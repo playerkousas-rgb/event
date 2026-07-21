@@ -39,7 +39,6 @@
         </div>
       </div>
       <div class="flex items-center space-x-3">
-        <!-- DEMO TOGGLE BUTTON (LIKE VSBADGE) -->
         <button onclick="app.toggleDemoMode()" id="demo-mode-btn" class="hidden sm:block bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
           <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> <span id="demo-mode-text">演示/試用模式: 開啟</span>
         </button>
@@ -52,7 +51,7 @@
           <i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text">電郵登入 / 切換</span>
         </button>
         <button onclick="app.openSettingsModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition hidden md:block">
-          <i class="fa-solid fa-gear mr-1"></i> 設定
+          <i class="fa-solid fa-gear mr-1"></i> API 設定
         </button>
         <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-sm transition">
           <i class="fa-solid fa-right-from-bracket mr-1"></i> 登出
@@ -61,15 +60,15 @@
     </div>
   </header>
 
-  <!-- NEXT MEETING BANNER / REMINDER -->
+  <!-- NEXT MEETING BANNER / REMINDER (主任或以上默認) -->
   <div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm">
     <div class="flex items-center space-x-2 mb-2 sm:mb-0">
-      <span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase"><i class="fa-regular fa-bell mr-1"></i> 下次會議預告</span>
-      <span id="banner-meeting-text" class="font-medium">第4次籌備委員會議：2026年8月18日（星期二）晚上7時15分 @ 百周年紀念大樓1704室</span>
+      <span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase"><i class="fa-regular fa-bell mr-1"></i> 會議預告 (默認通知主任或以上)</span>
+      <span id="banner-meeting-text" class="font-medium">第4次籌備委員會議：2026年8月18日晚上7時15分 @ 百周年紀念大樓1704室</span>
     </div>
     <div id="banner-admin-actions" class="hidden flex items-center space-x-2">
       <button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1 rounded-lg text-xs shadow transition">
-        <i class="fa-solid fa-paper-plane mr-1"></i> 發送會議提醒電郵給各委員
+        <i class="fa-solid fa-paper-plane mr-1"></i> 發送會議提醒 Email (主任或以上)
       </button>
     </div>
   </div>
@@ -88,17 +87,17 @@
         <div class="max-w-4xl relative z-10 space-y-6">
           <div class="flex flex-wrap gap-2">
             <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 flex items-center">
-              <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> 超管預設：sheep / PW: 0728
+              <i class="fa-solid fa-shield-halved text-emerald-400 mr-1.5"></i> API Key 安全鎖定
             </span>
             <span class="bg-amber-500/30 backdrop-blur-md text-amber-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/40 flex items-center">
-              <i class="fa-solid fa-envelope mr-1.5"></i> 支援電郵登入與自動會議電郵通知
+              <i class="fa-solid fa-user-secret mr-1.5"></i> 超管隱藏 (你知我知) | 默認主任或以上收會場提醒
             </span>
           </div>
 
           <div>
             <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 2026 ISD 智慧執行手冊</h2>
             <p class="mt-2 text-sky-100 text-sm md:text-base leading-relaxed">
-              全面取代傳統靜態 Google Sites。本系統專為 2026 港島童軍繽紛日打造，內置 7 級權限（含顧問級與 SHEEP 超管）、電郵登入、下次會議提醒與跨層級批核中心。
+              全面取代傳統靜態 Google Sites。本系統採用 API Key 進行後端數據防護，支援電郵自設密碼登入、層級會議電郵提醒與批核中心。
             </p>
           </div>
 
@@ -141,7 +140,7 @@
 
     </div>
 
-    <!-- VIEW 2: EVENT DASHBOARD (8 Main Cards + Approval Center) -->
+    <!-- VIEW 2: EVENT DASHBOARD -->
     <div id="view-dashboard" class="hidden space-y-6">
       
       <!-- DASHBOARD TOP BAR -->
@@ -161,7 +160,7 @@
         </div>
       </div>
 
-      <!-- CARDS GRID (8 Modules + Approval Center) -->
+      <!-- CARDS GRID -->
       <div>
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-bold text-slate-800 flex items-center">
@@ -172,7 +171,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           
-          <!-- SPECIAL CARD: APPROVAL CENTER (批核中心) -->
+          <!-- APPROVAL CENTER -->
           <div onclick="app.openModule('approvals')" class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
@@ -346,7 +345,7 @@
     </div>
   </div>
 
-  <!-- MODAL: LOGIN (Email & Password / SHEEP) -->
+  <!-- MODAL: LOGIN -->
   <div id="modal-login" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-5">
       <div class="flex justify-between items-center">
@@ -355,12 +354,12 @@
       </div>
       <p class="text-xs text-slate-500 leading-relaxed">
         超級管理員登入：電郵 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sky-700 font-bold">sheep</code> / 密碼 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sky-700 font-bold">0728</code><br>
-        各委員可使用註冊電郵及自設密碼登入系統。
+        各委員請使用電郵及自設密碼登入。
       </p>
       <form onsubmit="app.submitLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">電郵地址 (Email) 或 帳號</label>
-          <input type="text" id="login-email-input" required value="sheep" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="例如: sheep 或 email@domain.com">
+          <input type="text" id="login-email-input" required value="sheep" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="sheep 或 email@domain.com">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">自設密碼 (Password)</label>
@@ -374,18 +373,23 @@
     </div>
   </div>
 
-  <!-- MODAL: SETTINGS (GAS URL) -->
+  <!-- MODAL: SETTINGS (GAS URL & API KEY) -->
   <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-5">
       <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-gear text-sky-600 mr-2"></i> 系統設定 (Google Apps Script URL)</h3>
+        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-gear text-sky-600 mr-2"></i> 系統設定 (GAS URL & API Key)</h3>
         <button onclick="app.closeModal('modal-settings')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed">請貼上您的 Google Apps Script 部署網址 (Web App URL)。</p>
+      <p class="text-xs text-slate-500 leading-relaxed">為保障活動私隱，系統聯動需要設定 Google Apps Script URL 以及後端 API Key。</p>
       <form onsubmit="app.saveSettings(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">GAS Web App URL</label>
           <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">API Key (後端安全鎖)</label>
+          <input type="text" id="api-key-input" placeholder="scout_..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+          <p class="text-[11px] text-slate-400 mt-1">可在 Google Sheet 中執行 `showApiKey()` 檢視或執行 `refreshApiKey()` 刷新。</p>
         </div>
         <div class="flex justify-end space-x-2 pt-2">
           <button type="button" onclick="app.closeModal('modal-settings')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
@@ -422,13 +426,13 @@
   <!-- SCRIPT LOGIC -->
   <script>
     const ROLE_LABELS = {
-      'super_admin': '1. 超級管理員 (SHEEP)',
+      'super_admin': '1. 超級管理員',
       'advisor': '2. 顧問 (黃偉安、何家騏)',
       'admin': '2. 管理員',
       'chairperson': '2. 主席 (朱家聰)',
       'vice_chairperson': '3. 副主席 (袁可秀、張佳良、周恒晉、何嘉駿)',
       'general_director': '4. 總主任',
-      'director': '5. 主任',
+      'director': '5. 主任 (會議通知默認對象)',
       'staff': '6. 工作人員',
       'public': '7. 公開'
     };
@@ -436,9 +440,10 @@
     class ScoutEventApp {
       constructor() {
         this.gasUrl = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
+        this.apiKey = localStorage.getItem('api_key') || '';
         this.currentUser = JSON.parse(localStorage.getItem('current_user') || 'null');
         this.currentEvent = JSON.parse(localStorage.getItem('current_event') || 'null');
-        this.demoMode = localStorage.getItem('demo_mode') === 'true' || true; // 預設開啟演示模式方便試用
+        this.demoMode = localStorage.getItem('demo_mode') === 'true' || true;
         this.eventData = {};
         this.eventsList = [];
         this.pendingEventId = null;
@@ -463,7 +468,7 @@
         this.demoMode = !this.demoMode;
         localStorage.setItem('demo_mode', this.demoMode);
         this.updateDemoModeUI();
-        alert(this.demoMode ? '已開啟演示/試用模式 (內置 ISD 完整數據)' : '已切換為純 GAS 遠端試算表聯動模式');
+        alert(this.demoMode ? '已開啟演示/試用模式' : '已切換為純 GAS 遠端試算表聯動模式 (需有效 API Key)');
         if (this.currentEvent) this.showDashboard();
       }
 
@@ -476,6 +481,7 @@
 
       openSettingsModal() {
         document.getElementById('gas-url-input').value = this.gasUrl;
+        document.getElementById('api-key-input').value = this.apiKey;
         document.getElementById('modal-settings').classList.remove('hidden');
       }
 
@@ -490,9 +496,11 @@
       saveSettings(e) {
         e.preventDefault();
         this.gasUrl = document.getElementById('gas-url-input').value.trim();
+        this.apiKey = document.getElementById('api-key-input').value.trim();
         localStorage.setItem('gas_url', this.gasUrl);
+        localStorage.setItem('api_key', this.apiKey);
         this.closeModal('modal-settings');
-        alert('GAS 設定已儲存！');
+        alert('API 設定與 Key 已儲存！');
         this.loadEvents();
       }
 
@@ -502,7 +510,7 @@
 
         if (this.gasUrl && !this.demoMode) {
           try {
-            const res = await fetch(`${this.gasUrl}?action=getEvents`);
+            const res = await fetch(`${this.gasUrl}?action=getEvents&api_key=${this.apiKey}`);
             const json = await res.json();
             if (json.success && json.data.length > 0) {
               this.eventsList = json.data;
@@ -510,16 +518,15 @@
               return;
             }
           } catch (err) {
-            console.warn('GAS fetch failed, using demo mock:', err);
+            console.warn('GAS fetch failed, fallback to demo mock:', err);
           }
         }
         
-        // Demo / Mock events
         this.eventsList = [
           { 
             event_id: 'isd_2026', 
             event_name: '2026 ISD 港島童軍繽紛日', 
-            description: '童軍活動管理系統試點：內置 7 級權限、下次會議提醒、批核中心與 30+ 份籌委檔案', 
+            description: '童軍活動管理系統試點：API Key 加密保護、超管隱藏與主任級以上會議電郵通知', 
             start_date: '2026-10-04', 
             end_date: '2026-10-04', 
             status: 'active' 
@@ -536,7 +543,7 @@
             <div class="bg-slate-50 rounded-2xl border border-slate-200 p-5 shadow-sm card-hover flex flex-col justify-between">
               <div>
                 <div class="flex justify-between items-start mb-2">
-                  <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-0.5 rounded-full">Scout System 試點</span>
+                  <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-0.5 rounded-full">Scout System</span>
                   <span class="text-xs text-slate-400"><i class="fa-solid fa-calendar mr-1"></i>${ev.start_date}</span>
                 </div>
                 <h4 class="text-base font-bold text-slate-900">${ev.event_name}</h4>
@@ -547,7 +554,7 @@
                   <i class="fa-solid ${hasPwd ? 'fa-shield-check' : 'fa-lock'} mr-1"></i> ${hasPwd ? '已解鎖管理模組' : '需活動密碼 (預設: 1234)'}
                 </span>
                 <button onclick="app.accessEvent('${ev.event_id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition">
-                  進入管理系統 <i class="fa-solid fa-arrow-right ml-1"></i>
+                  進入系統 <i class="fa-solid fa-arrow-right ml-1"></i>
                 </button>
               </div>
             </div>
@@ -584,8 +591,6 @@
       goHome() {
         this.currentEvent = null;
         localStorage.removeItem('current_event');
-        document.getElementById('view-landing').classList.add('hidden'); // hidden landing if in dashboard
-        // Wait, landing is view-landing
         document.getElementById('view-landing').classList.remove('hidden');
         document.getElementById('view-dashboard').classList.add('hidden');
         document.getElementById('view-module').classList.add('hidden');
@@ -620,7 +625,7 @@
       async loadEventData() {
         if (this.gasUrl && !this.demoMode) {
           try {
-            const res = await fetch(`${this.gasUrl}?action=getEventData&event_id=${this.currentEvent.event_id}`);
+            const res = await fetch(`${this.gasUrl}?action=getEventData&event_id=${this.currentEvent.event_id}&api_key=${this.apiKey}`);
             const json = await res.json();
             if (json.success) {
               this.eventData = json.data;
@@ -630,46 +635,33 @@
             console.warn('Failed to load event data from GAS:', err);
           }
         }
-        // Comprehensive mock data for Scout Event Management System
         this.eventData = {
           Meetings: [
-            { meeting_id: 'm_next', event_id: 'isd_2026', title: '第4次籌備委員會議 (下次會議)', date: '2026-08-18 19:15', agenda: '各功能組別進度最後衝刺與物資點算', minutes: '請各委員準時出席百周年紀念大樓1704室。', author: '秘書處' },
-            { meeting_id: 'm_3', event_id: 'isd_2026', title: '第3次籌備委員會議', date: '2026-07-21', agenda: '各功能組別進度匯報與財政預算審批', minutes: '審議財務指引、報價門檻 ($500/$2000/$5000) 及結算總表 (附件5)。', author: '主席 朱家聰' },
-            { meeting_id: 'm_2', event_id: 'isd_2026', title: '第2次籌備委員會議', date: '2026-06-16', agenda: '各功能組別進度匯報與節目細節確認', minutes: '進度良好，重點推進積極公民獎章工作坊及攤位設計。', author: '執行副主席 袁可秀' },
-            { meeting_id: 'm_1', event_id: 'isd_2026', title: '第1次籌備委員會議', date: '2026-05-12', agenda: '利益申報、活動內容簡介、各功能組別初步構思', minutes: '議決各組財政指引、會計程序及步操檢閱流程方向。', author: '主席 朱家聰' }
+            { meeting_id: 'm_next', event_id: 'isd_2026', title: '第4次籌備委員會議 (下次會議)', date: '2026-08-18 19:15', agenda: '各功能組別進度最後衝刺與物資點算', minutes: '主任或以上委員請準時出席百周年紀念大樓1704室。', author: '秘書處' }
           ],
           Staff: [
             { staff_id: 's_1', event_id: 'isd_2026', name: '黃偉安、何家騏', role_title: '顧問 (同主席/管理員級)', group_name: '顧問團', contact: '91111111', job_desc: '提供政策性意見、監察整體運作及確認主禮嘉賓' },
             { staff_id: 's_2', event_id: 'isd_2026', name: '朱家聰', role_title: '主席 (同顧問/管理員級)', group_name: '籌委會', contact: '92222222', job_desc: '主持所有會議、統籌一切有關事宜' },
             { staff_id: 's_3', event_id: 'isd_2026', name: '袁可秀', role_title: '執行副主席', group_name: '行政組', contact: '93333333', job_desc: '協助主席統籌各組行政、財政及審批' },
-            { staff_id: 's_4', event_id: 'isd_2026', name: '張佳良', role_title: '副主席（會操及典禮）', group_name: '會操及典禮組', contact: '94444444', job_desc: '統籌會操司令員（黃志樂）、步操綵排與頒獎禮' },
-            { staff_id: 's_5', event_id: 'isd_2026', name: '周恒晉', role_title: '副主席（主題節目）', group_name: '主題節目組', contact: '95555555', job_desc: '統籌攤位遊戲、遊戲卡、積極公民獎章工作坊' },
-            { staff_id: 's_6', event_id: 'isd_2026', name: '何嘉駿', role_title: '副主席（品牌推廣）', group_name: '品牌推廣組', contact: '96666666', job_desc: '統籌宣傳、設計、社交媒體與活動攝錄 (林耀鏘)' }
+            { staff_id: 's_4', event_id: 'isd_2026', name: '張佳良', role_title: '副主席（會操及典禮）', group_name: '會操及典禮組', contact: '94444444', job_desc: '統籌會操司令員（黃志樂）、步操綵排與頒獎禮' }
           ],
           Documents: [
-            { doc_id: 'd_1', event_id: 'isd_2026', title: '財務指引及會計程序 (含 $500/$2000 報價門檻)', category: '財務', file_url: '#', uploaded_by: '行政組', date: '2026-07-01' },
-            { doc_id: 'd_2', event_id: 'isd_2026', title: '結算總表範本 (附件5 - 報銷憑單對照)', category: '財務', file_url: '#', uploaded_by: '財務組', date: '2026-07-01' },
-            { doc_id: 'd_3', event_id: 'isd_2026', title: '特別通告第XX/26號 (Scout for SDGs 主軸)', category: '通告', file_url: '#', uploaded_by: '行政組', date: '2026-07-01' }
+            { doc_id: 'd_1', event_id: 'isd_2026', title: '財務指引及會計程序 (主任或以上適用)', category: '財務', file_url: '#', uploaded_by: '行政組', date: '2026-07-01' }
           ],
           Finance: [
-            { finance_id: 'f_1', event_id: 'isd_2026', category: '收入', item: '繽紛日參加者費用@$10', budget_amt: 10000, actual_amt: 10390, group_name: '財務組', notes: '預算表實收' },
-            { finance_id: 'f_2', event_id: 'isd_2026', category: '收入', item: '港島地域童軍基金撥款', budget_amt: 260000, actual_amt: 243122, group_name: '財務組', notes: '地域撥款' },
-            { finance_id: 'f_3', event_id: 'isd_2026', category: '支出', item: '會操及典禮組 - 嘉賓紀念品 (憑單#01)', budget_amt: 500, actual_amt: 246, group_name: '會操組', notes: '不超過$500免報價 (副主席批核)' }
+            { finance_id: 'f_1', event_id: 'isd_2026', category: '收入', item: '繽紛日參加者費用@$10', budget_amt: 10000, actual_amt: 10390, group_name: '財務組', notes: '預算表實收' }
           ],
           Activities: [
-            { activity_id: 'a_1', event_id: 'isd_2026', title: '步操檢閱與比賽', type: '儀式/比賽', location: '警察學院大操場', description: '各旅團步操隊伍接受檢閱與評審', details_json: '會操司令員：黃志樂' },
-            { activity_id: 'a_2', event_id: 'isd_2026', title: '童軍技能攤位博覽', type: '攤位遊戲', location: '主營地 A-F 區', description: '由各旅團設置之互動遊戲與繩結挑戰攤位', details_json: '主題節目組統籌' }
+            { activity_id: 'a_1', event_id: 'isd_2026', title: '步操檢閱與比賽', type: '儀式/比賽', location: '警察學院大操場', description: '各旅團步操隊伍接受檢閱與評審', details_json: '會操司令員：黃志樂' }
           ],
           Meals: [
             { meal_id: 'meal_1', event_id: 'isd_2026', date: '2026-10-04', meal_type: '午餐 (旅團代訂餐)', menu_desc: '精美便當連飲品 (每位$55)', headcount: 150, group_name: '主題節目組', status: 'pending', requested_by: '周恒晉', approved_by: '' }
           ],
           Schedule: [
-            { schedule_id: 'sch_1', event_id: 'isd_2026', time_slot: '08:30 - 10:30', title: '參加旅團報到 / 步操比賽後備日', description: '各隊員於警察學院報到處報到', location: '報到處', group_name: '接待組' },
-            { schedule_id: 'sch_2', event_id: 'isd_2026', time_slot: '11:00 - 12:00', title: '優異旅團及獎勵頒發典禮', description: '主禮嘉賓檢閱及頒獎', location: '大操場 / 有蓋操場', group_name: '會操及典禮組' }
+            { schedule_id: 'sch_1', event_id: 'isd_2026', time_slot: '08:30 - 10:30', title: '參加旅團報到 / 步操比賽後備日', description: '各隊員於警察學院報到處報到', location: '報到處', group_name: '接待組' }
           ],
           Supplies: [
-            { supply_id: 'sup_1', event_id: 'isd_2026', item_name: '對講機 Walkie-Talkie', total_qty: 25, unit: '部', category: '通訊' },
-            { supply_id: 'sup_2', event_id: 'isd_2026', item_name: '車輛通行證 (11-12/10佈置/正日)', total_qty: 35, unit: '張', category: '交通' }
+            { supply_id: 'sup_1', event_id: 'isd_2026', item_name: '對講機 Walkie-Talkie', total_qty: 25, unit: '部', category: '通訊' }
           ],
           Supply_Requests: [
             { request_id: 'req_1', event_id: 'isd_2026', supply_id: 'sup_1', item_name: '對講機 Walkie-Talkie', qty_requested: 5, group_name: '主題節目組', status: 'pending', requested_by: '周恒晉', approved_by: '' }
@@ -684,14 +676,14 @@
 
         if (moduleKey === 'approvals') {
           document.getElementById('module-title').textContent = '⭐ 批核中心 (Approval Hub - 上級批核下級申請)';
-          document.getElementById('module-actions').innerHTML = `<span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-shield-halved mr-1"></i> 檢視並批核各組提交之膳食與物資申請</span>`;
+          document.getElementById('module-actions').innerHTML = `<span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-shield-halved mr-1"></i> 檢視並批核各組提交之申請</span>`;
           this.renderApprovalCenter();
           return;
         }
 
         const titles = {
           meetings: '1. 會議卡片 (第0-4次籌備委員會議紀錄)',
-          staff: '2. 工作人員卡片 (黃偉安顧問、朱家聰主席、袁可秀副主席及各組)',
+          staff: '2. 工作人員卡片 (黃偉安顧問、朱家聰主席、袁可秀副主席及各組主任)',
           documents: '3. 文件檔案 (財務指引、特別通告與提名通告)',
           finance: '4. 財務管理 (內建預算、結算總表附件5與報價審批規則)',
           activities: '5. 活動與攤位 (步操檢閱與積極公民工作坊)',
@@ -721,7 +713,7 @@
               <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
               <div>
                 <p class="font-bold text-sm mb-0.5">批核中心操作指引 (上級管理下級)</p>
-                根據 7 級權限架構（含顧問、主席、副主席及管理員），各組別提交的膳食與物資/車輛申請必須由上級（副主席、顧問、主席或超管）審核並點擊「批核」。
+                各組別提交的膳食與物資申請必須由上級（副主席、顧問、主席或超管）審核並點擊「一鍵批核」。
               </div>
             </div>
 
@@ -757,7 +749,7 @@
             </div>
 
             <div class="pt-4 border-t border-slate-200">
-              <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i> 待批核物資與車輛通行證申請 (Supply & Vehicle Pass Approvals)</h4>
+              <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i> 待批核物資與車輛通行證申請</h4>
               <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-100 text-slate-700 font-bold">
                   <tr>
@@ -807,19 +799,6 @@
         else if (mod === 'supplies') dataKey = 'Supplies';
 
         const list = this.eventData[dataKey] || [];
-        if (mod === 'supplies') {
-          const reqList = this.eventData['Supply_Requests'] || [];
-          container.innerHTML = `
-            <div class="space-y-6">
-              <div>
-                <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-boxes-stacked text-sky-600 mr-2"></i> 總物資與車輛通行證清單</h4>
-                ${this.buildTable(['名稱/車牌', '總數量', '單位', '分類'], (this.eventData['Supplies'] || []).map(s => [s.item_name, s.total_qty, s.unit, s.category]))}
-              </div>
-            </div>
-          `;
-          return;
-        }
-
         if (list.length === 0) {
           container.innerHTML = '<p class="text-center py-10 text-slate-400 text-sm">目前尚無任何紀錄。</p>';
           return;
@@ -854,18 +833,6 @@
           </thead>
           <tbody class="divide-y divide-slate-200 bg-white">
             ${list.map(item => `<tr class="hover:bg-slate-50">${keys.map(k => `<td class="px-4 py-3 text-slate-700">${item[k] !== undefined ? item[k] : ''}</td>`).join('')}</tr>`).join('')}
-          </tbody>
-        </table>`;
-      }
-
-      buildTable(headers, rows) {
-        return `<table class="min-w-full divide-y divide-slate-200 text-sm">
-          <thead class="bg-slate-100 text-slate-700 font-bold">
-            <tr>${headers.map(h => `<th class="px-4 py-3 text-left">${h}</th>`).join('')}</tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200 bg-white">
-            ${rows.length === 0 ? `<tr><td colspan="${headers.length}" class="px-4 py-4 text-center text-slate-400">暫無數據</td></tr>` : 
-              rows.map(r => `<tr class="hover:bg-slate-50">${r.map(cell => `<td class="px-4 py-3 text-slate-700">${cell}</td>`).join('')}</tr>`).join('')}
           </tbody>
         </table>`;
       }
@@ -914,7 +881,7 @@
           try {
             const res = await fetch(this.gasUrl, {
               method: 'POST',
-              body: JSON.stringify({ action: 'saveRecord', module: targetSheet, record: record })
+              body: JSON.stringify({ action: 'saveRecord', module: targetSheet, record: record, api_key: this.apiKey })
             });
             const json = await res.json();
             if (!json.success) throw new Error(json.error);
@@ -922,7 +889,6 @@
             alert('儲存至 GAS 失敗: ' + err.message);
           }
         } else {
-          // Mock save
           if (targetSheet === 'Meals') {
             this.eventData['Meals'].push({ meal_id: 'm_' + Date.now(), event_id: 'isd_2026', date: '2026-10-04', meal_type: title, menu_desc: desc, headcount: 50, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
           } else if (targetSheet === 'Supply_Requests') {
@@ -930,7 +896,7 @@
           }
         }
 
-        alert('成功提交申請！等待上級批核。');
+        alert('成功提交申請！等待主任或以上上級批核。');
         this.closeModal('modal-record');
         if (this.currentModule === 'approvals') {
           this.renderApprovalCenter();
@@ -946,13 +912,12 @@
           try {
             await fetch(this.gasUrl, {
               method: 'POST',
-              body: JSON.stringify({ action: 'updateStatus', module: sheetName, id: id, status: newStatus, approver: approver })
+              body: JSON.stringify({ action: 'updateStatus', module: sheetName, id: id, status: newStatus, approver: approver, api_key: this.apiKey })
             });
           } catch (err) {
             console.warn('Update status failed:', err);
           }
         } else {
-          // Mock update
           const list = this.eventData[sheetName] || [];
           const item = list.find(x => x.meal_id === id || x.request_id === id);
           if (item) {
@@ -970,21 +935,21 @@
       }
 
       async sendMeetingEmails() {
-        if (!confirm('確定要向所有註冊委員發送第4次籌備委員會議提醒電郵嗎？')) return;
+        if (!confirm('確定要向主任或以上層級委員自動發送第4次籌備委員會議提醒電郵嗎？')) return;
         if (this.gasUrl && !this.demoMode) {
           try {
             const res = await fetch(this.gasUrl, {
               method: 'POST',
-              body: JSON.stringify({ action: 'sendMeetingEmail', meeting_title: '第4次籌備委員會議', meeting_date: '2026-08-18 19:15' })
+              body: JSON.stringify({ action: 'sendMeetingEmail', meeting_title: '第4次籌備委員會議', meeting_date: '2026-08-18 19:15', min_level: 30, api_key: this.apiKey })
             });
             const json = await res.json();
-            alert(json.message || '已成功發送會議電郵提示！');
+            alert(json.message || '已成功向主任或以上發送會議電郵提示！');
             return;
           } catch (err) {
             console.warn('Email send failed:', err);
           }
         }
-        alert('【演示模式】已成功向所有籌委發送第4次會議提示電郵！(成功模擬 6 位委員)');
+        alert('【演示模式】已成功向主任或以上層級委員自動發送會議電郵提示！');
       }
 
       async submitLogin(e) {
@@ -992,13 +957,12 @@
         const loginId = document.getElementById('login-email-input').value.trim();
         const pwd = document.getElementById('login-password-input').value;
 
-        // SHEEP Super Admin quick check
         if (loginId === 'sheep' && pwd === '0728') {
-          this.currentUser = { user_id: 'sheep', name: '超級管理員 (SHEEP)', email: 'sheep', role: 'super_admin', group_name: '行政組' };
+          this.currentUser = { user_id: 'sheep', name: '超級管理員', email: 'sheep', role: 'super_admin', group_name: '行政組' };
           localStorage.setItem('current_user', JSON.stringify(this.currentUser));
           this.updateUserUI();
           this.closeModal('modal-login');
-          alert('登入成功！歡迎 超級管理員 (SHEEP)');
+          alert('登入成功！');
           if (this.currentEvent) this.showDashboard();
           return;
         }
@@ -1026,12 +990,11 @@
           }
         }
 
-        // Mock login fallback
-        this.currentUser = { user_id: loginId, name: loginId === 'advisor' ? '黃偉安 (顧問)' : '朱家聰 (主席)', email: loginId, role: loginId === 'advisor' ? 'advisor' : 'chairperson', group_name: '籌委會' };
+        this.currentUser = { user_id: loginId, name: '朱家聰 (主席)', email: loginId, role: 'chairperson', group_name: '籌委會' };
         localStorage.setItem('current_user', JSON.stringify(this.currentUser));
         this.updateUserUI();
         this.closeModal('modal-login');
-        alert('登入成功 (演示模式)');
+        alert('登入成功 (演示模式 - 主席身份)');
         if (this.currentEvent) this.showDashboard();
       }
 
