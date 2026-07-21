@@ -1,7 +1,8 @@
 // ============================================================
-// 童軍活動管理系統 - Google Apps Script 後端 v4.0 (全數據實戰版)
+// 童軍活動管理系統 - Google Apps Script 後端 v4.1 (完整真實試算表對接版)
 // COPY RIGHT Scout System
-// 運行 initializeSheets() / seedInitialData() 可自動將所有真實檔案資料寫入 Google Sheet
+// 當 mockMode 關閉時，前端 100% 讀取 Google Sheet 中的真實資料
+// initializeSheets() 會將所有完整組織架構與明細寫入試算表
 // ============================================================
 
 const SUPER_ADMIN_EMAIL = 'sheep';
@@ -86,17 +87,17 @@ function ensureSheet(ss, sheetName, headers) {
   }
 }
 
-// 寫入全部真實 ISD 2026 數據（包含所有總主任、副主席、節目主任）
+// 完整寫入所有真實 ISD 2026 數據與完整 Staff 名單進 Google Sheet
 function seedInitialData() {
   const ss = getSheet();
   
-  // Events
+  // 1. Events
   const evSheet = ss.getSheetByName('Events');
   if (evSheet.getLastRow() <= 1) {
     evSheet.appendRow(['isd_2026', '2026 ISD 港島童軍繽紛日', hashPassword('1234'), '港島地域年度旗艦盛事：步操檢閱與攤位博覽', '2026-10-04', '2026-10-04', 'active', new Date()]);
   }
   
-  // Users
+  // 2. Users
   const uSheet = ss.getSheetByName('Users');
   if (uSheet.getLastRow() <= 1) {
     uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
@@ -107,7 +108,7 @@ function seedInitialData() {
     uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', hashPassword('1234'), 'active', new Date()]);
   }
   
-  // Meetings
+  // 3. Meetings
   const mSheet = ss.getSheetByName('Meetings');
   if (mSheet.getLastRow() <= 1) {
     mSheet.appendRow(['m_0', 'isd_2026', '第0次預備會議 (Zoom)', '2026-05-01', '活動背景簡介、上屆活動檢討、籌委會架構確認', '主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行。', '主席 朱家聰', new Date()]);
@@ -117,7 +118,7 @@ function seedInitialData() {
     mSheet.appendRow(['m_next', 'isd_2026', '第4次籌備委員會議 (下次會議)', '2026-08-18 19:15', '各功能組別進度最後衝刺與物資點算', '主任或以上委員請準時出席百周年紀念大樓1704室。', '秘書處', new Date()]);
   }
   
-  // Staff (完整收錄所有總主任與節目主任)
+  // 4. Staff (完整收錄所有工作人員、總主任、節目主任)
   const sSheet = ss.getSheetByName('Staff');
   if (sSheet.getLastRow() <= 1) {
     sSheet.appendRow(['s_1', 'isd_2026', '黃偉安 / 何家騏', '顧問', '顧問團', '91111111', '政策指導與總監匯報', new Date()]);
@@ -138,62 +139,58 @@ function seedInitialData() {
     sSheet.appendRow(['s_16', 'isd_2026', '林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組', '96333333', '活動當日錄影及拍照', new Date()]);
   }
   
-  // Documents
+  // 5. Documents
   const dSheet = ss.getSheetByName('Documents');
   if (dSheet.getLastRow() <= 1) {
-    dSheet.appendRow(['d_1', 'isd_2026', '財務指引及會計程序 (含 $500/$2000 報價門檻)', '財務', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_2', 'isd_2026', '結算總表範本 (附件5 - 報銷憑單對照)', '財務', '#', '財務組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_3', 'isd_2026', '特別通告第XX/26號 (Scout for SDGs 主軸)', '通告', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_4', 'isd_2026', '車輛通行證申請與警察學院場地佈置須知', '協調', '#', '協調組', '2026-08-05', new Date()]);
+    dSheet.appendRow(['d_1', 'isd_2026', '利益申報政策及收受利益指引 (附件一)', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
+    dSheet.appendRow(['d_2', 'isd_2026', '財務指引及會計程序 (含 $500/$2000 報價門檻)', '財務', '#', '行政組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_3', 'isd_2026', '結算總表範本 (附件5 - 報銷憑單對照)', '財務', '#', '財務組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_4', 'isd_2026', '特別通告第XX/26號 (Scout for SDGs 主軸)', '通告', '#', '行政組', '2026-07-01', new Date()]);
   }
   
-  // Finance
+  // 6. Finance
   const fSheet = ss.getSheetByName('Finance');
   if (fSheet.getLastRow() <= 1) {
     fSheet.appendRow(['f_1', 'isd_2026', '收入', '繽紛日參加者費用@$10', 10000, 10390, '財務組', '預算表實收', new Date()]);
-    fSheet.appendRow(['f_2', 'isd_2026', '收入', '港島地域童軍基金撥款', 260000, 243122, '財務組', '地域撥款', new Date()]);
+    fSheet.appendRow(['f_2', 'isd_2026', '收入', '港島地域童軍基金撥款', 260000, 243122.59, '財務組', '地域撥款', new Date()]);
     fSheet.appendRow(['f_3', 'isd_2026', '支出', '會操及典禮組 - 嘉賓紀念品 (憑單#01)', 500, 246, '會操組', '不超過$500免報價', new Date()]);
-    fSheet.appendRow(['f_4', 'isd_2026', '支出', '主題節目組 - 攤位遊戲與積極公民證書', 30200, 13872, '節目組', '已完成報價比較表 (附件4)', new Date()]);
+    fSheet.appendRow(['f_4', 'isd_2026', '支出', '主題節目組 - 節目／攤位遊戲', 26000, 13872.53, '節目組', '道具與佈置', new Date()]);
   }
   
-  // Activities
+  // 7. Activities
   const actSheet = ss.getSheetByName('Activities');
   if (actSheet.getLastRow() <= 1) {
     actSheet.appendRow(['a_1', 'isd_2026', '步操檢閱與比賽', '儀式/比賽', '警察學院大操場', '各旅團步操隊伍接受檢閱與評審', '會操司令員：黃志樂', new Date()]);
     actSheet.appendRow(['a_2', 'isd_2026', '童軍技能攤位博覽', '攤位遊戲', '主營地 A-F 區', '由各旅團設置之互動遊戲與繩結挑戰攤位', '主題節目組統籌', new Date()]);
-    actSheet.appendRow(['a_3', 'isd_2026', '积极公民獎章工作坊 (VS & RS)', '專章培訓', '課室 1-3', 'Scout for Innovative Community Builders 培訓', '專章導師指導', new Date()]);
   }
   
-  // Meals
+  // 8. Meals
   const mealSheet = ss.getSheetByName('Meals');
   if (mealSheet.getLastRow() <= 1) {
     mealSheet.appendRow(['meal_1', 'isd_2026', '2026-10-04', '午餐 (旅團代訂餐)', '精美便當連飲品 (每位$55)', 150, '主題節目組', 'pending', '周恒晉', '', new Date()]);
   }
   
-  // Schedule
+  // 9. Schedule
   const schSheet = ss.getSheetByName('Schedule');
   if (schSheet.getLastRow() <= 1) {
     schSheet.appendRow(['sch_1', 'isd_2026', '07:45 - 08:30', '會操及頒獎禮場地設置劃位', '各功能組別場地佈置', '大操場', '協調組', new Date()]);
     schSheet.appendRow(['sch_2', 'isd_2026', '08:30 - 10:30', '參加旅團報到 / 步操比賽後備日', '各隊員於警察學院報到處報到', '報到處', '接待組', new Date()]);
-    schSheet.appendRow(['sch_3', 'isd_2026', '11:00 - 12:00', '優異旅團及獎勵頒發典禮', '主禮嘉賓檢閱及頒獎', '大操場 / 有蓋操場', '會操及典禮組', new Date()]);
-    schSheet.appendRow(['sch_4', 'isd_2026', '13:00 - 16:30', '攤位博覽與積極公民工作坊', '各項挑戰活動及專章培訓', '營地全區', '主題節目組', new Date()]);
   }
   
-  // Supplies
+  // 10. Supplies
   const supSheet = ss.getSheetByName('Supplies');
   if (supSheet.getLastRow() <= 1) {
     supSheet.appendRow(['sup_1', 'isd_2026', '對講機 Walkie-Talkie', 25, '部', '通訊', new Date()]);
     supSheet.appendRow(['sup_2', 'isd_2026', '大型戶外帳篷 (3x3m)', 10, '個', '營具', new Date()]);
-    supSheet.appendRow(['sup_3', 'isd_2026', '車輛通行證 (11-12/10佈置/正日)', 35, '張', '交通', new Date()]);
   }
   
-  // Supply_Requests
+  // 11. Supply_Requests
   const reqSheet = ss.getSheetByName('Supply_Requests');
   if (reqSheet.getLastRow() <= 1) {
     reqSheet.appendRow(['req_1', 'isd_2026', 'sup_1', '對講機 Walkie-Talkie', 5, '主題節目組', 'pending', '周恒晉', '', new Date()]);
   }
   
-  SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 完整組織架構與基礎數據已寫入 Google Sheet。');
+  SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 完整工作人員名單與真實明細已完整寫入 Google Sheet。');
 }
 
 function doGet(e) {
