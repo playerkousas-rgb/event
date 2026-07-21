@@ -1,7 +1,7 @@
 {
   "event_id": "isd_2026",
   "event_name": "2026 ISD 港島童軍繽紛日",
-  "description": "港島地域年度旗艦盛事：全面取代舊版靜態 Google Sites 執行手冊之智慧指揮中心",
+  "description": "港島地域年度旗艦盛事：顧問、籌委、總主任與各組主任專用智慧指揮中心",
   "meetings": [
     { "meeting_id": "m_0", "title": "第0次預備會議 (Zoom)", "date": "2026-05-01", "agenda": "活動背景簡介、上屆活動檢討、籌委會架構確認", "minutes": "主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行，主軸定為 Scout for SDGs。", "author": "主席 朱家聰" },
     { "meeting_id": "m_1", "title": "第1次籌備委員會議", "date": "2026-05-12", "agenda": "利益申報、活動內容簡介、各功能組別初步構思與財政指引", "minutes": "議決各組財政指引、會計程序及步操檢閱流程方向。批準各組預算上限。", "author": "主席 朱家聰" },
@@ -11,38 +11,46 @@
   ],
   "staff": {
     "org_chart": [
-      { "level": "顧問團", "title": "顧問", "names": "黃偉安、何家騏", "desc": "審核活動目的、提供政策性意見及確認主禮嘉賓" },
-      { "level": "籌委會", "title": "主席", "names": "朱家聰", "desc": "主持會議、統籌活動一切有關事宜及確保順利進行" },
-      { "level": "行政組", "title": "執行副主席", "names": "袁可秀", "desc": "協助主席統籌各組行政、財政及審批工作" },
-      { "level": "會操及典禮組", "title": "副主席", "names": "張佳良", "desc": "統籌會操司令員（黃志樂）、步操綵排與頒獎典禮" },
-      { "level": "主題節目組", "title": "副主席", "names": "周恒晉", "desc": "統籌攤位遊戲、遊戲卡、積極公民獎章工作坊" },
-      { "level": "品牌推廣組", "title": "副主席", "names": "何嘉駿", "desc": "統籌宣傳、設計、社交媒體與活動攝錄 (林耀鏘)" }
+      { "level": "顧問團 (Level 2)", "title": "顧問", "names": "黃偉安、何家騏", "desc": "審核活動目的、提供政策性意見、監察整體運作與確認主禮嘉賓" },
+      { "level": "籌委會 (Level 2)", "title": "主席", "names": "朱家聰", "desc": "主持會議、統籌活動一切有關事宜及確保順利進行" },
+      { "level": "行政組 (Level 3)", "title": "執行副主席", "names": "袁可秀", "desc": "協助主席統籌各組行政、財政與審批工作" },
+      { "level": "會操及典禮組 (Level 3)", "title": "副主席", "names": "張佳良", "desc": "統籌會操司令員、步操綵排與頒獎典禮" },
+      { "level": "會操及典禮組 (Level 4)", "title": "總主任（會操）", "names": "梁文澧", "desc": "統籌會操項目及步操後備日" },
+      { "level": "會操及典禮組 (Level 4)", "title": "副主席（典禮）", "names": "李懷恩", "desc": "統籌典禮、優異旅團及獎勵頒發" },
+      { "level": "主題節目組 (Level 3)", "title": "副主席", "names": "周恒晉", "desc": "統籌攤位遊戲、遊戲卡、積極公民獎章工作坊" },
+      { "level": "主題節目組 (Level 4)", "title": "總主任（主題節目）", "names": "仇紹謙", "desc": "統籌各項節目主任與活動內容" },
+      { "level": "品牌推廣組 (Level 3)", "title": "副主席", "names": "何嘉駿", "desc": "統籌宣傳、設計、社交媒體與活動攝錄" }
     ],
     "contacts": [
-      { "name": "黃偉安 / 何家騏", "role_title": "顧問", "group_name": "顧問團", "contact": "91111111", "job_desc": "政策指導與總監匯報" },
-      { "name": "朱家聰", "role_title": "主席", "group_name": "籌委會", "contact": "92222222", "job_desc": "全域統籌" },
+      { "name": "黃偉安 / 何家騏", "role_title": "顧問 (Advisor)", "group_name": "顧問團", "contact": "91111111", "job_desc": "政策指導與總監匯報" },
+      { "name": "朱家聰", "role_title": "主席 (Chairperson)", "group_name": "籌委會", "contact": "92222222", "job_desc": "全域統籌" },
       { "name": "袁可秀", "role_title": "執行副主席", "group_name": "行政組", "contact": "93333333", "job_desc": "行政與財務審批" },
       { "name": "張佳良", "role_title": "副主席", "group_name": "會操及典禮組", "contact": "94444444", "job_desc": "會操與典禮統籌" },
-      { "name": "黃志樂", "role_title": "會操司令員", "group_name": "會操及典禮組", "contact": "94111111", "job_desc": "步操檢閱指揮" },
       { "name": "梁文澧", "role_title": "總主任（會操）", "group_name": "會操及典禮組", "contact": "94222222", "job_desc": "會操後備日統籌" },
+      { "name": "黃志樂", "role_title": "步操統籌主任 / 會操司令員", "group_name": "會操及典禮組", "contact": "94111111", "job_desc": "步操檢閱指揮" },
+      { "name": "李懷恩", "role_title": "副主席（典禮）", "group_name": "會操及典禮組", "contact": "94333333", "job_desc": "典禮與優異旅團統籌" },
       { "name": "周恒晉", "role_title": "副主席", "group_name": "主題節目組", "contact": "95555555", "job_desc": "攤位與遊戲統籌" },
       { "name": "仇紹謙", "role_title": "總主任（主題節目）", "group_name": "主題節目組", "contact": "95111111", "job_desc": "節目內容策劃" },
-      { "name": "何令勤 / 陳鋑羲 / 張宏剛", "role_title": "節目主任", "group_name": "主題節目組", "contact": "95222222", "job_desc": "遊戲攤位及工作坊" },
+      { "name": "何令勤", "role_title": "節目主任 (1)", "group_name": "主題節目組", "contact": "95211111", "job_desc": "遊戲攤位執行" },
+      { "name": "陳鋑羲", "role_title": "節目主任 (2)", "group_name": "主題節目組", "contact": "95222222", "job_desc": "遊戲攤位執行" },
+      { "name": "張宏剛", "role_title": "節目主任 (3)", "group_name": "主題節目組", "contact": "95233333", "job_desc": "遊戲攤位執行" },
+      { "name": "羅卓華", "role_title": "節目主任 (4)", "group_name": "主題節目組", "contact": "95244444", "job_desc": "攤位遊戲與印花" },
+      { "name": "李庭甄", "role_title": "節目主任 (5)", "group_name": "主題節目組", "contact": "95255555", "job_desc": "積極公民工作坊" },
       { "name": "何嘉駿", "role_title": "副主席", "group_name": "品牌推廣組", "contact": "96666666", "job_desc": "宣傳與攝錄統籌" },
-      { "name": "林耀鏘", "role_title": "拍攝/攝錄統籌", "group_name": "品牌推廣組", "contact": "96333333", "job_desc": "活動當日錄影及拍照" }
+      { "name": "林耀鏘", "role_title": "拍攝/攝錄統籌主任", "group_name": "品牌推廣組", "contact": "96333333", "job_desc": "活動當日錄影及拍照" }
     ],
     "job_duties": [
       { "group": "顧問團", "duty": "審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作及確認主禮嘉賓。" },
       { "group": "主席", "duty": "主持籌委會所有會議；統籌活動一切有關事宜及確保順利進行；對外代表總會。" },
       { "group": "行政組", "duty": "負責財政指引、草擬總通告、保險承保、秘書處會議紀錄及開支審批。" },
-      { "group": "會操及典禮組", "duty": "擬訂會操及典禮流程、步操比賽後備日、嘉賓接待及優異旅團頒獎禮。" },
-      { "group": "主題節目組", "duty": "設計攤位遊戲內容、遊戲卡、遊戲獎品及積極公民獎章工作坊（VS&RS）。" },
-      { "group": "品牌推廣組", "duty": "擬訂宣傳構思、海報設計、社交媒體推廣及活動攝錄統籌。" },
+      { "group": "會操及典禮組", "duty": "由張佳良副主席統籌。梁文澧總主任負責會操，黃志樂擔任步操司令員；李懷恩副主席統籌典禮及優異旅團頒獎。" },
+      { "group": "主題節目組", "duty": "由周恒晉副主席統籌，仇紹謙總主任帶領何令勤、陳鋑羲、張宏剛、羅卓華、李庭甄等 5 位節目主任，負責設計攤位遊戲、遊戲卡、遊戲獎品及積極公民獎章工作坊。" },
+      { "group": "品牌推廣組", "duty": "由何嘉駿副主席統籌，林耀鏘擔任拍攝/攝錄統籌主任，負責宣傳海報設計、社交媒體推廣及活動攝影攝錄。" },
       { "group": "協調組", "duty": "收集場地佈置需求、制訂場地分佈圖、車輛通行證及總物資借用清單。" }
     ]
   },
   "documents": [
-    { "title": "財務指引及會計程序 (含 $500/$2000 報價門檻)", "category": "財務", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
+    { "title": "財務指引及會計程序 (完整詳細版 - 內含報價門檻說明)", "category": "財務", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
     { "title": "結算總表範本 (附件5 - 報銷憑單對照表)", "category": "財務", "uploaded_by": "財務組", "date": "2026-07-01", "file_url": "#" },
     { "title": "報價比較表與口頭報價紀錄 (附件4)", "category": "財務", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
     { "title": "特別通告第XX/26號 (Scout for SDGs 主軸)", "category": "通告", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
@@ -51,6 +59,12 @@
     { "title": "車輛通行證申請與警察學院場地佈置須知", "category": "協調", "uploaded_by": "協調組", "date": "2026-08-05", "file_url": "#" }
   ],
   "finance": {
+    "group_budgets": [
+      { "group_name": "會操及典禮組", "allocated_budget": 35000, "actual_spent": 1246, "remaining": 33754 },
+      { "group_name": "主題節目組", "allocated_budget": 45000, "actual_spent": 14678, "remaining": 30322 },
+      { "group_name": "品牌推廣組", "allocated_budget": 15000, "actual_spent": 2500, "remaining": 12500 },
+      { "group_name": "行政及協調組", "allocated_budget": 25000, "actual_spent": 8000, "remaining": 17000 }
+    ],
     "budget": [
       { "category": "收入", "item": "繽紛日參加者費用@$10", "budget_amt": 10000, "actual_amt": 10390, "group_name": "財務組", "notes": "預算表實收" },
       { "category": "收入", "item": "港島地域童軍基金撥款", "budget_amt": 260000, "actual_amt": 243122, "group_name": "財務組", "notes": "地域撥款" },

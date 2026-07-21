@@ -87,17 +87,17 @@
         <div class="max-w-4xl relative z-10 space-y-6">
           <div class="flex flex-wrap gap-2">
             <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 flex items-center">
-              <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> 30+ 份真實檔案全數內建 (Mock & Sheet 雙軌)
+              <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> 完整工作人員名單 (含總主任、節目主任)
             </span>
             <span class="bg-amber-500/30 backdrop-blur-md text-amber-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/40 flex items-center">
-              <i class="fa-solid fa-file-invoice-dollar mr-1.5"></i> 財務結算表 (附件5) 與報價指引
+              <i class="fa-solid fa-file-invoice-dollar mr-1.5"></i> 財務指引與組別預算管理
             </span>
           </div>
 
           <div>
             <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 2026 ISD 智慧執行手冊</h2>
             <p class="mt-2 text-sky-100 text-sm md:text-base leading-relaxed">
-              完全取代傳統靜態 Google Sites。本系統參考 vsbadge 與 indonesia-trip 架構，內置所有籌委會名單、會議記錄、預算表及審批表單。
+              完全取代傳統靜態 Google Sites。本系統完整收錄您提供的所有工作檔案、財務指引、報價門檻與組別預算分配。
             </p>
           </div>
         </div>
@@ -172,21 +172,21 @@
                 <i class="fa-solid fa-handshake"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-lg">1. 會議卡片</h4>
-              <p class="text-xs text-slate-500 mt-1">第0-4次籌備會議紀錄與議程。</p>
+              <p class="text-xs text-slate-500 mt-1">籌委會會議紀錄、議程與下次會議提醒。</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-sky-600 font-semibold">
               <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
             </div>
           </div>
 
-          <!-- 2. Staff (With Sub-sections) -->
+          <!-- 2. Staff -->
           <div onclick="app.openModule('staff')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
                 <i class="fa-solid fa-sitemap"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-lg">2. 工作人員卡片</h4>
-              <p class="text-xs text-slate-500 mt-1">組織架構、聯絡電話與各組職務大綱。</p>
+              <p class="text-xs text-slate-500 mt-1">完整組織架構、總主任、節目主任與聯絡資料。</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-indigo-600 font-semibold">
               <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
@@ -214,7 +214,7 @@
                 <i class="fa-solid fa-wallet"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-lg">4. 財務管理</h4>
-              <p class="text-xs text-slate-500 mt-1">預算表、結算總表（附件5）與報價門檻。</p>
+              <p class="text-xs text-slate-500 mt-1">各組預算分配、報價程序與結算總表（附件5）。</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-amber-600 font-semibold">
               <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
@@ -647,7 +647,7 @@
           meetings: '1. 會議卡片 (籌委會會議紀錄與下次會議提醒)',
           staff: '2. 工作人員卡片 (組織架構、聯絡資料與各組職務大綱)',
           documents: '3. 文件檔案 (總通告、提名通告與財務指引)',
-          finance: '4. 財務管理 (預算表、結算總表附件5與報價審批)',
+          finance: '4. 財務管理 (預算、結算總表附件5與報價審批)',
           activities: '5. 活動與攤位 (步操檢閱與積極公民工作坊)',
           meals: '6. 膳食管理 (旅團代訂便當申請與審批)',
           schedule: '7. 日程表 (警察學院典禮與博覽程序)',
@@ -677,7 +677,7 @@
       }
 
       openFinancialGuideModal() {
-        alert("【2026 ISD 財務指引摘要】\n\n1. 不超過 $500 (或豁免名單內 $2,000): 無須報價，由各副主席批核。\n2. $500 至 $5,000: 須取得不少於1個口頭報價，由副主席推薦，主席批核。\n3. $5,001 至 $30,000: 須正式招標/報價比較 (附件4)。\n\n實報實銷時請填寫「結算總表 (附件5)」並附上實體單據交回行政組核銷。");
+        alert("【2026 ISD 財務指引與報價程序】\n\n1. 預算控制：各組須嚴格按照獲批核之預算進行開支，不可擅自調配。\n2. 報價門檻：\n   - 不超過 $500 (或豁免名單內 $2,000): 無須報價，由各副主席批核。\n   - $500 至 $5,000: 須取得不少於1個口頭報價，副主席推薦，主席批核。\n   - $5,001 至 $30,000: 須填寫報價比較表 (附件4) 進行正式報價。\n3. 報銷程序：活動結束後填寫「結算總表 (附件5)」，附上實體憑單報銷交回行政組。");
       }
 
       renderApprovalCenter() {
@@ -833,10 +833,69 @@
           return;
         }
 
+        // SPECIAL HANDLING FOR FINANCE (Group Budgets + Budget Table + Guidelines)
+        if (mod === 'finance') {
+          const finData = this.eventData['finance'] || { group_budgets: [], budget: [] };
+          container.innerHTML = `
+            <div class="space-y-6">
+              <div>
+                <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-chart-pie text-amber-600 mr-2"></i> 各組獲批核之預算與剩餘額總覽</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  ${finData.group_budgets.map(gb => `
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
+                      <div class="font-bold text-slate-900 text-sm">${gb.group_name}</div>
+                      <div class="flex justify-between text-xs text-slate-500">
+                        <span>獲批預算:</span>
+                        <span class="font-bold text-slate-800">$${gb.allocated_budget.toLocaleString()}</span>
+                      </div>
+                      <div class="flex justify-between text-xs text-slate-500">
+                        <span>已用支出:</span>
+                        <span class="font-bold text-rose-600">$${gb.actual_spent.toLocaleString()}</span>
+                      </div>
+                      <div class="pt-2 border-t border-slate-200 flex justify-between text-xs font-bold">
+                        <span>剩餘額:</span>
+                        <span class="text-emerald-700">$${gb.remaining.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-slate-200">
+                <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-file-invoice-dollar text-amber-600 mr-2"></i> 財務收支明細與結算總表 (附件5)</h4>
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                  <thead class="bg-slate-100 text-slate-700 font-bold">
+                    <tr>
+                      <th class="px-4 py-3 text-left">類別</th>
+                      <th class="px-4 py-3 text-left">項目名稱 / 憑單編號</th>
+                      <th class="px-4 py-3 text-left">預算金額 ($)</th>
+                      <th class="px-4 py-3 text-left">實際金額 ($)</th>
+                      <th class="px-4 py-3 text-left">負責組別</th>
+                      <th class="px-4 py-3 text-left">備註</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200 bg-white">
+                    ${finData.budget.map(b => `
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-semibold ${b.category === '收入' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${b.category}</span></td>
+                        <td class="px-4 py-3 font-medium text-slate-900">${b.item}</td>
+                        <td class="px-4 py-3">$${b.budget_amt ? b.budget_amt.toLocaleString() : '-'}</td>
+                        <td class="px-4 py-3 font-bold text-slate-800">$${b.actual_amt ? b.actual_amt.toLocaleString() : '-'}</td>
+                        <td class="px-4 py-3">${b.group_name}</td>
+                        <td class="px-4 py-3 text-xs text-slate-500">${b.notes}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
         let dataList = [];
         if (mod === 'meetings') dataList = this.eventData['meetings'] || [];
         else if (mod === 'documents') dataList = this.eventData['documents'] || [];
-        else if (mod === 'finance') dataList = (this.eventData['finance'] && this.eventData['finance'].budget) || [];
         else if (mod === 'activities') dataList = this.eventData['activities'] || [];
         else if (mod === 'meals') dataList = this.eventData['meals'] || [];
         else if (mod === 'schedule') dataList = this.eventData['schedule'] || [];
@@ -871,7 +930,6 @@
         const headersMap = {
           meetings: ['標題', '日期', '議程摘要', '會議紀錄', '記錄人'],
           documents: ['文件標題', '類別', '上傳者', '日期', '檔案'],
-          finance: ['類別', '項目名稱', '預算金額 ($)', '實際金額 ($)', '負責組別', '備註'],
           activities: ['活動名稱', '類型', '地點', '簡介', '詳細資料'],
           meals: ['日期', '餐別', '菜單內容', '人數', '組別', '狀態'],
           schedule: ['時段', '項目名稱', '地點', '組別', '描述']
@@ -880,7 +938,6 @@
         const keysMap = {
           meetings: ['title', 'date', 'agenda', 'minutes', 'author'],
           documents: ['title', 'category', 'uploaded_by', 'date', 'file_url'],
-          finance: ['category', 'item', 'budget_amt', 'actual_amt', 'group_name', 'notes'],
           activities: ['title', 'type', 'location', 'description', 'details'],
           meals: ['date', 'meal_type', 'menu_desc', 'headcount', 'group_name', 'status'],
           schedule: ['time_slot', 'title', 'location', 'group_name', 'description']
@@ -958,7 +1015,7 @@
           if (!this.eventData['meals']) this.eventData['meals'] = [];
           this.eventData['meals'].push({ meal_id: 'm_' + Date.now(), date: '2026-10-04', meal_type: title, menu_desc: desc, headcount: 50, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
         } else if (modName === 'finance') {
-          if (!this.eventData['finance']) this.eventData['finance'] = { budget: [] };
+          if (!this.eventData['finance']) this.eventData['finance'] = { group_budgets: [], budget: [] };
           this.eventData['finance'].budget.push({ category: '支出', item: title, budget_amt: 0, actual_amt: parseFloat(document.getElementById('f_amt').value) || 0, group_name: group, notes: desc });
         } else {
           alert('成功提交申請！等待主任或以上上級批核。');
