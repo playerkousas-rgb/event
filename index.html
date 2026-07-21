@@ -87,17 +87,17 @@
         <div class="max-w-4xl relative z-10 space-y-6">
           <div class="flex flex-wrap gap-2">
             <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 flex items-center">
-              <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> 完整工作人員名單 (含總主任、節目主任)
+              <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> 財務明細與名單 100% 零精簡展開
             </span>
             <span class="bg-amber-500/30 backdrop-blur-md text-amber-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/40 flex items-center">
-              <i class="fa-solid fa-file-invoice-dollar mr-1.5"></i> 財務指引與組別預算管理
+              <i class="fa-solid fa-file-invoice-dollar mr-1.5"></i> 各組詳細預算與憑單對照表
             </span>
           </div>
 
           <div>
             <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 2026 ISD 智慧執行手冊</h2>
             <p class="mt-2 text-sky-100 text-sm md:text-base leading-relaxed">
-              完全取代傳統靜態 Google Sites。本系統完整收錄您提供的所有工作檔案、財務指引、報價門檻與組別預算分配。
+              完全取代傳統靜態 Google Sites。每組之預算明細、憑單編號、報價門檻、總主任與節目主任名單全部完整展開，無需打電話即可明察秋毫。
             </p>
           </div>
         </div>
@@ -214,7 +214,7 @@
                 <i class="fa-solid fa-wallet"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-lg">4. 財務管理</h4>
-              <p class="text-xs text-slate-500 mt-1">各組預算分配、報價程序與結算總表（附件5）。</p>
+              <p class="text-xs text-slate-500 mt-1">零精簡各組詳細預算、報價程序與結算總表（附件5）。</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-amber-600 font-semibold">
               <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
@@ -451,7 +451,7 @@
         this.mockMode = !this.mockMode;
         localStorage.setItem('mock_mode', this.mockMode);
         this.updateMockModeUI();
-        alert(this.mockMode ? '已開啟純離線 Mock 模式 (內置全部真實 ISD 2026 檔案數據)' : '已切換為遠端 GAS 聯動模式');
+        alert(this.mockMode ? '已開啟純離線 Mock 模式 (零精簡、各組詳細預算與明細全展開)' : '已切換為遠端 GAS 聯動模式');
         if (this.currentEvent) this.showDashboard();
       }
 
@@ -514,7 +514,7 @@
         }
 
         this.eventsList = [
-          { event_id: 'isd_2026', event_name: '2026 ISD 港島童軍繽紛日', description: '港島地域年度旗艦盛事：全面取代舊版 Google Sites 執行手冊', start_date: '2026-10-04', end_date: '2026-10-04', status: 'active' }
+          { event_id: 'isd_2026', event_name: '2026 ISD 港島童軍繽紛日', description: '港島地域年度旗艦盛事：零精簡詳細預算與明細指揮中心', start_date: '2026-10-04', end_date: '2026-10-04', status: 'active' }
         ];
         this.renderEventsGrid();
       }
@@ -647,7 +647,7 @@
           meetings: '1. 會議卡片 (籌委會會議紀錄與下次會議提醒)',
           staff: '2. 工作人員卡片 (組織架構、聯絡資料與各組職務大綱)',
           documents: '3. 文件檔案 (總通告、提名通告與財務指引)',
-          finance: '4. 財務管理 (預算、結算總表附件5與報價審批)',
+          finance: '4. 財務管理 (零精簡詳細預算明細、報價門檻與結算總表)',
           activities: '5. 活動與攤位 (步操檢閱與積極公民工作坊)',
           meals: '6. 膳食管理 (旅團代訂便當申請與審批)',
           schedule: '7. 日程表 (警察學院典禮與博覽程序)',
@@ -833,56 +833,64 @@
           return;
         }
 
-        // SPECIAL HANDLING FOR FINANCE (Group Budgets + Budget Table + Guidelines)
+        // FINANCE MODULE: RENDER GROUP ITEMIZED BUDGETS (ZERO CONDENSATION)
         if (mod === 'finance') {
-          const finData = this.eventData['finance'] || { group_budgets: [], budget: [] };
+          const finData = this.eventData['finance'] || { group_itemized_budgets: [], income: [] };
           container.innerHTML = `
-            <div class="space-y-6">
-              <div>
-                <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-chart-pie text-amber-600 mr-2"></i> 各組獲批核之預算與剩餘額總覽</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  ${finData.group_budgets.map(gb => `
-                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
-                      <div class="font-bold text-slate-900 text-sm">${gb.group_name}</div>
-                      <div class="flex justify-between text-xs text-slate-500">
-                        <span>獲批預算:</span>
-                        <span class="font-bold text-slate-800">$${gb.allocated_budget.toLocaleString()}</span>
-                      </div>
-                      <div class="flex justify-between text-xs text-slate-500">
-                        <span>已用支出:</span>
-                        <span class="font-bold text-rose-600">$${gb.actual_spent.toLocaleString()}</span>
-                      </div>
-                      <div class="pt-2 border-t border-slate-200 flex justify-between text-xs font-bold">
-                        <span>剩餘額:</span>
-                        <span class="text-emerald-700">$${gb.remaining.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
+            <div class="space-y-8">
+              <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 space-y-2">
+                <p class="font-bold text-sm"><i class="fa-solid fa-file-invoice-dollar mr-1"></i> 2026 ISD 財務結算總表與報價指引 (零精簡明細表)</p>
+                <p>各組獲批核之預算及所有支出細項（憑單編號、項目名稱、預算、實際金額）已全部完全展開。請依照報價門檻（$500/$2000/$5000）執行採購。</p>
               </div>
 
-              <div class="pt-4 border-t border-slate-200">
-                <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-file-invoice-dollar text-amber-600 mr-2"></i> 財務收支明細與結算總表 (附件5)</h4>
+              <!-- GROUP ITEMIZED BUDGET TABLES -->
+              ${(finData.group_itemized_budgets || []).map(gib => `
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+                  <h4 class="font-bold text-slate-900 text-base flex items-center"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i> ${gib.group_name}</h4>
+                  <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-100 text-slate-700 font-bold">
+                      <tr>
+                        <th class="px-4 py-2.5 text-left">憑單編號</th>
+                        <th class="px-4 py-2.5 text-left">支出細項</th>
+                        <th class="px-4 py-2.5 text-left">預算金額 ($)</th>
+                        <th class="px-4 py-2.5 text-left">實際金額 ($)</th>
+                        <th class="px-4 py-2.5 text-left">備註</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                      ${gib.items.map(it => `
+                        <tr class="hover:bg-slate-50">
+                          <td class="px-4 py-2.5 font-mono text-xs font-bold text-slate-600">${it.voucher}</td>
+                          <td class="px-4 py-2.5 font-medium text-slate-900">${it.item_name}</td>
+                          <td class="px-4 py-2.5">$${it.budget.toLocaleString()}</td>
+                          <td class="px-4 py-2.5 font-bold text-rose-600">$${it.actual.toLocaleString()}</td>
+                          <td class="px-4 py-2.5 text-xs text-slate-500">${it.notes}</td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `).join('')}
+
+              <!-- INCOME TABLE -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+                <h4 class="font-bold text-slate-900 text-base flex items-center"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i> 活動收入明細 (Income Summary)</h4>
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
                   <thead class="bg-slate-100 text-slate-700 font-bold">
                     <tr>
-                      <th class="px-4 py-3 text-left">類別</th>
-                      <th class="px-4 py-3 text-left">項目名稱 / 憑單編號</th>
-                      <th class="px-4 py-3 text-left">預算金額 ($)</th>
-                      <th class="px-4 py-3 text-left">實際金額 ($)</th>
-                      <th class="px-4 py-3 text-left">負責組別</th>
-                      <th class="px-4 py-3 text-left">備註</th>
+                      <th class="px-4 py-2.5 text-left">收入項目</th>
+                      <th class="px-4 py-2.5 text-left">預算金額 ($)</th>
+                      <th class="px-4 py-2.5 text-left">實際金額 ($)</th>
+                      <th class="px-4 py-2.5 text-left">備註</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-200 bg-white">
-                    ${finData.budget.map(b => `
+                    ${(finData.income || []).map(inc => `
                       <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-semibold ${b.category === '收入' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${b.category}</span></td>
-                        <td class="px-4 py-3 font-medium text-slate-900">${b.item}</td>
-                        <td class="px-4 py-3">$${b.budget_amt ? b.budget_amt.toLocaleString() : '-'}</td>
-                        <td class="px-4 py-3 font-bold text-slate-800">$${b.actual_amt ? b.actual_amt.toLocaleString() : '-'}</td>
-                        <td class="px-4 py-3">${b.group_name}</td>
-                        <td class="px-4 py-3 text-xs text-slate-500">${b.notes}</td>
+                        <td class="px-4 py-2.5 font-medium text-slate-900">${inc.item}</td>
+                        <td class="px-4 py-2.5">$${inc.budget.toLocaleString()}</td>
+                        <td class="px-4 py-2.5 font-bold text-emerald-700">$${inc.actual.toLocaleString()}</td>
+                        <td class="px-4 py-2.5 text-xs text-slate-500">${inc.notes}</td>
                       </tr>
                     `).join('')}
                   </tbody>
@@ -1015,8 +1023,12 @@
           if (!this.eventData['meals']) this.eventData['meals'] = [];
           this.eventData['meals'].push({ meal_id: 'm_' + Date.now(), date: '2026-10-04', meal_type: title, menu_desc: desc, headcount: 50, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
         } else if (modName === 'finance') {
-          if (!this.eventData['finance']) this.eventData['finance'] = { group_budgets: [], budget: [] };
-          this.eventData['finance'].budget.push({ category: '支出', item: title, budget_amt: 0, actual_amt: parseFloat(document.getElementById('f_amt').value) || 0, group_name: group, notes: desc });
+          if (!this.eventData['finance']) this.eventData['finance'] = { group_itemized_budgets: [], income: [] };
+          // Add to first group or create
+          if (!this.eventData['finance'].group_itemized_budgets[0]) {
+            this.eventData['finance'].group_itemized_budgets.push({ group_name: group, items: [] });
+          }
+          this.eventData['finance'].group_itemized_budgets[0].items.push({ voucher: '憑單#New', item_name: title, budget: 0, actual: parseFloat(document.getElementById('f_amt').value) || 0, notes: desc });
         } else {
           alert('成功提交申請！等待主任或以上上級批核。');
         }
