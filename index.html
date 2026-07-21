@@ -60,7 +60,7 @@
     </div>
   </header>
 
-  <!-- NEXT MEETING BANNER / REMINDER (主任或以上默認) -->
+  <!-- NEXT MEETING BANNER -->
   <div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm">
     <div class="flex items-center space-x-2 mb-2 sm:mb-0">
       <span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase"><i class="fa-regular fa-bell mr-1"></i> 會議預告 (默認通知主任或以上)</span>
@@ -87,17 +87,17 @@
         <div class="max-w-4xl relative z-10 space-y-6">
           <div class="flex flex-wrap gap-2">
             <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 flex items-center">
-              <i class="fa-solid fa-shield-halved text-emerald-400 mr-1.5"></i> API Key 安全鎖定
+              <i class="fa-solid fa-shield-halved text-emerald-400 mr-1.5"></i> Vercel API Key 後端路由防護
             </span>
             <span class="bg-amber-500/30 backdrop-blur-md text-amber-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/40 flex items-center">
-              <i class="fa-solid fa-user-secret mr-1.5"></i> 超管隱藏 (你知我知) | 默認主任或以上收會場提醒
+              <i class="fa-solid fa-user-secret mr-1.5"></i> 超管隱藏 (你知我知)
             </span>
           </div>
 
           <div>
             <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 2026 ISD 智慧執行手冊</h2>
             <p class="mt-2 text-sky-100 text-sm md:text-base leading-relaxed">
-              全面取代傳統靜態 Google Sites。本系統採用 API Key 進行後端數據防護，支援電郵自設密碼登入、層級會議電郵提醒與批核中心。
+              全面取代傳統靜態 Google Sites。API Key 透過 Vercel 伺服器端路由 (`/api/config`) 安全載入，徹底杜絕爬蟲竊取數據。
             </p>
           </div>
 
@@ -373,14 +373,14 @@
     </div>
   </div>
 
-  <!-- MODAL: SETTINGS (GAS URL & API KEY) -->
+  <!-- MODAL: SETTINGS -->
   <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-5">
       <div class="flex justify-between items-center">
         <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-gear text-sky-600 mr-2"></i> 系統設定 (GAS URL & API Key)</h3>
         <button onclick="app.closeModal('modal-settings')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed">為保障活動私隱，系統聯動需要設定 Google Apps Script URL 以及後端 API Key。</p>
+      <p class="text-xs text-slate-500 leading-relaxed">系統透過 Vercel 路由安全讀取 API Key，您也可以在此手動覆蓋設定。</p>
       <form onsubmit="app.saveSettings(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">GAS Web App URL</label>
@@ -389,7 +389,6 @@
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">API Key (後端安全鎖)</label>
           <input type="text" id="api-key-input" placeholder="scout_..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
-          <p class="text-[11px] text-slate-400 mt-1">可在 Google Sheet 中執行 `showApiKey()` 檢視或執行 `refreshApiKey()` 刷新。</p>
         </div>
         <div class="flex justify-end space-x-2 pt-2">
           <button type="button" onclick="app.closeModal('modal-settings')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
@@ -439,8 +438,8 @@
 
     class ScoutEventApp {
       constructor() {
-        this.gasUrl = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
-        this.apiKey = localStorage.getItem('api_key') || '';
+        this.gasUrl = '';
+        this.apiKey = '';
         this.currentUser = JSON.parse(localStorage.getItem('current_user') || 'null');
         this.currentEvent = JSON.parse(localStorage.getItem('current_event') || 'null');
         this.demoMode = localStorage.getItem('demo_mode') === 'true' || true;
@@ -448,6 +447,23 @@
         this.eventsList = [];
         this.pendingEventId = null;
         this.currentModule = null;
+
+        this.initConfig();
+      }
+
+      async initConfig() {
+        try {
+          const res = await fetch('/api/config');
+          const json = await res.json();
+          if (json.success) {
+            this.gasUrl = json.gasUrl;
+            this.apiKey = json.apiKey;
+          }
+        } catch (err) {
+          console.warn('Failed to load /api/config, using fallbacks:', err);
+          this.gasUrl = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
+          this.apiKey = localStorage.getItem('api_key') || 'scout_e6451624b1f340078ec6a111';
+        }
 
         this.init();
       }
@@ -468,7 +484,7 @@
         this.demoMode = !this.demoMode;
         localStorage.setItem('demo_mode', this.demoMode);
         this.updateDemoModeUI();
-        alert(this.demoMode ? '已開啟演示/試用模式' : '已切換為純 GAS 遠端試算表聯動模式 (需有效 API Key)');
+        alert(this.demoMode ? '已開啟演示/試用模式' : '已切換為純 GAS 遠端試算表聯動模式');
         if (this.currentEvent) this.showDashboard();
       }
 
@@ -526,7 +542,7 @@
           { 
             event_id: 'isd_2026', 
             event_name: '2026 ISD 港島童軍繽紛日', 
-            description: '童軍活動管理系統試點：API Key 加密保護、超管隱藏與主任級以上會議電郵通知', 
+            description: '童軍活動管理系統試點：API Key 驗證、超管隱藏與主任級以上會議電郵通知', 
             start_date: '2026-10-04', 
             end_date: '2026-10-04', 
             status: 'active' 
