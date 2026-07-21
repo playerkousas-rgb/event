@@ -1,11 +1,11 @@
 // ============================================================
-// 大型活動行政管理工具 - Google Apps Script 後端 v1.2 (動態對接版)
-// 支援 7 級權限（含顧問級 advisor）、活動密碼、8大卡片模組
-// 支援動態從 Google Sheet 讀寫數據，前端即時聯動
+// 童軍活動管理系統 - Google Apps Script 後端 v2.0
+// COPY RIGHT Scout System
+// 支援 7 級權限（含顧問級 advisor、SHEEP 超管）、會議提醒與電郵廣播、審批中心
 // ============================================================
 
-const ADMIN_DEFAULT_YMIS = 'admin001';
-const ADMIN_DEFAULT_PASS = 'admin123456';
+const SUPER_ADMIN_EMAIL = 'sheep';
+const SUPER_ADMIN_PASS = '0728';
 
 function getSheet() { return SpreadsheetApp.getActiveSpreadsheet(); }
 
@@ -22,11 +22,11 @@ function jsonResponse(obj) {
 
 // 7級權限架構（含顧問級，與主席、管理員同級）
 const ROLE_HIERARCHY = {
-  'super_admin': 100,        // 1. 超級管理員 / 我
-  'advisor': 80,             // 2. 顧問 (同主席、管理員同級)
+  'super_admin': 100,        // 1. 超級管理員 (sheep)
+  'advisor': 80,             // 2. 顧問 (黃偉安、何家騏)
   'admin': 80,               // 2. 管理員
-  'chairperson': 80,         // 2. 主席 (同顧問、管理員同級)
-  'vice_chairperson': 60,    // 3. 副主席 (含協調副主席、行政副主席 - 具備物資與膳食審批權)
+  'chairperson': 80,         // 2. 主席 (朱家聰)
+  'vice_chairperson': 60,    // 3. 副主席 (袁可秀、張佳良、周恒晉、何嘉駿)
   'general_director': 40,    // 4. 總主任
   'director': 30,            // 5. 主任
   'staff': 20,               // 6. 工作人員
@@ -45,20 +45,24 @@ function initializeSheets() {
   ensureSheet(ss, 'Events', 
     ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at'],
     [
-      ['isd_2026', '2026 ISD 港島童軍繽紛日', hashPassword('1234'), '港島地域年度旗艦盛事：步操檢閱與攤位博覽', '2026-10-01', '2026-10-03', 'active', new Date()]
+      ['isd_2026', '2026 ISD 港島童軍繽紛日', hashPassword('1234'), '港島地域年度旗艦盛事：步操檢閱與攤位博覽', '2026-10-04', '2026-10-04', 'active', new Date()]
     ]
   );
   
-  // 2. Users (用戶與7級權限 - 含顧問)
+  // 2. Users (用戶與7級權限 - SHEEP 超管與電郵登入)
   ensureSheet(ss, 'Users', 
     ['user_id', 'name', 'email', 'role', 'group_name', 'password_hash', 'status', 'created_at'],
     [
-      [ADMIN_DEFAULT_YMIS, '黃偉安 (顧問) / 朱家聰 (主席)', 'admin@isd2026.local', 'advisor', '顧問/主席團', hashPassword(ADMIN_DEFAULT_PASS), 'active', new Date()]
+      ['sheep', '超級管理員 (SHEEP)', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]
     ]
   );
   
-  // 3. Meetings (會議紀錄)
-  ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at']);
+  // 3. Meetings (會議紀錄與下次會議提示)
+  ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at'],
+    [
+      ['m_next', 'isd_2026', '第4次籌備委員會議 (下次會議)', '2026-08-18 19:15', '各功能組別進度最後衝刺與物資點算', '請各委員準時出席百周年紀念大樓1704室。', '秘書處', new Date()]
+    ]
+  );
   
   // 4. Staff (組織架構與工作人員)
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
@@ -66,13 +70,13 @@ function initializeSheets() {
   // 5. Documents (文件與通告)
   ensureSheet(ss, 'Documents', ['doc_id', 'event_id', 'title', 'category', 'file_url', 'uploaded_by', 'date', 'created_at']);
   
-  // 6. Finance (財務預算與報告)
+  // 6. Finance (財務預算與結算總表)
   ensureSheet(ss, 'Finance', ['finance_id', 'event_id', 'category', 'item', 'budget_amt', 'actual_amt', 'group_name', 'notes', 'created_at']);
   
   // 7. Activities (活動與攤位)
   ensureSheet(ss, 'Activities', ['activity_id', 'event_id', 'title', 'type', 'location', 'description', 'details_json', 'created_at']);
   
-  // 8. Meals (膳食內容與統計 - 副主席/顧問批核)
+  // 8. Meals (膳食內容與統計)
   ensureSheet(ss, 'Meals', ['meal_id', 'event_id', 'date', 'meal_type', 'menu_desc', 'headcount', 'group_name', 'status', 'requested_by', 'approved_by', 'created_at']);
   
   // 9. Schedule (日程表)
@@ -81,10 +85,10 @@ function initializeSheets() {
   // 10. Supplies (總物資與車輛通行證)
   ensureSheet(ss, 'Supplies', ['supply_id', 'event_id', 'item_name', 'total_qty', 'unit', 'category', 'created_at']);
   
-  // 11. Supply_Requests (物資/車輛申請 - 由協調副主席或行政副主席或以上批核)
+  // 11. Supply_Requests (物資/車輛申請)
   ensureSheet(ss, 'Supply_Requests', ['request_id', 'event_id', 'supply_id', 'item_name', 'qty_requested', 'group_name', 'status', 'requested_by', 'approved_by', 'created_at']);
   
-  SpreadsheetApp.getUi().alert('2026 ISD 初始化完成！所有 11 個模組工作表已動態檢查並確保結構完整（舊資料未受影響）。');
+  SpreadsheetApp.getUi().alert('「童軍活動管理系統」初始化完成！所有 11 個模組工作表已動態檢查並確保結構完整。超管帳號：sheep / 0728');
 }
 
 function ensureSheet(ss, sheetName, headers, defaultRows) {
@@ -148,6 +152,8 @@ function doPost(e) {
       return jsonResponse(deleteRecord(data));
     } else if (action === 'updateStatus') {
       return jsonResponse(updateStatus(data));
+    } else if (action === 'sendMeetingEmail') {
+      return jsonResponse(sendMeetingEmailNotification(data));
     } else {
       return jsonResponse({ success: false, error: 'Unknown POST action' });
     }
@@ -196,7 +202,7 @@ function verifyEventPassword(data) {
 }
 
 function handleLogin(data) {
-  const user_id = data.user_id;
+  const loginId = (data.user_id || '').trim(); // 可以是 username 或 email
   const password = data.password;
   const ss = getSheet();
   const sheet = ss.getSheetByName('Users');
@@ -204,10 +210,15 @@ function handleLogin(data) {
   const rows = sheet.getDataRange().getValues();
   const headers = rows[0];
   
+  const idIdx = headers.indexOf('user_id');
+  const emailIdx = headers.indexOf('email');
+  const passIdx = headers.indexOf('password_hash');
+  
   for (let i = 1; i < rows.length; i++) {
     const rowObj = {};
     headers.forEach((h, idx) => { rowObj[h] = rows[i][idx]; });
-    if (rowObj.user_id === user_id) {
+    
+    if (rowObj.user_id === loginId || rowObj.email === loginId) {
       if (rowObj.password_hash === hashPassword(password)) {
         delete rowObj.password_hash;
         return { success: true, user: rowObj };
@@ -216,7 +227,48 @@ function handleLogin(data) {
       }
     }
   }
-  return { success: false, error: '找不到用戶帳號' };
+  
+  // 支援 SHEEP 超管直接登入
+  if (loginId === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASS) {
+    return {
+      success: true,
+      user: { user_id: 'sheep', name: '超級管理員 (SHEEP)', email: SUPER_ADMIN_EMAIL, role: 'super_admin', group_name: '行政組' }
+    };
+  }
+  
+  return { success: false, error: '找不到用戶帳號或電郵' };
+}
+
+function sendMeetingEmailNotification(data) {
+  const meetingTitle = data.meeting_title || '第4次籌備委員會議';
+  const meetingDate = data.meeting_date || '2026-08-18 19:15';
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet || sheet.getLastRow() <= 1) return { success: false, error: '沒有找到任何委員電郵' };
+  
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const emailIdx = headers.indexOf('email');
+  const nameIdx = headers.indexOf('name');
+  
+  let count = 0;
+  for (let i = 1; i < rows.length; i++) {
+    const email = rows[i][emailIdx];
+    const name = rows[i][nameIdx];
+    if (email && email.indexOf('@') !== -1) {
+      try {
+        MailApp.sendEmail(
+          email,
+          `[童軍活動管理系統] 會議提醒：${meetingTitle}`,
+          `親愛的 ${name} 委員：\n\n這是一封來自「童軍活動管理系統」的自動會議提示。\n\n會議名稱：${meetingTitle}\n會議時間：${meetingDate}\n地點：香港童軍百周年紀念大樓 1704 室\n\n請準時出席並預早查閱系統內各項議程與檔案。\n\nCOPY RIGHT Scout System`
+        );
+        count++;
+      } catch (err) {
+        Logger.log(`Failed to send email to ${email}: ${err}`);
+      }
+    }
+  }
+  return { success: true, message: `成功向 ${count} 位委員發送會議電郵提示！` };
 }
 
 function getEventAllData(eventId) {
