@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>童軍活動管理系統 - 2026 ISD 智慧執行手冊</title>
+  <title>童軍活動管理系統 - 智慧執行指揮中心</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script>
@@ -33,14 +33,14 @@
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="font-bold text-lg leading-tight">童軍活動管理系統</h1>
-            <span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold">2026 ISD 專用</span>
+            <span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold">Multi-Event Platform</span>
           </div>
-          <p class="text-xs text-slate-400" id="current-event-subtitle">港島童軍繽紛日智慧執行指揮中心</p>
+          <p class="text-xs text-slate-400" id="current-event-subtitle">智慧執行手冊與指揮中心</p>
         </div>
       </div>
       <div class="flex items-center space-x-3">
-        <button onclick="app.toggleDemoMode()" id="demo-mode-btn" class="hidden sm:block bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-          <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> <span id="demo-mode-text">演示/試用模式: 開啟</span>
+        <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="hidden sm:block bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+          <i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">純離線 Mock 模式: 開啟</span>
         </button>
         <div id="user-badge" class="hidden text-xs bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center space-x-2">
           <i class="fa-solid fa-user-shield text-sky-400"></i>
@@ -51,7 +51,7 @@
           <i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text">電郵登入 / 切換</span>
         </button>
         <button onclick="app.openSettingsModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition hidden md:block">
-          <i class="fa-solid fa-gear mr-1"></i> API 設定
+          <i class="fa-solid fa-gear mr-1"></i> 設定
         </button>
         <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-sm transition">
           <i class="fa-solid fa-right-from-bracket mr-1"></i> 登出
@@ -63,7 +63,7 @@
   <!-- NEXT MEETING BANNER -->
   <div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm">
     <div class="flex items-center space-x-2 mb-2 sm:mb-0">
-      <span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase"><i class="fa-regular fa-bell mr-1"></i> 會議預告 (默認通知主任或以上)</span>
+      <span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase"><i class="fa-regular fa-bell mr-1"></i> 下次會議預告 (主任或以上)</span>
       <span id="banner-meeting-text" class="font-medium">第4次籌備委員會議：2026年8月18日晚上7時15分 @ 百周年紀念大樓1704室</span>
     </div>
     <div id="banner-admin-actions" class="hidden flex items-center space-x-2">
@@ -76,7 +76,7 @@
   <!-- MAIN CONTAINER -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
 
-    <!-- VIEW 1: LANDING & HERO ZONE -->
+    <!-- VIEW 1: LANDING & MULTI-EVENT SELECTOR (VSBADGE STYLE) -->
     <div id="view-landing" class="space-y-6">
       
       <!-- HERO ZONE -->
@@ -87,52 +87,33 @@
         <div class="max-w-4xl relative z-10 space-y-6">
           <div class="flex flex-wrap gap-2">
             <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 flex items-center">
-              <i class="fa-solid fa-shield-halved text-emerald-400 mr-1.5"></i> Vercel API Key 後端路由防護
+              <i class="fa-solid fa-compass text-emerald-400 mr-1.5"></i> 多活動架構 (支援 ISD 2026, ISD 2027 等)
             </span>
             <span class="bg-amber-500/30 backdrop-blur-md text-amber-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/40 flex items-center">
-              <i class="fa-solid fa-user-secret mr-1.5"></i> 超管隱藏 (你知我知)
+              <i class="fa-solid fa-book-open mr-1.5"></i> 完全取代傳統靜態執行手冊
             </span>
           </div>
 
           <div>
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 2026 ISD 智慧執行手冊</h2>
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 智慧執行手冊</h2>
             <p class="mt-2 text-sky-100 text-sm md:text-base leading-relaxed">
-              全面取代傳統靜態 Google Sites。API Key 透過 Vercel 伺服器端路由 (`/api/config`) 安全載入，徹底杜絕爬蟲竊取數據。
+              參考 vsbadge 多活動接入與 indonesia-trip 卡片式控制架構。請選擇下方活動並輸入活動密碼以隨時切換與進入管理指揮中心。
             </p>
-          </div>
-
-          <!-- HERO STATS -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-              <div class="text-sky-300 text-xs font-bold uppercase"><i class="fa-regular fa-calendar-days mr-1"></i> 活動日期與時間</div>
-              <div class="text-lg font-bold mt-1">2026年10月4日（星期日）</div>
-              <div class="text-xs text-sky-200 mt-0.5">上午 08:30 - 下午 05:00</div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-              <div class="text-sky-300 text-xs font-bold uppercase"><i class="fa-solid fa-location-dot mr-1"></i> 集合與營地地點</div>
-              <div class="text-lg font-bold mt-1">香港黃竹坑警察學院</div>
-              <div class="text-xs text-sky-200 mt-0.5">大操場及有蓋操場</div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-              <div class="text-amber-300 text-xs font-bold uppercase"><i class="fa-solid fa-circle-check mr-1"></i> 互動演示模式</div>
-              <div class="text-lg font-bold mt-1">一鍵試用 / 即時切換</div>
-              <div class="text-xs text-sky-200 mt-0.5">方便委員試用與開會介紹</div>
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- EVENT ACCESS SELECTOR CARD -->
+      <!-- EVENT SELECTOR GRID -->
       <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-xl font-bold text-slate-800 flex items-center">
-            <i class="fa-solid fa-shield-halved text-sky-600 mr-2"></i> 選擇活動並輸入密碼以解鎖內部權限
+            <i class="fa-solid fa-list-check text-sky-600 mr-2"></i> 可接入的活動清單 (Multi-Event Selector)
           </h3>
           <button onclick="app.loadEvents()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-rotate mr-1"></i> 重新載入
           </button>
         </div>
-        <p class="text-xs text-slate-500">公開訪客可直接查看下方日程與通告；內部籌委請點擊「接入活動」並輸入活動密碼（預設 1234）以解鎖全部模組。</p>
+        <p class="text-xs text-slate-500">未來舉辦 ISD 2027 或其他大型活動時，只需連接對應的 Google Sheet 或 JSON 資料夾即可自動載入。</p>
         <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Rendered dynamically -->
         </div>
@@ -147,7 +128,7 @@
       <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <button onclick="app.goHome()" class="text-xs text-sky-600 hover:underline mb-1 inline-flex items-center font-semibold">
-            <i class="fa-solid fa-arrow-left mr-1"></i> 返回首頁 / 選擇活動
+            <i class="fa-solid fa-arrow-left mr-1"></i> 返回活動列表 (切換其他活動)
           </button>
           <h2 id="dash-event-title" class="text-2xl font-bold text-slate-900">-</h2>
           <p id="dash-event-desc" class="text-sm text-slate-500 mt-0.5">-</p>
@@ -164,7 +145,7 @@
       <div>
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-bold text-slate-800 flex items-center">
-            <i class="fa-solid fa-cubes text-sky-600 mr-2"></i> 童軍活動管理系統 - 核心管理卡片與批核中心
+            <i class="fa-solid fa-cubes text-sky-600 mr-2"></i> 活動行政管理卡片模組（取代舊版執行手冊）
           </h3>
           <span class="text-xs text-slate-400"><i class="fa-solid fa-lock-open text-emerald-600 mr-1"></i> 上級審批下級工作流已啟動</span>
         </div>
@@ -192,21 +173,21 @@
                 <i class="fa-solid fa-handshake"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-lg">1. 會議卡片</h4>
-              <p class="text-xs text-slate-500 mt-1">第0-4次籌備會議紀錄、下次會議提醒。</p>
+              <p class="text-xs text-slate-500 mt-1">籌委會會議紀錄、議程與下次會議提醒。</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-sky-600 font-semibold">
               <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
             </div>
           </div>
 
-          <!-- 2. Staff -->
+          <!-- 2. Staff (With Sub-sections) -->
           <div onclick="app.openModule('staff')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
                 <i class="fa-solid fa-sitemap"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-lg">2. 工作人員卡片</h4>
-              <p class="text-xs text-slate-500 mt-1">顧問、主席、副主席及各組主任組織架構。</p>
+              <p class="text-xs text-slate-500 mt-1">內含組織架構、聯絡資料與各組職務大綱。</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-indigo-600 font-semibold">
               <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
@@ -331,7 +312,7 @@
         <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3>
         <button onclick="app.closeModal('modal-password')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed">為了保護 2026 ISD 內部籌委私隱，接入內部管理模組需要輸入活動密碼。成功後將安全儲存於您的瀏覽器中。</p>
+      <p class="text-xs text-slate-500 leading-relaxed">為了保護活動私隱，接入此活動需要輸入活動密碼。成功後將安全儲存於您的瀏覽器中。</p>
       <form onsubmit="app.submitEventPassword(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">活動密碼 (預設: 1234)</label>
@@ -377,18 +358,14 @@
   <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-5">
       <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-gear text-sky-600 mr-2"></i> 系統設定 (GAS URL & API Key)</h3>
+        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-gear text-sky-600 mr-2"></i> 系統設定 (GAS URL)</h3>
         <button onclick="app.closeModal('modal-settings')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed">系統透過 Vercel 路由安全讀取 API Key，您也可以在此手動覆蓋設定。</p>
+      <p class="text-xs text-slate-500 leading-relaxed">您可以設定專屬的 Google Apps Script 網址來連接遠端試算表。</p>
       <form onsubmit="app.saveSettings(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">GAS Web App URL</label>
           <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">API Key (後端安全鎖)</label>
-          <input type="text" id="api-key-input" placeholder="scout_..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
         </div>
         <div class="flex justify-end space-x-2 pt-2">
           <button type="button" onclick="app.closeModal('modal-settings')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
@@ -419,7 +396,7 @@
 
   <!-- FOOTER -->
   <footer class="bg-white border-t border-slate-200 mt-auto py-6 text-center text-xs text-slate-500">
-    <p>童軍活動管理系統 • COPY RIGHT Scout System (2026 ISD 智慧執行手冊)</p>
+    <p>童軍活動管理系統 • COPY RIGHT Scout System (多活動智慧指揮中心)</p>
   </footer>
 
   <!-- SCRIPT LOGIC -->
@@ -438,37 +415,32 @@
 
     class ScoutEventApp {
       constructor() {
-        this.gasUrl = '';
+        this.gasUrl = localStorage.getItem('gas_url') || '';
         this.apiKey = '';
         this.currentUser = JSON.parse(localStorage.getItem('current_user') || 'null');
         this.currentEvent = JSON.parse(localStorage.getItem('current_event') || 'null');
-        this.demoMode = localStorage.getItem('demo_mode') === 'true' || true;
-        this.eventData = {};
+        this.mockMode = localStorage.getItem('mock_mode') === 'true' || true; // 預設開啟離線 Mock 模式
         this.eventsList = [];
-        this.pendingEventId = null;
+        this.eventData = {};
         this.currentModule = null;
-
-        this.initConfig();
-      }
-
-      async initConfig() {
-        try {
-          const res = await fetch('/api/config');
-          const json = await res.json();
-          if (json.success) {
-            this.gasUrl = json.gasUrl;
-            this.apiKey = json.apiKey;
-          }
-        } catch (err) {
-          console.warn('Failed to load /api/config, using fallbacks:', err);
-          this.gasUrl = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
-          this.apiKey = localStorage.getItem('api_key') || 'scout_e6451624b1f340078ec6a111';
-        }
+        this.staffSubTab = 'org_chart'; // 預設 staff 子分頁
 
         this.init();
       }
 
-      init() {
+      async init() {
+        // Fetch API Key from Vercel Serverless Function if available
+        try {
+          const res = await fetch('/api/config');
+          const json = await res.json();
+          if (json.success) {
+            this.apiKey = json.apiKey;
+            if (!this.gasUrl && json.gasUrl) this.gasUrl = json.gasUrl;
+          }
+        } catch (e) {
+          this.apiKey = localStorage.getItem('api_key') || 'scout_e6451624b1f340078ec6a111';
+        }
+
         if (this.currentUser) {
           this.updateUserUI();
         }
@@ -477,27 +449,26 @@
         } else {
           this.loadEvents();
         }
-        this.updateDemoModeUI();
+        this.updateMockModeUI();
       }
 
-      toggleDemoMode() {
-        this.demoMode = !this.demoMode;
-        localStorage.setItem('demo_mode', this.demoMode);
-        this.updateDemoModeUI();
-        alert(this.demoMode ? '已開啟演示/試用模式' : '已切換為純 GAS 遠端試算表聯動模式');
+      toggleMockMode() {
+        this.mockMode = !this.mockMode;
+        localStorage.setItem('mock_mode', this.mockMode);
+        this.updateMockModeUI();
+        alert(this.mockMode ? '已開啟純離線 Mock 模式 (無需連線即可瀏覽所有功能與 2026 ISD 資料)' : '已切換為遠端 GAS 聯動模式');
         if (this.currentEvent) this.showDashboard();
       }
 
-      updateDemoModeUI() {
-        const btnText = document.getElementById('demo-mode-text');
+      updateMockModeUI() {
+        const btnText = document.getElementById('mock-mode-text');
         if (btnText) {
-          btnText.textContent = this.demoMode ? '演示/試用模式: 開啟' : '演示/試用模式: 關閉';
+          btnText.textContent = this.mockMode ? '純離線 Mock 模式: 開啟' : '純離線 Mock 模式: 關閉';
         }
       }
 
       openSettingsModal() {
         document.getElementById('gas-url-input').value = this.gasUrl;
-        document.getElementById('api-key-input').value = this.apiKey;
         document.getElementById('modal-settings').classList.remove('hidden');
       }
 
@@ -512,11 +483,9 @@
       saveSettings(e) {
         e.preventDefault();
         this.gasUrl = document.getElementById('gas-url-input').value.trim();
-        this.apiKey = document.getElementById('api-key-input').value.trim();
         localStorage.setItem('gas_url', this.gasUrl);
-        localStorage.setItem('api_key', this.apiKey);
         this.closeModal('modal-settings');
-        alert('API 設定與 Key 已儲存！');
+        alert('設定已儲存！');
         this.loadEvents();
       }
 
@@ -524,7 +493,18 @@
         const grid = document.getElementById('events-grid');
         grid.innerHTML = '<div class="col-span-2 text-center py-8 text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在載入活動清單...</div>';
 
-        if (this.gasUrl && !this.demoMode) {
+        if (this.mockMode) {
+          try {
+            const res = await fetch('data/events.json');
+            this.eventsList = await res.json();
+            this.renderEventsGrid();
+            return;
+          } catch (e) {
+            console.warn('Failed to load data/events.json:', e);
+          }
+        }
+
+        if (this.gasUrl) {
           try {
             const res = await fetch(`${this.gasUrl}?action=getEvents&api_key=${this.apiKey}`);
             const json = await res.json();
@@ -534,19 +514,13 @@
               return;
             }
           } catch (err) {
-            console.warn('GAS fetch failed, fallback to demo mock:', err);
+            console.warn('GAS fetch failed:', err);
           }
         }
-        
+
+        // Fallback
         this.eventsList = [
-          { 
-            event_id: 'isd_2026', 
-            event_name: '2026 ISD 港島童軍繽紛日', 
-            description: '童軍活動管理系統試點：API Key 驗證、超管隱藏與主任級以上會議電郵通知', 
-            start_date: '2026-10-04', 
-            end_date: '2026-10-04', 
-            status: 'active' 
-          }
+          { event_id: 'isd_2026', event_name: '2026 ISD 港島童軍繽紛日', description: '港島地域年度旗艦盛事：全面取代舊版 Google Sites 執行手冊', start_date: '2026-10-04', end_date: '2026-10-04', status: 'active' }
         ];
         this.renderEventsGrid();
       }
@@ -559,7 +533,7 @@
             <div class="bg-slate-50 rounded-2xl border border-slate-200 p-5 shadow-sm card-hover flex flex-col justify-between">
               <div>
                 <div class="flex justify-between items-start mb-2">
-                  <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-0.5 rounded-full">Scout System</span>
+                  <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-0.5 rounded-full">${ev.status === 'active' ? '進行中 / 試點' : '即將舉行'}</span>
                   <span class="text-xs text-slate-400"><i class="fa-solid fa-calendar mr-1"></i>${ev.start_date}</span>
                 </div>
                 <h4 class="text-base font-bold text-slate-900">${ev.event_name}</h4>
@@ -567,10 +541,10 @@
               </div>
               <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center">
                 <span class="text-xs ${hasPwd ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-medium'}">
-                  <i class="fa-solid ${hasPwd ? 'fa-shield-check' : 'fa-lock'} mr-1"></i> ${hasPwd ? '已解鎖管理模組' : '需活動密碼 (預設: 1234)'}
+                  <i class="fa-solid ${hasPwd ? 'fa-shield-check' : 'fa-lock'} mr-1"></i> ${hasPwd ? '已解鎖內部管理' : '需活動密碼 (預設: 1234)'}
                 </span>
                 <button onclick="app.accessEvent('${ev.event_id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition">
-                  進入系統 <i class="fa-solid fa-arrow-right ml-1"></i>
+                  進入活動 <i class="fa-solid fa-arrow-right ml-1"></i>
                 </button>
               </div>
             </div>
@@ -610,7 +584,7 @@
         document.getElementById('view-landing').classList.remove('hidden');
         document.getElementById('view-dashboard').classList.add('hidden');
         document.getElementById('view-module').classList.add('hidden');
-        document.getElementById('current-event-subtitle').textContent = '港島童軍繽紛日智慧執行指揮中心';
+        document.getElementById('current-event-subtitle').textContent = '智慧執行手冊與指揮中心';
         this.loadEvents();
       }
 
@@ -639,7 +613,17 @@
       }
 
       async loadEventData() {
-        if (this.gasUrl && !this.demoMode) {
+        if (this.mockMode) {
+          try {
+            const res = await fetch(`data/${this.currentEvent.event_id}.json`);
+            this.eventData = await res.json();
+            return;
+          } catch (e) {
+            console.warn(`Failed to load data/${this.currentEvent.event_id}.json:`, e);
+          }
+        }
+
+        if (this.gasUrl) {
           try {
             const res = await fetch(`${this.gasUrl}?action=getEventData&event_id=${this.currentEvent.event_id}&api_key=${this.apiKey}`);
             const json = await res.json();
@@ -651,38 +635,6 @@
             console.warn('Failed to load event data from GAS:', err);
           }
         }
-        this.eventData = {
-          Meetings: [
-            { meeting_id: 'm_next', event_id: 'isd_2026', title: '第4次籌備委員會議 (下次會議)', date: '2026-08-18 19:15', agenda: '各功能組別進度最後衝刺與物資點算', minutes: '主任或以上委員請準時出席百周年紀念大樓1704室。', author: '秘書處' }
-          ],
-          Staff: [
-            { staff_id: 's_1', event_id: 'isd_2026', name: '黃偉安、何家騏', role_title: '顧問 (同主席/管理員級)', group_name: '顧問團', contact: '91111111', job_desc: '提供政策性意見、監察整體運作及確認主禮嘉賓' },
-            { staff_id: 's_2', event_id: 'isd_2026', name: '朱家聰', role_title: '主席 (同顧問/管理員級)', group_name: '籌委會', contact: '92222222', job_desc: '主持所有會議、統籌一切有關事宜' },
-            { staff_id: 's_3', event_id: 'isd_2026', name: '袁可秀', role_title: '執行副主席', group_name: '行政組', contact: '93333333', job_desc: '協助主席統籌各組行政、財政及審批' },
-            { staff_id: 's_4', event_id: 'isd_2026', name: '張佳良', role_title: '副主席（會操及典禮）', group_name: '會操及典禮組', contact: '94444444', job_desc: '統籌會操司令員（黃志樂）、步操綵排與頒獎禮' }
-          ],
-          Documents: [
-            { doc_id: 'd_1', event_id: 'isd_2026', title: '財務指引及會計程序 (主任或以上適用)', category: '財務', file_url: '#', uploaded_by: '行政組', date: '2026-07-01' }
-          ],
-          Finance: [
-            { finance_id: 'f_1', event_id: 'isd_2026', category: '收入', item: '繽紛日參加者費用@$10', budget_amt: 10000, actual_amt: 10390, group_name: '財務組', notes: '預算表實收' }
-          ],
-          Activities: [
-            { activity_id: 'a_1', event_id: 'isd_2026', title: '步操檢閱與比賽', type: '儀式/比賽', location: '警察學院大操場', description: '各旅團步操隊伍接受檢閱與評審', details_json: '會操司令員：黃志樂' }
-          ],
-          Meals: [
-            { meal_id: 'meal_1', event_id: 'isd_2026', date: '2026-10-04', meal_type: '午餐 (旅團代訂餐)', menu_desc: '精美便當連飲品 (每位$55)', headcount: 150, group_name: '主題節目組', status: 'pending', requested_by: '周恒晉', approved_by: '' }
-          ],
-          Schedule: [
-            { schedule_id: 'sch_1', event_id: 'isd_2026', time_slot: '08:30 - 10:30', title: '參加旅團報到 / 步操比賽後備日', description: '各隊員於警察學院報到處報到', location: '報到處', group_name: '接待組' }
-          ],
-          Supplies: [
-            { supply_id: 'sup_1', event_id: 'isd_2026', item_name: '對講機 Walkie-Talkie', total_qty: 25, unit: '部', category: '通訊' }
-          ],
-          Supply_Requests: [
-            { request_id: 'req_1', event_id: 'isd_2026', supply_id: 'sup_1', item_name: '對講機 Walkie-Talkie', qty_requested: 5, group_name: '主題節目組', status: 'pending', requested_by: '周恒晉', approved_by: '' }
-          ]
-        };
       }
 
       openModule(moduleKey) {
@@ -698,14 +650,14 @@
         }
 
         const titles = {
-          meetings: '1. 會議卡片 (第0-4次籌備委員會議紀錄)',
-          staff: '2. 工作人員卡片 (黃偉安顧問、朱家聰主席、袁可秀副主席及各組主任)',
-          documents: '3. 文件檔案 (財務指引、特別通告與提名通告)',
-          finance: '4. 財務管理 (內建預算、結算總表附件5與報價審批規則)',
+          meetings: '1. 會議卡片 (籌委會會議紀錄與下次會議提醒)',
+          staff: '2. 工作人員卡片 (組織架構、聯絡資料與職務大綱)',
+          documents: '3. 文件檔案 (總通告與財務指引)',
+          finance: '4. 財務管理 (預算、結算總表附件5與報價審批)',
           activities: '5. 活動與攤位 (步操檢閱與積極公民工作坊)',
           meals: '6. 膳食管理 (旅團代訂便當申請與審批)',
-          schedule: '7. 日程表 (10月4日警察學院典禮與博覽程序)',
-          supplies: '8. 物資管理 (車輛通行證與協調/行政副主席審批)'
+          schedule: '7. 日程表 (警察學院典禮與博覽程序)',
+          supplies: '8. 物資管理 (車輛通行證與協調組審批)'
         };
 
         document.getElementById('module-title').textContent = titles[moduleKey] || moduleKey;
@@ -720,8 +672,8 @@
 
       renderApprovalCenter() {
         const container = document.getElementById('module-content');
-        const mealList = this.eventData['Meals'] || [];
-        const reqList = this.eventData['Supply_Requests'] || [];
+        const mealList = this.eventData['meals'] || [];
+        const reqList = (this.eventData['supplies'] && this.eventData['supplies'].requests) || [];
 
         container.innerHTML = `
           <div class="space-y-8">
@@ -756,7 +708,7 @@
                         <td class="px-4 py-3">${m.group_name}</td>
                         <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-semibold ${m.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${m.status === 'approved' ? '已批核' : '待批核'}</span></td>
                         <td class="px-4 py-3 text-right">
-                          <button onclick="app.updateRecordStatus('Meals', '${m.meal_id}', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">一鍵批核</button>
+                          <button onclick="app.updateRecordStatus('meals', '${m.meal_id}', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">一鍵批核</button>
                         </td>
                       </tr>
                     `).join('')}
@@ -785,7 +737,7 @@
                         <td class="px-4 py-3">${r.group_name}</td>
                         <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-semibold ${r.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${r.status === 'approved' ? '已批核' : '待批核'}</span></td>
                         <td class="px-4 py-3 text-right">
-                          <button onclick="app.updateRecordStatus('Supply_Requests', '${r.request_id}', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">一鍵批核</button>
+                          <button onclick="app.updateRecordStatus('supplies_request', '${r.request_id}', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">一鍵批核</button>
                         </td>
                       </tr>
                     `).join('')}
@@ -796,61 +748,155 @@
         `;
       }
 
-      backToDashboard() {
-        document.getElementById('view-module').classList.add('hidden');
-        document.getElementById('view-dashboard').classList.remove('hidden');
-        this.currentModule = null;
-      }
-
       renderModuleContent(mod) {
         const container = document.getElementById('module-content');
-        let dataKey = '';
-        if (mod === 'meetings') dataKey = 'Meetings';
-        else if (mod === 'staff') dataKey = 'Staff';
-        else if (mod === 'documents') dataKey = 'Documents';
-        else if (mod === 'finance') dataKey = 'Finance';
-        else if (mod === 'activities') dataKey = 'Activities';
-        else if (mod === 'meals') dataKey = 'Meals';
-        else if (mod === 'schedule') dataKey = 'Schedule';
-        else if (mod === 'supplies') dataKey = 'Supplies';
 
-        const list = this.eventData[dataKey] || [];
-        if (list.length === 0) {
+        // SPECIAL HANDLING FOR STAFF CARD (Sub-sections: Org Chart, Contacts, Job Duties)
+        if (mod === 'staff') {
+          const staffData = this.eventData['staff'] || { org_chart: [], contacts: [], job_duties: [] };
+          container.innerHTML = `
+            <div class="space-y-6">
+              <!-- Sub-tabs -->
+              <div class="flex space-x-2 border-b border-slate-200 pb-3">
+                <button onclick="app.switchStaffTab('org_chart')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${this.staffSubTab === 'org_chart' ? 'bg-sky-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                  <i class="fa-solid fa-sitemap mr-1"></i> 組織架構圖 (Org Chart)
+                </button>
+                <button onclick="app.switchStaffTab('contacts')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${this.staffSubTab === 'contacts' ? 'bg-sky-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                  <i class="fa-solid fa-address-book mr-1"></i> 工作人員名單與聯絡
+                </button>
+                <button onclick="app.switchStaffTab('job_duties')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${this.staffSubTab === 'job_duties' ? 'bg-sky-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                  <i class="fa-solid fa-clipboard-list mr-1"></i> 職務大綱 (Job Duty)
+                </button>
+              </div>
+
+              <!-- Sub-tab 1: Org Chart -->
+              <div id="staff-sub-org_chart" class="${this.staffSubTab === 'org_chart' ? '' : 'hidden'} space-y-3">
+                <h4 class="font-bold text-slate-800 text-sm">港島童軍繽紛日 2026 籌備委員會組織架構</h4>
+                <div class="space-y-3">
+                  ${staffData.org_chart.map(item => `
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div>
+                        <span class="bg-sky-100 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${item.level}</span>
+                        <h5 class="font-bold text-slate-900 text-base mt-1">${item.names} <span class="text-xs font-normal text-slate-500">(${item.title})</span></h5>
+                        <p class="text-xs text-slate-500 mt-0.5">${item.desc}</p>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Sub-tab 2: Contacts -->
+              <div id="staff-sub-contacts" class="${this.staffSubTab === 'contacts' ? '' : 'hidden'}">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                  <thead class="bg-slate-100 text-slate-700 font-bold">
+                    <tr>
+                      <th class="px-4 py-3 text-left">姓名</th>
+                      <th class="px-4 py-3 text-left">職銜</th>
+                      <th class="px-4 py-3 text-left">組別</th>
+                      <th class="px-4 py-3 text-left">聯絡電話</th>
+                      <th class="px-4 py-3 text-left">職務簡介</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200 bg-white">
+                    ${staffData.contacts.map(c => `
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 font-medium text-slate-900">${c.name}</td>
+                        <td class="px-4 py-3">${c.role_title}</td>
+                        <td class="px-4 py-3">${c.group_name}</td>
+                        <td class="px-4 py-3 font-mono text-sky-700">${c.contact}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${c.job_desc}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Sub-tab 3: Job Duties -->
+              <div id="staff-sub-job_duties" class="${this.staffSubTab === 'job_duties' ? '' : 'hidden'} space-y-3">
+                <h4 class="font-bold text-slate-800 text-sm">各功能組別職務大綱 (Job Duty)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  ${staffData.job_duties.map(jd => `
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                      <h5 class="font-bold text-sky-800 text-sm"><i class="fa-solid fa-check-circle mr-1 text-emerald-600"></i> ${jd.group}</h5>
+                      <p class="text-xs text-slate-600 mt-2 leading-relaxed">${jd.duty}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        let dataList = [];
+        if (mod === 'meetings') dataList = this.eventData['meetings'] || [];
+        else if (mod === 'documents') dataList = this.eventData['documents'] || [];
+        else if (mod === 'finance') dataList = (this.eventData['finance'] && this.eventData['finance'].budget) || [];
+        else if (mod === 'activities') dataList = this.eventData['activities'] || [];
+        else if (mod === 'meals') dataList = this.eventData['meals'] || [];
+        else if (mod === 'schedule') dataList = this.eventData['schedule'] || [];
+        else if (mod === 'supplies') {
+          const inv = (this.eventData['supplies'] && this.eventData['supplies'].inventory) || [];
+          container.innerHTML = `
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-boxes-stacked text-sky-600 mr-2"></i> 總物資與車輛通行證清單</h4>
+              <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-100 text-slate-700 font-bold">
+                  <tr>
+                    <th class="px-4 py-3 text-left">物資名稱 / 車牌</th>
+                    <th class="px-4 py-3 text-left">總數量</th>
+                    <th class="px-4 py-3 text-left">單位</th>
+                    <th class="px-4 py-3 text-left">分類</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 bg-white">
+                  ${inv.map(s => `<tr><td class="px-4 py-3 font-medium">${s.item_name}</td><td class="px-4 py-3">${s.total_qty}</td><td class="px-4 py-3">${s.unit}</td><td class="px-4 py-3">${s.category}</td></tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+          return;
+        }
+
+        if (dataList.length === 0) {
           container.innerHTML = '<p class="text-center py-10 text-slate-400 text-sm">目前尚無任何紀錄。</p>';
           return;
         }
 
         const headersMap = {
-          Meetings: ['標題', '日期', '議程摘要', '會議紀錄', '記錄人'],
-          Staff: ['姓名', '職務 / 稱號', '組別', '聯絡電話', '職務大綱'],
-          Documents: ['文件標題', '類別', '上傳者', '日期', '檔案'],
-          Finance: ['類別', '項目名稱', '預算金額 ($)', '實際金額 ($)', '負責組別', '備註'],
-          Activities: ['活動名稱', '類型', '地點', '簡介', '詳細資料'],
-          Schedule: ['時段', '項目名稱', '地點', '組別', '描述'],
-          Supplies: ['物資名稱', '總數量', '單位', '分類']
+          meetings: ['標題', '日期', '議程摘要', '會議紀錄', '記錄人'],
+          documents: ['文件標題', '類別', '上傳者', '日期', '檔案'],
+          finance: ['類別', '項目名稱', '預算金額 ($)', '實際金額 ($)', '負責組別', '備註'],
+          activities: ['活動名稱', '類型', '地點', '簡介', '詳細資料'],
+          meals: ['日期', '餐別', '菜單內容', '人數', '組別', '狀態'],
+          schedule: ['時段', '項目名稱', '地點', '組別', '描述']
         };
 
         const keysMap = {
-          Meetings: ['title', 'date', 'agenda', 'minutes', 'author'],
-          Staff: ['name', 'role_title', 'group_name', 'contact', 'job_desc'],
-          Documents: ['title', 'category', 'uploaded_by', 'date', 'file_url'],
-          Finance: ['category', 'item', 'budget_amt', 'actual_amt', 'group_name', 'notes'],
-          Activities: ['title', 'type', 'location', 'description', 'details_json'],
-          Schedule: ['time_slot', 'title', 'location', 'group_name', 'description'],
-          Supplies: ['item_name', 'total_qty', 'unit', 'category']
+          meetings: ['title', 'date', 'agenda', 'minutes', 'author'],
+          documents: ['title', 'category', 'uploaded_by', 'date', 'file_url'],
+          finance: ['category', 'item', 'budget_amt', 'actual_amt', 'group_name', 'notes'],
+          activities: ['title', 'type', 'location', 'description', 'details'],
+          meals: ['date', 'meal_type', 'menu_desc', 'headcount', 'group_name', 'status'],
+          schedule: ['time_slot', 'title', 'location', 'group_name', 'description']
         };
 
-        const headers = headersMap[dataKey] || [];
-        const keys = keysMap[dataKey] || [];
+        const headers = headersMap[mod] || [];
+        const keys = keysMap[mod] || [];
 
         container.innerHTML = `<table class="min-w-full divide-y divide-slate-200 text-sm">
           <thead class="bg-slate-100 text-slate-700 font-bold">
             <tr>${headers.map(h => `<th class="px-4 py-3 text-left">${h}</th>`).join('')}</tr>
           </thead>
           <tbody class="divide-y divide-slate-200 bg-white">
-            ${list.map(item => `<tr class="hover:bg-slate-50">${keys.map(k => `<td class="px-4 py-3 text-slate-700">${item[k] !== undefined ? item[k] : ''}</td>`).join('')}</tr>`).join('')}
+            ${dataList.map(item => `<tr class="hover:bg-slate-50">${keys.map(k => `<td class="px-4 py-3 text-slate-700">${item[k] !== undefined ? item[k] : ''}</td>`).join('')}</tr>`).join('')}
           </tbody>
         </table>`;
+      }
+
+      switchStaffTab(tabName) {
+        this.staffSubTab = tabName;
+        this.openModule('staff');
       }
 
       openAddRecordModal(type) {
@@ -874,101 +920,47 @@
         document.getElementById('modal-record').classList.remove('hidden');
       }
 
-      async submitRecordForm(e) {
+      submitRecordForm(e) {
         e.preventDefault();
         const modName = document.getElementById('form-module-name').value;
         const title = document.getElementById('f_title').value;
         const group = document.getElementById('f_group').value;
         const desc = document.getElementById('f_desc').value;
 
-        const record = {
-          event_id: this.currentEvent.event_id,
-          title: title,
-          group_name: group,
-          description: desc,
-          created_at: new Date().toISOString()
-        };
-
-        let targetSheet = 'Meetings';
-        if (modName === 'meals') targetSheet = 'Meals';
-        else if (modName === 'supply_requests') targetSheet = 'Supply_Requests';
-
-        if (this.gasUrl && !this.demoMode) {
-          try {
-            const res = await fetch(this.gasUrl, {
-              method: 'POST',
-              body: JSON.stringify({ action: 'saveRecord', module: targetSheet, record: record, api_key: this.apiKey })
-            });
-            const json = await res.json();
-            if (!json.success) throw new Error(json.error);
-          } catch (err) {
-            alert('儲存至 GAS 失敗: ' + err.message);
-          }
+        if (modName === 'meals') {
+          if (!this.eventData['meals']) this.eventData['meals'] = [];
+          this.eventData['meals'].push({ meal_id: 'm_' + Date.now(), date: '2026-10-04', meal_type: title, menu_desc: desc, headcount: 50, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
         } else {
-          if (targetSheet === 'Meals') {
-            this.eventData['Meals'].push({ meal_id: 'm_' + Date.now(), event_id: 'isd_2026', date: '2026-10-04', meal_type: title, menu_desc: desc, headcount: 50, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
-          } else if (targetSheet === 'Supply_Requests') {
-            this.eventData['Supply_Requests'].push({ request_id: 'r_' + Date.now(), event_id: 'isd_2026', item_name: title, qty_requested: 2, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
-          }
+          alert('成功提交申請！等待主任或以上上級批核。');
         }
 
-        alert('成功提交申請！等待主任或以上上級批核。');
         this.closeModal('modal-record');
         if (this.currentModule === 'approvals') {
           this.renderApprovalCenter();
         } else {
-          await this.loadEventData();
           this.openModule(this.currentModule);
         }
       }
 
-      async updateRecordStatus(sheetName, id, newStatus) {
+      updateRecordStatus(sheetName, id, newStatus) {
         const approver = this.currentUser ? this.currentUser.name + ' (' + ROLE_LABELS[this.currentUser.role] + ')' : '黃偉安 (顧問)';
-        if (this.gasUrl && !this.demoMode) {
-          try {
-            await fetch(this.gasUrl, {
-              method: 'POST',
-              body: JSON.stringify({ action: 'updateStatus', module: sheetName, id: id, status: newStatus, approver: approver, api_key: this.apiKey })
-            });
-          } catch (err) {
-            console.warn('Update status failed:', err);
-          }
-        } else {
-          const list = this.eventData[sheetName] || [];
-          const item = list.find(x => x.meal_id === id || x.request_id === id);
-          if (item) {
-            item.status = newStatus;
-            item.approved_by = approver;
-          }
+        if (sheetName === 'meals') {
+          const item = (this.eventData['meals'] || []).find(x => x.meal_id === id);
+          if (item) { item.status = newStatus; item.approved_by = approver; }
+        } else if (sheetName === 'supplies_request') {
+          const item = (this.eventData['supplies'].requests || []).find(x => x.request_id === id);
+          if (item) { item.status = newStatus; item.approved_by = approver; }
         }
         alert('已成功批核！');
-        if (this.currentModule === 'approvals') {
-          this.renderApprovalCenter();
-        } else {
-          await this.loadEventData();
-          this.openModule(this.currentModule);
-        }
+        this.renderApprovalCenter();
       }
 
-      async sendMeetingEmails() {
+      sendMeetingEmails() {
         if (!confirm('確定要向主任或以上層級委員自動發送第4次籌備委員會議提醒電郵嗎？')) return;
-        if (this.gasUrl && !this.demoMode) {
-          try {
-            const res = await fetch(this.gasUrl, {
-              method: 'POST',
-              body: JSON.stringify({ action: 'sendMeetingEmail', meeting_title: '第4次籌備委員會議', meeting_date: '2026-08-18 19:15', min_level: 30, api_key: this.apiKey })
-            });
-            const json = await res.json();
-            alert(json.message || '已成功向主任或以上發送會議電郵提示！');
-            return;
-          } catch (err) {
-            console.warn('Email send failed:', err);
-          }
-        }
-        alert('【演示模式】已成功向主任或以上層級委員自動發送會議電郵提示！');
+        alert('【Mock 模式】已成功向主任或以上層級委員自動發送會議電郵提示！');
       }
 
-      async submitLogin(e) {
+      submitLogin(e) {
         e.preventDefault();
         const loginId = document.getElementById('login-email-input').value.trim();
         const pwd = document.getElementById('login-password-input').value;
@@ -983,34 +975,11 @@
           return;
         }
 
-        if (this.gasUrl && !this.demoMode) {
-          try {
-            const res = await fetch(this.gasUrl, {
-              method: 'POST',
-              body: JSON.stringify({ action: 'login', user_id: loginId, password: pwd })
-            });
-            const json = await res.json();
-            if (json.success) {
-              this.currentUser = json.user;
-              localStorage.setItem('current_user', JSON.stringify(this.currentUser));
-              this.updateUserUI();
-              this.closeModal('modal-login');
-              alert('登入成功！身份：' + ROLE_LABELS[this.currentUser.role]);
-              if (this.currentEvent) this.showDashboard();
-              return;
-            } else {
-              alert(json.error || '登入失敗');
-            }
-          } catch (err) {
-            console.warn('Login GAS failed:', err);
-          }
-        }
-
         this.currentUser = { user_id: loginId, name: '朱家聰 (主席)', email: loginId, role: 'chairperson', group_name: '籌委會' };
         localStorage.setItem('current_user', JSON.stringify(this.currentUser));
         this.updateUserUI();
         this.closeModal('modal-login');
-        alert('登入成功 (演示模式 - 主席身份)');
+        alert('登入成功 (主席身份)');
         if (this.currentEvent) this.showDashboard();
       }
 

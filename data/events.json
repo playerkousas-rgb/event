@@ -1,0 +1,20 @@
+[
+  {
+    "event_id": "isd_2026",
+    "event_name": "2026 ISD 港島童軍繽紛日",
+    "description": "港島地域年度旗艦盛事：步操檢閱、優異旅團頒獎與攤位博覽",
+    "start_date": "2026-10-04",
+    "end_date": "2026-10-04",
+    "status": "active",
+    "has_password": true
+  },
+  {
+    "event_id": "isd_2027",
+    "event_name": "2027 ISD 港島童軍大露營與國際交流",
+    "description": "未來展望：跨地域國際童軍大露營與營地技能挑戰",
+    "start_date": "2027-10-01",
+    "end_date": "2027-10-04",
+    "status": "upcoming",
+    "has_password": true
+  }
+]
