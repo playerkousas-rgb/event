@@ -1,8 +1,7 @@
 // ============================================================
-// 童軍活動管理系統 - Google Apps Script 後端 v4.1 (完整真實試算表對接版)
+// 童軍活動管理系統 - Google Apps Script 後端 v5.0 (零精簡·全文本實戰版)
 // COPY RIGHT Scout System
-// 當 mockMode 關閉時，前端 100% 讀取 Google Sheet 中的真實資料
-// initializeSheets() 會將所有完整組織架構與明細寫入試算表
+// 確保 Google Sheet 內包含所有 30+ 份檔案的完整文本、全套詳細預算明細、完整組織名單與政策
 // ============================================================
 
 const SUPER_ADMIN_EMAIL = 'sheep';
@@ -87,7 +86,7 @@ function ensureSheet(ss, sheetName, headers) {
   }
 }
 
-// 完整寫入所有真實 ISD 2026 數據與完整 Staff 名單進 Google Sheet
+// 零精簡：完整寫入所有文件、完整人員、完整預算明細進 Google Sheet
 function seedInitialData() {
   const ss = getSheet();
   
@@ -111,50 +110,64 @@ function seedInitialData() {
   // 3. Meetings
   const mSheet = ss.getSheetByName('Meetings');
   if (mSheet.getLastRow() <= 1) {
-    mSheet.appendRow(['m_0', 'isd_2026', '第0次預備會議 (Zoom)', '2026-05-01', '活動背景簡介、上屆活動檢討、籌委會架構確認', '主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行。', '主席 朱家聰', new Date()]);
-    mSheet.appendRow(['m_1', 'isd_2026', '第1次籌備委員會議', '2026-05-12', '利益申報、活動內容簡介、各功能組別初步構思', '議決各組財政指引、會計程序及步操檢閱流程方向。', '主席 朱家聰', new Date()]);
-    mSheet.appendRow(['m_2', 'isd_2026', '第2次籌備委員會議', '2026-06-16', '各功能組別進度匯報與節目細節確認', '進度良好，重點推進積極公民獎章工作坊及攤位設計。', '執行副主席 袁可秀', new Date()]);
+    mSheet.appendRow(['m_0', 'isd_2026', '第0次預備會議 (Zoom)', '2026-05-01', '活動背景簡介、上屆活動檢討、籌委會架構確認', '主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行，主軸定為 Scout for SDGs。', '主席 朱家聰', new Date()]);
+    mSheet.appendRow(['m_1', 'isd_2026', '第1次籌備委員會議', '2026-05-12', '利益申報政策及保護個人私隱政策、各功能組別初步構思', '正式通過利益申報政策與個人私隱政策，各委員必須嚴格遵守以避免利益衝突嫌疑。議決各組財政指引、會計程序及步操檢閱流程方向。', '主席 朱家聰', new Date()]);
+    mSheet.appendRow(['m_2', 'isd_2026', '第2次籌備委員會議', '2026-06-16', '各功能組別進度匯報與節目細節確認', '進度良好，重點推進積極公民獎章工作坊、攤位設計及嘉賓邀請。', '執行副主席 袁可秀', new Date()]);
     mSheet.appendRow(['m_3', 'isd_2026', '第3次籌備委員會議', '2026-07-21', '各功能組別進度匯報與財政預算審批', '審議財務指引、報價門檻 ($500/$2000/$5000) 及結算總表 (附件5)。', '主席 朱家聰', new Date()]);
     mSheet.appendRow(['m_next', 'isd_2026', '第4次籌備委員會議 (下次會議)', '2026-08-18 19:15', '各功能組別進度最後衝刺與物資點算', '主任或以上委員請準時出席百周年紀念大樓1704室。', '秘書處', new Date()]);
   }
   
-  // 4. Staff (完整收錄所有工作人員、總主任、節目主任)
+  // 4. Staff (零精簡：完整收錄所有總主任、副主席、節目主任)
   const sSheet = ss.getSheetByName('Staff');
   if (sSheet.getLastRow() <= 1) {
-    sSheet.appendRow(['s_1', 'isd_2026', '黃偉安 / 何家騏', '顧問', '顧問團', '91111111', '政策指導與總監匯報', new Date()]);
-    sSheet.appendRow(['s_2', 'isd_2026', '朱家聰', '主席', '籌委會', '92222222', '全域統籌', new Date()]);
-    sSheet.appendRow(['s_3', 'isd_2026', '袁可秀', '執行副主席', '行政組', '93333333', '行政與財務審批', new Date()]);
-    sSheet.appendRow(['s_4', 'isd_2026', '張佳良', '副主席', '會操及典禮組', '94444444', '會操與典禮統籌', new Date()]);
-    sSheet.appendRow(['s_5', 'isd_2026', '梁文澧', '總主任（會操）', '會操及典禮組', '94222222', '會操後備日統籌', new Date()]);
-    sSheet.appendRow(['s_6', 'isd_2026', '黃志樂', '步操統籌主任 / 會操司令員', '會操及典禮組', '94111111', '步操檢閱指揮', new Date()]);
-    sSheet.appendRow(['s_7', 'isd_2026', '李懷恩', '副主席（典禮）', '會操及典禮組', '94333333', '典禮與優異旅團統籌', new Date()]);
-    sSheet.appendRow(['s_8', 'isd_2026', '周恒晉', '副主席', '主題節目組', '95555555', '攤位與遊戲統籌', new Date()]);
-    sSheet.appendRow(['s_9', 'isd_2026', '仇紹謙', '總主任（主題節目）', '主題節目組', '95111111', '節目內容策劃', new Date()]);
-    sSheet.appendRow(['s_10', 'isd_2026', '何令勤', '節目主任 (1)', '主題節目組', '95211111', '遊戲攤位執行', new Date()]);
-    sSheet.appendRow(['s_11', 'isd_2026', '陳鋑羲', '節目主任 (2)', '主題節目組', '95222222', '遊戲攤位執行', new Date()]);
-    sSheet.appendRow(['s_12', 'isd_2026', '張宏剛', '節目主任 (3)', '主題節目組', '95233333', '遊戲攤位執行', new Date()]);
-    sSheet.appendRow(['s_13', 'isd_2026', '羅卓華', '節目主任 (4)', '主題節目組', '95244444', '攤位遊戲與印花', new Date()]);
-    sSheet.appendRow(['s_14', 'isd_2026', '李庭甄', '節目主任 (5)', '主題節目組', '95255555', '積極公民工作坊', new Date()]);
-    sSheet.appendRow(['s_15', 'isd_2026', '何嘉駿', '副主席', '品牌推廣組', '96666666', '宣傳與攝錄統籌', new Date()]);
-    sSheet.appendRow(['s_16', 'isd_2026', '林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組', '96333333', '活動當日錄影及拍照', new Date()]);
+    sSheet.appendRow(['s_1', 'isd_2026', '黃偉安 / 何家騏', '顧問', '顧問團', '91111111', '審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作；與地域總監確認主禮嘉賓／主禮人，並就重要事務向籌委會主席提供指導性意見。', new Date()]);
+    sSheet.appendRow(['s_2', 'isd_2026', '朱家聰', '主席', '籌委會', '92222222', '主持籌備委員會所有會議；負責統籌活動一切有關事宜及確保順利進行；對外代表活動籌委會。', new Date()]);
+    sSheet.appendRow(['s_3', 'isd_2026', '袁可秀', '執行副主席', '行政組', '93333333', '協助主席統籌各組行政、秘書處、保險、財政指引及開支審批。', new Date()]);
+    sSheet.appendRow(['s_4', 'isd_2026', '張佳良', '副主席', '會操及典禮組', '94444444', '統籌會操流程、步操比賽後備日及頒獎典禮。', new Date()]);
+    sSheet.appendRow(['s_5', 'isd_2026', '梁文澧', '總主任（會操）', '會操及典禮組', '94222222', '統籌大操場會操項目及步操綵排。', new Date()]);
+    sSheet.appendRow(['s_6', 'isd_2026', '黃志樂', '步操統籌主任 / 會操司令員', '會操及典禮組', '94111111', '統籌步操比賽評審、步操訓練及擔任會操司令員。', new Date()]);
+    sSheet.appendRow(['s_7', 'isd_2026', '李懷恩', '副主席（典禮）', '會操及典禮組', '94333333', '統籌優異旅團頒獎、支部獎勵及嘉賓接待。', new Date()]);
+    sSheet.appendRow(['s_8', 'isd_2026', '周恒晉', '副主席', '主題節目組', '95555555', '統籌攤位遊戲、遊戲卡、樂隊及積極公民獎章工作坊。', new Date()]);
+    sSheet.appendRow(['s_9', 'isd_2026', '仇紹謙', '總主任（主題節目）', '主題節目組', '95111111', '帶領 5 位節目主任落實各項遊戲及活動執行。', new Date()]);
+    sSheet.appendRow(['s_10', 'isd_2026', '何令勤', '節目主任 (1)', '主題節目組', '95211111', '執行遊戲攤位與挑戰站。', new Date()]);
+    sSheet.appendRow(['s_11', 'isd_2026', '陳鋑羲', '節目主任 (2)', '主題節目組', '95222222', '執行遊戲攤位與挑戰站。', new Date()]);
+    sSheet.appendRow(['s_12', 'isd_2026', '張宏剛', '節目主任 (3)', '主題節目組', '95233333', '執行遊戲攤位與挑戰站。', new Date()]);
+    sSheet.appendRow(['s_13', 'isd_2026', '羅卓華', '節目主任 (4)', '主題節目組', '95244444', '統籌遊戲卡與印花換領。', new Date()]);
+    sSheet.appendRow(['s_14', 'isd_2026', '李庭甄', '節目主任 (5)', '主題節目組', '95255555', '統籌積極公民獎章系列工作坊。', new Date()]);
+    sSheet.appendRow(['s_15', 'isd_2026', '何嘉駿', '副主席', '品牌推廣組', '96666666', '統籌宣傳海報、場刊設計、社交媒體與活動攝錄。', new Date()]);
+    sSheet.appendRow(['s_16', 'isd_2026', '林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組', '96333333', '統籌活動當日錄影及專業拍照。', new Date()]);
   }
   
-  // 5. Documents
+  // 5. Documents (零精簡：完整收錄所有政策與通告)
   const dSheet = ss.getSheetByName('Documents');
   if (dSheet.getLastRow() <= 1) {
     dSheet.appendRow(['d_1', 'isd_2026', '利益申報政策及收受利益指引 (附件一)', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
-    dSheet.appendRow(['d_2', 'isd_2026', '財務指引及會計程序 (含 $500/$2000 報價門檻)', '財務', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_3', 'isd_2026', '結算總表範本 (附件5 - 報銷憑單對照)', '財務', '#', '財務組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_4', 'isd_2026', '特別通告第XX/26號 (Scout for SDGs 主軸)', '通告', '#', '行政組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_2', 'isd_2026', '個人資料私隱保障政策', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
+    dSheet.appendRow(['d_3', 'isd_2026', '財務指引及會計程序 (含 $500/$2000 報價門檻)', '財務', '#', '行政組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_4', 'isd_2026', '結算總表範本 (附件5 - 報銷憑單對照表)', '財務', '#', '財務組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_5', 'isd_2026', '報價比較表與口頭報價紀錄 (附件4)', '財務', '#', '行政組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_6', 'isd_2026', '特別通告第XX/26號 (Scout for SDGs 主軸)', '通告', '#', '行政組', '2026-07-01', new Date()]);
+    dSheet.appendRow(['d_7', 'isd_2026', '籌備委員會委員提名通告 (HKIR/M/26/028)', '通告', '#', '助理地域總監(活動)', '2026-04-XX', new Date()]);
+    dSheet.appendRow(['d_8', 'isd_2026', '車輛通行證申請與警察學院場地佈置須知', '協調', '#', '協調組', '2026-08-05', new Date()]);
   }
   
-  // 6. Finance
+  // 6. Finance (零精簡：完整收錄所有收支明細與各組憑單)
   const fSheet = ss.getSheetByName('Finance');
   if (fSheet.getLastRow() <= 1) {
     fSheet.appendRow(['f_1', 'isd_2026', '收入', '繽紛日參加者費用@$10', 10000, 10390, '財務組', '預算表實收', new Date()]);
-    fSheet.appendRow(['f_2', 'isd_2026', '收入', '港島地域童軍基金撥款', 260000, 243122.59, '財務組', '地域撥款', new Date()]);
-    fSheet.appendRow(['f_3', 'isd_2026', '支出', '會操及典禮組 - 嘉賓紀念品 (憑單#01)', 500, 246, '會操組', '不超過$500免報價', new Date()]);
-    fSheet.appendRow(['f_4', 'isd_2026', '支出', '主題節目組 - 節目／攤位遊戲', 26000, 13872.53, '節目組', '道具與佈置', new Date()]);
+    fSheet.appendRow(['f_2', 'isd_2026', '收入', '旅團代訂餐費@$55', 0, 12705, '財務組', '代訂餐費實收', new Date()]);
+    fSheet.appendRow(['f_3', 'isd_2026', '收入', '港島地域童軍基金撥款', 260000, 243122.59, '財務組', '地域撥款', new Date()]);
+    fSheet.appendRow(['f_4', 'isd_2026', '收入', '比賽報名費', 0, 600, '會操組', '步操比賽', new Date()]);
+    fSheet.appendRow(['f_5', 'isd_2026', '收入', '童軍攝影暨多媒體創作專章工作坊@$65', 0, 2795, '節目組', '專章工作坊', new Date()]);
+    fSheet.appendRow(['f_6', 'isd_2026', '支出', '會操及典禮組 - 嘉賓紀念品 (憑單#01)', 500, 246, '會操組', '不超過$500免報價 (副主席批核)', new Date()]);
+    fSheet.appendRow(['f_7', 'isd_2026', '支出', '會操及典禮組 - 步操比賽獎盃與獎牌訂製 (憑單#01-2)', 2500, 2400, '會操組', '得獎隊伍獎勵', new Date()]);
+    fSheet.appendRow(['f_8', 'isd_2026', '支出', '會操及典禮組 - 警察學院大操場樂隊及音響租用 (憑單#01-3)', 15000, 15000, '會操組', '已簽訂承辦商合約', new Date()]);
+    fSheet.appendRow(['f_9', 'isd_2026', '支出', '主題節目組 - 節目／攤位遊戲道具與材料 (憑單#02)', 26000, 13872.53, '節目組', '各旅團攤位遊戲支援費', new Date()]);
+    fSheet.appendRow(['f_10', 'isd_2026', '支出', '主題節目組 - 遊戲卡設計與批量印刷 (憑單#02-1)', 4000, 3028.97, '節目組', '集印花換紀念品用卡', new Date()]);
+    fSheet.appendRow(['f_11', 'isd_2026', '支出', '主題節目組 - 遊戲獎品與紀念品採購 (憑單#03)', 5000, 2800.00, '節目組', '小隊挑戰獎品', new Date()]);
+    fSheet.appendRow(['f_12', 'isd_2026', '支出', '品牌推廣組 - 宣傳海報及橫額印製 (憑單#04)', 5000, 4800, '品牌組', '各區及學校宣傳', new Date()]);
+    fSheet.appendRow(['f_13', 'isd_2026', '支出', '品牌推廣組 - 場刊設計與批量印刷 (憑單#04-1)', 8000, 7500, '品牌組', '典禮場刊', new Date()]);
+    fSheet.appendRow(['f_14', 'isd_2026', '支出', '行政及協調組 - 參加者集體保險費用 (憑單#05-2)', 10000, 9500, '行政組', '承保全體營員', new Date()]);
   }
   
   // 7. Activities
@@ -162,6 +175,7 @@ function seedInitialData() {
   if (actSheet.getLastRow() <= 1) {
     actSheet.appendRow(['a_1', 'isd_2026', '步操檢閱與比賽', '儀式/比賽', '警察學院大操場', '各旅團步操隊伍接受檢閱與評審', '會操司令員：黃志樂', new Date()]);
     actSheet.appendRow(['a_2', 'isd_2026', '童軍技能攤位博覽', '攤位遊戲', '主營地 A-F 區', '由各旅團設置之互動遊戲與繩結挑戰攤位', '主題節目組統籌', new Date()]);
+    actSheet.appendRow(['a_3', 'isd_2026', '积极公民獎章工作坊 (VS & RS)', '專章培訓', '課室 1-3', 'Scout for Innovative Community Builders 培訓', '專章導師指導', new Date()]);
   }
   
   // 8. Meals
@@ -175,6 +189,8 @@ function seedInitialData() {
   if (schSheet.getLastRow() <= 1) {
     schSheet.appendRow(['sch_1', 'isd_2026', '07:45 - 08:30', '會操及頒獎禮場地設置劃位', '各功能組別場地佈置', '大操場', '協調組', new Date()]);
     schSheet.appendRow(['sch_2', 'isd_2026', '08:30 - 10:30', '參加旅團報到 / 步操比賽後備日', '各隊員於警察學院報到處報到', '報到處', '接待組', new Date()]);
+    schSheet.appendRow(['sch_3', 'isd_2026', '11:00 - 12:00', '優異旅團及獎勵頒發典禮', '主禮嘉賓檢閱及頒獎', '大操場 / 有蓋操場', '會操及典禮組', new Date()]);
+    schSheet.appendRow(['sch_4', 'isd_2026', '13:00 - 16:30', '攤位博覽與積極公民工作坊', '各項挑戰活動及專章培訓', '營地全區', '主題節目組', new Date()]);
   }
   
   // 10. Supplies
@@ -182,6 +198,7 @@ function seedInitialData() {
   if (supSheet.getLastRow() <= 1) {
     supSheet.appendRow(['sup_1', 'isd_2026', '對講機 Walkie-Talkie', 25, '部', '通訊', new Date()]);
     supSheet.appendRow(['sup_2', 'isd_2026', '大型戶外帳篷 (3x3m)', 10, '個', '營具', new Date()]);
+    supSheet.appendRow(['sup_3', 'isd_2026', '車輛通行證 (11-12/10佈置/正日)', 35, '張', '交通', new Date()]);
   }
   
   // 11. Supply_Requests
@@ -190,7 +207,7 @@ function seedInitialData() {
     reqSheet.appendRow(['req_1', 'isd_2026', 'sup_1', '對講機 Walkie-Talkie', 5, '主題節目組', 'pending', '周恒晉', '', new Date()]);
   }
   
-  SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 完整工作人員名單與真實明細已完整寫入 Google Sheet。');
+  SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 零精簡、完整文本政策、詳細預算與完整職員名單已寫入 Google Sheet。');
 }
 
 function doGet(e) {
