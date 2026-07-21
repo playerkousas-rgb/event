@@ -1,13 +1,13 @@
 {
   "event_id": "isd_2026",
   "event_name": "2026 ISD 港島童軍繽紛日",
-  "description": "全面取代傳統靜態 Google Sites 執行手冊之智慧指揮中心",
+  "description": "港島地域年度旗艦盛事：全面取代舊版靜態 Google Sites 執行手冊之智慧指揮中心",
   "meetings": [
-    { "meeting_id": "m_0", "title": "第0次預備會議 (Zoom)", "date": "2026-05-01", "agenda": "活動背景簡介、上屆活動檢討、籌委會架構確認", "minutes": "主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行。", "author": "主席 朱家聰" },
-    { "meeting_id": "m_1", "title": "第1次籌備委員會議", "date": "2026-05-12", "agenda": "利益申報、活動內容簡介、各功能組別初步構思", "minutes": "議決各組財政指引、會計程序及步操檢閱流程方向。", "author": "主席 朱家聰" },
-    { "meeting_id": "m_2", title: "第2次籌備委員會議", "date": "2026-06-16", "agenda": "各功能組別進度匯報與節目細節確認", "minutes": "進度良好，重點推進積極公民獎章工作坊及攤位設計。", "author": "執行副主席 袁可秀" },
+    { "meeting_id": "m_0", "title": "第0次預備會議 (Zoom)", "date": "2026-05-01", "agenda": "活動背景簡介、上屆活動檢討、籌委會架構確認", "minutes": "主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行，主軸定為 Scout for SDGs。", "author": "主席 朱家聰" },
+    { "meeting_id": "m_1", "title": "第1次籌備委員會議", "date": "2026-05-12", "agenda": "利益申報、活動內容簡介、各功能組別初步構思與財政指引", "minutes": "議決各組財政指引、會計程序及步操檢閱流程方向。批準各組預算上限。", "author": "主席 朱家聰" },
+    { "meeting_id": "m_2", title: "第2次籌備委員會議", "date": "2026-06-16", "agenda": "各功能組別進度匯報與節目細節確認", "minutes": "進度良好，重點推進積極公民獎章工作坊、攤位設計及嘉賓邀請。", "author": "執行副主席 袁可秀" },
     { "meeting_id": "m_3", title: "第3次籌備委員會議", "date": "2026-07-21", "agenda": "各功能組別進度匯報與財政預算審批", "minutes": "審議財務指引、報價門檻 ($500/$2000/$5000) 及結算總表 (附件5)。", "author": "主席 朱家聰" },
-    { "meeting_id": "m_next", title: "第4次籌備委員會議 (下次會議)", "date": "2026-08-18 19:15", "agenda": "各功能組別進度最後衝刺與物資點算", "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室。", "author": "秘書處" }
+    { "meeting_id": "m_next", title: "第4次籌備委員會議 (下次會議)", "date": "2026-08-18 19:15", "agenda": "各功能組別進度最後衝刺與物資點算", "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室進行總綵排。", "author": "秘書處" }
   ],
   "staff": {
     "org_chart": [
@@ -23,8 +23,11 @@
       { "name": "朱家聰", "role_title": "主席", "group_name": "籌委會", "contact": "92222222", "job_desc": "全域統籌" },
       { "name": "袁可秀", "role_title": "執行副主席", "group_name": "行政組", "contact": "93333333", "job_desc": "行政與財務審批" },
       { "name": "張佳良", "role_title": "副主席", "group_name": "會操及典禮組", "contact": "94444444", "job_desc": "會操與典禮統籌" },
+      { "name": "黃志樂", "role_title": "會操司令員", "group_name": "會操及典禮組", "contact": "94111111", "job_desc": "步操檢閱指揮" },
       { "name": "周恒晉", "role_title": "副主席", "group_name": "主題節目組", "contact": "95555555", "job_desc": "攤位與遊戲統籌" },
-      { "name": "何嘉駿", "role_title": "副主席", "group_name": "品牌推廣組", "contact": "96666666", "job_desc": "宣傳與攝錄統籌" }
+      { "name": "何令勤 / 陳鋑羲 / 張宏剛", "role_title": "節目主任", "group_name": "主題節目組", "contact": "95222222", "job_desc": "遊戲攤位及工作坊" },
+      { "name": "何嘉駿", "role_title": "副主席", "group_name": "品牌推廣組", "contact": "96666666", "job_desc": "宣傳與攝錄統籌" },
+      { "name": "林耀鏘", "role_title": "拍攝/攝錄統籌", "group_name": "品牌推廣組", "contact": "96333333", "job_desc": "活動當日錄影及拍照" }
     ],
     "job_duties": [
       { "group": "顧問團", "duty": "監督活動方針、審批重大預算與確認主禮嘉賓。" },
@@ -32,6 +35,7 @@
       { "group": "行政組", "duty": "統籌秘書處、保險、總通告發布及財務總結。" },
       { "group": "會操及典禮組", "duty": "負責警察學院大操場步操檢閱、步操比賽及頒獎禮程序。" },
       { "group": "主題節目組", "duty": "統籌各旅團攤位遊戲、遊戲卡設計及積極公民獎章工作坊。" },
+      { "group": "品牌推廣組", "duty": "負責宣傳海報設計、社交媒體推廣及活動攝影攝錄。" },
       { "group": "協調組", "duty": "統籌場地佈置、車輛通行證、總物資借用及對講機分配。" }
     ]
   },
@@ -39,23 +43,28 @@
     { "title": "財務指引及會計程序 (主任或以上適用)", "category": "財務", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
     { "title": "結算總表範本 (附件5 - 報銷憑單對照)", "category": "財務", "uploaded_by": "財務組", "date": "2026-07-01", "file_url": "#" },
     { "title": "特別通告第XX/26號 (Scout for SDGs 主軸)", "category": "通告", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
-    { "title": "警察學院場地佈置與車輛通行證申請須知", "category": "協調", "uploaded_by": "協調組", "date": "2026-08-05", "file_url": "#" }
+    { "title": "籌備委員會委員提名通告 (HKIR/M/26/028)", "category": "通告", "uploaded_by": "助理地域總監(活動)", "date": "2026-04-XX", "file_url": "#" },
+    { "title": "旅團報名表格 (小童軍至領袖人數與費用統計)", "category": "表格", "uploaded_by": "行政組", "date": "2026-08-01", "file_url": "#" },
+    { "title": "車輛通行證申請與警察學院場地佈置須知", "category": "協調", "uploaded_by": "協調組", "date": "2026-08-05", "file_url": "#" }
   ],
   "finance": {
     "budget": [
       { "category": "收入", "item": "繽紛日參加者費用@$10", "budget_amt": 10000, "actual_amt": 10390, "group_name": "財務組", "notes": "預算表實收" },
       { "category": "收入", "item": "港島地域童軍基金撥款", "budget_amt": 260000, "actual_amt": 243122, "group_name": "財務組", "notes": "地域撥款" },
       { "category": "支出", "item": "會操及典禮組 - 嘉賓紀念品 (憑單#01)", "budget_amt": 500, "actual_amt": 246, "group_name": "會操組", "notes": "不超過$500免報價 (副主席批核)" },
-      { "category": "支出", "item": "主題節目組 - 攤位遊戲與積極公民證書 (憑單#02)", "budget_amt": 30200, "actual_amt": 13872, "group_name": "節目組", "notes": "已完成報價比較表 (附件4)" }
+      { "category": "支出", "item": "主題節目組 - 攤位遊戲與遊戲卡 (憑單#02)", "budget_amt": 4000, "actual_amt": 3028, "group_name": "節目組", "notes": "遊戲卡設計與印刷" },
+      { "category": "支出", "item": "主題節目組 - 遊戲獎品 (憑單#03)", "budget_amt": 5000, "actual_amt": 2800, "group_name": "節目組", "notes": "攤位紀念品" },
+      { "category": "支出", "item": "積極公民獎章及證書（CS&SC）", "budget_amt": 4200, "actual_amt": 4158, "group_name": "節目組", "notes": "專章製作" }
     ]
   },
   "activities": [
     { "title": "步操檢閱與比賽", "type": "儀式/比賽", "location": "警察學院大操場", "description": "各旅團步操隊伍接受檢閱與評審", "details": "會操司令員：黃志樂 | 步操統籌：黃志樂" },
-    { "title": "童軍技能攤位博覽", "type": "攤位遊戲", "location": "主營地 A-F 區", "description": "由各旅團設置之互動遊戲與繩結挑戰攤位", "details": "主題節目組統籌" },
-    { "title": "积极公民獎章工作坊 (VS & RS)", "type": "專章培訓", "location": "課室 1-3", description: "Scout for Innovative Community Builders 培訓", "details": "專章導師指導" }
+    { "title": "童軍技能攤位博覽", "type": "攤位遊戲", "location": "主營地 A-F 區", "description": "由各旅團設置之互動遊戲與繩結挑戰攤位", "details": "主題節目組統籌，集印花換紀念品" },
+    { "title": "积极公民獎章工作坊 (VS & RS)", "type": "專章培訓", "location": "課室 1-3", "description": "Scout for Innovative Community Builders 培訓", "details": "專業導師指導" }
   ],
   "meals": [
-    { "meal_id": "meal_1", "date": "2026-10-04", "meal_type": "午餐 (旅團代訂餐)", "menu_desc": "精美便當連飲品 (每位$55)", "headcount": 150, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "" }
+    { "meal_id": "meal_1", "date": "2026-10-04", "meal_type": "午餐 (旅團代訂餐)", "menu_desc": "精美便當連飲品 (每位$55)", "headcount": 150, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "" },
+    { "meal_id": "meal_2", "date": "2026-10-04", "meal_type": "工作人員早餐", "menu_desc": "三文治配熱茶", "headcount": 40, "group_name": "協調組", "status": "approved", "requested_by": "林美儀", "approved_by": "袁可秀 (執行副主席)" }
   ],
   "schedule": [
     { "time_slot": "07:45 - 08:30", "title": "會操及頒獎禮場地設置劃位", "location": "大操場", "group_name": "協調組", "description": "各功能組別場地佈置" },
@@ -67,10 +76,12 @@
     "inventory": [
       { "item_name": "對講機 Walkie-Talkie", "total_qty": 25, "unit": "部", "category": "通訊" },
       { "item_name": "大型戶外帳篷 (3x3m)", "total_qty": 10, "unit": "個", "category": "營具" },
+      { "item_name": "Megaphone 揚聲器", "total_qty": 5, "unit": "個", "category": "音響" },
       { "item_name": "車輛通行證 (11-12/10佈置/正日)", "total_qty": 35, "unit": "張", "category": "交通" }
     ],
     "requests": [
-      { "request_id": "req_1", "item_name": "對講機 Walkie-Talkie", "qty_requested": 5, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "" }
+      { "request_id": "req_1", "item_name": "對講機 Walkie-Talkie", "qty_requested": 5, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "" },
+      { "request_id": "req_2", "item_name": "車輛通行證 (車牌: AM1234)", "qty_requested": 1, "group_name": "會操組", "status": "approved", "requested_by": "張佳良", "approved_by": "黃偉安 (顧問)" }
     ]
   }
 }
