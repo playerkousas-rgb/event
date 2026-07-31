@@ -1,1112 +1,294 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>童軍活動管理系統 - 2026 ISD 智慧執行手冊</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    .card-hover { transition: all 0.2s ease-in-out; }
-    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); }
-    .hero-gradient { background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0284c7 100%); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>童軍活動管理系統 - 會議卡片全面升級版 v6.1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{brand:{50:'#f0f9ff',100:'#e0f2fe',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e'}}}}}
+</script>
+<style>
+:root{--brand:#0c4a6e;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-hover:0 8px 24px rgba(0,0,0,0.12);}
+*{ -webkit-tap-highlight-color:transparent; }
+body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","Microsoft JhengHei",sans-serif;overscroll-behavior:none;background:#F8FAFC;}
+.card-hover{transition:all .22s ease;} .card-hover:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);}
+.hero-gradient{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0284c7 100%);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:999px;font-size:13px;z-index:5000;opacity:0;transition:all .35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;max-width:92%;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.2);} .toast.show{transform:translateX(-50%) translateY(0);opacity:1} .toast.success{background:#16a34a}.toast.error{background:#dc2626}.toast.warning{background:#f59e0b;color:#000}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #0c4a6e;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,0.12);transform:translateY(110%);transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);z-index:999} .save-bar.visible{transform:translateY(0)} .save-bar .dot{width:8px;height:8px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;display:inline-block} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.2)}}
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:4000;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(6px)} .saving-overlay.active{display:flex} .spinner{width:46px;height:46px;border:4px solid #e2e8f0;border-top-color:#0c4a6e;border-radius:50%;animation:spin 1s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
+.modal{backdrop-filter:blur(6px)} .modal-content-anim{animation:modalPop .28s cubic-bezier(0.34,1.56,0.64,1)} @keyframes modalPop{from{opacity:0;transform:scale(.92) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.nav-tab{flex:0 0 auto;min-width:96px;padding:12px 14px;text-align:center;cursor:pointer;border:none;background:none;font-size:13px;font-weight:600;color:#64748b;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;border-radius:8px 8px 0 0} .nav-tab:hover{background:#f1f5f9;color:#0f172a} .nav-tab.active{color:#0c4a6e;border-bottom-color:#0c4a6e;background:#e0f2fe}
+.drawer{position:fixed;inset:0;z-index:60;display:none} .drawer.active{display:flex} .drawer-backdrop{flex:1;background:rgba(15,23,42,0.55);backdrop-filter:blur(2px)} .drawer-panel{width:84%;max-width:320px;background:#fff;height:100%;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:flex;flex-direction:column;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#0c4a6e;font-weight:700} .bottom-nav button i{font-size:18px}
+.table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
+.meeting-card{border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:#fff;transition:all .22s ease;cursor:pointer} .meeting-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:#0284c7}
+.meeting-number{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0c4a6e,#0284c7);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.visibility-badge{font-size:10px;padding:2px 8px;border-radius:999px;font-weight:700;border:1px solid}
+.visibility-public{background:#dcfce7;color:#166534;border-color:#bbf7d0} .visibility-private{background:#fee2e2;color:#991b1b;border-color:#fecaca} .visibility-attendees{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.file-chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;transition:.15s} .file-chip:hover{background:#e0f2fe;border-color:#0284c7;color:#0c4a6e}
+.tab-btn{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#64748b;transition:.2s} .tab-btn.active{background:#0c4a6e;color:#fff;border-color:#0c4a6e;box-shadow:0 2px 8px rgba(12,74,110,0.25)}
+@media(max-width:768px){
+  body{font-size:15px} .table-responsive table{min-width:0;width:100%} .table-responsive thead{display:none} .table-responsive tbody tr{display:block;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;padding:8px;background:#fff} .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:none;border-bottom:1px dashed #f1f5f9;font-size:13px} .table-responsive tbody td:last-child{border-bottom:none} .table-responsive tbody td::before{content:attr(data-label);font-weight:700;color:#475569;font-size:11px;flex-shrink:0;margin-right:12px}
+  .modal{align-items:flex-end!important;padding:0!important} .modal>div{border-radius:16px 16px 0 0!important;max-height:88vh!important;width:100%!important;max-width:100%!important} .hero-gradient{border-radius:16px!important;padding:18px!important} .bottom-pad{padding-bottom:78px} .btn-mobile{min-height:44px} .form-group input,.form-group select,.form-group textarea{min-height:44px;font-size:16px!important}
+}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col bottom-pad">
 
-  <!-- TOP HEADER -->
-  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="app.goHome()">
-        <div class="bg-sky-600 text-white p-2.5 rounded-xl font-bold text-lg shadow"><i class="fa-solid fa-tent"></i></div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="font-bold text-lg leading-tight">童軍活動管理系統</h1>
-            <span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold">2026 ISD 專用</span>
-          </div>
-          <p class="text-xs text-slate-400" id="current-event-subtitle">港島童軍繽紛日智慧執行指揮中心</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-3">
-        <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="hidden sm:block bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-          <i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">Mock 模式: 開啟</span>
-        </button>
-        <div id="user-badge" class="hidden text-xs bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center space-x-2">
-          <i class="fa-solid fa-user-shield text-sky-400"></i>
-          <span id="nav-username">-</span>
-          <span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span>
-        </div>
-        <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
-          <i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text">電郵登入 / 切換</span>
-        </button>
-        <button onclick="app.openSettingsModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition hidden md:block">
-          <i class="fa-solid fa-gear mr-1"></i> 設定
-        </button>
-        <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-sm transition">
-          <i class="fa-solid fa-right-from-bracket mr-1"></i> 登出
-        </button>
+<header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-3 min-w-0 flex-1">
+      <button onclick="app.toggleDrawer()" class="md:hidden bg-slate-800 p-2.5 rounded-xl border border-slate-700 mr-1 btn-mobile"><i class="fa-solid fa-bars"></i></button>
+      <div class="flex items-center space-x-3 cursor-pointer min-w-0 flex-1" onclick="app.goHome()">
+        <div class="bg-sky-600 text-white p-2.5 rounded-xl font-bold text-lg shadow flex-shrink-0"><i class="fa-solid fa-tent"></i></div>
+        <div class="min-w-0 flex-1"><div class="flex items-center space-x-2 flex-wrap"><h1 class="font-bold text-[15px] sm:text-lg leading-tight truncate">童軍活動管理系統</h1><span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold whitespace-nowrap">v6.1 會議升級</span></div><p class="text-[11px] sm:text-xs text-slate-400 truncate" id="current-event-subtitle">會議卡片·全前端上傳·分次管理·權限下載</p></div>
       </div>
     </div>
-  </header>
-
-  <!-- NEXT MEETING BANNER -->
-  <div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm">
-    <div class="flex items-center space-x-2 mb-2 sm:mb-0">
-      <span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase"><i class="fa-regular fa-bell mr-1"></i> 會議預告 (主任或以上)</span>
-      <span id="banner-meeting-text" class="font-medium">第4次籌備委員會議：2026年8月18日晚上7時15分 @ 百周年紀念大樓1704室</span>
+    <div class="flex items-center space-x-2 flex-shrink-0">
+      <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="hidden sm:flex bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-xl text-xs font-semibold"><i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">Mock: 開</span></button>
+      <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[80px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
+      <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text" class="hidden sm:inline">登入</span><span class="sm:hidden">登入</span></button>
+      <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-sm transition btn-mobile"><i class="fa-solid fa-right-from-bracket"></i></button>
     </div>
-    <div id="banner-admin-actions" class="hidden flex items-center space-x-2">
-      <button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1 rounded-lg text-xs shadow transition">
-        <i class="fa-solid fa-paper-plane mr-1"></i> 發送會議提醒 Email (主任或以上)
-      </button>
+  </div>
+  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶</button><button class="nav-tab" data-view="bulk" onclick="app.switchTopTab('bulk',this)"><i class="fa-solid fa-file-csv mr-1"></i> 批量</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
+</header>
+
+<div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goHome();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-house text-sky-600 w-5"></i> 首頁</button><button onclick="app.showDashboard();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-gauge w-5"></i> 儀表板</button><button onclick="app.openModule('meetings');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-handshake text-sky-600 w-5"></i> 會議卡片 (升級)</button><button onclick="app.openModule('staff');app.toggleDrawer()" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 border flex items-center gap-3"><i class="fa-solid fa-sitemap text-indigo-600 w-5"></i> 工作人員</button><button onclick="app.switchTopTab('users');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-users text-emerald-700 w-5"></i> 用戶管理</button><button onclick="app.switchTopTab('bulk');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-file-csv text-amber-700 w-5"></i> 批量開戶</button></div><div class="p-3 border-t text-[11px] text-slate-500">v6.1 會議卡片全面升級<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
+
+<div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-3 sm:px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-sm gap-2"><div class="flex items-start sm:items-center gap-2 flex-1 min-w-0"><span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase flex-shrink-0"><i class="fa-regular fa-bell mr-1"></i> 會議預告</span><span id="banner-meeting-text" class="font-medium leading-snug flex-1">第4次籌備會議：2026-08-18 19:15 @ 1704室</span></div><div id="banner-admin-actions" class="hidden flex items-center gap-2 flex-shrink-0"><button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1.5 rounded-xl text-xs shadow btn-mobile"><i class="fa-solid fa-paper-plane mr-1"></i> 發送提醒</button></div></div>
+
+<main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 pb-[90px] md:pb-6">
+
+  <div id="view-landing" class="space-y-5">
+    <div class="hero-gradient text-white rounded-[24px] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 text-8xl sm:text-9xl pointer-events-none"><i class="fa-solid fa-compass"></i></div>
+      <div class="max-w-5xl relative z-10 space-y-4">
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-emerald-400/30 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30 flex items-center"><i class="fa-solid fa-eye mr-1.5"></i> 公開查閱模式：無需登入即可查看所有資料</span>
+          <span class="bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30">僅修改需登入·一次登入永久有效·瀏覽器儲存</span>
+          <span class="bg-amber-400/30 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30">完全取代舊 Google Sites</span>
+        </div>
+        <div><h2 class="text-2xl sm:text-3xl font-extrabold">童軍活動管理系統 v7.0 完全取代版</h2><p class="mt-2 text-sky-100 text-[13px] leading-relaxed">已完全取代舊執行手冊 https://sites.google.com/view/isd2025om/home ，整合行政組、協調組、主題節目組等所有舊版文件，優化為卡片式、手機友善、部門間溝通更完善。所有工作人員更易找到要找的資料。</p></div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="flex-1 relative"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/60 text-xs"></i><input id="global-search" oninput="app.globalSearch(this.value)" placeholder="全域搜尋：會議、文件、財務、物資、膳食、地圖、攤位... (公開可看)" class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-white placeholder:text-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"></div>
+          <button onclick="app.goHome()" class="bg-white text-sky-800 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile">進入活動</button>
+          <button onclick="app.openModule('announcements')" class="bg-amber-400 text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile"><i class="fa-solid fa-bullhorn mr-1"></i> 公告及溝通</button>
+        </div>
+        <div class="text-[11px] text-white/80 bg-black/20 rounded-xl p-2.5 border border-white/10">參考舊手冊已加入卡片：行政組(通告·報名·膳食安排·參加旅團)、協調組(場地佈置圖·物資借用表·箱頭紙·佈置數據)、主題節目組(遊戲卡·攤位總表·積極公民)、安全及醫療、交通及泊車。全部公開可看，僅修改需登入。</div>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 border shadow-sm">
+      <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-sm"><i class="fa-solid fa-magnifying-glass text-sky-600 mr-2"></i>全域搜尋結果 / 活動選擇</h3><span class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">公開查閱·登入永久有效</span></div>
+      <div id="global-search-results" class="hidden mb-4"></div>
+      <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
     </div>
   </div>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+  <div id="view-dashboard" class="hidden space-y-6">
+    <div class="bg-white rounded-2xl p-5 shadow-sm border flex justify-between items-center"><div><button onclick="app.goHome()" class="text-xs text-sky-600 font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h2 id="dash-event-title" class="text-xl font-bold truncate">-</h2><p id="dash-event-desc" class="text-[12px] text-slate-500">-</p></div><div class="bg-slate-50 px-3 py-2 rounded-xl border text-[11px]"><span class="text-slate-400 block">當前身份 | 公開可看，僅修改需登入，一次永久有效</span><span class="font-bold text-sky-700" id="dash-role-display">-</span></div></div>
 
-    <!-- VIEW 1: LANDING & MULTI-EVENT SELECTOR -->
-    <div id="view-landing" class="space-y-6">
-      
-      <!-- HERO ZONE -->
-      <div class="hero-gradient text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-        <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 text-9xl">
-          <i class="fa-solid fa-compass"></i>
-        </div>
-        <div class="max-w-4xl relative z-10 space-y-6">
-          <div class="flex flex-wrap gap-2">
-            <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 flex items-center">
-              <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> 財務明細與名單 100% 零精簡展開
-            </span>
-            <span class="bg-amber-500/30 backdrop-blur-md text-amber-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/40 flex items-center">
-              <i class="fa-solid fa-file-invoice-dollar mr-1.5"></i> 各組詳細預算與憑單對照表
-            </span>
-          </div>
-
-          <div>
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">童軍活動管理系統 - 2026 ISD 智慧執行手冊</h2>
-            <p class="mt-2 text-sky-100 text-sm md:text-base leading-relaxed">
-              完全取代傳統靜態 Google Sites。每組之預算明細、憑單編號、報價門檻、總主任與節目主任名單全部完整展開，無需打電話即可明察秋毫。
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- EVENT SELECTOR GRID -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xl font-bold text-slate-800 flex items-center">
-            <i class="fa-solid fa-list-check text-sky-600 mr-2"></i> 可接入的活動清單
-          </h3>
-          <button onclick="app.loadEvents()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition">
-            <i class="fa-solid fa-rotate mr-1"></i> 重新載入
-          </button>
-        </div>
-        <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
-
+    <!-- 公開查閱說明 -->
+    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-4 flex justify-between items-center">
+      <div><h3 class="font-bold text-sm">🌍 公開查閱模式</h3><p class="text-[11px] text-emerald-100 mt-1">所有人均可查看 (=公開)，只有要修改資料才需登入，可儲存在瀏覽器，一次登入永久通行，目的是一個什麼都不知道的人用此APP就可了解整個活動和找到需要的資料</p></div>
+      <div class="hidden sm:block text-2xl opacity-30"><i class="fa-solid fa-eye"></i></div>
     </div>
 
-    <!-- VIEW 2: EVENT DASHBOARD -->
-    <div id="view-dashboard" class="hidden space-y-6">
-      
-      <!-- DASHBOARD TOP BAR -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <button onclick="app.goHome()" class="text-xs text-sky-600 hover:underline mb-1 inline-flex items-center font-semibold">
-            <i class="fa-solid fa-arrow-left mr-1"></i> 返回活動列表 (切換其他活動)
-          </button>
-          <h2 id="dash-event-title" class="text-2xl font-bold text-slate-900">-</h2>
-          <p id="dash-event-desc" class="text-sm text-slate-500 mt-0.5">-</p>
-        </div>
-        <div class="flex items-center space-x-3">
-          <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 text-xs">
-            <span class="text-slate-400 block">當前登入身份 (7級權限)</span>
-            <span class="font-bold text-sky-700 text-sm" id="dash-role-display">-</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- CARDS GRID -->
-      <div>
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-bold text-slate-800 flex items-center">
-            <i class="fa-solid fa-cubes text-sky-600 mr-2"></i> 8大管理卡片模組與批核中心
-          </h3>
-          <span class="text-xs text-slate-400"><i class="fa-solid fa-lock-open text-emerald-600 mr-1"></i> 上級審批下級工作流已啟動</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          
-          <!-- APPROVAL CENTER -->
-          <div onclick="app.openModule('approvals')" class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-user-check"></i>
-              </div>
-              <h4 class="font-bold text-lg">⭐ 批核中心 (Approval Hub)</h4>
-              <p class="text-xs text-amber-100 mt-1">上級審批下級申請（膳食、物資、開支報銷實時批核）。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/20 flex justify-between items-center text-xs text-amber-100 font-semibold">
-              <span>進入批核中心</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 1. Meetings -->
-          <div onclick="app.openModule('meetings')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-handshake"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">1. 會議卡片</h4>
-              <p class="text-xs text-slate-500 mt-1">籌委會會議紀錄、議程與下次會議提醒。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-sky-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 2. Staff -->
-          <div onclick="app.openModule('staff')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-sitemap"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">2. 工作人員卡片</h4>
-              <p class="text-xs text-slate-500 mt-1">完整組織架構、總主任、節目主任與聯絡資料。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-indigo-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 3. Documents -->
-          <div onclick="app.openModule('documents')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-file-shield"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">3. 文件檔案</h4>
-              <p class="text-xs text-slate-500 mt-1">總通告、提名通告與財務指引。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-emerald-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 4. Finance -->
-          <div onclick="app.openModule('finance')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-wallet"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">4. 財務管理</h4>
-              <p class="text-xs text-slate-500 mt-1">零精簡各組詳細預算、報價程序與結算總表（附件5）。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-amber-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 5. Activities -->
-          <div onclick="app.openModule('activities')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-map-location-dot"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">5. 活動與攤位</h4>
-              <p class="text-xs text-slate-500 mt-1">步操檢閱、攤位博覽與積極公民工作坊。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-rose-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 6. Meals -->
-          <div onclick="app.openModule('meals')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-utensils"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">6. 膳食管理</h4>
-              <p class="text-xs text-slate-500 mt-1">各組提交膳食申請，副主席/顧問批核。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-purple-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 7. Schedule -->
-          <div onclick="app.openModule('schedule')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-calendar-days"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">7. 日程表</h4>
-              <p class="text-xs text-slate-500 mt-1">警察學院典禮與博覽詳細程序。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-teal-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-          <!-- 8. Supplies -->
-          <div onclick="app.openModule('supplies')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4 font-bold shadow-sm">
-                <i class="fa-solid fa-boxes-stacked"></i>
-              </div>
-              <h4 class="font-bold text-slate-800 text-lg">8. 物資管理</h4>
-              <p class="text-xs text-slate-500 mt-1">總物資清單、車輛通行證申請與審批。</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-blue-600 font-semibold">
-              <span>進入查看</span> <i class="fa-solid fa-arrow-right"></i>
-            </div>
-          </div>
-
-        </div>
+    <!-- 認識活動 - 給完全不了解的人 -->
+    <div class="space-y-3">
+      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-sky-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">1</span>認識活動 <span class="text-[11px] text-slate-500 font-normal ml-2">什麼都不知道的人從這裡開始，一目了然了解整個活動</span></h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div onclick="app.openModule('announcements')" class="bg-gradient-to-br from-sky-500 to-blue-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-bullhorn"></i></div><h4 class="font-bold">公告及溝通</h4><p class="text-[11px] text-sky-100 mt-1">最新公告、跨部門協作，公開可看，快速了解活動動態</p></div>
+        <div onclick="app.openModule('schedule')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-calendar-days"></i></div><h4 class="font-bold">日程表</h4><p class="text-[11px] text-slate-500 mt-1">活動當天時間表，各組流程一目了然</p></div>
+        <div onclick="app.openModule('activities')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-map-location-dot"></i></div><h4 class="font-bold">場地與活動總覽</h4><p class="text-[11px] text-slate-500 mt-1">地圖、攤位總表、遊戲卡，快速了解場地與活動內容</p></div>
+        <div onclick="app.openModule('staff')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-sitemap"></i></div><h4 class="font-bold">組織架構與聯絡</h4><p class="text-[11px] text-slate-500 mt-1">誰負責什麼，找人更方便，公開電話</p></div>
       </div>
     </div>
 
-    <!-- VIEW 3: MODULE DETAIL VIEW -->
-    <div id="view-module" class="hidden space-y-6">
-      <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center space-x-3">
-          <button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition">
-            <i class="fa-solid fa-arrow-left mr-1"></i> 返回活動主頁
-          </button>
-          <h3 id="module-title" class="text-xl font-bold text-slate-900">-</h3>
-        </div>
-        <div id="module-actions" class="flex items-center space-x-2">
-          <!-- Dynamic action buttons -->
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
-        <div id="module-content">
-          <!-- Dynamic content -->
-        </div>
+    <!-- 參與活動 -->
+    <div class="space-y-3">
+      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">2</span>參與活動 <span class="text-[11px] text-slate-500 font-normal ml-2">工作人員參與活動所需</span></h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div onclick="app.openModule('theme_badges')" class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-award"></i></div><h4 class="font-bold">活動主題章</h4><p class="text-[11px] text-purple-100 mt-1">主題章介紹，參加條件，全部人可觀看</p></div>
+        <div onclick="app.openModule('meals')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-utensils"></i></div><h4 class="font-bold">膳食管理</h4><p class="text-[11px] text-slate-500 mt-1">菜單、截止、可選不吃、列印派發，我的訂餐</p></div>
+        <div onclick="app.openModule('safety')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-red-100 text-red-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-shield-halved"></i></div><h4 class="font-bold">安全及醫療</h4><p class="text-[11px] text-slate-500 mt-1">急救、保險、安全指引、危機處理</p></div>
+        <div onclick="app.openModule('documents')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-shield"></i></div><h4 class="font-bold">文件中心</h4><p class="text-[11px] text-slate-500 mt-1">通告、指引、表格，全部公開可看</p></div>
       </div>
     </div>
 
-  </main>
-
-  <!-- MODAL: EVENT PASSWORD -->
-  <div id="modal-password" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-5">
-      <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3>
-        <button onclick="app.closeModal('modal-password')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+    <!-- 後勤支援 -->
+    <div class="space-y-3">
+      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-amber-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">3</span>後勤支援 <span class="text-[11px] text-slate-500 font-normal ml-2">籌備與執行所需</span></h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div onclick="app.openModule('supplies')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-boxes-stacked"></i></div><h4 class="font-bold">物資+車輛 (含截止)</h4><p class="text-[11px] text-slate-500 mt-1">申請、批核、通知、截止日期、車輛登記</p></div>
+        <div onclick="app.openModule('finance')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-wallet"></i></div><h4 class="font-bold">財務管理</h4><p class="text-[11px] text-slate-500 mt-1">指引、預算、開支申報、結算按銀碼批核</p></div>
+        <div onclick="app.openModule('admin_group')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-building"></i></div><h4 class="font-bold">行政組</h4><p class="text-[11px] text-slate-500 mt-1">通告、報名、膳食安排、參加旅團 (取代舊手冊)</p></div>
+        <div onclick="app.openModule('coordinator_group')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-orange-100 text-orange-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-people-roof"></i></div><h4 class="font-bold">協調組</h4><p class="text-[11px] text-slate-500 mt-1">場地佈置圖、物資借用、箱頭紙、數據</p></div>
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed">為了保護活動私隱，接入此活動需要輸入活動密碼。成功後將安全儲存於您的瀏覽器中。</p>
-      <form onsubmit="app.submitEventPassword(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">活動密碼 (預設: 1234)</label>
-          <input type="password" id="event-pwd-input" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="請輸入活動密碼">
-        </div>
-        <div class="flex justify-end space-x-2 pt-2">
-          <button type="button" onclick="app.closeModal('modal-password')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
-          <button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold shadow">確認接入</button>
-        </div>
-      </form>
+    </div>
+
+    <!-- 協作與管理 -->
+    <div class="space-y-3">
+      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-slate-900 text-white rounded-xl flex items-center justify-center text-xs mr-2">4</span>協作與管理 <span class="text-[11px] text-slate-500 font-normal ml-2">籌委各組之間更方便協作和統計</span></h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div onclick="app.openModule('meetings')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-handshake"></i></div><h4 class="font-bold">會議卡片</h4><p class="text-[11px] text-slate-500 mt-1">分次會議、上傳議程、會員資料、指定資料夾</p></div>
+        <div onclick="app.switchTopTab('users')" class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-users-gear"></i></div><h4 class="font-bold">用戶·批量</h4><p class="text-[11px] text-emerald-100 mt-1">全前端、批量開戶、手機友善</p></div>
+        <div onclick="app.openModule('meals'); setTimeout(()=>app.switchMealsTab('monitor'),300)" class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-eye"></i></div><h4 class="font-bold">我的監察 (專門)</h4><p class="text-[11px] text-indigo-100 mt-1">查自己訂餐、物資是否獲批、車輛是否獲批</p></div>
+        <div class="bg-white p-5 rounded-2xl border border-dashed shadow-sm"><div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-chart-line"></i></div><h4 class="font-bold">統計儀表板</h4><p class="text-[11px] text-slate-500 mt-1">各分組訂餐統計、物資統計、財務統計 (即將推出)</p></div>
+      </div>
+    </div>
+
+    <!-- 按組別一目了然 - 部門管理中心 -->
+    <div class="bg-white rounded-2xl p-5 border shadow-sm space-y-4">
+      <div class="flex justify-between items-center"><h3 class="font-bold text-[15px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>按組別一目了然 - 部門管理中心</h3><span class="text-[11px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">各組透過管理卡片修改本組內容</span></div>
+      <p class="text-[11px] text-slate-500 leading-relaxed">舊有組別是因為各人不用登入沒身份，方便工作人員按組別找自己需要的資料。現卡片制，各組均可以一眼看到卡片分類就找到自己需要的資料，而各組可以透過一個管理卡片，修改或加入自己組別控制的內容。公開可看，僅修改需登入 (一次登入永久有效，儲存於瀏覽器)。目的：什麼都不知道的人用此APP就可了解整個活動和找到需要的資料。</p>
+      <div id="group-quick-access" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      <div class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">說明：點擊組別卡片進入該組管理中心，可管理本組控制的內容 (成員、職務、文件、攤位、預算、物資等)，僅本組成員或管理員可修改，其他人公開可看。參考舊手冊組別分類，現優化為卡片制更直觀，部門間溝通更完善。</div>
     </div>
   </div>
 
-  <!-- MODAL: LOGIN -->
-  <div id="modal-login" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-5">
-      <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-envelope text-sky-600 mr-2"></i> 電郵登入與權限切換</h3>
-        <button onclick="app.closeModal('modal-login')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <p class="text-xs text-slate-500 leading-relaxed">
-        超級管理員登入：電郵 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sky-700 font-bold">sheep</code> / 密碼 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sky-700 font-bold">0728</code><br>
-        各委員請使用電郵及自設密碼登入。
-      </p>
-      <form onsubmit="app.submitLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">電郵地址 (Email) 或 帳號</label>
-          <input type="text" id="login-email-input" required value="sheep" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="sheep 或 email@domain.com">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">自設密碼 (Password)</label>
-          <input type="password" id="login-password-input" required value="0728" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="請輸入密碼">
-        </div>
-        <div class="flex justify-end space-x-2 pt-2">
-          <button type="button" onclick="app.closeModal('modal-login')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
-          <button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold shadow">登入系統</button>
-        </div>
-      </form>
-    </div>
+  <div id="view-module" class="hidden space-y-4">
+    <div class="flex flex-col sm:flex-row justify-between bg-white p-4 rounded-2xl border shadow-sm gap-3"><div class="flex items-center gap-3 min-w-0"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl text-sm font-semibold btn-mobile"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 id="module-title" class="text-[15px] font-bold truncate">-</h3></div><div id="module-actions" class="flex gap-2 flex-wrap"></div></div>
+    <div class="bg-white rounded-2xl shadow-sm border p-4 sm:p-6"><div id="module-content"></div></div>
   </div>
 
-  <!-- MODAL: SETTINGS -->
-  <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-5">
-      <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-gear text-sky-600 mr-2"></i> 系統設定 (GAS URL)</h3>
-        <button onclick="app.closeModal('modal-settings')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><div id="users-container" class="mt-4 space-y-3"></div></div></div>
+  <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
+  <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">全前端控制台</h3><p class="text-xs text-slate-500 mt-1">所有設定前端可控</p></div></div>
+  <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
+
+</main>
+
+<nav class="bottom-nav md:hidden"><button id="bn-home" class="active" onclick="app.goHome()"><i class="fa-solid fa-house"></i><span>首頁</span></button><button onclick="app.openModule('meetings')"><i class="fa-solid fa-handshake"></i><span>會議</span></button><button onclick="app.switchTopTab('users')"><i class="fa-solid fa-users"></i><span>成員</span></button><button onclick="app.switchTopTab('bulk')"><i class="fa-solid fa-file-csv"></i><span>批量</span></button><button onclick="app.switchTopTab('system')"><i class="fa-solid fa-gear"></i><span>設定</span></button></nav>
+
+<!-- MODALS -->
+<div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
+
+<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">電郵登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500">超管 sheep / 0728</p><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required value="sheep" placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required value="0728" placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
+
+<div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
+
+<div id="modal-event" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="event-modal-title" class="font-bold">新增活動</h3><button onclick="app.closeModal('modal-event')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventForm(event)" class="space-y-3"><input type="hidden" id="ev-form-mode" value="create"><input type="hidden" id="ev-form-original-id"><div><label class="text-xs font-bold">活動ID*</label><input id="ev-id" required pattern="[a-zA-Z0-9_\-]+" placeholder="isd_2026" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">活動名稱*</label><input id="ev-name" required placeholder="名稱" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">簡介</label><textarea id="ev-desc" rows="2" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></textarea></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">開始日期</label><input type="date" id="ev-start" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">結束日期</label><input type="date" id="ev-end" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">狀態</label><select id="ev-status" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white mt-1"><option value="active">進行中</option><option value="upcoming">即將舉行</option></select></div><div><label class="text-xs font-bold">密碼</label><input id="ev-password" placeholder="1234" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-event')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">儲存</button></div></form></div></div>
+
+<!-- NEW: MEETING FORM MODAL -->
+<div id="modal-meeting-form" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4">
+  <div class="bg-white rounded-[20px] max-w-2xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto">
+    <div class="flex justify-between items-center"><h3 id="meeting-form-title" class="font-bold text-[16px]"><i class="fa-solid fa-handshake text-sky-600 mr-2"></i> 新增會議 (分次管理·上傳下載)</h3><button onclick="app.closeModal('modal-meeting-form')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark text-lg"></i></button></div>
+    <form id="meeting-form" onsubmit="app.submitMeetingForm(event)" class="space-y-4">
+      <input type="hidden" id="mf-mode" value="create"><input type="hidden" id="mf-original-id">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div><label class="block text-[11px] font-bold mb-1">會議次數 *</label><select id="mf-number" required class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"><option value="0">第0次 預備</option><option value="1">第1次</option><option value="2">第2次</option><option value="3">第3次</option><option value="4">第4次 (下次)</option><option value="5">第5次</option><option value="6">第6次</option><option value="99">特別/臨時</option></select></div>
+        <div class="sm:col-span-2"><label class="block text-[11px] font-bold mb-1">會議標題 *</label><input id="mf-title" required placeholder="例如：第2次籌備委員會議" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed">您可以設定專屬的 Google Apps Script 網址來連接遠端試算表。</p>
-      <form onsubmit="app.saveSettings(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">GAS Web App URL</label>
-          <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
-        </div>
-        <div class="flex justify-end space-x-2 pt-2">
-          <button type="button" onclick="app.closeModal('modal-settings')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
-          <button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold shadow">儲存設定</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: GENERIC ADD / EDIT RECORD -->
-  <div id="modal-record" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-3xl max-w-xl w-full p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center">
-        <h3 id="record-modal-title" class="text-xl font-bold text-slate-900">新增紀錄 / 提交申請</h3>
-        <button onclick="app.closeModal('modal-record')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div><label class="block text-[11px] font-bold mb-1">日期</label><input type="date" id="mf-date" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
+        <div><label class="block text-[11px] font-bold mb-1">時間</label><input type="time" id="mf-time" value="19:15" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
+        <div><label class="block text-[11px] font-bold mb-1">地點</label><input id="mf-location" placeholder="百周年紀念大樓1704室" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
       </div>
-      <form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4">
-        <div id="record-form-fields" class="space-y-4">
-          <!-- Dynamic fields -->
-        </div>
-        <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-          <button type="button" onclick="app.closeModal('modal-record')" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium">取消</button>
-          <button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold shadow">確認提交</button>
-        </div>
-      </form>
-    </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="block text-[11px] font-bold mb-1">可見度 (管理員決定)</label><select id="mf-visibility" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"><option value="public">🌍 全部與會者可看 (公開)</option><option value="attendees">👥 僅主任或以上可看</option><option value="private">🔒 僅管理員(整理用)·其他人不可見但可下載統計</option></select></div>
+        <div><label class="block text-[11px] font-bold mb-1">狀態</label><select id="mf-status" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"><option value="upcoming">即將舉行</option><option value="completed">已完成</option><option value="draft">草稿(整理中)</option></select></div>
+      </div>
+      <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 space-y-2">
+        <label class="block text-[11px] font-bold text-sky-900"><i class="fa-solid fa-file-lines mr-1"></i> 會議議程 (管理員上傳)</label>
+        <textarea id="mf-agenda" rows="3" placeholder="議程內容..." class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"></textarea>
+        <div class="flex gap-2 items-center"><input type="file" id="mf-agenda-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.png" class="text-xs"><span id="mf-agenda-file-name" class="text-[11px] text-slate-500"></span></div>
+        <p class="text-[10px] text-sky-700">支援 PDF/Word/PPT/Excel/圖片，全前端存瀏覽器，提供下載</p>
+      </div>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2">
+        <label class="block text-[11px] font-bold text-emerald-900"><i class="fa-solid fa-clipboard-check mr-1"></i> 會議紀錄 (管理員上傳)</label>
+        <textarea id="mf-minutes" rows="3" placeholder="會議紀錄..." class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"></textarea>
+        <div class="flex gap-2 items-center"><input type="file" id="mf-minutes-file" accept=".pdf,.doc,.docx,.txt,.jpg,.png" class="text-xs"><span id="mf-minutes-file-name" class="text-[11px] text-slate-500"></span></div>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2">
+        <label class="block text-[11px] font-bold text-amber-900"><i class="fa-solid fa-paperclip mr-1"></i> 附加文件 (全部可下載)</label>
+        <input type="file" id="mf-attachments" multiple class="text-xs w-full">
+        <div id="mf-attachments-list" class="flex flex-wrap gap-2 mt-1"></div>
+      </div>
+      <div><label class="block text-[11px] font-bold mb-1">記錄人 / 主持</label><input id="mf-author" placeholder="主席 朱家聰" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
+      <div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-meeting-form')" class="px-5 py-2.5 border rounded-xl text-sm font-medium btn-mobile">取消</button><button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-bold shadow btn-mobile">儲存會議 (全前端)</button></div>
+    </form>
   </div>
-
-  <!-- FOOTER -->
-  <footer class="bg-white border-t border-slate-200 mt-auto py-6 text-center text-xs text-slate-500">
-    <p>童軍活動管理系統 • COPY RIGHT Scout System (2026 ISD 智慧執行手冊)</p>
-  </footer>
-
-  <!-- SCRIPT LOGIC -->
-  <script>
-    const ROLE_LABELS = {
-      'super_admin': '1. 超級管理員',
-      'advisor': '2. 顧問 (黃偉安、何家騏)',
-      'admin': '2. 管理員',
-      'chairperson': '2. 主席 (朱家聰)',
-      'vice_chairperson': '3. 副主席 (袁可秀、張佳良、周恒晉、何嘉駿)',
-      'general_director': '4. 總主任',
-      'director': '5. 主任 (會議通知默認對象)',
-      'staff': '6. 工作人員',
-      'public': '7. 公開'
-    };
-
-    class ScoutEventApp {
-      constructor() {
-        this.gasUrl = localStorage.getItem('gas_url') || '';
-        this.apiKey = '';
-        this.currentUser = JSON.parse(localStorage.getItem('current_user') || 'null');
-        this.currentEvent = JSON.parse(localStorage.getItem('current_event') || 'null');
-        this.mockMode = localStorage.getItem('mock_mode') === 'true' || true;
-        this.eventsList = [];
-        this.eventData = {};
-        this.currentModule = null;
-        this.staffSubTab = 'org_chart';
-
-        this.init();
-      }
-
-      async init() {
-        try {
-          const res = await fetch('/api/config');
-          const json = await res.json();
-          if (json.success) this.apiKey = json.apiKey;
-        } catch (e) {
-          this.apiKey = localStorage.getItem('api_key') || 'scout_e6451624b1f340078ec6a111';
-        }
-
-        if (this.currentUser) {
-          this.updateUserUI();
-        }
-        if (this.currentEvent) {
-          this.showDashboard();
-        } else {
-          this.loadEvents();
-        }
-        this.updateMockModeUI();
-      }
-
-      toggleMockMode() {
-        this.mockMode = !this.mockMode;
-        localStorage.setItem('mock_mode', this.mockMode);
-        this.updateMockModeUI();
-        alert(this.mockMode ? '已開啟純離線 Mock 模式 (零精簡、各組詳細預算與明細全展開)' : '已切換為遠端 GAS 聯動模式');
-        if (this.currentEvent) this.showDashboard();
-      }
-
-      updateMockModeUI() {
-        const btnText = document.getElementById('mock-mode-text');
-        if (btnText) {
-          btnText.textContent = this.mockMode ? 'Mock 模式: 開啟' : 'Mock 模式: 關閉';
-        }
-      }
-
-      openSettingsModal() {
-        document.getElementById('gas-url-input').value = this.gasUrl;
-        document.getElementById('modal-settings').classList.remove('hidden');
-      }
-
-      openLoginModal() {
-        document.getElementById('modal-login').classList.remove('hidden');
-      }
-
-      closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
-      }
-
-      saveSettings(e) {
-        e.preventDefault();
-        this.gasUrl = document.getElementById('gas-url-input').value.trim();
-        localStorage.setItem('gas_url', this.gasUrl);
-        this.closeModal('modal-settings');
-        alert('設定已儲存！');
-        this.loadEvents();
-      }
-
-      async loadEvents() {
-        const grid = document.getElementById('events-grid');
-        grid.innerHTML = '<div class="col-span-2 text-center py-8 text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在載入活動清單...</div>';
-
-        if (this.mockMode) {
-          try {
-            const res = await fetch('data/events.json');
-            this.eventsList = await res.json();
-            this.renderEventsGrid();
-            return;
-          } catch (e) {
-            console.warn('Failed to load data/events.json:', e);
-          }
-        }
-
-        if (this.gasUrl) {
-          try {
-            const res = await fetch(`${this.gasUrl}?action=getEvents&api_key=${this.apiKey}`);
-            const json = await res.json();
-            if (json.success && json.data.length > 0) {
-              this.eventsList = json.data;
-              this.renderEventsGrid();
-              return;
-            }
-          } catch (err) {
-            console.warn('GAS fetch failed:', err);
-          }
-        }
-
-        this.eventsList = [
-          { event_id: 'isd_2026', event_name: '2026 ISD 港島童軍繽紛日', description: '港島地域年度旗艦盛事：零精簡詳細預算與明細指揮中心', start_date: '2026-10-04', end_date: '2026-10-04', status: 'active' }
-        ];
-        this.renderEventsGrid();
-      }
-
-      renderEventsGrid() {
-        const grid = document.getElementById('events-grid');
-        grid.innerHTML = this.eventsList.map(ev => {
-          const hasPwd = localStorage.getItem(`event_pwd_${ev.event_id}`);
-          return `
-            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-5 shadow-sm card-hover flex flex-col justify-between">
-              <div>
-                <div class="flex justify-between items-start mb-2">
-                  <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-0.5 rounded-full">${ev.status === 'active' ? '進行中 / 試點' : '即將舉行'}</span>
-                  <span class="text-xs text-slate-400"><i class="fa-solid fa-calendar mr-1"></i>${ev.start_date}</span>
-                </div>
-                <h4 class="text-base font-bold text-slate-900">${ev.event_name}</h4>
-                <p class="text-xs text-slate-500 mt-1 leading-relaxed">${ev.description || ''}</p>
-              </div>
-              <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center">
-                <span class="text-xs ${hasPwd ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-medium'}">
-                  <i class="fa-solid ${hasPwd ? 'fa-shield-check' : 'fa-lock'} mr-1"></i> ${hasPwd ? '已解鎖內部管理' : '需活動密碼 (預設: 1234)'}
-                </span>
-                <button onclick="app.accessEvent('${ev.event_id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition">
-                  進入活動 <i class="fa-solid fa-arrow-right ml-1"></i>
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      accessEvent(eventId) {
-        this.pendingEventId = eventId;
-        const savedPwd = localStorage.getItem(`event_pwd_${eventId}`);
-        if (savedPwd) {
-          this.verifyAndEnterEvent(eventId, savedPwd);
-        } else {
-          document.getElementById('event-pwd-input').value = '';
-          document.getElementById('modal-password').classList.remove('hidden');
-        }
-      }
-
-      submitEventPassword(e) {
-        e.preventDefault();
-        const pwd = document.getElementById('event-pwd-input').value;
-        this.verifyAndEnterEvent(this.pendingEventId, pwd);
-      }
-
-      async verifyAndEnterEvent(eventId, password) {
-        const ev = this.eventsList.find(e => e.event_id === eventId);
-        localStorage.setItem(`event_pwd_${eventId}`, password);
-        this.currentEvent = ev;
-        localStorage.setItem('current_event', JSON.stringify(ev));
-        this.closeModal('modal-password');
-        this.showDashboard();
-      }
-
-      goHome() {
-        this.currentEvent = null;
-        localStorage.removeItem('current_event');
-        document.getElementById('view-landing').classList.remove('hidden');
-        document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById('view-module').classList.add('hidden');
-        document.getElementById('current-event-subtitle').textContent = '港島童軍繽紛日智慧執行指揮中心';
-        this.loadEvents();
-      }
-
-      async showDashboard() {
-        document.getElementById('view-landing').classList.add('hidden');
-        document.getElementById('view-dashboard').classList.remove('hidden');
-        document.getElementById('view-module').classList.add('hidden');
-
-        document.getElementById('dash-event-title').textContent = this.currentEvent.event_name;
-        document.getElementById('dash-event-desc').textContent = this.currentEvent.description || '';
-        document.getElementById('current-event-subtitle').textContent = this.currentEvent.event_name;
-
-        if (this.currentUser) {
-          document.getElementById('dash-role-display').textContent = ROLE_LABELS[this.currentUser.role] || this.currentUser.role;
-          if (['super_admin', 'advisor', 'admin', 'chairperson'].indexOf(this.currentUser.role) !== -1) {
-            document.getElementById('banner-admin-actions').classList.remove('hidden');
-          } else {
-            document.getElementById('banner-admin-actions').classList.add('hidden');
-          }
-        } else {
-          document.getElementById('dash-role-display').textContent = '訪客 (Public 視角)';
-          document.getElementById('banner-admin-actions').classList.add('hidden');
-        }
-
-        await this.loadEventData();
-      }
-
-      async loadEventData() {
-        if (this.mockMode) {
-          try {
-            const res = await fetch(`data/${this.currentEvent.event_id}.json`);
-            this.eventData = await res.json();
-            return;
-          } catch (e) {
-            console.warn(`Failed to load data/${this.currentEvent.event_id}.json:`, e);
-          }
-        }
-
-        if (this.gasUrl) {
-          try {
-            const res = await fetch(`${this.gasUrl}?action=getEventData&event_id=${this.currentEvent.event_id}&api_key=${this.apiKey}`);
-            const json = await res.json();
-            if (json.success) {
-              this.eventData = json.data;
-              return;
-            }
-          } catch (err) {
-            console.warn('Failed to load event data from GAS:', err);
-          }
-        }
-      }
-
-      openModule(moduleKey) {
-        this.currentModule = moduleKey;
-        document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById('view-module').classList.remove('hidden');
-
-        if (moduleKey === 'approvals') {
-          document.getElementById('module-title').textContent = '⭐ 批核中心 (Approval Hub - 上級批核下級申請)';
-          document.getElementById('module-actions').innerHTML = `<span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-shield-halved mr-1"></i> 檢視並批核各組提交之申請</span>`;
-          this.renderApprovalCenter();
-          return;
-        }
-
-        const titles = {
-          meetings: '1. 會議卡片 (籌委會會議紀錄與下次會議提醒)',
-          staff: '2. 工作人員卡片 (組織架構、聯絡資料與各組職務大綱)',
-          documents: '3. 文件檔案 (總通告、提名通告與財務指引)',
-          finance: '4. 財務管理 (零精簡詳細預算明細、報價門檻與結算總表)',
-          activities: '5. 活動與攤位 (步操檢閱與積極公民工作坊)',
-          meals: '6. 膳食管理 (旅團代訂便當申請與審批)',
-          schedule: '7. 日程表 (警察學院典禮與博覽程序)',
-          supplies: '8. 物資管理 (總物資、車輛通行證與協調組審批)'
-        };
-
-        document.getElementById('module-title').textContent = titles[moduleKey] || moduleKey;
-        
-        if (moduleKey === 'finance') {
-          document.getElementById('module-actions').innerHTML = `
-            <button onclick="app.openFinancialGuideModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow transition mr-2">
-              <i class="fa-solid fa-file-invoice-dollar mr-1"></i> 查看財務指引與報價規則
-            </button>
-            <button onclick="app.openAddRecordModal('${moduleKey}')" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow transition">
-              <i class="fa-solid fa-plus mr-1"></i> 提交開支申報 (附件5)
-            </button>
-          `;
-        } else {
-          document.getElementById('module-actions').innerHTML = `
-            <button onclick="app.openAddRecordModal('${moduleKey}')" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow transition">
-              <i class="fa-solid fa-plus mr-1"></i> 新增紀錄 / 提交申請
-            </button>
-          `;
-        }
-
-        this.renderModuleContent(moduleKey);
-      }
-
-      openFinancialGuideModal() {
-        alert("【2026 ISD 財務指引與報價程序】\n\n1. 預算控制：各組須嚴格按照獲批核之預算進行開支，不可擅自調配。\n2. 報價門檻：\n   - 不超過 $500 (或豁免名單內 $2,000): 無須報價，由各副主席批核。\n   - $500 至 $5,000: 須取得不少於1個口頭報價，副主席推薦，主席批核。\n   - $5,001 至 $30,000: 須填寫報價比較表 (附件4) 進行正式報價。\n3. 報銷程序：活動結束後填寫「結算總表 (附件5)」，附上實體憑單報銷交回行政組。");
-      }
-
-      renderApprovalCenter() {
-        const container = document.getElementById('module-content');
-        const mealList = this.eventData['meals'] || [];
-        const reqList = (this.eventData['supplies'] && this.eventData['supplies'].requests) || [];
-
-        container.innerHTML = `
-          <div class="space-y-8">
-            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 flex items-start space-x-3">
-              <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
-              <div>
-                <p class="font-bold text-sm mb-0.5">批核中心操作指引 (上級管理下級)</p>
-                各組別提交的膳食與物資申請必須由上級（副主席、顧問、主席或超管）審核並點擊「一鍵批核」。
-              </div>
-            </div>
-
-            <div>
-              <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-utensils text-purple-600 mr-2"></i> 待批核膳食申請 (Meals Approvals)</h4>
-              <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-100 text-slate-700 font-bold">
-                  <tr>
-                    <th class="px-4 py-3 text-left">日期 / 餐別</th>
-                    <th class="px-4 py-3 text-left">菜單內容</th>
-                    <th class="px-4 py-3 text-left">人數</th>
-                    <th class="px-4 py-3 text-left">申請組別</th>
-                    <th class="px-4 py-3 text-left">狀態</th>
-                    <th class="px-4 py-3 text-right">操作</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200 bg-white">
-                  ${mealList.length === 0 ? '<tr><td colspan="6" class="px-4 py-4 text-center text-slate-400">暫無膳食申請</td></tr>' : 
-                    mealList.map(m => `
-                      <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3 font-medium">${m.date} - ${m.meal_type}</td>
-                        <td class="px-4 py-3">${m.menu_desc}</td>
-                        <td class="px-4 py-3">${m.headcount}</td>
-                        <td class="px-4 py-3">${m.group_name}</td>
-                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-semibold ${m.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${m.status === 'approved' ? '已批核' : '待批核'}</span></td>
-                        <td class="px-4 py-3 text-right">
-                          <button onclick="app.updateRecordStatus('meals', '${m.meal_id}', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">一鍵批核</button>
-                        </td>
-                      </tr>
-                    `).join('')}
-                </tbody>
-              </table>
-            </div>
-
-            <div class="pt-4 border-t border-slate-200">
-              <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i> 待批核物資與車輛通行證申請</h4>
-              <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-100 text-slate-700 font-bold">
-                  <tr>
-                    <th class="px-4 py-3 text-left">項目名稱</th>
-                    <th class="px-4 py-3 text-left">申請數量</th>
-                    <th class="px-4 py-3 text-left">申請組別</th>
-                    <th class="px-4 py-3 text-left">狀態</th>
-                    <th class="px-4 py-3 text-right">操作</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200 bg-white">
-                  ${reqList.length === 0 ? '<tr><td colspan="5" class="px-4 py-4 text-center text-slate-400">暫無物資申請</td></tr>' : 
-                    reqList.map(r => `
-                      <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3 font-medium">${r.item_name}</td>
-                        <td class="px-4 py-3">${r.qty_requested}</td>
-                        <td class="px-4 py-3">${r.group_name}</td>
-                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-semibold ${r.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${r.status === 'approved' ? '已批核' : '待批核'}</span></td>
-                        <td class="px-4 py-3 text-right">
-                          <button onclick="app.updateRecordStatus('supplies_request', '${r.request_id}', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">一鍵批核</button>
-                        </td>
-                      </tr>
-                    `).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
-      }
-
-      renderModuleContent(mod) {
-        const container = document.getElementById('module-content');
-
-        if (mod === 'staff') {
-          const staffData = this.eventData['staff'] || { org_chart: [], contacts: [], job_duties: [] };
-          container.innerHTML = `
-            <div class="space-y-6">
-              <div class="flex space-x-2 border-b border-slate-200 pb-3">
-                <button onclick="app.switchStaffTab('org_chart')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${this.staffSubTab === 'org_chart' ? 'bg-sky-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
-                  <i class="fa-solid fa-sitemap mr-1"></i> 組織架構圖 (Org Chart)
-                </button>
-                <button onclick="app.switchStaffTab('contacts')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${this.staffSubTab === 'contacts' ? 'bg-sky-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
-                  <i class="fa-solid fa-address-book mr-1"></i> 工作人員名單與聯絡
-                </button>
-                <button onclick="app.switchStaffTab('job_duties')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${this.staffSubTab === 'job_duties' ? 'bg-sky-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
-                  <i class="fa-solid fa-clipboard-list mr-1"></i> 職務大綱 (Job Duty)
-                </button>
-              </div>
-
-              <div id="staff-sub-org_chart" class="${this.staffSubTab === 'org_chart' ? '' : 'hidden'} space-y-3">
-                <h4 class="font-bold text-slate-800 text-sm">港島童軍繽紛日 2026 籌備委員會組織架構</h4>
-                <div class="space-y-3">
-                  ${staffData.org_chart.map(item => `
-                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                      <div>
-                        <span class="bg-sky-100 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${item.level}</span>
-                        <h5 class="font-bold text-slate-900 text-base mt-1">${item.names} <span class="text-xs font-normal text-slate-500">(${item.title})</span></h5>
-                        <p class="text-xs text-slate-500 mt-0.5">${item.desc}</p>
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-
-              <div id="staff-sub-contacts" class="${this.staffSubTab === 'contacts' ? '' : 'hidden'}">
-                <table class="min-w-full divide-y divide-slate-200 text-sm">
-                  <thead class="bg-slate-100 text-slate-700 font-bold">
-                    <tr>
-                      <th class="px-4 py-3 text-left">姓名</th>
-                      <th class="px-4 py-3 text-left">職銜</th>
-                      <th class="px-4 py-3 text-left">組別</th>
-                      <th class="px-4 py-3 text-left">聯絡電話</th>
-                      <th class="px-4 py-3 text-left">職務簡介</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-200 bg-white">
-                    ${staffData.contacts.map(c => `
-                      <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3 font-medium text-slate-900">${c.name}</td>
-                        <td class="px-4 py-3">${c.role_title}</td>
-                        <td class="px-4 py-3">${c.group_name}</td>
-                        <td class="px-4 py-3 font-mono text-sky-700">${c.contact}</td>
-                        <td class="px-4 py-3 text-slate-600 text-xs">${c.job_desc}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
-
-              <div id="staff-sub-job_duties" class="${this.staffSubTab === 'job_duties' ? '' : 'hidden'} space-y-3">
-                <h4 class="font-bold text-slate-800 text-sm">各功能組別職務大綱 (Job Duty)</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  ${staffData.job_duties.map(jd => `
-                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                      <h5 class="font-bold text-sky-800 text-sm"><i class="fa-solid fa-check-circle mr-1 text-emerald-600"></i> ${jd.group}</h5>
-                      <p class="text-xs text-slate-600 mt-2 leading-relaxed">${jd.duty}</p>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            </div>
-          `;
-          return;
-        }
-
-        // FINANCE MODULE: RENDER GROUP ITEMIZED BUDGETS (ZERO CONDENSATION)
-        if (mod === 'finance') {
-          const finData = this.eventData['finance'] || { group_itemized_budgets: [], income: [] };
-          container.innerHTML = `
-            <div class="space-y-8">
-              <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 space-y-2">
-                <p class="font-bold text-sm"><i class="fa-solid fa-file-invoice-dollar mr-1"></i> 2026 ISD 財務結算總表與報價指引 (零精簡明細表)</p>
-                <p>各組獲批核之預算及所有支出細項（憑單編號、項目名稱、預算、實際金額）已全部完全展開。請依照報價門檻（$500/$2000/$5000）執行採購。</p>
-              </div>
-
-              <!-- GROUP ITEMIZED BUDGET TABLES -->
-              ${(finData.group_itemized_budgets || []).map(gib => `
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-                  <h4 class="font-bold text-slate-900 text-base flex items-center"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i> ${gib.group_name}</h4>
-                  <table class="min-w-full divide-y divide-slate-200 text-sm">
-                    <thead class="bg-slate-100 text-slate-700 font-bold">
-                      <tr>
-                        <th class="px-4 py-2.5 text-left">憑單編號</th>
-                        <th class="px-4 py-2.5 text-left">支出細項</th>
-                        <th class="px-4 py-2.5 text-left">預算金額 ($)</th>
-                        <th class="px-4 py-2.5 text-left">實際金額 ($)</th>
-                        <th class="px-4 py-2.5 text-left">備註</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200 bg-white">
-                      ${gib.items.map(it => `
-                        <tr class="hover:bg-slate-50">
-                          <td class="px-4 py-2.5 font-mono text-xs font-bold text-slate-600">${it.voucher}</td>
-                          <td class="px-4 py-2.5 font-medium text-slate-900">${it.item_name}</td>
-                          <td class="px-4 py-2.5">$${it.budget.toLocaleString()}</td>
-                          <td class="px-4 py-2.5 font-bold text-rose-600">$${it.actual.toLocaleString()}</td>
-                          <td class="px-4 py-2.5 text-xs text-slate-500">${it.notes}</td>
-                        </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              `).join('')}
-
-              <!-- INCOME TABLE -->
-              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-                <h4 class="font-bold text-slate-900 text-base flex items-center"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i> 活動收入明細 (Income Summary)</h4>
-                <table class="min-w-full divide-y divide-slate-200 text-sm">
-                  <thead class="bg-slate-100 text-slate-700 font-bold">
-                    <tr>
-                      <th class="px-4 py-2.5 text-left">收入項目</th>
-                      <th class="px-4 py-2.5 text-left">預算金額 ($)</th>
-                      <th class="px-4 py-2.5 text-left">實際金額 ($)</th>
-                      <th class="px-4 py-2.5 text-left">備註</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-200 bg-white">
-                    ${(finData.income || []).map(inc => `
-                      <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-2.5 font-medium text-slate-900">${inc.item}</td>
-                        <td class="px-4 py-2.5">$${inc.budget.toLocaleString()}</td>
-                        <td class="px-4 py-2.5 font-bold text-emerald-700">$${inc.actual.toLocaleString()}</td>
-                        <td class="px-4 py-2.5 text-xs text-slate-500">${inc.notes}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          `;
-          return;
-        }
-
-        let dataList = [];
-        if (mod === 'meetings') dataList = this.eventData['meetings'] || [];
-        else if (mod === 'documents') dataList = this.eventData['documents'] || [];
-        else if (mod === 'activities') dataList = this.eventData['activities'] || [];
-        else if (mod === 'meals') dataList = this.eventData['meals'] || [];
-        else if (mod === 'schedule') dataList = this.eventData['schedule'] || [];
-        else if (mod === 'supplies') {
-          const inv = (this.eventData['supplies'] && this.eventData['supplies'].inventory) || [];
-          container.innerHTML = `
-            <div>
-              <h4 class="font-bold text-slate-800 mb-3 text-base flex items-center"><i class="fa-solid fa-boxes-stacked text-sky-600 mr-2"></i> 總物資與車輛通行證清單</h4>
-              <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-100 text-slate-700 font-bold">
-                  <tr>
-                    <th class="px-4 py-3 text-left">物資名稱 / 車牌</th>
-                    <th class="px-4 py-3 text-left">總數量</th>
-                    <th class="px-4 py-3 text-left">單位</th>
-                    <th class="px-4 py-3 text-left">分類</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200 bg-white">
-                  ${inv.map(s => `<tr><td class="px-4 py-3 font-medium">${s.item_name}</td><td class="px-4 py-3">${s.total_qty}</td><td class="px-4 py-3">${s.unit}</td><td class="px-4 py-3">${s.category}</td></tr>`).join('')}
-                </tbody>
-              </table>
-            </div>
-          `;
-          return;
-        }
-
-        if (dataList.length === 0) {
-          container.innerHTML = '<p class="text-center py-10 text-slate-400 text-sm">目前尚無任何紀錄。</p>';
-          return;
-        }
-
-        const headersMap = {
-          meetings: ['標題', '日期', '議程摘要', '會議紀錄', '記錄人'],
-          documents: ['文件標題', '類別', '上傳者', '日期', '檔案'],
-          activities: ['活動名稱', '類型', '地點', '簡介', '詳細資料'],
-          meals: ['日期', '餐別', '菜單內容', '人數', '組別', '狀態'],
-          schedule: ['時段', '項目名稱', '地點', '組別', '描述']
-        };
-
-        const keysMap = {
-          meetings: ['title', 'date', 'agenda', 'minutes', 'author'],
-          documents: ['title', 'category', 'uploaded_by', 'date', 'file_url'],
-          activities: ['title', 'type', 'location', 'description', 'details'],
-          meals: ['date', 'meal_type', 'menu_desc', 'headcount', 'group_name', 'status'],
-          schedule: ['time_slot', 'title', 'location', 'group_name', 'description']
-        };
-
-        const headers = headersMap[mod] || [];
-        const keys = keysMap[mod] || [];
-
-        container.innerHTML = `<table class="min-w-full divide-y divide-slate-200 text-sm">
-          <thead class="bg-slate-100 text-slate-700 font-bold">
-            <tr>${headers.map(h => `<th class="px-4 py-3 text-left">${h}</th>`).join('')}</tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200 bg-white">
-            ${dataList.map(item => `<tr class="hover:bg-slate-50">${keys.map(k => `<td class="px-4 py-3 text-slate-700">${item[k] !== undefined ? item[k] : ''}</td>`).join('')}</tr>`).join('')}
-          </tbody>
-        </table>`;
-      }
-
-      switchStaffTab(tabName) {
-        this.staffSubTab = tabName;
-        this.openModule('staff');
-      }
-
-      openAddRecordModal(type) {
-        document.getElementById('record-modal-title').textContent = type === 'finance' ? '提交開支申報 / 結算總表 (附件5)' : '新增紀錄 / 提交申請';
-        const fieldsDiv = document.getElementById('record-form-fields');
-        if (type === 'finance') {
-          fieldsDiv.innerHTML = `
-            <input type="hidden" id="form-module-name" value="${type}">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">支出細項 (憑單編號及項目名稱)</label>
-              <input type="text" id="f_title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="例如: 憑單#03 購買活動道具">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">所屬組別</label>
-              <input type="text" id="f_group" required value="主題節目組" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">實際支出金額 ($)</label>
-              <input type="number" id="f_amt" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="金額">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">備註 (註明是否小於$500免報價或附口頭報價)</label>
-              <textarea id="f_desc" rows="2" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="實體單據須交回行政組核銷..."></textarea>
-            </div>
-          `;
-        } else {
-          fieldsDiv.innerHTML = `
-            <input type="hidden" id="form-module-name" value="${type}">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">標題 / 項目名稱</label>
-              <input type="text" id="f_title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="請輸入名稱">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">組別</label>
-              <input type="text" id="f_group" required value="主題節目組" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">詳細說明</label>
-              <textarea id="f_desc" rows="3" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="說明..."></textarea>
-            </div>
-          `;
-        }
-        document.getElementById('modal-record').classList.remove('hidden');
-      }
-
-      submitRecordForm(e) {
-        e.preventDefault();
-        const modName = document.getElementById('form-module-name').value;
-        const title = document.getElementById('f_title').value;
-        const group = document.getElementById('f_group').value;
-        const desc = document.getElementById('f_desc').value;
-
-        if (modName === 'meals') {
-          if (!this.eventData['meals']) this.eventData['meals'] = [];
-          this.eventData['meals'].push({ meal_id: 'm_' + Date.now(), date: '2026-10-04', meal_type: title, menu_desc: desc, headcount: 50, group_name: group, status: 'pending', requested_by: this.currentUser ? this.currentUser.name : '委員', approved_by: '' });
-        } else if (modName === 'finance') {
-          if (!this.eventData['finance']) this.eventData['finance'] = { group_itemized_budgets: [], income: [] };
-          // Add to first group or create
-          if (!this.eventData['finance'].group_itemized_budgets[0]) {
-            this.eventData['finance'].group_itemized_budgets.push({ group_name: group, items: [] });
-          }
-          this.eventData['finance'].group_itemized_budgets[0].items.push({ voucher: '憑單#New', item_name: title, budget: 0, actual: parseFloat(document.getElementById('f_amt').value) || 0, notes: desc });
-        } else {
-          alert('成功提交申請！等待主任或以上上級批核。');
-        }
-
-        this.closeModal('modal-record');
-        if (this.currentModule === 'approvals') {
-          this.renderApprovalCenter();
-        } else {
-          this.openModule(this.currentModule);
-        }
-      }
-
-      updateRecordStatus(sheetName, id, newStatus) {
-        const approver = this.currentUser ? this.currentUser.name + ' (' + ROLE_LABELS[this.currentUser.role] + ')' : '黃偉安 (顧問)';
-        if (sheetName === 'meals') {
-          const item = (this.eventData['meals'] || []).find(x => x.meal_id === id);
-          if (item) { item.status = newStatus; item.approved_by = approver; }
-        } else if (sheetName === 'supplies_request') {
-          const item = (this.eventData['supplies'].requests || []).find(x => x.request_id === id);
-          if (item) { item.status = newStatus; item.approved_by = approver; }
-        }
-        alert('已成功批核！');
-        this.renderApprovalCenter();
-      }
-
-      sendMeetingEmails() {
-        if (!confirm('確定要向主任或以上層級委員自動發送第4次籌備委員會議提醒電郵嗎？')) return;
-        alert('【Mock 模式】已成功向主任或以上層級委員自動發送會議電郵提示！');
-      }
-
-      submitLogin(e) {
-        e.preventDefault();
-        const loginId = document.getElementById('login-email-input').value.trim();
-        const pwd = document.getElementById('login-password-input').value;
-
-        if (loginId === 'sheep' && pwd === '0728') {
-          this.currentUser = { user_id: 'sheep', name: '超級管理員', email: 'sheep', role: 'super_admin', group_name: '行政組' };
-          localStorage.setItem('current_user', JSON.stringify(this.currentUser));
-          this.updateUserUI();
-          this.closeModal('modal-login');
-          alert('登入成功！');
-          if (this.currentEvent) this.showDashboard();
-          return;
-        }
-
-        this.currentUser = { user_id: loginId, name: '朱家聰 (主席)', email: loginId, role: 'chairperson', group_name: '籌委會' };
-        localStorage.setItem('current_user', JSON.stringify(this.currentUser));
-        this.updateUserUI();
-        this.closeModal('modal-login');
-        alert('登入成功 (主席身份)');
-        if (this.currentEvent) this.showDashboard();
-      }
-
-      updateUserUI() {
-        if (!this.currentUser) return;
-        document.getElementById('user-badge').classList.remove('hidden');
-        document.getElementById('nav-username').textContent = this.currentUser.name;
-        document.getElementById('nav-role').textContent = this.currentUser.role.toUpperCase();
-        document.getElementById('logout-btn').classList.remove('hidden');
-        document.getElementById('login-btn-text').textContent = '已登入';
-        if (['super_admin', 'advisor', 'admin', 'chairperson'].indexOf(this.currentUser.role) !== -1) {
-          document.getElementById('banner-admin-actions').classList.remove('hidden');
-        }
-      }
-
-      logout() {
-        this.currentUser = null;
-        localStorage.removeItem('current_user');
-        document.getElementById('user-badge').classList.add('hidden');
-        document.getElementById('logout-btn').classList.add('hidden');
-        document.getElementById('login-btn-text').textContent = '電郵登入 / 切換';
-        document.getElementById('banner-admin-actions').classList.add('hidden');
-        alert('已登出');
-        if (this.currentEvent) this.showDashboard();
-      }
-    }
-
-    const app = new ScoutEventApp();
-  </script>
+</div>
+
+<!-- NEW: MEETING DETAIL MODAL -->
+<div id="modal-meeting-detail" class="fixed inset-0 bg-slate-900/70 modal z-[60] flex items-center justify-center hidden p-4">
+  <div class="bg-white rounded-[20px] max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-hidden flex flex-col modal-content-anim">
+    <div class="p-4 sm:p-5 border-b flex justify-between items-start gap-3">
+      <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><span id="md-number-badge" class="bg-sky-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">第1次</span><span id="md-visibility-badge" class="visibility-badge visibility-public">公開</span><span id="md-status-badge" class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border">已完成</span></div><h3 id="md-title" class="font-bold text-[16px] mt-2 leading-snug">-</h3><div class="text-[11px] text-slate-500 mt-1 flex flex-wrap gap-3"><span><i class="fa-solid fa-calendar mr-1"></i><span id="md-date">-</span> <span id="md-time"></span></span><span><i class="fa-solid fa-location-dot mr-1"></i><span id="md-location">-</span></span><span><i class="fa-solid fa-user mr-1"></i><span id="md-author">-</span></span></div></div>
+      <button onclick="app.closeModal('modal-meeting-detail')" class="bg-slate-100 hover:bg-slate-200 p-2.5 rounded-xl flex-shrink-0"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="flex gap-2 p-3 border-b bg-slate-50 overflow-x-auto flex-shrink-0">
+      <button class="tab-btn active" data-tab="agenda" onclick="app.switchMeetingDetailTab('agenda',this)"><i class="fa-solid fa-file-lines mr-1"></i> 議程</button>
+      <button class="tab-btn" data-tab="minutes" onclick="app.switchMeetingDetailTab('minutes',this)"><i class="fa-solid fa-clipboard-check mr-1"></i> 會議紀錄</button>
+      <button class="tab-btn" data-tab="attachments" onclick="app.switchMeetingDetailTab('attachments',this)"><i class="fa-solid fa-paperclip mr-1"></i> 文件下載 (<span id="md-attach-count">0</span>)</button>
+      <button class="tab-btn" data-tab="group" onclick="app.switchMeetingDetailTab('group',this)"><i class="fa-solid fa-users-rectangle mr-1"></i> 各組會員資料 (<span id="md-group-count">0</span>)</button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+      <div id="md-tab-agenda" class="space-y-3">
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-4"><h4 class="font-bold text-sm text-sky-900 mb-2">議程內容</h4><p id="md-agenda-text" class="text-sm leading-relaxed whitespace-pre-line">-</p></div>
+        <div id="md-agenda-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-pdf text-red-500"></i><div class="min-w-0"><div id="md-agenda-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-agenda-file-meta"></span> · 儲存位置：<span class="font-mono text-[10px]">瀏覽器 localStorage (Mock) / Google Sheet cell (GAS)</span></div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 下載</button><button id="md-agenda-delete-btn" onclick="app.deleteMeetingFile('agenda')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-agenda-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
+        <div id="md-agenda-admin-upload" class="hidden border-2 border-dashed border-sky-300 rounded-xl p-3 bg-sky-50/50"><label class="text-xs font-bold">管理員追加上傳議程檔案</label><div class="flex gap-2 mt-2"><input type="file" id="md-agenda-upload" class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
+      </div>
+      <div id="md-tab-minutes" class="hidden space-y-3">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4"><h4 class="font-bold text-sm text-emerald-900 mb-2">會議紀錄</h4><p id="md-minutes-text" class="text-sm leading-relaxed whitespace-pre-line">-</p></div>
+        <div id="md-minutes-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-lines text-emerald-600"></i><div class="min-w-0"><div id="md-minutes-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-minutes-file-meta"></span> · 儲存位置：localStorage / Sheet</div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 下載</button><button id="md-minutes-delete-btn" onclick="app.deleteMeetingFile('minutes')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-minutes-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
+        <div id="md-minutes-admin-upload" class="hidden border-2 border-dashed border-emerald-300 rounded-xl p-3 bg-emerald-50/50"><label class="text-xs font-bold">管理員追加上傳紀錄檔案</label><div class="flex gap-2 mt-2"><input type="file" id="md-minutes-upload" class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
+      </div>
+      <div id="md-tab-attachments" class="hidden space-y-3">
+        <div class="flex justify-between items-center"><h4 class="font-bold text-sm">全部文件下載</h4><button onclick="app.downloadAllMeetingFiles()" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 打包下載 (逐個)</button></div>
+        <div id="md-attachments-list" class="space-y-2"></div>
+        <div id="md-attachments-admin" class="hidden border rounded-xl p-3 bg-slate-50"><label class="text-xs font-bold">管理員追加附件 (全員可下載)</label><div class="flex gap-2 mt-2"><input type="file" id="md-attachment-upload" multiple class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('attachment')" class="bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
+      </div>
+      <div id="md-tab-group" class="hidden space-y-4">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>各組總主任上傳會員資料區</b><br>各組總主任可上傳本組參與名單/分工資料，管理員可設定是否全部與會者可看或僅管理員整理用 (所有文件支援下載)</div>
+        <div id="md-group-upload-form" class="hidden bg-white border-2 border-dashed border-amber-300 rounded-xl p-4 space-y-3">
+          <h5 class="font-bold text-sm">上傳本組會員資料</h5>
+          <form onsubmit="app.submitGroupUpload(event)" class="space-y-3">
+            <div class="grid grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">組別 *</label><input id="gu-group" required placeholder="主題節目組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">標題 *</label><input id="gu-title" required placeholder="會員名單/分工表" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+            <div><label class="text-[11px] font-bold">會員資料 / 備註 (文字)</label><textarea id="gu-member-data" rows="3" placeholder="可貼上名單、聯絡等" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea></div>
+            <div><label class="text-[11px] font-bold">上傳檔案 (Excel/Word/PDF)</label><input type="file" id="gu-file" class="w-full text-xs mt-1"></div>
+            <div><label class="text-[11px] font-bold">可見度 (管理員可改)</label><select id="gu-visibility" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="public">公開 - 全部與會者可看</option><option value="private">僅管理員 (整理用)</option><option value="attendees">僅主任或以上</option></select></div>
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl text-sm font-bold">上傳會員資料</button>
+          </form>
+        </div>
+        <div id="md-group-list" class="space-y-3"></div>
+      </div>
+    </div>
+    <div class="p-3 border-t bg-slate-50 flex justify-between gap-2 flex-shrink-0"><button onclick="app.closeModal('modal-meeting-detail')" class="px-4 py-2 border bg-white rounded-xl text-sm">關閉</button><div class="flex gap-2"><button id="md-edit-btn" onclick="app.editCurrentMeeting()" class="hidden bg-sky-600 text-white px-4 py-2 rounded-xl text-sm font-bold">✏️ 編輯會議</button><button id="md-delete-btn" onclick="app.deleteCurrentMeeting()" class="hidden bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-bold">🗑️ 刪除</button></div></div>
+  </div>
+</div>
+
+<div id="modal-user" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">用戶管理</h3><button onclick="app.closeModal('modal-user')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="user-form" onsubmit="app.submitUserForm(event)" class="space-y-3"><input type="hidden" id="u-form-mode" value="create"><input type="hidden" id="u-form-original-id"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">ID*</label><input id="u-ymis" required class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">姓名*</label><input id="u-name" required class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">Email</label><input id="u-email" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">角色</label><select id="u-role" class="w-full px-3 py-2 border rounded-xl text-sm bg-white"><option value="staff">staff</option><option value="director">director</option><option value="general_director">總主任</option><option value="vice_chairperson">副主席</option><option value="chairperson">主席</option><option value="advisor">顧問</option><option value="admin">管理員</option><option value="super_admin">超管</option></select></div><div><label class="text-xs font-bold">組別</label><input id="u-group" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">電話</label><input id="u-contact" class="w-full px-3 py-2 border rounded-xl text-sm"></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-user')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
+
+<div id="modal-bulk" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-3xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">批量開戶</h3><button onclick="app.closeModal('modal-bulk')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button><div class="mt-3"><label class="text-xs font-bold">貼上 JSON</label><textarea id="bulk-json-modal" rows="4" placeholder='[{"ymis":"001","name":"test"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea><button onclick="app.handleBulkJSON(true)" class="mt-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">由 JSON 預覽</button></div><div id="bulk-modal-preview" class="hidden"><div class="flex justify-between mt-3"><h4 class="font-bold text-sm">預覽 <span id="bulk-modal-count">0</span></h4><button onclick="app.confirmBulkCreate(true)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">確認開戶</button></div><div id="bulk-modal-table" class="table-responsive mt-2"></div></div></div></div>
+
+<div id="modal-settings" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">系統設定</h3><button onclick="app.closeModal('modal-settings')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.saveSettings(event)" class="space-y-3"><input id="gas-url-input" placeholder="GAS URL" class="w-full px-3 py-2 border rounded-xl text-sm"><input id="api-key-input" placeholder="API Key" class="w-full px-3 py-2 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-settings')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
+
+<div id="saveBar" class="save-bar"><div class="flex items-center gap-2 text-sm"><span class="dot"></span><span id="pendingText">0 項未保存</span></div><div class="flex gap-2"><button onclick="app.discardChanges()" class="px-4 py-2 border bg-white rounded-xl text-xs font-bold">捨棄</button><button onclick="app.saveChanges()" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold">確認寫入</button></div></div>
+<div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#0c4a6e] transition-all"></div></div></div>
+<div id="toast" class="toast"></div>
+
+<footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4"><p>童軍活動管理系統 v6.1 會議卡片升級版 · 全前端上傳·分次管理·權限下載 · COPYRIGHT 2026</p></footer>
+
+<script>
+const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
+const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v6',users:(eid)=>`event_users_${eid}`,meetings:(eid)=>`event_meetings_v6_${eid}`,staff:(eid)=>`event_staff_v6_${eid}`,finance:(eid)=>`event_finance_v6_${eid}`,supplies:(eid)=>`event_supplies_v6_${eid}`,meals:(eid)=>`event_meals_v6_${eid}`,activities:(eid)=>`event_activities_v6_${eid}`,theme_badges:(eid)=>`event_theme_badges_v6_${eid}`,documents:(eid)=>`event_documents_v6_${eid}`,notifications:(eid,uid)=>`event_notifications_${eid}_${uid}`,pending:(eid)=>`event_pending_${eid}`,config:(eid)=>`event_config_${eid}`};
+function todayISO(){return new Date().toISOString().split('T')[0];}
+function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function parseCSV(text){const lines=text.trim().split('\n');if(!lines.length)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));const out=[];for(let i=1;i<lines.length;i++){const line=lines[i];if(!line.trim())continue;const cols=[];let cur='',inQ=false;for(let c=0;c<line.length;c++){const ch=line[c];if(ch==='"'){inQ=!inQ;}else if(ch===','&&!inQ){cols.push(cur.trim().replace(/^"|"$/g,''));cur='';}else cur+=ch;}cols.push(cur.trim().replace(/^"|"$/g,''));const obj={};headers.forEach((h,idx)=>obj[h]=cols[idx]||'');out.push(obj);}return out;}
+
+
+function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
+
+
+const app=new ScoutEventApp();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
+</script>
 </body>
 </html>
