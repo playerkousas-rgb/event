@@ -1,0 +1,75 @@
+# 會議卡片全面升級 - v6.1
+
+> 根據用戶需求：管理員上傳議程及紀錄、所有籌委可觀看、分次會議、上傳會員資料、權限控制、下載
+
+## 1. 管理員上傳議程及會議紀錄，所有籌委可觀看
+
+- **權限**：`isAdmin()` = super_admin / advisor / admin / chairperson 才可新增/編輯會議、上傳議程/紀錄
+- **上傳**：會議表單內
+  - 議程文字 `agenda` + 議程檔案 `agenda_file` (PDF/Word/PPT/Excel/圖片) → 存為 base64 DataURL，全前端，支援下載
+  - 會議紀錄文字 `minutes` + 紀錄檔案 `minutes_file`
+  - 附加文件 `attachments` 多檔上傳
+- **觀看**：所有籌委成員點擊會議卡片進入詳情，分頁：議程 / 紀錄 / 文件下載 / 各組會員資料
+  - 卡片顯示：會議次數徽章、第X次、標題、日期時間地點、記錄人、可見度徽章、議程/紀錄/附件/組資料數量
+  - 手機友善：卡片式，點擊進入
+
+## 2. 分不同會議上傳及觀看 (第1次第2次第3次)
+
+- **會議次數欄位** `meeting_number`：0=第0次預備, 1=第1次, 2=第2次, 3=第3次, 4=第4次(下次), 5,6,99=特別/臨時
+- **列表**：按 `meeting_number` 升序 + 日期排序，自動分組顯示
+- **篩選**：頂部搜尋框可搜尋「第2次」或標題；可見度篩選
+- **儲存**：`event_meetings_v6_{event_id}` localStorage，Mock 模式全前端；GAS 模式透過 `saveRecord` 寫入 `Meetings` Sheet (已升級表頭 25 欄，自動補欄位不覆蓋舊資料)
+
+## 3. 各組總主任上傳會員資料，管理員決定可見度
+
+- **上傳權限**：`canUploadGroup()` = general_director 及以上 (Level >=40) 包括 general_director, vice_chairperson, chairperson, admin, advisor, super_admin
+- **上傳表單** (會議詳情 → 各組會員資料 分頁)：
+  - 組別 * (例如 主題節目組)
+  - 標題 * (會員名單/分工表)
+  - 會員資料文字 (可貼上名單、聯絡)
+  - 檔案 (Excel/Word/PDF)
+  - 可見度 (管理員可後續更改)
+    - `public` 公開 - 全部與會者可看
+    - `private` 僅管理員 (整理用) - 其他人不可見，但管理員可下載統計
+    - `attendees` 僅主任或以上
+- **管理員控制**：
+  - 在組資料列表，每筆可下拉改可見度 `changeGroupVisibility()`
+  - 可刪除任意組資料
+  - 私有資料僅管理員可見，非管理員過濾
+- **下載**：每筆組資料獨立下載按鈕；若僅文字，自動生成 txt 下載
+
+## 4. 所有會議文件同時可提供下載功能
+
+- **單個下載**：
+  - 議程檔案 `downloadCurrentMeetingFile('agenda')`
+  - 紀錄檔案 `downloadCurrentMeetingFile('minutes')`
+  - 附件 `downloadAttachment(meetingId,fileId)`
+  - 組資料 `downloadGroupFile(meetingId,uploadId)`
+- **打包下載**：
+  - 單場會議：`downloadAllMeetingFiles(meetingId)` 逐個彈出下載 (瀏覽器限制，需逐個，延遲 400ms)
+  - 全部會議：`downloadAllMeetingsFiles()` 打包下載全部會議的議程、紀錄、附件，按 `第X次_檔名` 命名
+  - 匯出 JSON：`exportMeetings()` 匯出全部會議資料 JSON 備份
+- **實作**：`downloadDataUrl(fileName,dataUrl)` 創建 `<a download>` 觸發，DataURL 來自 FileReader `readAsDataURL`
+
+## 手機友善
+
+- 會議卡片：`.meeting-card` 卡片排版，點擊進入詳情，44px 按鈕
+- 詳情 Modal：Bottom Sheet 88vh，頂部黏性 Tab 切換 (`tab-btn`)，內容可滾動
+- 文件 Chip：`.file-chip` 圓形標籤，顯示文件類型
+- 可見度徽章：`visibility-public/private/attendees` 顏色區分
+
+## 後端變更
+
+- `apps-script/Code.gs` Meetings Sheet 表頭從 8 欄升級至 25 欄：`meeting_number,time,location,status,visibility,agenda_file_name,data,minutes_file_name,data,attachments_json,group_uploads_json...`
+- `ensureSheet` 自動補欄位，不覆蓋舊資料 (非破壞性)
+- 前端 `saveMeetings()` 同時寫 localStorage + GAS `saveRecord` (若非 Mock)
+
+## 使用流程
+
+1. 管理員登入 sheep/0728 → 進入活動 → 會議卡片
+2. 右上「新增會議」→ 選擇第X次 → 標題日期地點 → 可見度 (公開/僅管理員/僅主任以上) → 上傳議程/紀錄檔案 → 保存 (全前端)
+3. 所有籌委登入 → 會議卡片 → 點擊卡片 → 查看議程/紀錄分頁 → 下載文件
+4. 各組總主任登入 (梁文澧 general_director 等) → 會議詳情 → 各組會員資料分頁 → 上傳本組會員資料 → 選擇可見度
+5. 管理員 → 同一分頁 → 改可見度 (下拉) → 決定是否全部與會者可看或僅管理員整理用 → 下載統計
+
+COPYRIGHT 2026 Scout System

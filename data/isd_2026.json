@@ -1,146 +1,253 @@
 {
   "event_id": "isd_2026",
   "event_name": "2026 ISD 港島童軍繽紛日",
-  "description": "港島地域年度旗艦盛事：百分之百原汁原味、零精簡、完整收錄所有原始檔案與明細之智慧指揮中心",
+  "description": "港島地域年度旗艦盛事：步操檢閱、優異旅團頒獎與攤位博覽，參考 2025 執行手冊大架構，細節每年更新，資料來源 https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+  "drive_folder_link": "https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+  "drive_structure": {
+    "典禮組": "https://drive.google.com/drive/folders/1mIy2LatgaXworWsvr91ovwz3SPnLE3At",
+    "協調組": "https://drive.google.com/drive/folders/1OFugENuzbu8gIPr-tsXfBOG0_Un9QJ2n",
+    "服務組": "https://drive.google.com/drive/folders/1Px_kf2ipjZ1YvIjwHIViGMMt6P502R-L",
+    "秘書處及文件類": "https://drive.google.com/drive/folders/1q65ci_5185w2IeDujy_Pnq4KtzId02Nq",
+    "節目組": "https://drive.google.com/drive/folders/1EYw48Lh_UrTfpFDpNifHO7Wd1kjWOi15",
+    "行政組": "https://drive.google.com/drive/folders/1f36teUWdBPMm1rmkSlENguJgSm-MGJ5C",
+    "設計": "https://drive.google.com/drive/folders/1keKwMFpA7UefcBPWgyqaG3kXk29hodqx",
+    "財務指引": "https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C"
+  },
   "meetings": [
-    { "meeting_id": "m_0", "title": "第0次預備會議 (Zoom)", "date": "2026-05-01", "agenda": "1. 活動背景簡介\n2. 上屆活動檢討\n3. 籌備委員會架構確認\n4. 活動初步計劃與日期", "minutes": "主席朱家聰主持，會議議決 2026 港島童軍繽紛日訂於 2026 年 10 月 4 日（星期日）假黃竹坑香港警察學院舉行，活動主軸定為 Scout for SDGs（Scout for Innovative Community Builders）。", "author": "主席 朱家聰" },
-    { "meeting_id": "m_1", "title": "第1次籌備委員會議", "date": "2026-05-12", "agenda": "1. 利益申報政策及保護個人私隱政策（附件一）\n2. 活動內容簡介（附件二）\n3. 籌備委員會架構及工作大綱（附件三及四）\n4. 港島童軍繽紛日2025活動檢討（附件五）\n5. 各功能組別匯報初步構思及方向", "minutes": "正式通過利益申報政策與個人私隱政策。各副主席匯報初步預算與工作方向，議決各組預算執行方案。", "author": "主席 朱家聰" },
-    { "meeting_id": "m_2", "title": "第2次籌備委員會議", "date": "2026-06-16", "agenda": "1. 通過上次會議紀錄\n2. 主席匯報\n3. 各功能組別進度匯報（典禮及會操、主題節目、品牌推廣、嘉賓接待、協調、服務及發展、行政）\n4. 財政預算審批", "minutes": "各組推進順利。主題節目組確認積極公民獎章工作坊內容；會操組確認邀請步操司令員黃志樂協助。", "author": "執行副主席 袁可秀" },
-    { "meeting_id": "m_3", "title": "第3次籌備委員會議", "date": "2026-07-21", "agenda": "1. 通過上次會議紀錄\n2. 主席匯報\n3. 各功能組別進度匯報\n4. 財政預算及報價門檻審批（附件二）", "minutes": "落實 $500 / $2,000 / $5,000 報價門檻及結算總表（附件5）之報銷規範。各組提交物資與車輛通行證申請。", "author": "主席 朱家聰" },
-    { "meeting_id": "m_next", "title": "第4次籌備委員會議 (下次會議)", "date": "2026-08-18 19:15", "agenda": "1. 通過上次會議紀錄\n2. 總綵排流程確認\n3. 各組物資與膳食最終統計\n4. 財務審批總結", "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室。", "author": "秘書處" }
+    { "meeting_id": "m_0", "meeting_number": 0, "title": "第0次預備會議 (Zoom)", "date": "2026-05-01", "time": "19:15", "location": "Zoom", "status": "completed", "visibility": "public", "agenda": "1. 活動背景簡介\n2. 上屆活動檢討\n3. 籌備委員會架構確認\n4. 活動初步計劃與日期", "minutes": "主席朱家聰主持，會議議決 2026 港島童軍繽紛日訂於 2026 年 10 月 4 日（星期日）假黃竹坑香港警察學院舉行，活動主軸定為 Scout for SDGs。Drive: 0 Pre-Meeting 20260501 Zoom", "author": "主席 朱家聰", "drive_link": "https://drive.google.com/drive/folders/1W1IHvVZrlafg3Ioxd7JCR06rZiyBVOXX" },
+    { "meeting_id": "m_1", "meeting_number": 1, "title": "第1次籌備委員會議", "date": "2026-05-12", "time": "19:15", "location": "百周年紀念大樓1704室", "status": "completed", "visibility": "public", "agenda": "1. 利益申報政策及保護個人私隱政策（附件一）\n2. 活動內容簡介（附件二）\n3. 籌備委員會架構及工作大綱（附件三及四）\n4. 港島童軍繽紛日2025活動檢討（附件五）\n5. 各功能組別匯報初步構思及方向", "minutes": "正式通過利益申報政策與個人私隱政策。各副主席匯報初步預算與工作方向，議決各組預算執行方案。Drive: 1 Meeting 20260512", "author": "主席 朱家聰", "drive_link": "https://drive.google.com/drive/folders/1Q_0MwS9JYvr2vdWr4xMvY0Zsy" },
+    { "meeting_id": "m_2", "meeting_number": 2, "title": "第2次籌備委員會議", "date": "2026-06-16", "time": "19:15", "location": "百周年紀念大樓1704室", "status": "completed", "visibility": "public", "agenda": "1. 通過上次會議紀錄\n2. 主席匯報\n3. 各功能組別進度匯報（典禮及會操、主題節目、品牌推廣、嘉賓接待、協調、服務及發展、行政）\n4. 財政預算審批", "minutes": "各組推進順利。主題節目組確認積極公民獎章工作坊內容；會操組確認邀請步操司令員黃志樂協助。節目組報告：ISD2026 - 主題節目組報告 (20260616) Rev.1.pdf Drive。", "author": "執行副主席 袁可秀", "drive_link": "https://drive.google.com/drive/folders/1DIjanPDviWgTa4hKanOiQTrq9o3bQTx1" },
+    { "meeting_id": "m_3", "meeting_number": 3, "title": "第3次籌備委員會議", "date": "2026-07-21", "time": "19:15", "location": "百周年紀念大樓1704室", "status": "completed", "visibility": "public", "agenda": "1. 通過上次會議紀錄\n2. 主席匯報\n3. 各功能組別進度匯報\n4. 財政預算及報價門檻審批（附件二）", "minutes": "落實 $500 / $2,000 / $5,000 報價門檻及結算總表（附件5）之報銷規範。各組提交物資與車輛通行證申請。財務：Budget.xlsx 已更新 2026 預算。", "author": "主席 朱家聰", "drive_link": "https://drive.google.com/drive/folders/1aExU8X7KDqurCxI1T3YKtagvEliInBq1" },
+    { "meeting_id": "m_next", "meeting_number": 4, "title": "第4次籌備委員會議 (下次會議)", "date": "2026-08-18", "time": "19:15", "location": "百周年紀念大樓1704室", "status": "upcoming", "visibility": "public", "agenda": "1. 通過上次會議紀錄\n2. 總綵排流程確認\n3. 各組物資與膳食最終統計\n4. 財務審批總結", "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室。", "author": "秘書處" }
   ],
   "staff": {
     "org_chart": [
-      { "level": "顧問團 (Level 2)", "title": "顧問", "names": "黃偉安、何家騏", "desc": "審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作；與地域總監確認主禮嘉賓／主禮人，並就重要事務向籌委會主席提供指導性意見。" },
-      { "level": "籌委會 (Level 2)", "title": "主席", "names": "朱家聰", "desc": "主持籌備委員會所有會議；負責統籌活動一切有關事宜及確保順利進行；對外代表活動籌委會。" },
-      { "level": "行政組 (Level 3)", "title": "執行副主席", "names": "袁可秀", "desc": "協助主席統籌各組行政、秘書處、保險、財政指引及開支審批。" },
-      { "level": "會操及典禮組 (Level 3)", "title": "副主席（會操及典禮）", "names": "張佳良", "desc": "統籌會操流程、步操比賽後備日及頒獎典禮。" },
-      { "level": "會操及典禮組 (Level 4)", "title": "總主任（會操）", "names": "梁文澧", "desc": "統籌大操場會操項目及步操綵排。" },
-      { "level": "會操及典禮組 (Level 4)", "title": "步操統籌主任 / 會操司令員", "names": "黃志樂", "desc": "統籌步操比賽評審、步操訓練及擔任會操司令員。" },
-      { "level": "會操及典禮組 (Level 3)", "title": "副主席（典禮）", "names": "李懷恩", "desc": "統籌優異旅團頒獎、支部獎勵及嘉賓接待。" },
-      { "level": "主題節目組 (Level 3)", "title": "副主席", "names": "周恒晉", "desc": "統籌攤位遊戲、遊戲卡、樂隊及積極公民獎章工作坊。" },
-      { "level": "主題節目組 (Level 4)", "title": "總主任（主題節目）", "names": "仇紹謙", "desc": "帶領 5 位節目主任落實各項遊戲及活動執行。" },
-      { "level": "主題節目組 (Level 5)", "title": "節目主任 (1)", "names": "何令勤", "desc": "執行遊戲攤位與挑戰站。" },
-      { "level": "主題節目組 (Level 5)", "title": "節目主任 (2)", "names": "陳鋑羲", "desc": "執行遊戲攤位與挑戰站。" },
-      { "level": "主題節目組 (Level 5)", "title": "節目主任 (3)", "names": "張宏剛", "desc": "執行遊戲攤位與挑戰站。" },
-      { "level": "主題節目組 (Level 5)", "title": "節目主任 (4)", "names": "羅卓華", "desc": "統籌遊戲卡與印花換領。" },
-      { "level": "主題節目組 (Level 5)", "title": "節目主任 (5)", "names": "李庭甄", "desc": "統籌積極公民獎章系列工作坊。" },
-      { "level": "品牌推廣組 (Level 3)", "title": "副主席", "names": "何嘉駿", "desc": "統籌宣傳海報、場刊設計、社交媒體與活動攝錄。" },
-      { "level": "品牌推廣組 (Level 5)", "title": "拍攝/攝錄統籌主任", "names": "林耀鏘", "desc": "統籌活動當日錄影及專業拍照。" }
+      { "level": "顧問團 (Level 2)", "title": "顧問", "names": "黃偉安、何家騏", "desc": "審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作；與地域總監確認主禮嘉賓／主禮人，並就重要事務向籌委會主席提供指導性意見。", "group": "顧問團" },
+      { "level": "籌委會 (Level 2)", "title": "主席", "names": "朱家聰", "desc": "主持籌備委員會所有會議；負責統籌活動一切有關事宜及確保順利進行；對外代表活動籌委會。", "group": "籌委會" },
+      { "level": "行政組 (Level 3)", "title": "執行副主席", "names": "袁可秀", "desc": "協助主席統籌各組行政、秘書處、保險、財政指引及開支審批。", "group": "行政組" },
+      { "level": "會操及典禮組 (Level 3)", "title": "副主席（會操及典禮）", "names": "張佳良", "desc": "統籌會操流程、步操比賽後備日及頒獎典禮。", "group": "會操及典禮組" },
+      { "level": "會操及典禮組 (Level 4)", "title": "總主任（會操）", "names": "梁文澧", "desc": "統籌大操場會操項目及步操綵排。", "group": "會操及典禮組" },
+      { "level": "會操及典禮組 (Level 4)", "title": "步操統籌主任 / 會操司令員", "names": "黃志樂", "desc": "統籌步操比賽評審、步操訓練及擔任會操司令員。", "group": "會操及典禮組" },
+      { "level": "會操及典禮組 (Level 3)", "title": "副主席（典禮）", "names": "李懷恩", "desc": "統籌優異旅團頒獎、支部獎勵及嘉賓接待。", "group": "會操及典禮組" },
+      { "level": "主題節目組 (Level 3)", "title": "副主席", "names": "周恒晉", "desc": "統籌攤位遊戲、遊戲卡、樂隊及積極公民獎章工作坊。", "group": "主題節目組" },
+      { "level": "主題節目組 (Level 4)", "title": "總主任（主題節目）", "names": "仇紹謙", "desc": "帶領 5 位節目主任落實各項遊戲及活動執行。", "group": "主題節目組" },
+      { "level": "主題節目組 (Level 5)", "title": "節目主任 (1)", "names": "何令勤", "desc": "執行遊戲攤位與挑戰站。", "group": "主題節目組" },
+      { "level": "主題節目組 (Level 5)", "title": "節目主任 (2)", "names": "陳鋑羲", "desc": "執行遊戲攤位與挑戰站。", "group": "主題節目組" },
+      { "level": "主題節目組 (Level 5)", "title": "節目主任 (3)", "names": "張宏剛", "desc": "執行遊戲攤位與挑戰站。", "group": "主題節目組" },
+      { "level": "主題節目組 (Level 5)", "title": "節目主任 (4)", "names": "羅卓華", "desc": "統籌遊戲卡與印花換領。", "group": "主題節目組" },
+      { "level": "主題節目組 (Level 5)", "title": "節目主任 (5)", "names": "李庭甄", "desc": "統籌積極公民獎章系列工作坊。", "group": "主題節目組" },
+      { "level": "品牌推廣組 (Level 3)", "title": "副主席", "names": "何嘉駿", "desc": "統籌宣傳海報、場刊設計、社交媒體與活動攝錄。", "group": "品牌推廣組" },
+      { "level": "品牌推廣組 (Level 5)", "title": "拍攝/攝錄統籌主任", "names": "林耀鏘", "desc": "統籌活動當日錄影及專業拍照。", "group": "品牌推廣組" },
+      { "level": "嘉賓接待組 (Level 3)", "title": "副主席（嘉賓接待）", "names": "曾麗珊", "desc": "統籌嘉賓接待、交通、輕食、午膳、穿梭巴士。", "group": "嘉賓接待組" },
+      { "level": "嘉賓接待組 (Level 4)", "title": "總主任（嘉賓接待）", "names": "張嘉政", "desc": "嘉賓接待總負責。", "group": "嘉賓接待組" },
+      { "level": "協調組 (Level 3)", "title": "副主席（協調）", "names": "羅添駿", "desc": "統籌場地佈置、物資、交通、膳食、後勤、秩序。", "group": "協調組" },
+      { "level": "協調組 (Level 4)", "title": "總主任（協調）", "names": "鍾偉志", "desc": "協調組總主任。", "group": "協調組" },
+      { "level": "協調組 (Level 4)", "title": "總主任（協調）", "names": "黃嘉恩", "desc": "協調組總主任。", "group": "協調組" },
+      { "level": "服務及發展組 (Level 3)", "title": "副主席（服務及發展）", "names": "黎姵伶", "desc": "統籌 NGO 協作、捐贈、長者福袋、服務。", "group": "服務及發展組" },
+      { "level": "服務及發展組 (Level 4)", "title": "總主任（服務及發展）", "names": "李卓琪", "desc": "服務及發展總主任。", "group": "服務及發展組" },
+      { "level": "行政組 (Level 3)", "title": "副主席（行政）", "names": "徐嘉皓", "desc": "行政組副主席，常務。", "group": "行政組" },
+      { "level": "行政組 (Level 4)", "title": "總主任(運作)", "names": "文幹皓", "desc": "運作總主任。", "group": "行政組" },
+      { "level": "行政組 (Level 4)", "title": "總主任(行政)", "names": "莫穎民", "desc": "行政總主任，財政主任。", "group": "行政組" }
     ],
     "contacts": [
-      { "name": "黃偉安 / 何家騏", "role_title": "顧問", "group_name": "顧問團", "contact": "91111111", "job_desc": "政策指導與主禮嘉賓確認" },
-      { "name": "朱家聰", "role_title": "主席", "group_name": "籌委會", "contact": "92222222", "job_desc": "全域統籌與會議主持" },
-      { "name": "袁可秀", "role_title": "執行副主席", "group_name": "行政組", "contact": "93333333", "job_desc": "行政、秘書處與財政審批" },
-      { "name": "張佳良", "role_title": "副主席（會操及典禮）", "group_name": "會操及典禮組", "contact": "94444444", "job_desc": "會操流程與步操後備日" },
-      { "name": "梁文澧", "role_title": "總主任（會操）", "group_name": "會操及典禮組", "contact": "94222222", "job_desc": "會操項目統籌" },
-      { "name": "黃志樂", "role_title": "步操統籌主任 / 會操司令員", "group_name": "會操及典禮組", "contact": "94111111", "job_desc": "步操檢閱指揮" },
-      { "name": "李懷恩", "role_title": "副主席（典禮）", "group_name": "會操及典禮組", "contact": "94333333", "job_desc": "優異旅團與獎勵頒發" },
-      { "name": "周恒晉", "role_title": "副主席", "group_name": "主題節目組", "contact": "95555555", "job_desc": "攤位與遊戲統籌" },
-      { "name": "仇紹謙", "role_title": "總主任（主題節目）", "group_name": "主題節目組", "contact": "95111111", "job_desc": "節目內容策劃" },
+      { "name": "黃偉安 / 何家騏", "role_title": "顧問", "group_name": "顧問團", "contact": "92157472", "job_desc": "政策指導與主禮嘉賓確認", "establishment": 2, "strength": 2 },
+      { "name": "朱家聰", "role_title": "主席", "group_name": "籌委會", "contact": "61070452", "job_desc": "全域統籌與會議主持", "establishment": 1, "strength": 1 },
+      { "name": "袁可秀", "role_title": "執行副主席", "group_name": "行政組", "contact": "90340099", "job_desc": "行政、秘書處與財政審批", "establishment": 1, "strength": 1 },
+      { "name": "張佳良", "role_title": "副主席（會操及典禮）", "group_name": "會操及典禮組", "contact": "94444444", "job_desc": "會操流程與步操後備日", "establishment": 1, "strength": 1 },
+      { "name": "梁文澧", "role_title": "總主任（會操）", "group_name": "會操及典禮組", "contact": "94222222", "job_desc": "會操項目統籌", "establishment": 5, "strength": 3 },
+      { "name": "黃志樂", "role_title": "步操統籌主任 / 會操司令員", "group_name": "會操及典禮組", "contact": "94111111", "job_desc": "步操檢閱指揮", "establishment": 5, "strength": 3 },
+      { "name": "李懷恩", "role_title": "副主席（典禮）", "group_name": "會操及典禮組", "contact": "94333333", "job_desc": "優異旅團與獎勵頒發", "establishment": 5, "strength": 1 },
+      { "name": "周恒晉", "role_title": "副主席", "group_name": "主題節目組", "contact": "64719696", "job_desc": "攤位與遊戲統籌", "establishment": 1, "strength": 1 },
+      { "name": "仇紹謙", "role_title": "總主任（主題節目）", "group_name": "主題節目組", "contact": "95111111", "job_desc": "節目內容策劃", "establishment": 7, "strength": 7 },
       { "name": "何令勤", "role_title": "節目主任 (1)", "group_name": "主題節目組", "contact": "95211111", "job_desc": "遊戲攤位執行" },
       { "name": "陳鋑羲", "role_title": "節目主任 (2)", "group_name": "主題節目組", "contact": "95222222", "job_desc": "遊戲攤位執行" },
       { "name": "張宏剛", "role_title": "節目主任 (3)", "group_name": "主題節目組", "contact": "95233333", "job_desc": "遊戲攤位執行" },
       { "name": "羅卓華", "role_title": "節目主任 (4)", "group_name": "主題節目組", "contact": "95244444", "job_desc": "攤位遊戲與印花" },
       { "name": "李庭甄", "role_title": "節目主任 (5)", "group_name": "主題節目組", "contact": "95255555", "job_desc": "積極公民工作坊" },
       { "name": "何嘉駿", "role_title": "副主席", "group_name": "品牌推廣組", "contact": "96666666", "job_desc": "宣傳與攝錄統籌" },
-      { "name": "林耀鏘", "role_title": "拍攝/攝錄統籌主任", "group_name": "品牌推廣組", "contact": "96333333", "job_desc": "活動當日錄影及拍照" }
+      { "name": "林耀鏘", "role_title": "拍攝/攝錄統籌主任", "group_name": "品牌推廣組", "contact": "96333333", "job_desc": "活動當日錄影及拍照" },
+      { "name": "曾麗珊", "role_title": "副主席（嘉賓接待）", "group_name": "嘉賓接待組", "contact": "曾麗珊", "job_desc": "嘉賓接待、交通、輕食、午膳" },
+      { "name": "張嘉政", "role_title": "總主任（嘉賓接待）", "group_name": "嘉賓接待組", "contact": "張嘉政", "job_desc": "嘉賓接待總負責" },
+      { "name": "羅添駿", "role_title": "副主席（協調）", "group_name": "協調組", "contact": "羅添駿", "job_desc": "場地佈置、物資、交通、膳食、後勤" },
+      { "name": "鍾偉志", "role_title": "總主任（協調）", "group_name": "協調組", "contact": "鍾偉志", "job_desc": "協調組總主任" },
+      { "name": "黃嘉恩", "role_title": "總主任（協調）", "group_name": "協調組", "contact": "黃嘉恩", "job_desc": "協調組總主任" },
+      { "name": "徐嘉皓", "role_title": "副主席（行政）", "group_name": "行政組", "contact": "徐嘉皓", "job_desc": "行政組副主席" },
+      { "name": "文幹皓", "role_title": "總主任(運作)", "group_name": "行政組", "contact": "文幹皓", "job_desc": "運作總主任" },
+      { "name": "莫穎民", "role_title": "總主任(行政) / 財政主任", "group_name": "行政組", "contact": "莫穎民", "job_desc": "行政總主任，財政" }
     ],
     "job_duties": [
       { "group": "顧問團", "duty": "1. 審核「港島童軍繽紛日」活動的目的；\n2. 就活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察活動整體運作；\n4. 與地域總監確認主禮嘉賓／主禮人，並就重要事務向籌委會主席提供指導性意見。" },
       { "group": "主席", "duty": "1. 主持籌備委員會所有會議；\n2. 負責統籌「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察各功能組別進度及對外代表活動籌委會。" },
-      { "group": "行政組", "duty": "1. 擬訂財政指引及會計程序；\n2. 開設活動檔案、發布總通告與提名信；\n3. 統籌參加者保險、秘書處會議紀錄及各組開支報銷審批。" },
-      { "group": "會操及典禮組", "duty": "1. 擬訂會操及典禮流程及時間表；\n2. 開設步操比賽後備日與綵排安排；\n3. 統籌優異旅團獎勵計劃、支部獎勵及嘉賓接待。" },
-      { "group": "主題節目組", "duty": "1. 設計攤位遊戲內容、遊戲卡、遊戲獎品；\n2. 統籌積極公民獎章系列工作坊（VS&RS）及獎章證書（CS&SC）；\n3. 協調各旅團攤位設置。" },
-      { "group": "品牌推廣組", "duty": "1. 擬訂宣傳構思及計劃（包括海報、場刊、橫額）；\n2. 統籌社交媒體宣傳與活動當日攝影攝錄。" },
-      { "group": "協調組", "duty": "1. 收集場地佈置需求、制訂場地分佈及警察學院建設初稿；\n2. 設計物資清單、借用表格及車輛通行證審批。" }
+      { "group": "行政組", "duty": "1. 擬訂財政指引及會計程序；\n2. 開設活動檔案、發布總通告與提名信；\n3. 統籌參加者保險、秘書處會議紀錄及各組開支報銷審批；\n4. 參考 舊手冊行政組：活動通告 sp12、報名表 sp12a、急救申請 St John、膳食安排、參加旅團名單。\nDrive: 行政組/工作人員/財務/秘書處及文件類" },
+      { "group": "會操及典禮組", "duty": "1. 擬訂會操及典禮流程及時間表；\n2. 開設步操比賽後備日與綵排安排；\n3. 統籌優異旅團獎勵計劃、支部獎勵及嘉賓接待。\n大方向不變，細節每年更新，參考 2025 執行手冊架構。" },
+      { "group": "主題節目組", "duty": "1. 設計攤位遊戲內容、遊戲卡、遊戲獎品；\n2. 統籌積極公民獎章系列工作坊（VS&RS）及獎章證書（CS&SC）；\n3. 協調各旅團攤位設置。\n概念：積極公民 - 機電先鋒等，參考 節目組/Concept/ 內多個 JPG、PDF 報告 ISD2026 主題節目組報告 Rev.1" },
+      { "group": "品牌推廣組", "duty": "1. 擬訂宣傳構思及計劃（包括海報、場刊、橫額）；\n2. 統籌社交媒體宣傳與活動當日攝影攝錄。\n設計：香港童軍115周年紀念標誌" },
+      { "group": "協調組", "duty": "1. 收集場地佈置需求、制訂場地分佈及警察學院建設初稿；\n2. 設計物資清單、借用表格及車輛通行證審批。\n舊版有場地佈置圖 R7、物資借用表格、箱頭紙、佈置數據 Spreadsheet，新版已有 Site setup Quotation Request、Cleaning Quotation、泊車證申請表格" },
+      { "group": "嘉賓接待組", "duty": "1. 擬訂嘉賓接待流程；\n2. 嘉賓輕食、午膳、穿梭巴士安排；\n3. 嘉賓接待及交通。" },
+      { "group": "服務及發展組", "duty": "1. NGO 協作、捐贈紀念章、捐贈物品運輸、車費、午餐、相架證書、長者福袋。" },
+      { "group": "膳食組", "duty": "1. 旅團代訂餐盒、2. 工作人員膳食 300@$60、3. 蒸餾水、4. 衛生服務" }
     ]
   },
   "documents": [
-    { "title": "利益申報政策及收受利益指引 (附件一)", "category": "合規政策", "uploaded_by": "行政組", "date": "2026-05-01", "file_url": "#" },
-    { "title": "個人資料私隱保障政策", "category": "合規政策", "uploaded_by": "行政組", "date": "2026-05-01", "file_url": "#" },
-    { "title": "財務指引及會計程序 (完整詳細版 - 內含報價門檻說明)", "category": "財務", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
-    { "title": "結算總表範本 (附件5 - 報銷憑單對照表)", "category": "財務", "uploaded_by": "財務組", "date": "2026-07-01", "file_url": "#" },
-    { "title": "報價比較表與口頭報價紀錄 (附件4)", "category": "財務", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
-    { "title": "特別通告第XX/26號 (Scout for SDGs 主軸)", "category": "通告", "uploaded_by": "行政組", "date": "2026-07-01", "file_url": "#" },
-    { "title": "籌備委員會委員提名通告 (HKIR/M/26/028)", "category": "通告", "uploaded_by": "助理地域總監(活動)", "date": "2026-04-XX", "file_url": "#" },
-    { "title": "旅團報名表格 (小童軍至領袖人數與費用統計)", "category": "表格", "uploaded_by": "行政組", "date": "2026-08-01", "file_url": "#" },
-    { "title": "車輛通行證申請與警察學院場地佈置須知", "category": "協調", "uploaded_by": "協調組", "date": "2026-08-05", "file_url": "#" }
+    { "title": "財務指引 Drive 資料夾 (2026 最新)", "category": "財務", "file_url": "https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C", "uploaded_by": "行政組", "date": "2026-03-29", "description": "指引資料夾，含 9 份文件，已整合至財務卡片" },
+    { "title": "ISD2026 Budget.xlsx (2026 最新預算)", "category": "財務", "file_url": "https://drive.google.com/file/d/1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_/view", "uploaded_by": "財務組", "date": "2026-07-21", "description": "收入 270,000，總支出 250,650，剩餘 19,350，ISD 2025 實際 269,612.59" },
+    { "title": "ISD2026 Org Chart and Contact List（持續更新）.xlsx", "category": "組織", "file_url": "https://drive.google.com/file/d/1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp/view", "uploaded_by": "行政組", "date": "2026-07-21", "description": "Establishment 53, Strength 39, 73.58%" },
+    { "title": "ISD2026 Site setup Quotation Request.pdf", "category": "協調", "file_url": "https://drive.google.com/file/d/1ryQltDGazkf_l2qPPnxc6DmomfIlMu-x/view", "uploaded_by": "協調組", "date": "2026-07-21", "description": "場地佈置報價要求" },
+    { "title": "ISD2026 Cleaning Quotation request.pdf", "category": "協調", "file_url": "https://drive.google.com/file/d/1n_vRIZ4X_NV3523r89hd8mODQpyNMvbL/view", "uploaded_by": "協調組", "date": "2026-07-20", "description": "清潔報價要求" },
+    { "title": "泊車證申請表格.xlsx", "category": "交通", "file_url": "https://drive.google.com/file/d/1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7/view", "uploaded_by": "協調組", "date": "2026-07-20", "description": "泊車證申請，11/10 佈置及 12/10 正日" },
+    { "title": "ISD2026 - 主題節目組報告 (20260616) Rev.1.pdf", "category": "節目", "file_url": "https://drive.google.com/file/d/1cbmYoNOhlP3EQcNrSMgSycELQYsLpj4o/view", "uploaded_by": "主題節目組", "date": "2026-06-16", "description": "主題節目組報告，Concept 包含機電先鋒等多個概念 JPG" },
+    { "title": "工作計劃及進度 V2.docx", "category": "秘書處", "file_url": "https://drive.google.com/file/d/1OPRHxG3x_fLvpLDBEqmdb8dlsq0HuSe1/view", "uploaded_by": "秘書處", "date": "2026-05-12", "description": "工作計劃及進度" },
+    { "title": "財務指引及會計程序 ver 1.docx (原指引)", "category": "財務", "file_url": "https://drive.google.com/file/d/1QNWNG1BnVab3oHlI7yvIK_2YMMSFV-p4/view", "uploaded_by": "行政組", "date": "2026-04-27", "description": "財務指引 ver 1，含預算、報價、預支、直接付款、現金支出、單據處理、盤點、退還款項限期" },
+    { "title": "報價要求 (附件1)", "category": "財務", "file_url": "https://drive.google.com/file/d/176X1zGzH_k7DJzzuzE5fHkAr6GE3_IHm/view", "uploaded_by": "財務組", "date": "2026-04-27", "description": "支出金額、報價/招標要求、獲授權批核人士對照表 (已修正)" }
   ],
   "finance": {
+    "drive_folder_link": "https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C",
+    "drive_folder_id": "1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C",
+    "budget_file": "https://drive.google.com/file/d/1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_/view",
     "group_itemized_budgets": [
       {
-        "group_name": "會操及典禮組 (總預算: $35,000)",
+        "group_name": "會操及典禮組 (預算 $500)",
         "items": [
-          { "voucher": "憑單#01", "item_name": "嘉賓紀念品採購", "budget": 500, "actual": 246, "notes": "不超過$500免報價 (副主席批核)" },
-          { "voucher": "憑單#01-2", "item_name": "步操比賽獎盃與獎牌訂製", "budget": 2500, "actual": 2400, "notes": "得獎隊伍獎勵" },
-          { "voucher": "憑單#01-3", "item_name": "警察學院大操場樂隊及音響租用", "budget": 15000, "actual": 15000, "notes": "已簽訂承辦商合約" },
-          { "voucher": "憑單#01-4", "item_name": "典禮場地佈置與橫額", "budget": 3000, "actual": 2800, "notes": "有蓋操場佈置" }
+          { "voucher": "01", "item_name": "嘉賓紀念品", "budget": 500, "actual": 246, "notes": "實際 2025: 246 (預算 500)" }
         ]
       },
       {
-        "group_name": "主題節目組 (總預算: $45,000)",
+        "group_name": "主題節目組 (預算 $42,950)",
         "items": [
-          { "voucher": "憑單#02", "item_name": "節目／攤位遊戲道具與材料", "budget": 26000, "actual": 13872.53, "notes": "各旅團攤位遊戲支援費" },
-          { "voucher": "憑單#02-1", "item_name": "遊戲卡設計與批量印刷", "budget": 4000, "actual": 3028.97, "notes": "集印花換紀念品用卡" },
-          { "voucher": "憑單#03", "item_name": "遊戲獎品與紀念品採購", "budget": 5000, "actual": 2800.00, "notes": "小隊挑戰獎品" },
-          { "voucher": "憑單#03-1", "item_name": "樂隊車費及搬運雜費", "budget": 2000, "actual": 0.00, "notes": "備用開支" },
-          { "voucher": "憑單#03-2", "item_name": "積極公民獎章系列工作坊（VS&RS）", "budget": 1000, "actual": 0.00, "notes": "培訓開支" },
-          { "voucher": "憑單#03-3", "item_name": "積極公民獎章及證書（CS&SC）", "budget": 4200, "actual": 4158.00, "notes": "專章製作" }
+          { "voucher": "02", "item_name": "節目／攤位遊戲", "budget": 26000, "actual": 13872.53, "notes": "實際 2025: 13,872.53" },
+          { "voucher": "03", "item_name": "遊戲卡", "budget": 4000, "actual": 3028.97, "notes": "4,000 預算" },
+          { "voucher": "04", "item_name": "遊戲獎品", "budget": 5000, "actual": 2800, "notes": "5,000 預算" },
+          { "voucher": "05", "item_name": "樂隊車費", "budget": 2000, "actual": 0, "notes": "-" },
+          { "voucher": "06", "item_name": "雜項", "budget": 750, "actual": 0, "notes": "750 預算" },
+          { "voucher": "07", "item_name": "積極公民獎章系列工作坊（VS&RS）", "budget": 1000, "actual": 0, "notes": "1,000 預算" },
+          { "voucher": "08", "item_name": "積極公民獎章及證書（CS&SC）", "budget": 4200, "actual": 4158, "notes": "實際 4,158" }
         ]
       },
       {
-        "group_name": "品牌推廣組 (總預算: $15,000)",
+        "group_name": "成員參與組 (預算 $8,500)",
         "items": [
-          { "voucher": "憑單#04", "item_name": "宣傳海報及橫額印製", "budget": 5000, "actual": 4800, "notes": "各區及學校宣傳" },
-          { "voucher": "憑單#04-1", "item_name": "場刊設計與批量印刷", "budget": 8000, "actual": 7500, "notes": "典禮場刊" },
-          { "voucher": "憑單#04-2", "item_name": "攝影攝錄雜費與快閃記憶卡", "budget": 2000, "actual": 1500, "notes": "林耀鏘統籌" }
+          { "voucher": "09", "item_name": "比賽獎盃(快樂傘及團呼）", "budget": 4500, "actual": 2820, "notes": "實際 2,820" },
+          { "voucher": "10", "item_name": "支部比賽", "budget": 2000, "actual": 0, "notes": "-" },
+          { "voucher": "11", "item_name": "支部工作坊", "budget": 1000, "actual": 2637, "notes": "實際 2,637 超預算" },
+          { "voucher": "12", "item_name": "比賽及成員參與紀念章", "budget": 1000, "actual": 2640, "notes": "實際 2,640 超預算" }
         ]
       },
       {
-        "group_name": "行政及協調組 (總預算: $25,000)",
+        "group_name": "品牌推廣組 (預算 $500)",
         "items": [
-          { "voucher": "憑單#05", "item_name": "秘書處郵寄與文具雜費", "budget": 3000, "actual": 2500, "notes": "通告郵寄" },
-          { "voucher": "憑單#05-1", "item_name": "車輛通行證製作與張貼", "budget": 2000, "actual": 1800, "notes": "警察學院車位" },
-          { "voucher": "憑單#05-2", "item_name": "參加者集體保險費用", "budget": 10000, "actual": 9500, "notes": "承保全體營員" },
-          { "voucher": "憑單#05-3", "item_name": "醫療急救藥箱與防疫物資", "budget": 5000, "actual": 4200, "notes": "救傷站備用" }
+          { "voucher": "13", "item_name": "雜項", "budget": 500, "actual": 0, "notes": "-" }
+        ]
+      },
+      {
+        "group_name": "嘉賓接待組 (預算 $3,600)",
+        "items": [
+          { "voucher": "14", "item_name": "嘉賓輕食", "budget": 2000, "actual": 6000, "notes": "實際 6,000 超預算，原預算 2,000" },
+          { "voucher": "15", "item_name": "嘉賓午膳120@$95", "budget": 11400, "actual": 0, "notes": "11,400 預算" },
+          { "voucher": "16", "item_name": "嘉賓穿梭巴士 x1", "budget": 2000, "actual": 145.4, "notes": "實際 145.4" }
+        ]
+      },
+      {
+        "group_name": "協調組 (預算 $180,900)",
+        "items": [
+          { "voucher": "17", "item_name": "場地佈置及音響", "budget": 130000, "actual": 122900, "notes": "實際 122,900 (預算 130,000)" },
+          { "voucher": "18", "item_name": "旅團代訂餐盒", "budget": 0, "actual": 12705, "notes": "代訂" },
+          { "voucher": "19", "item_name": "工作人員膳食300@$60", "budget": 18000, "actual": 29408.9, "notes": "實際 29,408.9 超預算" },
+          { "voucher": "20", "item_name": "工作人員蒸餾水", "budget": 500, "actual": 228, "notes": "228" },
+          { "voucher": "21", "item_name": "衛生服務", "budget": 22000, "actual": 21700, "notes": "21,700" },
+          { "voucher": "22", "item_name": "救傷服務", "budget": 0, "actual": 1200, "notes": "1,200" },
+          { "voucher": "23", "item_name": "運輸及物資", "budget": 12000, "actual": 10887.9, "notes": "10,887.9" },
+          { "voucher": "24", "item_name": "物資購置", "budget": 5000, "actual": 10784.8, "notes": "10,784.8 超預算" }
+        ]
+      },
+      {
+        "group_name": "服務及發展組 (預算 $21,000)",
+        "items": [
+          { "voucher": "25", "item_name": "捐贈紀念章", "budget": 1500, "actual": 1500, "notes": "1,500" },
+          { "voucher": "26", "item_name": "捐贈物品運輸費", "budget": 1800, "actual": 1800, "notes": "1,800" },
+          { "voucher": "27", "item_name": "NGO 車費 x2", "budget": 4000, "actual": 4300, "notes": "4,300" },
+          { "voucher": "28", "item_name": "NGO 午餐100@$60", "budget": 6000, "actual": 4730, "notes": "4,730" },
+          { "voucher": "29", "item_name": "相架及證書", "budget": 500, "actual": 0, "notes": "-" },
+          { "voucher": "30", "item_name": "NGO 長者褔袋", "budget": 1000, "actual": 775, "notes": "775" }
+        ]
+      },
+      {
+        "group_name": "行政組 (預算 $12,450)",
+        "items": [
+          { "voucher": "31", "item_name": "大會紀念章", "budget": 10000, "actual": 5000, "notes": "5,000" },
+          { "voucher": "32", "item_name": "文具", "budget": 450, "actual": 0, "notes": "-" },
+          { "voucher": "33", "item_name": "會議場租", "budget": 1000, "actual": 220, "notes": "220" },
+          { "voucher": "34", "item_name": "雜項", "budget": 1000, "actual": 32.46, "notes": "32.46" }
+        ]
+      },
+      {
+        "group_name": "可持續發展組 (預算 $2,800)",
+        "items": [
+          { "voucher": "35", "item_name": "Survey 紀念品", "budget": 2800, "actual": 3092.63, "notes": "實際 3,092.63 超預算" }
+        ]
+      },
+      {
+        "group_name": "備用支出 (3%)",
+        "items": [
+          { "voucher": "36", "item_name": "備用支出", "budget": 7300, "actual": 0, "notes": "3%" }
         ]
       }
     ],
     "income": [
-      { "item": "繽紛日參加者費用@$10", "budget": 10000, "actual": 10390, "notes": "預算表實收" },
-      { "item": "旅團代訂餐費@$55", "budget": 0, "actual": 12705, "notes": "代訂餐費實收" },
+      { "item": "繽紛日參加者費用@$10", "budget": 10000, "actual": 10390, "notes": "ISD 2025 實際 10,390 預算 15,000" },
+      { "item": "旅團代訂餐費@$60", "budget": 0, "actual": 12705, "notes": "代訂" },
       { "item": "港島地域童軍基金撥款", "budget": 260000, "actual": 243122.59, "notes": "地域撥款" },
-      { "item": "比賽報名費", "budget": 0, "actual": 600, "notes": "步操比賽" },
-      { "item": "童軍攝影暨多媒體創作專章工作坊@$65", "budget": 0, "actual": 2795, "notes": "專章工作坊" },
-      { "item": "總收入合共", "budget": 270000, "actual": 269612.59, "notes": "總計" }
+      { "item": "比賽報名費", "budget": 0, "actual": 600, "notes": "600 (預算 1,400)" },
+      { "item": "童軍攝影暨多媒體創作專章工作坊@$65", "budget": 0, "actual": 2795, "notes": "2,795" },
+      { "item": "總收入", "budget": 270000, "actual": 269612.59, "notes": "總收入 269,612.59 (預算 270,000)" },
+      { "item": "總支出", "budget": 250650, "actual": 269612.59, "notes": "總支出 250,650 預算，實際 269,612.59 (2025)" },
+      { "item": "剩餘（超支）", "budget": 19350, "actual": 0, "notes": "剩餘 19,350" }
+    ],
+    "expenses": []
+  },
+  "activities": {
+    "maps": [
+      { "id": "map_1", "title": "警察學院場地總圖 (ISD2026)", "description": "黃竹坑警察學院大操場、有蓋操場、主營地 A-F 區、報到處、停車場", "file_url": "", "file_name": "", "created_by": "協調組", "created_at": "2026-07-21" }
+    ],
+    "booths": [
+      { "id": "booth_1", "booth_number": "A01", "booth_name": "童軍技能挑戰", "location": "主營地 A區", "group_name": "第12旅", "theme": "繩結", "game_type": "挑戰", "responsible": "陳小明", "contact": "91234567", "description": "繩結挑戰，完成可獲印章" },
+      { "id": "booth_2", "booth_number": "A02", "booth_name": "定向追蹤", "location": "主營地 A區", "group_name": "第15旅", "theme": "定向", "game_type": "定向", "responsible": "李小華", "contact": "92345678", "description": "定向追蹤遊戲" }
+    ],
+    "gameCards": [
+      { "id": "gamecard_1", "title": "遊戲記錄冊 (Game Passport)", "description": "參考舊版 ISD2025_passport_v696_outline.pdf，集印章換禮物，10個攤位", "file_url": "", "version": "v696", "created_by": "主題節目組" }
+    ],
+    "activities": [
+      { "title": "步操檢閱與比賽", "type": "儀式/比賽", "location": "警察學院大操場", "description": "各旅團步操隊伍接受檢閱與評審", "details": "會操司令員：黃志樂" },
+      { "title": "童軍技能攤位博覽", "type": "攤位遊戲", "location": "主營地 A-F 區", "description": "由各旅團設置之互動遊戲與繩結挑戰攤位", "details": "主題節目組統籌" },
+      { "title": "積極公民獎章工作坊 (VS & RS)", "type": "專章培訓", "location": "課室 1-3", "description": "Scout for Innovative Community Builders 培訓，機電先鋒等概念", "details": "Concept 資料夾內多個 JPG/PDF：666e4da9e4b0fd6f3eff1ffa.jpg, 67fcaef0..., big_waster, Confined Space Robotic Dog, Watersavedave video等" }
     ]
   },
-  "activities": [
-    { "title": "步操檢閱與比賽", "type": "儀式/比賽", "location": "警察學院大操場", "description": "各旅團步操隊伍接受檢閱與評審", "details": "會操司令員：黃志樂 | 步操統籌：黃志樂" },
-    { "title": "童軍技能攤位博覽", "type": "攤位遊戲", "location": "主營地 A-F 區", "description": "由各旅團設置之互動遊戲與繩結挑戰攤位", "details": "主題節目組統籌，集印花換紀念品" },
-    { "title": "积极公民獎章工作坊 (VS & RS)", "type": "專章培訓", "location": "課室 1-3", "description": "Scout for Innovative Community Builders 培訓", "details": "專業導師指導" }
-  ],
-  "meals": [
-    { "meal_id": "meal_1", "date": "2026-10-04", "meal_type": "午餐 (旅團代訂餐)", "menu_desc": "精美便當連飲品 (每位$55)", "headcount": 150, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "" },
-    { "meal_id": "meal_2", "date": "2026-10-04", "meal_type": "工作人員早餐", "menu_desc": "三文治配熱茶", "headcount": 40, "group_name": "協調組", "status": "approved", "requested_by": "林美儀", "approved_by": "袁可秀 (執行副主席)" }
-  ],
+  "meals": {
+    "menus": [
+      { "menu_id": "menu_1", "date": "2026-10-04", "meal_type": "午餐", "menu_desc": "精美便當連飲品", "options": ["A餐 叉燒飯", "B餐 雞扒飯", "C餐 素食", "不吃"], "price": 55, "deadline": "2026-09-20T18:00", "status": "open", "locked": false, "group_name": "全部" },
+      { "menu_id": "menu_2", "date": "2026-10-04", "meal_type": "工作人員早餐", "menu_desc": "三文治配熱茶", "options": ["要", "不吃"], "price": 0, "deadline": "2026-09-20T18:00", "status": "open", "locked": false, "group_name": "工作人員" }
+    ],
+    "orders": []
+  },
   "schedule": [
-    { "time_slot": "07:45 - 08:30", "title": "會操及頒獎禮場地設置劃位", "location": "大操場", "group_name": "協調組", "description": "各功能組別場地佈置" },
-    { "time_slot": "08:30 - 10:30", "title": "參加旅團報到 / 步操比賽後備日", "location": "報到處", "group_name": "接待組", "description": "各隊員於警察學院報到處報到" },
-    { "time_slot": "11:00 - 12:00", "title": "優異旅團及獎勵頒發典禮", "location": "大操場 / 有蓋操場", "group_name": "會操及典禮組", "description": "主禮嘉賓檢閱及頒獎" },
-    { "time_slot": "13:00 - 16:30", "title": "攤位博覽與積極公民工作坊", "location": "營地全區", "group_name": "主題節目組", "description": "各項挑戰活動及專章培訓" }
+    { "time_slot": "07:45 - 08:30", "title": "會操及頒獎禮場地設置劃位", "location": "大操場", "group_name": "協調組", "description": "各功能組別場地佈置 - 協調組：場地佈置、物資運送" },
+    { "time_slot": "08:30 - 10:30", "title": "參加旅團報到 / 步操比賽後備日", "location": "報到處", "group_name": "接待組", "description": "制服團隊報到，貼嘉賓座位紙，營座最後點算，攤位負責人報到佈置 - 步操及典禮組、節目組、行政組" },
+    { "time_slot": "11:00 - 12:00", "title": "優異旅團及獎勵頒發典禮", "location": "大操場 / 有蓋操場", "group_name": "會操及典禮組", "description": "主禮嘉賓檢閱、頒發彩帶及證書、支部最高獎章嘉許信、領袖獎勵" },
+    { "time_slot": "13:00 - 16:30", "title": "攤位博覽與積極公民工作坊", "location": "營地全區", "group_name": "主題節目組", "description": "各項挑戰活動及專章培訓，Scout for SDGs 主題，機電先鋒等" }
   ],
   "supplies": {
     "inventory": [
       { "item_name": "對講機 Walkie-Talkie", "total_qty": 25, "unit": "部", "category": "通訊" },
       { "item_name": "大型戶外帳篷 (3x3m)", "total_qty": 10, "unit": "個", "category": "營具" },
       { "item_name": "Megaphone 揚聲器", "total_qty": 5, "unit": "個", "category": "音響" },
-      { "item_name": "車輛通行證 (11-12/10佈置/正日)", "total_qty": 35, "unit": "張", "category": "交通" }
+      { "item_name": "車輛通行證 (11-12/10佈置/正日)", "total_qty": 35, "unit": "張", "category": "交通" },
+      { "item_name": "箱頭紙", "total_qty": 100, "unit": "張", "category": "文具" },
+      { "item_name": "物資借用表格 v.3", "total_qty": 50, "unit": "份", "category": "文具" }
     ],
     "requests": [
-      { "request_id": "req_1", "item_name": "對講機 Walkie-Talkie", "qty_requested": 5, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "" },
-      { "request_id": "req_2", "item_name": "車輛通行證 (車牌: AM1234)", "qty_requested": 1, "group_name": "會操組", "status": "approved", "requested_by": "張佳良", "approved_by": "黃偉安 (顧問)" }
+      { "request_id": "req_1", "item_name": "對講機 Walkie-Talkie", "qty_requested": 5, "group_name": "主題節目組", "status": "pending", "requested_by": "周恒晉", "approved_by": "", "deadline": "2026-09-20T18:00" }
+    ],
+    "vehicle_passes": [
+      { "pass_id": "veh_1", "plate": "AM1234", "driver_name": "陳大文", "driver_contact": "91234567", "vehicle_type": "私家車", "purpose": "運送音響器材", "group_name": "會操及典禮組", "entry_date": "2026-10-03", "exit_date": "2026-10-04", "parking_location": "警察學院停車場A", "status": "pending", "requested_by": "張佳良", "deadline": "2026-09-20T18:00" }
     ]
   }
 }
