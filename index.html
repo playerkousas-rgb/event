@@ -286,7 +286,7 @@ function parseCSV(text){const lines=text.trim().split('\n');if(!lines.length)ret
 
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
 
-function ScoutEventApp{constructor(){this.init();}init(){}toggleDrawer(){}goHome(){}switchTopTab(){}openLoginModal(){}logout(){}saveChanges(){}discardChanges(){}submitGroupUpload(){}editCurrentMeeting(){}deleteCurrentMeeting(){}closeModal(){}}
+function ScoutEventApp() {constructor(){this.init();}init(){}toggleDrawer(){}goHome(){}switchTopTab(){}openLoginModal(){}logout(){}saveChanges(){}discardChanges(){}submitGroupUpload(){}editCurrentMeeting(){}deleteCurrentMeeting(){}closeModal(){}}
 
 const app=new ScoutEventApp();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
