@@ -92,6 +92,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
   <div id="view-dashboard" class="hidden space-y-6">
     <div class="bg-white rounded-2xl p-5 shadow-sm border flex justify-between items-center"><div><button onclick="app.goHome()" class="text-xs text-sky-600 font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h2 id="dash-event-title" class="text-xl font-bold truncate">-</h2><p id="dash-event-desc" class="text-[12px] text-slate-500">-</p></div><div class="bg-slate-50 px-3 py-2 rounded-xl border text-[11px]"><span class="text-slate-400 block">當前身份 | 公開可看，僅修改需登入，一次永久有效</span><span class="font-bold text-sky-700" id="dash-role-display">-</span></div></div>
 
+    <!-- 簡單卡片模式：按角色顯示常用卡片 -->
+    <div id="simple-card-panel" class="space-y-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 bg-sky-600 text-white rounded-xl flex items-center justify-center text-base flex-shrink-0"><i class="fa-solid fa-id-card"></i></div>
+          <div class="min-w-0">
+            <h3 class="font-bold text-sm flex items-center flex-wrap gap-2">簡單卡片模式 <span id="simple-mode-role-badge" class="bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200 whitespace-nowrap">公開 (未登入)</span></h3>
+            <p id="simple-mode-hint" class="text-[11px] text-slate-500 mt-0.5">未登入以公開身份瀏覽：全部資料可看，僅修改需登入 (一次登入永久有效)。</p>
+          </div>
+        </div>
+        <div class="flex gap-2 flex-shrink-0">
+          <button onclick="app.toggleDashboardMode()" id="dashboard-mode-toggle" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap btn-mobile"><i class="fa-solid fa-table-cells-large mr-1"></i> 完整模式</button>
+        </div>
+      </div>
+      <div id="role-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+      <div class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">說明：簡單卡片模式會根據你的身份 (角色 / 組別) 顯示最常用的卡片，讓新人 30 秒了解活動、各組一眼找到所需資料；所有公開資料仍然全部可看，按「完整模式」可查看全部 4 大類卡片。</div>
+    </div>
+
+    <div id="full-dashboard-sections" class="space-y-6">
     <!-- 公開查閱說明 -->
     <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-4 flex justify-between items-center">
       <div><h3 class="font-bold text-sm">🌍 公開查閱模式</h3><p class="text-[11px] text-emerald-100 mt-1">所有人均可查看 (=公開)，只有要修改資料才需登入，可儲存在瀏覽器，一次登入永久通行，目的是一個什麼都不知道的人用此APP就可了解整個活動和找到需要的資料</p></div>
@@ -140,6 +159,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div onclick="app.openModule('meals'); setTimeout(()=>app.switchMealsTab('monitor'),300)" class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-eye"></i></div><h4 class="font-bold">我的監察 (專門)</h4><p class="text-[11px] text-indigo-100 mt-1">查自己訂餐、物資是否獲批、車輛是否獲批</p></div>
         <div class="bg-white p-5 rounded-2xl border border-dashed shadow-sm"><div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-chart-line"></i></div><h4 class="font-bold">統計儀表板</h4><p class="text-[11px] text-slate-500 mt-1">各分組訂餐統計、物資統計、財務統計 (即將推出)</p></div>
       </div>
+    </div>
     </div>
 
     <!-- 按組別一目了然 - 部門管理中心 -->
@@ -278,6 +298,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <script>
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+// 簡單卡片模式：每個卡片按角色最低等級 (minLevel) 顯示；groups 表示該組成員 (即使等級未達) 亦可看到
+const DASH_CARD_DEFS=[
+  // 1. 認識活動 - 公開 (Level 0+)
+  {id:'announcements',title:'公告及溝通',desc:'最新公告、跨部門協作，公開可看，快速了解活動動態',icon:'fa-solid fa-bullhorn',cardClass:'bg-gradient-to-br from-sky-500 to-blue-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0},
+  {id:'schedule',title:'日程表',desc:'活動當天時間表，各組流程一目了然',icon:'fa-solid fa-calendar-days',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-600',minLevel:0},
+  {id:'activities',title:'場地與活動總覽',desc:'地圖、攤位總表、遊戲卡，快速了解場地與活動內容',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0},
+  {id:'staff',title:'組織架構與聯絡',desc:'誰負責什麼，找人更方便，公開電話',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0},
+  // 2. 參與活動 - 公開 (Level 0+)
+  {id:'theme_badges',title:'活動主題章',desc:'主題章介紹、參加條件，全部人可觀看',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0},
+  {id:'meals',title:'膳食管理',desc:'菜單、截止、可選不吃、列印派發、我的訂餐',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:0},
+  {id:'safety',title:'安全及醫療',desc:'急救、保險、安全指引、危機處理',icon:'fa-solid fa-shield-halved',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0},
+  {id:'documents',title:'文件中心',desc:'通告、指引、表格，全部公開可看',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0},
+  // 3. 後勤支援 - 主任/總主任/副主席以上 (Level 40+ 或所屬組別)
+  {id:'supplies',title:'物資+車輛 (含截止)',desc:'申請、批核、通知、截止日期、車輛登記',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40},
+  {id:'finance',title:'財務管理',desc:'指引、預算、開支申報、結算按銀碼批核',icon:'fa-solid fa-wallet',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-600',minLevel:60,groups:['行政組','財務組']},
+  {id:'admin_group',title:'行政組',desc:'通告、報名、膳食安排、參加旅團 (取代舊手冊)',icon:'fa-solid fa-building',cardClass:'bg-white border shadow-sm',iconClass:'bg-emerald-100 text-emerald-700',minLevel:40,groups:['行政組']},
+  {id:'coordinator_group',title:'協調組',desc:'場地佈置圖、物資借用、箱頭紙、數據',icon:'fa-solid fa-people-roof',cardClass:'bg-white border shadow-sm',iconClass:'bg-orange-100 text-orange-700',minLevel:40,groups:['協調組']},
+  // 4. 協作與管理 - 主任/副主席以上
+  {id:'meetings',title:'會議卡片',desc:'分次會議、上傳議程、會員資料、指定資料夾',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:30},
+  {id:'my_monitor',title:'我的監察 (專門)',desc:'查自己訂餐、物資是否獲批、車輛是否獲批',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,action:"app.openModule('meals'); setTimeout(()=>app.switchMealsTab('monitor'),300)"},
+  {id:'users_bulk',title:'用戶·批量',desc:'全前端、批量開戶、手機友善',icon:'fa-solid fa-users-gear',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:80,action:"app.switchTopTab('users')"},
+  {id:'approvals',title:'批核中心',desc:'膳食、物資、財務待批項目',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:60,action:"app.switchTopTab('approvals')"}
+];
 const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v6',users:(eid)=>`event_users_${eid}`,meetings:(eid)=>`event_meetings_v6_${eid}`,staff:(eid)=>`event_staff_v6_${eid}`,finance:(eid)=>`event_finance_v6_${eid}`,supplies:(eid)=>`event_supplies_v6_${eid}`,meals:(eid)=>`event_meals_v6_${eid}`,activities:(eid)=>`event_activities_v6_${eid}`,theme_badges:(eid)=>`event_theme_badges_v6_${eid}`,documents:(eid)=>`event_documents_v6_${eid}`,announcements:(eid)=>`event_announcements_${eid}`,safety:(eid)=>`event_safety_${eid}`,notifications:(eid,uid)=>`event_notifications_${eid}_${uid}`,pending:(eid)=>`event_pending_${eid}`,config:(eid)=>`event_config_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -344,7 +387,46 @@ class ScoutEventApp{
   async verifyAndEnterEvent(id,pwd){const ev=this.eventsList.find(e=>e.event_id===id); if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'verifyEventPassword',api_key:this.apiKey,event_id:id,password:pwd})}); const j=await res.json(); if(!j.success){showToast('密碼錯誤','error'); return;}}catch(e){}} localStorage.setItem(`event_pwd_${id}`,pwd); this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('dash-event-title').textContent=this.currentEvent.event_name; document.getElementById('dash-event-desc').textContent=this.currentEvent.description||''; document.getElementById('current-event-subtitle').textContent=this.currentEvent.event_name; if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('dash-event-title').textContent=this.currentEvent.event_name; document.getElementById('dash-event-desc').textContent=this.currentEvent.description||''; document.getElementById('current-event-subtitle').textContent=this.currentEvent.event_name; if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
+  roleLevel(role){return ROLE_HIERARCHY[role]||0;}
+  canSeeRoleCard(def){
+    if(!this.currentUser) return def.minLevel<=0;
+    const lvl=this.roleLevel(this.currentUser.role);
+    if(lvl>=100) return true;
+    if(lvl>=def.minLevel) return true;
+    if(def.groups&&def.groups.length){const g=this.currentUser.group_name||''; if(def.groups.some(x=>g.includes(x)||x.includes(g))) return true;}
+    return false;
+  }
+  renderRoleCards(){
+    const grid=document.getElementById('role-cards-grid'); if(!grid) return;
+    const user=this.currentUser;
+    const badge=document.getElementById('simple-mode-role-badge');
+    const hint=document.getElementById('simple-mode-hint');
+    if(badge) badge.textContent=user?(ROLE_LABELS[user.role]||user.role):'公開 (未登入)';
+    if(hint) hint.textContent=user?('身份：'+(user.name||'')+' · '+(ROLE_LABELS[user.role]||user.role)+(user.group_name?(' · '+user.group_name):'')+'。已按角色顯示常用卡片，公開資料仍全部可看。'):'未登入以公開身份瀏覽：全部資料可看，僅修改需登入 (一次登入永久有效)。';
+    const visible=DASH_CARD_DEFS.filter(d=>this.canSeeRoleCard(d));
+    if(!visible.length){grid.innerHTML='<div class="col-span-full text-center text-[12px] text-slate-400 bg-white border rounded-2xl p-6">暫無可用卡片</div>'; return;}
+    grid.innerHTML=visible.map(d=>{
+      const whiteCard=!d.cardClass.includes('text-white');
+      return `<div onclick="${d.action||("app.openModule('"+d.id+"')")}" class="p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${d.cardClass}"><div class="w-11 h-11 ${d.iconClass} rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${d.icon}"></i></div><h4 class="font-bold text-[13px]">${escapeHtml(d.title)}</h4><p class="text-[11px] ${whiteCard?'text-slate-500':'text-white/80'} mt-0.5">${escapeHtml(d.desc)}</p></div>`;
+    }).join('');
+  }
+  applyDashboardMode(){
+    const simple=localStorage.getItem('simple_card_mode')!=='false';
+    const simplePanel=document.getElementById('simple-card-panel');
+    const fullSections=document.getElementById('full-dashboard-sections');
+    const toggle=document.getElementById('dashboard-mode-toggle');
+    this.renderRoleCards();
+    if(simplePanel) simplePanel.classList.toggle('hidden',!simple);
+    if(fullSections) fullSections.classList.toggle('hidden',simple);
+    if(toggle) toggle.innerHTML=simple?'<i class="fa-solid fa-table-cells-large mr-1"></i> 完整模式':'<i class="fa-solid fa-bolt mr-1"></i> 簡單模式';
+  }
+  toggleDashboardMode(){
+    const simple=localStorage.getItem('simple_card_mode')!=='false';
+    localStorage.setItem('simple_card_mode',simple?'false':'true');
+    this.applyDashboardMode();
+    showToast(simple?'已切換為完整模式':'已切換為簡單卡片模式','');
+  }
   renderGroupQuickAccess(){
     const container=document.getElementById('group-quick-access');
     if(!container) return;
