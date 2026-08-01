@@ -8,6 +8,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
 <script>
+window.tailwind=window.tailwind||{};
 tailwind.config={theme:{extend:{colors:{brand:{50:'#f0f9ff',100:'#e0f2fe',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e'}}}}}
 </script>
 <style>
@@ -75,7 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div><h2 class="text-2xl sm:text-3xl font-extrabold">童軍活動管理系統 v7.0 完全取代版</h2><p class="mt-2 text-sky-100 text-[13px] leading-relaxed">已完全取代舊執行手冊 https://sites.google.com/view/isd2025om/home ，整合行政組、協調組、主題節目組等所有舊版文件，優化為卡片式、手機友善、部門間溝通更完善。所有工作人員更易找到要找的資料。</p></div>
         <div class="flex flex-col sm:flex-row gap-2">
           <div class="flex-1 relative"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/60 text-xs"></i><input id="global-search" oninput="app.globalSearch(this.value)" placeholder="全域搜尋：會議、文件、財務、物資、膳食、地圖、攤位... (公開可看)" class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-white placeholder:text-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"></div>
-          <button onclick="app.goHome()" class="bg-white text-sky-800 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile">進入活動</button>
+          <button onclick="app.enterFirstEvent()" class="bg-white text-sky-800 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile">進入活動</button>
           <button onclick="app.openModule('announcements')" class="bg-amber-400 text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile"><i class="fa-solid fa-bullhorn mr-1"></i> 公告及溝通</button>
         </div>
         <div class="text-[11px] text-white/80 bg-black/20 rounded-xl p-2.5 border border-white/10">參考舊手冊已加入卡片：行政組(通告·報名·膳食安排·參加旅團)、協調組(場地佈置圖·物資借用表·箱頭紙·佈置數據)、主題節目組(遊戲卡·攤位總表·積極公民)、安全及醫療、交通及泊車。全部公開可看，僅修改需登入。</div>
@@ -277,9 +278,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <script>
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
-const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v6',users:(eid)=>`event_users_${eid}`,meetings:(eid)=>`event_meetings_v6_${eid}`,staff:(eid)=>`event_staff_v6_${eid}`,finance:(eid)=>`event_finance_v6_${eid}`,supplies:(eid)=>`event_supplies_v6_${eid}`,meals:(eid)=>`event_meals_v6_${eid}`,activities:(eid)=>`event_activities_v6_${eid}`,theme_badges:(eid)=>`event_theme_badges_v6_${eid}`,documents:(eid)=>`event_documents_v6_${eid}`,notifications:(eid,uid)=>`event_notifications_${eid}_${uid}`,pending:(eid)=>`event_pending_${eid}`,config:(eid)=>`event_config_${eid}`};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v6',users:(eid)=>`event_users_${eid}`,meetings:(eid)=>`event_meetings_v6_${eid}`,staff:(eid)=>`event_staff_v6_${eid}`,finance:(eid)=>`event_finance_v6_${eid}`,supplies:(eid)=>`event_supplies_v6_${eid}`,meals:(eid)=>`event_meals_v6_${eid}`,activities:(eid)=>`event_activities_v6_${eid}`,theme_badges:(eid)=>`event_theme_badges_v6_${eid}`,documents:(eid)=>`event_documents_v6_${eid}`,announcements:(eid)=>`event_announcements_${eid}`,safety:(eid)=>`event_safety_${eid}`,notifications:(eid,uid)=>`event_notifications_${eid}_${uid}`,pending:(eid)=>`event_pending_${eid}`,config:(eid)=>`event_config_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
-function escapeHtml(s){return String(s||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));}
+function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
 function parseCSV(text){const lines=text.trim().split(/\\r?\\n/);if(!lines.length)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^\"|\"$/g,''));const out=[];for(let i=1;i<lines.length;i++){const line=lines[i];if(!line.trim())continue;const cols=[];let cur='',inQ=false;for(let c=0;c<line.length;c++){const ch=line[c];if(ch==='\"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim().replace(/^\"|\"$/g,''));cur='';}else cur+=ch;}cols.push(cur.trim().replace(/^\"|\"$/g,''));const obj={};headers.forEach((h,idx)=>obj[h]=cols[idx]||'');out.push(obj);}return out;}
 function downloadDataUrl(fileName,dataUrl){const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();a.remove();}
@@ -342,6 +343,7 @@ class ScoutEventApp{
   submitEventPassword(e){e.preventDefault(); this.verifyAndEnterEvent(this.pendingEventId,document.getElementById('event-pwd-input').value);}
   async verifyAndEnterEvent(id,pwd){const ev=this.eventsList.find(e=>e.event_id===id); if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'verifyEventPassword',api_key:this.apiKey,event_id:id,password:pwd})}); const j=await res.json(); if(!j.success){showToast('密碼錯誤','error'); return;}}catch(e){}} localStorage.setItem(`event_pwd_${id}`,pwd); this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
+  async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
   async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('dash-event-title').textContent=this.currentEvent.event_name; document.getElementById('dash-event-desc').textContent=this.currentEvent.description||''; document.getElementById('current-event-subtitle').textContent=this.currentEvent.event_name; if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
   renderGroupQuickAccess(){
     const container=document.getElementById('group-quick-access');
@@ -431,7 +433,7 @@ class ScoutEventApp{
     const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){ this.eventData.staff=localStaff; }
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
-  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',theme_badges:'活動主題章'}[key]||key; 
+  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',theme_badges:'活動主題章',announcements:'公告及溝通',safety:'安全及醫療',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車'}[key]||key;
     if(key==='meetings'){
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
@@ -904,6 +906,278 @@ class ScoutEventApp{
   exportActivitiesData(){
     const data=this.getActivitiesData();
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`activities_${todayISO()}.json`; a.click(); showToast('已匯出活動資料 JSON','success');
+  }
+
+
+  /* ===================== Documents & Theme Badge Modules ===================== */
+  canUploadDocument(){
+    const role=this.currentUser?.role||'';
+    const group=this.currentUser?.group_name||'';
+    const lvl=ROLE_HIERARCHY[role]||0;
+    return this.isAdmin() || lvl>=60 || (lvl>=40 && group.includes('行政'));
+  }
+  canUploadThemeBadge(){
+    const lvl=ROLE_HIERARCHY[this.currentUser?.role]||0;
+    return this.isAdmin() || lvl>=60;
+  }
+  getDocumentsData(){
+    const key=LS.documents(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    const normalize=(raw)=>{
+      const list=Array.isArray(raw)?raw:(raw?.docs||raw?.documents||[]);
+      return {docs:list.map((d,i)=>({
+        id:d.id||d.document_id||'doc_'+i,
+        title:d.title||d.name||'未命名文件',
+        category:d.category||'文件',
+        description:d.description||d.desc||'',
+        file_name:d.file_name||d.fileName||'',
+        file_url:d.file_url||d.url||'',
+        file_data:d.file_data||d.data_url||'',
+        uploaded_by:d.uploaded_by||d.created_by||'',
+        date:d.date||d.created_at||''
+      }))};
+    };
+    if(local) return normalize(local);
+    return normalize(this.eventData['documents']||[]);
+  }
+  saveDocumentsData(data){
+    const normalized={docs:(data.docs||[])};
+    localStorage.setItem(LS.documents(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(normalized));
+    this.eventData['documents']=normalized.docs;
+  }
+  renderDocumentsModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    const data=this.getDocumentsData();
+    const q=(document.getElementById('document-search')?.value||'').toLowerCase();
+    const cat=(document.getElementById('document-category-filter')?.value||'');
+    const canUpload=this.canUploadDocument();
+    const categories=[...new Set(data.docs.map(d=>d.category).filter(Boolean))].sort();
+    const filtered=data.docs.filter(d=>{
+      const hit=!q || (d.title+d.category+d.description+d.uploaded_by).toLowerCase().includes(q);
+      const catOk=!cat || d.category===cat;
+      return hit && catOk;
+    });
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700">
+          <b>📁 文件中心：</b>通告、指引、表格集中管理；全部公開可查閱，只有上傳/修改需要登入權限。
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          ${canUpload?`<button onclick="app.openDocumentForm()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件</button>`:''}
+          <input id="document-search" value="${escapeHtml(q)}" placeholder="搜尋文件/分類" oninput="app.renderDocumentsModule()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
+          <select id="document-category-filter" onchange="app.renderDocumentsModule()" class="px-3 py-2 border rounded-xl text-xs bg-white"><option value="">全部分類</option>${categories.map(c=>`<option value="${escapeHtml(c)}" ${cat===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select>
+          <button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${filtered.map(d=>`
+            <div class="border rounded-xl p-4 bg-white space-y-2">
+              <div class="flex justify-between items-start gap-2"><div><b class="text-[13px]">${escapeHtml(d.title)}</b><div class="mt-1 flex gap-2 flex-wrap"><span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span>${d.file_name?`<span class="bg-sky-50 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200">${escapeHtml(d.file_name)}</span>`:''}</div></div><div class="flex gap-1">${canUpload?`<button onclick="app.openDocumentForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteDocument('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
+              <div class="text-[11px] text-slate-600 whitespace-pre-line">${escapeHtml(d.description||'')}</div>
+              <div class="text-[10px] text-slate-400">上載：${escapeHtml(d.uploaded_by||'')} ${d.date?' | '+escapeHtml(d.date):''}</div>
+              <div class="flex gap-2"><button onclick="app.downloadDocument('${d.id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>開啟/下載</button></div>
+            </div>
+          `).join('') || '<p class="text-xs text-slate-400 py-8 text-center md:col-span-2">暫無文件</p>'}
+        </div>
+      </div>
+    `;
+  }
+  openDocumentForm(id=null){
+    if(!this.canUploadDocument()){ showToast('僅管理員/行政組總主任以上可上傳','error'); return; }
+    const data=this.getDocumentsData();
+    const existing=id?data.docs.find(d=>d.id===id):null;
+    const html=`
+      <input type="hidden" id="doc-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="doc-form-id" value="${existing?.id||''}">
+      <div class="space-y-3">
+        <div><label class="text-[11px] font-bold">文件標題 *</label><input id="doc-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分類</label><input id="doc-category" value="${escapeHtml(existing?.category||'通告')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">外部連結</label><input id="doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+        <div><label class="text-[11px] font-bold">說明</label><textarea id="doc-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+        <div><label class="text-[11px] font-bold">上傳檔案 (可選，儲存在瀏覽器)</label><input type="file" id="doc-file" class="w-full text-xs mt-1"><div class="text-[10px] text-slate-400 mt-1">${existing?.file_name?'現有檔案：'+escapeHtml(existing.file_name):'如不選擇檔案，可只填外部連結。'}</div></div>
+      </div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯文件':'上傳文件';
+    document.getElementById('record-form-fields').innerHTML=html;
+    document.getElementById('record-form').onsubmit=(e)=>{e.preventDefault(); this.submitDocumentForm();};
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+  async submitDocumentForm(){
+    const mode=document.getElementById('doc-form-mode').value;
+    const id=document.getElementById('doc-form-id').value;
+    const title=document.getElementById('doc-title').value.trim();
+    if(!title){ showToast('請填寫文件標題','error'); return; }
+    const data=this.getDocumentsData();
+    const existing=id?data.docs.find(d=>d.id===id):null;
+    const file=document.getElementById('doc-file').files[0];
+    let fileData=existing?.file_data||'';
+    let fileName=existing?.file_name||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; }
+    const record={
+      id:existing?.id||'doc_'+Date.now(),
+      title,
+      category:document.getElementById('doc-category').value.trim()||'文件',
+      description:document.getElementById('doc-desc').value.trim(),
+      file_url:document.getElementById('doc-url').value.trim(),
+      file_name:fileName,
+      file_data:fileData,
+      uploaded_by:this.currentUser?.name||'',
+      date:existing?.date||todayISO()
+    };
+    if(mode==='edit'){
+      const idx=data.docs.findIndex(d=>d.id===id);
+      if(idx>=0) data.docs[idx]={...data.docs[idx],...record};
+    }else data.docs.unshift(record);
+    this.saveDocumentsData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('文件已保存','success');
+    this.renderDocumentsModule();
+  }
+  downloadDocument(id){
+    const d=this.getDocumentsData().docs.find(x=>x.id===id);
+    if(!d) return;
+    if(d.file_data){ downloadDataUrl(d.file_name||`${d.title}.txt`, d.file_data); return; }
+    if(d.file_url && d.file_url!=='#'){ window.open(d.file_url,'_blank'); return; }
+    showToast('此文件暫未附加檔案或連結','warning');
+  }
+  deleteDocument(id){
+    if(!this.canUploadDocument()) return;
+    if(!confirm('確定刪除此文件？')) return;
+    const data=this.getDocumentsData();
+    data.docs=data.docs.filter(d=>d.id!==id);
+    this.saveDocumentsData(data);
+    this.renderDocumentsModule();
+    showToast('文件已刪除','warning');
+  }
+  downloadDocumentTemplate(){
+    const csv='title,category,description,file_url\n活動通告,通告,活動重要資訊,https://example.com/file.pdf\n報名表格,表格,旅團報名資料,\n';
+    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='documents_template.csv'; a.click(); showToast('已下載文件範本','success');
+  }
+  exportDocumentsData(){
+    const data=this.getDocumentsData();
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`documents_${todayISO()}.json`; a.click(); showToast('已匯出文件 JSON','success');
+  }
+  getThemeBadgesData(){
+    const key=LS.theme_badges(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    const normalize=(raw)=>{
+      const list=Array.isArray(raw)?raw:(raw?.badges||[]);
+      return {badges:list.map((b,i)=>({
+        id:b.id||b.badge_id||'badge_'+i,
+        title:b.title||b.name||'活動主題章',
+        branch:b.branch||'全體成員',
+        requirements:b.requirements||b.criteria||'',
+        description:b.description||b.desc||'',
+        file_name:b.file_name||'',
+        file_url:b.file_url||b.url||'',
+        file_data:b.file_data||'',
+        created_by:b.created_by||'',
+        created_at:b.created_at||''
+      }))};
+    };
+    if(local) return normalize(local);
+    return normalize(this.eventData['theme_badges']||[
+      {id:'badge_1',title:'Scout for SDGs 活動主題章',branch:'小童軍 / 幼童軍 / 童軍 / 深資童軍 / 樂行童軍',requirements:'完成指定攤位任務及集印，認識可持續發展目標。',description:'主題章資料公開可看；詳細參加條件可由副主席以上上傳更新。',created_by:'主題節目組',created_at:todayISO()},
+      {id:'badge_2',title:'積極公民獎章活動記錄',branch:'幼童軍及童軍',requirements:'參與活動並完成指定服務/學習紀錄。',description:'可下載或查閱回條、記錄冊及參與條件。',created_by:'行政組',created_at:todayISO()}
+    ]);
+  }
+  saveThemeBadgesData(data){
+    const normalized={badges:data.badges||[]};
+    localStorage.setItem(LS.theme_badges(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(normalized));
+    this.eventData['theme_badges']=normalized.badges;
+  }
+  renderThemeBadgesModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    const data=this.getThemeBadgesData();
+    const q=(document.getElementById('theme-badge-search')?.value||'').toLowerCase();
+    const canUpload=this.canUploadThemeBadge();
+    const list=data.badges.filter(b=>!q||(b.title+b.branch+b.requirements+b.description).toLowerCase().includes(q));
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-[11px] leading-relaxed text-purple-900"><b>🏅 活動主題章：</b>參加條件、回條、記錄冊及相關文件集中在這裡；全部公開可看，副主席以上可更新。</div>
+        <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openThemeBadgeForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-award mr-1"></i>新增主題章</button>`:''}<input id="theme-badge-search" value="${escapeHtml(q)}" placeholder="搜尋主題章/支部/條件" oninput="app.renderThemeBadgesModule()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${list.map(b=>`
+          <div class="border rounded-xl p-4 bg-white space-y-2">
+            <div class="flex justify-between items-start gap-2"><div><b class="text-[14px] text-purple-900">${escapeHtml(b.title)}</b><div class="text-[10px] text-purple-700 mt-1 bg-purple-50 border border-purple-100 rounded-full px-2 py-0.5 inline-block">${escapeHtml(b.branch)}</div></div><div class="flex gap-1">${canUpload?`<button onclick="app.openThemeBadgeForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteThemeBadge('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
+            <div class="text-[11px] text-slate-700 whitespace-pre-line"><b>參加條件：</b>${escapeHtml(b.requirements||'待補充')}</div>
+            <div class="text-[11px] text-slate-600 whitespace-pre-line">${escapeHtml(b.description||'')}</div>
+            <div class="text-[10px] text-slate-400">更新：${escapeHtml(b.created_by||'')} ${b.created_at?' | '+escapeHtml(b.created_at):''}</div>
+            <div class="flex gap-2">${(b.file_data||b.file_url)?`<button onclick="app.downloadThemeBadgeFile('${b.id}')" class="bg-purple-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載資料</button>`:'<span class="text-[10px] text-slate-400">暫無附件</span>'}</div>
+          </div>
+        `).join('') || '<p class="text-xs text-slate-400 py-8 text-center md:col-span-2">暫無主題章資料</p>'}</div>
+      </div>
+    `;
+  }
+  openThemeBadgeForm(id=null){
+    if(!this.canUploadThemeBadge()){ showToast('僅副主席以上可上傳主題章資料','error'); return; }
+    const data=this.getThemeBadgesData();
+    const existing=id?data.badges.find(b=>b.id===id):null;
+    const html=`
+      <input type="hidden" id="badge-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="badge-form-id" value="${existing?.id||''}">
+      <div class="space-y-3">
+        <div><label class="text-[11px] font-bold">主題章名稱 *</label><input id="badge-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">適用支部</label><input id="badge-branch" value="${escapeHtml(existing?.branch||'全體成員')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">參加條件</label><textarea id="badge-requirements" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.requirements||'')}</textarea></div>
+        <div><label class="text-[11px] font-bold">說明</label><textarea id="badge-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+        <div><label class="text-[11px] font-bold">外部連結</label><input id="badge-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">附件 (可選)</label><input type="file" id="badge-file" class="w-full text-xs mt-1"><div class="text-[10px] text-slate-400 mt-1">${existing?.file_name?'現有附件：'+escapeHtml(existing.file_name):'可上傳回條、記錄冊或主題章圖片。'}</div></div>
+      </div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯活動主題章':'新增活動主題章';
+    document.getElementById('record-form-fields').innerHTML=html;
+    document.getElementById('record-form').onsubmit=(e)=>{e.preventDefault(); this.submitThemeBadgeForm();};
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+  async submitThemeBadgeForm(){
+    const mode=document.getElementById('badge-form-mode').value;
+    const id=document.getElementById('badge-form-id').value;
+    const title=document.getElementById('badge-title').value.trim();
+    if(!title){ showToast('請填寫主題章名稱','error'); return; }
+    const data=this.getThemeBadgesData();
+    const existing=id?data.badges.find(b=>b.id===id):null;
+    const file=document.getElementById('badge-file').files[0];
+    let fileData=existing?.file_data||'';
+    let fileName=existing?.file_name||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; }
+    const record={
+      id:existing?.id||'badge_'+Date.now(),
+      title,
+      branch:document.getElementById('badge-branch').value.trim()||'全體成員',
+      requirements:document.getElementById('badge-requirements').value.trim(),
+      description:document.getElementById('badge-desc').value.trim(),
+      file_url:document.getElementById('badge-url').value.trim(),
+      file_name:fileName,
+      file_data:fileData,
+      created_by:this.currentUser?.name||'',
+      created_at:existing?.created_at||todayISO()
+    };
+    if(mode==='edit'){
+      const idx=data.badges.findIndex(b=>b.id===id);
+      if(idx>=0) data.badges[idx]={...data.badges[idx],...record};
+    }else data.badges.unshift(record);
+    this.saveThemeBadgesData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('主題章資料已保存','success');
+    this.renderThemeBadgesModule();
+  }
+  downloadThemeBadgeFile(id){
+    const b=this.getThemeBadgesData().badges.find(x=>x.id===id);
+    if(!b) return;
+    if(b.file_data){ downloadDataUrl(b.file_name||`${b.title}.txt`, b.file_data); return; }
+    if(b.file_url && b.file_url!=='#'){ window.open(b.file_url,'_blank'); return; }
+    showToast('此主題章暫未附加檔案或連結','warning');
+  }
+  deleteThemeBadge(id){
+    if(!this.canUploadThemeBadge()) return;
+    if(!confirm('確定刪除此主題章資料？')) return;
+    const data=this.getThemeBadgesData();
+    data.badges=data.badges.filter(b=>b.id!==id);
+    this.saveThemeBadgesData(data);
+    this.renderThemeBadgesModule();
+    showToast('主題章資料已刪除','warning');
+  }
+  exportThemeBadges(){
+    const data=this.getThemeBadgesData();
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`theme_badges_${todayISO()}.json`; a.click(); showToast('已匯出主題章 JSON','success');
   }
 
   /* ===================== Meals Enhanced Module v6.7 ===================== */
@@ -1383,8 +1657,8 @@ class ScoutEventApp{
     reader.readAsText(file);
   }
 
-  /* ===================== Staff Enhanced Module ===================== */
-  getStaffData(){
+  /* ===================== Supplies Enhanced Module ===================== */
+  getSuppliesData(){
     const key=LS.supplies(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
     if(local){
@@ -1589,6 +1863,7 @@ class ScoutEventApp{
       `;
     }
     this.renderSuppliesVehicle();
+  }
   switchSuppliesTab(tab){
     this.suppliesSubTab=tab;
     document.querySelectorAll('[id^="supplies-tab-"]').forEach(el=>el.classList.add('hidden'));
@@ -1803,7 +2078,7 @@ class ScoutEventApp{
     });
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast(`已${approvedQty!==data.requests[idx].qty_requested?'修改批核':'批准'}，已通知提交人 (再登入時彈出)','success');
+    showToast(`已${approvedQty!==data.requests[idx].qty_requested?'修改批核':'批准'}，已通知提交人 (再登入時彈出)`,'success');
     this.renderSuppliesModule();
   }
   rejectSupplyRequest(requestId){
@@ -4038,7 +4313,7 @@ class ScoutEventApp{
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`coordinator_group_${todayISO()}.json`; a.click();
   }
-  renderTransportModule(){ document.getElementById('module-content').innerHTML='<div class="bg-white border rounded-xl p-4"><h4 class="font-bold text-sm">交通及泊車 (已整合至物資管理→車輛通行證)</h4><p class="text-[11px] text-slate-500 mt-2">車輛通行證申請已在物資管理卡片內，包含車牌、司機、用途、進出日期、停泊位置、截止日期、批核、通知、後台紀錄。另可在此補充交通流量、泊車位置圖等。</p><button onclick="app.openModule(\'supplies\')" class="mt-3 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">前往物資+車輛</button></div>'; }
+  renderTransportModule(){ document.getElementById('module-content').innerHTML=`<div class="bg-white border rounded-xl p-4"><h4 class="font-bold text-sm">交通及泊車 (已整合至物資管理→車輛通行證)</h4><p class="text-[11px] text-slate-500 mt-2">車輛通行證申請已在物資管理卡片內，包含車牌、司機、用途、進出日期、停泊位置、截止日期、批核、通知、後台紀錄。另可在此補充交通流量、泊車位置圖等。</p><button onclick="app.openModule('supplies')" class="mt-3 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">前往物資+車輛</button></div>`; }
   renderScheduleModule(){
     const container=document.getElementById('module-content');
     if(!this.scheduleSubTab) this.scheduleSubTab='overall';
@@ -4133,6 +4408,19 @@ class ScoutEventApp{
     if(!container) return;
     container.innerHTML=`<div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">時段</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">地點</th><th class="px-2 py-1 text-left">組別</th></tr></thead><tbody>${data.map(s=>`<tr><td class="px-2 py-1">${escapeHtml(s.time_slot||'')}</td><td class="px-2 py-1">${escapeHtml(s.title||'')}</td><td class="px-2 py-1">${escapeHtml(s.location||'')}</td><td class="px-2 py-1">${escapeHtml(s.group_name||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無原始資料</td></tr>'}</tbody></table></div>`;
   }
+  printSchedule(){
+    const area=document.getElementById('module-content');
+    if(!area){ showToast('找不到日程內容','error'); return; }
+    const win=window.open('','_blank');
+    if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
+    win.document.write(`<html><head><title>日程表</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button,label,input,select{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.close();
+  }
+  exportSchedule(){
+    const data={event_id:this.currentEvent?.event_id||'isd_2026', exported_at:new Date().toISOString(), schedule:this.eventData['schedule']||[], custom:JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'isd_2026')+'_custom_schedule')||'null')};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`schedule_${todayISO()}.json`; a.click(); showToast('已匯出日程 JSON','success');
+  }
   async handleScheduleWordUpload(file){
     if(!file){ showToast('請選擇 Word','warning'); return; }
     const overlay=document.getElementById('savingOverlay');
@@ -4191,7 +4479,7 @@ class ScoutEventApp{
   sendMeetingEmails(){if(!confirm('發送會議提醒 Email？')) return; showToast('已發送 (Mock)','success');}
 }
 
-const app=new ScoutEventApp();
+const app=window.app=new ScoutEventApp();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
 </script>
 </body>
