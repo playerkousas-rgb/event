@@ -9,28 +9,45 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
 <script>
 window.tailwind=window.tailwind||{};
-tailwind.config={theme:{extend:{colors:{brand:{50:'#f0f9ff',100:'#e0f2fe',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e'}}}}}
+tailwind.config={theme:{extend:{colors:{brand:{50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',300:'#c4b5fd',400:'#a78bfa',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9',800:'#5b21b6',900:'#4c1d95'}}}}}
 </script>
 <style>
-:root{--brand:#0c4a6e;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-hover:0 8px 24px rgba(0,0,0,0.12);}
+:root{--brand:#6d28d9;--brand-dark:#5b21b6;--brand-deep:#4c1d95;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-hover:0 8px 24px rgba(0,0,0,0.12);}
 *{ -webkit-tap-highlight-color:transparent; }
 body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","Microsoft JhengHei",sans-serif;overscroll-behavior:none;background:#F8FAFC;}
 .card-hover{transition:all .22s ease;} .card-hover:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);}
-.hero-gradient{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0284c7 100%);}
+.hero-gradient{background:linear-gradient(135deg,#4c1d95 0%,#6d28d9 55%,#8b5cf6 100%);}
+/* ── 童軍總會 紫 + 白 主調：把全站 sky/blue 重新對應為 violet 系 (顏色日後再細調) ── */
+.bg-sky-50,.bg-blue-50{background-color:#f5f3ff!important}.text-sky-50{color:#f5f3ff!important}
+.bg-sky-100,.bg-blue-100{background-color:#ede9fe!important}.text-sky-100{color:#ede9fe!important}
+.bg-sky-200,.bg-blue-200{background-color:#ddd6fe!important}.text-sky-200{color:#ddd6fe!important}
+.bg-sky-300{background-color:#c4b5fd!important}.text-sky-300{color:#c4b5fd!important}
+.bg-sky-400{background-color:#a78bfa!important}.text-sky-400{color:#a78bfa!important}
+.bg-sky-500,.bg-blue-500{background-color:#8b5cf6!important}.text-sky-500{color:#8b5cf6!important}
+.bg-sky-600,.bg-blue-600{background-color:#7c3aed!important}.text-sky-600{color:#7c3aed!important}
+.bg-sky-700,.bg-blue-700{background-color:#6d28d9!important}.text-sky-700{color:#6d28d9!important}
+.bg-sky-800{background-color:#5b21b6!important}.text-sky-800{color:#5b21b6!important}
+.bg-sky-900{background-color:#4c1d95!important}.text-sky-900{color:#4c1d95!important}
+.border-sky-200,.border-blue-200{border-color:#ddd6fe!important}.border-sky-300{border-color:#c4b5fd!important}.border-sky-500\/30{border-color:rgba(139,92,246,.3)!important}.border-sky-700{border-color:#6d28d9!important}
+.bg-sky-500\/20{background-color:rgba(139,92,246,.2)!important}.text-sky-500\/20{color:rgba(139,92,246,.2)!important}
+.from-sky-500{--tw-gradient-from:#8b5cf6!important;--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)!important}
+.to-blue-600{--tw-gradient-to:#7c3aed!important}
+.from-sky-600{--tw-gradient-from:#7c3aed!important}
+.to-indigo-600{--tw-gradient-to:#6d28d9!important}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:999px;font-size:13px;z-index:5000;opacity:0;transition:all .35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;max-width:92%;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.2);} .toast.show{transform:translateX(-50%) translateY(0);opacity:1} .toast.success{background:#16a34a}.toast.error{background:#dc2626}.toast.warning{background:#f59e0b;color:#000}
-.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #0c4a6e;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,0.12);transform:translateY(110%);transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);z-index:999} .save-bar.visible{transform:translateY(0)} .save-bar .dot{width:8px;height:8px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;display:inline-block} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.2)}}
-.saving-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:4000;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(6px)} .saving-overlay.active{display:flex} .spinner{width:46px;height:46px;border:4px solid #e2e8f0;border-top-color:#0c4a6e;border-radius:50%;animation:spin 1s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #6d28d9;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,0.12);transform:translateY(110%);transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);z-index:999} .save-bar.visible{transform:translateY(0)} .save-bar .dot{width:8px;height:8px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;display:inline-block} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.2)}}
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:4000;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(6px)} .saving-overlay.active{display:flex} .spinner{width:46px;height:46px;border:4px solid #e2e8f0;border-top-color:#6d28d9;border-radius:50%;animation:spin 1s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
 .modal{backdrop-filter:blur(6px)} .modal-content-anim{animation:modalPop .28s cubic-bezier(0.34,1.56,0.64,1)} @keyframes modalPop{from{opacity:0;transform:scale(.92) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.nav-tab{flex:0 0 auto;min-width:96px;padding:12px 14px;text-align:center;cursor:pointer;border:none;background:none;font-size:13px;font-weight:600;color:#64748b;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;border-radius:8px 8px 0 0} .nav-tab:hover{background:#f1f5f9;color:#0f172a} .nav-tab.active{color:#0c4a6e;border-bottom-color:#0c4a6e;background:#e0f2fe}
+.nav-tab{flex:0 0 auto;min-width:96px;padding:12px 14px;text-align:center;cursor:pointer;border:none;background:none;font-size:13px;font-weight:600;color:#64748b;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;border-radius:8px 8px 0 0} .nav-tab:hover{background:#f1f5f9;color:#0f172a} .nav-tab.active{color:#6d28d9;border-bottom-color:#6d28d9;background:#ede9fe}
 .drawer{position:fixed;inset:0;z-index:60;display:none} .drawer.active{display:flex} .drawer-backdrop{flex:1;background:rgba(15,23,42,0.55);backdrop-filter:blur(2px)} .drawer-panel{width:84%;max-width:320px;background:#fff;height:100%;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:flex;flex-direction:column;}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#0c4a6e;font-weight:700} .bottom-nav button i{font-size:18px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
-.meeting-card{border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:#fff;transition:all .22s ease;cursor:pointer} .meeting-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:#0284c7}
-.meeting-number{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0c4a6e,#0284c7);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.meeting-card{border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:#fff;transition:all .22s ease;cursor:pointer} .meeting-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:#8b5cf6}
+.meeting-number{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
 .visibility-badge{font-size:10px;padding:2px 8px;border-radius:999px;font-weight:700;border:1px solid}
 .visibility-public{background:#dcfce7;color:#166534;border-color:#bbf7d0} .visibility-private{background:#fee2e2;color:#991b1b;border-color:#fecaca} .visibility-attendees{background:#fef3c7;color:#92400e;border-color:#fde68a}
-.file-chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;transition:.15s} .file-chip:hover{background:#e0f2fe;border-color:#0284c7;color:#0c4a6e}
-.tab-btn{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#64748b;transition:.2s} .tab-btn.active{background:#0c4a6e;color:#fff;border-color:#0c4a6e;box-shadow:0 2px 8px rgba(12,74,110,0.25)}
+.file-chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;transition:.15s} .file-chip:hover{background:#ede9fe;border-color:#8b5cf6;color:#6d28d9}
+.tab-btn{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#64748b;transition:.2s} .tab-btn.active{background:#6d28d9;color:#fff;border-color:#6d28d9;box-shadow:0 2px 8px rgba(109,40,217,0.25)}
 @media(max-width:768px){
   body{font-size:15px} .table-responsive table{min-width:0;width:100%} .table-responsive thead{display:none} .table-responsive tbody tr{display:block;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;padding:8px;background:#fff} .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:none;border-bottom:1px dashed #f1f5f9;font-size:13px} .table-responsive tbody td:last-child{border-bottom:none} .table-responsive tbody td::before{content:attr(data-label);font-weight:700;color:#475569;font-size:11px;flex-shrink:0;margin-right:12px}
   .modal{align-items:flex-end!important;padding:0!important} .modal>div{border-radius:16px 16px 0 0!important;max-height:88vh!important;width:100%!important;max-width:100%!important} .hero-gradient{border-radius:16px!important;padding:18px!important} .bottom-pad{padding-bottom:78px} .btn-mobile{min-height:44px} .form-group input,.form-group select,.form-group textarea{min-height:44px;font-size:16px!important}
@@ -65,32 +82,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 pb-[90px] md:pb-6">
 
   <div id="view-landing" class="space-y-5">
+    <!-- 首頁：先選擇活動 (像 trip APP，一進來就先選活動) -->
     <div class="hero-gradient text-white rounded-[24px] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-      <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 text-8xl sm:text-9xl pointer-events-none"><i class="fa-solid fa-compass"></i></div>
-      <div class="max-w-5xl relative z-10 space-y-4">
-        <div class="flex flex-wrap gap-2">
-          <span class="bg-emerald-400/30 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30 flex items-center"><i class="fa-solid fa-eye mr-1.5"></i> 公開查閱模式：無需登入即可查看所有資料</span>
-          <span class="bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30">僅修改需登入·一次登入永久有效·瀏覽器儲存</span>
-          <span class="bg-amber-400/30 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30">完全取代舊 Google Sites</span>
-        </div>
-        <div><h2 class="text-2xl sm:text-3xl font-extrabold">童軍活動管理系統 v7.0 完全取代版</h2><p class="mt-2 text-sky-100 text-[13px] leading-relaxed">已完全取代舊執行手冊 https://sites.google.com/view/isd2025om/home ，整合行政組、協調組、主題節目組等所有舊版文件，優化為卡片式、手機友善、部門間溝通更完善。所有工作人員更易找到要找的資料。</p></div>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <div class="flex-1 relative"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/60 text-xs"></i><input id="global-search" oninput="app.globalSearch(this.value)" placeholder="全域搜尋：會議、文件、財務、物資、膳食、地圖、攤位... (公開可看)" class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-white placeholder:text-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"></div>
-          <button onclick="app.enterFirstEvent()" class="bg-white text-sky-800 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile">進入活動</button>
-          <button onclick="app.openModule('announcements')" class="bg-amber-400 text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow btn-mobile"><i class="fa-solid fa-bullhorn mr-1"></i> 公告及溝通</button>
-        </div>
-        <div class="text-[11px] text-white/80 bg-black/20 rounded-xl p-2.5 border border-white/10">參考舊手冊已加入卡片：行政組(通告·報名·膳食安排·參加旅團)、協調組(場地佈置圖·物資借用表·箱頭紙·佈置數據)、主題節目組(遊戲卡·攤位總表·積極公民)、安全及醫療、交通及泊車。全部公開可看，僅修改需登入。</div>
+      <div class="absolute right-0 bottom-0 opacity-10 translate-x-6 translate-y-6 text-7xl sm:text-8xl pointer-events-none"><i class="fa-solid fa-tent"></i></div>
+      <div class="max-w-3xl relative z-10">
+        <span class="bg-white/20 text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30 inline-flex items-center"><i class="fa-solid fa-eye mr-1.5"></i> 公開查閱 · 無需登入即可查看所有資料</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mt-3">童軍活動管理系統</h2>
+        <p class="mt-2 text-white/80 text-[13px] leading-relaxed">選擇一個活動，進入後即可查閱該活動的所有資訊卡片（公告、日程、活動、膳食、物資、財務等）。全部資料公開可看，僅修改需登入（一次登入永久有效）。</p>
       </div>
     </div>
-    <div class="bg-white rounded-2xl p-4 border shadow-sm">
-      <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-sm"><i class="fa-solid fa-magnifying-glass text-sky-600 mr-2"></i>全域搜尋結果 / 活動選擇</h3><span class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">公開查閱·登入永久有效</span></div>
+
+    <!-- 活動選擇 -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border shadow-sm">
+      <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <h3 class="font-bold text-[15px] flex items-center gap-2"><span class="w-7 h-7 bg-brand-600 text-white rounded-xl flex items-center justify-center text-xs"><i class="fa-solid fa-calendar-check"></i></span>選擇活動</h3>
+        <span id="landing-admin-manage" class="hidden"></span>
+      </div>
       <div id="global-search-results" class="hidden mb-4"></div>
-      <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      <p class="mt-3 text-[11px] text-slate-400">按活動類別選擇。進入後即可查閱該活動的所有資訊卡片（公告、日程、活動、膳食、物資、財務等）。全部資料公開可看，僅修改需登入（一次登入永久有效）。</p>
     </div>
   </div>
 
-  <div id="view-dashboard" class="hidden space-y-6">
-    <div class="bg-white rounded-2xl p-5 shadow-sm border flex justify-between items-center"><div><button onclick="app.goHome()" class="text-xs text-sky-600 font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h2 id="dash-event-title" class="text-xl font-bold truncate">-</h2><p id="dash-event-desc" class="text-[12px] text-slate-500">-</p></div><div class="bg-slate-50 px-3 py-2 rounded-xl border text-[11px]"><span class="text-slate-400 block">當前身份 | 公開可看，僅修改需登入，一次永久有效</span><span class="font-bold text-sky-700" id="dash-role-display">-</span></div></div>
+  <div id="view-dashboard" class="hidden space-y-5">
+    <!-- 活動基本資訊 (Trip 風置頂)：一進入活動就先看到活動資料 -->
+    <div class="hero-gradient text-white rounded-[24px] p-5 sm:p-7 shadow-2xl relative overflow-hidden">
+      <div class="absolute right-0 bottom-0 opacity-10 translate-x-6 translate-y-6 text-7xl pointer-events-none"><i class="fa-solid fa-calendar-star"></i></div>
+      <div class="relative z-10 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="app.goHome()" class="bg-white/15 hover:bg-white/25 backdrop-blur px-3 py-1.5 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-arrow-left mr-1"></i> 選擇其他活動</button>
+          <span id="dash-status-badge" class="bg-white/20 text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30">活動</span>
+          <span class="bg-white/90 text-purple-800 text-[11px] font-bold px-3 py-1 rounded-full">身份：<span id="dash-role-display">公開</span></span>
+        </div>
+        <h2 id="dash-event-title" class="text-2xl sm:text-3xl font-extrabold leading-tight">-</h2>
+        <div class="flex flex-wrap gap-x-5 gap-y-1.5 text-[12px] text-white/90">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-calendar-days"></i><span id="dash-event-dates">-</span></span>
+          <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock"></i><span id="dash-event-time">時間待公佈</span></span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot"></i><span id="dash-event-location">地點待公佈</span></span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-cloud-sun"></i><span id="dash-event-weather">天氣待公佈</span></span>
+        </div>
+        <p id="dash-event-desc" class="text-[12px] text-white/80 leading-relaxed max-w-3xl">-</p>
+        <div id="dash-news-box" class="hidden bg-white/15 backdrop-blur border border-white/30 rounded-2xl p-3 flex items-start gap-2.5">
+          <span class="bg-amber-400 text-slate-900 text-[11px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0"><i class="fa-solid fa-bullhorn mr-1"></i>最新消息</span>
+          <span id="dash-event-news" class="text-[13px] leading-snug"></span>
+        </div>
+      </div>
+    </div>
 
     <!-- 簡單卡片模式：卡片顯示所有資料，身份 (角色+組別) 決定可見與可修改範圍 -->
     <div id="simple-card-panel" class="space-y-4">
@@ -122,13 +159,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <!-- 身份專屬卡片：由角色 + 組別決定 -->
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-id-badge"></i></span>身份專屬卡片 <span class="text-[10px] text-slate-400 font-normal">由角色＋組別決定，登入後解鎖</span></h3>
+          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-id-badge"></i></span>管理資料 <span class="text-[10px] text-slate-400 font-normal">由角色＋組別決定，登入後解鎖</span></h3>
           <span id="identity-count" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200"></span>
         </div>
         <div id="identity-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">🔒 登入後解鎖更多卡片：身份 (角色＋組別) 由管理員批核，決定了你能看到與修改的範圍。未有帳戶？請聯絡管理員開戶。所有資料均以卡片形式顯示，按「完整模式」可查看全部卡片分類。</div>
+      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">🔒 登入後解鎖更多卡片：管理資料 (角色＋組別) 由管理員批核，決定了你能看到與修改的範圍。未有帳戶？請聯絡管理員開戶。所有資料均以卡片形式顯示，按「完整模式」可查看全部卡片分類。</div>
     </div>
 
     <div id="full-dashboard-sections" class="space-y-6">
@@ -178,13 +215,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div onclick="app.openModule('meetings')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-handshake"></i></div><h4 class="font-bold">會議卡片</h4><p class="text-[11px] text-slate-500 mt-1">分次會議、上傳議程、會員資料、指定資料夾</p></div>
         <div onclick="app.switchTopTab('users')" class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-users-gear"></i></div><h4 class="font-bold">用戶·批量</h4><p class="text-[11px] text-emerald-100 mt-1">全前端、批量開戶、手機友善</p></div>
         <div onclick="app.openModule('meals'); setTimeout(()=>app.switchMealsTab('monitor'),300)" class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-eye"></i></div><h4 class="font-bold">我的監察 (專門)</h4><p class="text-[11px] text-indigo-100 mt-1">查自己訂餐、物資是否獲批、車輛是否獲批</p></div>
-        <div class="bg-white p-5 rounded-2xl border border-dashed shadow-sm"><div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-chart-line"></i></div><h4 class="font-bold">統計儀表板</h4><p class="text-[11px] text-slate-500 mt-1">各分組訂餐統計、物資統計、財務統計 (即將推出)</p></div>
+        <div onclick="app.openModule('supplies'); setTimeout(()=>app.switchSuppliesTab('stats'),300)" class="bg-gradient-to-br from-indigo-500 to-violet-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-chart-line"></i></div><h4 class="font-bold">統計已併入卡片</h4><p class="text-[11px] text-indigo-100 mt-1">統計資料不再另設儀表板：進入「物資」或「膳食」卡片後，於內部分頁即可查看 申請／批核／統計。點此查看物資統計。</p></div>
       </div>
     </div>
     </div>
 
-    <!-- 按組別一目了然 - 部門管理中心 -->
-    <div class="bg-white rounded-2xl p-5 border shadow-sm space-y-4">
+    <!-- 按組別一目了然 - 部門管理中心 (僅副主席或以上可見) -->
+    <div id="group-management-section" class="bg-white rounded-2xl p-5 border shadow-sm space-y-4 hidden">
       <div class="flex justify-between items-center"><h3 class="font-bold text-[15px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>按組別一目了然 - 部門管理中心</h3><span class="text-[11px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">各組透過管理卡片修改本組內容</span></div>
       <p class="text-[11px] text-slate-500 leading-relaxed">舊有組別是因為各人不用登入沒身份，方便工作人員按組別找自己需要的資料。現卡片制，各組均可以一眼看到卡片分類就找到自己需要的資料，而各組可以透過一個管理卡片，修改或加入自己組別控制的內容。公開可看，僅修改需登入 (一次登入永久有效，儲存於瀏覽器)。目的：什麼都不知道的人用此APP就可了解整個活動和找到需要的資料。</p>
       <div id="group-quick-access" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
@@ -213,7 +250,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
 
-<div id="modal-event" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="event-modal-title" class="font-bold">新增活動</h3><button onclick="app.closeModal('modal-event')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventForm(event)" class="space-y-3"><input type="hidden" id="ev-form-mode" value="create"><input type="hidden" id="ev-form-original-id"><div><label class="text-xs font-bold">活動ID*</label><input id="ev-id" required pattern="[a-zA-Z0-9_\-]+" placeholder="isd_2026" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">活動名稱*</label><input id="ev-name" required placeholder="名稱" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">簡介</label><textarea id="ev-desc" rows="2" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></textarea></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">開始日期</label><input type="date" id="ev-start" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">結束日期</label><input type="date" id="ev-end" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">狀態</label><select id="ev-status" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white mt-1"><option value="active">進行中</option><option value="upcoming">即將舉行</option></select></div><div><label class="text-xs font-bold">密碼</label><input id="ev-password" placeholder="1234" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-event')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">儲存</button></div></form></div></div>
+<div id="modal-event" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="event-modal-title" class="font-bold">新增活動</h3><button onclick="app.closeModal('modal-event')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventForm(event)" class="space-y-3"><input type="hidden" id="ev-form-mode" value="create"><input type="hidden" id="ev-form-original-id"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">活動ID*</label><input id="ev-id" required pattern="[a-zA-Z0-9_\-]+" placeholder="isd_2026" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">類別</label><select id="ev-category" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white mt-1"><option value="isd">港島童軍繽紛日</option><option value="trailwalk">港島毅行</option><option value="other">其他大型活動</option></select></div></div><div><label class="text-xs font-bold">活動名稱*</label><input id="ev-name" required placeholder="名稱" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">簡介</label><textarea id="ev-desc" rows="2" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></textarea></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">開始日期</label><input type="date" id="ev-start" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">結束日期</label><input type="date" id="ev-end" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">時間</label><input id="ev-time" placeholder="07:45 - 17:30" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">地點</label><input id="ev-location" placeholder="黃竹坑香港警察學院" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div></div><div><label class="text-xs font-bold">天氣</label><input id="ev-weather" placeholder="晴天 27-31°C" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">最新消息 (改期／取消等最優先)</label><textarea id="ev-news" rows="2" placeholder="活動如期舉行，敬請留意最新消息。" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1"></textarea></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">狀態</label><select id="ev-status" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white mt-1"><option value="active">進行中</option><option value="upcoming">即將舉行</option></select></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-event')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">儲存</button></div></form></div></div>
 
 <!-- NEW: MEETING FORM MODAL -->
 <div id="modal-meeting-form" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4">
@@ -311,7 +348,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">系統設定</h3><button onclick="app.closeModal('modal-settings')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.saveSettings(event)" class="space-y-3"><input id="gas-url-input" placeholder="GAS URL" class="w-full px-3 py-2 border rounded-xl text-sm"><input id="api-key-input" placeholder="API Key" class="w-full px-3 py-2 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-settings')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
 
 <div id="saveBar" class="save-bar"><div class="flex items-center gap-2 text-sm"><span class="dot"></span><span id="pendingText">0 項未保存</span></div><div class="flex gap-2"><button onclick="app.discardChanges()" class="px-4 py-2 border bg-white rounded-xl text-xs font-bold">捨棄</button><button onclick="app.saveChanges()" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold">確認寫入</button></div></div>
-<div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#0c4a6e] transition-all"></div></div></div>
+<div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#6d28d9] transition-all"></div></div></div>
 <div id="toast" class="toast"></div>
 
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4"><p>童軍活動管理系統 v6.1 會議卡片升級版 · 全前端上傳·分次管理·權限下載 · COPYRIGHT 2026</p></footer>
@@ -319,6 +356,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <script>
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+// 首頁 3 大類別活動卡
+const EVENT_CATEGORIES=[
+  {key:'isd',title:'港島童軍繽紛日',icon:'fa-solid fa-star',desc:'步操檢閱、頒獎典禮與攤位博覽',gradient:'from-brand-600 to-fuchsia-500'},
+  {key:'trailwalk',title:'港島毅行',icon:'fa-solid fa-person-hiking',desc:'港島區步行籌款活動',gradient:'from-emerald-500 to-teal-500'},
+  {key:'other',title:'其他大型活動',icon:'fa-solid fa-tent',desc:'其他大型露營、培訓及活動',gradient:'from-indigo-500 to-violet-600'}
+];
 // 簡單卡片模式：卡片顯示所有資料。身份 (角色+組別) 由管理員批核，決定：
 // - 看到什麼：minLevel / groups 達標才顯示該卡片 (minLevel 0 = 公開，所有人可見)
 // - 修改什麼：editLevel / editGroups 達標才顯示「可修改」徽章，否則為「只讀」
@@ -389,28 +432,104 @@ class ScoutEventApp{
     if(!loaded && this.eventsList.length===0){this.eventsList=[{event_id:'isd_2026',event_name:'2026 ISD 港島童軍繽紛日',description:'港島地域年度旗艦',start_date:'2026-10-04',end_date:'2026-10-04',status:'active'},{event_id:'isd_2027',event_name:'2027 ISD 大露營',description:'國際大露營',start_date:'2027-10-01',end_date:'2027-10-04',status:'upcoming'}];}
     localStorage.setItem(LS.events,JSON.stringify(this.eventsList)); this.renderEventsGrid();
   }
+  categoryEvents(catKey){ return this.eventsList.filter(ev=>(ev.category||'other')===catKey); }
+  catSelection(catKey){
+    if(!this._catSel) this._catSel={};
+    return this._catSel[catKey]||'';
+  }
   renderEventsGrid(){
     const grid=document.getElementById('events-grid'); if(!grid) return;
-    if(!this.eventsList.length){grid.innerHTML='<div class="col-span-2 text-center py-8 text-slate-400">暫無活動</div>'; return;}
-    grid.innerHTML=this.eventsList.map(ev=>{
-      const hasPwd=localStorage.getItem(`event_pwd_${ev.event_id}`);
-      return `<div class="bg-slate-50 rounded-2xl border p-4 shadow-sm card-hover flex flex-col justify-between"><div><div class="flex justify-between mb-2"><span class="bg-sky-100 text-sky-700 text-[11px] font-bold px-2 py-0.5 rounded-full">${ev.status==='active'?'進行中':'即將舉行'}</span><span class="text-[11px] text-slate-400">${ev.start_date||''}</span></div><h4 class="font-bold text-[14px]">${escapeHtml(ev.event_name)}</h4><p class="text-[11px] text-slate-500 mt-1">${escapeHtml(ev.description||'')}</p></div><div class="mt-3 pt-3 border-t flex justify-between items-center"><span class="text-[11px] ${hasPwd?'text-emerald-600':'text-amber-600'}">${hasPwd?'已解鎖':'需密碼'}</span><div class="flex gap-1"><button onclick="app.editEvent('${ev.event_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]"><i class="fa-solid fa-pen"></i></button><button onclick="app.accessEvent('${ev.event_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">進入</button></div></div></div>`;
+    const manageBtn=document.getElementById('landing-admin-manage');
+    if(manageBtn) manageBtn.classList.add('hidden');
+    if(!this.eventsList.length){grid.innerHTML='<div class="col-span-3 text-center py-8 text-slate-400">暫無活動</div>'; return;}
+    const isAdminEdit=this.isEventManager();
+    grid.innerHTML=EVENT_CATEGORIES.map(cat=>{
+      const list=this.categoryEvents(cat.key);
+      const sel=this.catSelection(cat.key);
+      const current=list.find(ev=>ev.event_id===sel)||list[0];
+      const options=list.map(ev=>`<option value="${escapeHtml(ev.event_id)}" ${ev.event_id===sel?'selected':''}>${escapeHtml(ev.event_name)}${ev.status==='active'?'（進行中）':''}</option>`).join('');
+      const body=list.length
+        ? `<select id="cat-${cat.key}-select" onchange="app.onCatSelect('${cat.key}',this.value)" class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white mb-3">${options||''}</select>
+           ${current?`
+           <div class="text-[12px] text-slate-600 space-y-1.5 mb-4">
+             <div class="flex items-center gap-2"><i class="fa-regular fa-calendar text-slate-400 w-4"></i>${escapeHtml([current.start_date,current.end_date].filter(Boolean).join(' → ')||'日期待公佈')}</div>
+             <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-slate-400 w-4"></i>${escapeHtml(current.location||'地點待公佈')}</div>
+           </div>
+           <button onclick="app.accessEvent('${current.event_id}')" class="w-full bg-gradient-to-r ${cat.gradient} text-white py-2.5 rounded-xl text-[13px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>進入活動</button>`
+          :`<div class="text-[12px] text-slate-400 py-6 text-center">暫無活動</div>`}`
+        : `<div class="text-[12px] text-slate-400 py-8 text-center">此類別暫無活動</div>`;
+      return `<div class="bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col">
+        <div class="bg-gradient-to-r ${cat.gradient} text-white px-4 py-3 flex items-center gap-2.5">
+          <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center text-base flex-shrink-0"><i class="${cat.icon}"></i></div>
+          <div class="min-w-0 flex-1"><h4 class="font-bold text-[15px] leading-tight">${cat.title}</h4><p class="text-[11px] text-white/80 truncate">${cat.desc}</p></div>
+        </div>
+        <div class="p-4 flex flex-col flex-1">
+          <label class="text-[11px] font-bold text-slate-500 mb-1.5 flex items-center gap-1"><i class="fa-solid fa-calendar-plus"></i>選擇年份／屆別</label>
+          ${body}
+          ${isAdminEdit?`<div class="mt-3 pt-3 border-t flex gap-1.5 justify-end">
+            <button onclick="app.addEventToCategory('${cat.key}')" class="bg-brand-600 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增</button>
+            ${current?`<button onclick="app.editEvent('${current.event_id}')" class="bg-white border px-2.5 py-1.5 rounded-xl text-[11px]"><i class="fa-solid fa-pen"></i></button><button onclick="app.deleteEvent('${current.event_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-[11px]"><i class="fa-solid fa-trash"></i></button>`:''}
+          </div>`:''}
+        </div>
+      </div>`;
     }).join('');
   }
+  onCatSelect(catKey,val){ if(!this._catSel) this._catSel={}; this._catSel[catKey]=val; }
+  addEventToCategory(catKey){
+    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可新增活動','error'); return; }
+    document.getElementById('ev-category').value=catKey||'other';
+    this.openEventFormModal();
+  }
+  deleteEvent(id){
+    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可刪除活動','error'); return; }
+    if(!confirm('確定刪除這個活動？')) return;
+    this.eventsList=this.eventsList.filter(ev=>ev.event_id!==id);
+    localStorage.removeItem(`event_pwd_${id}`);
+    localStorage.setItem(LS.events,JSON.stringify(this.eventsList));
+    showToast('已刪除活動','warning');
+    this.renderEventsGrid();
+  }
   openEventFormModal(isEdit=false){
-    if(!isEdit){document.getElementById('event-modal-title').textContent='新增活動'; document.getElementById('ev-form-mode').value='create'; document.getElementById('ev-form-original-id').value=''; document.getElementById('ev-id').value='isd_'+Date.now().toString().slice(-4); document.getElementById('ev-name').value=''; document.getElementById('ev-desc').value=''; document.getElementById('ev-start').value=todayISO(); document.getElementById('ev-end').value=todayISO(); document.getElementById('ev-status').value='active'; document.getElementById('ev-password').value='1234';}
-    else{if(!this.currentEvent) return; document.getElementById('event-modal-title').textContent='編輯活動'; document.getElementById('ev-form-mode').value='edit'; document.getElementById('ev-form-original-id').value=this.currentEvent.event_id; document.getElementById('ev-id').value=this.currentEvent.event_id; document.getElementById('ev-name').value=this.currentEvent.event_name; document.getElementById('ev-desc').value=this.currentEvent.description||''; document.getElementById('ev-start').value=this.currentEvent.start_date||''; document.getElementById('ev-end').value=this.currentEvent.end_date||''; document.getElementById('ev-status').value=this.currentEvent.status||'active'; document.getElementById('ev-password').value=localStorage.getItem(`event_pwd_${this.currentEvent.event_id}`)||'1234';}
+    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可管理活動','error'); return; }
+    if(!isEdit){document.getElementById('event-modal-title').textContent='新增活動'; document.getElementById('ev-form-mode').value='create'; document.getElementById('ev-form-original-id').value=''; document.getElementById('ev-id').value='ev_'+Date.now().toString().slice(-6); document.getElementById('ev-category').value='isd'; document.getElementById('ev-name').value=''; document.getElementById('ev-desc').value=''; document.getElementById('ev-start').value=todayISO(); document.getElementById('ev-end').value=todayISO(); document.getElementById('ev-time').value=''; document.getElementById('ev-location').value=''; document.getElementById('ev-weather').value=''; document.getElementById('ev-news').value=''; document.getElementById('ev-status').value='upcoming';}
+    else{if(!this.currentEvent) return; this.fillEventForm(this.currentEvent);}
     document.getElementById('modal-event').classList.remove('hidden');
   }
-  editEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev) return; document.getElementById('event-modal-title').textContent='編輯活動'; document.getElementById('ev-form-mode').value='edit'; document.getElementById('ev-form-original-id').value=ev.event_id; document.getElementById('ev-id').value=ev.event_id; document.getElementById('ev-name').value=ev.event_name; document.getElementById('ev-desc').value=ev.description||''; document.getElementById('ev-start').value=ev.start_date||''; document.getElementById('ev-end').value=ev.end_date||''; document.getElementById('ev-status').value=ev.status||'active'; document.getElementById('ev-password').value=localStorage.getItem(`event_pwd_${ev.event_id}`)||'1234'; document.getElementById('modal-event').classList.remove('hidden');}
-  submitEventForm(e){e.preventDefault(); const mode=document.getElementById('ev-form-mode').value; const orig=document.getElementById('ev-form-original-id').value; const newEv={event_id:document.getElementById('ev-id').value.trim(),event_name:document.getElementById('ev-name').value.trim(),description:document.getElementById('ev-desc').value.trim(),start_date:document.getElementById('ev-start').value,end_date:document.getElementById('ev-end').value,status:document.getElementById('ev-status').value}; const pwd=document.getElementById('ev-password').value.trim(); if(!newEv.event_id||!newEv.event_name) return; if(mode==='create'){if(this.eventsList.some(x=>x.event_id===newEv.event_id)){showToast('ID 已存在','error'); return;} this.eventsList.push(newEv);} else{const idx=this.eventsList.findIndex(x=>x.event_id===orig); if(idx>=0) this.eventsList[idx]=newEv; if(this.currentEvent&&this.currentEvent.event_id===orig) this.currentEvent=newEv;} if(pwd) localStorage.setItem(`event_pwd_${newEv.event_id}`,pwd); localStorage.setItem(LS.events,JSON.stringify(this.eventsList)); localStorage.setItem(LS.currentEvent,JSON.stringify(newEv)); this.closeModal('modal-event'); showToast('已保存','success'); this.renderEventsGrid(); if(this.currentEvent&&this.currentEvent.event_id===newEv.event_id) this.showDashboard();}
-  accessEvent(id){this.pendingEventId=id; const saved=localStorage.getItem(`event_pwd_${id}`); if(saved) this.verifyAndEnterEvent(id,saved); else{document.getElementById('event-pwd-input').value=this.systemConfig.defaultPwd||'1234'; document.getElementById('modal-password').classList.remove('hidden');}}
-  submitEventPassword(e){e.preventDefault(); this.verifyAndEnterEvent(this.pendingEventId,document.getElementById('event-pwd-input').value);}
-  async verifyAndEnterEvent(id,pwd){const ev=this.eventsList.find(e=>e.event_id===id); if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'verifyEventPassword',api_key:this.apiKey,event_id:id,password:pwd})}); const j=await res.json(); if(!j.success){showToast('密碼錯誤','error'); return;}}catch(e){}} localStorage.setItem(`event_pwd_${id}`,pwd); this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
+  fillEventForm(ev){document.getElementById('event-modal-title').textContent='編輯活動'; document.getElementById('ev-form-mode').value='edit'; document.getElementById('ev-form-original-id').value=ev.event_id; document.getElementById('ev-id').value=ev.event_id; document.getElementById('ev-category').value=ev.category||'isd'; document.getElementById('ev-name').value=ev.event_name; document.getElementById('ev-desc').value=ev.description||''; document.getElementById('ev-start').value=ev.start_date||''; document.getElementById('ev-end').value=ev.end_date||''; document.getElementById('ev-time').value=ev.time||''; document.getElementById('ev-location').value=ev.location||''; document.getElementById('ev-weather').value=ev.weather||''; document.getElementById('ev-news').value=ev.news||''; document.getElementById('ev-status').value=ev.status||'upcoming';}
+  editEvent(id){if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可編輯活動','error'); return; } const ev=this.eventsList.find(e=>e.event_id===id); if(!ev) return; this.fillEventForm(ev); document.getElementById('modal-event').classList.remove('hidden');}
+  submitEventForm(e){e.preventDefault(); if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可管理活動','error'); return; } const mode=document.getElementById('ev-form-mode').value; const orig=document.getElementById('ev-form-original-id').value; const newEv={event_id:document.getElementById('ev-id').value.trim(),event_name:document.getElementById('ev-name').value.trim(),category:document.getElementById('ev-category').value,description:document.getElementById('ev-desc').value.trim(),start_date:document.getElementById('ev-start').value,end_date:document.getElementById('ev-end').value,time:document.getElementById('ev-time').value.trim(),location:document.getElementById('ev-location').value.trim(),weather:document.getElementById('ev-weather').value.trim(),news:document.getElementById('ev-news').value.trim(),status:document.getElementById('ev-status').value,has_password:false}; if(!newEv.event_id||!newEv.event_name) return; if(mode==='create'){if(this.eventsList.some(x=>x.event_id===newEv.event_id)){showToast('ID 已存在','error'); return;} this.eventsList.push(newEv);} else{const idx=this.eventsList.findIndex(x=>x.event_id===orig); if(idx>=0) this.eventsList[idx]=newEv; if(this.currentEvent&&this.currentEvent.event_id===orig) this.currentEvent=newEv;} localStorage.setItem(LS.events,JSON.stringify(this.eventsList)); localStorage.setItem(LS.currentEvent,JSON.stringify(newEv)); this.closeModal('modal-event'); showToast('已保存','success'); this.renderEventsGrid(); if(this.currentEvent&&this.currentEvent.event_id===newEv.event_id) this.showDashboard();}
+  accessEvent(id){this.pendingEventId=id; this.verifyAndEnterEvent(id);}
+  submitEventPassword(e){e.preventDefault(); this.verifyAndEnterEvent(this.pendingEventId);}
+  async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('dash-event-title').textContent=this.currentEvent.event_name; document.getElementById('dash-event-desc').textContent=this.currentEvent.description||''; document.getElementById('current-event-subtitle').textContent=this.currentEvent.event_name; if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
+
+  // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
+  async loadHkoWeather(){
+    const fallback=this.currentEvent?.weather;
+    try{
+      const res=await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
+      if(!res.ok) throw new Error('http');
+      const j=await res.json();
+      let temps=[], humid='';
+      if(j.temperature && j.temperature.data){ temps=(j.temperature.data||[]).filter(d=>d && d.place && d.value!==undefined); }
+      if(j.humidity && j.humidity.data){ const h=j.humidity.data.find(d=>d && d.place && d.value!==undefined); if(h) humid=' 濕度 '+h.value+'%'; }
+      const preferred=['香港天文台','京士柏','黃竹坑','跑馬地'];
+      const pick=preferred.map(p=>temps.find(t=>t.place===p)).find(Boolean)||temps[0];
+      let txt='';
+      if(pick) txt=pick.place+' '+pick.value+'°C'+humid;
+      else if(temps.length) txt='溫度約 '+temps.map(t=>t.value).join('/')+'°C'+humid;
+      const el=document.getElementById('dash-event-weather');
+      if(el) el.textContent=txt||(fallback||'天氣待公佈');
+      return;
+    }catch(e){}
+    const el2=document.getElementById('dash-event-weather');
+    if(el2) el2.textContent=fallback||'天氣待公佈';
+  }
   roleLevel(role){return ROLE_HIERARCHY[role]||0;}
+  // 大型活動管理權限：僅管理員（地域秘書處）與超管可以新增/編輯/刪除活動
+  isEventManager(){ return ['admin','super_admin'].includes(this.currentUser?.role); }
   canSeeRoleCard(def){
     if(!this.currentUser) return def.minLevel<=0;
     const lvl=this.roleLevel(this.currentUser.role);
@@ -511,7 +630,7 @@ class ScoutEventApp{
     if(!user){
       identityGrid.innerHTML=identityDefs.map(d=>this.cardHTML(d,{locked:true})).join('');
       if(identityCount) identityCount.textContent=`${identityDefs.length} 張 · 登入解鎖`;
-      if(note) note.innerHTML='🔒 登入後解鎖更多卡片：身份 (角色＋組別) 由管理員批核，決定了你能看到與修改的範圍。未有帳戶？請聯絡管理員開戶。所有資料均以卡片形式顯示，按「完整模式」可查看全部卡片分類。';
+      if(note) note.innerHTML='🔒 登入後解鎖更多卡片：管理資料 (角色＋組別) 由管理員批核，決定了你能看到與修改的範圍。未有帳戶？請聯絡管理員開戶。所有資料均以卡片形式顯示，按「完整模式」可查看全部卡片分類。';
       return;
     }
     const visible=identityDefs.filter(d=>this.canSeeRoleCard(d));
@@ -2025,6 +2144,7 @@ class ScoutEventApp{
           <button onclick="app.switchSuppliesTab('pending')" class="tab-btn ${this.suppliesSubTab==='pending'?'active':''}"><i class="fa-solid fa-hourglass-half mr-1"></i> 待批核 ${isCoordinator?`(${pendingRequests.length + (data.vehicle_passes||[]).filter(v=>v.status==='pending').length})`:''}</button>
           <button onclick="app.switchSuppliesTab('inventory')" class="tab-btn ${this.suppliesSubTab==='inventory'?'active':''}"><i class="fa-solid fa-boxes-stacked mr-1"></i> 總物資 (${data.inventory.length})</button>
           <button onclick="app.switchSuppliesTab('notifications')" class="tab-btn ${this.suppliesSubTab==='notifications'?'active':''}"><i class="fa-solid fa-bell mr-1"></i> 通知</button>
+          <button onclick="app.switchSuppliesTab('stats')" class="tab-btn ${this.suppliesSubTab==='stats'?'active':''}"><i class="fa-solid fa-chart-column mr-1"></i> 統計</button>
         </div>
         <div id="supplies-tab-requests" class="${this.suppliesSubTab==='requests'?'':'hidden'}"></div>
         <div id="supplies-tab-vehicle" class="${this.suppliesSubTab==='vehicle'?'':'hidden'}"></div>
@@ -2032,6 +2152,7 @@ class ScoutEventApp{
         <div id="supplies-tab-pending" class="${this.suppliesSubTab==='pending'?'':'hidden'}"></div>
         <div id="supplies-tab-inventory" class="${this.suppliesSubTab==='inventory'?'':'hidden'}"></div>
         <div id="supplies-tab-notifications" class="${this.suppliesSubTab==='notifications'?'':'hidden'}"></div>
+        <div id="supplies-tab-stats" class="${this.suppliesSubTab==='stats'?'':'hidden'}"></div>
       </div>
     `;
     this.renderSuppliesRequests();
@@ -2039,6 +2160,7 @@ class ScoutEventApp{
     this.renderSuppliesPending();
     this.renderSuppliesInventory();
     this.renderSuppliesNotifications();
+    this.renderSuppliesStats();
     // Update module-actions
     const actionsEl=document.getElementById('module-actions');
     if(actionsEl){
@@ -2154,6 +2276,56 @@ class ScoutEventApp{
     keys.forEach(k=> localStorage.removeItem(k));
     showToast('已清空通知','warning');
     this.renderSuppliesNotifications();
+  }
+  renderSuppliesStats(){
+    const container=document.getElementById('supplies-tab-stats');
+    if(!container) return;
+    const data=this.getSuppliesData();
+    const requests=data.requests||[];
+    // 按狀態統計
+    const byStatus={};
+    requests.forEach(r=>{ byStatus[r.status]=(byStatus[r.status]||0)+1; });
+    // 按組別統計 (申請數量 及 已批核數量)
+    const byGroup={};
+    requests.forEach(r=>{
+      const g=r.group_name||'未分組';
+      if(!byGroup[g]) byGroup[g]={count:0, qty:0, approvedQty:0, pendingQty:0};
+      byGroup[g].count++;
+      byGroup[g].qty += r.qty_requested||0;
+      if(r.status==='approved') byGroup[g].approvedQty += (r.qty_approved!==null?r.qty_approved:r.qty_requested)||0;
+      if(r.status==='pending') byGroup[g].pendingQty += r.qty_requested||0;
+    });
+    // 按物資統計 + 對照總庫存
+    const byItem={};
+    requests.forEach(r=>{
+      const it=r.item_name||'未命名';
+      if(!byItem[it]) byItem[it]={count:0, requested:0, approved:0, pending:0, rejected:0};
+      byItem[it].count++;
+      byItem[it].requested += r.qty_requested||0;
+      if(r.status==='approved') byItem[it].approved += (r.qty_approved!==null?r.qty_approved:r.qty_requested)||0;
+      if(r.status==='pending') byItem[it].pending += r.qty_requested||0;
+      if(r.status==='rejected') byItem[it].rejected += r.qty_requested||0;
+    });
+    const statusLabel={pending:'待批核',approved:'已批核',rejected:'已拒絕',modified:'已修改批核'};
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-2xl font-extrabold text-amber-700">${byStatus.pending||0}</div><div class="text-[11px] text-amber-800">待批核</div></div>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-2xl font-extrabold text-emerald-700">${byStatus.approved||0}</div><div class="text-[11px] text-emerald-800">已批核</div></div>
+          <div class="bg-rose-50 border border-rose-200 rounded-xl p-3"><div class="text-2xl font-extrabold text-rose-700">${byStatus.rejected||0}</div><div class="text-[11px] text-rose-800">已拒絕</div></div>
+          <div class="bg-sky-50 border border-sky-200 rounded-xl p-3"><div class="text-2xl font-extrabold text-sky-700">${requests.length}</div><div class="text-[11px] text-sky-800">申請總數</div></div>
+        </div>
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>按組別統計</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請數量</th><th class="px-2 py-1 text-right">待批核</th><th class="px-2 py-1 text-right">已批核</th></tr></thead><tbody class="divide-y">${Object.keys(byGroup).sort().map(g=>{const s=byGroup[g]; return `<tr><td class="px-2 py-1 font-medium" data-label="組別">${escapeHtml(g)}</td><td class="px-2 py-1 text-right" data-label="申請筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請數量">${s.qty}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批核">${s.pendingQty}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批核">${s.approvedQty}</td></tr>`;}).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
+        </div>
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>按物資統計 (對照總庫存)</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">物資</th><th class="px-2 py-1 text-right">總庫存</th><th class="px-2 py-1 text-right">申請</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批核</th><th class="px-2 py-1 text-right">剩餘</th></tr></thead><tbody class="divide-y">${Object.keys(byItem).sort().map(it=>{const s=byItem[it]; const inv=data.inventory.find(i=>i.item_name===it); const total=inv?inv.total_qty:null; const approved=s.approved; const remaining=total!==null?Math.max(0,total-approved):'—'; return `<tr><td class="px-2 py-1 font-medium" data-label="物資">${escapeHtml(it)}</td><td class="px-2 py-1 text-right" data-label="總庫存">${total!==null?total:'—'}</td><td class="px-2 py-1 text-right" data-label="申請">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批核">${approved}</td><td class="px-2 py-1 text-right ${total!==null&&approved>total?'text-rose-600 font-bold':''}" data-label="剩餘">${remaining}</td></tr>`;}).join('') || '<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
+          <div class="mt-2 text-[10px] text-slate-400">已批核數量 = 批核通過的數量 (若批核時修改過數量則用批核數量)；剩餘 = 總庫存 − 已批核。</div>
+        </div>
+      </div>
+    `;
   }
   openSupplyRequestForm(editId=null){
     if(!this.canSubmitSupply()){ showToast('僅各組總主任或副主席可提交','error'); return; }
@@ -4155,9 +4327,17 @@ class ScoutEventApp{
   setLocalUsers(l){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
   async loadUsers(){let list=[]; if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:u.role,group_name:u.group_name||u.branch,contact:u.contact||'',password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); this.usersList=list; this.renderUsers();}
   renderUsers(){const container=document.getElementById('users-container'); if(!container) return; if(!this.usersList.length){container.innerHTML='<p class="text-xs text-slate-400">無用戶</p>'; return;} container.innerHTML=this.usersList.map(u=>`<div class="border p-3 rounded-xl flex justify-between"><div><b>${escapeHtml(u.name)}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')}</div></div><div class="flex gap-1"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button></div></div>`).join('');}
-  openUserFormModal(){document.getElementById('modal-user').classList.remove('hidden');}
-  editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('modal-user').classList.remove('hidden'); document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name;}
-  submitUserForm(e){e.preventDefault(); const uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!uid||!name) return; let list=this.getLocalUsers(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; } else list.push({user_id:uid,name,role:document.getElementById('u-role').value,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,password:'1234',status:'active',can_tick:false}); this.setLocalUsers(list); this.closeModal('modal-user'); showToast('已保存','success'); this.loadUsers();}
+  openUserFormModal(){document.getElementById('u-form-mode').value='create'; document.getElementById('u-form-original-id').value=''; document.getElementById('u-ymis').value=''; document.getElementById('u-name').value=''; this.populateUserRoleSelect('staff'); document.getElementById('modal-user').classList.remove('hidden');}
+  // 上級可改下級權限：最多可設定到與自己相同的權限 (super_admin 例外可設全部)
+  assignableRoles(){ if(!this.currentUser) return []; const myLv=this.roleLevel(this.currentUser.role); return Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public' && ROLE_HIERARCHY[r]<=myLv); }
+  populateUserRoleSelect(curVal){
+    const sel=document.getElementById('u-role'); if(!sel) return;
+    const allowed=this.assignableRoles();
+    if(!allowed.includes(curVal) && curVal) allowed.unshift(curVal);
+    sel.innerHTML=allowed.map(r=>`<option value="${r}" ${r===curVal?'selected':''}>${ROLE_LABELS[r]||r}${ROLE_HIERARCHY[r]>=100?'（超管）':''}</option>`).join('')||'<option value="staff">staff</option>';
+  }
+  editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('u-form-mode').value='edit'; document.getElementById('u-form-original-id').value=u.user_id; document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name; document.getElementById('u-group').value=u.group_name||''; document.getElementById('u-contact').value=u.contact||''; document.getElementById('u-email').value=u.email||''; this.populateUserRoleSelect(u.role||'staff'); document.getElementById('modal-user').classList.remove('hidden');}
+  submitUserForm(e){e.preventDefault(); const uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!uid||!name) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } let list=this.getLocalUsers(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:'1234',status:'active',can_tick:false}); this.setLocalUsers(list); this.closeModal('modal-user'); showToast('已保存','success'); this.loadUsers();}
   downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n00820001,陳小明,chan@example.com,staff,主題節目組,91234567,123456,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
   handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請貼上JSON','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('JSON錯誤','error');}}
   confirmBulkCreate(){if(!this.bulkPending.length){showToast('無資料','warning'); return;} let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ list.push({user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,password:r.password||'1234',status:'active',can_tick:r.can_tick}); added++; } }); this.setLocalUsers(list); this.closeModal('modal-bulk'); showToast(`批量完成 成功${added}筆`,'success'); this.loadUsers();}
