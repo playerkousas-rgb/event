@@ -1,20 +1,72 @@
 [
   {
     "event_id": "isd_2026",
-    "event_name": "2026 ISD 港島童軍繽紛日",
+    "event_name": "2026 港島童軍繽紛日",
+    "category": "isd",
     "description": "港島地域年度旗艦盛事：步操檢閱、優異旅團頒獎與攤位博覽",
     "start_date": "2026-10-04",
     "end_date": "2026-10-04",
+    "time": "07:45 - 17:30",
+    "location": "黃竹坑香港警察學院",
+    "weather": "晴天 27-31°C（如遇惡劣天氣將改期）",
+    "news": "活動如期舉行，敬請留意最新消息。",
     "status": "active",
-    "has_password": true
+    "has_password": false
   },
   {
     "event_id": "isd_2027",
-    "event_name": "2027 ISD 港島童軍大露營與國際交流",
+    "event_name": "2027 港島童軍繽紛日",
+    "category": "isd",
     "description": "未來展望：跨地域國際童軍大露營與營地技能挑戰",
     "start_date": "2027-10-01",
     "end_date": "2027-10-04",
+    "time": "09:00 - 18:00",
+    "location": "黃竹坑香港警察學院",
+    "weather": "待公佈",
+    "news": "詳情稍後公佈。",
     "status": "upcoming",
-    "has_password": true
+    "has_password": false
+  },
+  {
+    "event_id": "trailwalk_2026",
+    "event_name": "2026 港島毅行",
+    "category": "trailwalk",
+    "description": "港島區步行籌款活動，鍛鍊毅力與團隊合作",
+    "start_date": "2026-11-15",
+    "end_date": "2026-11-15",
+    "time": "08:00 - 18:00",
+    "location": "港島徑",
+    "weather": "多雲 24-28°C",
+    "news": "路線稍後公佈。",
+    "status": "upcoming",
+    "has_password": false
+  },
+  {
+    "event_id": "annual_camp_2027",
+    "event_name": "2027 大型聯合露營",
+    "category": "other",
+    "description": "其他大型活動：跨地域聯合露營與技能培訓",
+    "start_date": "2027-07-20",
+    "end_date": "2027-07-24",
+    "time": "全日",
+    "location": "港島郊野營地",
+    "weather": "待公佈",
+    "news": "詳情稍後公佈。",
+    "status": "upcoming",
+    "has_password": false
+  },
+  {
+    "event_id": "mock_demo",
+    "event_name": "模擬示範版（完整示範資料）",
+    "category": "demo",
+    "description": "模擬示範版本：含全部示範假資料，供會議簡介及改革展示",
+    "start_date": "2026-01-01",
+    "end_date": "2026-12-31",
+    "time": "全日",
+    "location": "示範環境",
+    "weather": "示範資料",
+    "news": "此為模擬示範版本，全部資料皆為示範假資料。",
+    "status": "active",
+    "has_password": false
   }
 ]
