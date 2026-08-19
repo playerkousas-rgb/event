@@ -242,6 +242,26 @@
     "booths": [],
     "gameCards": []
   },
+  "schedule": [],
+  "schedule_source": {
+    "mode": "drive_sheet",
+    "name": "日程表 (Run Down)",
+    "sheet_id": "",
+    "gid": 0,
+    "folder": "秘書處",
+    "columns": ["time_slot", "title", "location", "group_name", "description"],
+    "note": "待秘書處提供日程表 Google Sheet 後填入 sheet_id，即可每次開啟自動同步。欄位：時段/節目/位置/組別/說明。"
+  },
+  "participants": [],
+  "participants_source": {
+    "mode": "drive_sheet",
+    "name": "參加旅團名單",
+    "sheet_id": "",
+    "gid": 0,
+    "folder": "行政組",
+    "columns": ["unit_name", "section", "headcount", "notes"],
+    "note": "待行政組提供參加旅團名單 Google Sheet 後填入 sheet_id，即可每次開啟自動同步。欄位：旅團/支部/人數/備註。"
+  },
   "meals": [],
   "schedule": [],
   "supplies": {

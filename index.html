@@ -247,7 +247,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
 
-<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>示範帳戶 (密碼 1234)：<b>advisor01</b> 顧問 · <b>chair01</b> 主席 · <b>exec_vp</b> 副主席(行政組) · <b>gd_001</b> 總主任 · <b>staff_001</b> 工作人員 ｜ 超管 <b>sheep / 0728</b></p><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('sheep')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-slate-900 text-white btn-mobile">👑 超管</button><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required value="sheep" placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required value="0728" placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
+<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>示範帳戶 (密碼 1234)：<b>advisor01</b> 顧問 · <b>chair01</b> 主席 · <b>exec_vp</b> 副主席(行政組) · <b>gd_001</b> 總主任 · <b>staff_001</b> 工作人員</p><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
 
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
 
@@ -392,7 +392,7 @@ const DASH_CARD_DEFS=[
   {id:'approvals',title:'批核中心',desc:'膳食、物資、財務待批項目',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:60,editLevel:60,editLabel:'副主席以上可批核',action:"app.switchTopTab('approvals')"},
   {id:'users_bulk',title:'用戶·批量',desc:'全前端、批量開戶、手機友善',icon:'fa-solid fa-users-gear',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:80,editLevel:80,editLabel:'管理員專用',action:"app.switchTopTab('users')"}
 ];
-const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
@@ -518,7 +518,7 @@ class ScoutEventApp{
   async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
   async loadHkoWeather(){
@@ -1195,11 +1195,11 @@ class ScoutEventApp{
     return {id:'booth_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), booth_number, booth_name, location, group_name, theme, game_type, responsible, contact, description, created_by:'同步', created_at:new Date().toISOString()};
   }
   rowsToBooths(rows){ return (rows||[]).map(r=>this.normalizeBoothRow(r)).filter(Boolean); }
-  applyBooths(booths, srcLabel){
+  applyBooths(booths, srcLabel, silent){
     const data=this.getActivitiesData();
     data.booths=booths;
     this.saveActivitiesData(data);
-    showToast(`已從「${srcLabel}」更新 ${booths.length} 筆攤位`,'success');
+    if(!silent) showToast(`已從「${srcLabel}」更新 ${booths.length} 筆攤位`,'success');
     this.renderActivitiesBooths();
   }
   // 模式 A：直接從 Drive 讀最新（原生 Google Sheet → export=csv；xlsx → 下載後 SheetJS 解析）
@@ -1234,6 +1234,30 @@ class ScoutEventApp{
     const wb=XLSX.read(ab,{type:'array'});
     return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
   }
+  // 開 APP 時自動從 Drive 讀取最新表格（靜默、拆解後內建顯示，不跳轉）
+  async autoSyncDriveSources(){
+    if(this.isDemoEvent()) return; // 模擬示範活動不使用 Drive 資料源
+    try{
+      const act=this.getActivitiesData();
+      if(act.booth_source && (act.booth_source.sheet_id||act.booth_source.drive_file_id)) await this.syncBoothsFromDrive(true);
+    }catch(e){}
+    try{
+      const fin=this.getFinanceData();
+      if(fin.budget_source && (fin.budget_source.sheet_id||fin.budget_source.drive_file_id)) await this.syncBudgetFromDrive(true);
+    }catch(e){}
+    try{
+      const st=this.getStaffData();
+      if(st.staff_source && (st.staff_source.sheet_id||st.staff_source.drive_file_id)) await this.syncStaffFromDrive(true);
+    }catch(e){}
+    try{
+      const ss=this.eventData['schedule_source'];
+      if(ss && (ss.sheet_id||ss.drive_file_id)) await this.syncScheduleFromDrive(true);
+    }catch(e){}
+    try{
+      const ps=this.eventData['participants_source'];
+      if(ps && (ps.sheet_id||ps.drive_file_id)) await this.syncParticipantsFromDrive(true);
+    }catch(e){}
+  }
   // 依 header map 模糊配對欄位（各卡片用同一套）
   pickCol(obj, want, fallback){
     if(!obj) return fallback;
@@ -1244,20 +1268,20 @@ class ScoutEventApp{
     for(const w of wants){ if(lower[w]!==undefined && lower[w]!==null && String(lower[w]).trim()!=='') return String(lower[w]).trim(); }
     return fallback;
   }
-  async syncBoothsFromDrive(){
+  async syncBoothsFromDrive(silent){
     const src=(this.getActivitiesData().booth_source)||{};
     const sheetId=src.sheet_id||src.drive_file_id;
-    if(!sheetId){ showToast('尚未設定攤位資料來源 (booth_source)','warning'); return; }
-    showToast('正在從 Drive 讀取最新攤位資料…','');
-    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    if(!sheetId){ if(!silent) showToast('尚未設定攤位資料來源 (booth_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新攤位資料…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
     try{
       const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
       if(got.ok && got.rows.length){
         const booths=this.rowsToBooths(got.rows);
-        if(booths.length){ this.applyBooths(booths,'Drive 直接同步 ('+got.via+')'); return; }
+        if(booths.length){ this.applyBooths(booths,'Drive 直接同步 ('+got.via+')', silent); return; }
       }
-      showToast('未能從 Drive 讀取。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
-    }catch(e){ showToast('同步失敗：'+e.message+'（如為 CORS，請把 xlsx 轉為 Google 試算表）','error'); }
+      if(!silent) showToast('未能從 Drive 讀取。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message+'（如為 CORS，請把 xlsx 轉為 Google 試算表）','error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
   // 模式 B：副主席上傳 Excel → SheetJS 轉 CSV/JSON → 寫入後端 Sheet (GAS) + 本地
@@ -1308,12 +1332,12 @@ class ScoutEventApp{
     items.forEach(it=>{ if(!groups[it.group_name]) groups[it.group_name]=[]; groups[it.group_name].push(it); });
     return Object.keys(groups).map(g=>({group_name:g, items:groups[g]}));
   }
-  async syncBudgetFromDrive(){
+  async syncBudgetFromDrive(silent){
     const src=(this.getFinanceData().budget_source)||{};
     const sheetId=src.sheet_id||src.drive_file_id;
-    if(!sheetId){ showToast('尚未設定預算資料來源 (budget_source)','warning'); return; }
-    showToast('正在從 Drive 讀取最新預算…','');
-    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    if(!sheetId){ if(!silent) showToast('尚未設定預算資料來源 (budget_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新預算…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
     try{
       const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
       if(got.ok && got.rows.length){
@@ -1322,13 +1346,13 @@ class ScoutEventApp{
           const fin=this.getFinanceData();
           fin.group_itemized_budgets=gb;
           this.saveFinanceData(fin);
-          showToast(`已同步 ${gb.length} 組預算（共 ${gb.reduce((s,g)=>s+g.items.length,0)} 項，via ${got.via}）`,'success');
+          if(!silent) showToast(`已同步 ${gb.length} 組預算（共 ${gb.reduce((s,g)=>s+g.items.length,0)} 項，via ${got.via}）`,'success');
           this.renderFinanceBudgets();
           return;
         }
       }
-      showToast('未能從 Drive 讀取預算。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
-    }catch(e){ showToast('同步失敗：'+e.message,'error'); }
+      if(!silent) showToast('未能從 Drive 讀取預算。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
   async handleBudgetExcelUpload(file){
@@ -1356,12 +1380,12 @@ class ScoutEventApp{
     return { name, role_title:b(this.staffHeaderMap().role_title), group_name:b(this.staffHeaderMap().group_name)||'未分組', contact:b(this.staffHeaderMap().contact), job_desc:b(this.staffHeaderMap().job_desc) };
   }
   rowsToContacts(rows){ return (rows||[]).map(r=>this.normalizeStaffRow(r)).filter(Boolean); }
-  async syncStaffFromDrive(){
+  async syncStaffFromDrive(silent){
     const src=(this.getStaffData().staff_source)||this.eventData.staff?.staff_source||{};
     const sheetId=src.sheet_id||src.drive_file_id;
-    if(!sheetId){ showToast('尚未設定名單資料來源 (staff_source)','warning'); return; }
-    showToast('正在從 Drive 讀取最新名單…','');
-    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    if(!sheetId){ if(!silent) showToast('尚未設定名單資料來源 (staff_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新名單…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
     try{
       const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
       if(got.ok && got.rows.length){
@@ -1370,13 +1394,13 @@ class ScoutEventApp{
           const data=this.getStaffData();
           data.contacts=contacts;
           this.saveStaffData(data);
-          showToast(`已同步 ${contacts.length} 位工作人員（via ${got.via}）`,'success');
+          if(!silent) showToast(`已同步 ${contacts.length} 位工作人員（via ${got.via}）`,'success');
           this.renderStaffContacts();
           return;
         }
       }
-      showToast('未能自動解析名單。Org Chart 為架構圖，建議另設「聯絡名單」扁平分頁（姓名/職銜/組別/電話）再同步','warning');
-    }catch(e){ showToast('同步失敗：'+e.message,'error'); }
+      if(!silent) showToast('未能自動解析名單。Org Chart 為架構圖，建議另設「聯絡名單」扁平分頁（姓名/職銜/組別/電話）再同步','warning');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
   async handleStaffExcelUpload(file){
@@ -1392,6 +1416,102 @@ class ScoutEventApp{
       this.saveStaffData(data);
       showToast(`已解析 ${contacts.length} 位工作人員（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
       this.renderStaffContacts();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // ═══ 日程表 (Run Down) 資料源 + 同步 ═══
+  getScheduleData(){
+    const key=LS.schedule(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    if(local && Array.isArray(local)) return local;
+    const raw=this.eventData['schedule']||[];
+    if(Array.isArray(raw)) return raw;
+    return [];
+  }
+  saveScheduleData(data){ localStorage.setItem(LS.schedule(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['schedule']=data||[]; }
+  scheduleHeaderMap(){ return { time_slot:['時段','時間','time','time_slot','slot'], title:['節目','項目','title','program','內容','活動'], location:['位置','地點','location','place'], group_name:['組別','組','group','group_name','負責組'], description:['說明','描述','description','備註','desc','notes'] }; }
+  normalizeScheduleRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const title=b(this.scheduleHeaderMap().title);
+    if(!title) return null;
+    return { time_slot:b(this.scheduleHeaderMap().time_slot), title, location:b(this.scheduleHeaderMap().location), group_name:b(this.scheduleHeaderMap().group_name), description:b(this.scheduleHeaderMap().description) };
+  }
+  rowsToSchedule(rows){ return (rows||[]).map(r=>this.normalizeScheduleRow(r)).filter(Boolean); }
+  async syncScheduleFromDrive(silent){
+    const src=this.eventData['schedule_source']||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定日程表資料來源 (schedule_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新日程…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const sch=this.rowsToSchedule(got.rows);
+        if(sch.length){ this.saveScheduleData(sch); if(!silent) showToast(`已同步 ${sch.length} 個時段（via ${got.via}）`,'success'); this.renderScheduleModule(); return; }
+      }
+      if(!silent) showToast('未能從 Drive 讀取日程。建議另存為原生「Google 試算表」再同步','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleScheduleExcelUpload(file){
+    if(!file) return;
+    if(!((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳日程','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const sch=this.rowsToSchedule(rows);
+      if(!sch.length){ showToast('解析不到日程，請確認欄位（時段/節目/位置/組別）','error'); return; }
+      this.saveScheduleData(sch);
+      showToast(`已解析 ${sch.length} 個時段（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderScheduleModule();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // ═══ 參加旅團名單資料源 + 同步 ═══
+  getParticipantsData(){
+    const key=LS.participants(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    if(local) return local;
+    const raw=this.eventData['participants']||[];
+    if(Array.isArray(raw)) return raw;
+    return [];
+  }
+  saveParticipantsData(data){ localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
+  participantHeaderMap(){ return { unit_name:['旅團','旅團名稱','單位','unit','unit_name','group','名稱'], section:['支部','section','支部名稱','組別'], headcount:['人數','headcount','count','參加人數'], notes:['備註','notes','說明','remark'] }; }
+  normalizeParticipantRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const unit_name=b(this.participantHeaderMap().unit_name);
+    if(!unit_name) return null;
+    return { unit_name, section:b(this.participantHeaderMap().section), headcount:b(this.participantHeaderMap().headcount), notes:b(this.participantHeaderMap().notes) };
+  }
+  rowsToParticipants(rows){ return (rows||[]).map(r=>this.normalizeParticipantRow(r)).filter(Boolean); }
+  async syncParticipantsFromDrive(silent){
+    const src=this.eventData['participants_source']||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定參加旅團名單來源 (participants_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新參加旅團名單…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const p=this.rowsToParticipants(got.rows);
+        if(p.length){ this.saveParticipantsData(p); if(!silent) showToast(`已同步 ${p.length} 個旅團（via ${got.via}）`,'success'); this.renderAdminGroupModule(); return; }
+      }
+      if(!silent) showToast('未能從 Drive 讀取參加旅團名單','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleParticipantsExcelUpload(file){
+    if(!file) return;
+    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅行政組主任以上可上傳','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const p=this.rowsToParticipants(rows);
+      if(!p.length){ showToast('解析不到名單，請確認欄位（旅團/支部/人數）','error'); return; }
+      this.saveParticipantsData(p);
+      showToast(`已解析 ${p.length} 個旅團（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderAdminGroupModule();
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
@@ -4692,7 +4812,7 @@ class ScoutEventApp{
   removeTempAttachment(fileId){/* for form */ }
 
   /* ===== Users & Others (simplified) ===== */
-  getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){list=[{user_id:'sheep',name:'超級管理員',email:'sheep',role:'super_admin',group_name:'行政組',contact:'',password:'0728',status:'active',can_tick:true},{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'何家聰',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; localStorage.setItem(key,JSON.stringify(list));} return list;}
+  getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){list=[{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'何家聰',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; localStorage.setItem(key,JSON.stringify(list));} return list;}
   setLocalUsers(l){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
   async loadUsers(){let list=[]; if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:u.role,group_name:u.group_name||u.branch,contact:u.contact||'',password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); this.usersList=list; this.renderUsers();}
   renderUsers(){const container=document.getElementById('users-container'); if(!container) return; if(!this.usersList.length){container.innerHTML='<p class="text-xs text-slate-400">無用戶</p>'; return;} container.innerHTML=this.usersList.map(u=>`<div class="border p-3 rounded-xl flex justify-between"><div><b>${escapeHtml(u.name)}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')}</div></div><div class="flex gap-1"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button></div></div>`).join('');}
@@ -4714,7 +4834,21 @@ class ScoutEventApp{
   updateSaveBar(){const bar=document.getElementById('saveBar'); const c=this.pendingChanges.length; if(c>0){bar.classList.add('visible'); document.getElementById('pendingText').textContent=`${c} 項未保存`;} else bar.classList.remove('visible');}
   discardChanges(){this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); this.updateSaveBar();}
   async saveChanges(){if(!this.pendingChanges.length){showToast('無變更','warning'); return;} const overlay=document.getElementById('savingOverlay'); overlay.classList.add('active'); await new Promise(r=>setTimeout(r,800)); this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); overlay.classList.remove('active'); this.updateSaveBar(); showToast('已保存','success');}
-  submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value; const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd); if(id==='sheep'&&pwd==='0728'){this.currentUser={user_id:'sheep',name:'超級管理員',role:'super_admin',group_name:'行政組'}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 超管','success'); if(this.currentEvent) this.showDashboard(); return;} if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;} showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');}
+  async submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value;
+    // 正式連線 (GAS) 模式：交由後端驗證（超管帳密只存在 SCRIPT 內，前端不外露）
+    if(!this.mockMode && this.gasUrl){
+      try{
+        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'login',user_id:id,password:pwd})});
+        const j=await res.json();
+        if(j && j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:j.user.role,group_name:j.user.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||''),'success'); if(this.currentEvent) this.showDashboard(); return; }
+        showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤'),'error'); return;
+      }catch(err){ showToast('無法連線後端：'+err.message,'error'); return; }
+    }
+    // Mock 模式：本地示範帳戶（不含超管，超管只走後端 SCRIPT）
+    const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd);
+    if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
+    showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
+  }
   demoLogin(uid){if(!this.mockMode){showToast('示範登入僅限 Mock 模式','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>u.user_id===uid)||{user_id:uid,name:'示範帳戶',role:'staff',group_name:'籌委會'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
   updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=this.currentUser.role.toUpperCase(); document.getElementById('logout-btn').classList.remove('hidden'); document.getElementById('login-btn-text').textContent='已登入'; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); setTimeout(()=>this.checkAndShowNotifications(), 500);}
   logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('logout-btn').classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
@@ -5595,10 +5729,17 @@ class ScoutEventApp{
     const container=document.getElementById('module-content');
     const data=this.getAdminGroupData();
     const canUpload=this.canUploadDocument()||this.isAdmin();
+    const participants=this.getParticipantsData();
+    const pSrc=this.eventData['participants_source']||{};
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>🏢 行政組 (完全取代舊手冊行政組頁面)：</b><br>舊版有活動通告、報名表、急救申請、膳食安排、參加旅團名單，現全部整合至此卡片，公開可看，僅修改需登入，部門間溝通更完善</div>
         <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 上傳文件</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
+        <div class="bg-white border rounded-xl p-4">
+          <div class="flex justify-between items-center mb-2"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>參加旅團名單 (${participants.length})</h4><div class="flex gap-2"><button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer">上傳 Excel<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleParticipantsExcelUpload(this.files[0])"></label>`:''}</div></div>
+          ${(pSrc.sheet_id||pSrc.drive_file_id)?`<div class="text-[10px] text-slate-500 mb-2">來源：「${escapeHtml(pSrc.name||'參加旅團名單')}」由行政組更新，可一鍵／自動同步。</div>`:'<div class="text-[10px] text-slate-400 mb-2">尚未設定名單來源（participants_source）。行政組提供 Google Sheet 後即可同步。</div>'}
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.docs.map(d=>`
           <div class="border rounded-xl p-4 bg-white space-y-2">
             <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
@@ -5774,7 +5915,8 @@ class ScoutEventApp{
   renderScheduleModule(){
     const container=document.getElementById('module-content');
     if(!this.scheduleSubTab) this.scheduleSubTab='overall';
-    const data=this.eventData['schedule']||[];
+    const data=this.getScheduleData();
+    const schSrc=this.eventData['schedule_source']||{};
     // ISD typical run down - 上午攤位、下午儀式 (2025 實際流程)；僅模擬示範活動顯示
     const isdRunDown=this.isDemoEvent()?[
       {time:'07:45 - 08:30', location:'大操場 / 有蓋操場', program:'會操及頒獎禮場地設置劃位，各功能組別場地佈置', groups:{'協調組':'場地佈置、物資運送','步操及典禮組':'步操報到處 set up, 樂隊報到','節目組':'到達會場及拿物資','服務組':'到達會場及拿物資','行政組':'行政組 set up、運作'}},
@@ -5791,8 +5933,12 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed">
-          <b>📅 ISD Run Down（2025 實際流程：上午攤位、下午儀式）：</b><br>
-          ISD 當天流程：07:45 場地設置 → 08:30 報到/攤位佈置 → 10:00 上午主題攤位節目 → 12:30 午膳 → 14:45 優異旅團頒獎 → 16:00 會操檢閱及頒獎 → 16:50 拍照 → 17:00 茶聚 → 拆卸。下方為詳細工作人員日程交叉表 (時間 x 組別)，方便各組一目了然。
+          <b>📅 ISD Run Down：</b>下方為詳細工作人員日程交叉表 (時間 x 組別)，方便各組一目了然。
+          ${(schSrc.sheet_id||schSrc.drive_file_id)?`<div class="mt-1 text-teal-800">資料來源：「${escapeHtml(schSrc.name||'日程表')}」（由秘書處更新），可一鍵同步或自動同步。</div>`:''}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="app.syncScheduleFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新日程 (Drive)</button>
+          ${((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchScheduleTab('overall')" class="tab-btn ${this.scheduleSubTab==='overall'?'active':''}">總表 (參加者)</button>
