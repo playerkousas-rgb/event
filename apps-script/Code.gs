@@ -48,6 +48,7 @@ const ROLE_HIERARCHY = {
   'advisor': 80,
   'admin': 80,
   'chairperson': 80,
+  'executive_vice_chairperson': 70,
   'vice_chairperson': 60,
   'general_director': 40,
   'director': 30,
@@ -64,6 +65,7 @@ const ROLE_LABELS_CN = {
   '主席': 'chairperson',
   '顧問': 'advisor',
   '管理員': 'admin',
+  '執行副主席': 'executive_vice_chairperson',
   '副主席': 'vice_chairperson',
   '總主任': 'general_director',
   '主任': 'director',
@@ -242,14 +244,15 @@ function createAccount(data) {
   let uid = (data.user_id || '').trim();
   if (!uid) uid = 'staff_' + Date.now();
 
-  // 輕量防呆：開戶者只能是總主任以上，且只能開自己組別（管理員/超管可跨組）
+  // 輕量防呆：開戶者只能是總主任以上，且只能開自己組別（管理層/執行副主席/超管可跨組）
   const byRole = data.by_role || '';
   const byGroup = data.by_group || '';
   const byLvl = ROLE_HIERARCHY[byRole] !== undefined ? ROLE_HIERARCHY[byRole] : 0;
-  if (byRole && byLvl < 40 && !['admin', 'super_admin'].includes(byRole)) {
+  const CROSS_GROUP_ROLES = ['admin', 'super_admin', 'executive_vice_chairperson'];
+  if (byRole && byLvl < 40 && !CROSS_GROUP_ROLES.includes(byRole)) {
     return { success: false, error: '只有總主任或以上可開戶' };
   }
-  if (byRole && !['admin', 'super_admin'].includes(byRole) && byGroup && group !== byGroup) {
+  if (byRole && !CROSS_GROUP_ROLES.includes(byRole) && byGroup && group !== byGroup) {
     return { success: false, error: '只能為自己組別開戶' };
   }
 
