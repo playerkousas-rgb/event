@@ -74,7 +74,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-sm transition btn-mobile"><i class="fa-solid fa-right-from-bracket"></i></button>
     </div>
   </div>
-  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶</button><button class="nav-tab" data-view="bulk" onclick="app.switchTopTab('bulk',this)"><i class="fa-solid fa-file-csv mr-1"></i> 批量</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
+  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶</button><button class="nav-tab" data-view="bulk" onclick="app.switchTopTab('bulk',this)"><i class="fa-solid fa-file-csv mr-1"></i> 批量</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="approvalmatrix" onclick="app.switchTopTab('approvalmatrix',this)"><i class="fa-solid fa-table-cells mr-1"></i> 批核權限表</button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
 </header>
 
 <div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goHome();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-house text-sky-600 w-5"></i> 首頁</button><button onclick="app.showDashboard();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-gauge w-5"></i> 儀表板</button><button onclick="app.openModule('meetings');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-handshake text-sky-600 w-5"></i> 會議卡片 (升級)</button><button onclick="app.openModule('staff');app.toggleDrawer()" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 border flex items-center gap-3"><i class="fa-solid fa-sitemap text-indigo-600 w-5"></i> 工作人員</button><button onclick="app.switchTopTab('users');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-users text-emerald-700 w-5"></i> 用戶管理</button><button onclick="app.switchTopTab('bulk');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-file-csv text-amber-700 w-5"></i> 批量開戶</button></div><div class="p-3 border-t text-[11px] text-slate-500">v6.1 會議卡片全面升級<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
@@ -240,6 +240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
   <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
   <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">全前端控制台</h3><p class="text-xs text-slate-500 mt-1">所有設定前端可控</p></div></div>
   <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
+  <div id="view-approvalmatrix" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核權限表</h3><div id="approval-matrix-content" class="mt-4"></div></div></div>
 
 </main>
 
@@ -458,11 +459,11 @@ class ScoutEventApp{
   openLoginModal(){const demo=document.getElementById('mock-demo-login'); if(demo) demo.classList.toggle('hidden', !(this.mockMode && this.isDemoEvent())); document.getElementById('modal-login').classList.remove('hidden');}
   openBulkModal(){document.getElementById('modal-bulk').classList.remove('hidden');}
   switchTopTab(view,btn){
-    ['landing','dashboard','module','users','bulk','approvals','system'].forEach(v=>{const el=document.getElementById('view-'+v); if(el) el.classList.add('hidden');});
+    ['landing','dashboard','module','users','bulk','approvals','approvalmatrix','system'].forEach(v=>{const el=document.getElementById('view-'+v); if(el) el.classList.add('hidden');});
     const target=document.getElementById('view-'+view); if(target) target.classList.remove('hidden');
     document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active')); if(btn) btn.classList.add('active'); else document.querySelector(`.nav-tab[data-view="${view}"]`)?.classList.add('active');
-    document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active')); const map={landing:'bn-home',dashboard:'bn-home',users:'bn-users',bulk:'bn-bulk',approvals:'bn-home',system:'bn-home',module:'bn-home'}; document.getElementById(map[view]||'bn-home')?.classList.add('active');
-    if(view==='users') this.loadUsers(); else if(view==='approvals') this.renderApprovalCenter(); else if(view==='landing') this.loadEvents();
+    document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active')); const map={landing:'bn-home',dashboard:'bn-home',users:'bn-users',bulk:'bn-bulk',approvals:'bn-home',approvalmatrix:'bn-home',system:'bn-home',module:'bn-home'}; document.getElementById(map[view]||'bn-home')?.classList.add('active');
+    if(view==='users') this.loadUsers(); else if(view==='approvals') this.renderApprovalCenter(); else if(view==='approvalmatrix') this.renderApprovalMatrixView(); else if(view==='landing') this.loadEvents();
   }
   saveSettings(e){e.preventDefault(); this.gasUrl=document.getElementById('gas-url-input').value.trim(); this.apiKey=document.getElementById('api-key-input').value.trim()||this.apiKey; localStorage.setItem(LS.gasUrl,this.gasUrl); localStorage.setItem(LS.apiKey,this.apiKey); showToast('設定已保存','success'); this.closeModal('modal-settings'); this.loadEvents();}
   async loadEvents(){
@@ -841,20 +842,70 @@ class ScoutEventApp{
     }
     this.renderModuleContent(key);
   }
+  // 批核中心：待批項目（物資／車位／財務），用 canApproveArea 控制批准/拒絕
   async renderApprovalCenter(){
     document.getElementById('view-landing').classList.add('hidden');
     document.getElementById('view-dashboard').classList.add('hidden');
     document.getElementById('view-module').classList.add('hidden');
     document.getElementById('view-approvals').classList.remove('hidden');
     await this.loadApprovalPermissions();
+    const container=document.getElementById('approval-content');
+    if(!container) return;
+    const sup=this.getSuppliesData();
+    const fin=this.getFinanceData();
+    const pendingSupplies=(sup.requests||[]).filter(r=>r.status==='pending');
+    const pendingVehicles=(sup.vehicle_passes||[]).filter(v=>v.status==='pending');
+    const pendingExpenses=(fin.expenses||[]).filter(e=>e.status==='pending');
+    const canSup=this.canApproveArea('supplies');
+    const canVeh=this.canApproveArea('vehicle');
+    const canFin=this.canApproveArea('finance');
+    const pendingTotal=pendingSupplies.length+pendingVehicles.length+pendingExpenses.length;
+    const badge=document.getElementById('badge-pending-count');
+    if(badge){ if(pendingTotal>0){ badge.textContent=pendingTotal; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+    const section=(icon,color,title,count,rowsHTML)=>`
+      <div class="border rounded-xl p-4 bg-white">
+        <div class="flex items-center gap-2 mb-2"><i class="${icon} ${color}"></i><b class="text-[13px]">${title}</b><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${count} 待批</span></div>
+        <div class="space-y-2">${rowsHTML||'<p class="text-xs text-slate-400">暫無待批項目</p>'}</div>
+      </div>`;
+    const supRows=pendingSupplies.map(r=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(r.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">申請 ${r.qty_requested} ${escapeHtml(r.unit||'個')} · ${escapeHtml(r.requested_by||'')}</div></div>
+        ${canSup?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveSupplyRequest('${r.request_id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectSupplyRequest('${r.request_id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
+    const vehRows=pendingVehicles.map(v=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(v.plate||'')}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(v.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">司機 ${escapeHtml(v.driver_name||'')} · 用途 ${escapeHtml(v.purpose||'')}</div></div>
+        ${canVeh?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveVehiclePass('${v.pass_id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectVehiclePass('${v.pass_id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
+    const finRows=pendingExpenses.map(e=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">金額 $${e.actual} · ${escapeHtml(e.submitted_by||'')}</div></div>
+        ${canFin?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveExpense('${e.id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectExpense('${e.id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
+          <b><i class="fa-solid fa-user-check mr-1"></i>批核中心：</b>以下是待你批核的項目。批核權限由超管設定（另見「批核權限表」分頁）；你只能看到自己有權批核的範疇。
+        </div>
+        <div class="flex gap-2"><button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button><button onclick="app.switchTopTab('approvalmatrix')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-table-cells mr-1"></i>查看批核權限表</button></div>
+        ${section('fa-solid fa-boxes-stacked','text-blue-600','物資待批',pendingSupplies.length,supRows)}
+        ${section('fa-solid fa-car','text-amber-600','車位/車輛待批',pendingVehicles.length,vehRows)}
+        ${section('fa-solid fa-wallet','text-emerald-600','財務待批',pendingExpenses.length,finRows)}
+      </div>
+    `;
+  }
+  // 「批核權限表」分頁（橫看人×頁 / 直看頁×人）
+  async renderApprovalMatrixView(){
+    document.getElementById('view-landing').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-module').classList.add('hidden');
+    document.getElementById('view-approvals').classList.add('hidden');
+    document.getElementById('view-approvalmatrix').classList.remove('hidden');
+    await this.loadApprovalPermissions();
     this.renderApprovalMatrix();
   }
   // 批核權限矩陣（兩種檢視：橫看人×頁 / 直看頁×人，顏色＋文字分類）
   renderApprovalMatrix(){
-    const container=document.getElementById('approval-content');
+    const container=document.getElementById('approval-matrix-content');
     if(!container) return;
     const perms=this.approvalPerms||[];
-    const isAdmin=this.isAdmin()||this.roleLevel(this.currentUser?.role)>=100;
     const mode=this.approvalViewMode||'byPerson';
     const chip=(on,area)=> on
       ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold ${area.chip}"><span class="w-2 h-2 rounded-full ${area.dot}"></span>有權</span>`
@@ -878,17 +929,16 @@ class ScoutEventApp{
     }).join('');
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
-          <b><i class="fa-solid fa-user-check mr-1"></i>批核權限：</b>批核權由超管在後端 Sheet「<b>Approval_Permissions</b>」直接填寫（supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務，有權填 Y）。
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
+          <b><i class="fa-solid fa-table-cells mr-1"></i>批核權限表：</b>批核權由超管在後端 Sheet「<b>Approval_Permissions</b>」直接填寫（supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務，有權填 Y）。
           管理層（主席/顧問/管理員/執行副主席/超管）預設全範疇，不需列明。此頁供檢視「誰有哪個範疇的批核權」。
         </div>
         <div class="flex flex-wrap gap-2 items-center">
           <button onclick="app.approvalViewMode='byPerson';app.renderApprovalMatrix()" class="px-4 py-2 rounded-xl text-xs font-bold ${mode==='byPerson'?'bg-slate-900 text-white':'bg-white border text-slate-600'}"><i class="fa-solid fa-arrows-left-right mr-1"></i>橫看（人 → 頁）</button>
           <button onclick="app.approvalViewMode='byArea';app.renderApprovalMatrix()" class="px-4 py-2 rounded-xl text-xs font-bold ${mode==='byArea'?'bg-slate-900 text-white':'bg-white border text-slate-600'}"><i class="fa-solid fa-arrows-up-down mr-1"></i>直看（頁 → 人）</button>
-          <button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>
+          <button onclick="app.renderApprovalMatrixView()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>
         </div>
         ${mode==='byPerson'?byPerson:byArea}
-        <div class="text-[10px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">待批項目（物資／車位／膳食／財務）會顯示於此；點上方按鈕切換「橫看／直看」檢視批核權矩陣。</div>
       </div>
     `;
   }
