@@ -879,15 +879,41 @@ class ScoutEventApp{
         <div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">金額 $${e.actual} · ${escapeHtml(e.submitted_by||'')}</div></div>
         ${canFin?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveExpense('${e.id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectExpense('${e.id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
       </div>`).join('');
+    // ── 我的申請（申請人視角：訂餐／物資／車位 狀態）──
+    const mealsData=this.getMealsData();
+    const myName=this.currentUser?.name||'';
+    const myId=this.currentUser?.user_id||'';
+    const myMeals=(mealsData.orders||[]).filter(o=>o.user_id===myId||o.user_name===myName);
+    const mySupplies=(sup.requests||[]).filter(r=>r.requested_by_id===myId||r.requested_by===myName);
+    const myVehicles=(sup.vehicle_passes||[]).filter(v=>v.requested_by_id===myId||v.requested_by===myName);
+    const myExpenses=(fin.expenses||[]).filter(e=>e.submitted_by===myName||e.submitted_by_id===myId);
+    const stLabel={pending:'待批',approved:'已批',modified:'已批(修改)',rejected:'已拒絕'};
+    const stCls={pending:'bg-amber-100 text-amber-700',approved:'bg-emerald-100 text-emerald-700',modified:'bg-sky-100 text-sky-700',rejected:'bg-rose-100 text-rose-700'};
+    const myMealRows=myMeals.map(o=>{ const m=mealsData.menus.find(x=>x.menu_id===o.menu_id); return `<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(m?.meal_type||'')} - ${escapeHtml(m?.menu_desc||'')}</b><div class="text-[11px] text-slate-500">選擇：<b>${escapeHtml(o.selection||'')}</b></div></div><span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border">已訂</span></div>`; }).join('')||'<p class="text-xs text-slate-400">暫無訂餐</p>';
+    const mySupRows=mySupplies.map(r=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(r.item_name)} x ${r.qty_requested}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">批核 ${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:r.qty_requested} ${escapeHtml(r.unit||'個')}${r.approved_by?` · ${escapeHtml(r.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[r.status]||'bg-slate-100 text-slate-600'}">${stLabel[r.status]||r.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無物資申請</p>';
+    const myVehRows=myVehicles.map(v=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(v.plate||'')} - ${escapeHtml(v.driver_name||'')}</b><div class="text-[11px] text-slate-500 mt-0.5">停泊 ${escapeHtml(v.parking_location||'待定')}${v.approved_by?` · ${escapeHtml(v.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[v.status]||'bg-slate-100 text-slate-600'}">${stLabel[v.status]||v.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無車輛申請</p>';
+    const myExpRows=myExpenses.map(e=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">$${e.actual}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[e.status]||'bg-slate-100 text-slate-600'}">${stLabel[e.status]||e.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無開支申報</p>';
+    const hasAnyMine=myMeals.length||mySupplies.length||myVehicles.length||myExpenses.length;
+    const mySection=`<div class="border rounded-xl p-4 bg-white">
+      <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-user text-indigo-600"></i><b class="text-[13px]">我的申請</b><span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border">${myMeals.length+mySupplies.length+myVehicles.length+myExpenses.length} 項</span></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><h5 class="font-bold text-[11px] text-purple-700 mb-1"><i class="fa-solid fa-utensils mr-1"></i>我的訂餐 (${myMeals.length})</h5><div class="space-y-1.5">${myMealRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-blue-700 mb-1"><i class="fa-solid fa-boxes-stacked mr-1"></i>我的物資 (${mySupplies.length})</h5><div class="space-y-1.5">${mySupRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-amber-700 mb-1"><i class="fa-solid fa-car mr-1"></i>我的車位 (${myVehicles.length})</h5><div class="space-y-1.5">${myVehRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-emerald-700 mb-1"><i class="fa-solid fa-wallet mr-1"></i>我的開支 (${myExpenses.length})</h5><div class="space-y-1.5">${myExpRows}</div></div>
+      </div>
+      ${!hasAnyMine?'<p class="text-xs text-slate-400 mt-2">你暫時未有申請紀錄。</p>':''}
+    </div>`;
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
-          <b><i class="fa-solid fa-user-check mr-1"></i>批核中心：</b>以下是待你批核的項目。批核權限由超管設定（另見「批核權限表」分頁）；你只能看到自己有權批核的範疇。
+          <b><i class="fa-solid fa-user-check mr-1"></i>批核中心：</b>上半部是待你批核的項目；下半部「我的申請」顯示你自己的訂餐／物資／車位／開支狀態（待批·已批·已批(修改)·已拒絕）。批核權限由超管設定（另見「批核權限表」分頁）。
         </div>
         <div class="flex gap-2"><button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button><button onclick="app.switchTopTab('approvalmatrix')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-table-cells mr-1"></i>查看批核權限表</button></div>
         ${section('fa-solid fa-boxes-stacked','text-blue-600','物資待批',pendingSupplies.length,supRows)}
         ${section('fa-solid fa-car','text-amber-600','車位/車輛待批',pendingVehicles.length,vehRows)}
         ${section('fa-solid fa-wallet','text-emerald-600','財務待批',pendingExpenses.length,finRows)}
+        ${mySection}
       </div>
     `;
   }
