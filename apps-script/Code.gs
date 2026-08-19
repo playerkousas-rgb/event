@@ -626,10 +626,11 @@ function verifyEventPassword(data) {
 }
 
 function handleLogin(data) {
-  const loginId = (data.user_id || '').trim();
-  const password = data.password;
+  const loginId = String(data.user_id || '').trim();
+  const password = String(data.password == null ? '' : data.password);
   
-  if (loginId === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASS) {
+  // 超管帳號：只存在本 SCRIPT，不在任何 Sheet/前端；帳號不區分大小寫，密碼區分
+  if (loginId.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {
     return { success: true, user: { user_id: 'sheep', name: '超級管理員', email: SUPER_ADMIN_EMAIL, role: 'super_admin', group_name: '行政組' } };
   }
 

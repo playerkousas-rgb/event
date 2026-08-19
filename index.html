@@ -67,7 +67,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       </div>
     </div>
     <div class="flex items-center space-x-2 flex-shrink-0">
-      <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="hidden sm:flex bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-xl text-xs font-semibold"><i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">Mock: 開</span></button>
+      <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="flex bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-2 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-xs font-semibold"><i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">Mock: 開</span></button>
       <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[80px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
       <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text" class="hidden sm:inline">登入</span><span class="sm:hidden">登入</span></button>
       <button id="changepwd-btn" onclick="app.openChangePwdModal()" class="hidden bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-xl text-xs transition btn-mobile"><i class="fa-solid fa-key mr-1"></i><span class="hidden sm:inline">修改密碼</span></button>
@@ -249,7 +249,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
 
-<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
+<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10px] text-sky-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i>超管及正式帳戶在 <b>任何模式</b>（Mock / 雲端）都會經後端驗證，可直接登入；如失敗請確認頂部為「Mock: 關」(雲端模式) 或後端已更新至最新 Code.gs。</div><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
 
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
 
@@ -407,16 +407,16 @@ const DASH_CARD_DEFS=[
   {id:'announcements',title:'公告及溝通',desc:'最新公告、跨部門協作，公開可看',icon:'fa-solid fa-bullhorn',cardClass:'bg-gradient-to-br from-sky-500 to-blue-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:30,editLabel:'主任以上可發佈'},
   {id:'schedule',title:'日程表',desc:'活動當天時間表，各組流程一目了然',icon:'fa-solid fa-calendar-days',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-600',minLevel:0,editLevel:60,editLabel:'副主席以上可上傳'},
   {id:'activities',title:'場地與活動總覽',desc:'地圖、攤位總表、遊戲卡',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'主任/副主席以上可上傳'},
-  {id:'staff',title:'組織架構與聯絡',desc:'誰負責什麼，找人更方便',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:20,editLevel:40,editGroups:['行政組'],editLabel:'本組成員/主任以上可管理'},
-  {id:'theme_badges',title:'活動主題章',desc:'主題章介紹、參加條件',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,editLevel:60,editLabel:'副主席以上可更新'},
-  {id:'meals',title:'膳食管理',desc:'菜單、截止、我的訂餐',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:20,editLevel:60,editGroups:['膳食','協調','行政'],editLabel:'膳食主任/協調副主席可管理'},
-  {id:'safety',title:'安全及醫療',desc:'急救、保險、安全指引、危機處理',icon:'fa-solid fa-shield-halved',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:20,editLevel:60,editLabel:'副主席以上可上傳'},
+  {id:'staff',title:'組織架構與聯絡',desc:'架構公開可看；電話/Email 需登入',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0,editLevel:40,editGroups:['行政組'],editLabel:'本組成員/主任以上可管理'},
+  {id:'theme_badges',title:'活動主題章',desc:'主題章介紹、參加條件',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'副主席以上可更新'},
+  {id:'meals',title:'膳食管理',desc:'菜單、截止、我的訂餐',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:0,editLevel:60,editGroups:['膳食','協調','行政'],editLabel:'膳食主任/協調副主席可管理'},
+  {id:'safety',title:'安全及醫療',desc:'急救、保險、安全指引',icon:'fa-solid fa-shield-halved',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'副主席以上可上傳'},
+  {id:'crisis',title:'危機處理',desc:'危機處理手冊、應變流程，公開可看',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
   {id:'documents',title:'通告及文件',desc:'通告、指引、表格，公眾可看',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'管理員/行政總主任以上可上傳'},
   {id:'unit_guide',title:'旅團須知',desc:'參加旅團須知、指引、注意事項',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'管理員/行政總主任以上可上傳'},
   {id:'ceremony',title:'典禮儀式',desc:'司儀稿、嘉賓名單、座位表、RUNDOWN',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
   {id:'awards',title:'獲獎名單',desc:'優異旅團、支部及領袖獎勵名單',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-yellow-100 text-yellow-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
   // ── 管理資料 (登入後按角色/組別解鎖) ──
-  {id:'crisis',title:'危機處理',desc:'危機處理指引、應變流程',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:20,editLevel:60,editLabel:'管理員/副主席以上可更新'},
   {id:'meetings',title:'會議卡片',desc:'分次會議、上傳議程、會員資料、指定資料夾',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:30,editLevel:80,editLabel:'管理員可新增會議'},
   {id:'supplies',title:'物資+車輛 (含截止)',desc:'申請、批核、通知、截止日期、車輛登記',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40,editLevel:40,editLabel:'總主任/副主席以上可申請·批核'},
   {id:'finance',title:'財務管理',desc:'指引、預算、開支申報、結算按銀碼批核',icon:'fa-solid fa-wallet',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-600',minLevel:40,groups:['行政組','財務組'],editLevel:60,editGroups:['行政組','財務組'],editLabel:'副主席以上批核'},
@@ -825,7 +825,10 @@ class ScoutEventApp{
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
     } else if(key==='staff'){
-      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+ 單欄新增</button><button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載名單範本</button><label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label><button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
+      const canManageStaff=this.canManageStaffContacts();
+      document.getElementById('module-actions').innerHTML=canManageStaff
+        ?`<div class="flex gap-2 flex-wrap"><button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+ 單欄新增</button><button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載名單範本</button><label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`
+        :`<div class="flex gap-2 flex-wrap items-center"><span class="text-[11px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200"><i class="fa-solid fa-globe mr-1"></i>組織架構公開可看；聯絡資料 (電話/Email) 需登入</span>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`;
     } else if(key==='activities'){
       const canUpload=this.canUploadActivity();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openActivityMapForm()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-map mr-1"></i>上傳地圖</button><button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>新增攤位</button><button onclick="app.openGameCardForm()" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-id-card mr-1"></i>上傳遊戲卡</button>`:''}<button onclick="app.downloadActivityTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button><button onclick="app.exportActivitiesData()" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
@@ -2464,9 +2467,9 @@ class ScoutEventApp{
     if(actionsEl){
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
-          ${canManage?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單 (膳食主任/協調副主席)</button>`:''}
-          <button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0])"></label>
+          ${canManage?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單 (膳食主任/協調副主席)</button>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0])"></label>`:''}
+          ${this.currentUser?`<button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:'<span class="text-[11px] bg-purple-50 text-purple-700 px-3 py-2 rounded-full border border-purple-200"><i class="fa-solid fa-globe mr-1"></i>菜單公開可看，訂餐需登入</span>'}
         </div>
       `;
     }
@@ -2559,6 +2562,7 @@ class ScoutEventApp{
   renderMealsMy(){
     const container=document.getElementById('meals-tab-my');
     if(!container) return;
+    if(!this.currentUser){ container.innerHTML=`<div class="text-center py-8"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500 mb-3">「我的訂餐」屬個人資料，登入後才顯示</p><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">登入查看</button></div>`; return; }
     const data=this.getMealsData();
     const myName=this.currentUser?.name||'';
     const myId=this.currentUser?.user_id||'';
@@ -2598,6 +2602,7 @@ class ScoutEventApp{
   renderMealsMonitor(){
     const container=document.getElementById('meals-tab-monitor');
     if(!container) return;
+    if(!this.currentUser){ container.innerHTML=`<div class="text-center py-8"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500 mb-3">監察卡片顯示你的個人申請 (訂餐/物資/車輛)，登入後才顯示</p><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">登入查看</button></div>`; return; }
     // Combined monitoring for meal, supplies, vehicle
     const mealsData=this.getMealsData();
     const suppliesData=this.getSuppliesData();
@@ -2711,6 +2716,8 @@ class ScoutEventApp{
     this.renderMealsModule();
   }
   openMealOrderForm(menuId, orderId=null){
+    // 膳食「查看」公開；但訂餐=修改資料，需登入（連同姓名/組別自動帶入）
+    if(!this.currentUser){ showToast('訂餐屬於修改資料，請先登入','warning'); this.openLoginModal(); return; }
     const data=this.getMealsData();
     const menu=data.menus.find(m=>m.menu_id===menuId);
     if(!menu){ showToast('找不到菜單','error'); return; }
@@ -4285,8 +4292,8 @@ class ScoutEventApp{
       <div class="flex flex-wrap gap-2">
         ${isAdmin||isExec?`<button onclick="app.openOrgNodeForm()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增頂級崗位 (主席/顧問)</button>`:''}
         <button onclick="app.exportStaffData('org_chart')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
-        <button onclick="app.downloadStaffTemplate('org')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'org_chart')"></label>
+        ${canAddNode||isAdmin||isExec?`<button onclick="app.downloadStaffTemplate('org')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
+        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'org_chart')"></label>`:''}
       </div>
       <div class="bg-white border rounded-2xl p-4">
         <h4 class="font-bold text-sm mb-3"><i class="fa-solid fa-sitemap text-indigo-600 mr-2"></i>組織架構樹形圖 (各副主席可新增下屬)</h4>
@@ -4384,26 +4391,34 @@ class ScoutEventApp{
     showToast('已刪除崗位','warning');
     this.renderOrgChartTree();
   }
+  // 聯絡名單管理權：管理層/總主任以上/行政組成員（與卡片「可修改」規則一致）；未登入訪客只可看姓名/職銜/組別，電話/Email 需登入
+  canManageStaffContacts(){
+    if(!this.currentUser) return false;
+    const lvl=this.roleLevel(this.currentUser.role); const g=this.currentUser.group_name||'';
+    return this.isAdmin()||this.isExecViceOrChair()||lvl>=40||g.includes('行政');
+  }
   renderStaffContacts(){
     const container=document.getElementById('staff-tab-contacts');
     if(!container) return;
     const data=this.getStaffData();
     const contacts=data.contacts||[];
-    const isAdmin=this.isAdmin()||this.isExecViceOrChair();
+    const loggedIn=!!this.currentUser;
+    const canManage=this.canManageStaffContacts();
     container.innerHTML=`
       <div class="space-y-4">
+        ${!loggedIn?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center gap-2 justify-between"><span><i class="fa-solid fa-lock mr-1"></i><b>聯絡資料受保護：</b>姓名、職銜、組別公開可看；電話及 Email 需登入後才顯示。</span><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入查看聯絡資料</button></div>`:''}
         <div class="flex flex-wrap gap-2">
-          <button onclick="app.syncStaffFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新名單 (Drive)</button>
+          ${canManage?`<button onclick="app.syncStaffFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新名單 (Drive)</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleStaffExcelUpload(this.files[0])"></label>
           <button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>單欄新增</button>
           <button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 CSV/JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>
-          <button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
-          <input id="staff-search" placeholder="搜尋姓名/組別/電話" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 CSV/JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>`:''}
+          ${loggedIn?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
+          <input id="staff-search" placeholder="${loggedIn?'搜尋姓名/組別/電話':'搜尋姓名/組別/職務'}" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
         ${(data.staff_source)?this.driveSyncNotice():''}
-        ${(data.staff_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組更新。此檔為架構圖，建議另設一個「聯絡名單」扁平分頁（姓名/職銜/組別/電話）即可「同步最新」自動讀取。</div>`:''}
-        <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th><th class="px-3 py-2 text-right">操作</th></tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
+        ${(data.staff_source && loggedIn)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組更新。此檔為架構圖，建議另設一個「聯絡名單」扁平分頁（姓名/職銜/組別/電話）即可「同步最新」自動讀取。</div>`:''}
+        <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>
     `;
@@ -4412,14 +4427,19 @@ class ScoutEventApp{
   filterStaffContacts(){
     const q=(document.getElementById('staff-search')?.value||'').toLowerCase();
     const data=this.getStaffData();
+    const loggedIn=!!this.currentUser;
+    const canManage=this.canManageStaffContacts();
+    // 未登入：不以電話欄位搜尋（避免藉搜尋反查電話）
     let list=data.contacts||[];
-    if(q) list=list.filter(c=> (c.name+c.role_title+c.group_name+c.contact+c.job_desc).toLowerCase().includes(q));
+    if(q) list=list.filter(c=> (loggedIn?(c.name+c.role_title+c.group_name+c.contact+c.job_desc):(c.name+c.role_title+c.group_name+c.job_desc)).toLowerCase().includes(q));
+    const phoneCell=(c,cls)=>loggedIn?`<span class="${cls||''}">${escapeHtml(c.contact)}</span>`:`<button onclick="app.openLoginModal()" class="bg-slate-100 hover:bg-slate-200 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="登入後可見"><i class="fa-solid fa-lock mr-0.5"></i>登入可見</button>`;
     const tbody=document.getElementById('staff-contacts-tbody');
     const cards=document.getElementById('staff-contacts-cards');
-    if(tbody) tbody.innerHTML=list.map(c=>`<tr class="hover:bg-slate-50"><td class="px-3 py-2 font-bold" data-label="姓名">${escapeHtml(c.name)}</td><td class="px-3 py-2" data-label="職銜">${escapeHtml(c.role_title)}</td><td class="px-3 py-2" data-label="組別">${escapeHtml(c.group_name)}</td><td class="px-3 py-2 font-mono text-sky-700" data-label="電話">${escapeHtml(c.contact)}</td><td class="px-3 py-2 text-xs" data-label="職務">${escapeHtml(c.job_desc)}</td><td class="px-3 py-2 text-right" data-label="操作"><div class="flex gap-1 justify-end"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div></td></tr>`).join('') || '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-400">無符合條件</td></tr>';
-    if(cards) cards.innerHTML=list.map(c=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><div><b>${escapeHtml(c.name)}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(c.role_title)}</span><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(c.group_name)} | ${escapeHtml(c.contact)}</div><div class="text-[11px] text-slate-600 mt-1">${escapeHtml(c.job_desc)}</div></div><div class="flex flex-col gap-1"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div></div></div>`).join('');
+    if(tbody) tbody.innerHTML=list.map(c=>`<tr class="hover:bg-slate-50"><td class="px-3 py-2 font-bold" data-label="姓名">${escapeHtml(c.name)}</td><td class="px-3 py-2" data-label="職銜">${escapeHtml(c.role_title)}</td><td class="px-3 py-2" data-label="組別">${escapeHtml(c.group_name)}</td><td class="px-3 py-2 font-mono text-sky-700" data-label="電話">${phoneCell(c)}</td><td class="px-3 py-2 text-xs" data-label="職務">${escapeHtml(c.job_desc)}</td>${canManage?`<td class="px-3 py-2 text-right" data-label="操作"><div class="flex gap-1 justify-end"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div></td>`:''}</tr>`).join('') || `<tr><td colspan="${canManage?6:5}" class="px-3 py-4 text-center text-slate-400">無符合條件</td></tr>`;
+    if(cards) cards.innerHTML=list.map(c=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><div><b>${escapeHtml(c.name)}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(c.role_title)}</span><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(c.group_name)} | ${phoneCell(c)}</div><div class="text-[11px] text-slate-600 mt-1">${escapeHtml(c.job_desc)}</div></div>${canManage?`<div class="flex flex-col gap-1"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div>`:''}</div></div>`).join('');
   }
   openStaffFormModal(id=null){
+    if(!this.canManageStaffContacts()){ showToast(this.currentUser?'你無權限修改名單':'請先登入（名單管理需總主任以上/行政組）','warning'); if(!this.currentUser) this.openLoginModal(); return; }
     const data=this.getStaffData();
     const existing=id?data.contacts.find(c=>c.id===id):null;
     const title=existing?'編輯工作人員':'新增工作人員 (單欄)';
@@ -4440,6 +4460,7 @@ class ScoutEventApp{
     document.getElementById('modal-record').classList.remove('hidden');
   }
   submitStaffForm(){
+    if(!this.canManageStaffContacts()){ showToast('無權限修改名單','error'); return; }
     const mode=document.getElementById('staff-form-mode').value;
     const id=document.getElementById('staff-form-id').value;
     const obj={
@@ -4489,6 +4510,9 @@ class ScoutEventApp{
   }
   handleStaffFileUpload(file, type){
     if(!file){ showToast('請選擇檔案','warning'); return; }
+    // 名單(含聯絡資料)上傳需管理權；架構圖上傳需副主席以上（與介面按鈕一致）
+    if(type==='contacts' && !this.canManageStaffContacts()){ showToast('無權限上傳名單','error'); return; }
+    if(type==='org_chart' && (ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isAdmin() && !this.isExecViceOrChair()){ showToast('僅副主席以上/管理員可上傳架構','error'); return; }
     const reader=new FileReader();
     reader.onload=(e)=>{
       try{
@@ -4524,6 +4548,8 @@ class ScoutEventApp{
     else reader.readAsText(file);
   }
   exportStaffData(type){
+    // 聯絡名單含電話/Email：需登入才能匯出；組織架構/職務大綱公開可匯出
+    if(type==='contacts' && !this.currentUser){ showToast('聯絡資料需登入後才能匯出','warning'); this.openLoginModal(); return; }
     const data=this.getStaffData();
     let exportData=data[type]||data.contacts;
     const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`staff_${type}_${todayISO()}.json`; a.click(); showToast('已匯出 JSON','success');
@@ -5221,16 +5247,18 @@ class ScoutEventApp{
   discardChanges(){this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); this.updateSaveBar();}
   async saveChanges(){if(!this.pendingChanges.length){showToast('無變更','warning'); return;} const overlay=document.getElementById('savingOverlay'); overlay.classList.add('active'); await new Promise(r=>setTimeout(r,800)); this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); overlay.classList.remove('active'); this.updateSaveBar(); showToast('已保存','success');}
   async submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value;
-    // 正式連線 (GAS) 模式：交由後端驗證（超管帳密只存在 SCRIPT 內，前端不外露）
-    if(!this.mockMode && this.gasUrl){
+    // 只要已設定後端網址，無論 Mock/雲端模式都先交由後端驗證
+    // （超管 sheep 及正式帳戶只存在後端 SCRIPT/Sheet，前端及 Mock 本地均不留存；之前 Mock 模式下超管永遠登入失敗）
+    if(this.gasUrl){
       try{
         const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'login',user_id:id,password:pwd})});
         const j=await res.json();
         if(j && j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:j.user.role,group_name:j.user.group_name,job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||''),'success'); if(this.currentEvent) this.showDashboard(); return; }
-        showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤'),'error'); return;
-      }catch(err){ showToast('無法連線後端：'+err.message,'error'); return; }
+        if(!this.mockMode){ showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤'),'error'); return; }
+        // Mock 模式下後端找不到 → 繼續嘗試本地示範帳戶
+      }catch(err){ if(!this.mockMode){ showToast('無法連線後端：'+err.message,'error'); return; } /* Mock 模式下後端連不上 → 繼續嘗試本地示範帳戶 */ }
     }
-    // Mock 模式：本地示範帳戶（不含超管，超管只走後端 SCRIPT）
+    // Mock 模式回退：本地示範帳戶（不含超管，超管只走後端 SCRIPT）
     const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd);
     if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name,job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
@@ -5864,7 +5892,7 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] leading-relaxed text-red-900">
-          <b>⚠️ 危機處理計劃（依上年手冊細分）：</b>供籌委成員使用的危機處理指引與應變流程，僅登入籌委可見。每年主要只需更新「危機應變小組成員及其聯絡」。<br>
+          <b>⚠️ 危機處理計劃（依上年手冊細分）：</b>危機處理指引與應變流程現已 <b>公開可看</b>（緊急時任何人可查閱），僅修改/更新需副主席以上登入。每年主要只需更新「危機應變小組成員及其聯絡」。<br>
           <b>資料來源：</b>港島童軍繽紛日危機處理計劃（組織、職責及運作）。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
