@@ -267,6 +267,7 @@ function doPost(e) {
     if (action === 'login') return jsonResponse(handleLogin(data));
     else if (action === 'verifyEventPassword') return jsonResponse(verifyEventPassword(data));
     else if (action === 'saveRecord') return jsonResponse(saveRecord(data));
+    else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
     else if (action === 'sendMeetingEmail') return jsonResponse(sendMeetingEmailNotification(data));
@@ -448,6 +449,33 @@ function saveRecord(data) {
   else sheet.appendRow(rowValues);
   
   return { success: true, id: recordId };
+}
+
+// 攤位總表：清空該活動現有攤位紀錄後，整批重寫（供節目組副主席上傳 Excel 後同步）
+function saveBooths(data) {
+  const eventId = data.event_id || 'isd_2026';
+  const booths = data.booths || [];
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Activities');
+  if (!sheet) return { success: false, error: 'Activities sheet not found' };
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const eventIdx = headers.indexOf('event_id');
+  if (eventIdx === -1) return { success: false, error: 'event_id column missing' };
+  // 刪除該活動既有攤位紀錄（type === 'booth' 的紀錄）
+  const rows = sheet.getDataRange().getValues();
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (rows[i][eventIdx] === eventId) sheet.deleteRow(i + 1);
+  }
+  const now = new Date();
+  booths.forEach(function (b, idx) {
+    const title = b.booth_name || b.booth_number || ('攤位 ' + (idx + 1));
+    const type = 'booth';
+    const location = b.location || '';
+    const description = b.description || b.theme || '';
+    const detailsJson = JSON.stringify(b);
+    sheet.appendRow(['booth_' + Date.now() + '_' + idx, eventId, title, type, location, description, detailsJson, now]);
+  });
+  return { success: true, count: booths.length };
 }
 
 function deleteRecord(data) {

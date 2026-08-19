@@ -206,7 +206,22 @@
     "income": [],
     "expenses": []
   },
-  "activities": [],
+  "activities": {
+    "booth_source": {
+      "mode": "drive_sheet",
+      "name": "ISD2026 攤位資料",
+      "drive_file_id": "1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle",
+      "sheet_id": "1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle",
+      "gid": 0,
+      "folder": "節目組",
+      "columns": ["booth_number", "booth_name", "location", "group_name", "theme", "game_type", "responsible", "contact", "description"],
+      "note": "建議把 xlsx 另存為原生 Google 試算表，APP 即可每次開啟直接讀最新（內建式，不用跳轉）。由節目組副主席負責更新。"
+    },
+    "activities": [],
+    "maps": [],
+    "booths": [],
+    "gameCards": []
+  },
   "meals": [],
   "schedule": [],
   "supplies": {

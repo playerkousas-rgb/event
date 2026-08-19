@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 window.tailwind=window.tailwind||{};
 tailwind.config={theme:{extend:{colors:{brand:{50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',300:'#c4b5fd',400:'#a78bfa',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9',800:'#5b21b6',900:'#4c1d95'}}}}}
@@ -825,7 +826,7 @@ class ScoutEventApp{
     if(local) return local;
     const raw=this.eventData['activities']||[];
     // raw may be array of activities, convert to new structure
-    let activities=[], maps=[], booths=[], gameCards=[];
+    let activities=[], maps=[], booths=[], gameCards=[], booth_source=null;
     if(Array.isArray(raw)){
       activities=raw.map((a,i)=>({id:a.activity_id||'act_'+i,title:a.title||a.name||'未命名活動',type:a.type||'攤位',location:a.location||'',description:a.description||'',details:a.details||a.details_json||'',created_at:a.created_at||''}));
     }else{
@@ -833,6 +834,7 @@ class ScoutEventApp{
       maps=raw.maps||[];
       booths=raw.booths||[];
       gameCards=raw.gameCards||raw.game_cards||[];
+      booth_source=raw.booth_source||null;
     }
     // 模擬示範活動才加入示範預設資料；真實活動(ISD等)為預留版位(空白)
     if(this.isDemoEvent()){
@@ -866,7 +868,7 @@ class ScoutEventApp{
       });
     }
     }
-    return {activities, maps, booths, gameCards, drive_folder_link: (this.eventData['activities']?.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
+    return {activities, maps, booths, gameCards, booth_source, drive_folder_link: (this.eventData['activities']?.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
   }
   saveActivitiesData(data){
     const key=LS.activities(this.currentEvent?.event_id||'isd_2026');
@@ -948,20 +950,28 @@ class ScoutEventApp{
     if(!container) return;
     const data=this.getActivitiesData();
     const canUpload=this.canUploadActivity();
+    const src=data.booth_source||null;
     container.innerHTML=`
       <div class="space-y-3">
+        ${src?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
+          <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（內建式，不用跳轉 Drive）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
+          <a href="https://drive.google.com/file/d/${escapeHtml(src.drive_file_id)}/view" target="_blank" class="text-sky-700 underline">📂 開啟 Drive 檔案</a>
+          <br>• 由<b>節目組副主席</b>負責更新。若該檔為原生「Google 試算表」，點「同步最新」即直接在 APP 內讀取最新內容（各組在 Drive 一改，APP 即時同步）。
+          <br>• 若仍是 .xlsx 檔：建議在 Drive「檔案 → 另存為 Google 試算表」後同步，或由副主席直接「上傳 Excel → 寫入後端」。
+        </div>`:''}
         <div class="flex flex-wrap gap-2">
-          ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位 (主任/副主席以上)</button>`:''}
-          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載攤位總表範本 CSV</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳總表文件 (PDF/CSV/Excel)<input type="file" accept=".pdf,.csv,.xlsx,.xls,.json" class="hidden" onchange="app.handleActivityFileUpload(this.files[0],'booth')"></label>
+          <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
+          ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel → 寫入後端<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
           <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印總表</button>
         </div>
         <div id="booths-print-area" class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-sm mb-3">攤位總表 (2025 真實攤位資料 · 攤位編號及負責單位來自舊版 Copy of ISD2025 攤位資料，負責人為示範代號)</h4>
+          <h4 class="font-bold text-sm mb-3">攤位總表 (共 ${data.booths.length} 個攤位 · 由節目組負責更新)</h4>
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th><th class="px-2 py-1 text-right">操作</th></tr></thead><tbody class="divide-y">${data.booths.map(b=>`
             <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number)}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name)}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td><td class="px-2 py-1 text-right" data-label="操作"><div class="flex gap-1 justify-end">${canUpload?`<button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></td></tr>
           `).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請上傳總表或新增</td></tr>'}</tbody></table></div>
-          <div class="mt-3 text-[10px] text-slate-500">已整合 2025 真實攤位總表（共 ${data.booths.length} 個攤位，按主題範疇 A-F 分區），相關主任可上傳新版 PDF/Excel，或直接在 APP 內新增攤位，全部前台可控</div>
+          <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。節目組副主席可在 Drive 更新 Google 試算表後點「同步最新」，或直接上傳 Excel 寫入後端。</div>
         </div>
       </div>
     `;
@@ -1152,6 +1162,104 @@ class ScoutEventApp{
     this.renderActivitiesBooths();
     showToast('已刪除攤位','warning');
   }
+  // ── 攤位資料同步：模式 A (Drive 直接讀 = 內建式) / 模式 B (副主席上傳 Excel → 寫後端) ──
+  boothHeaderMap(){
+    return {
+      booth_number:['攤位編號','攤位號','編號','booth_number','booth','booth no','no'],
+      booth_name:['攤位名稱','攤位','名稱','booth_name','name','title'],
+      location:['位置','地點','location','區'],
+      group_name:['組別','負責單位','負責旅團','單位','group_name','group','unit'],
+      theme:['主題','範疇','theme','zone'],
+      game_type:['遊戲類型','類型','game_type','type','形式'],
+      responsible:['負責人','負責','responsible','pic','leader'],
+      contact:['聯絡','電話','聯絡電話','contact','phone','tel'],
+      description:['描述','備註','說明','description','remarks','desc']
+    };
+  }
+  normalizeBoothRow(r){
+    if(!r) return null;
+    const map=this.boothHeaderMap();
+    const keys=Object.keys(r);
+    const fuzzy=(key)=>{ const want=map[key]; for(const k of keys){ if(want.some(w=>String(k).trim()===w)) return r[k]; } return ''; };
+    const v=(key)=>{ const x=fuzzy(key); return (x===undefined||x===null)?'':String(x).trim(); };
+    const booth_number=v('booth_number');
+    const booth_name=v('booth_name');
+    const location=v('location');
+    const group_name=v('group_name');
+    const theme=v('theme');
+    const game_type=v('game_type');
+    const responsible=v('responsible');
+    const contact=v('contact');
+    const description=v('description');
+    if(!booth_number && !booth_name) return null;
+    return {id:'booth_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), booth_number, booth_name, location, group_name, theme, game_type, responsible, contact, description, created_by:'同步', created_at:new Date().toISOString()};
+  }
+  rowsToBooths(rows){ return (rows||[]).map(r=>this.normalizeBoothRow(r)).filter(Boolean); }
+  applyBooths(booths, srcLabel){
+    const data=this.getActivitiesData();
+    data.booths=booths;
+    this.saveActivitiesData(data);
+    showToast(`已從「${srcLabel}」更新 ${booths.length} 筆攤位`,'success');
+    this.renderActivitiesBooths();
+  }
+  // 模式 A：直接從 Drive 讀最新（原生 Google Sheet → export=csv；xlsx → 下載後 SheetJS 解析）
+  async syncBoothsFromDrive(){
+    const src=(this.getActivitiesData().booth_source)||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ showToast('尚未設定攤位資料來源 (booth_source)','warning'); return; }
+    showToast('正在從 Drive 讀取最新攤位資料…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const csvUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${src.gid||0}`;
+      const res=await fetch(csvUrl);
+      const text=await res.text();
+      if(res.ok && text.trim() && !text.trim().startsWith('<') && text.includes(',')){
+        const booths=this.rowsToBooths(parseCSV(text));
+        if(booths.length){ this.applyBooths(booths,'Drive 直接同步'); return; }
+      }
+      if(typeof XLSX!=='undefined'){
+        const dl=`https://drive.google.com/uc?export=download&id=${sheetId}`;
+        const r2=await fetch(dl);
+        if(r2.ok){
+          const ab=await r2.arrayBuffer();
+          const wb=XLSX.read(ab,{type:'array'});
+          const sh=wb.Sheets[wb.SheetNames[0]];
+          const booths=this.rowsToBooths(XLSX.utils.sheet_to_json(sh,{defval:''}));
+          if(booths.length){ this.applyBooths(booths,'Drive 直接同步 (xlsx)'); return; }
+        }
+      }
+      showToast('未能從 Drive 讀取。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+    }catch(e){ showToast('同步失敗：'+e.message+'（如為 CORS，請把 xlsx 轉為 Google 試算表）','error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // 模式 B：副主席上傳 Excel → SheetJS 轉 CSV/JSON → 寫入後端 Sheet (GAS) + 本地
+  async handleBoothExcelUpload(file){
+    if(!file){ return; }
+    if(!this.canUploadActivity()){ showToast('僅節目組副主席/主任以上可上傳','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const ab=await file.arrayBuffer();
+      if(typeof XLSX==='undefined'){ showToast('未載入 Excel 解析庫 (需連線 CDN)','error'); return; }
+      const wb=XLSX.read(ab,{type:'array'});
+      const sh=wb.Sheets[wb.SheetNames[0]];
+      const booths=this.rowsToBooths(XLSX.utils.sheet_to_json(sh,{defval:''}));
+      if(!booths.length){ showToast('解析不到攤位資料，請確認表頭（攤位編號/攤位名稱/組別…）','error'); return; }
+      const data=this.getActivitiesData();
+      data.booths=booths;
+      this.saveActivitiesData(data);
+      if(!this.mockMode && this.gasUrl){
+        try{
+          const r=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveBooths',api_key:this.apiKey,event_id:this.currentEvent?.event_id||'isd_2026',booths})});
+          const j=await r.json();
+          showToast(j&&j.success?`已上傳 ${booths.length} 筆並寫入後端 Sheet`:`本地已更新 ${booths.length} 筆（後端：${(j&&j.error)||'未寫入'}）`, j&&j.success?'success':'warning');
+        }catch(e){ showToast(`本地已更新 ${booths.length} 筆，但寫入後端失敗：${e.message}`,'warning'); }
+      } else {
+        showToast(`已解析 ${booths.length} 筆攤位（Mock 模式僅存瀏覽器；正式連線 GAS 會寫入後端 Sheet）`,'success');
+      }
+      this.renderActivitiesBooths();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
   printBooths(){
     const area=document.getElementById('booths-print-area');
     if(!area){ showToast('找不到列印區域','error'); return; }
@@ -1224,6 +1332,7 @@ class ScoutEventApp{
   }
   async handleActivityFileUpload(file, type){
     if(!file){ showToast('請選擇檔案','warning'); return; }
+    if(type==='booth' && (file.name.endsWith('.xlsx')||file.name.endsWith('.xls'))){ return this.handleBoothExcelUpload(file); }
     const reader=new FileReader();
     reader.onload=async (e)=>{
       try{
