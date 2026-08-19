@@ -86,6 +86,9 @@ function initializeSheets() {
   const ss = getSheet();
   ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at']);
   ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
+  // 訂餐紀錄（v7.1 新增）：免登入訂餐 → 組長確認 → 行政審批 的兩級流程狀態都存呢度
+  // ⚠️ 舊部署更新後，請在 Apps Script 手動執行一次 initializeSheets（只會新增此表，絕不影響舊資料）
+  ensureSheet(ss, 'Meal_Orders', ['order_id', 'event_id', 'menu_id', 'user_id', 'user_name', 'group_name', 'selection', 'quantity', 'remarks', 'status', 'confirmed_by', 'approved_by', 'created_at', 'updated_at']);
   // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
   ensureSheet(ss, 'Account_Setup', ['name', 'role', 'job_title', 'group_name', 'user_id', 'email', 'contact']);
   // 批核權限表：供超管直接填「誰有哪個批核範疇的權」（supplies/vehicle/meals/finance）
@@ -626,10 +629,11 @@ function verifyEventPassword(data) {
 }
 
 function handleLogin(data) {
-  const loginId = (data.user_id || '').trim();
-  const password = data.password;
+  const loginId = String(data.user_id || '').trim();
+  const password = String(data.password == null ? '' : data.password);
   
-  if (loginId === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASS) {
+  // 超管帳號：只存在本 SCRIPT，不在任何 Sheet/前端；帳號不區分大小寫，密碼區分
+  if (loginId.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {
     return { success: true, user: { user_id: 'sheep', name: '超級管理員', email: SUPER_ADMIN_EMAIL, role: 'super_admin', group_name: '行政組' } };
   }
 
@@ -698,7 +702,7 @@ function sendMeetingEmailNotification(data) {
 
 function getEventAllData(eventId) {
   const ss = getSheet();
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Schedule', 'Supplies', 'Supply_Requests', 'Users'];
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Users'];
   const result = {};
   
   modules.forEach(mod => {
