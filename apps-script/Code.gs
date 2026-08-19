@@ -72,12 +72,30 @@ const ROLE_LABELS_CN = {
   '工作人員': 'staff'
 };
 
+// 批核範疇（頁）：可批核的業務領域
+const APPROVAL_AREAS = ['supplies', 'vehicle', 'meals', 'finance'];
+
+function isYes(v) {
+  if (v === true || v === 1 || v === '1') return true;
+  const s = String(v || '').trim().toLowerCase();
+  return ['y', 'yes', '是', '✓', 'true', '批', 'v'].indexOf(s) !== -1;
+}
+function yn(b) { return b ? 'Y' : ''; }
+
 function initializeSheets() {
   const ss = getSheet();
   ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at']);
   ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
   // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
   ensureSheet(ss, 'Account_Setup', ['name', 'role', 'job_title', 'group_name', 'user_id', 'email', 'contact']);
+  // 批核權限表：供超管直接填「誰有哪個批核範疇的權」（supplies/vehicle/meals/finance）
+  ensureSheet(ss, 'Approval_Permissions', ['user_id', 'name', 'group_name', 'supplies', 'vehicle', 'meals', 'finance']);
+  const apSheet = ss.getSheetByName('Approval_Permissions');
+  if (apSheet) apSheet.getRange('A1').setNote(
+    '批核權限表：每行一位批核人。supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務。\n' +
+    '有權的欄位填「Y」或「是」；無權留空。修改後在選單「童軍活動管理 → 同步批核權限」或前端「重新整理」即生效。\n' +
+    '管理層（主席/顧問/管理員/執行副主席/超管）預設全範疇，不在此表亦有效。'
+  );
   // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
   ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
   setupAccountSetupSheet(ss);
@@ -304,6 +322,44 @@ function saveUserPermissions(data) {
   return { success: false, error: '找不到帳戶：' + userId };
 }
 
+// 讀取批核權限表
+function getApprovalPermissions() {
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Approval_Permissions');
+  if (!sheet || sheet.getLastRow() <= 1) return { success: true, permissions: [] };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const list = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const uid = r[col('user_id')];
+    if (!uid || String(uid).trim() === '') continue;
+    const item = { user_id: String(uid).trim(), name: r[col('name')] || '', group_name: r[col('group_name')] || '' };
+    APPROVAL_AREAS.forEach(function (a) { item[a] = isYes(r[col(a)]); });
+    list.push(item);
+  }
+  return { success: true, permissions: list };
+}
+
+// 儲存批核權限表（整批重寫）
+function saveApprovalPermissions(data) {
+  const permissions = Array.isArray(data.permissions) ? data.permissions : [];
+  const ss = getSheet();
+  let sheet = ss.getSheetByName('Approval_Permissions');
+  if (!sheet) {
+    sheet = ss.insertSheet('Approval_Permissions');
+    sheet.appendRow(['user_id', 'name', 'group_name', 'supplies', 'vehicle', 'meals', 'finance']);
+    sheet.getRange(1, 1, 1, 7).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  if (sheet.getLastRow() > 1) sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).clearContent();
+  permissions.forEach(function (p) {
+    sheet.appendRow([p.user_id || '', p.name || '', p.group_name || '', yn(p.supplies), yn(p.vehicle), yn(p.meals), yn(p.finance)]);
+  });
+  return { success: true, count: permissions.length };
+}
+
 // 列出所有用戶（不含密碼），供前端用戶管理
 function getAllUsers() {
   const ss = getSheet();
@@ -327,6 +383,7 @@ function onOpen() {
   ui.createMenu('童軍活動管理')
     .addItem('初始化工作表', 'initializeSheets')
     .addItem('開戶（同步 Account_Setup → Users）', 'syncAccountsFromSetup')
+    .addItem('同步批核權限（Approval_Permissions）', 'getApprovalPermissions')
     .addItem('刷新 API Key', 'refreshApiKey')
     .addToUi();
 }
@@ -517,6 +574,8 @@ function doPost(e) {
     else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
     else if (action === 'createAccount') return jsonResponse(createAccount(data));
     else if (action === 'saveUserPermissions') return jsonResponse(saveUserPermissions(data));
+    else if (action === 'getApprovalPermissions') return jsonResponse(getApprovalPermissions());
+    else if (action === 'saveApprovalPermissions') return jsonResponse(saveApprovalPermissions(data));
     else if (action === 'syncAccountsFromSetup') return jsonResponse(syncAccountsFromSetup());
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));

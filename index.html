@@ -382,6 +382,14 @@ const PERM_CARDS=[
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
+// 批核範疇（頁）：有權批核的業務領域，附顏色分類
+const APPROVAL_AREAS=[
+  {id:'supplies',label:'物資批核',icon:'fa-solid fa-boxes-stacked',chip:'bg-blue-100 text-blue-700 border-blue-300',dot:'bg-blue-500'},
+  {id:'vehicle',label:'車位/車輛批核',icon:'fa-solid fa-car',chip:'bg-amber-100 text-amber-700 border-amber-300',dot:'bg-amber-500'},
+  {id:'meals',label:'膳食批核',icon:'fa-solid fa-utensils',chip:'bg-purple-100 text-purple-700 border-purple-300',dot:'bg-purple-500'},
+  {id:'finance',label:'財務批核',icon:'fa-solid fa-wallet',chip:'bg-emerald-100 text-emerald-700 border-emerald-300',dot:'bg-emerald-500'}
+];
+const APPROVAL_IDS=new Set(APPROVAL_AREAS.map(a=>a.id));
 // 首頁 3 大類別活動卡
 const EVENT_CATEGORIES=[
   {key:'isd',title:'港島童軍繽紛日',icon:'fa-solid fa-star',desc:'步操檢閱、頒獎典禮與攤位博覽',gradient:'from-brand-600 to-fuchsia-500'},
@@ -432,7 +440,7 @@ class ScoutEventApp{
     this.gasUrl=localStorage.getItem(LS.gasUrl)||''; this.apiKey=localStorage.getItem(LS.apiKey)||'scout_e6451624b1f340078ec6a111';
     this.currentUser=JSON.parse(localStorage.getItem(LS.currentUser)||'null'); this.currentEvent=JSON.parse(localStorage.getItem(LS.currentEvent)||'null');
     this.mockMode=localStorage.getItem(LS.mockMode)!=='false'; this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
-    this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda';
+    this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda'; this.approvalPerms=[]; this.approvalViewMode='byPerson';
     this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'',meeting_folder_id:''};
     this.init();
   }
@@ -545,7 +553,7 @@ class ScoutEventApp{
   async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); await this.loadApprovalPermissions(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
   async loadHkoWeather(){
@@ -833,7 +841,57 @@ class ScoutEventApp{
     }
     this.renderModuleContent(key);
   }
-  renderApprovalCenter(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-approvals').classList.remove('hidden'); document.getElementById('approval-content').innerHTML='<p class="text-sm text-slate-400">批核中心：膳食與物資待批 (全前端演示)</p>';}
+  async renderApprovalCenter(){
+    document.getElementById('view-landing').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-module').classList.add('hidden');
+    document.getElementById('view-approvals').classList.remove('hidden');
+    await this.loadApprovalPermissions();
+    this.renderApprovalMatrix();
+  }
+  // 批核權限矩陣（兩種檢視：橫看人×頁 / 直看頁×人，顏色＋文字分類）
+  renderApprovalMatrix(){
+    const container=document.getElementById('approval-content');
+    if(!container) return;
+    const perms=this.approvalPerms||[];
+    const isAdmin=this.isAdmin()||this.roleLevel(this.currentUser?.role)>=100;
+    const mode=this.approvalViewMode||'byPerson';
+    const chip=(on,area)=> on
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold ${area.chip}"><span class="w-2 h-2 rounded-full ${area.dot}"></span>有權</span>`
+      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold bg-slate-50 text-slate-400 border-slate-200"><span class="w-2 h-2 rounded-full bg-slate-300"></span>無權</span>`;
+    // 橫看（人 → 頁）
+    const byPerson=perms.length?`
+      <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-900 text-white"><tr>
+        <th class="px-3 py-2 text-left">批核人</th><th class="px-3 py-2 text-left">組別</th>
+        ${APPROVAL_AREAS.map(a=>`<th class="px-2 py-2 text-center"><i class="${a.icon}"></i> ${escapeHtml(a.label.replace('批核',''))}</th>`).join('')}
+      </tr></thead><tbody class="divide-y bg-white">
+      ${perms.map(p=>`<tr><td class="px-3 py-2 font-bold">${escapeHtml(p.name||p.user_id)}${p.name!==p.user_id&&p.user_id?`<div class="text-[10px] text-slate-400 font-mono">${escapeHtml(p.user_id)}</div>`:''}</td><td class="px-3 py-2">${escapeHtml(p.group_name||'')}</td>${APPROVAL_AREAS.map(a=>`<td class="px-2 py-2 text-center">${chip(p[a],a)}</td>`).join('')}</tr>`).join('')}
+      </tbody></table></div>`
+      :'<p class="text-xs text-slate-400 py-4">尚未設定批核權限（請在後端 Sheet「Approval_Permissions」填寫）</p>';
+    // 直看（頁 → 人）
+    const byArea=APPROVAL_AREAS.map(a=>{
+      const holders=perms.filter(p=>p[a]);
+      return `<div class="border rounded-xl p-3 bg-white">
+        <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 rounded-full ${a.dot}"></span><b class="text-[13px]">${escapeHtml(a.label)}</b><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${holders.length} 人</span></div>
+        <div class="flex flex-wrap gap-1.5">${holders.length?holders.map(p=>`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full border text-[11px] font-bold ${a.chip}">${escapeHtml(p.name||p.user_id)}${p.group_name?`<span class="text-[9px] font-normal opacity-70">${escapeHtml(p.group_name)}</span>`:''}</span>`).join(''):'<span class="text-[11px] text-slate-400">暫無批核人</span>'}</div>
+      </div>`;
+    }).join('');
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
+          <b><i class="fa-solid fa-user-check mr-1"></i>批核權限：</b>批核權由超管在後端 Sheet「<b>Approval_Permissions</b>」直接填寫（supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務，有權填 Y）。
+          管理層（主席/顧問/管理員/執行副主席/超管）預設全範疇，不需列明。此頁供檢視「誰有哪個範疇的批核權」。
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <button onclick="app.approvalViewMode='byPerson';app.renderApprovalMatrix()" class="px-4 py-2 rounded-xl text-xs font-bold ${mode==='byPerson'?'bg-slate-900 text-white':'bg-white border text-slate-600'}"><i class="fa-solid fa-arrows-left-right mr-1"></i>橫看（人 → 頁）</button>
+          <button onclick="app.approvalViewMode='byArea';app.renderApprovalMatrix()" class="px-4 py-2 rounded-xl text-xs font-bold ${mode==='byArea'?'bg-slate-900 text-white':'bg-white border text-slate-600'}"><i class="fa-solid fa-arrows-up-down mr-1"></i>直看（頁 → 人）</button>
+          <button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>
+        </div>
+        ${mode==='byPerson'?byPerson:byArea}
+        <div class="text-[10px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">待批項目（物資／車位／膳食／財務）會顯示於此；點上方按鈕切換「橫看／直看」檢視批核權矩陣。</div>
+      </div>
+    `;
+  }
   renderModuleContent(mod){
     const container=document.getElementById('module-content');
     if(mod==='staff'){ this.renderStaffModule(); return;}
@@ -2914,7 +2972,7 @@ class ScoutEventApp{
           ${r.notes?`<div class="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2 mt-1">批核備註: ${escapeHtml(r.notes)}</div>`:''}
           </div>
           <div class="flex flex-col gap-1 flex-shrink-0">
-            ${this.isCoordinatorViceChair() && r.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px] font-bold">拒絕</button></div>`:''}
+            ${this.canApproveArea('supplies') && r.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px] font-bold">拒絕</button></div>`:''}
             ${this.isAdmin()?`<button onclick="app.deleteSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}
             <span class="text-[10px] text-slate-400">${r.approved_by?`批核: ${escapeHtml(r.approved_by)}<br>${r.approved_at?new Date(r.approved_at).toLocaleString():''}`:''}</span>
           </div>
@@ -3121,7 +3179,7 @@ class ScoutEventApp{
     document.getElementById('modal-record').classList.remove('hidden');
   }
   approveSupplyRequest(requestId, isModify=false){
-    if(!this.isCoordinatorViceChair()){ showToast('僅協調副主席可批核','error'); return; }
+    if(!this.canApproveArea('supplies')){ showToast('你沒有物資批核權','error'); return; }
     const data=this.getSuppliesData();
     const idx=data.requests.findIndex(r=>r.request_id===requestId);
     if(idx<0) return;
@@ -3157,7 +3215,7 @@ class ScoutEventApp{
     this.renderSuppliesModule();
   }
   rejectSupplyRequest(requestId){
-    if(!this.isCoordinatorViceChair()) return;
+    if(!this.canApproveArea('supplies')) return;
     const data=this.getSuppliesData();
     const idx=data.requests.findIndex(r=>r.request_id===requestId);
     if(idx<0) return;
@@ -3320,7 +3378,7 @@ class ScoutEventApp{
               ${v.notes?`<div class="text-[10px] bg-amber-50 border border-amber-200 rounded-xl p-2 mt-1">批核備註: ${escapeHtml(v.notes)}</div>`:''}
               </div>
               <div class="flex flex-col gap-1 flex-shrink-0">
-                ${isCoordinator && v.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveVehiclePass('${v.pass_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openVehicleApproveModifyModal('${v.pass_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectVehiclePass('${v.pass_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px]">拒絕</button></div>`:''}
+                ${this.canApproveArea('vehicle') && v.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveVehiclePass('${v.pass_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openVehicleApproveModifyModal('${v.pass_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectVehiclePass('${v.pass_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px]">拒絕</button></div>`:''}
                 ${isAdmin?`<button onclick="app.deleteVehiclePass('${v.pass_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}
                 <span class="text-[10px] text-slate-400">${v.approved_by?`批核: ${escapeHtml(v.approved_by)}<br>${v.approved_at?new Date(v.approved_at).toLocaleString():''}`:''}</span>
               </div>
@@ -3462,7 +3520,7 @@ class ScoutEventApp{
     document.getElementById('modal-record').classList.remove('hidden');
   }
   approveVehiclePass(passId, isModify=false){
-    if(!this.isCoordinatorViceChair()){ showToast('僅協調副主席可批核','error'); return; }
+    if(!this.canApproveArea('vehicle')){ showToast('你沒有車位/車輛批核權','error'); return; }
     const data=this.getSuppliesData();
     const idx=(data.vehicle_passes||[]).findIndex(v=>v.pass_id===passId);
     if(idx<0) return;
@@ -3495,7 +3553,7 @@ class ScoutEventApp{
     this.renderSuppliesModule();
   }
   rejectVehiclePass(passId){
-    if(!this.isCoordinatorViceChair()) return;
+    if(!this.canApproveArea('vehicle')) return;
     const data=this.getSuppliesData();
     const idx=(data.vehicle_passes||[]).findIndex(v=>v.pass_id===passId);
     if(idx<0) return;
@@ -3761,7 +3819,7 @@ class ScoutEventApp{
       </div>
     `;
   }
-  canApproveFinance(){ return (ROLE_HIERARCHY[this.currentUser?.role]||0)>=60; }
+  canApproveFinance(){ return this.canApproveArea('finance'); }
   openExpenseForm(editId=null){
     const fin=this.getFinanceData();
     const existing=editId?fin.expenses.find(e=>e.id===editId):null;
@@ -5051,6 +5109,22 @@ class ScoutEventApp{
   getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){ if(this.isDemoEvent()){ list=[{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; } else { list=[]; } localStorage.setItem(key,JSON.stringify(list)); } return list;}
   setLocalUsers(l){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
   async loadUsers(){let list=[]; if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:u.role,group_name:u.group_name||u.branch,job_title:u.job_title||'',contact:u.contact||'',perm_see:parsePerm(u.perm_see),perm_edit:parsePerm(u.perm_edit),password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); this.usersList=list; this.renderUsers();}
+  async loadApprovalPermissions(){ this.approvalPerms=[]; if(!this.mockMode && this.gasUrl){ try{ const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getApprovalPermissions',api_key:this.apiKey})}); const j=await res.json(); if(j && j.success && Array.isArray(j.permissions)) this.approvalPerms=j.permissions; }catch(e){} } return this.approvalPerms; }
+  // 某用戶在某批核範疇是否有權：優先看批核權限表，無紀錄則回退角色預設
+  canApproveArea(area, user){
+    user=user||this.currentUser;
+    if(!user) return false;
+    const role=user.role||'', lvl=ROLE_HIERARCHY[role]||0, group=user.group_name||'';
+    if(['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(role)) return true; // 管理層全範疇
+    // 批核權限表有明確紀錄 → 以表為準
+    const rec=this.approvalPerms.find(p=>p.user_id===user.user_id);
+    if(rec){ return !!rec[area]; }
+    // 回退角色預設
+    if(area==='finance') return lvl>=60;
+    if(area==='supplies'||area==='vehicle') return role==='vice_chairperson' && (group.includes('協調')||group.includes('行政'));
+    if(area==='meals') return (role==='vice_chairperson'||role==='general_director'||role==='director') && (group.includes('膳食')||group.includes('協調')||group.includes('行政'));
+    return false;
+  }
   renderUsers(){const container=document.getElementById('users-container'); if(!container) return; if(!this.usersList.length){container.innerHTML='<p class="text-xs text-slate-400">無用戶</p>'; return;} container.innerHTML=this.usersList.map(u=>`<div class="border p-3 rounded-xl flex justify-between"><div><b>${escapeHtml(u.name)}</b> ${u.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full border">${escapeHtml(u.job_title)}</span>`:''}<span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')} | 帳號 ${escapeHtml(u.user_id||'')}</div></div><div class="flex gap-1"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button></div></div>`).join('');}
   openUserFormModal(){document.getElementById('u-form-mode').value='create'; document.getElementById('u-form-original-id').value=''; document.getElementById('u-ymis').value=''; document.getElementById('u-name').value=''; this.populateUserRoleSelect('staff'); document.getElementById('modal-user').classList.remove('hidden');}
   // 上級可改下級權限：最多可設定到與自己相同的權限 (super_admin 例外可設全部)
