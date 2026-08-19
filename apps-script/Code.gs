@@ -76,8 +76,8 @@ function initializeSheets() {
   ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
   // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
   ensureSheet(ss, 'Account_Setup', ['name', 'role', 'job_title', 'group_name', 'user_id', 'email', 'contact']);
-  // 遷移舊 Users 表：補上 job_title / contact 欄（非破壞性）
-  ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact']);
+  // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
+  ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
   setupAccountSetupSheet(ss);
   ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at']);
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
@@ -224,6 +224,81 @@ function changePassword(data) {
     }
   }
   return { success: false, error: '找不到帳戶' };
+}
+
+// 前端開戶（總主任以上，只能幫自己組別開戶；預設密碼 1234）
+function createAccount(data) {
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  const name = (data.name || '').trim();
+  if (!name) return { success: false, error: '請填寫名字' };
+  const role = data.role || 'staff';
+  const group = data.group_name || '';
+  const job = data.job_title || '';
+  const email = (data.email || '').trim();
+  const contact = data.contact || '';
+  let uid = (data.user_id || '').trim();
+  if (!uid) uid = 'staff_' + Date.now();
+
+  // 輕量防呆：開戶者只能是總主任以上，且只能開自己組別（管理員/超管可跨組）
+  const byRole = data.by_role || '';
+  const byGroup = data.by_group || '';
+  const byLvl = ROLE_HIERARCHY[byRole] !== undefined ? ROLE_HIERARCHY[byRole] : 0;
+  if (byRole && byLvl < 40 && !['admin', 'super_admin'].includes(byRole)) {
+    return { success: false, error: '只有總主任或以上可開戶' };
+  }
+  if (byRole && !['admin', 'super_admin'].includes(byRole) && byGroup && group !== byGroup) {
+    return { success: false, error: '只能為自己組別開戶' };
+  }
+
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const uId = col('user_id'), uEmail = col('email');
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][uId]) === uid) return { success: false, error: '帳號已存在：' + uid };
+    if (email && String(rows[i][uEmail]) === email) return { success: false, error: '電郵已存在：' + email };
+  }
+  const rowVals = headers.map(function () { return ''; });
+  rowVals[uId] = uid;
+  rowVals[col('name')] = name;
+  rowVals[col('role')] = role;
+  rowVals[col('job_title')] = job;
+  rowVals[col('group_name')] = group;
+  rowVals[uEmail] = email;
+  rowVals[col('contact')] = contact;
+  rowVals[col('password_hash')] = hashPassword('1234');
+  rowVals[col('status')] = 'active';
+  rowVals[col('created_at')] = new Date();
+  users.appendRow(rowVals);
+  return { success: true, id: uid, message: '已開戶：' + name + '（帳號 ' + uid + '，密碼 1234）' };
+}
+
+// 儲存用戶權限（上級把「自己有的」看/管權授權給下級；perm_see / perm_edit 為卡片 ID 陣列）
+function saveUserPermissions(data) {
+  const userId = (data.user_id || '').trim();
+  if (!userId) return { success: false, error: '缺少 user_id' };
+  const permSee = Array.isArray(data.perm_see) ? data.perm_see : [];
+  const permEdit = Array.isArray(data.perm_edit) ? data.perm_edit : [];
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['perm_see', 'perm_edit']);
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const idIdx = headers.indexOf('user_id');
+  const seeIdx = headers.indexOf('perm_see');
+  const editIdx = headers.indexOf('perm_edit');
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][idIdx]) === userId) {
+      users.getRange(i + 1, seeIdx + 1).setValue(JSON.stringify(permSee));
+      users.getRange(i + 1, editIdx + 1).setValue(JSON.stringify(permEdit));
+      return { success: true, message: '已更新 ' + userId + ' 的權限' };
+    }
+  }
+  return { success: false, error: '找不到帳戶：' + userId };
 }
 
 // 列出所有用戶（不含密碼），供前端用戶管理
@@ -437,6 +512,8 @@ function doPost(e) {
     else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
     else if (action === 'changePassword') return jsonResponse(changePassword(data));
     else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
+    else if (action === 'createAccount') return jsonResponse(createAccount(data));
+    else if (action === 'saveUserPermissions') return jsonResponse(saveUserPermissions(data));
     else if (action === 'syncAccountsFromSetup') return jsonResponse(syncAccountsFromSetup());
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
