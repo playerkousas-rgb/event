@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 window.tailwind=window.tailwind||{};
 tailwind.config={theme:{extend:{colors:{brand:{50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',300:'#c4b5fd',400:'#a78bfa',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9',800:'#5b21b6',900:'#4c1d95'}}}}}
@@ -69,10 +70,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="hidden sm:flex bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-xl text-xs font-semibold"><i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">Mock: 開</span></button>
       <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[80px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
       <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text" class="hidden sm:inline">登入</span><span class="sm:hidden">登入</span></button>
+      <button id="changepwd-btn" onclick="app.openChangePwdModal()" class="hidden bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-xl text-xs transition btn-mobile"><i class="fa-solid fa-key mr-1"></i><span class="hidden sm:inline">修改密碼</span></button>
       <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-sm transition btn-mobile"><i class="fa-solid fa-right-from-bracket"></i></button>
     </div>
   </div>
-  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶</button><button class="nav-tab" data-view="bulk" onclick="app.switchTopTab('bulk',this)"><i class="fa-solid fa-file-csv mr-1"></i> 批量</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
+  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶</button><button class="nav-tab" data-view="bulk" onclick="app.switchTopTab('bulk',this)"><i class="fa-solid fa-file-csv mr-1"></i> 批量</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="approvalmatrix" onclick="app.switchTopTab('approvalmatrix',this)"><i class="fa-solid fa-table-cells mr-1"></i> 批核權限表</button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
 </header>
 
 <div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goHome();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-house text-sky-600 w-5"></i> 首頁</button><button onclick="app.showDashboard();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-gauge w-5"></i> 儀表板</button><button onclick="app.openModule('meetings');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-handshake text-sky-600 w-5"></i> 會議卡片 (升級)</button><button onclick="app.openModule('staff');app.toggleDrawer()" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 border flex items-center gap-3"><i class="fa-solid fa-sitemap text-indigo-600 w-5"></i> 工作人員</button><button onclick="app.switchTopTab('users');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-users text-emerald-700 w-5"></i> 用戶管理</button><button onclick="app.switchTopTab('bulk');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-file-csv text-amber-700 w-5"></i> 批量開戶</button></div><div class="p-3 border-t text-[11px] text-slate-500">v6.1 會議卡片全面升級<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
@@ -238,6 +240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
   <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
   <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">全前端控制台</h3><p class="text-xs text-slate-500 mt-1">所有設定前端可控</p></div></div>
   <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
+  <div id="view-approvalmatrix" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核權限表</h3><div id="approval-matrix-content" class="mt-4"></div></div></div>
 
 </main>
 
@@ -246,7 +249,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
 
-<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>示範帳戶 (密碼 1234)：<b>advisor01</b> 顧問 · <b>chair01</b> 主席 · <b>exec_vp</b> 副主席(行政組) · <b>gd_001</b> 總主任 · <b>staff_001</b> 工作人員 ｜ 超管 <b>sheep / 0728</b></p><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('sheep')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-slate-900 text-white btn-mobile">👑 超管</button><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required value="sheep" placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required value="0728" placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
+<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
 
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
 
@@ -287,7 +290,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <input type="file" id="mf-attachments" multiple class="text-xs w-full">
         <div id="mf-attachments-list" class="flex flex-wrap gap-2 mt-1"></div>
       </div>
-      <div><label class="block text-[11px] font-bold mb-1">記錄人 / 主持</label><input id="mf-author" placeholder="主席 何家聰" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
+      <div><label class="block text-[11px] font-bold mb-1">記錄人 / 主持</label><input id="mf-author" placeholder="主席 朱家聰" class="w-full px-3 py-2.5 border rounded-xl text-sm"></div>
       <div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-meeting-form')" class="px-5 py-2.5 border rounded-xl text-sm font-medium btn-mobile">取消</button><button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-bold shadow btn-mobile">儲存會議 (全前端)</button></div>
     </form>
   </div>
@@ -347,6 +350,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 
 <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">系統設定</h3><button onclick="app.closeModal('modal-settings')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.saveSettings(event)" class="space-y-3"><input id="gas-url-input" placeholder="GAS URL" class="w-full px-3 py-2 border rounded-xl text-sm"><input id="api-key-input" placeholder="API Key" class="w-full px-3 py-2 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-settings')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
 
+<div id="modal-changepwd" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-key text-sky-600 mr-2"></i>修改密碼</h3><button onclick="app.closeModal('modal-changepwd')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitChangePassword(event)" class="space-y-3"><input type="password" id="cp-old" required placeholder="舊密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="cp-new" required placeholder="新密碼 (至少 4 字元)" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="cp-new2" required placeholder="再次輸入新密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-changepwd')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">儲存</button></div></form></div></div>
+
 <div id="saveBar" class="save-bar"><div class="flex items-center gap-2 text-sm"><span class="dot"></span><span id="pendingText">0 項未保存</span></div><div class="flex gap-2"><button onclick="app.discardChanges()" class="px-4 py-2 border bg-white rounded-xl text-xs font-bold">捨棄</button><button onclick="app.saveChanges()" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold">確認寫入</button></div></div>
 <div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#6d28d9] transition-all"></div></div></div>
 <div id="toast" class="toast"></div>
@@ -354,8 +359,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4"><p>童軍活動管理系統 v6.1 會議卡片升級版 · 全前端上傳·分次管理·權限下載 · COPYRIGHT 2026</p></footer>
 
 <script>
-const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
-const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
+const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+// 權限卡片清單（= 用戶「可看到 / 可編輯」的內容卡片，上級授權給下級）
+const PERM_CARDS=[
+  {id:'announcements',label:'公告及溝通',icon:'fa-solid fa-bullhorn'},
+  {id:'schedule',label:'日程表',icon:'fa-solid fa-calendar-days'},
+  {id:'activities',label:'場地與活動總覽',icon:'fa-solid fa-map-location-dot'},
+  {id:'staff',label:'組織架構與聯絡',icon:'fa-solid fa-sitemap'},
+  {id:'theme_badges',label:'活動主題章',icon:'fa-solid fa-award'},
+  {id:'meals',label:'膳食管理',icon:'fa-solid fa-utensils'},
+  {id:'safety',label:'安全及醫療',icon:'fa-solid fa-shield-halved'},
+  {id:'documents',label:'通告及文件',icon:'fa-solid fa-file-shield'},
+  {id:'unit_guide',label:'旅團須知',icon:'fa-solid fa-book-open'},
+  {id:'ceremony',label:'典禮儀式',icon:'fa-solid fa-crown'},
+  {id:'awards',label:'獲獎名單',icon:'fa-solid fa-trophy'},
+  {id:'crisis',label:'危機處理',icon:'fa-solid fa-triangle-exclamation'},
+  {id:'meetings',label:'會議卡片',icon:'fa-solid fa-handshake'},
+  {id:'supplies',label:'物資+車輛',icon:'fa-solid fa-boxes-stacked'},
+  {id:'finance',label:'財務管理',icon:'fa-solid fa-wallet'},
+  {id:'admin_group',label:'行政組',icon:'fa-solid fa-building'},
+  {id:'coordinator_group',label:'協調組',icon:'fa-solid fa-people-roof'}
+];
+const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
+function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
+// 批核範疇（頁）：有權批核的業務領域，附顏色分類
+const APPROVAL_AREAS=[
+  {id:'supplies',label:'物資批核',icon:'fa-solid fa-boxes-stacked',chip:'bg-blue-100 text-blue-700 border-blue-300',dot:'bg-blue-500'},
+  {id:'vehicle',label:'車位/車輛批核',icon:'fa-solid fa-car',chip:'bg-amber-100 text-amber-700 border-amber-300',dot:'bg-amber-500'},
+  {id:'meals',label:'膳食批核',icon:'fa-solid fa-utensils',chip:'bg-purple-100 text-purple-700 border-purple-300',dot:'bg-purple-500'},
+  {id:'finance',label:'財務批核',icon:'fa-solid fa-wallet',chip:'bg-emerald-100 text-emerald-700 border-emerald-300',dot:'bg-emerald-500'}
+];
+const APPROVAL_IDS=new Set(APPROVAL_AREAS.map(a=>a.id));
 // 首頁 3 大類別活動卡
 const EVENT_CATEGORIES=[
   {key:'isd',title:'港島童軍繽紛日',icon:'fa-solid fa-star',desc:'步操檢閱、頒獎典禮與攤位博覽',gradient:'from-brand-600 to-fuchsia-500'},
@@ -389,9 +424,11 @@ const DASH_CARD_DEFS=[
   {id:'coordinator_group',title:'協調組',desc:'場地佈置圖、物資借用、箱頭紙、數據',icon:'fa-solid fa-people-roof',cardClass:'bg-white border shadow-sm',iconClass:'bg-orange-100 text-orange-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理'},
   {id:'my_monitor',title:'我的監察 (專門)',desc:'查自己訂餐、物資是否獲批、車輛是否獲批',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,readOnly:true,editLabel:'僅查看自己的申請',action:"app.openModule('meals'); setTimeout(()=>app.switchMealsTab('monitor'),300)"},
   {id:'approvals',title:'批核中心',desc:'膳食、物資、財務待批項目',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:60,editLevel:60,editLabel:'副主席以上可批核',action:"app.switchTopTab('approvals')"},
-  {id:'users_bulk',title:'用戶·批量',desc:'全前端、批量開戶、手機友善',icon:'fa-solid fa-users-gear',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:80,editLevel:80,editLabel:'管理員專用',action:"app.switchTopTab('users')"}
+  {id:'users_bulk',title:'用戶·批量',desc:'全前端、批量開戶、手機友善',icon:'fa-solid fa-users-gear',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:80,editLevel:80,editLabel:'管理員專用',action:"app.switchTopTab('users')"},
+  {id:'account_setup',title:'開戶',desc:'總主任以上為本組開戶（預設密碼 1234）',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可為本組開戶'},
+  {id:'permissions',title:'權限管理',desc:'把「看到/編輯」權限授權給下級',icon:'fa-solid fa-key',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-700',minLevel:40,editLevel:40,editLabel:'上級可授權給下級'}
 ];
-const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
@@ -404,7 +441,7 @@ class ScoutEventApp{
     this.gasUrl=localStorage.getItem(LS.gasUrl)||''; this.apiKey=localStorage.getItem(LS.apiKey)||'scout_e6451624b1f340078ec6a111';
     this.currentUser=JSON.parse(localStorage.getItem(LS.currentUser)||'null'); this.currentEvent=JSON.parse(localStorage.getItem(LS.currentEvent)||'null');
     this.mockMode=localStorage.getItem(LS.mockMode)!=='false'; this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
-    this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda';
+    this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda'; this.approvalPerms=[]; this.approvalViewMode='byPerson';
     this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'',meeting_folder_id:''};
     this.init();
   }
@@ -419,14 +456,14 @@ class ScoutEventApp{
   updateMockModeUI(){const t=document.getElementById('mock-mode-text'); if(t) t.textContent=this.mockMode?'Mock: 開':'Mock: 關';}
   closeModal(id){document.getElementById(id).classList.add('hidden');}
   openSettingsModal(){document.getElementById('gas-url-input').value=this.gasUrl; document.getElementById('api-key-input').value=this.apiKey; document.getElementById('modal-settings').classList.remove('hidden');}
-  openLoginModal(){const demo=document.getElementById('mock-demo-login'); if(demo) demo.classList.toggle('hidden',!this.mockMode); document.getElementById('modal-login').classList.remove('hidden');}
+  openLoginModal(){const demo=document.getElementById('mock-demo-login'); if(demo) demo.classList.toggle('hidden', !(this.mockMode && this.isDemoEvent())); document.getElementById('modal-login').classList.remove('hidden');}
   openBulkModal(){document.getElementById('modal-bulk').classList.remove('hidden');}
   switchTopTab(view,btn){
-    ['landing','dashboard','module','users','bulk','approvals','system'].forEach(v=>{const el=document.getElementById('view-'+v); if(el) el.classList.add('hidden');});
+    ['landing','dashboard','module','users','bulk','approvals','approvalmatrix','system'].forEach(v=>{const el=document.getElementById('view-'+v); if(el) el.classList.add('hidden');});
     const target=document.getElementById('view-'+view); if(target) target.classList.remove('hidden');
     document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active')); if(btn) btn.classList.add('active'); else document.querySelector(`.nav-tab[data-view="${view}"]`)?.classList.add('active');
-    document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active')); const map={landing:'bn-home',dashboard:'bn-home',users:'bn-users',bulk:'bn-bulk',approvals:'bn-home',system:'bn-home',module:'bn-home'}; document.getElementById(map[view]||'bn-home')?.classList.add('active');
-    if(view==='users') this.loadUsers(); else if(view==='approvals') this.renderApprovalCenter(); else if(view==='landing') this.loadEvents();
+    document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active')); const map={landing:'bn-home',dashboard:'bn-home',users:'bn-users',bulk:'bn-bulk',approvals:'bn-home',approvalmatrix:'bn-home',system:'bn-home',module:'bn-home'}; document.getElementById(map[view]||'bn-home')?.classList.add('active');
+    if(view==='users') this.loadUsers(); else if(view==='approvals') this.renderApprovalCenter(); else if(view==='approvalmatrix') this.renderApprovalMatrixView(); else if(view==='landing') this.loadEvents();
   }
   saveSettings(e){e.preventDefault(); this.gasUrl=document.getElementById('gas-url-input').value.trim(); this.apiKey=document.getElementById('api-key-input').value.trim()||this.apiKey; localStorage.setItem(LS.gasUrl,this.gasUrl); localStorage.setItem(LS.apiKey,this.apiKey); showToast('設定已保存','success'); this.closeModal('modal-settings'); this.loadEvents();}
   async loadEvents(){
@@ -517,7 +554,7 @@ class ScoutEventApp{
   async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800);}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden', !(this.currentUser && this.roleLevel(this.currentUser.role)>=60)); await this.loadEventData(); await this.loadUsers(); await this.loadApprovalPermissions(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
   async loadHkoWeather(){
@@ -548,10 +585,17 @@ class ScoutEventApp{
   isEventManager(){ return ['admin','super_admin'].includes(this.currentUser?.role); }
   canSeeRoleCard(def){
     if(!this.currentUser) return def.minLevel<=0;
-    const lvl=this.roleLevel(this.currentUser.role);
+    const u=this.currentUser;
+    const lvl=this.roleLevel(u.role);
     if(lvl>=100) return true;
+    // 內容卡片：有明確授權（perm_see）時，以授權為準；管理層（admin/顧問/主席/執行副主席）默認全看
+    if(PERM_IDS.has(def.id)){
+      const ps=u.perm_see;
+      if(Array.isArray(ps)) return ps.includes(def.id);
+      if(lvl>=70) return true;
+    }
     if(lvl>=def.minLevel) return true;
-    if(def.groups&&def.groups.length){const g=this.currentUser.group_name||''; if(def.groups.some(x=>g.includes(x)||x.includes(g))) return true;}
+    if(def.groups&&def.groups.length){const g=u.group_name||''; if(def.groups.some(x=>g.includes(x)||x.includes(g))) return true;}
     return false;
   }
   canEditRoleCard(def){
@@ -559,6 +603,12 @@ class ScoutEventApp{
     if(def.readOnly) return false;
     const role=this.currentUser.role||'', lvl=this.roleLevel(role), g=this.currentUser.group_name||'';
     if(lvl>=100) return true;
+    // 內容卡片：有明確授權（perm_edit）時，以授權為準；管理層默認全管
+    if(PERM_IDS.has(def.id)){
+      const pe=this.currentUser.perm_edit;
+      if(Array.isArray(pe)) return pe.includes(def.id);
+      if(lvl>=70) return true;
+    }
     // 使用各模組真實權限函數，與卡片內按鈕顯示完全一致
     const f={
       announcements:()=>lvl>=30,
@@ -770,7 +820,7 @@ class ScoutEventApp{
     const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){ this.eventData.staff=localStaff; }
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
-  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引)',theme_badges:'活動主題章',announcements:'公告及溝通',safety:'安全及醫療',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車'}[key]||key;
+  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引)',theme_badges:'活動主題章',announcements:'公告及溝通',safety:'安全及醫療',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
     if(key==='meetings'){
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
@@ -783,12 +833,141 @@ class ScoutEventApp{
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap">${this.canUploadDocument()?`<button onclick="app.openDocumentForm()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件 (管理員/行政總主任以上)</button>`:''}<button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button><button onclick="app.exportDocumentsData()" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
     } else if(key==='theme_badges'){
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap">${this.canUploadThemeBadge()?`<button onclick="app.openThemeBadgeForm()" class="bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-award mr-1"></i>上傳主題章 (副主席以上)</button>`:''}<button onclick="app.exportThemeBadges()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
+    } else if(key==='account_setup'){
+      document.getElementById('module-actions').innerHTML=`<span class="text-[11px] bg-teal-50 text-teal-700 px-3 py-2 rounded-full border border-teal-200">開戶（預設密碼 1234）</span>`;
+    } else if(key==='permissions'){
+      document.getElementById('module-actions').innerHTML=`<button onclick="app.renderPermissionsModule()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>`;
     } else {
       document.getElementById('module-actions').innerHTML=`<button onclick="app.openAddRecordModal('${key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold">新增</button>`;
     }
     this.renderModuleContent(key);
   }
-  renderApprovalCenter(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-approvals').classList.remove('hidden'); document.getElementById('approval-content').innerHTML='<p class="text-sm text-slate-400">批核中心：膳食與物資待批 (全前端演示)</p>';}
+  // 批核中心：待批項目（物資／車位／財務），用 canApproveArea 控制批准/拒絕
+  async renderApprovalCenter(){
+    document.getElementById('view-landing').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-module').classList.add('hidden');
+    document.getElementById('view-approvals').classList.remove('hidden');
+    await this.loadApprovalPermissions();
+    const container=document.getElementById('approval-content');
+    if(!container) return;
+    const sup=this.getSuppliesData();
+    const fin=this.getFinanceData();
+    const pendingSupplies=(sup.requests||[]).filter(r=>r.status==='pending');
+    const pendingVehicles=(sup.vehicle_passes||[]).filter(v=>v.status==='pending');
+    const pendingExpenses=(fin.expenses||[]).filter(e=>e.status==='pending');
+    const canSup=this.canApproveArea('supplies');
+    const canVeh=this.canApproveArea('vehicle');
+    const canFin=this.canApproveArea('finance');
+    const pendingTotal=pendingSupplies.length+pendingVehicles.length+pendingExpenses.length;
+    const badge=document.getElementById('badge-pending-count');
+    if(badge){ if(pendingTotal>0){ badge.textContent=pendingTotal; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+    const section=(icon,color,title,count,rowsHTML)=>`
+      <div class="border rounded-xl p-4 bg-white">
+        <div class="flex items-center gap-2 mb-2"><i class="${icon} ${color}"></i><b class="text-[13px]">${title}</b><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${count} 待批</span></div>
+        <div class="space-y-2">${rowsHTML||'<p class="text-xs text-slate-400">暫無待批項目</p>'}</div>
+      </div>`;
+    const supRows=pendingSupplies.map(r=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(r.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">申請 ${r.qty_requested} ${escapeHtml(r.unit||'個')} · ${escapeHtml(r.requested_by||'')}</div></div>
+        ${canSup?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveSupplyRequest('${r.request_id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectSupplyRequest('${r.request_id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
+    const vehRows=pendingVehicles.map(v=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(v.plate||'')}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(v.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">司機 ${escapeHtml(v.driver_name||'')} · 用途 ${escapeHtml(v.purpose||'')}</div></div>
+        ${canVeh?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveVehiclePass('${v.pass_id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectVehiclePass('${v.pass_id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
+    const finRows=pendingExpenses.map(e=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">金額 $${e.actual} · ${escapeHtml(e.submitted_by||'')}</div></div>
+        ${canFin?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveExpense('${e.id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectExpense('${e.id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
+    // ── 我的申請（申請人視角：訂餐／物資／車位 狀態）──
+    const mealsData=this.getMealsData();
+    const myName=this.currentUser?.name||'';
+    const myId=this.currentUser?.user_id||'';
+    const myMeals=(mealsData.orders||[]).filter(o=>o.user_id===myId||o.user_name===myName);
+    const mySupplies=(sup.requests||[]).filter(r=>r.requested_by_id===myId||r.requested_by===myName);
+    const myVehicles=(sup.vehicle_passes||[]).filter(v=>v.requested_by_id===myId||v.requested_by===myName);
+    const myExpenses=(fin.expenses||[]).filter(e=>e.submitted_by===myName||e.submitted_by_id===myId);
+    const stLabel={pending:'待批',approved:'已批',modified:'已批(修改)',rejected:'已拒絕'};
+    const stCls={pending:'bg-amber-100 text-amber-700',approved:'bg-emerald-100 text-emerald-700',modified:'bg-sky-100 text-sky-700',rejected:'bg-rose-100 text-rose-700'};
+    const myMealRows=myMeals.map(o=>{ const m=mealsData.menus.find(x=>x.menu_id===o.menu_id); return `<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(m?.meal_type||'')} - ${escapeHtml(m?.menu_desc||'')}</b><div class="text-[11px] text-slate-500">選擇：<b>${escapeHtml(o.selection||'')}</b></div></div><span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border">已訂</span></div>`; }).join('')||'<p class="text-xs text-slate-400">暫無訂餐</p>';
+    const mySupRows=mySupplies.map(r=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(r.item_name)} x ${r.qty_requested}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">批核 ${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:r.qty_requested} ${escapeHtml(r.unit||'個')}${r.approved_by?` · ${escapeHtml(r.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[r.status]||'bg-slate-100 text-slate-600'}">${stLabel[r.status]||r.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無物資申請</p>';
+    const myVehRows=myVehicles.map(v=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(v.plate||'')} - ${escapeHtml(v.driver_name||'')}</b><div class="text-[11px] text-slate-500 mt-0.5">停泊 ${escapeHtml(v.parking_location||'待定')}${v.approved_by?` · ${escapeHtml(v.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[v.status]||'bg-slate-100 text-slate-600'}">${stLabel[v.status]||v.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無車輛申請</p>';
+    const myExpRows=myExpenses.map(e=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">$${e.actual}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[e.status]||'bg-slate-100 text-slate-600'}">${stLabel[e.status]||e.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無開支申報</p>';
+    const hasAnyMine=myMeals.length||mySupplies.length||myVehicles.length||myExpenses.length;
+    const mySection=`<div class="border rounded-xl p-4 bg-white">
+      <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-user text-indigo-600"></i><b class="text-[13px]">我的申請</b><span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border">${myMeals.length+mySupplies.length+myVehicles.length+myExpenses.length} 項</span></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><h5 class="font-bold text-[11px] text-purple-700 mb-1"><i class="fa-solid fa-utensils mr-1"></i>我的訂餐 (${myMeals.length})</h5><div class="space-y-1.5">${myMealRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-blue-700 mb-1"><i class="fa-solid fa-boxes-stacked mr-1"></i>我的物資 (${mySupplies.length})</h5><div class="space-y-1.5">${mySupRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-amber-700 mb-1"><i class="fa-solid fa-car mr-1"></i>我的車位 (${myVehicles.length})</h5><div class="space-y-1.5">${myVehRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-emerald-700 mb-1"><i class="fa-solid fa-wallet mr-1"></i>我的開支 (${myExpenses.length})</h5><div class="space-y-1.5">${myExpRows}</div></div>
+      </div>
+      ${!hasAnyMine?'<p class="text-xs text-slate-400 mt-2">你暫時未有申請紀錄。</p>':''}
+    </div>`;
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
+          <b><i class="fa-solid fa-user-check mr-1"></i>批核中心：</b>上半部是待你批核的項目；下半部「我的申請」顯示你自己的訂餐／物資／車位／開支狀態（待批·已批·已批(修改)·已拒絕）。批核權限由超管設定（另見「批核權限表」分頁）。
+        </div>
+        <div class="flex gap-2"><button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button><button onclick="app.switchTopTab('approvalmatrix')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-table-cells mr-1"></i>查看批核權限表</button></div>
+        ${section('fa-solid fa-boxes-stacked','text-blue-600','物資待批',pendingSupplies.length,supRows)}
+        ${section('fa-solid fa-car','text-amber-600','車位/車輛待批',pendingVehicles.length,vehRows)}
+        ${section('fa-solid fa-wallet','text-emerald-600','財務待批',pendingExpenses.length,finRows)}
+        ${mySection}
+      </div>
+    `;
+  }
+  // 「批核權限表」分頁（橫看人×頁 / 直看頁×人）
+  async renderApprovalMatrixView(){
+    document.getElementById('view-landing').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-module').classList.add('hidden');
+    document.getElementById('view-approvals').classList.add('hidden');
+    document.getElementById('view-approvalmatrix').classList.remove('hidden');
+    await this.loadApprovalPermissions();
+    this.renderApprovalMatrix();
+  }
+  // 批核權限矩陣（兩種檢視：橫看人×頁 / 直看頁×人，顏色＋文字分類）
+  renderApprovalMatrix(){
+    const container=document.getElementById('approval-matrix-content');
+    if(!container) return;
+    const perms=this.approvalPerms||[];
+    const mode=this.approvalViewMode||'byPerson';
+    const chip=(on,area)=> on
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold ${area.chip}"><span class="w-2 h-2 rounded-full ${area.dot}"></span>有權</span>`
+      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold bg-slate-50 text-slate-400 border-slate-200"><span class="w-2 h-2 rounded-full bg-slate-300"></span>無權</span>`;
+    // 橫看（人 → 頁）
+    const byPerson=perms.length?`
+      <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-900 text-white"><tr>
+        <th class="px-3 py-2 text-left">批核人</th><th class="px-3 py-2 text-left">組別</th>
+        ${APPROVAL_AREAS.map(a=>`<th class="px-2 py-2 text-center"><i class="${a.icon}"></i> ${escapeHtml(a.label.replace('批核',''))}</th>`).join('')}
+      </tr></thead><tbody class="divide-y bg-white">
+      ${perms.map(p=>`<tr><td class="px-3 py-2 font-bold">${escapeHtml(p.name||p.user_id)}${p.name!==p.user_id&&p.user_id?`<div class="text-[10px] text-slate-400 font-mono">${escapeHtml(p.user_id)}</div>`:''}</td><td class="px-3 py-2">${escapeHtml(p.group_name||'')}</td>${APPROVAL_AREAS.map(a=>`<td class="px-2 py-2 text-center">${chip(p[a],a)}</td>`).join('')}</tr>`).join('')}
+      </tbody></table></div>`
+      :'<p class="text-xs text-slate-400 py-4">尚未設定批核權限（請在後端 Sheet「Approval_Permissions」填寫）</p>';
+    // 直看（頁 → 人）
+    const byArea=APPROVAL_AREAS.map(a=>{
+      const holders=perms.filter(p=>p[a]);
+      return `<div class="border rounded-xl p-3 bg-white">
+        <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 rounded-full ${a.dot}"></span><b class="text-[13px]">${escapeHtml(a.label)}</b><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${holders.length} 人</span></div>
+        <div class="flex flex-wrap gap-1.5">${holders.length?holders.map(p=>`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full border text-[11px] font-bold ${a.chip}">${escapeHtml(p.name||p.user_id)}${p.group_name?`<span class="text-[9px] font-normal opacity-70">${escapeHtml(p.group_name)}</span>`:''}</span>`).join(''):'<span class="text-[11px] text-slate-400">暫無批核人</span>'}</div>
+      </div>`;
+    }).join('');
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
+          <b><i class="fa-solid fa-table-cells mr-1"></i>批核權限表：</b>批核權由超管在後端 Sheet「<b>Approval_Permissions</b>」直接填寫（supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務，有權填 Y）。
+          管理層（主席/顧問/管理員/執行副主席/超管）預設全範疇，不需列明。此頁供檢視「誰有哪個範疇的批核權」。
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <button onclick="app.approvalViewMode='byPerson';app.renderApprovalMatrix()" class="px-4 py-2 rounded-xl text-xs font-bold ${mode==='byPerson'?'bg-slate-900 text-white':'bg-white border text-slate-600'}"><i class="fa-solid fa-arrows-left-right mr-1"></i>橫看（人 → 頁）</button>
+          <button onclick="app.approvalViewMode='byArea';app.renderApprovalMatrix()" class="px-4 py-2 rounded-xl text-xs font-bold ${mode==='byArea'?'bg-slate-900 text-white':'bg-white border text-slate-600'}"><i class="fa-solid fa-arrows-up-down mr-1"></i>直看（頁 → 人）</button>
+          <button onclick="app.renderApprovalMatrixView()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>
+        </div>
+        ${mode==='byPerson'?byPerson:byArea}
+      </div>
+    `;
+  }
   renderModuleContent(mod){
     const container=document.getElementById('module-content');
     if(mod==='staff'){ this.renderStaffModule(); return;}
@@ -809,7 +988,186 @@ class ScoutEventApp{
     if(mod==='coordinator_group'){this.renderCoordinatorGroupModule(); return;}
     if(mod==='transport'){this.renderTransportModule(); return;}
     if(mod==='schedule'){this.renderScheduleModule(); return;}
+    if(mod==='account_setup'){this.renderAccountSetupModule(); return;}
+    if(mod==='permissions'){this.renderPermissionsModule(); return;}
     container.innerHTML='<p class="text-sm text-slate-400">此模組內容 (全前端演示) 尚未有資料，點擊右上新增</p>';
+  }
+
+  /* ===================== 開戶 + 權限管理 (總主任以上) ===================== */
+  // 我可授權的下級（同組 + 層級比我低；管理員/超管看全部）
+  getMySubordinates(){
+    const u=this.currentUser; if(!u) return [];
+    const myLvl=this.roleLevel(u.role);
+    const isAdmin=this.isAdmin()||myLvl>=100;
+    return (this.usersList||[]).filter(x=>{
+      if(!x || x.user_id===u.user_id) return false;
+      const lvl=this.roleLevel(x.role);
+      if(isAdmin) return true;
+      if(lvl>=myLvl) return false;         // 只能授權給層級比自己低的下級
+      return (x.group_name||'')===(u.group_name||''); // 同組
+    });
+  }
+  // 我自己的「看/管」集合（有授權用授權，否則按角色/組別推算）
+  getMyPermSets(){
+    const see=PERM_CARDS.filter(c=>{ const d=DASH_CARD_DEFS.find(x=>x.id===c.id); return d&&this.canSeeRoleCard(d); }).map(c=>c.id);
+    const edit=PERM_CARDS.filter(c=>{ const d=DASH_CARD_DEFS.find(x=>x.id===c.id); return d&&this.canEditRoleCard(d); }).map(c=>c.id);
+    return {see, edit};
+  }
+  canOpenAccounts(){ return (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40 || this.isAdmin(); }
+  renderAccountSetupModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    if(!this.canOpenAccounts()){ container.innerHTML='<p class="text-xs text-slate-400">僅總主任或以上可開戶</p>'; return; }
+    const u=this.currentUser;
+    const myGroup=u.group_name||'';
+    const isAdmin=this.isAdmin();
+    const allowRoles=this.assignableRoles();
+    const roleOptions=allowRoles.map(r=>`<option value="${r}">${ROLE_LABELS[r]||r}</option>`).join('');
+    const myAccounts=(this.usersList||[]).filter(x=>isAdmin?true:(x.group_name||'')===myGroup);
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900">
+          <b><i class="fa-solid fa-user-plus mr-1"></i>開戶（預設密碼 1234，登入後自行修改）：</b><br>
+          • 總主任或以上可為<b>本組</b>開戶（管理員/超管可跨組）<br>
+          • 只能開設層級不高於自己的帳戶（角色下拉已限制）
+        </div>
+        <div class="bg-white border rounded-xl p-4 space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label class="text-[11px] font-bold">名字 *</label><input id="acc-name" placeholder="姓名" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+            <div><label class="text-[11px] font-bold">職位層級 *</label><select id="acc-role" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${roleOptions}</select></div>
+            <div><label class="text-[11px] font-bold">職稱</label><input id="acc-job" placeholder="例如 總主任（協調）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+            <div><label class="text-[11px] font-bold">組別</label>${isAdmin?`<input id="acc-group" value="${escapeHtml(myGroup)}" placeholder="組別" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">`:`<input id="acc-group" value="${escapeHtml(myGroup)}" disabled class="w-full px-3 py-2 border rounded-xl text-sm bg-slate-50 mt-1">`}</div>
+            <div><label class="text-[11px] font-bold">帳號（可留空自動產生）</label><input id="acc-id" placeholder="user_id" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+            <div><label class="text-[11px] font-bold">電郵（選填）</label><input id="acc-email" placeholder="name@example.com" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+          </div>
+          <button onclick="app.submitAccountSetup()" class="bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-user-plus mr-1"></i>開戶</button>
+        </div>
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-sm mb-2">本組帳戶 (${myAccounts.length})</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">名字</th><th class="px-2 py-1 text-left">職稱</th><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-left">帳號</th></tr></thead><tbody class="divide-y">${myAccounts.map(x=>`<tr><td class="px-2 py-1 font-medium" data-label="名字">${escapeHtml(x.name)}</td><td class="px-2 py-1" data-label="職稱">${escapeHtml(x.job_title||'')}</td><td class="px-2 py-1" data-label="層級">${escapeHtml(ROLE_LABELS[x.role]||x.role)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(x.group_name||'')}</td><td class="px-2 py-1 font-mono" data-label="帳號">${escapeHtml(x.user_id||'')}</td></tr>`).join('')||'<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無帳戶</td></tr>'}</tbody></table></div>
+        </div>
+      </div>
+    `;
+  }
+  async submitAccountSetup(){
+    if(!this.canOpenAccounts()){ showToast('僅總主任或以上可開戶','error'); return; }
+    const name=(document.getElementById('acc-name')?.value||'').trim();
+    const role=(document.getElementById('acc-role')?.value||'staff');
+    const job=(document.getElementById('acc-job')?.value||'').trim();
+    const group=(document.getElementById('acc-group')?.value||'').trim();
+    const uid=(document.getElementById('acc-id')?.value||'').trim();
+    const email=(document.getElementById('acc-email')?.value||'').trim();
+    if(!name){ showToast('請填寫名字','error'); return; }
+    const myLvl=this.roleLevel(this.currentUser.role);
+    if(ROLE_HIERARCHY[role]>myLvl){ showToast('不可開設層級比自己高的帳戶','error'); return; }
+    if(!group){ showToast('請填寫組別','error'); return; }
+    const payload={action:'createAccount',api_key:this.apiKey,name,role,job_title:job,group_name:group,user_id:uid,email,contact:'',by_role:this.currentUser.role,by_group:this.currentUser.group_name};
+    if(!this.mockMode && this.gasUrl){
+      try{
+        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+        const j=await res.json();
+        if(j&&j.success){ showToast(j.message||'已開戶','success'); await this.loadUsers(); this.renderAccountSetupModule(); }
+        else showToast('開戶失敗：'+(j&&j.error||'未知錯誤'),'error');
+      }catch(e){ showToast('無法連線後端：'+e.message,'error'); }
+      return;
+    }
+    // Mock 模式：本地新增
+    const list=this.getLocalUsers();
+    if(list.some(x=>x.user_id===uid)){ showToast('帳號已存在','error'); return; }
+    list.push({user_id:uid||('staff_'+Date.now()),name,role,group_name:group,job_title:job,email,contact:'',password:'1234',status:'active',can_tick:false});
+    this.setLocalUsers(list);
+    await this.loadUsers();
+    showToast('已開戶（示範，密碼 1234）','success');
+    this.renderAccountSetupModule();
+  }
+  renderPermissionsModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    if(!this.currentUser){ container.innerHTML='<p class="text-xs text-slate-400">請先登入</p>'; return; }
+    const mine=this.getMyPermSets();
+    const subs=this.getMySubordinates();
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
+          <b><i class="fa-solid fa-key mr-1"></i>權限管理：</b>你可把「自己有的」權利授權給下級。<br>
+          • 我「可看」${mine.see.length} 張卡片、「可管」${mine.edit.length} 張卡片<br>
+          • 授權給下級時，只能勾選<b>你自己也有的</b>卡片；授出「看」後，才能授「管」
+        </div>
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-sm mb-3">我的下級 (${subs.length})</h4>
+          ${subs.length===0?'<p class="text-xs text-slate-400">暫無可授權的下級（同組、層級比你低）</p>':`
+          <div class="space-y-2">${subs.map(s=>{
+            const see=s.perm_see&&Array.isArray(s.perm_see)?s.perm_see:[];
+            const edit=s.perm_edit&&Array.isArray(s.perm_edit)?s.perm_edit:[];
+            return `<div class="border rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="min-w-0"><b class="text-[13px]">${escapeHtml(s.name)}</b> ${s.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">${escapeHtml(s.job_title)}</span>`:''}<span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(ROLE_LABELS[s.role]||s.role)}</span>
+                <div class="text-[11px] text-slate-500 mt-1">${escapeHtml(s.group_name||'')} · 看 ${see.length} / 管 ${edit.length}</div></div>
+              <button onclick="app.openPermissionEditor('${escapeHtml(s.user_id)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">編輯權限</button>
+            </div>`;}).join('')}
+          </div>`}
+        </div>
+      </div>
+    `;
+  }
+  openPermissionEditor(userId){
+    if(!this.currentUser){ showToast('請先登入','error'); return; }
+    const sub=(this.usersList||[]).find(x=>x.user_id===userId);
+    if(!sub){ showToast('找不到該用戶','error'); return; }
+    const mine=this.getMyPermSets();
+    const see=Array.isArray(sub.perm_see)?sub.perm_see:[];
+    const edit=Array.isArray(sub.perm_edit)?sub.perm_edit:[];
+    const rows=PERM_CARDS.map(c=>{
+      const canSee=mine.see.includes(c.id);
+      const canEdit=mine.edit.includes(c.id)&&canSee;
+      if(!canSee) return '';
+      return `<tr><td class="px-2 py-1">${c.icon?`<i class="${c.icon} text-slate-400 mr-1"></i>`:''}${escapeHtml(c.label)}</td>
+        <td class="px-2 py-1 text-center"><input type="checkbox" id="psee-${c.id}" ${see.includes(c.id)?'checked':''} onchange="app.onPermSeeToggle('${c.id}')"></td>
+        <td class="px-2 py-1 text-center">${canEdit?`<input type="checkbox" id="pedit-${c.id}" ${edit.includes(c.id)?'checked':''}>`:'<span class="text-[10px] text-slate-400">無</span>'}</td></tr>`;
+    }).join('');
+    document.getElementById('record-modal-title').textContent=`授權給 ${sub.name}（看 / 管）`;
+    document.getElementById('record-form-fields').innerHTML=`
+      <input type="hidden" id="perm-target" value="${escapeHtml(userId)}">
+      <div class="text-[11px] text-slate-500 mb-2">勾選「看」可查看該卡片；勾選「管」可編輯該卡片內容。你只能授出自己有的權利。</div>
+      <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">卡片</th><th class="px-2 py-1 text-center">可看</th><th class="px-2 py-1 text-center">可管</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="px-2 py-4 text-center text-slate-400">你目前沒有可授權的卡片</td></tr>'}</tbody></table></div>
+    `;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitPermissionEditor(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+  onPermSeeToggle(cardId){
+    const seeChk=document.getElementById('psee-'+cardId);
+    const editChk=document.getElementById('pedit-'+cardId);
+    if(editChk && !seeChk.checked){ editChk.checked=false; }
+  }
+  async submitPermissionEditor(){
+    const target=document.getElementById('perm-target').value;
+    const mine=this.getMyPermSets();
+    const perm_see=[], perm_edit=[];
+    PERM_CARDS.forEach(c=>{
+      if(!mine.see.includes(c.id)) return;
+      const sc=document.getElementById('psee-'+c.id);
+      if(sc && sc.checked) perm_see.push(c.id);
+      const ec=document.getElementById('pedit-'+c.id);
+      if(ec && ec.checked && perm_see.includes(c.id)) perm_edit.push(c.id);
+    });
+    if(!this.mockMode && this.gasUrl){
+      try{
+        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveUserPermissions',api_key:this.apiKey,user_id:target,perm_see,perm_edit})});
+        const j=await res.json();
+        if(j&&j.success){ this.closeModal('modal-record'); document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e); showToast('權限已更新','success'); await this.loadUsers(); this.renderPermissionsModule(); }
+        else showToast('儲存失敗：'+(j&&j.error||'未知錯誤'),'error');
+      }catch(e){ showToast('無法連線後端：'+e.message,'error'); }
+      return;
+    }
+    // Mock：本地更新
+    const list=this.getLocalUsers();
+    const u=list.find(x=>x.user_id===target);
+    if(u){ u.perm_see=perm_see; u.perm_edit=perm_edit; this.setLocalUsers(list); }
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('權限已更新（示範）','success');
+    await this.loadUsers();
+    this.renderPermissionsModule();
   }
 
   /* ===================== Activities Enhanced Module v6.8 ===================== */
@@ -825,7 +1183,7 @@ class ScoutEventApp{
     if(local) return local;
     const raw=this.eventData['activities']||[];
     // raw may be array of activities, convert to new structure
-    let activities=[], maps=[], booths=[], gameCards=[];
+    let activities=[], maps=[], booths=[], gameCards=[], booth_source=null;
     if(Array.isArray(raw)){
       activities=raw.map((a,i)=>({id:a.activity_id||'act_'+i,title:a.title||a.name||'未命名活動',type:a.type||'攤位',location:a.location||'',description:a.description||'',details:a.details||a.details_json||'',created_at:a.created_at||''}));
     }else{
@@ -833,6 +1191,7 @@ class ScoutEventApp{
       maps=raw.maps||[];
       booths=raw.booths||[];
       gameCards=raw.gameCards||raw.game_cards||[];
+      booth_source=raw.booth_source||null;
     }
     // 模擬示範活動才加入示範預設資料；真實活動(ISD等)為預留版位(空白)
     if(this.isDemoEvent()){
@@ -866,7 +1225,7 @@ class ScoutEventApp{
       });
     }
     }
-    return {activities, maps, booths, gameCards, drive_folder_link: (this.eventData['activities']?.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
+    return {activities, maps, booths, gameCards, booth_source, drive_folder_link: (this.eventData['activities']?.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
   }
   saveActivitiesData(data){
     const key=LS.activities(this.currentEvent?.event_id||'isd_2026');
@@ -948,20 +1307,29 @@ class ScoutEventApp{
     if(!container) return;
     const data=this.getActivitiesData();
     const canUpload=this.canUploadActivity();
+    const src=data.booth_source||null;
     container.innerHTML=`
       <div class="space-y-3">
+        ${src?this.driveSyncNotice():''}
+        ${src?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
+          <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（內建式，不用跳轉 Drive）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
+          <a href="https://drive.google.com/file/d/${escapeHtml(src.drive_file_id)}/view" target="_blank" class="text-sky-700 underline">📂 開啟 Drive 檔案</a>
+          <br>• 由<b>節目組副主席</b>負責更新。若該檔為原生「Google 試算表」，點「同步最新」即直接在 APP 內讀取最新內容（各組在 Drive 一改，APP 即時同步）。
+          <br>• 若仍是 .xlsx 檔：建議在 Drive「檔案 → 另存為 Google 試算表」後同步，或由副主席直接「上傳 Excel → 寫入後端」。
+        </div>`:''}
         <div class="flex flex-wrap gap-2">
-          ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位 (主任/副主席以上)</button>`:''}
-          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載攤位總表範本 CSV</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳總表文件 (PDF/CSV/Excel)<input type="file" accept=".pdf,.csv,.xlsx,.xls,.json" class="hidden" onchange="app.handleActivityFileUpload(this.files[0],'booth')"></label>
+          <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
+          ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel → 寫入後端<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
           <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印總表</button>
         </div>
         <div id="booths-print-area" class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-sm mb-3">攤位總表 (2025 真實攤位資料 · 攤位編號及負責單位來自舊版 Copy of ISD2025 攤位資料，負責人為示範代號)</h4>
+          <h4 class="font-bold text-sm mb-3">攤位總表 (共 ${data.booths.length} 個攤位 · 由節目組負責更新)</h4>
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th><th class="px-2 py-1 text-right">操作</th></tr></thead><tbody class="divide-y">${data.booths.map(b=>`
             <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number)}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name)}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td><td class="px-2 py-1 text-right" data-label="操作"><div class="flex gap-1 justify-end">${canUpload?`<button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></td></tr>
           `).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請上傳總表或新增</td></tr>'}</tbody></table></div>
-          <div class="mt-3 text-[10px] text-slate-500">已整合 2025 真實攤位總表（共 ${data.booths.length} 個攤位，按主題範疇 A-F 分區），相關主任可上傳新版 PDF/Excel，或直接在 APP 內新增攤位，全部前台可控</div>
+          <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。節目組副主席可在 Drive 更新 Google 試算表後點「同步最新」，或直接上傳 Excel 寫入後端。</div>
         </div>
       </div>
     `;
@@ -1152,12 +1520,368 @@ class ScoutEventApp{
     this.renderActivitiesBooths();
     showToast('已刪除攤位','warning');
   }
+  // ── 攤位資料同步：模式 A (Drive 直接讀 = 內建式) / 模式 B (副主席上傳 Excel → 寫後端) ──
+  boothHeaderMap(){
+    return {
+      booth_number:['攤位編號','攤位號','編號','booth_number','booth','booth no','no'],
+      booth_name:['攤位名稱','攤位','名稱','booth_name','name','title'],
+      location:['位置','地點','location','區'],
+      group_name:['組別','負責單位','負責旅團','單位','group_name','group','unit'],
+      theme:['主題','範疇','theme','zone'],
+      game_type:['遊戲類型','類型','game_type','type','形式'],
+      responsible:['負責人','負責','responsible','pic','leader'],
+      contact:['聯絡','電話','聯絡電話','contact','phone','tel'],
+      description:['描述','備註','說明','description','remarks','desc']
+    };
+  }
+  normalizeBoothRow(r){
+    if(!r) return null;
+    const map=this.boothHeaderMap();
+    const keys=Object.keys(r);
+    const fuzzy=(key)=>{ const want=map[key]; for(const k of keys){ if(want.some(w=>String(k).trim()===w)) return r[k]; } return ''; };
+    const v=(key)=>{ const x=fuzzy(key); return (x===undefined||x===null)?'':String(x).trim(); };
+    const booth_number=v('booth_number');
+    const booth_name=v('booth_name');
+    const location=v('location');
+    const group_name=v('group_name');
+    const theme=v('theme');
+    const game_type=v('game_type');
+    const responsible=v('responsible');
+    const contact=v('contact');
+    const description=v('description');
+    if(!booth_number && !booth_name) return null;
+    return {id:'booth_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), booth_number, booth_name, location, group_name, theme, game_type, responsible, contact, description, created_by:'同步', created_at:new Date().toISOString()};
+  }
+  rowsToBooths(rows){ return (rows||[]).map(r=>this.normalizeBoothRow(r)).filter(Boolean); }
+  applyBooths(booths, srcLabel, silent){
+    const data=this.getActivitiesData();
+    data.booths=booths;
+    this.saveActivitiesData(data);
+    if(!silent) showToast(`已從「${srcLabel}」更新 ${booths.length} 筆攤位`,'success');
+    this.renderActivitiesBooths();
+  }
+  // 模式 A：直接從 Drive 讀最新（原生 Google Sheet → export=csv；xlsx → 下載後 SheetJS 解析）
+  async fetchDriveSheetRows(sheetId, gid){
+    gid=gid||0;
+    // 1) 原生 Google 試算表：export=csv 直讀（瀏覽器 CORS 友善，最可靠）
+    try{
+      const csvUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+      const res=await fetch(csvUrl);
+      const text=await res.text();
+      if(res.ok && text.trim() && !text.trim().startsWith('<') && text.includes(',')){
+        return {ok:true, rows:parseCSV(text), via:'sheet'};
+      }
+    }catch(e){}
+    // 2) xlsx 後備：下載後用 SheetJS 解析（.xlsx 二進位在瀏覽器可能受 CORS 限制）
+    if(typeof XLSX!=='undefined'){
+      try{
+        const r2=await fetch(`https://drive.google.com/uc?export=download&id=${sheetId}`);
+        if(r2.ok){
+          const ab=await r2.arrayBuffer();
+          const wb=XLSX.read(ab,{type:'array'});
+          return {ok:true, rows:XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}), via:'xlsx'};
+        }
+      }catch(e){}
+    }
+    return {ok:false, rows:[], via:'none'};
+  }
+  // 模式 B：上傳 Excel → SheetJS 解析成 rows（供各卡片「上傳寫後端」共用）
+  async parseExcelToRows(file){
+    const ab=await file.arrayBuffer();
+    if(typeof XLSX==='undefined') throw new Error('未載入 Excel 解析庫 (需連線 CDN)');
+    const wb=XLSX.read(ab,{type:'array'});
+    return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+  }
+  // 統一提示：各組只需在 Drive 更新 Google Sheet，APP 即自動同步
+  driveSyncNotice(){ return '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>自動同步：</b>各組只要在 Drive 內更新 Google Sheet 表單，APP 開啟即自動同步最新資料（也可手動點「同步最新」）。</div>'; }
+  // 開 APP 時自動從 Drive 讀取最新表格（靜默、拆解後內建顯示，不跳轉）
+  async autoSyncDriveSources(){
+    if(this.isDemoEvent()) return; // 模擬示範活動不使用 Drive 資料源
+    try{
+      const act=this.getActivitiesData();
+      if(act.booth_source && (act.booth_source.sheet_id||act.booth_source.drive_file_id)) await this.syncBoothsFromDrive(true);
+    }catch(e){}
+    try{
+      const fin=this.getFinanceData();
+      if(fin.budget_source && (fin.budget_source.sheet_id||fin.budget_source.drive_file_id)) await this.syncBudgetFromDrive(true);
+    }catch(e){}
+    try{
+      const st=this.getStaffData();
+      if(st.staff_source && (st.staff_source.sheet_id||st.staff_source.drive_file_id)) await this.syncStaffFromDrive(true);
+    }catch(e){}
+    try{
+      const ss=this.eventData['schedule_source'];
+      if(ss && (ss.sheet_id||ss.drive_file_id)) await this.syncScheduleFromDrive(true);
+    }catch(e){}
+    try{
+      const ps=this.eventData['participants_source'];
+      if(ps && (ps.sheet_id||ps.drive_file_id)) await this.syncParticipantsFromDrive(true);
+    }catch(e){}
+  }
+  // 依 header map 模糊配對欄位（各卡片用同一套）
+  pickCol(obj, want, fallback){
+    if(!obj) return fallback;
+    const keys=Object.keys(obj);
+    const lower={};
+    keys.forEach(k=>lower[String(k).trim().toLowerCase()]=obj[k]);
+    const wants=(Array.isArray(want)?want:[want]).map(w=>String(w).trim().toLowerCase());
+    for(const w of wants){ if(lower[w]!==undefined && lower[w]!==null && String(lower[w]).trim()!=='') return String(lower[w]).trim(); }
+    return fallback;
+  }
+  async syncBoothsFromDrive(silent){
+    const src=(this.getActivitiesData().booth_source)||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定攤位資料來源 (booth_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新攤位資料…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const booths=this.rowsToBooths(got.rows);
+        if(booths.length){ this.applyBooths(booths,'Drive 直接同步 ('+got.via+')', silent); return; }
+      }
+      if(!silent) showToast('未能從 Drive 讀取。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message+'（如為 CORS，請把 xlsx 轉為 Google 試算表）','error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // 模式 B：副主席上傳 Excel → SheetJS 轉 CSV/JSON → 寫入後端 Sheet (GAS) + 本地
+  async handleBoothExcelUpload(file){
+    if(!file){ return; }
+    if(!this.canUploadActivity()){ showToast('僅節目組副主席/主任以上可上傳','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const booths=this.rowsToBooths(rows);
+      if(!booths.length){ showToast('解析不到攤位資料，請確認表頭（攤位編號/攤位名稱/組別…）','error'); return; }
+      const data=this.getActivitiesData();
+      data.booths=booths;
+      this.saveActivitiesData(data);
+      if(!this.mockMode && this.gasUrl){
+        try{
+          const r=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveBooths',api_key:this.apiKey,event_id:this.currentEvent?.event_id||'isd_2026',booths})});
+          const j=await r.json();
+          showToast(j&&j.success?`已上傳 ${booths.length} 筆並寫入後端 Sheet`:`本地已更新 ${booths.length} 筆（後端：${(j&&j.error)||'未寫入'}）`, j&&j.success?'success':'warning');
+        }catch(e){ showToast(`本地已更新 ${booths.length} 筆，但寫入後端失敗：${e.message}`,'warning'); }
+      } else {
+        showToast(`已解析 ${booths.length} 筆攤位（Mock 模式僅存瀏覽器；正式連線 GAS 會寫入後端 Sheet）`,'success');
+      }
+      this.renderActivitiesBooths();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
   printBooths(){
     const area=document.getElementById('booths-print-area');
     if(!area){ showToast('找不到列印區域','error'); return; }
     const win=window.open('','_blank');
     win.document.write(`<html><head><title>攤位總表</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px}</style></head><body>${area.innerHTML}<div class="mt-4 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
+  }
+  // ═══ 預算（財務）資料源 + 同步 ═══
+  budgetHeaderMap(){ return { group_name:['組別','組','group','group_name','department','組名'], voucher:['憑單','憑單編號','voucher','voucher no','單號'], item_name:['項目','項目名稱','item','item_name','名稱','name','description','開支項目'], budget:['預算','budget','budget_amt','預算金額','計劃'], actual:['實際','實際金額','actual','actual_amt','實付'], notes:['備註','notes','remark','說明','remarks'] }; }
+  normalizeBudgetRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const item_name=b(this.budgetHeaderMap().item_name);
+    if(!item_name) return null;
+    const budget=parseFloat(String(b(this.budgetHeaderMap().budget)).replace(/[$,]/g,''))||0;
+    const actual=parseFloat(String(b(this.budgetHeaderMap().actual)).replace(/[$,]/g,''))||0;
+    return { voucher:b(this.budgetHeaderMap().voucher), item_name, group_name:b(this.budgetHeaderMap().group_name)||'未分組', budget, actual, notes:b(this.budgetHeaderMap().notes) };
+  }
+  rowsToBudgets(rows){
+    const items=(rows||[]).map(r=>this.normalizeBudgetRow(r)).filter(Boolean);
+    const groups={};
+    items.forEach(it=>{ if(!groups[it.group_name]) groups[it.group_name]=[]; groups[it.group_name].push(it); });
+    return Object.keys(groups).map(g=>({group_name:g, items:groups[g]}));
+  }
+  async syncBudgetFromDrive(silent){
+    const src=(this.getFinanceData().budget_source)||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定預算資料來源 (budget_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新預算…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const gb=this.rowsToBudgets(got.rows);
+        if(gb.length){
+          const fin=this.getFinanceData();
+          fin.group_itemized_budgets=gb;
+          this.saveFinanceData(fin);
+          if(!silent) showToast(`已同步 ${gb.length} 組預算（共 ${gb.reduce((s,g)=>s+g.items.length,0)} 項，via ${got.via}）`,'success');
+          this.renderFinanceBudgets();
+          return;
+        }
+      }
+      if(!silent) showToast('未能從 Drive 讀取預算。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleBudgetExcelUpload(file){
+    if(!file) return;
+    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳預算','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const gb=this.rowsToBudgets(rows);
+      if(!gb.length){ showToast('解析不到預算，請確認欄位（組別/項目/預算/實際）','error'); return; }
+      const fin=this.getFinanceData();
+      fin.group_itemized_budgets=gb;
+      this.saveFinanceData(fin);
+      showToast(`已解析 ${gb.length} 組預算（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderFinanceBudgets();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // ═══ 工作人員名單資料源 + 同步 ═══
+  staffHeaderMap(){ return { name:['姓名','name','名字','人員'], role_title:['職銜','職位','role','role_title','title','崗位'], group_name:['組別','組','group','group_name','部門'], contact:['電話','聯絡','聯絡電話','contact','phone','mobile','tel'], job_desc:['職務','job_desc','duty','職責','工作'] }; }
+  normalizeStaffRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const name=b(this.staffHeaderMap().name);
+    if(!name) return null;
+    return { name, role_title:b(this.staffHeaderMap().role_title), group_name:b(this.staffHeaderMap().group_name)||'未分組', contact:b(this.staffHeaderMap().contact), job_desc:b(this.staffHeaderMap().job_desc) };
+  }
+  rowsToContacts(rows){ return (rows||[]).map(r=>this.normalizeStaffRow(r)).filter(Boolean); }
+  async syncStaffFromDrive(silent){
+    const src=(this.getStaffData().staff_source)||this.eventData.staff?.staff_source||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定名單資料來源 (staff_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新名單…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const contacts=this.rowsToContacts(got.rows);
+        if(contacts.length){
+          const data=this.getStaffData();
+          data.contacts=contacts;
+          this.saveStaffData(data);
+          if(!silent) showToast(`已同步 ${contacts.length} 位工作人員（via ${got.via}）`,'success');
+          this.renderStaffContacts();
+          return;
+        }
+      }
+      if(!silent) showToast('未能自動解析名單。Org Chart 為架構圖，建議另設「聯絡名單」扁平分頁（姓名/職銜/組別/電話）再同步','warning');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleStaffExcelUpload(file){
+    if(!file) return;
+    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅主任以上可上傳名單','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const contacts=this.rowsToContacts(rows);
+      if(!contacts.length){ showToast('解析不到名單，請確認欄位（姓名/職銜/組別/電話）','error'); return; }
+      const data=this.getStaffData();
+      data.contacts=contacts;
+      this.saveStaffData(data);
+      showToast(`已解析 ${contacts.length} 位工作人員（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderStaffContacts();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // ═══ 日程表 (Run Down) 資料源 + 同步 ═══
+  getScheduleData(){
+    const key=LS.schedule(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    if(local && Array.isArray(local)) return local;
+    const raw=this.eventData['schedule']||[];
+    if(Array.isArray(raw)) return raw;
+    return [];
+  }
+  saveScheduleData(data){ localStorage.setItem(LS.schedule(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['schedule']=data||[]; }
+  scheduleHeaderMap(){ return { time_slot:['時段','時間','time','time_slot','slot'], title:['節目','項目','title','program','內容','活動'], location:['位置','地點','location','place'], group_name:['組別','組','group','group_name','負責組'], description:['說明','描述','description','備註','desc','notes'] }; }
+  normalizeScheduleRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const title=b(this.scheduleHeaderMap().title);
+    if(!title) return null;
+    return { time_slot:b(this.scheduleHeaderMap().time_slot), title, location:b(this.scheduleHeaderMap().location), group_name:b(this.scheduleHeaderMap().group_name), description:b(this.scheduleHeaderMap().description) };
+  }
+  rowsToSchedule(rows){ return (rows||[]).map(r=>this.normalizeScheduleRow(r)).filter(Boolean); }
+  async syncScheduleFromDrive(silent){
+    const src=this.eventData['schedule_source']||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定日程表資料來源 (schedule_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新日程…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const sch=this.rowsToSchedule(got.rows);
+        if(sch.length){ this.saveScheduleData(sch); if(!silent) showToast(`已同步 ${sch.length} 個時段（via ${got.via}）`,'success'); this.renderScheduleModule(); return; }
+      }
+      if(!silent) showToast('未能從 Drive 讀取日程。建議另存為原生「Google 試算表」再同步','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleScheduleExcelUpload(file){
+    if(!file) return;
+    if(!((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳日程','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const sch=this.rowsToSchedule(rows);
+      if(!sch.length){ showToast('解析不到日程，請確認欄位（時段/節目/位置/組別）','error'); return; }
+      this.saveScheduleData(sch);
+      showToast(`已解析 ${sch.length} 個時段（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderScheduleModule();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // ═══ 參加旅團名單資料源 + 同步 ═══
+  getParticipantsData(){
+    const key=LS.participants(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    if(local) return local;
+    const raw=this.eventData['participants']||[];
+    if(Array.isArray(raw)) return raw;
+    return [];
+  }
+  saveParticipantsData(data){ localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
+  participantHeaderMap(){ return { unit_name:['旅團','旅團名稱','單位','unit','unit_name','group','名稱'], section:['支部','section','支部名稱','組別'], headcount:['人數','headcount','count','參加人數'], notes:['備註','notes','說明','remark'] }; }
+  normalizeParticipantRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const unit_name=b(this.participantHeaderMap().unit_name);
+    if(!unit_name) return null;
+    return { unit_name, section:b(this.participantHeaderMap().section), headcount:b(this.participantHeaderMap().headcount), notes:b(this.participantHeaderMap().notes) };
+  }
+  rowsToParticipants(rows){ return (rows||[]).map(r=>this.normalizeParticipantRow(r)).filter(Boolean); }
+  async syncParticipantsFromDrive(silent){
+    const src=this.eventData['participants_source']||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定參加旅團名單來源 (participants_source)','warning'); return; }
+    if(!silent) showToast('正在從 Drive 讀取最新參加旅團名單…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const p=this.rowsToParticipants(got.rows);
+        if(p.length){ this.saveParticipantsData(p); if(!silent) showToast(`已同步 ${p.length} 個旅團（via ${got.via}）`,'success'); this.renderAdminGroupModule(); return; }
+      }
+      if(!silent) showToast('未能從 Drive 讀取參加旅團名單','error');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleParticipantsExcelUpload(file){
+    if(!file) return;
+    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅行政組主任以上可上傳','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const p=this.rowsToParticipants(rows);
+      if(!p.length){ showToast('解析不到名單，請確認欄位（旅團/支部/人數）','error'); return; }
+      this.saveParticipantsData(p);
+      showToast(`已解析 ${p.length} 個旅團（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderAdminGroupModule();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  downloadScheduleTemplate(){
+    const csv='time_slot,title,location,group_name,description\n07:45 - 08:30,會操及頒獎禮場地設置劃位,大操場,協調組,各功能組別場地佈置\n08:30 - 10:30,參加旅團報到,報到處,行政組,旅團報到及攤位佈置\n10:00 - 12:30,上午主題攤位節目,營地全區,主題節目組,攤位博覽與積極公民工作坊\n12:30 - 14:30,午膳,食堂,協調組,工作人員午膳\n14:45 - 15:45,優異旅團及獎勵頒發儀式,大操場,會操及典禮組,頒發彩帶及證書\n16:00 - 16:40,會操檢閱及頒獎典禮,大操場,會操及典禮組,主禮嘉賓檢閱及頒獎\n';
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='schedule_template.csv'; a.click(); showToast('已下載日程表範本','success');
+  }
+  downloadParticipantsTemplate(){
+    const csv='unit_name,section,headcount,notes\n港島第1旅,童軍,30,\n港島第2旅,幼童軍,45,\n港島第3旅,小童軍,25,\n';
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='participants_template.csv'; a.click(); showToast('已下載參加旅團名單範本','success');
   }
   openGameCardForm(editId=null){
     if(!this.canUploadActivity()){ showToast('僅相關主任、副主席或以上可上傳','error'); return; }
@@ -1224,6 +1948,7 @@ class ScoutEventApp{
   }
   async handleActivityFileUpload(file, type){
     if(!file){ showToast('請選擇檔案','warning'); return; }
+    if(type==='booth' && (file.name.endsWith('.xlsx')||file.name.endsWith('.xls'))){ return this.handleBoothExcelUpload(file); }
     const reader=new FileReader();
     reader.onload=async (e)=>{
       try{
@@ -1281,7 +2006,7 @@ class ScoutEventApp{
   downloadActivityTemplate(type){
     let csv='', filename='';
     if(type==='booth'){
-      csv='booth_number,booth_name,location,group_name,theme,game_type,responsible,contact,description\nA01,童軍技能挑戰,主營地 A區,第12旅,繩結,挑戰,陳子明,91234567,繩結挑戰\nA02,定向追蹤,主營地 A區,第15旅,定向,定向,李小華,92345678,定向追蹤遊戲\n';
+      csv='booth_number,booth_name,location,group_name,theme,game_type,responsible,contact,description\nA01,童軍技能挑戰,主營地 A區,港島第1旅,繩結,挑戰,負責人,91234567,繩結挑戰\nA02,定向追蹤,主營地 A區,港島第2旅,定向,定向,負責人,92345678,定向追蹤遊戲\n';
       filename='booth_template.csv';
     }else if(type==='map'){
       csv='title,description,file_url\n場地分佈圖,主營地及警察學院分佈,https://drive.google.com/file/d/.../view\n泊車位置圖,停車場及車輛進出路線,\n';
@@ -1318,10 +2043,12 @@ class ScoutEventApp{
         id:d.id||d.document_id||'doc_'+i,
         title:d.title||d.name||'未命名文件',
         category:d.category||'文件',
+        summary:d.summary||d.摘要||'',
         description:d.description||d.desc||'',
         file_name:d.file_name||d.fileName||'',
         file_url:d.file_url||d.url||'',
         file_data:d.file_data||d.data_url||'',
+        drive_id:d.drive_id||d.fileId||'',
         uploaded_by:d.uploaded_by||d.created_by||'',
         date:d.date||d.created_at||''
       }))};
@@ -1359,14 +2086,24 @@ class ScoutEventApp{
           <button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          ${filtered.map(d=>`
-            <div class="border rounded-xl p-4 bg-white space-y-2">
-              <div class="flex justify-between items-start gap-2"><div><b class="text-[13px]">${escapeHtml(d.title)}</b><div class="mt-1 flex gap-2 flex-wrap"><span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span>${d.file_name?`<span class="bg-sky-50 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200">${escapeHtml(d.file_name)}</span>`:''}</div></div><div class="flex gap-1">${canUpload?`<button onclick="app.openDocumentForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteDocument('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
-              <div class="text-[11px] text-slate-600 whitespace-pre-line">${escapeHtml(d.description||'')}</div>
+          ${filtered.map(d=>{
+            const driveId=this.docDriveId(d);
+            return `
+            <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col">
+              <div class="flex justify-between items-start gap-2"><div class="min-w-0"><b class="text-[13px]">${escapeHtml(d.title)}</b><div class="mt-1 flex gap-2 flex-wrap"><span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span>${d.file_name?`<span class="bg-sky-50 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200">${escapeHtml(d.file_name)}</span>`:''}</div></div><div class="flex gap-1 flex-shrink-0">${canUpload?`<button onclick="app.openDocumentForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteDocument('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
+              ${d.summary?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-slate-700 leading-relaxed"><b class="text-amber-800"><i class="fa-solid fa-align-left mr-1"></i>擇要：</b>${escapeHtml(d.summary)}</div>`:''}
               <div class="text-[10px] text-slate-400">上載：${escapeHtml(d.uploaded_by||'')} ${d.date?' | '+escapeHtml(d.date):''}</div>
-              <div class="flex gap-2"><button onclick="app.downloadDocument('${d.id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>開啟/下載</button></div>
-            </div>
-          `).join('') || '<p class="text-xs text-slate-400 py-8 text-center md:col-span-2">暫無文件</p>'}
+              <div class="flex gap-2 flex-wrap mt-auto pt-1">
+                ${driveId?`<button onclick="app.previewDocument('${d.id}')" class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-eye mr-1"></i>嵌入預覽</button><a href="https://drive.google.com/uc?export=download&id=${driveId}" target="_blank" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</a>`:''}
+                <button onclick="app.downloadDocument('${d.id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</button>
+                <button onclick="app.toggleDocumentDetail('${d.id}')" class="bg-slate-100 border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-circle-info mr-1"></i>詳細</button>
+              </div>
+              <div id="doc-detail-${d.id}" class="hidden space-y-2 border-t pt-2 mt-1">
+                ${d.description?`<div class="text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">${escapeHtml(d.description)}</div>`:''}
+                ${driveId?`<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="w-full h-[320px] border rounded-xl" allow="autoplay"></iframe>`:''}
+              </div>
+            </div>`;
+          }).join('') || '<p class="text-xs text-slate-400 py-8 text-center md:col-span-2">暫無文件</p>'}
         </div>
       </div>
     `;
@@ -1379,7 +2116,8 @@ class ScoutEventApp{
       <input type="hidden" id="doc-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="doc-form-id" value="${existing?.id||''}">
       <div class="space-y-3">
         <div><label class="text-[11px] font-bold">文件標題 *</label><input id="doc-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分類</label><input id="doc-category" value="${escapeHtml(existing?.category||'通告')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">外部連結</label><input id="doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分類</label><input id="doc-category" value="${escapeHtml(existing?.category||'通告')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">外部連結 (Drive)</label><input id="doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+        <div><label class="text-[11px] font-bold">擇要 (摘要：讓用戶一眼知道內容)</label><textarea id="doc-summary" rows="2" placeholder="簡短摘錄此文件重點…" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.summary||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">說明</label><textarea id="doc-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">上傳檔案 (可選，儲存在瀏覽器)</label><input type="file" id="doc-file" class="w-full text-xs mt-1"><div class="text-[10px] text-slate-400 mt-1">${existing?.file_name?'現有檔案：'+escapeHtml(existing.file_name):'如不選擇檔案，可只填外部連結。'}</div></div>
       </div>`;
@@ -1403,6 +2141,7 @@ class ScoutEventApp{
       id:existing?.id||'doc_'+Date.now(),
       title,
       category:document.getElementById('doc-category').value.trim()||'文件',
+      summary:document.getElementById('doc-summary').value.trim(),
       description:document.getElementById('doc-desc').value.trim(),
       file_url:document.getElementById('doc-url').value.trim(),
       file_name:fileName,
@@ -1426,6 +2165,33 @@ class ScoutEventApp{
     if(d.file_data){ downloadDataUrl(d.file_name||`${d.title}.txt`, d.file_data); return; }
     if(d.file_url && d.file_url!=='#'){ window.open(d.file_url,'_blank'); return; }
     showToast('此文件暫未附加檔案或連結','warning');
+  }
+  // 從 file_url / drive_id 抽取 Google Drive 檔案 ID (供預覽、下載)
+  docDriveId(d){
+    if(d.drive_id) return d.drive_id;
+    const u=d.file_url||'';
+    const m=u.match(/\/file\/d\/([0-9a-zA-Z_-]{20,})/)||u.match(/[?&]id=([0-9a-zA-Z_-]{20,})/)||u.match(/\/open\?id=([0-9a-zA-Z_-]{20,})/);
+    return m?m[1]:'';
+  }
+  previewDocument(id){
+    const d=this.getDocumentsData().docs.find(x=>x.id===id);
+    if(!d) return;
+    const driveId=this.docDriveId(d);
+    const area=document.getElementById('doc-detail-'+id);
+    if(!area) return;
+    area.classList.remove('hidden');
+    if(!driveId){ showToast('此文件無可嵌入預覽的 Drive 連結','warning'); return; }
+    if(!area.querySelector('iframe')){
+      const fr=document.createElement('iframe');
+      fr.src='https://drive.google.com/file/d/'+driveId+'/preview';
+      fr.className='w-full h-[320px] border rounded-xl';
+      fr.allow='autoplay';
+      area.insertAdjacentElement('afterbegin', fr);
+    }
+  }
+  toggleDocumentDetail(id){
+    const area=document.getElementById('doc-detail-'+id);
+    if(area) area.classList.toggle('hidden');
   }
   deleteDocument(id){
     if(!this.canUploadDocument()) return;
@@ -2282,7 +3048,7 @@ class ScoutEventApp{
           ${r.notes?`<div class="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2 mt-1">批核備註: ${escapeHtml(r.notes)}</div>`:''}
           </div>
           <div class="flex flex-col gap-1 flex-shrink-0">
-            ${this.isCoordinatorViceChair() && r.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px] font-bold">拒絕</button></div>`:''}
+            ${this.canApproveArea('supplies') && r.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px] font-bold">拒絕</button></div>`:''}
             ${this.isAdmin()?`<button onclick="app.deleteSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}
             <span class="text-[10px] text-slate-400">${r.approved_by?`批核: ${escapeHtml(r.approved_by)}<br>${r.approved_at?new Date(r.approved_at).toLocaleString():''}`:''}</span>
           </div>
@@ -2489,7 +3255,7 @@ class ScoutEventApp{
     document.getElementById('modal-record').classList.remove('hidden');
   }
   approveSupplyRequest(requestId, isModify=false){
-    if(!this.isCoordinatorViceChair()){ showToast('僅協調副主席可批核','error'); return; }
+    if(!this.canApproveArea('supplies')){ showToast('你沒有物資批核權','error'); return; }
     const data=this.getSuppliesData();
     const idx=data.requests.findIndex(r=>r.request_id===requestId);
     if(idx<0) return;
@@ -2525,7 +3291,7 @@ class ScoutEventApp{
     this.renderSuppliesModule();
   }
   rejectSupplyRequest(requestId){
-    if(!this.isCoordinatorViceChair()) return;
+    if(!this.canApproveArea('supplies')) return;
     const data=this.getSuppliesData();
     const idx=data.requests.findIndex(r=>r.request_id===requestId);
     if(idx<0) return;
@@ -2688,7 +3454,7 @@ class ScoutEventApp{
               ${v.notes?`<div class="text-[10px] bg-amber-50 border border-amber-200 rounded-xl p-2 mt-1">批核備註: ${escapeHtml(v.notes)}</div>`:''}
               </div>
               <div class="flex flex-col gap-1 flex-shrink-0">
-                ${isCoordinator && v.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveVehiclePass('${v.pass_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openVehicleApproveModifyModal('${v.pass_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectVehiclePass('${v.pass_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px]">拒絕</button></div>`:''}
+                ${this.canApproveArea('vehicle') && v.status==='pending'?`<div class="flex gap-1"><button onclick="app.approveVehiclePass('${v.pass_id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.openVehicleApproveModifyModal('${v.pass_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">修改批核</button><button onclick="app.rejectVehiclePass('${v.pass_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px]">拒絕</button></div>`:''}
                 ${isAdmin?`<button onclick="app.deleteVehiclePass('${v.pass_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}
                 <span class="text-[10px] text-slate-400">${v.approved_by?`批核: ${escapeHtml(v.approved_by)}<br>${v.approved_at?new Date(v.approved_at).toLocaleString():''}`:''}</span>
               </div>
@@ -2830,7 +3596,7 @@ class ScoutEventApp{
     document.getElementById('modal-record').classList.remove('hidden');
   }
   approveVehiclePass(passId, isModify=false){
-    if(!this.isCoordinatorViceChair()){ showToast('僅協調副主席可批核','error'); return; }
+    if(!this.canApproveArea('vehicle')){ showToast('你沒有車位/車輛批核權','error'); return; }
     const data=this.getSuppliesData();
     const idx=(data.vehicle_passes||[]).findIndex(v=>v.pass_id===passId);
     if(idx<0) return;
@@ -2863,7 +3629,7 @@ class ScoutEventApp{
     this.renderSuppliesModule();
   }
   rejectVehiclePass(passId){
-    if(!this.isCoordinatorViceChair()) return;
+    if(!this.canApproveArea('vehicle')) return;
     const data=this.getSuppliesData();
     const idx=(data.vehicle_passes||[]).findIndex(v=>v.pass_id===passId);
     if(idx<0) return;
@@ -2924,7 +3690,8 @@ class ScoutEventApp{
         created_at:e.created_at||''
       })),
       drive_folder_link: raw.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C?usp=sharing',
-      drive_folder_id: '1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C'
+      drive_folder_id: '1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C',
+      budget_source: raw.budget_source||null
     };
   }
   saveFinanceData(data){
@@ -3069,7 +3836,13 @@ class ScoutEventApp{
     const income=fin.income||[];
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="flex gap-2"><button onclick="app.openExpenseForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增開支申報</button><button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button></div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.syncBudgetFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新預算 (Drive)</button>
+          ${(this.isAdmin()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 預算<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBudgetExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.openExpenseForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增開支申報</button><button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
+        </div>
+        ${(this.getFinanceData().budget_source)?this.driveSyncNotice():''}
+        ${(this.getFinanceData().budget_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">📊 預算來源：「${escapeHtml(this.getFinanceData().budget_source.name||'Budget')}」（由行政組/財務更新）。建議把 xlsx 另存為原生 Google 試算表後，點「同步最新」直接讀取。</div>`:''}
         ${budgets.map(g=>`<div class="border rounded-xl p-4 bg-white"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-sm"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i>${escapeHtml(g.group_name)}</h4><span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded-full">${(g.items||[]).length} 項</span></div><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">憑單</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">預算</th><th class="px-2 py-1 text-left">實際</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${(g.items||[]).map(it=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(it.voucher)}</td><td class="px-2 py-1">${escapeHtml(it.item_name)}</td><td class="px-2 py-1">$${it.budget}</td><td class="px-2 py-1 font-bold text-rose-600">$${it.actual}</td><td class="px-2 py-1">${escapeHtml(it.notes||'')}</td></tr>`).join('')}</tbody></table></div></div>`).join('') || '<p class="text-xs text-slate-400">暫無預算明細</p>'}
         <div class="border rounded-xl p-4 bg-white"><h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i>收入</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1">預算</th><th class="px-2 py-1">實際</th></tr></thead><tbody class="divide-y">${income.map(i=>`<tr><td class="px-2 py-1">${escapeHtml(i.item)}</td><td class="px-2 py-1">$${i.budget}</td><td class="px-2 py-1 font-bold text-emerald-700">$${i.actual}</td></tr>`).join('')}</tbody></table></div></div>
       </div>
@@ -3122,7 +3895,7 @@ class ScoutEventApp{
       </div>
     `;
   }
-  canApproveFinance(){ return (ROLE_HIERARCHY[this.currentUser?.role]||0)>=60; }
+  canApproveFinance(){ return this.canApproveArea('finance'); }
   openExpenseForm(editId=null){
     const fin=this.getFinanceData();
     const existing=editId?fin.expenses.find(e=>e.id===editId):null;
@@ -3313,15 +4086,15 @@ class ScoutEventApp{
       // isExempt = shop in exempt list
       if(isExempt){
         if(amount<=2000) return {quotation:'無須報價 (豁免名單內 $2,000)', steps:[{role:'各副主席', action:'批核', by:'vice_chair'}]};
-        if(amount<=5000) return {quotation:'1個口頭報價 (附件3)', steps:[{role:'各副主席', action:'推薦', by:'vice_chair'},{role:'主席 何家聰', action:'批核', by:'chair'}]};
+        if(amount<=5000) return {quotation:'1個口頭報價 (附件3)', steps:[{role:'各副主席', action:'推薦', by:'vice_chair'},{role:'主席', action:'批核', by:'chair'}]};
       }else{
         if(amount<=500) return {quotation:'無須報價 (其他商舖 ≤$500)', steps:[{role:'各副主席', action:'批核', by:'vice_chair'}]};
-        if(amount<=5000) return {quotation:'1個口頭報價 (附件3)', steps:[{role:'各副主席', action:'推薦', by:'vice_chair'},{role:'主席 何家聰', action:'批核', by:'chair'}]};
+        if(amount<=5000) return {quotation:'1個口頭報價 (附件3)', steps:[{role:'各副主席', action:'推薦', by:'vice_chair'},{role:'主席', action:'批核', by:'chair'}]};
       }
-      if(amount>=5001 && amount<=30000) return {quotation:'2個口頭報價 (附件3)', steps:[{role:'主席 何家聰', action:'推薦', by:'chair'},{role:'助理地域總監(活動) 高家豪', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練) 區子君', action:'批核', by:'deputy_rc'}]};
-      if(amount>=30001 && amount<=100000) return {quotation:'2個書面報價 (附件4)', steps:[{role:'主席 何家聰', action:'推薦', by:'chair'},{role:'助理地域總監(活動) 高家豪', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練) 區子君', action:'批核', by:'deputy_rc'}]};
-      if(amount>=10001 && amount<=300000) return {quotation:'3個書面報價 (附件4)', steps:[{role:'主席 何家聰', action:'推薦', by:'chair'},{role:'助理地域總監(活動) 高家豪', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練) 區子君', action:'批核', by:'deputy_rc'}]};
-      if(amount>=300001 && amount<=1000000) return {quotation:'5個書面報價 (附件4)', steps:[{role:'主席 何家聰', action:'推薦', by:'chair'},{role:'助理地域總監(活動) 高家豪 及 副地域總監 區子君', action:'認可', by:'assistant_deputy'},{role:'地域總監', action:'批核', by:'regional'}]};
+      if(amount>=5001 && amount<=30000) return {quotation:'2個口頭報價 (附件3)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動)', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練)', action:'批核', by:'deputy_rc'}]};
+      if(amount>=30001 && amount<=100000) return {quotation:'2個書面報價 (附件4)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動)', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練)', action:'批核', by:'deputy_rc'}]};
+      if(amount>=10001 && amount<=300000) return {quotation:'3個書面報價 (附件4)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動)', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練)', action:'批核', by:'deputy_rc'}]};
+      if(amount>=300001 && amount<=1000000) return {quotation:'5個書面報價 (附件4)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動) 及 副地域總監', action:'認可', by:'assistant_deputy'},{role:'地域總監', action:'批核', by:'regional'}]};
       if(amount>1000000) return {quotation:'投標，至少5個報價', steps:[{role:'投標小組委員會', action:'推薦', by:'tender'},{role:'地域總監', action:'批核', by:'regional'}]};
       return {quotation:'未知', steps:[]};
     };
@@ -3343,8 +4116,8 @@ class ScoutEventApp{
               <thead class="bg-slate-100 font-bold"><tr><th class="border px-2 py-1">支出金額</th><th class="border px-2 py-1">報價要求</th><th class="border px-2 py-1">批核人士 (申請→批→再確認)</th></tr></thead>
               <tbody>
                 <tr><td class="border px-2 py-1">豁免名單 ≤$2,000 或其他 ≤$500</td><td class="border px-2 py-1">無須報價</td><td class="border px-2 py-1">各副主席批核</td></tr>
-                <tr class="bg-amber-50"><td class="border px-2 py-1">豁免> $2,000 或其他 >$500 且 ≤$5,000</td><td class="border px-2 py-1">1個口頭報價 (附件3)</td><td class="border px-2 py-1">各副主席推薦 → 主席 何家聰批核</td></tr>
-                <tr><td class="border px-2 py-1">$5,001-$30,000</td><td class="border px-2 py-1">2個口頭報價</td><td class="border px-2 py-1">主席推薦 → 助理地域總監 高家豪認可 → 副地域總監 區子君批核</td></tr>
+                <tr class="bg-amber-50"><td class="border px-2 py-1">豁免> $2,000 或其他 >$500 且 ≤$5,000</td><td class="border px-2 py-1">1個口頭報價 (附件3)</td><td class="border px-2 py-1">各副主席推薦 → 主席批核</td></tr>
+                <tr><td class="border px-2 py-1">$5,001-$30,000</td><td class="border px-2 py-1">2個口頭報價</td><td class="border px-2 py-1">主席推薦 → 助理地域總監(活動)認可 → 副地域總監(活動與訓練)批核</td></tr>
                 <tr class="bg-slate-50"><td class="border px-2 py-1">$30,001-$100,000</td><td class="border px-2 py-1">2個書面報價 (附件4)</td><td class="border px-2 py-1">主席推薦 → 助理地域總監認可 → 副地域總監批核</td></tr>
                 <tr><td class="border px-2 py-1">$10,001-$300,000</td><td class="border px-2 py-1">3個書面報價</td><td class="border px-2 py-1">主席推薦 → 助理地域總監認可 → 副地域總監批核</td></tr>
                 <tr class="bg-slate-50"><td class="border px-2 py-1">$300,001-$1,000,000</td><td class="border px-2 py-1">5個書面報價</td><td class="border px-2 py-1">主席推薦 → 助理+副地域總監認可 → 地域總監批核</td></tr>
@@ -3422,6 +4195,7 @@ class ScoutEventApp{
     const raw=this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
     // Normalize
     return {
+      staff_source: raw.staff_source||null,
       org_chart:(raw.org_chart||[]).map((n,i)=>({id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:this.parseGroupFromLevel(n.level)||n.group||'未分組',title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''})),
       contacts:(raw.contacts||[]).map((c,i)=>({id:c.id||'contact_'+i,name:c.name||'',role_title:c.role_title||c.role||'',group_name:c.group_name||c.group||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'})),
       job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:j.group||'未分組',duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
@@ -3550,7 +4324,7 @@ class ScoutEventApp{
   isExecViceOrChair(){
     const role=this.currentUser?.role;
     const group=this.currentUser?.group_name||'';
-    // exec vice chair = 羅雅雯 in 行政組, or any vice_chair in 行政組 + chairpersons
+    // exec vice chair = 袁可秀 in 籌委會, or any vice_chair in 行政組 + chairpersons
     return ['super_admin','admin','chairperson','advisor'].includes(role) || (role==='vice_chairperson' && group.includes('行政')) || role==='super_admin';
   }
   openOrgNodeForm(groupName='', editId=null, parentId=null){
@@ -3563,7 +4337,7 @@ class ScoutEventApp{
       <input type="hidden" id="org-form-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">所屬組別 *</label><input id="org-group" value="${escapeHtml(existing?.group||groupName||'')}" placeholder="例如 主題節目組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="grid grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">職級 Level *</label><select id="org-level-num" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="2" ${existing?.level_num===2?'selected':''}>Level 2 顧問/主席</option><option value="3" ${existing?.level_num===3?'selected':''}>Level 3 副主席</option><option value="4" ${!existing||existing?.level_num===4?'selected':''}>Level 4 總主任</option><option value="5" ${existing?.level_num===5?'selected':''}>Level 5 主任</option><option value="6" ${existing?.level_num===6?'selected':''}>Level 6 工作人員</option></select></div><div><label class="text-[11px] font-bold">職銜 *</label><input id="org-title" value="${escapeHtml(existing?.title||'')}" placeholder="例如 總主任（主題節目）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
-      <div><label class="text-[11px] font-bold">人名 (多人名用 / 分隔)</label><input id="org-names" value="${escapeHtml(existing?.names||'')}" placeholder="例如 簡正豪 / 仇紹謙" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div><label class="text-[11px] font-bold">人名 (多人名用 / 分隔)</label><input id="org-names" value="${escapeHtml(existing?.names||'')}" placeholder="例如 周恒晉 / 仇紹謙" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div><label class="text-[11px] font-bold">職務描述</label><textarea id="org-desc" rows="3" placeholder="職務大綱..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.desc||'')}</textarea></div>
       <div><label class="text-[11px] font-bold">上級崗位 ID (可空，樹形關聯)</label><input id="org-parent-id" value="${escapeHtml(existing?.parent_id||parentId||'')}" placeholder="上級節點 ID，空為頂級" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="text-[10px] text-slate-500">行政副主席、執行副主席、主席可修改全部；各副主席可新增自己組別下崗位</div>
@@ -3619,12 +4393,16 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="flex flex-wrap gap-2">
+          <button onclick="app.syncStaffFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新名單 (Drive)</button>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleStaffExcelUpload(this.files[0])"></label>
           <button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>單欄新增</button>
           <button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 CSV/JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>
           <button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
           <input id="staff-search" placeholder="搜尋姓名/組別/電話" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
+        ${(data.staff_source)?this.driveSyncNotice():''}
+        ${(data.staff_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組更新。此檔為架構圖，建議另設一個「聯絡名單」扁平分頁（姓名/職銜/組別/電話）即可「同步最新」自動讀取。</div>`:''}
         <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th><th class="px-3 py-2 text-right">操作</th></tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>
@@ -3698,10 +4476,10 @@ class ScoutEventApp{
   downloadStaffTemplate(type){
     let csv='', filename='';
     if(type==='contacts'){
-      csv='name,role_title,group_name,contact,job_desc,email,squad\n陳子明,節目主任,主題節目組,91234567,遊戲攤位執行,chan@example.com,紅隊\n李小華,總主任,會操及典禮組,92345678,會操統籌,lee@example.com,\n';
+      csv='name,role_title,group_name,contact,job_desc,email,squad\n朱家聰,主席,籌委會,,全域統籌與會議主持,chair@isd.local,\n袁可秀,執行副主席,籌委會,,行政、秘書處與財政審批,execvp@isd.local,\n';
       filename='staff_contacts_template.csv';
     }else if(type==='org'){
-      csv='group,level_num,title,names,desc,parent_id\n主題節目組,3,副主席,簡正豪,統籌攤位遊戲、遊戲卡、樂隊,\n主題節目組,4,總主任（主題節目）,仇紹謙,帶領5位節目主任,\n主題節目組,5,節目主任 (1),何令勤,執行遊戲攤位與挑戰站,org_xxxx\n';
+      csv='group,level_num,title,names,desc,parent_id\n主題節目組,3,副主席,周恒晉,統籌攤位遊戲、遊戲卡、樂隊,\n主題節目組,4,總主任（主題節目）,仇紹謙,帶領5位節目主任,\n主題節目組,5,節目主任 (1),何令勤,執行遊戲攤位與挑戰站,org_xxxx\n';
       filename='staff_org_template.csv';
     }else{
       csv='group,duty\n行政組,1. 擬訂財政指引及會計程序；\\n2. 開設活動檔案；\\n3. 統籌保險及秘書處\n會操及典禮組,1. 擬訂會操及典禮流程；\\n2. 統籌優異旅團獎勵\n';
@@ -3878,7 +4656,7 @@ class ScoutEventApp{
   }
 
   /* ===================== Meeting Enhanced Functions ===================== */
-  isAdmin(){return ['super_admin','advisor','admin','chairperson'].includes(this.currentUser?.role);}
+  isAdmin(){return ['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser?.role);}
   isDirectorOrAbove(){const lvl=ROLE_HIERARCHY[this.currentUser?.role]||0; return lvl>=30;}
   canUploadGroup(){const lvl=ROLE_HIERARCHY[this.currentUser?.role]||0; return lvl>=40;} // general_director up
   getMeetingsRaw(){return this.eventData['meetings']||[];}
@@ -4404,10 +5182,26 @@ class ScoutEventApp{
   removeTempAttachment(fileId){/* for form */ }
 
   /* ===== Users & Others (simplified) ===== */
-  getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){list=[{user_id:'sheep',name:'超級管理員',email:'sheep',role:'super_admin',group_name:'行政組',contact:'',password:'0728',status:'active',can_tick:true},{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'何家聰',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; localStorage.setItem(key,JSON.stringify(list));} return list;}
+  getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){ if(this.isDemoEvent()){ list=[{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; } else { list=[]; } localStorage.setItem(key,JSON.stringify(list)); } return list;}
   setLocalUsers(l){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
-  async loadUsers(){let list=[]; if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:u.role,group_name:u.group_name||u.branch,contact:u.contact||'',password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); this.usersList=list; this.renderUsers();}
-  renderUsers(){const container=document.getElementById('users-container'); if(!container) return; if(!this.usersList.length){container.innerHTML='<p class="text-xs text-slate-400">無用戶</p>'; return;} container.innerHTML=this.usersList.map(u=>`<div class="border p-3 rounded-xl flex justify-between"><div><b>${escapeHtml(u.name)}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')}</div></div><div class="flex gap-1"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button></div></div>`).join('');}
+  async loadUsers(){let list=[]; if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:u.role,group_name:u.group_name||u.branch,job_title:u.job_title||'',contact:u.contact||'',perm_see:parsePerm(u.perm_see),perm_edit:parsePerm(u.perm_edit),password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); this.usersList=list; this.renderUsers();}
+  async loadApprovalPermissions(){ this.approvalPerms=[]; if(!this.mockMode && this.gasUrl){ try{ const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getApprovalPermissions',api_key:this.apiKey})}); const j=await res.json(); if(j && j.success && Array.isArray(j.permissions)) this.approvalPerms=j.permissions; }catch(e){} } return this.approvalPerms; }
+  // 某用戶在某批核範疇是否有權：優先看批核權限表，無紀錄則回退角色預設
+  canApproveArea(area, user){
+    user=user||this.currentUser;
+    if(!user) return false;
+    const role=user.role||'', lvl=ROLE_HIERARCHY[role]||0, group=user.group_name||'';
+    if(['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(role)) return true; // 管理層全範疇
+    // 批核權限表有明確紀錄 → 以表為準
+    const rec=this.approvalPerms.find(p=>p.user_id===user.user_id);
+    if(rec){ return !!rec[area]; }
+    // 回退角色預設
+    if(area==='finance') return lvl>=60;
+    if(area==='supplies'||area==='vehicle') return role==='vice_chairperson' && (group.includes('協調')||group.includes('行政'));
+    if(area==='meals') return (role==='vice_chairperson'||role==='general_director'||role==='director') && (group.includes('膳食')||group.includes('協調')||group.includes('行政'));
+    return false;
+  }
+  renderUsers(){const container=document.getElementById('users-container'); if(!container) return; if(!this.usersList.length){container.innerHTML='<p class="text-xs text-slate-400">無用戶</p>'; return;} container.innerHTML=this.usersList.map(u=>`<div class="border p-3 rounded-xl flex justify-between"><div><b>${escapeHtml(u.name)}</b> ${u.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full border">${escapeHtml(u.job_title)}</span>`:''}<span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')} | 帳號 ${escapeHtml(u.user_id||'')}</div></div><div class="flex gap-1"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button></div></div>`).join('');}
   openUserFormModal(){document.getElementById('u-form-mode').value='create'; document.getElementById('u-form-original-id').value=''; document.getElementById('u-ymis').value=''; document.getElementById('u-name').value=''; this.populateUserRoleSelect('staff'); document.getElementById('modal-user').classList.remove('hidden');}
   // 上級可改下級權限：最多可設定到與自己相同的權限 (super_admin 例外可設全部)
   assignableRoles(){ if(!this.currentUser) return []; const myLv=this.roleLevel(this.currentUser.role); return Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public' && ROLE_HIERARCHY[r]<=myLv); }
@@ -4419,17 +5213,60 @@ class ScoutEventApp{
   }
   editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('u-form-mode').value='edit'; document.getElementById('u-form-original-id').value=u.user_id; document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name; document.getElementById('u-group').value=u.group_name||''; document.getElementById('u-contact').value=u.contact||''; document.getElementById('u-email').value=u.email||''; this.populateUserRoleSelect(u.role||'staff'); document.getElementById('modal-user').classList.remove('hidden');}
   submitUserForm(e){e.preventDefault(); const uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!uid||!name) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } let list=this.getLocalUsers(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:'1234',status:'active',can_tick:false}); this.setLocalUsers(list); this.closeModal('modal-user'); showToast('已保存','success'); this.loadUsers();}
-  downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n00820001,陳子明,chan@example.com,staff,主題節目組,91234567,123456,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
+  downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n00820001,朱家聰,chair@isd.local,chairperson,籌委會,,123456,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
   handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請貼上JSON','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('JSON錯誤','error');}}
   confirmBulkCreate(){if(!this.bulkPending.length){showToast('無資料','warning'); return;} let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ list.push({user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,password:r.password||'1234',status:'active',can_tick:r.can_tick}); added++; } }); this.setLocalUsers(list); this.closeModal('modal-bulk'); showToast(`批量完成 成功${added}筆`,'success'); this.loadUsers();}
   applyBannerConfig(){const t=this.systemConfig.bannerText; document.getElementById('banner-meeting-text').textContent=t;}
   updateSaveBar(){const bar=document.getElementById('saveBar'); const c=this.pendingChanges.length; if(c>0){bar.classList.add('visible'); document.getElementById('pendingText').textContent=`${c} 項未保存`;} else bar.classList.remove('visible');}
   discardChanges(){this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); this.updateSaveBar();}
   async saveChanges(){if(!this.pendingChanges.length){showToast('無變更','warning'); return;} const overlay=document.getElementById('savingOverlay'); overlay.classList.add('active'); await new Promise(r=>setTimeout(r,800)); this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); overlay.classList.remove('active'); this.updateSaveBar(); showToast('已保存','success');}
-  submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value; const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd); if(id==='sheep'&&pwd==='0728'){this.currentUser={user_id:'sheep',name:'超級管理員',role:'super_admin',group_name:'行政組'}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 超管','success'); if(this.currentEvent) this.showDashboard(); return;} if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;} showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');}
-  demoLogin(uid){if(!this.mockMode){showToast('示範登入僅限 Mock 模式','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>u.user_id===uid)||{user_id:uid,name:'示範帳戶',role:'staff',group_name:'籌委會'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
-  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=this.currentUser.role.toUpperCase(); document.getElementById('logout-btn').classList.remove('hidden'); document.getElementById('login-btn-text').textContent='已登入'; if(['super_admin','advisor','admin','chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); setTimeout(()=>this.checkAndShowNotifications(), 500);}
-  logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('logout-btn').classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
+  async submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value;
+    // 正式連線 (GAS) 模式：交由後端驗證（超管帳密只存在 SCRIPT 內，前端不外露）
+    if(!this.mockMode && this.gasUrl){
+      try{
+        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'login',user_id:id,password:pwd})});
+        const j=await res.json();
+        if(j && j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:j.user.role,group_name:j.user.group_name,job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||''),'success'); if(this.currentEvent) this.showDashboard(); return; }
+        showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤'),'error'); return;
+      }catch(err){ showToast('無法連線後端：'+err.message,'error'); return; }
+    }
+    // Mock 模式：本地示範帳戶（不含超管，超管只走後端 SCRIPT）
+    const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd);
+    if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name,job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
+    showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
+  }
+  demoLogin(uid){if(!this.mockMode || !this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>u.user_id===uid)||{user_id:uid,name:'示範帳戶',role:'staff',group_name:'籌委會'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
+  openChangePwdModal(){if(!this.currentUser){ showToast('請先登入','warning'); return; } ['cp-old','cp-new','cp-new2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); document.getElementById('modal-changepwd').classList.remove('hidden');}
+  async submitChangePassword(e){
+    e.preventDefault();
+    const oldPwd=document.getElementById('cp-old').value;
+    const newPwd=document.getElementById('cp-new').value;
+    const newPwd2=document.getElementById('cp-new2').value;
+    if(!oldPwd||!newPwd){ showToast('請填寫舊密碼及新密碼','error'); return; }
+    if(newPwd!==newPwd2){ showToast('兩次新密碼不一致','error'); return; }
+    if(newPwd.length<4){ showToast('新密碼至少 4 個字元','error'); return; }
+    const uid=this.currentUser?.user_id;
+    if(!this.mockMode && this.gasUrl){
+      try{
+        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'changePassword',api_key:this.apiKey,user_id:uid,old_password:oldPwd,new_password:newPwd})});
+        const j=await res.json();
+        if(j&&j.success){ this.closeModal('modal-changepwd'); showToast('密碼已更新','success'); }
+        else showToast('修改失敗：'+(j&&j.error||'未知錯誤'),'error');
+      }catch(err){ showToast('無法連線後端：'+err.message,'error'); }
+      return;
+    }
+    // Mock 模式：更新本地示範帳戶
+    const list=this.getLocalUsers();
+    const u=list.find(x=>x.user_id===uid);
+    if(!u){ showToast('找不到帳戶','error'); return; }
+    if(u.password && u.password!==oldPwd){ showToast('舊密碼錯誤','error'); return; }
+    u.password=newPwd;
+    this.setLocalUsers(list);
+    this.closeModal('modal-changepwd');
+    showToast('密碼已更新（示範）','success');
+  }
+  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=this.currentUser.role.toUpperCase(); document.getElementById('logout-btn').classList.remove('hidden'); document.getElementById('changepwd-btn').classList.remove('hidden'); document.getElementById('login-btn-text').textContent='已登入'; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); setTimeout(()=>this.checkAndShowNotifications(), 500);}
+  logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('logout-btn').classList.add('hidden'); const cpb=document.getElementById('changepwd-btn'); if(cpb) cpb.classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
   openAddRecordModal(type){document.getElementById('record-modal-title').textContent='新增紀錄'; document.getElementById('record-form-fields').innerHTML=`<input type="hidden" id="form-module-name" value="${type}"><div><label class="text-xs font-bold">標題</label><input id="f_title" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">組別</label><input id="f_group" value="主題節目組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">說明</label><textarea id="f_desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea></div>`; document.getElementById('modal-record').classList.remove('hidden');}
   submitRecordForm(e){e.preventDefault(); const mod=document.getElementById('form-module-name').value; const title=document.getElementById('f_title').value; const group=document.getElementById('f_group').value; const desc=document.getElementById('f_desc').value; this.pendingChanges.push({module:mod,title,group,desc}); localStorage.setItem(LS.pending(this.currentEvent?.event_id||'global'),JSON.stringify(this.pendingChanges)); this.updateSaveBar(); this.closeModal('modal-record'); showToast('已提交 (全前端)','success'); if(this.currentModule) this.openModule(this.currentModule);}
   sendMeetingEmails(){if(!confirm('發送會議提醒 Email？')) return; showToast('已發送 (Mock)','success');}
@@ -5307,10 +6144,17 @@ class ScoutEventApp{
     const container=document.getElementById('module-content');
     const data=this.getAdminGroupData();
     const canUpload=this.canUploadDocument()||this.isAdmin();
+    const participants=this.getParticipantsData();
+    const pSrc=this.eventData['participants_source']||{};
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>🏢 行政組 (完全取代舊手冊行政組頁面)：</b><br>舊版有活動通告、報名表、急救申請、膳食安排、參加旅團名單，現全部整合至此卡片，公開可看，僅修改需登入，部門間溝通更完善</div>
         <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 上傳文件</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
+        <div class="bg-white border rounded-xl p-4">
+          <div class="flex justify-between items-center mb-2"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>參加旅團名單 (${participants.length})</h4><div class="flex gap-2 flex-wrap"><button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer">上傳 Excel<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleParticipantsExcelUpload(this.files[0])"></label>`:''}<button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載欄位範本 CSV</button></div></div>
+          ${(pSrc.sheet_id||pSrc.drive_file_id)?`<div class="text-[10px] text-slate-500 mb-2">來源：「${escapeHtml(pSrc.name||'參加旅團名單')}」由行政組更新，可一鍵／自動同步。${this.driveSyncNotice()}</div>`:'<div class="text-[10px] text-slate-400 mb-2">尚未設定名單來源（participants_source）。行政組提供 Google Sheet 後即可同步。</div>'}
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.docs.map(d=>`
           <div class="border rounded-xl p-4 bg-white space-y-2">
             <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
@@ -5486,7 +6330,8 @@ class ScoutEventApp{
   renderScheduleModule(){
     const container=document.getElementById('module-content');
     if(!this.scheduleSubTab) this.scheduleSubTab='overall';
-    const data=this.eventData['schedule']||[];
+    const data=this.getScheduleData();
+    const schSrc=this.eventData['schedule_source']||{};
     // ISD typical run down - 上午攤位、下午儀式 (2025 實際流程)；僅模擬示範活動顯示
     const isdRunDown=this.isDemoEvent()?[
       {time:'07:45 - 08:30', location:'大操場 / 有蓋操場', program:'會操及頒獎禮場地設置劃位，各功能組別場地佈置', groups:{'協調組':'場地佈置、物資運送','步操及典禮組':'步操報到處 set up, 樂隊報到','節目組':'到達會場及拿物資','服務組':'到達會場及拿物資','行政組':'行政組 set up、運作'}},
@@ -5502,9 +6347,15 @@ class ScoutEventApp{
     const isAdmin=this.isAdmin();
     container.innerHTML=`
       <div class="space-y-4">
+        ${(schSrc.sheet_id||schSrc.drive_file_id)?this.driveSyncNotice():''}
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed">
-          <b>📅 ISD Run Down（2025 實際流程：上午攤位、下午儀式）：</b><br>
-          ISD 當天流程：07:45 場地設置 → 08:30 報到/攤位佈置 → 10:00 上午主題攤位節目 → 12:30 午膳 → 14:45 優異旅團頒獎 → 16:00 會操檢閱及頒獎 → 16:50 拍照 → 17:00 茶聚 → 拆卸。下方為詳細工作人員日程交叉表 (時間 x 組別)，方便各組一目了然。
+          <b>📅 ISD Run Down：</b>下方為詳細工作人員日程交叉表 (時間 x 組別)，方便各組一目了然。
+          ${(schSrc.sheet_id||schSrc.drive_file_id)?`<div class="mt-1 text-teal-800">資料來源：「${escapeHtml(schSrc.name||'日程表')}」（由秘書處更新），可一鍵同步或自動同步。</div>`:''}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="app.syncScheduleFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新日程 (Drive)</button>
+          ${((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.downloadScheduleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載欄位範本 CSV</button>
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchScheduleTab('overall')" class="tab-btn ${this.scheduleSubTab==='overall'?'active':''}">總表 (參加者)</button>

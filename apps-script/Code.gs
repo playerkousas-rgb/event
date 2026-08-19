@@ -48,6 +48,7 @@ const ROLE_HIERARCHY = {
   'advisor': 80,
   'admin': 80,
   'chairperson': 80,
+  'executive_vice_chairperson': 70,
   'vice_chairperson': 60,
   'general_director': 40,
   'director': 30,
@@ -59,10 +60,45 @@ function getRoleLevel(r) {
   return ROLE_HIERARCHY[r] !== undefined ? ROLE_HIERARCHY[r] : 0;
 }
 
+// 開戶表職位層級：中文下拉選項 → 系統角色
+const ROLE_LABELS_CN = {
+  '主席': 'chairperson',
+  '顧問': 'advisor',
+  '管理員': 'admin',
+  '執行副主席': 'executive_vice_chairperson',
+  '副主席': 'vice_chairperson',
+  '總主任': 'general_director',
+  '主任': 'director',
+  '工作人員': 'staff'
+};
+
+// 批核範疇（頁）：可批核的業務領域
+const APPROVAL_AREAS = ['supplies', 'vehicle', 'meals', 'finance'];
+
+function isYes(v) {
+  if (v === true || v === 1 || v === '1') return true;
+  const s = String(v || '').trim().toLowerCase();
+  return ['y', 'yes', '是', '✓', 'true', '批', 'v'].indexOf(s) !== -1;
+}
+function yn(b) { return b ? 'Y' : ''; }
+
 function initializeSheets() {
   const ss = getSheet();
   ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at']);
-  ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'password_hash', 'status', 'created_at']);
+  ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
+  // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
+  ensureSheet(ss, 'Account_Setup', ['name', 'role', 'job_title', 'group_name', 'user_id', 'email', 'contact']);
+  // 批核權限表：供超管直接填「誰有哪個批核範疇的權」（supplies/vehicle/meals/finance）
+  ensureSheet(ss, 'Approval_Permissions', ['user_id', 'name', 'group_name', 'supplies', 'vehicle', 'meals', 'finance']);
+  const apSheet = ss.getSheetByName('Approval_Permissions');
+  if (apSheet) apSheet.getRange('A1').setNote(
+    '批核權限表：每行一位批核人。supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務。\n' +
+    '有權的欄位填「Y」或「是」；無權留空。修改後在選單「童軍活動管理 → 同步批核權限」或前端「重新整理」即生效。\n' +
+    '管理層（主席/顧問/管理員/執行副主席/超管）預設全範疇，不在此表亦有效。'
+  );
+  // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
+  ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  setupAccountSetupSheet(ss);
   ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at']);
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
   ensureSheet(ss, 'Documents', ['doc_id', 'event_id', 'title', 'category', 'file_url', 'uploaded_by', 'date', 'created_at']);
@@ -86,6 +122,272 @@ function ensureSheet(ss, sheetName, headers) {
   }
 }
 
+// 非破壞性補欄位：只會把缺失的欄位加到最右側，不刪除/覆蓋既有資料
+function ensureColumns(sheet, headers) {
+  if (!sheet) return;
+  let lastCol = sheet.getLastColumn();
+  let existing = [];
+  if (lastCol >= 1) existing = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (v) { return String(v); });
+  headers.forEach(function (h) {
+    if (existing.indexOf(h) === -1) {
+      sheet.getRange(1, lastCol + 1).setValue(h);
+      lastCol++;
+      existing.push(h);
+    }
+  });
+}
+
+// 開戶表：加上「職位層級」下拉選單 + 使用說明
+function setupAccountSetupSheet(ss) {
+  const sheet = ss.getSheetByName('Account_Setup');
+  if (!sheet) return;
+  const labels = Object.keys(ROLE_LABELS_CN);
+  const dv = SpreadsheetApp.newDataValidation().requireValueInList(labels, true).setAllowInvalid(true).build();
+  sheet.getRange(2, 2, 100, 1).setDataValidation(dv); // B 欄 (role) 下拉
+  sheet.getRange('A1').setNote(
+    '開戶表：從第 2 行起逐行填寫 —— 名字(name)、職位層級(role，下拉選)、職稱(job_title)、組別(group_name)、帳號(user_id 可留空，系統自動產生)、電郵(email)、電話(contact)。\n' +
+    '填好後在選單「童軍活動管理 → 開戶（同步帳戶）」執行，即開戶完成。\n' +
+    '預設密碼為 1234，用戶登入後可在 APP 內自行修改密碼。'
+  );
+}
+
+// 開戶：把 Account_Setup 的內容同步成 Users（預設密碼 1234；已存在則更新資料但保留其已改密碼）
+function syncAccountsFromSetup() {
+  const ss = getSheet();
+  const setup = ss.getSheetByName('Account_Setup');
+  if (!setup || setup.getLastRow() < 2) return { success: false, error: 'Account_Setup 沒有資料（請先填名字等欄位）' };
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['job_title', 'contact']);
+
+  const sRows = setup.getDataRange().getValues();
+  const sHead = sRows[0].map(String);
+  const scol = function (h) { return sHead.indexOf(h); };
+  const iName = scol('name'), iRole = scol('role'), iJob = scol('job_title'), iGrp = scol('group_name'), iId = scol('user_id'), iEmail = scol('email'), iContact = scol('contact');
+
+  const uRows = users.getDataRange().getValues();
+  const uHead = uRows[0].map(String);
+  const ucol = function (h) { return uHead.indexOf(h); };
+  const uName = ucol('name'), uRole = ucol('role'), uJob = ucol('job_title'), uGrp = ucol('group_name'), uId = ucol('user_id'), uEmail = ucol('email'), uContact = ucol('contact'), uPass = ucol('password_hash'), uStatus = ucol('status'), uCreated = ucol('created_at');
+
+  const existing = {};
+  for (let i = 1; i < uRows.length; i++) { existing[String(uRows[i][uId])] = i + 1; }
+
+  let created = 0, updated = 0;
+  for (let i = 1; i < sRows.length; i++) {
+    const name = sRows[i][iName];
+    if (!name || String(name).trim() === '') continue;
+    const nameStr = String(name).trim();
+    const roleRaw = sRows[i][iRole] ? String(sRows[i][iRole]).trim() : '';
+    const role = ROLE_LABELS_CN[roleRaw] || roleRaw || 'staff';
+    const job = sRows[i][iJob] || '';
+    const grp = sRows[i][iGrp] || '';
+    const email = sRows[i][iEmail] || '';
+    const contact = sRows[i][iContact] || '';
+    let uid = sRows[i][iId];
+    if (!uid || String(uid).trim() === '') {
+      uid = 'staff_' + (10000 + i);
+      setup.getRange(i + 1, iId + 1).setValue(uid);
+    }
+    uid = String(uid).trim();
+
+    if (existing[uid]) {
+      const r = existing[uid];
+      users.getRange(r, uName + 1).setValue(nameStr);
+      users.getRange(r, uRole + 1).setValue(role);
+      users.getRange(r, uJob + 1).setValue(job);
+      users.getRange(r, uGrp + 1).setValue(grp);
+      users.getRange(r, uEmail + 1).setValue(email);
+      users.getRange(r, uContact + 1).setValue(contact);
+      updated++;
+    } else {
+      const rowVals = uHead.map(function () { return ''; });
+      rowVals[uId] = uid;
+      rowVals[uName] = nameStr;
+      rowVals[uRole] = role;
+      rowVals[uJob] = job;
+      rowVals[uGrp] = grp;
+      rowVals[uEmail] = email;
+      rowVals[uContact] = contact;
+      rowVals[uPass] = hashPassword('1234');
+      rowVals[uStatus] = 'active';
+      rowVals[uCreated] = new Date();
+      users.appendRow(rowVals);
+      existing[uid] = users.getLastRow();
+      created++;
+    }
+  }
+  return { success: true, created: created, updated: updated, message: '開戶完成：新增 ' + created + ' 人，更新 ' + updated + ' 人（預設密碼 1234，登入後可自行修改）' };
+}
+
+// 修改密碼（登入用戶自行修改）
+function changePassword(data) {
+  const userId = (data.user_id || '').trim();
+  const oldPwd = data.old_password || '';
+  const newPwd = data.new_password || '';
+  if (!userId || !newPwd) return { success: false, error: '參數不足' };
+  if (String(newPwd).length < 4) return { success: false, error: '新密碼至少 4 個字元' };
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet) return { success: false, error: 'Users sheet missing' };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const idIdx = headers.indexOf('user_id');
+  const emailIdx = headers.indexOf('email');
+  const passIdx = headers.indexOf('password_hash');
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][idIdx]) === userId || String(rows[i][emailIdx]) === userId) {
+      const stored = rows[i][passIdx];
+      if (stored && stored !== hashPassword(oldPwd)) return { success: false, error: '舊密碼錯誤' };
+      sheet.getRange(i + 1, passIdx + 1).setValue(hashPassword(newPwd));
+      return { success: true, message: '密碼已更新' };
+    }
+  }
+  return { success: false, error: '找不到帳戶' };
+}
+
+// 前端開戶（總主任以上，只能幫自己組別開戶；預設密碼 1234）
+function createAccount(data) {
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  const name = (data.name || '').trim();
+  if (!name) return { success: false, error: '請填寫名字' };
+  const role = data.role || 'staff';
+  const group = data.group_name || '';
+  const job = data.job_title || '';
+  const email = (data.email || '').trim();
+  const contact = data.contact || '';
+  let uid = (data.user_id || '').trim();
+  if (!uid) uid = 'staff_' + Date.now();
+
+  // 輕量防呆：開戶者只能是總主任以上，且只能開自己組別（管理層/執行副主席/超管可跨組）
+  const byRole = data.by_role || '';
+  const byGroup = data.by_group || '';
+  const byLvl = ROLE_HIERARCHY[byRole] !== undefined ? ROLE_HIERARCHY[byRole] : 0;
+  const CROSS_GROUP_ROLES = ['admin', 'super_admin', 'executive_vice_chairperson'];
+  if (byRole && byLvl < 40 && !CROSS_GROUP_ROLES.includes(byRole)) {
+    return { success: false, error: '只有總主任或以上可開戶' };
+  }
+  if (byRole && !CROSS_GROUP_ROLES.includes(byRole) && byGroup && group !== byGroup) {
+    return { success: false, error: '只能為自己組別開戶' };
+  }
+
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const uId = col('user_id'), uEmail = col('email');
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][uId]) === uid) return { success: false, error: '帳號已存在：' + uid };
+    if (email && String(rows[i][uEmail]) === email) return { success: false, error: '電郵已存在：' + email };
+  }
+  const rowVals = headers.map(function () { return ''; });
+  rowVals[uId] = uid;
+  rowVals[col('name')] = name;
+  rowVals[col('role')] = role;
+  rowVals[col('job_title')] = job;
+  rowVals[col('group_name')] = group;
+  rowVals[uEmail] = email;
+  rowVals[col('contact')] = contact;
+  rowVals[col('password_hash')] = hashPassword('1234');
+  rowVals[col('status')] = 'active';
+  rowVals[col('created_at')] = new Date();
+  users.appendRow(rowVals);
+  return { success: true, id: uid, message: '已開戶：' + name + '（帳號 ' + uid + '，密碼 1234）' };
+}
+
+// 儲存用戶權限（上級把「自己有的」看/管權授權給下級；perm_see / perm_edit 為卡片 ID 陣列）
+function saveUserPermissions(data) {
+  const userId = (data.user_id || '').trim();
+  if (!userId) return { success: false, error: '缺少 user_id' };
+  const permSee = Array.isArray(data.perm_see) ? data.perm_see : [];
+  const permEdit = Array.isArray(data.perm_edit) ? data.perm_edit : [];
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['perm_see', 'perm_edit']);
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const idIdx = headers.indexOf('user_id');
+  const seeIdx = headers.indexOf('perm_see');
+  const editIdx = headers.indexOf('perm_edit');
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][idIdx]) === userId) {
+      users.getRange(i + 1, seeIdx + 1).setValue(JSON.stringify(permSee));
+      users.getRange(i + 1, editIdx + 1).setValue(JSON.stringify(permEdit));
+      return { success: true, message: '已更新 ' + userId + ' 的權限' };
+    }
+  }
+  return { success: false, error: '找不到帳戶：' + userId };
+}
+
+// 讀取批核權限表
+function getApprovalPermissions() {
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Approval_Permissions');
+  if (!sheet || sheet.getLastRow() <= 1) return { success: true, permissions: [] };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const list = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const uid = r[col('user_id')];
+    if (!uid || String(uid).trim() === '') continue;
+    const item = { user_id: String(uid).trim(), name: r[col('name')] || '', group_name: r[col('group_name')] || '' };
+    APPROVAL_AREAS.forEach(function (a) { item[a] = isYes(r[col(a)]); });
+    list.push(item);
+  }
+  return { success: true, permissions: list };
+}
+
+// 儲存批核權限表（整批重寫）
+function saveApprovalPermissions(data) {
+  const permissions = Array.isArray(data.permissions) ? data.permissions : [];
+  const ss = getSheet();
+  let sheet = ss.getSheetByName('Approval_Permissions');
+  if (!sheet) {
+    sheet = ss.insertSheet('Approval_Permissions');
+    sheet.appendRow(['user_id', 'name', 'group_name', 'supplies', 'vehicle', 'meals', 'finance']);
+    sheet.getRange(1, 1, 1, 7).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  if (sheet.getLastRow() > 1) sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).clearContent();
+  permissions.forEach(function (p) {
+    sheet.appendRow([p.user_id || '', p.name || '', p.group_name || '', yn(p.supplies), yn(p.vehicle), yn(p.meals), yn(p.finance)]);
+  });
+  return { success: true, count: permissions.length };
+}
+
+// 列出所有用戶（不含密碼），供前端用戶管理
+function getAllUsers() {
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet || sheet.getLastRow() <= 1) return { success: true, users: [] };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const list = [];
+  for (let i = 1; i < rows.length; i++) {
+    const obj = {};
+    headers.forEach(function (h, idx) { obj[h] = rows[i][idx]; });
+    delete obj.password_hash;
+    list.push(obj);
+  }
+  return { success: true, users: list };
+}
+
+// 選單（在 Google Sheet 內手動執行）
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('童軍活動管理')
+    .addItem('初始化工作表', 'initializeSheets')
+    .addItem('開戶（同步 Account_Setup → Users）', 'syncAccountsFromSetup')
+    .addItem('同步批核權限（Approval_Permissions）', 'getApprovalPermissions')
+    .addItem('刷新 API Key', 'refreshApiKey')
+    .addToUi();
+}
+
 // 零精簡：完整寫入所有文件、完整人員、完整預算明細進 Google Sheet
 function seedInitialData() {
   const ss = getSheet();
@@ -99,12 +401,12 @@ function seedInitialData() {
   // 2. Users
   const uSheet = ss.getSheetByName('Users');
   if (uSheet.getLastRow() <= 1) {
-    uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
-    uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '籌委會', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'vice_chairperson', '行政組', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', '', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
+    uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '籌委會', '主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'vice_chairperson', '行政組', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
   }
   
   // 3. Meetings
@@ -117,38 +419,60 @@ function seedInitialData() {
     mSheet.appendRow(['m_next', 'isd_2026', '第4次籌備委員會議 (下次會議)', '2026-08-18 19:15', '各功能組別進度最後衝刺與物資點算', '主任或以上委員請準時出席百周年紀念大樓1704室。', '秘書處', new Date()]);
   }
   
-  // 4. Staff (零精簡：完整收錄所有總主任、副主席、節目主任)
+  // 4. Staff (零精簡：2026 真實組織架構圖 — 完整收錄所有顧問、主席、副主席、總主任、主任)
   const sSheet = ss.getSheetByName('Staff');
   if (sSheet.getLastRow() <= 1) {
-    sSheet.appendRow(['s_1', 'isd_2026', '黃偉安 / 何家騏', '顧問', '顧問團', '91111111', '審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作；與地域總監確認主禮嘉賓／主禮人，並就重要事務向籌委會主席提供指導性意見。', new Date()]);
-    sSheet.appendRow(['s_2', 'isd_2026', '朱家聰', '主席', '籌委會', '92222222', '主持籌備委員會所有會議；負責統籌活動一切有關事宜及確保順利進行；對外代表活動籌委會。', new Date()]);
-    sSheet.appendRow(['s_3', 'isd_2026', '袁可秀', '執行副主席', '行政組', '93333333', '協助主席統籌各組行政、秘書處、保險、財政指引及開支審批。', new Date()]);
-    sSheet.appendRow(['s_4', 'isd_2026', '張佳良', '副主席', '會操及典禮組', '94444444', '統籌會操流程、步操比賽後備日及頒獎典禮。', new Date()]);
-    sSheet.appendRow(['s_5', 'isd_2026', '梁文澧', '總主任（會操）', '會操及典禮組', '94222222', '統籌大操場會操項目及步操綵排。', new Date()]);
-    sSheet.appendRow(['s_6', 'isd_2026', '黃志樂', '步操統籌主任 / 會操司令員', '會操及典禮組', '94111111', '統籌步操比賽評審、步操訓練及擔任會操司令員。', new Date()]);
-    sSheet.appendRow(['s_7', 'isd_2026', '李懷恩', '副主席（典禮）', '會操及典禮組', '94333333', '統籌優異旅團頒獎、支部獎勵及嘉賓接待。', new Date()]);
-    sSheet.appendRow(['s_8', 'isd_2026', '周恒晉', '副主席', '主題節目組', '95555555', '統籌攤位遊戲、遊戲卡、樂隊及積極公民獎章工作坊。', new Date()]);
-    sSheet.appendRow(['s_9', 'isd_2026', '仇紹謙', '總主任（主題節目）', '主題節目組', '95111111', '帶領 5 位節目主任落實各項遊戲及活動執行。', new Date()]);
-    sSheet.appendRow(['s_10', 'isd_2026', '何令勤', '節目主任 (1)', '主題節目組', '95211111', '執行遊戲攤位與挑戰站。', new Date()]);
-    sSheet.appendRow(['s_11', 'isd_2026', '陳鋑羲', '節目主任 (2)', '主題節目組', '95222222', '執行遊戲攤位與挑戰站。', new Date()]);
-    sSheet.appendRow(['s_12', 'isd_2026', '張宏剛', '節目主任 (3)', '主題節目組', '95233333', '執行遊戲攤位與挑戰站。', new Date()]);
-    sSheet.appendRow(['s_13', 'isd_2026', '羅卓華', '節目主任 (4)', '主題節目組', '95244444', '統籌遊戲卡與印花換領。', new Date()]);
-    sSheet.appendRow(['s_14', 'isd_2026', '李庭甄', '節目主任 (5)', '主題節目組', '95255555', '統籌積極公民獎章系列工作坊。', new Date()]);
-    sSheet.appendRow(['s_15', 'isd_2026', '何嘉駿', '副主席', '品牌推廣組', '96666666', '統籌宣傳海報、場刊設計、社交媒體與活動攝錄。', new Date()]);
-    sSheet.appendRow(['s_16', 'isd_2026', '林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組', '96333333', '統籌活動當日錄影及專業拍照。', new Date()]);
+    const STAFF = [
+      ['黃偉安', '顧問', '顧問團'], ['何家騏', '顧問 / 危機處理主任', '顧問團 / 行政組'],
+      ['朱家聰', '主席', '籌委會'], ['袁可秀', '執行副主席', '籌委會'],
+      ['張佳良', '副主席（會操及典禮）', '會操及典禮組'], ['梁文澧', '總主任（會操）', '會操及典禮組'], ['黃志樂', '會操顧問', '會操及典禮組'],
+      ['李懷恩', '總主任（典禮）', '會操及典禮組'], ['黃凱琳', '典禮統籌主任', '會操及典禮組'], ['林雋逸', '優異旅團統籌主任', '會操及典禮組'], ['馮玉成', '獎勵統籌主任', '會操及典禮組'], ['范紫晴', '司儀統籌主任', '會操及典禮組'], ['林卓衡', '司儀統籌主任', '會操及典禮組'],
+      ['周恒晉', '副主席（主題節目）', '主題節目組'], ['仇紹謙', '總主任（主題節目）', '主題節目組'], ['何令勤', '節目主任 (1)', '主題節目組'], ['陳鋑羲', '節目主任 (2)', '主題節目組'], ['張宏剛', '節目主任 (3)', '主題節目組'], ['羅卓華', '節目主任 (4)', '主題節目組'], ['李庭甄', '節目主任 (5)', '主題節目組'],
+      ['何嘉駿', '副主席（品牌推廣）', '品牌推廣組'], ['陳鈞翰', '社交媒體主任', '品牌推廣組'], ['林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組'],
+      ['曾麗珊', '副主席（嘉賓接待）', '嘉賓接待組'], ['張嘉政', '總主任（嘉賓接待）', '嘉賓接待組'], ['黃培芳', '嘉賓接待主任', '嘉賓接待組'], ['張敬浩', '交通主任', '嘉賓接待組'], ['朱浩銘', '嘉賓支援主任', '嘉賓接待組'],
+      ['羅添駿', '副主席（協調）', '協調組'], ['鍾偉志', '總主任（協調）', '協調組'], ['馬一波', '場地佈置主任', '協調組'], ['吳卓藍', '膳食主任', '協調組'], ['郭慧敏', '後勤主任', '協調組'], ['施珍淇', '物資主任', '協調組'],
+      ['黃嘉恩', '總主任（協調）', '協調組'], ['布瀚文', '秩序主任', '協調組'], ['鄺逸俊', '交通管制主任', '協調組'], ['李思諭', '物流運輸主任', '協調組'], ['袁宇靖', '物流運輸主任', '協調組'],
+      ['黎姵伶', '副主席（服務及發展）', '服務及發展組'], ['李卓琪', '總主任（服務及發展）', '服務及發展組'], ['郭成威', '服務主任', '服務及發展組'], ['李婉顏', '機構聯絡主任', '服務及發展組'],
+      ['徐嘉皓', '副主席（行政）', '行政組'], ['文幹皓', '總主任（運作）', '行政組'], ['陳銘彥', '旅團報到主任', '行政組'], ['何仲康', '紀念品主任', '行政組'], ['莫穎民', '總主任（行政）', '行政組'], ['蔡天欣', '財政主任', '行政組']
+    ];
+    STAFF.forEach(function (p, i) {
+      sSheet.appendRow(['s_' + (i + 1), 'isd_2026', p[0], p[1], p[2], '', '', new Date()]);
+    });
   }
   
-  // 5. Documents (零精簡：完整收錄所有政策與通告)
+  // 5. Documents (零精簡：2026 真實通告與文件，file_url 指向 ISD 2026 Staff Drive)
   const dSheet = ss.getSheetByName('Documents');
   if (dSheet.getLastRow() <= 1) {
-    dSheet.appendRow(['d_1', 'isd_2026', '利益申報政策及收受利益指引 (附件一)', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
-    dSheet.appendRow(['d_2', 'isd_2026', '個人資料私隱保障政策', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
-    dSheet.appendRow(['d_3', 'isd_2026', '財務指引及會計程序 (含 $500/$2000 報價門檻)', '財務', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_4', 'isd_2026', '結算總表範本 (附件5 - 報銷憑單對照表)', '財務', '#', '財務組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_5', 'isd_2026', '報價比較表與口頭報價紀錄 (附件4)', '財務', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_6', 'isd_2026', '特別通告第XX/26號 (Scout for SDGs 主軸)', '通告', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_7', 'isd_2026', '籌備委員會委員提名通告 (HKIR/M/26/028)', '通告', '#', '助理地域總監(活動)', '2026-04-XX', new Date()]);
-    dSheet.appendRow(['d_8', 'isd_2026', '車輛通行證申請與警察學院場地佈置須知', '協調', '#', '協調組', '2026-08-05', new Date()]);
+    const DOCS = [
+      ['活動通告 sp12_26_isd2026.pdf', '通告', 'https://drive.google.com/file/d/1rmV3zqrBex803aiyjrf20QddudOBoTFf/view', '行政組', '2026-07-07'],
+      ['報名表格 sp12a_26_isd2026_enrollform.pdf', '表格', 'https://drive.google.com/file/d/1TsqPjL57LooYZ21OqP_dXjnt_L_Q0b1Q/view', '行政組', '2026-07-07'],
+      ['工作計劃及進度 V2.docx', '通告', 'https://drive.google.com/file/d/1OPRHxG3x_fLvpLDBEqmdb8dlsq0HuSe1/view', '秘書處', '2026-05-12'],
+      ['食物捐贈通告 (FoodDonation)', '通告', 'https://drive.google.com/file/d/1AXsmbK59MFz-ODLtZ-ysgvW2RcF8mu7j/view', '秘書處', '2026-07-24'],
+      ['食物捐贈表格 (FoodDonation_Form)', '表格', 'https://drive.google.com/file/d/1SuqR2x-Ws0F8zqcX9-tZKUbEndDbS7xJ/view', '秘書處', '2026-07-24'],
+      ['物資捐贈通告 (Goods Donating)', '通告', 'https://drive.google.com/file/d/1WbfGCy90Pkau6TLNg9J_DdohEqPzdknQ/view', '秘書處', '2026-07-24'],
+      ['物資捐贈表格 (Goods Donating_Form)', '表格', 'https://drive.google.com/file/d/1eLhBg1yJxo99hG-nUhL9kjtfR15KizxW/view', '秘書處', '2026-07-24'],
+      ['收受利益及申報政策 (pc132018c)', '合規政策', 'https://drive.google.com/file/d/1V-Kj7xIu8ow9ncVF9dJ6j680IEP9qHZl/view', '秘書處', '2026-03-29'],
+      ['收受利益及申報政策 (pc142018c)', '合規政策', 'https://drive.google.com/file/d/1w-u50e3cMpMf2SCAw-3BQfJ66l4qBFzy/view', '秘書處', '2026-03-29'],
+      ['財務指引及會計程序 ver 1', '財務', 'https://drive.google.com/file/d/1QNWNG1BnVab3oHlI7yvIK_2YMMSFV-p4/view', '行政組', '2026-04-27'],
+      ['附件1 - 報價要求', '財務', 'https://drive.google.com/file/d/176X1zGzH_k7DJzzuzE5fHkAr6GE3_IHm/view', '行政組', '2026-04-27'],
+      ['附件2 - 豁免商戶名單', '財務', 'https://drive.google.com/file/d/1Z_VqtQ1LjKGI7fFqRCvN9sI8XrmJLbL2/view', '行政組', '2026-03-29'],
+      ['附件3 - 口頭報價資料記錄', '財務', 'https://drive.google.com/file/d/1s5X9v7FJfbCZG1zDX5GX_yXpE2C_8BIq/view', '行政組', '2026-03-29'],
+      ['附件4 - 書面報價比較表', '財務', 'https://drive.google.com/file/d/1Qal9KVjgN54cb6GwxideH_lsRXJquVWy/view', '行政組', '2026-03-29'],
+      ['附件5 - 結算總表 (WORD)', '財務', 'https://drive.google.com/file/d/1FwpuK79mWDToX_p_csO_8Fg085lT0QkC/view', '行政組', '2026-03-29'],
+      ['附件5A - 結算總表 (autosum)', '財務', 'https://drive.google.com/file/d/16krtzQYD11b2cyL8h_Qdb0a8X4_wyDN-/view', '行政組', '2026-03-29'],
+      ['附件5B - 結算總表 (EXCEL)', '財務', 'https://drive.google.com/file/d/1boZYb4XxiZllAP_2sxxcdatiOQIZMfbJ/view', '行政組', '2026-03-29'],
+      ['附件6 - 四格印簽名位置', '財務', 'https://drive.google.com/file/d/19bmvieiDcnFBcQ6qPAGagN8UDXc3tAG2/view', '行政組', '2026-03-29'],
+      ['ISD2026 Budget.xlsx', '財務', 'https://drive.google.com/file/d/1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_/view', '行政組', '2026-08-16'],
+      ['ISD2026 Org Chart and Contact List', '名單', 'https://drive.google.com/file/d/1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp/view', '行政組', '2026-08-19'],
+      ['ISD2026 Site setup Quotation Request', '協調', 'https://drive.google.com/file/d/1ryQltDGazkf_l2qPPnxc6DmomfIlMu-x/view', '協調組', '2026-07-21'],
+      ['ISD2026 Cleaning Quotation request', '協調', 'https://drive.google.com/file/d/1n_vRIZ4X_NV3523r89hd8mODQpyNMvbL/view', '協調組', '2026-07-20'],
+      ['泊車證申請表格', '協調', 'https://drive.google.com/file/d/1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7/view', '協調組', '2026-07-20'],
+      ['ISD2026 攤位資料', '活動', 'https://drive.google.com/file/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle/view', '主題節目組', '2026-08-19'],
+      ['ISD2025 攤位資料（參考）', '活動', 'https://drive.google.com/file/d/179nQJYbzar3AqddmPf3cstWO65LT_gBM/view', '主題節目組', '2026-08-14']
+    ];
+    DOCS.forEach(function (p, i) {
+      dSheet.appendRow(['d_' + (i + 1), 'isd_2026', p[0], p[1], p[2], p[3], p[4], new Date()]);
+    });
   }
   
   // 6. Finance (零精簡：完整收錄所有收支明細與各組憑單)
@@ -245,6 +569,14 @@ function doPost(e) {
     if (action === 'login') return jsonResponse(handleLogin(data));
     else if (action === 'verifyEventPassword') return jsonResponse(verifyEventPassword(data));
     else if (action === 'saveRecord') return jsonResponse(saveRecord(data));
+    else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
+    else if (action === 'changePassword') return jsonResponse(changePassword(data));
+    else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
+    else if (action === 'createAccount') return jsonResponse(createAccount(data));
+    else if (action === 'saveUserPermissions') return jsonResponse(saveUserPermissions(data));
+    else if (action === 'getApprovalPermissions') return jsonResponse(getApprovalPermissions());
+    else if (action === 'saveApprovalPermissions') return jsonResponse(saveApprovalPermissions(data));
+    else if (action === 'syncAccountsFromSetup') return jsonResponse(syncAccountsFromSetup());
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
     else if (action === 'sendMeetingEmail') return jsonResponse(sendMeetingEmailNotification(data));
@@ -426,6 +758,33 @@ function saveRecord(data) {
   else sheet.appendRow(rowValues);
   
   return { success: true, id: recordId };
+}
+
+// 攤位總表：清空該活動現有攤位紀錄後，整批重寫（供節目組副主席上傳 Excel 後同步）
+function saveBooths(data) {
+  const eventId = data.event_id || 'isd_2026';
+  const booths = data.booths || [];
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Activities');
+  if (!sheet) return { success: false, error: 'Activities sheet not found' };
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const eventIdx = headers.indexOf('event_id');
+  if (eventIdx === -1) return { success: false, error: 'event_id column missing' };
+  // 刪除該活動既有攤位紀錄（type === 'booth' 的紀錄）
+  const rows = sheet.getDataRange().getValues();
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (rows[i][eventIdx] === eventId) sheet.deleteRow(i + 1);
+  }
+  const now = new Date();
+  booths.forEach(function (b, idx) {
+    const title = b.booth_name || b.booth_number || ('攤位 ' + (idx + 1));
+    const type = 'booth';
+    const location = b.location || '';
+    const description = b.description || b.theme || '';
+    const detailsJson = JSON.stringify(b);
+    sheet.appendRow(['booth_' + Date.now() + '_' + idx, eventId, title, type, location, description, detailsJson, now]);
+  });
+  return { success: true, count: booths.length };
 }
 
 function deleteRecord(data) {
