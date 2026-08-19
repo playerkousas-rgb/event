@@ -1318,10 +1318,12 @@ class ScoutEventApp{
         id:d.id||d.document_id||'doc_'+i,
         title:d.title||d.name||'未命名文件',
         category:d.category||'文件',
+        summary:d.summary||d.摘要||'',
         description:d.description||d.desc||'',
         file_name:d.file_name||d.fileName||'',
         file_url:d.file_url||d.url||'',
         file_data:d.file_data||d.data_url||'',
+        drive_id:d.drive_id||d.fileId||'',
         uploaded_by:d.uploaded_by||d.created_by||'',
         date:d.date||d.created_at||''
       }))};
@@ -1359,14 +1361,24 @@ class ScoutEventApp{
           <button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          ${filtered.map(d=>`
-            <div class="border rounded-xl p-4 bg-white space-y-2">
-              <div class="flex justify-between items-start gap-2"><div><b class="text-[13px]">${escapeHtml(d.title)}</b><div class="mt-1 flex gap-2 flex-wrap"><span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span>${d.file_name?`<span class="bg-sky-50 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200">${escapeHtml(d.file_name)}</span>`:''}</div></div><div class="flex gap-1">${canUpload?`<button onclick="app.openDocumentForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteDocument('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
-              <div class="text-[11px] text-slate-600 whitespace-pre-line">${escapeHtml(d.description||'')}</div>
+          ${filtered.map(d=>{
+            const driveId=this.docDriveId(d);
+            return `
+            <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col">
+              <div class="flex justify-between items-start gap-2"><div class="min-w-0"><b class="text-[13px]">${escapeHtml(d.title)}</b><div class="mt-1 flex gap-2 flex-wrap"><span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span>${d.file_name?`<span class="bg-sky-50 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200">${escapeHtml(d.file_name)}</span>`:''}</div></div><div class="flex gap-1 flex-shrink-0">${canUpload?`<button onclick="app.openDocumentForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteDocument('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
+              ${d.summary?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-slate-700 leading-relaxed"><b class="text-amber-800"><i class="fa-solid fa-align-left mr-1"></i>擇要：</b>${escapeHtml(d.summary)}</div>`:''}
               <div class="text-[10px] text-slate-400">上載：${escapeHtml(d.uploaded_by||'')} ${d.date?' | '+escapeHtml(d.date):''}</div>
-              <div class="flex gap-2"><button onclick="app.downloadDocument('${d.id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>開啟/下載</button></div>
-            </div>
-          `).join('') || '<p class="text-xs text-slate-400 py-8 text-center md:col-span-2">暫無文件</p>'}
+              <div class="flex gap-2 flex-wrap mt-auto pt-1">
+                ${driveId?`<button onclick="app.previewDocument('${d.id}')" class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-eye mr-1"></i>嵌入預覽</button><a href="https://drive.google.com/uc?export=download&id=${driveId}" target="_blank" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</a>`:''}
+                <button onclick="app.downloadDocument('${d.id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</button>
+                <button onclick="app.toggleDocumentDetail('${d.id}')" class="bg-slate-100 border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-circle-info mr-1"></i>詳細</button>
+              </div>
+              <div id="doc-detail-${d.id}" class="hidden space-y-2 border-t pt-2 mt-1">
+                ${d.description?`<div class="text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">${escapeHtml(d.description)}</div>`:''}
+                ${driveId?`<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="w-full h-[320px] border rounded-xl" allow="autoplay"></iframe>`:''}
+              </div>
+            </div>`;
+          }).join('') || '<p class="text-xs text-slate-400 py-8 text-center md:col-span-2">暫無文件</p>'}
         </div>
       </div>
     `;
@@ -1379,7 +1391,8 @@ class ScoutEventApp{
       <input type="hidden" id="doc-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="doc-form-id" value="${existing?.id||''}">
       <div class="space-y-3">
         <div><label class="text-[11px] font-bold">文件標題 *</label><input id="doc-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分類</label><input id="doc-category" value="${escapeHtml(existing?.category||'通告')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">外部連結</label><input id="doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分類</label><input id="doc-category" value="${escapeHtml(existing?.category||'通告')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">外部連結 (Drive)</label><input id="doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+        <div><label class="text-[11px] font-bold">擇要 (摘要：讓用戶一眼知道內容)</label><textarea id="doc-summary" rows="2" placeholder="簡短摘錄此文件重點…" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.summary||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">說明</label><textarea id="doc-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">上傳檔案 (可選，儲存在瀏覽器)</label><input type="file" id="doc-file" class="w-full text-xs mt-1"><div class="text-[10px] text-slate-400 mt-1">${existing?.file_name?'現有檔案：'+escapeHtml(existing.file_name):'如不選擇檔案，可只填外部連結。'}</div></div>
       </div>`;
@@ -1403,6 +1416,7 @@ class ScoutEventApp{
       id:existing?.id||'doc_'+Date.now(),
       title,
       category:document.getElementById('doc-category').value.trim()||'文件',
+      summary:document.getElementById('doc-summary').value.trim(),
       description:document.getElementById('doc-desc').value.trim(),
       file_url:document.getElementById('doc-url').value.trim(),
       file_name:fileName,
@@ -1426,6 +1440,33 @@ class ScoutEventApp{
     if(d.file_data){ downloadDataUrl(d.file_name||`${d.title}.txt`, d.file_data); return; }
     if(d.file_url && d.file_url!=='#'){ window.open(d.file_url,'_blank'); return; }
     showToast('此文件暫未附加檔案或連結','warning');
+  }
+  // 從 file_url / drive_id 抽取 Google Drive 檔案 ID (供預覽、下載)
+  docDriveId(d){
+    if(d.drive_id) return d.drive_id;
+    const u=d.file_url||'';
+    const m=u.match(/\/file\/d\/([0-9a-zA-Z_-]{20,})/)||u.match(/[?&]id=([0-9a-zA-Z_-]{20,})/)||u.match(/\/open\?id=([0-9a-zA-Z_-]{20,})/);
+    return m?m[1]:'';
+  }
+  previewDocument(id){
+    const d=this.getDocumentsData().docs.find(x=>x.id===id);
+    if(!d) return;
+    const driveId=this.docDriveId(d);
+    const area=document.getElementById('doc-detail-'+id);
+    if(!area) return;
+    area.classList.remove('hidden');
+    if(!driveId){ showToast('此文件無可嵌入預覽的 Drive 連結','warning'); return; }
+    if(!area.querySelector('iframe')){
+      const fr=document.createElement('iframe');
+      fr.src='https://drive.google.com/file/d/'+driveId+'/preview';
+      fr.className='w-full h-[320px] border rounded-xl';
+      fr.allow='autoplay';
+      area.insertAdjacentElement('afterbegin', fr);
+    }
+  }
+  toggleDocumentDetail(id){
+    const area=document.getElementById('doc-detail-'+id);
+    if(area) area.classList.toggle('hidden');
   }
   deleteDocument(id){
     if(!this.canUploadDocument()) return;

@@ -117,38 +117,60 @@ function seedInitialData() {
     mSheet.appendRow(['m_next', 'isd_2026', '第4次籌備委員會議 (下次會議)', '2026-08-18 19:15', '各功能組別進度最後衝刺與物資點算', '主任或以上委員請準時出席百周年紀念大樓1704室。', '秘書處', new Date()]);
   }
   
-  // 4. Staff (零精簡：完整收錄所有總主任、副主席、節目主任)
+  // 4. Staff (零精簡：2026 真實組織架構圖 — 完整收錄所有顧問、主席、副主席、總主任、主任)
   const sSheet = ss.getSheetByName('Staff');
   if (sSheet.getLastRow() <= 1) {
-    sSheet.appendRow(['s_1', 'isd_2026', '黃偉安 / 何家騏', '顧問', '顧問團', '91111111', '審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作；與地域總監確認主禮嘉賓／主禮人，並就重要事務向籌委會主席提供指導性意見。', new Date()]);
-    sSheet.appendRow(['s_2', 'isd_2026', '朱家聰', '主席', '籌委會', '92222222', '主持籌備委員會所有會議；負責統籌活動一切有關事宜及確保順利進行；對外代表活動籌委會。', new Date()]);
-    sSheet.appendRow(['s_3', 'isd_2026', '袁可秀', '執行副主席', '行政組', '93333333', '協助主席統籌各組行政、秘書處、保險、財政指引及開支審批。', new Date()]);
-    sSheet.appendRow(['s_4', 'isd_2026', '張佳良', '副主席', '會操及典禮組', '94444444', '統籌會操流程、步操比賽後備日及頒獎典禮。', new Date()]);
-    sSheet.appendRow(['s_5', 'isd_2026', '梁文澧', '總主任（會操）', '會操及典禮組', '94222222', '統籌大操場會操項目及步操綵排。', new Date()]);
-    sSheet.appendRow(['s_6', 'isd_2026', '黃志樂', '步操統籌主任 / 會操司令員', '會操及典禮組', '94111111', '統籌步操比賽評審、步操訓練及擔任會操司令員。', new Date()]);
-    sSheet.appendRow(['s_7', 'isd_2026', '李懷恩', '副主席（典禮）', '會操及典禮組', '94333333', '統籌優異旅團頒獎、支部獎勵及嘉賓接待。', new Date()]);
-    sSheet.appendRow(['s_8', 'isd_2026', '周恒晉', '副主席', '主題節目組', '95555555', '統籌攤位遊戲、遊戲卡、樂隊及積極公民獎章工作坊。', new Date()]);
-    sSheet.appendRow(['s_9', 'isd_2026', '仇紹謙', '總主任（主題節目）', '主題節目組', '95111111', '帶領 5 位節目主任落實各項遊戲及活動執行。', new Date()]);
-    sSheet.appendRow(['s_10', 'isd_2026', '何令勤', '節目主任 (1)', '主題節目組', '95211111', '執行遊戲攤位與挑戰站。', new Date()]);
-    sSheet.appendRow(['s_11', 'isd_2026', '陳鋑羲', '節目主任 (2)', '主題節目組', '95222222', '執行遊戲攤位與挑戰站。', new Date()]);
-    sSheet.appendRow(['s_12', 'isd_2026', '張宏剛', '節目主任 (3)', '主題節目組', '95233333', '執行遊戲攤位與挑戰站。', new Date()]);
-    sSheet.appendRow(['s_13', 'isd_2026', '羅卓華', '節目主任 (4)', '主題節目組', '95244444', '統籌遊戲卡與印花換領。', new Date()]);
-    sSheet.appendRow(['s_14', 'isd_2026', '李庭甄', '節目主任 (5)', '主題節目組', '95255555', '統籌積極公民獎章系列工作坊。', new Date()]);
-    sSheet.appendRow(['s_15', 'isd_2026', '何嘉駿', '副主席', '品牌推廣組', '96666666', '統籌宣傳海報、場刊設計、社交媒體與活動攝錄。', new Date()]);
-    sSheet.appendRow(['s_16', 'isd_2026', '林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組', '96333333', '統籌活動當日錄影及專業拍照。', new Date()]);
+    const STAFF = [
+      ['黃偉安', '顧問', '顧問團'], ['何家騏', '顧問 / 危機處理主任', '顧問團 / 行政組'],
+      ['朱家聰', '主席', '籌委會'], ['袁可秀', '執行副主席', '籌委會'],
+      ['張佳良', '副主席（會操及典禮）', '會操及典禮組'], ['梁文澧', '總主任（會操）', '會操及典禮組'], ['黃志樂', '會操顧問', '會操及典禮組'],
+      ['李懷恩', '總主任（典禮）', '會操及典禮組'], ['黃凱琳', '典禮統籌主任', '會操及典禮組'], ['林雋逸', '優異旅團統籌主任', '會操及典禮組'], ['馮玉成', '獎勵統籌主任', '會操及典禮組'], ['范紫晴', '司儀統籌主任', '會操及典禮組'], ['林卓衡', '司儀統籌主任', '會操及典禮組'],
+      ['周恒晉', '副主席（主題節目）', '主題節目組'], ['仇紹謙', '總主任（主題節目）', '主題節目組'], ['何令勤', '節目主任 (1)', '主題節目組'], ['陳鋑羲', '節目主任 (2)', '主題節目組'], ['張宏剛', '節目主任 (3)', '主題節目組'], ['羅卓華', '節目主任 (4)', '主題節目組'], ['李庭甄', '節目主任 (5)', '主題節目組'],
+      ['何嘉駿', '副主席（品牌推廣）', '品牌推廣組'], ['陳鈞翰', '社交媒體主任', '品牌推廣組'], ['林耀鏘', '拍攝/攝錄統籌主任', '品牌推廣組'],
+      ['曾麗珊', '副主席（嘉賓接待）', '嘉賓接待組'], ['張嘉政', '總主任（嘉賓接待）', '嘉賓接待組'], ['黃培芳', '嘉賓接待主任', '嘉賓接待組'], ['張敬浩', '交通主任', '嘉賓接待組'], ['朱浩銘', '嘉賓支援主任', '嘉賓接待組'],
+      ['羅添駿', '副主席（協調）', '協調組'], ['鍾偉志', '總主任（協調）', '協調組'], ['馬一波', '場地佈置主任', '協調組'], ['吳卓藍', '膳食主任', '協調組'], ['郭慧敏', '後勤主任', '協調組'], ['施珍淇', '物資主任', '協調組'],
+      ['黃嘉恩', '總主任（協調）', '協調組'], ['布瀚文', '秩序主任', '協調組'], ['鄺逸俊', '交通管制主任', '協調組'], ['李思諭', '物流運輸主任', '協調組'], ['袁宇靖', '物流運輸主任', '協調組'],
+      ['黎姵伶', '副主席（服務及發展）', '服務及發展組'], ['李卓琪', '總主任（服務及發展）', '服務及發展組'], ['郭成威', '服務主任', '服務及發展組'], ['李婉顏', '機構聯絡主任', '服務及發展組'],
+      ['徐嘉皓', '副主席（行政）', '行政組'], ['文幹皓', '總主任（運作）', '行政組'], ['陳銘彥', '旅團報到主任', '行政組'], ['何仲康', '紀念品主任', '行政組'], ['莫穎民', '總主任（行政）', '行政組'], ['蔡天欣', '財政主任', '行政組']
+    ];
+    STAFF.forEach(function (p, i) {
+      sSheet.appendRow(['s_' + (i + 1), 'isd_2026', p[0], p[1], p[2], '', '', new Date()]);
+    });
   }
   
-  // 5. Documents (零精簡：完整收錄所有政策與通告)
+  // 5. Documents (零精簡：2026 真實通告與文件，file_url 指向 ISD 2026 Staff Drive)
   const dSheet = ss.getSheetByName('Documents');
   if (dSheet.getLastRow() <= 1) {
-    dSheet.appendRow(['d_1', 'isd_2026', '利益申報政策及收受利益指引 (附件一)', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
-    dSheet.appendRow(['d_2', 'isd_2026', '個人資料私隱保障政策', '合規政策', '#', '行政組', '2026-05-01', new Date()]);
-    dSheet.appendRow(['d_3', 'isd_2026', '財務指引及會計程序 (含 $500/$2000 報價門檻)', '財務', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_4', 'isd_2026', '結算總表範本 (附件5 - 報銷憑單對照表)', '財務', '#', '財務組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_5', 'isd_2026', '報價比較表與口頭報價紀錄 (附件4)', '財務', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_6', 'isd_2026', '特別通告第XX/26號 (Scout for SDGs 主軸)', '通告', '#', '行政組', '2026-07-01', new Date()]);
-    dSheet.appendRow(['d_7', 'isd_2026', '籌備委員會委員提名通告 (HKIR/M/26/028)', '通告', '#', '助理地域總監(活動)', '2026-04-XX', new Date()]);
-    dSheet.appendRow(['d_8', 'isd_2026', '車輛通行證申請與警察學院場地佈置須知', '協調', '#', '協調組', '2026-08-05', new Date()]);
+    const DOCS = [
+      ['活動通告 sp12_26_isd2026.pdf', '通告', 'https://drive.google.com/file/d/1rmV3zqrBex803aiyjrf20QddudOBoTFf/view', '行政組', '2026-07-07'],
+      ['報名表格 sp12a_26_isd2026_enrollform.pdf', '表格', 'https://drive.google.com/file/d/1TsqPjL57LooYZ21OqP_dXjnt_L_Q0b1Q/view', '行政組', '2026-07-07'],
+      ['工作計劃及進度 V2.docx', '通告', 'https://drive.google.com/file/d/1OPRHxG3x_fLvpLDBEqmdb8dlsq0HuSe1/view', '秘書處', '2026-05-12'],
+      ['食物捐贈通告 (FoodDonation)', '通告', 'https://drive.google.com/file/d/1AXsmbK59MFz-ODLtZ-ysgvW2RcF8mu7j/view', '秘書處', '2026-07-24'],
+      ['食物捐贈表格 (FoodDonation_Form)', '表格', 'https://drive.google.com/file/d/1SuqR2x-Ws0F8zqcX9-tZKUbEndDbS7xJ/view', '秘書處', '2026-07-24'],
+      ['物資捐贈通告 (Goods Donating)', '通告', 'https://drive.google.com/file/d/1WbfGCy90Pkau6TLNg9J_DdohEqPzdknQ/view', '秘書處', '2026-07-24'],
+      ['物資捐贈表格 (Goods Donating_Form)', '表格', 'https://drive.google.com/file/d/1eLhBg1yJxo99hG-nUhL9kjtfR15KizxW/view', '秘書處', '2026-07-24'],
+      ['收受利益及申報政策 (pc132018c)', '合規政策', 'https://drive.google.com/file/d/1V-Kj7xIu8ow9ncVF9dJ6j680IEP9qHZl/view', '秘書處', '2026-03-29'],
+      ['收受利益及申報政策 (pc142018c)', '合規政策', 'https://drive.google.com/file/d/1w-u50e3cMpMf2SCAw-3BQfJ66l4qBFzy/view', '秘書處', '2026-03-29'],
+      ['財務指引及會計程序 ver 1', '財務', 'https://drive.google.com/file/d/1QNWNG1BnVab3oHlI7yvIK_2YMMSFV-p4/view', '行政組', '2026-04-27'],
+      ['附件1 - 報價要求', '財務', 'https://drive.google.com/file/d/176X1zGzH_k7DJzzuzE5fHkAr6GE3_IHm/view', '行政組', '2026-04-27'],
+      ['附件2 - 豁免商戶名單', '財務', 'https://drive.google.com/file/d/1Z_VqtQ1LjKGI7fFqRCvN9sI8XrmJLbL2/view', '行政組', '2026-03-29'],
+      ['附件3 - 口頭報價資料記錄', '財務', 'https://drive.google.com/file/d/1s5X9v7FJfbCZG1zDX5GX_yXpE2C_8BIq/view', '行政組', '2026-03-29'],
+      ['附件4 - 書面報價比較表', '財務', 'https://drive.google.com/file/d/1Qal9KVjgN54cb6GwxideH_lsRXJquVWy/view', '行政組', '2026-03-29'],
+      ['附件5 - 結算總表 (WORD)', '財務', 'https://drive.google.com/file/d/1FwpuK79mWDToX_p_csO_8Fg085lT0QkC/view', '行政組', '2026-03-29'],
+      ['附件5A - 結算總表 (autosum)', '財務', 'https://drive.google.com/file/d/16krtzQYD11b2cyL8h_Qdb0a8X4_wyDN-/view', '行政組', '2026-03-29'],
+      ['附件5B - 結算總表 (EXCEL)', '財務', 'https://drive.google.com/file/d/1boZYb4XxiZllAP_2sxxcdatiOQIZMfbJ/view', '行政組', '2026-03-29'],
+      ['附件6 - 四格印簽名位置', '財務', 'https://drive.google.com/file/d/19bmvieiDcnFBcQ6qPAGagN8UDXc3tAG2/view', '行政組', '2026-03-29'],
+      ['ISD2026 Budget.xlsx', '財務', 'https://drive.google.com/file/d/1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_/view', '行政組', '2026-08-16'],
+      ['ISD2026 Org Chart and Contact List', '名單', 'https://drive.google.com/file/d/1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp/view', '行政組', '2026-08-19'],
+      ['ISD2026 Site setup Quotation Request', '協調', 'https://drive.google.com/file/d/1ryQltDGazkf_l2qPPnxc6DmomfIlMu-x/view', '協調組', '2026-07-21'],
+      ['ISD2026 Cleaning Quotation request', '協調', 'https://drive.google.com/file/d/1n_vRIZ4X_NV3523r89hd8mODQpyNMvbL/view', '協調組', '2026-07-20'],
+      ['泊車證申請表格', '協調', 'https://drive.google.com/file/d/1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7/view', '協調組', '2026-07-20'],
+      ['ISD2026 攤位資料', '活動', 'https://drive.google.com/file/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle/view', '主題節目組', '2026-08-19'],
+      ['ISD2025 攤位資料（參考）', '活動', 'https://drive.google.com/file/d/179nQJYbzar3AqddmPf3cstWO65LT_gBM/view', '主題節目組', '2026-08-14']
+    ];
+    DOCS.forEach(function (p, i) {
+      dSheet.appendRow(['d_' + (i + 1), 'isd_2026', p[0], p[1], p[2], p[3], p[4], new Date()]);
+    });
   }
   
   // 6. Finance (零精簡：完整收錄所有收支明細與各組憑單)
