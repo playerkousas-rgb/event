@@ -59,10 +59,26 @@ function getRoleLevel(r) {
   return ROLE_HIERARCHY[r] !== undefined ? ROLE_HIERARCHY[r] : 0;
 }
 
+// 開戶表職位層級：中文下拉選項 → 系統角色
+const ROLE_LABELS_CN = {
+  '主席': 'chairperson',
+  '顧問': 'advisor',
+  '管理員': 'admin',
+  '副主席': 'vice_chairperson',
+  '總主任': 'general_director',
+  '主任': 'director',
+  '工作人員': 'staff'
+};
+
 function initializeSheets() {
   const ss = getSheet();
   ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at']);
-  ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'password_hash', 'status', 'created_at']);
+  ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
+  // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
+  ensureSheet(ss, 'Account_Setup', ['name', 'role', 'job_title', 'group_name', 'user_id', 'email', 'contact']);
+  // 遷移舊 Users 表：補上 job_title / contact 欄（非破壞性）
+  ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact']);
+  setupAccountSetupSheet(ss);
   ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at']);
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
   ensureSheet(ss, 'Documents', ['doc_id', 'event_id', 'title', 'category', 'file_url', 'uploaded_by', 'date', 'created_at']);
@@ -86,6 +102,157 @@ function ensureSheet(ss, sheetName, headers) {
   }
 }
 
+// 非破壞性補欄位：只會把缺失的欄位加到最右側，不刪除/覆蓋既有資料
+function ensureColumns(sheet, headers) {
+  if (!sheet) return;
+  let lastCol = sheet.getLastColumn();
+  let existing = [];
+  if (lastCol >= 1) existing = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (v) { return String(v); });
+  headers.forEach(function (h) {
+    if (existing.indexOf(h) === -1) {
+      sheet.getRange(1, lastCol + 1).setValue(h);
+      lastCol++;
+      existing.push(h);
+    }
+  });
+}
+
+// 開戶表：加上「職位層級」下拉選單 + 使用說明
+function setupAccountSetupSheet(ss) {
+  const sheet = ss.getSheetByName('Account_Setup');
+  if (!sheet) return;
+  const labels = Object.keys(ROLE_LABELS_CN);
+  const dv = SpreadsheetApp.newDataValidation().requireValueInList(labels, true).setAllowInvalid(true).build();
+  sheet.getRange(2, 2, 100, 1).setDataValidation(dv); // B 欄 (role) 下拉
+  sheet.getRange('A1').setNote(
+    '開戶表：從第 2 行起逐行填寫 —— 名字(name)、職位層級(role，下拉選)、職稱(job_title)、組別(group_name)、帳號(user_id 可留空，系統自動產生)、電郵(email)、電話(contact)。\n' +
+    '填好後在選單「童軍活動管理 → 開戶（同步帳戶）」執行，即開戶完成。\n' +
+    '預設密碼為 1234，用戶登入後可在 APP 內自行修改密碼。'
+  );
+}
+
+// 開戶：把 Account_Setup 的內容同步成 Users（預設密碼 1234；已存在則更新資料但保留其已改密碼）
+function syncAccountsFromSetup() {
+  const ss = getSheet();
+  const setup = ss.getSheetByName('Account_Setup');
+  if (!setup || setup.getLastRow() < 2) return { success: false, error: 'Account_Setup 沒有資料（請先填名字等欄位）' };
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['job_title', 'contact']);
+
+  const sRows = setup.getDataRange().getValues();
+  const sHead = sRows[0].map(String);
+  const scol = function (h) { return sHead.indexOf(h); };
+  const iName = scol('name'), iRole = scol('role'), iJob = scol('job_title'), iGrp = scol('group_name'), iId = scol('user_id'), iEmail = scol('email'), iContact = scol('contact');
+
+  const uRows = users.getDataRange().getValues();
+  const uHead = uRows[0].map(String);
+  const ucol = function (h) { return uHead.indexOf(h); };
+  const uName = ucol('name'), uRole = ucol('role'), uJob = ucol('job_title'), uGrp = ucol('group_name'), uId = ucol('user_id'), uEmail = ucol('email'), uContact = ucol('contact'), uPass = ucol('password_hash'), uStatus = ucol('status'), uCreated = ucol('created_at');
+
+  const existing = {};
+  for (let i = 1; i < uRows.length; i++) { existing[String(uRows[i][uId])] = i + 1; }
+
+  let created = 0, updated = 0;
+  for (let i = 1; i < sRows.length; i++) {
+    const name = sRows[i][iName];
+    if (!name || String(name).trim() === '') continue;
+    const nameStr = String(name).trim();
+    const roleRaw = sRows[i][iRole] ? String(sRows[i][iRole]).trim() : '';
+    const role = ROLE_LABELS_CN[roleRaw] || roleRaw || 'staff';
+    const job = sRows[i][iJob] || '';
+    const grp = sRows[i][iGrp] || '';
+    const email = sRows[i][iEmail] || '';
+    const contact = sRows[i][iContact] || '';
+    let uid = sRows[i][iId];
+    if (!uid || String(uid).trim() === '') {
+      uid = 'staff_' + (10000 + i);
+      setup.getRange(i + 1, iId + 1).setValue(uid);
+    }
+    uid = String(uid).trim();
+
+    if (existing[uid]) {
+      const r = existing[uid];
+      users.getRange(r, uName + 1).setValue(nameStr);
+      users.getRange(r, uRole + 1).setValue(role);
+      users.getRange(r, uJob + 1).setValue(job);
+      users.getRange(r, uGrp + 1).setValue(grp);
+      users.getRange(r, uEmail + 1).setValue(email);
+      users.getRange(r, uContact + 1).setValue(contact);
+      updated++;
+    } else {
+      const rowVals = uHead.map(function () { return ''; });
+      rowVals[uId] = uid;
+      rowVals[uName] = nameStr;
+      rowVals[uRole] = role;
+      rowVals[uJob] = job;
+      rowVals[uGrp] = grp;
+      rowVals[uEmail] = email;
+      rowVals[uContact] = contact;
+      rowVals[uPass] = hashPassword('1234');
+      rowVals[uStatus] = 'active';
+      rowVals[uCreated] = new Date();
+      users.appendRow(rowVals);
+      existing[uid] = users.getLastRow();
+      created++;
+    }
+  }
+  return { success: true, created: created, updated: updated, message: '開戶完成：新增 ' + created + ' 人，更新 ' + updated + ' 人（預設密碼 1234，登入後可自行修改）' };
+}
+
+// 修改密碼（登入用戶自行修改）
+function changePassword(data) {
+  const userId = (data.user_id || '').trim();
+  const oldPwd = data.old_password || '';
+  const newPwd = data.new_password || '';
+  if (!userId || !newPwd) return { success: false, error: '參數不足' };
+  if (String(newPwd).length < 4) return { success: false, error: '新密碼至少 4 個字元' };
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet) return { success: false, error: 'Users sheet missing' };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const idIdx = headers.indexOf('user_id');
+  const emailIdx = headers.indexOf('email');
+  const passIdx = headers.indexOf('password_hash');
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][idIdx]) === userId || String(rows[i][emailIdx]) === userId) {
+      const stored = rows[i][passIdx];
+      if (stored && stored !== hashPassword(oldPwd)) return { success: false, error: '舊密碼錯誤' };
+      sheet.getRange(i + 1, passIdx + 1).setValue(hashPassword(newPwd));
+      return { success: true, message: '密碼已更新' };
+    }
+  }
+  return { success: false, error: '找不到帳戶' };
+}
+
+// 列出所有用戶（不含密碼），供前端用戶管理
+function getAllUsers() {
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet || sheet.getLastRow() <= 1) return { success: true, users: [] };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const list = [];
+  for (let i = 1; i < rows.length; i++) {
+    const obj = {};
+    headers.forEach(function (h, idx) { obj[h] = rows[i][idx]; });
+    delete obj.password_hash;
+    list.push(obj);
+  }
+  return { success: true, users: list };
+}
+
+// 選單（在 Google Sheet 內手動執行）
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('童軍活動管理')
+    .addItem('初始化工作表', 'initializeSheets')
+    .addItem('開戶（同步 Account_Setup → Users）', 'syncAccountsFromSetup')
+    .addItem('刷新 API Key', 'refreshApiKey')
+    .addToUi();
+}
+
 // 零精簡：完整寫入所有文件、完整人員、完整預算明細進 Google Sheet
 function seedInitialData() {
   const ss = getSheet();
@@ -99,12 +266,12 @@ function seedInitialData() {
   // 2. Users
   const uSheet = ss.getSheetByName('Users');
   if (uSheet.getLastRow() <= 1) {
-    uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
-    uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '籌委會', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'vice_chairperson', '行政組', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', '', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
+    uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '籌委會', '主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'vice_chairperson', '行政組', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
   }
   
   // 3. Meetings
@@ -268,6 +435,9 @@ function doPost(e) {
     else if (action === 'verifyEventPassword') return jsonResponse(verifyEventPassword(data));
     else if (action === 'saveRecord') return jsonResponse(saveRecord(data));
     else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
+    else if (action === 'changePassword') return jsonResponse(changePassword(data));
+    else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
+    else if (action === 'syncAccountsFromSetup') return jsonResponse(syncAccountsFromSetup());
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
     else if (action === 'sendMeetingEmail') return jsonResponse(sendMeetingEmailNotification(data));
