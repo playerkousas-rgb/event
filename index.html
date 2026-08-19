@@ -67,7 +67,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       </div>
     </div>
     <div class="flex items-center space-x-2 flex-shrink-0">
-      <button onclick="app.toggleMockMode()" id="mock-mode-btn" class="flex bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 border border-amber-500/40 px-2 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-xs font-semibold"><i class="fa-solid fa-database mr-1"></i> <span id="mock-mode-text">Mock: 開</span></button>
       <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[80px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
       <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text" class="hidden sm:inline">登入</span><span class="sm:hidden">登入</span></button>
       <button id="changepwd-btn" onclick="app.openChangePwdModal()" class="hidden bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-xl text-xs transition btn-mobile"><i class="fa-solid fa-key mr-1"></i><span class="hidden sm:inline">修改密碼</span></button>
@@ -77,7 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
   <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶</button><button class="nav-tab" data-view="bulk" onclick="app.switchTopTab('bulk',this)"><i class="fa-solid fa-file-csv mr-1"></i> 批量</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="approvalmatrix" onclick="app.switchTopTab('approvalmatrix',this)"><i class="fa-solid fa-table-cells mr-1"></i> 批核權限表</button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
 </header>
 
-<div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goHome();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-house text-sky-600 w-5"></i> 首頁</button><button onclick="app.showDashboard();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-gauge w-5"></i> 儀表板</button><button onclick="app.openModule('meetings');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-handshake text-sky-600 w-5"></i> 會議卡片 (升級)</button><button onclick="app.openModule('staff');app.toggleDrawer()" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 border flex items-center gap-3"><i class="fa-solid fa-sitemap text-indigo-600 w-5"></i> 工作人員</button><button onclick="app.switchTopTab('users');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-users text-emerald-700 w-5"></i> 用戶管理</button><button onclick="app.switchTopTab('bulk');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-file-csv text-amber-700 w-5"></i> 批量開戶</button></div><div class="p-3 border-t text-[11px] text-slate-500">v6.1 會議卡片全面升級<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
+<div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goHome();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-house text-sky-600 w-5"></i> 首頁</button><button onclick="app.showDashboard();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-gauge w-5"></i> 儀表板</button><button onclick="app.openModule('meetings');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-handshake text-sky-600 w-5"></i> 會議卡片 (升級)</button><button onclick="app.openModule('staff');app.toggleDrawer()" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 border flex items-center gap-3"><i class="fa-solid fa-sitemap text-indigo-600 w-5"></i> 工作人員</button><button onclick="app.switchTopTab('users');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-users text-emerald-700 w-5"></i> 用戶管理</button><button onclick="app.showDashboard();app.toggleDrawer();setTimeout(()=>app.openModule('account_setup'),200)" class="w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-user-plus text-amber-700 w-5"></i> 開戶 / 批量開戶</button></div><div class="p-3 border-t text-[11px] text-slate-500">v6.1 會議卡片全面升級<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
 
 <div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-3 sm:px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-sm gap-2"><div class="flex items-start sm:items-center gap-2 flex-1 min-w-0"><span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase flex-shrink-0"><i class="fa-regular fa-bell mr-1"></i> 會議預告</span><span id="banner-meeting-text" class="font-medium leading-snug flex-1">第4次籌備會議：2026-08-18 19:15 @ 1704室</span></div><div id="banner-admin-actions" class="hidden flex items-center gap-2 flex-shrink-0"><button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1.5 rounded-xl text-xs shadow btn-mobile"><i class="fa-solid fa-paper-plane mr-1"></i> 發送提醒</button></div></div>
 
@@ -138,7 +137,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div class="flex items-center gap-3 min-w-0">
           <div id="identity-avatar" class="w-11 h-11 bg-sky-600 text-white rounded-2xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-user"></i></div>
           <div class="min-w-0">
-            <h3 class="font-bold text-sm flex items-center flex-wrap gap-2">你好，<span id="identity-name">訪客</span>！ <span id="identity-role-badge" class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap">公開</span><span id="identity-group-badge" class="hidden bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200 whitespace-nowrap"></span><span id="identity-mock-badge" class="hidden bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap"><i class="fa-solid fa-flask mr-0.5"></i>示範模式</span></h3>
+            <h3 class="font-bold text-sm flex items-center flex-wrap gap-2">你好，<span id="identity-name">訪客</span>！ <span id="identity-role-badge" class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap">公開</span><span id="identity-group-badge" class="hidden bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200 whitespace-nowrap"></span><span id="identity-mock-badge" class="hidden bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap"><i class="fa-solid fa-flask mr-0.5"></i>示範沙盒</span></h3>
             <p id="identity-desc" class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">你正以「公開」身份瀏覽：所有公開資料都可看，無需登入。登入後，身份 (角色＋組別) 會決定你可看到與修改哪些卡片 — 身份由管理員批核。</p>
           </div>
         </div>
@@ -244,12 +243,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 
 </main>
 
-<nav id="bottom-nav" class="bottom-nav md:hidden"><button id="bn-home" class="active" onclick="app.goHome()"><i class="fa-solid fa-house"></i><span>首頁</span></button><button onclick="app.openModule('meetings')"><i class="fa-solid fa-handshake"></i><span>會議</span></button><button onclick="app.switchTopTab('users')"><i class="fa-solid fa-users"></i><span>成員</span></button><button onclick="app.switchTopTab('bulk')"><i class="fa-solid fa-file-csv"></i><span>批量</span></button><button onclick="app.switchTopTab('system')"><i class="fa-solid fa-gear"></i><span>設定</span></button></nav>
+<nav id="bottom-nav" class="bottom-nav md:hidden"><button id="bn-home" class="active" onclick="app.goHome()"><i class="fa-solid fa-house"></i><span>首頁</span></button><button onclick="app.openModule('meetings')"><i class="fa-solid fa-handshake"></i><span>會議</span></button><button onclick="app.switchTopTab('users')"><i class="fa-solid fa-users"></i><span>成員</span></button><button id="bn-accounts" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus"></i><span>開戶</span></button><button onclick="app.switchTopTab('system')"><i class="fa-solid fa-gear"></i><span>設定</span></button></nav>
 
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
 
-<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10px] text-sky-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i>超管及正式帳戶在 <b>任何模式</b>（Mock / 雲端）都會經後端驗證，可直接登入；如失敗請確認頂部為「Mock: 關」(雲端模式) 或後端已更新至最新 Code.gs。</div><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>會議示範 (Mock 模式)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於 Mock 模式顯示；正式連線 (GAS) 模式需用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
+<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10px] text-sky-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i>正式帳戶（含超管）任何時候都經後端驗證可直接登入；「模擬示範版」活動為本地沙盒，登入示範帳戶只影響你部裝置，不影響正式資料。</div><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>模擬示範版 (本地沙盒)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於「模擬示範版」活動顯示；正式活動請用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
 
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
 
@@ -396,7 +395,7 @@ const EVENT_CATEGORIES=[
   {key:'isd',title:'港島童軍繽紛日',icon:'fa-solid fa-star',desc:'步操檢閱、頒獎典禮與攤位博覽',gradient:'from-brand-600 to-fuchsia-500'},
   {key:'trailwalk',title:'港島毅行',icon:'fa-solid fa-person-hiking',desc:'港島區步行籌款活動',gradient:'from-emerald-500 to-teal-500'},
   {key:'other',title:'其他大型活動',icon:'fa-solid fa-tent',desc:'其他大型露營、培訓及活動',gradient:'from-indigo-500 to-violet-600'},
-  {key:'demo',title:'模擬示範版',icon:'fa-solid fa-flask',desc:'完整示範資料，供會議簡介及改革展示',gradient:'from-slate-500 to-slate-700'}
+  {key:'demo',title:'模擬示範版',icon:'fa-solid fa-flask',desc:'完整示範資料·本地沙盒：介紹展示用，改動不影響正式活動',gradient:'from-slate-500 to-slate-700'}
 ];
 // 簡單卡片模式：卡片顯示所有資料。身份 (角色+組別) 由管理員批核，決定：
 // - 看到什麼：minLevel / groups 達標才顯示該卡片 (minLevel 0 = 公開，所有人可見)
@@ -424,11 +423,10 @@ const DASH_CARD_DEFS=[
   {id:'coordinator_group',title:'協調組',desc:'場地佈置圖、物資借用、箱頭紙、數據',icon:'fa-solid fa-people-roof',cardClass:'bg-white border shadow-sm',iconClass:'bg-orange-100 text-orange-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理'},
   {id:'my_monitor',title:'我的監察 (專門)',desc:'查自己訂餐、物資是否獲批、車輛是否獲批',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,readOnly:true,editLabel:'僅查看自己的申請',action:"app.openModule('meals'); setTimeout(()=>app.switchMealsTab('monitor'),300)"},
   {id:'approvals',title:'批核中心',desc:'膳食、物資、財務待批項目',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:60,editLevel:60,editLabel:'副主席以上可批核',action:"app.switchTopTab('approvals')"},
-  {id:'users_bulk',title:'用戶·批量',desc:'全前端、批量開戶、手機友善',icon:'fa-solid fa-users-gear',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:80,editLevel:80,editLabel:'管理員專用',action:"app.switchTopTab('users')"},
-  {id:'account_setup',title:'開戶',desc:'總主任以上為本組開戶（預設密碼 1234）',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可為本組開戶'},
+  {id:'account_setup',title:'開戶',desc:'總主任以上為本組逐個開戶；批量開戶 (CSV/JSON) 管理員·超管專用',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可為本組開戶'},
   {id:'permissions',title:'權限管理',desc:'把「看到/編輯」權限授權給下級',icon:'fa-solid fa-key',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-700',minLevel:40,editLevel:40,editLabel:'上級可授權給下級'}
 ];
-const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,myMealOrders:(eid)=>`event_my_meal_orders_v7_${eid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
@@ -440,20 +438,20 @@ class ScoutEventApp{
   constructor(){
     this.gasUrl=localStorage.getItem(LS.gasUrl)||''; this.apiKey=localStorage.getItem(LS.apiKey)||'scout_e6451624b1f340078ec6a111';
     this.currentUser=JSON.parse(localStorage.getItem(LS.currentUser)||'null'); this.currentEvent=JSON.parse(localStorage.getItem(LS.currentEvent)||'null');
-    this.mockMode=localStorage.getItem(LS.mockMode)!=='false'; this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
+    this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
     this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda'; this.approvalPerms=[]; this.approvalViewMode='byPerson';
     this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'',meeting_folder_id:''};
     this.init();
   }
+  // 本地資料模式 (無開關)：「模擬示範版」活動永遠是 100% 本地沙盒 (改動不會寫出後端，介紹/示範用)；未設定後端網址時整站亦以本地資料運行。正式活動在已設定 GAS 時自動連線同步，無需人手切換。
+  get mockMode(){ return this.isDemoEvent() || !this.gasUrl; }
   async init(){
     try{const res=await fetch('/api/config').catch(()=>null); if(res&&res.ok){const j=await res.json(); if(j.success){this.apiKey=j.apiKey||this.apiKey; if(j.gasUrl) this.gasUrl=j.gasUrl;}}}catch(e){}
     if(this.currentUser) this.updateUserUI(); this.applyBannerConfig(); this.updateAdminNav();
     if(this.currentEvent){this.showDashboard();} else this.loadEvents();
-    this.updateMockModeUI(); this.updateSaveBar();
+    this.updateSaveBar();
   }
   toggleDrawer(){document.getElementById('mobile-drawer').classList.toggle('active');}
-  toggleMockMode(){this.mockMode=!this.mockMode; localStorage.setItem(LS.mockMode,this.mockMode); this.updateMockModeUI(); showToast(this.mockMode?'Mock 模式：瀏覽器儲存':'GAS 雲端模式','success'); if(this.currentEvent) this.showDashboard(); else this.loadEvents();}
-  updateMockModeUI(){const t=document.getElementById('mock-mode-text'); if(t) t.textContent=this.mockMode?'Mock: 開':'Mock: 關';}
   closeModal(id){document.getElementById(id).classList.add('hidden');}
   openSettingsModal(){document.getElementById('gas-url-input').value=this.gasUrl; document.getElementById('api-key-input').value=this.apiKey; document.getElementById('modal-settings').classList.remove('hidden');}
   openLoginModal(){const demo=document.getElementById('mock-demo-login'); if(demo) demo.classList.toggle('hidden', !(this.mockMode && this.isDemoEvent())); document.getElementById('modal-login').classList.remove('hidden');}
@@ -469,8 +467,9 @@ class ScoutEventApp{
   async loadEvents(){
     const grid=document.getElementById('events-grid'); if(grid) grid.innerHTML='<div class="col-span-2 text-center py-8 text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i> 載入活動...</div>';
     let loaded=false;
-    if(this.mockMode){try{const res=await fetch('data/events.json'); const data=await res.json(); if(Array.isArray(data)&&data.length){this.eventsList=data; loaded=true;}}catch(e){}}
-    if(!loaded && this.gasUrl){try{const res=await fetch(`${this.gasUrl}?action=getEvents&api_key=${this.apiKey}`); const j=await res.json(); if(j.success&&j.data.length){this.eventsList=j.data; loaded=true;}}catch(e){}}
+    // 首頁清單固定以內建 events.json 為主 (保證「模擬示範版」沙盒及其他活動永遠顯示)，再合併後端 Events 表新增的正式活動
+    try{const res=await fetch('data/events.json'); const data=await res.json(); if(Array.isArray(data)&&data.length){this.eventsList=data; loaded=true;}}catch(e){}
+    if(this.gasUrl){try{const res=await fetch(`${this.gasUrl}?action=getEvents&api_key=${this.apiKey}`); const j=await res.json(); if(j.success&&Array.isArray(j.data)){ const known=new Set(this.eventsList.map(e=>e.event_id)); j.data.forEach(ev=>{ if(ev && ev.event_id && !known.has(ev.event_id)) this.eventsList.push(ev); }); if(this.eventsList.length) loaded=true; }}catch(e){}}
     if(!loaded && this.eventsList.length===0){this.eventsList=[{event_id:'isd_2026',event_name:'2026 港島童軍繽紛日',category:'isd',description:'港島地域年度旗艦',start_date:'2026-10-04',end_date:'2026-10-04',status:'active'},{event_id:'isd_2027',event_name:'2027 港島童軍繽紛日',category:'isd',description:'港島童軍繽紛日',start_date:'2027-10-01',end_date:'2027-10-04',status:'upcoming'}];}
     // 修正類別：避免舊快取 (無 category) 被誤判到「其他大型活動」
     this.eventsList=this.eventsList.map(ev=>{
@@ -818,6 +817,8 @@ class ScoutEventApp{
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
     const localKey=LS.meetings(this.currentEvent.event_id); const localMeetings=JSON.parse(localStorage.getItem(localKey)||'null'); if(localMeetings&&Array.isArray(localMeetings)&&localMeetings.length){ this.eventData.meetings=localMeetings; }
     const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){ this.eventData.staff=localStaff; }
+    // 正式活動（非示範沙盒）且已連後端：拉取 Meal_Orders 合併（組長確認/行政審批狀態跨裝置同步）
+    this.syncMealOrdersFromGas();
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
   openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引)',theme_badges:'活動主題章',announcements:'公告及溝通',safety:'安全及醫療',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
@@ -1049,8 +1050,88 @@ class ScoutEventApp{
           <h4 class="font-bold text-sm mb-2">本組帳戶 (${myAccounts.length})</h4>
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">名字</th><th class="px-2 py-1 text-left">職稱</th><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-left">帳號</th></tr></thead><tbody class="divide-y">${myAccounts.map(x=>`<tr><td class="px-2 py-1 font-medium" data-label="名字">${escapeHtml(x.name)}</td><td class="px-2 py-1" data-label="職稱">${escapeHtml(x.job_title||'')}</td><td class="px-2 py-1" data-label="層級">${escapeHtml(ROLE_LABELS[x.role]||x.role)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(x.group_name||'')}</td><td class="px-2 py-1 font-mono" data-label="帳號">${escapeHtml(x.user_id||'')}</td></tr>`).join('')||'<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無帳戶</td></tr>'}</tbody></table></div>
         </div>
+        ${this.canBulkOnboard()?`
+        <div class="bg-white border rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h4 class="font-bold text-sm"><i class="fa-solid fa-file-csv text-amber-600 mr-1"></i>批量開戶 <span class="text-[10px] bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">管理員 / 超管專用</span></h4>
+            <button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載範本 CSV</button>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
+            • Excel 填好範本後上傳，預覽無誤再一次過開戶；<b>ID 重複會自動跳過，不覆蓋舊帳及已改密碼</b><br>
+            • 範本有填 <b>password</b> → 可登入帳號；只填 帳號+姓名 → 僅加入名單（不可登入）。後端開戶一律預設密碼 1234<br>
+            • 建議先試 2-3 筆，確認無誤再全團匯入
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <label class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳已填 CSV<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleAccBulkCSV(this.files[0])"></label>
+            <span class="text-[10px] text-slate-400">或</span>
+            <button onclick="app.previewAccBulkJSON()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-code mr-1"></i>由下方 JSON 預覽</button>
+          </div>
+          <textarea id="acc-bulk-json" rows="3" placeholder='[{"user_id":"00820001","name":"陳小明","role":"staff","group_name":"主題節目組","password":"1234"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea>
+          <div id="acc-bulk-preview" class="hidden">
+            <div class="flex justify-between items-center mt-1"><h5 class="font-bold text-xs">預覽 <span id="acc-bulk-count" class="bg-slate-900 text-white px-2 py-0.5 rounded-full text-[10px]">0</span> 筆</h5><button onclick="app.confirmAccBulkCreate()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-check mr-1"></i>確認批量開戶</button></div>
+            <div id="acc-bulk-table" class="table-responsive mt-2 max-h-56 overflow-y-auto border rounded-xl"></div>
+          </div>
+        </div>`:''}
       </div>
     `;
+  }
+  // 批量開戶：僅管理員/超管（從獨立「用戶·批量」卡片併入此處）
+  canBulkOnboard(){ return ['super_admin','admin'].includes(this.currentUser?.role); }
+  normalizeBulkRows(rows){
+    return (rows||[]).map(r=>({user_id:String(r.user_id||r.ymis||'').trim(),name:String(r.name||'').trim(),email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',job_title:r.job_title||r.job_desc||'',can_tick:!!r.can_tick})).filter(r=>r.user_id&&r.name);
+  }
+  renderAccBulkPreview(){
+    const box=document.getElementById('acc-bulk-preview'); if(!box) return;
+    box.classList.remove('hidden');
+    document.getElementById('acc-bulk-count').textContent=this.bulkPending.length;
+    document.getElementById('acc-bulk-table').innerHTML=`<table class="min-w-full text-xs"><thead class="bg-slate-100 sticky top-0"><tr><th class="px-2 py-1 text-left">帳號</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-left">可登入</th></tr></thead><tbody class="divide-y">${this.bulkPending.map(r=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td><td class="px-2 py-1">${escapeHtml(ROLE_LABELS[r.role]||r.role)}</td><td class="px-2 py-1">${escapeHtml(r.group_name)}</td><td class="px-2 py-1">${r.password?'✅':'—'}</td></tr>`).join('')}</tbody></table>`;
+  }
+  handleAccBulkCSV(file){
+    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員/超管可用','error'); return; }
+    if(!file){ showToast('請選擇檔案','warning'); return; }
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      try{
+        let rows=[];
+        if(file.name.endsWith('.json')){ const j=JSON.parse(e.target.result); rows=Array.isArray(j)?j:[j]; }
+        else rows=parseCSV(e.target.result);
+        this.bulkPending=this.normalizeBulkRows(rows);
+        if(!this.bulkPending.length){ showToast('解析不到有效資料（需要 user_id/ymis + name）','error'); return; }
+        this.renderAccBulkPreview();
+        showToast(`已解析 ${this.bulkPending.length} 筆，請預覽確認`,'success');
+      }catch(err){ showToast('檔案解析失敗：'+err.message,'error'); }
+    };
+    reader.readAsText(file);
+  }
+  previewAccBulkJSON(){
+    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員/超管可用','error'); return; }
+    const text=(document.getElementById('acc-bulk-json')?.value||'').trim();
+    if(!text){ showToast('請先貼上 JSON 陣列','warning'); return; }
+    try{ let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; this.bulkPending=this.normalizeBulkRows(arr); if(!this.bulkPending.length){ showToast('無有效資料（需要 user_id + name）','error'); return; } this.renderAccBulkPreview(); showToast(`已解析 ${this.bulkPending.length} 筆`,'success'); }
+    catch(e){ showToast('JSON 格式錯誤','error'); }
+  }
+  async confirmAccBulkCreate(){
+    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員/超管可用','error'); return; }
+    if(!this.bulkPending.length){ showToast('無資料','warning'); return; }
+    // 1) 本地名單（所有事件的小組資料庫；示範沙盒只留此步）
+    let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); const newRows=[];
+    this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ const row={user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,job_title:r.job_title||'',password:r.password||'1234',status:'active',can_tick:r.can_tick}; list.push(row); newRows.push(row); added++; } });
+    this.setLocalUsers(list);
+    // 2) 正式活動 + 已連後端：逐筆呼叫後端 createAccount 寫入 Users 表（best-effort；重複 ID 後端亦會跳過）
+    let gasMsg='';
+    if(!this.isDemoEvent() && this.gasUrl && newRows.length){
+      let ok=0,fail=0;
+      for(const r of newRows){
+        try{
+          const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'createAccount',api_key:this.apiKey,name:r.name,role:r.role,job_title:r.job_title||'',group_name:r.group_name,user_id:r.user_id,email:r.email,contact:r.contact,by_role:this.currentUser.role,by_group:this.currentUser.group_name})});
+          const j=await res.json(); if(j&&j.success) ok++; else fail++;
+        }catch(e){ fail++; }
+      }
+      gasMsg=`；後端已寫 ${ok} 筆${fail?`（${fail} 筆失敗/已存在）`:''}`;
+    }
+    this.bulkPending=[];
+    showToast(`批量完成 成功 ${added} 筆${gasMsg}`,'success');
+    await this.loadUsers(); this.renderAccountSetupModule();
   }
   async submitAccountSetup(){
     if(!this.canOpenAccounts()){ showToast('僅總主任或以上可開戶','error'); return; }
@@ -2340,10 +2421,18 @@ class ScoutEventApp{
   }
 
   /* ===================== Meals Enhanced Module v6.7 ===================== */
+  // 訂餐狀態正規化：舊資料 (無 status) 視作「行政已審批」；新訂餐一律 pending → 組長確認 → 行政審批
+  normalizeMealsOrders(data){
+    if(!data || typeof data!=='object') return {menus:[],orders:[]};
+    if(!Array.isArray(data.menus)) data.menus=[];
+    if(!Array.isArray(data.orders)) data.orders=[];
+    data.orders.forEach(o=>{ if(!o.status) o.status='approved'; if(o.confirmed_by===undefined) o.confirmed_by=''; if(o.approved_by===undefined) o.approved_by=''; });
+    return data;
+  }
   getMealsData(){
     const key=LS.meals(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
-    if(local) return local;
+    if(local) return this.normalizeMealsOrders(local);
     const raw=this.eventData['meals']||[];
     // Normalize old meals array into menus + orders structure
     // Old structure: meal_id, date, meal_type, menu_desc, headcount, group_name, status
@@ -2407,6 +2496,91 @@ class ScoutEventApp{
       });
     }
   }
+  // ═══ 訂餐流程：所有人免登入可訂 (填姓名+組別/攤位) → 組別負責人 (總主任/副主席) 核實「確係自己組」→ 行政組最終審批 → 膳食組按「已審批」總數落單及派飯 ═══
+  mealStatusMeta(s){ return {pending:{t:'待組長確認',cls:'bg-amber-100 text-amber-700 border-amber-300'},group_ok:{t:'組長已確認',cls:'bg-sky-100 text-sky-700 border-sky-300'},approved:{t:'行政已審批',cls:'bg-emerald-100 text-emerald-700 border-emerald-300'},rejected:{t:'已拒絕',cls:'bg-rose-100 text-rose-700 border-rose-300'}}[s||'pending']; }
+  getMyMealOrderIds(){ try{ return JSON.parse(localStorage.getItem(LS.myMealOrders(this.currentEvent?.event_id||'isd_2026'))||'[]'); }catch(e){ return []; } }
+  addMyMealOrderId(id){ const k=LS.myMealOrders(this.currentEvent?.event_id||'isd_2026'); const l=this.getMyMealOrderIds(); if(!l.includes(id)){ l.push(id); localStorage.setItem(k,JSON.stringify(l)); } }
+  removeMyMealOrderId(id){ const k=LS.myMealOrders(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(k,JSON.stringify(this.getMyMealOrderIds().filter(x=>x!==id))); }
+  // 「我的訂餐」：登入者按帳號/姓名匹配；免登入訂餐按本裝置記錄匹配
+  isMyMealOrder(o){ if(!o) return false; if(this.currentUser && o.user_id && o.user_id===this.currentUser.user_id) return true; if(this.currentUser && o.user_name && o.user_name===this.currentUser.name) return true; return this.getMyMealOrderIds().includes(o.order_id); }
+  canEditMealOrder(o){ if(!o) return false; if(this.canManageMealMenu()||this.isAdmin()||this.isCoordinatorViceChair()) return true; return this.isMyMealOrder(o); }
+  // 組長確認：總主任/副主席以上 且與訂單組別相符（行政/管理層可確認任何組）
+  canConfirmGroupOrder(o){
+    if(!this.currentUser) return false;
+    const lvl=this.roleLevel(this.currentUser.role); const g=this.currentUser.group_name||'';
+    if(this.isAdmin()||this.isExecViceOrChair()) return true;
+    if(lvl>=40 && g && o.group_name && (o.group_name.includes(g)||g.includes(o.group_name))) return true;
+    return false;
+  }
+  // 行政組最終審批：管理層/執行副主席，或行政組總主任以上
+  canFinalApproveMealOrder(){
+    if(!this.currentUser) return false;
+    const lvl=this.roleLevel(this.currentUser.role); const g=this.currentUser.group_name||'';
+    return this.isAdmin()||this.isExecViceOrChair()||(lvl>=40 && g.includes('行政'));
+  }
+  // 逐張訂單 best-effort 寫出後端 Meal_Orders 表（示範沙盒永不寫出；正式活動未重跑 initializeSheets 建立工作表前會靜默略過，資料仍存本地）
+  syncMealOrderToGas(o){
+    if(this.isDemoEvent()||!this.gasUrl||!o) return;
+    fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Meal_Orders',record:{order_id:o.order_id,event_id:this.currentEvent?.event_id||'isd_2026',menu_id:o.menu_id,user_id:o.user_id||'',user_name:o.user_name,group_name:o.group_name,selection:o.selection,quantity:o.quantity||1,remarks:o.remarks||'',status:o.status||'pending',confirmed_by:o.confirmed_by||'',approved_by:o.approved_by||'',created_at:o.created_at||'',updated_at:o.updated_at||''}})}).catch(()=>{});
+  }
+  deleteMealOrderGas(o){ if(this.isDemoEvent()||!this.gasUrl||!o) return; fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'deleteRecord',api_key:this.apiKey,module:'Meal_Orders',id:o.order_id})}).catch(()=>{}); }
+  confirmMealOrder(orderId){
+    const data=this.getMealsData(); const o=data.orders.find(x=>x.order_id===orderId);
+    if(!o) return; if(o.status!=='pending'&&o.status!=='rejected'){ showToast('此訂單無需確認','warning'); return; }
+    if(!this.canConfirmGroupOrder(o)){ showToast('只可由該組總主任/副主席（或管理層）確認','error'); return; }
+    o.status='group_ok'; o.confirmed_by=this.currentUser.name; o.updated_at=new Date().toISOString();
+    this.saveMealsData(data); this.syncMealOrderToGas(o); showToast(`已確認 ${o.user_name} 的訂餐，待行政組審批`,'success'); this.renderMealsModule();
+  }
+  approveMealOrder(orderId){
+    if(!this.canFinalApproveMealOrder()){ showToast('只可由行政組總主任以上或管理層審批','error'); return; }
+    const data=this.getMealsData(); const o=data.orders.find(x=>x.order_id===orderId);
+    if(!o) return; if(o.status==='approved'){ showToast('已審批過','warning'); return; }
+    const wasPending=o.status==='pending';
+    o.status='approved'; o.approved_by=this.currentUser.name; if(wasPending&&!o.confirmed_by) o.confirmed_by='(行政直接審批)'; o.updated_at=new Date().toISOString();
+    this.saveMealsData(data); this.syncMealOrderToGas(o); showToast(`已審批 ${o.user_name} 的訂餐`,'success'); this.renderMealsModule();
+  }
+  rejectMealOrder(orderId){
+    const data=this.getMealsData(); const o=data.orders.find(x=>x.order_id===orderId);
+    if(!o) return;
+    if(!this.canConfirmGroupOrder(o) && !this.canFinalApproveMealOrder()){ showToast('無權拒絕此訂餐','error'); return; }
+    if(!confirm(`確定拒絕 ${o.user_name} 的訂餐？（會標記為已拒絕，不計入訂購）`)) return;
+    o.status='rejected'; o.updated_at=new Date().toISOString();
+    this.saveMealsData(data); this.syncMealOrderToGas(o); showToast('已拒絕該訂餐','warning'); this.renderMealsModule();
+  }
+  // 組長一鍵確認本組全部待批訂餐
+  confirmGroupMealOrders(groupName){
+    const data=this.getMealsData();
+    const targets=data.orders.filter(o=>o.status==='pending'&&this.canConfirmGroupOrder(o)&&(groupName==='*'||o.group_name===groupName));
+    if(!targets.length){ showToast('本組無待確認訂餐','warning'); return; }
+    targets.forEach(o=>{ o.status='group_ok'; o.confirmed_by=this.currentUser.name; o.updated_at=new Date().toISOString(); this.syncMealOrderToGas(o); });
+    this.saveMealsData(data); showToast(`已確認 ${targets.length} 張訂餐，待行政組審批`,'success'); this.renderMealsModule();
+  }
+  // 行政組一鍵審批全部「組長已確認」訂餐
+  approveAllConfirmedMeals(){
+    if(!this.canFinalApproveMealOrder()){ showToast('只可由行政組總主任以上或管理層審批','error'); return; }
+    const data=this.getMealsData();
+    const targets=data.orders.filter(o=>o.status==='group_ok');
+    if(!targets.length){ showToast('無待審批訂餐','warning'); return; }
+    targets.forEach(o=>{ o.status='approved'; o.approved_by=this.currentUser.name; o.updated_at=new Date().toISOString(); this.syncMealOrderToGas(o); });
+    this.saveMealsData(data); showToast(`已審批 ${targets.length} 張訂餐`,'success'); this.renderMealsModule();
+  }
+  // 正式活動：從後端 Meal_Orders 表拉取合併（後端為準；本地新建未同步的保留）
+  async syncMealOrdersFromGas(){
+    if(this.isDemoEvent()||!this.gasUrl) return;
+    const eid=this.currentEvent?.event_id||'isd_2026';
+    try{
+      const res=await fetch(`${this.gasUrl}?action=getEventData&event_id=${encodeURIComponent(eid)}&api_key=${encodeURIComponent(this.apiKey)}`);
+      const j=await res.json();
+      const rows=(j&&j.data&&Array.isArray(j.data.Meal_Orders))?j.data.Meal_Orders:[];
+      if(!rows.length) return;
+      const data=this.getMealsData();
+      const map=new Map(data.orders.map(o=>[o.order_id,o]));
+      rows.forEach(r=>{ if(!r.order_id) return; map.set(r.order_id,{order_id:String(r.order_id),menu_id:String(r.menu_id||''),user_id:String(r.user_id||''),user_name:String(r.user_name||''),group_name:String(r.group_name||''),selection:String(r.selection||''),quantity:Number(r.quantity)||1,remarks:String(r.remarks||''),status:String(r.status||'pending'),confirmed_by:String(r.confirmed_by||''),approved_by:String(r.approved_by||''),created_at:String(r.created_at||''),updated_at:String(r.updated_at||'')}); });
+      data.orders=[...map.values()];
+      this.saveMealsData(data);
+      if(this.currentModule==='meals') this.renderMealsModule();
+    }catch(e){}
+  }
   canManageMealMenu(){
     // 膳食主任或協調副主席可以加入菜單
     const role=this.currentUser?.role||'';
@@ -2436,12 +2610,10 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-[11px] leading-relaxed text-purple-900">
-          <b>🍱 膳食管理升級：</b><br>
-          • 膳食主任或協調副主席可加入菜單，開啟給所有工作人員填寫 (列明截止日期) (亦可由所屬組別主管填寫) (可選不吃)<br>
-          • 後端紀錄及統計，可在前端看紀錄 (各分組訂了什麼，各人選了什麼) 以便膳食主任訂購<br>
-          • 列印出來供派發用<br>
-          • 物資及車輛也有截止日期 (已加入)<br>
-          • 膳食組截止後可鎖定整個訂購紀錄不給其他人更改，各工作人員可查閱自己訂了什麼餐、借了什麼物資是否獲批、車輛登記是否獲批 (監察卡片)
+          <b>🍱 膳食流程（公開訂餐 · 兩級把關防浪費）：</b><br>
+          ① 膳食組提供菜單（列明截止，可選不吃）→ ② <b>所有人無需登入</b>到此頁揀飯，填「姓名+組別/攤位」即可 → ③ <b>組別負責人（總主任/副主席）</b>核實訂餐人確係自己組成員（組長確認）→ ④ <b>行政組</b>最終審批 → ⑤ 膳食組按「訂購總數（行政已審批）」落單，派飯時按詳細紀錄核對誰訂了什麼<br>
+          • 亂填唔怕：未經組長確認＋行政審批的訂餐<b>不會計入訂購總數</b>；修改已訂餐會重新進入確認流程<br>
+          • 各組負責人登入後可一鍵確認本組訂餐、查看名下工作人員訂了什麼；膳食組可於截止後鎖定菜單；物資及車輛也有截止日期；訂餐/物資/車輛審批進度可看「監察卡片」
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchMealsTab('menus')" class="tab-btn ${this.mealsSubTab==='menus'?'active':''}"><i class="fa-solid fa-utensils mr-1"></i> 菜單 (${data.menus.length})</button>
@@ -2469,7 +2641,7 @@ class ScoutEventApp{
         <div class="flex gap-2 flex-wrap">
           ${canManage?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單 (膳食主任/協調副主席)</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0])"></label>`:''}
-          ${this.currentUser?`<button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:'<span class="text-[11px] bg-purple-50 text-purple-700 px-3 py-2 rounded-full border border-purple-200"><i class="fa-solid fa-globe mr-1"></i>菜單公開可看，訂餐需登入</span>'}
+          ${this.currentUser?`<button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:'<span class="text-[11px] bg-purple-50 text-purple-700 px-3 py-2 rounded-full border border-purple-200"><i class="fa-solid fa-globe mr-1"></i>公開訂餐：免登入，組長確認＋行政審批先計數</span>'}
         </div>
       `;
     }
@@ -2503,13 +2675,13 @@ class ScoutEventApp{
           <div class="text-[11px] text-slate-500 mt-1">日期: ${escapeHtml(menu.date)} | 截止: ${escapeHtml(deadlineText)} ${deadlinePassed?'(已過)':''} | 組別: ${escapeHtml(menu.group_name||'全部')}</div>
           <div class="text-[11px] text-slate-600 mt-1">選項: ${(menu.options||[]).map(o=>`<span class="bg-slate-100 border px-1.5 py-0.5 rounded-full text-[10px] mr-1">${escapeHtml(o)}</span>`).join('')}</div></div>
           <div class="flex flex-col gap-1 flex-shrink-0">
-            ${!isLocked?`<button onclick="app.openMealOrderForm('${menu.menu_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">填寫訂餐</button>`:''}
+            ${!isLocked?`<button onclick="app.openMealOrderForm('${menu.menu_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">填寫訂餐 (免登入)</button>`:''}
             ${canManage?`<button onclick="app.openMealMenuForm('${menu.menu_id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️ 編輯</button>`:''}
             ${canManage?`<button onclick="app.toggleMealLock('${menu.menu_id}')" class="bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-xl text-[10px]">${menu.locked?'🔓 解鎖':'🔒 鎖定'}</button>`:''}
             ${this.isAdmin()?`<button onclick="app.deleteMealMenu('${menu.menu_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}
           </div>
         </div>
-        <div class="text-[11px]">已訂: ${data.orders.filter(o=>o.menu_id===menu.menu_id).length} 人 | ${menu.locked?'鎖定後不可更改':`截止前可修改，截止後膳食組可鎖定`}</div>
+        <div class="text-[11px]">已訂: ${data.orders.filter(o=>o.menu_id===menu.menu_id&&o.status!=='rejected').length} 人（已審批 ${data.orders.filter(o=>o.menu_id===menu.menu_id&&o.status==='approved').length}） | ${menu.locked?'鎖定後不可更改':`截止前可修改，截止後膳食組可鎖定`}</div>
       </div>`;
     }).join('')}</div>`;
   }
@@ -2517,6 +2689,8 @@ class ScoutEventApp{
     const container=document.getElementById('meals-tab-orders');
     if(!container) return;
     const data=this.getMealsData();
+    const active=data.orders.filter(o=>o.status!=='rejected');
+    const statusCount=s=>data.orders.filter(o=>o.status===s).length;
     // Group by group_name and selection
     const groups={};
     data.orders.forEach(o=>{
@@ -2526,34 +2700,54 @@ class ScoutEventApp{
       if(!groups[g][sel]) groups[g][sel]=[];
       groups[g][sel].push(o);
     });
-    // Overall stats per selection
-    const selectionStats={};
+    // 膳食組落單用：只計「行政已審批」；另列待確認/已確認作參考
+    const approvedStats={}, pendingStats={}, confirmedStats={};
     data.orders.forEach(o=>{
       const sel=o.selection||'未選';
-      selectionStats[sel]=(selectionStats[sel]||0)+1;
+      if(o.status==='approved') approvedStats[sel]=(approvedStats[sel]||0)+1;
+      else if(o.status==='group_ok') confirmedStats[sel]=(confirmedStats[sel]||0)+1;
+      else if(o.status==='pending') pendingStats[sel]=(pendingStats[sel]||0)+1;
     });
+    const allSels=[...new Set([...Object.keys(approvedStats),...Object.keys(confirmedStats),...Object.keys(pendingStats)])];
+    const chip=o=>{ const m=this.mealStatusMeta(o.status); return `<span class="${m.cls} border px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">${escapeHtml(o.user_name)}${o.remarks?` (${escapeHtml(o.remarks)})`:''} · ${m.t}</span>`; };
+    const canFinal=this.canFinalApproveMealOrder();
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-xs mb-2">整體統計 (各選項訂了什麼)</h4>
-          <div class="flex flex-wrap gap-2">${Object.keys(selectionStats).map(sel=>`<span class="bg-slate-100 border px-3 py-1 rounded-full text-[11px]"><b>${escapeHtml(sel)}</b>: ${selectionStats[sel]} 人</span>`).join('') || '<span class="text-xs text-slate-400">暫無訂餐</span>'}</div>
+        <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-4">
+          <div class="flex justify-between items-center flex-wrap gap-2 mb-2"><h4 class="font-bold text-xs text-emerald-900"><i class="fa-solid fa-cart-shopping mr-1"></i>訂購總數（只計「行政已審批」= 膳食組照此落單）</h4>${canFinal&&statusCount('group_ok')?`<button onclick="app.approveAllConfirmedMeals()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-check-double mr-1"></i>一鍵審批全部已確認 (${statusCount('group_ok')})</button>`:''}</div>
+          <div class="flex flex-wrap gap-2">${allSels.map(sel=>`<span class="bg-white border border-emerald-200 px-3 py-1 rounded-full text-[11px]"><b>${escapeHtml(sel)}</b>: <b class="text-emerald-700">${approvedStats[sel]||0}</b>${confirmedStats[sel]?` <span class="text-sky-600">+${confirmedStats[sel]}待批</span>`:''}${pendingStats[sel]?` <span class="text-amber-600">+${pendingStats[sel]}未核</span>`:''}</span>`).join('') || '<span class="text-xs text-slate-400">暫無訂餐</span>'}</div>
+          <div class="mt-2 text-[10px] text-slate-500">流程：提交訂餐 → <span class="text-amber-700 font-bold">待組長確認 (${statusCount('pending')})</span> → <span class="text-sky-700 font-bold">組長已確認 (${statusCount('group_ok')})</span> → <span class="text-emerald-700 font-bold">行政已審批 (${statusCount('approved')})</span>${statusCount('rejected')?` · <span class="text-rose-600">已拒絕 (${statusCount('rejected')})</span>`:''} ｜ 有效訂餐共 ${active.length} 張</div>
         </div>
-        ${Object.keys(groups).map(groupName=>`
+        ${Object.keys(groups).sort().map(groupName=>{
+          const gOrders=data.orders.filter(o=>(o.group_name||'未分組')===groupName);
+          const gPending=gOrders.filter(o=>o.status==='pending');
+          const canConfirmHere=gPending.some(o=>this.canConfirmGroupOrder(o));
+          return `
           <div class="bg-white border rounded-xl p-4">
-            <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-people-group text-purple-600 mr-2"></i>${escapeHtml(groupName)} 訂餐紀錄</h4>
+            <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
+              <h4 class="font-bold text-[13px]"><i class="fa-solid fa-people-group text-purple-600 mr-2"></i>${escapeHtml(groupName)} <span class="text-[10px] text-slate-400 font-normal">${gOrders.length} 張訂餐 · ${gPending.length?`<span class="text-amber-600 font-bold">${gPending.length} 待組長確認</span>`:'全部已核實'}</span></h4>
+              ${canConfirmHere?`<button onclick="app.confirmGroupMealOrders('${escapeHtml(groupName)}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-check mr-1"></i>確認本組全部待批 (${gPending.length})</button>`:''}
+            </div>
             <div class="space-y-2">${Object.keys(groups[groupName]).map(sel=>`
               <div class="border rounded-xl p-2 bg-slate-50">
                 <div class="font-bold text-[11px]">${escapeHtml(sel)} (${groups[groupName][sel].length}人)</div>
-                <div class="text-[11px] text-slate-600 mt-1 flex flex-wrap gap-1">${groups[groupName][sel].map(o=>`<span class="bg-white border px-2 py-0.5 rounded-full text-[10px]">${escapeHtml(o.user_name)}${o.remarks?` (${escapeHtml(o.remarks)})`:''}</span>`).join('')}</div>
+                <div class="text-[11px] text-slate-600 mt-1 flex flex-wrap gap-1">${groups[groupName][sel].map(chip).join('')}</div>
               </div>
             `).join('')}</div>
-          </div>
-        `).join('') || '<p class="text-xs text-slate-400 py-4 text-center">暫無分組訂餐紀錄</p>'}
+          </div>`;
+        }).join('') || '<p class="text-xs text-slate-400 py-4 text-center">暫無分組訂餐紀錄</p>'}
         <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-xs mb-2">詳細紀錄 (各人選了什麼)</h4>
-          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-left">菜單</th><th class="px-2 py-1 text-left">選擇</th><th class="px-2 py-1 text-left">備註</th><th class="px-2 py-1 text-left">時間</th></tr></thead><tbody class="divide-y">${data.orders.map(o=>{
+          <h4 class="font-bold text-xs mb-2">詳細紀錄（派飯核對用：誰人訂了什麼）</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">組別/攤位</th><th class="px-2 py-1 text-left">菜單</th><th class="px-2 py-1 text-left">選擇</th><th class="px-2 py-1 text-left">狀態</th><th class="px-2 py-1 text-left">操作</th></tr></thead><tbody class="divide-y">${data.orders.map(o=>{
             const menu=data.menus.find(m=>m.menu_id===o.menu_id);
-            return `<tr><td class="px-2 py-1">${escapeHtml(o.user_name)}</td><td class="px-2 py-1">${escapeHtml(o.group_name)}</td><td class="px-2 py-1">${escapeHtml(menu?.meal_type||'')}-${escapeHtml(menu?.menu_desc||o.menu_id)}</td><td class="px-2 py-1 font-bold">${escapeHtml(o.selection)}</td><td class="px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="px-2 py-1 text-[10px] text-slate-400">${o.created_at?new Date(o.created_at).toLocaleString():''}</td></tr>`;
+            const st=this.mealStatusMeta(o.status);
+            const locked=menu?this.isMealLocked(menu):false;
+            const acts=[];
+            if((o.status==='pending'||o.status==='rejected')&&this.canConfirmGroupOrder(o)) acts.push(`<button onclick="app.confirmMealOrder('${o.order_id}')" class="bg-sky-600 text-white px-2 py-1 rounded-xl text-[10px] font-bold">✓組長確認</button>`);
+            if(o.status!=='approved'&&canFinal) acts.push(`<button onclick="app.approveMealOrder('${o.order_id}')" class="bg-emerald-600 text-white px-2 py-1 rounded-xl text-[10px] font-bold">✓行政審批</button>`);
+            if(o.status!=='rejected'&&(this.canConfirmGroupOrder(o)||canFinal)) acts.push(`<button onclick="app.rejectMealOrder('${o.order_id}')" class="bg-white border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px] font-bold">✗</button>`);
+            if(this.canEditMealOrder(o)&&(!locked||this.canManageMealMenu()||this.isAdmin())) acts.push(`<button onclick="app.openMealOrderForm('${o.menu_id}','${o.order_id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteMealOrder('${o.order_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`);
+            return `<tr><td class="px-2 py-1 font-medium" data-label="姓名">${escapeHtml(o.user_name)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(o.group_name)}</td><td class="px-2 py-1" data-label="菜單">${escapeHtml(menu?.meal_type||'')}-${escapeHtml(menu?.menu_desc||o.menu_id)}${o.created_at?`<div class="text-[9px] text-slate-400">${new Date(o.created_at).toLocaleString()}</div>`:''}</td><td class="px-2 py-1 font-bold" data-label="選擇">${escapeHtml(o.selection)}${o.remarks?`<div class="text-[9px] font-normal text-slate-400">${escapeHtml(o.remarks)}</div>`:''}</td><td class="px-2 py-1" data-label="狀態"><span class="${st.cls} border px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">${st.t}</span>${o.confirmed_by?`<div class="text-[9px] text-slate-400 mt-0.5">確認:${escapeHtml(o.confirmed_by)}</div>`:''}${o.approved_by?`<div class="text-[9px] text-slate-400">審批:${escapeHtml(o.approved_by)}</div>`:''}</td><td class="px-2 py-1" data-label="操作"><div class="flex flex-wrap gap-1">${acts.join('')||'<span class="text-[10px] text-slate-300">—</span>'}</div></td></tr>`;
           }).join('') || '<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無紀錄</td></tr>'}</tbody></table></div>
         </div>
       </div>
@@ -2562,19 +2756,18 @@ class ScoutEventApp{
   renderMealsMy(){
     const container=document.getElementById('meals-tab-my');
     if(!container) return;
-    if(!this.currentUser){ container.innerHTML=`<div class="text-center py-8"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500 mb-3">「我的訂餐」屬個人資料，登入後才顯示</p><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">登入查看</button></div>`; return; }
     const data=this.getMealsData();
-    const myName=this.currentUser?.name||'';
-    const myId=this.currentUser?.user_id||'';
-    const myOrders=data.orders.filter(o=> o.user_id===myId || o.user_name===myName);
+    // 免登入：顯示「此裝置提交」的訂餐；登入後另按帳號/姓名匹配
+    const myOrders=data.orders.filter(o=>this.isMyMealOrder(o));
     if(!myOrders.length){
-      container.innerHTML='<p class="text-xs text-slate-400 py-8 text-center">暫無你的訂餐紀錄，請到菜單分頁填寫</p>';
+      container.innerHTML=`<div class="text-center py-8"><div class="text-3xl mb-2">🍱</div><p class="text-xs text-slate-500">暫無你的訂餐紀錄 — 訂餐<b>無需登入</b>，到「菜單」分頁揀飯，填姓名+組別/攤位即可${this.currentUser?'':'；其他裝置提交的訂餐請在該裝置查看（或登入後按姓名匹配）'}</p></div>`;
       return;
     }
-    container.innerHTML=`<div class="space-y-3">${myOrders.map(o=>{
+    container.innerHTML=`${!this.currentUser?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10.5px] text-sky-800 mb-2"><i class="fa-solid fa-circle-info mr-1"></i>以下為<b>此裝置</b>提交的訂餐；登入後可按姓名匹配你所有訂餐。</div>`:''}<div class="space-y-3">${myOrders.map(o=>{
       const menu=data.menus.find(m=>m.menu_id===o.menu_id);
       const isLocked=menu?this.isMealLocked(menu):false;
-      return `<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(menu?.meal_type||'膳食')} - ${escapeHtml(menu?.menu_desc||'')}</b><div class="text-[11px] text-slate-500 mt-1">選擇: <b>${escapeHtml(o.selection)}</b> | 組別: ${escapeHtml(o.group_name)} | 日期: ${escapeHtml(menu?.date||'')}</div><div class="text-[11px] text-slate-400 mt-1">${o.remarks?`備註: ${escapeHtml(o.remarks)}<br>`:''}${o.created_at?`訂餐時間: ${new Date(o.created_at).toLocaleString()}<br>`:''}${isLocked?'🔒 已鎖定，不可更改':'可修改 (截止前)'}</div></div><div class="flex flex-col gap-1">${!isLocked?`<button onclick="app.openMealOrderForm('${o.menu_id}','${o.order_id}')" class="bg-white border px-3 py-1 rounded-xl text-[11px]">✏️ 修改</button><button onclick="app.deleteMealOrder('${o.order_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px]">🗑️ 刪除</button>`:''}</div></div></div>`;
+      const st=this.mealStatusMeta(o.status);
+      return `<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between gap-2"><div><b class="text-[13px]">${escapeHtml(menu?.meal_type||'膳食')} - ${escapeHtml(menu?.menu_desc||'')}</b><div class="text-[11px] text-slate-500 mt-1">選擇: <b>${escapeHtml(o.selection)}</b> | 組別: ${escapeHtml(o.group_name)} | 日期: ${escapeHtml(menu?.date||'')}</div><div class="text-[11px] text-slate-400 mt-1">${o.remarks?`備註: ${escapeHtml(o.remarks)}<br>`:''}${o.created_at?`訂餐時間: ${new Date(o.created_at).toLocaleString()}<br>`:''}${isLocked?'🔒 已鎖定，不可更改':'可修改 (截止前，修改後需重新確認)'}</div></div><div class="flex flex-col gap-1 items-end flex-shrink-0"><span class="${st.cls} border px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">${st.t}</span>${!isLocked?`<button onclick="app.openMealOrderForm('${o.menu_id}','${o.order_id}')" class="bg-white border px-3 py-1 rounded-xl text-[11px]">✏️ 修改</button><button onclick="app.deleteMealOrder('${o.order_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px]">🗑️ 刪除</button>`:''}</div></div></div>`;
     }).join('')}</div>`;
   }
   renderMealsPrint(){
@@ -2592,7 +2785,7 @@ class ScoutEventApp{
             orders.forEach(o=>{ stats[o.selection]=(stats[o.selection]||0)+1; });
             return `<div class="border rounded-xl p-4"><h4 class="font-bold text-sm">${escapeHtml(menu.date)} ${escapeHtml(menu.meal_type)} - ${escapeHtml(menu.menu_desc)} (截止: ${menu.deadline?new Date(menu.deadline).toLocaleString():'無'} ${menu.locked?'🔒已鎖定':''})</h4>
               <div class="text-[11px] mt-2">統計: ${Object.keys(stats).map(k=>`${escapeHtml(k)}: ${stats[k]}人`).join(' | ') || '無訂餐'}</div>
-              <div class="table-responsive mt-3"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">組別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">簽收</th></tr></thead><tbody>${orders.map(o=>`<tr><td class="border px-2 py-1">${escapeHtml(o.group_name)}</td><td class="border px-2 py-1">${escapeHtml(o.user_name)}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection)}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1"></td></tr>`).join('') || '<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無訂餐</td></tr>'}</tbody></table></div>
+              <div class="table-responsive mt-3"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">組別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">狀態</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">簽收</th></tr></thead><tbody>${orders.filter(o=>o.status!=='rejected').map(o=>{const st=this.mealStatusMeta(o.status); return `<tr><td class="border px-2 py-1">${escapeHtml(o.group_name)}</td><td class="border px-2 py-1">${escapeHtml(o.user_name)}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection)}</td><td class="border px-2 py-1">${st.t}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1"></td></tr>`;}).join('') || '<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無訂餐</td></tr>'}</tbody></table></div>
             </div>`;
           }).join('') || '<p class="text-xs text-slate-400">暫無菜單</p>'}
         </div>
@@ -2672,6 +2865,7 @@ class ScoutEventApp{
     document.getElementById('modal-record').classList.remove('hidden');
   }
   submitMealMenuForm(){
+    if(!this.canManageMealMenu() && !this.isAdmin()){ showToast('僅膳食主任或協調副主席可管理菜單','error'); return; }
     const mode=document.getElementById('meal-menu-mode').value;
     const id=document.getElementById('meal-menu-id').value;
     const date=document.getElementById('meal-menu-date').value;
@@ -2716,13 +2910,13 @@ class ScoutEventApp{
     this.renderMealsModule();
   }
   openMealOrderForm(menuId, orderId=null){
-    // 膳食「查看」公開；但訂餐=修改資料，需登入（連同姓名/組別自動帶入）
-    if(!this.currentUser){ showToast('訂餐屬於修改資料，請先登入','warning'); this.openLoginModal(); return; }
+    // 免登入訂餐：任何工作人員攞飯先得 — 填姓名+組別(或攤位)即可；亂填唔怕：組長核實 + 行政審批先會落單
     const data=this.getMealsData();
     const menu=data.menus.find(m=>m.menu_id===menuId);
     if(!menu){ showToast('找不到菜單','error'); return; }
     if(this.isMealLocked(menu)){ showToast('此菜單已鎖定或已截止，不可更改','error'); return; }
     const existing=orderId?data.orders.find(o=>o.order_id===orderId):null;
+    if(existing && !this.canEditMealOrder(existing)){ showToast('只可以修改自己的訂餐（管理人員除外）','error'); return; }
     const myName=this.currentUser?.name||'';
     const myGroup=this.currentUser?.group_name||'';
     // Check if group leader can fill for group? For now allow anyone
@@ -2731,9 +2925,10 @@ class ScoutEventApp{
       <input type="hidden" id="meal-order-id" value="${existing?.order_id||''}">
       <input type="hidden" id="meal-order-menu-id" value="${menuId}">
       <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-[11px] mb-3"><b>${escapeHtml(menu.date)} ${escapeHtml(menu.meal_type)} - ${escapeHtml(menu.menu_desc)}</b><br>截止: ${menu.deadline?new Date(menu.deadline).toLocaleString():'無'} | 選項: ${(menu.options||[]).join(', ')}</div>
+      <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10.5px] text-sky-800 mb-3 leading-relaxed"><i class="fa-solid fa-shield-halved mr-1"></i><b>免登入訂餐，兩級把關防浪費：</b>提交後狀態為「待組長確認」→ 你組的總主任/副主席核實你係組內成員 → 行政組最終審批後先會計入訂購。請如實填寫姓名及組別/攤位。</div>
       <div class="grid grid-cols-2 gap-3">
         <div><label class="text-[11px] font-bold">姓名 *</label><input id="meal-order-name" value="${escapeHtml(existing?.user_name||myName)}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">組別 *</label><input id="meal-order-group" value="${escapeHtml(existing?.group_name||myGroup)}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">組別 / 攤位 *</label><input id="meal-order-group" value="${escapeHtml(existing?.group_name||myGroup)}" placeholder="例：主題節目組 或 攤位A12" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div class="col-span-2"><label class="text-[11px] font-bold">選擇 *</label><select id="meal-order-selection" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${(menu.options||[]).map(opt=>`<option value="${escapeHtml(opt)}" ${existing?.selection===opt?'selected':''}>${escapeHtml(opt)}</option>`).join('')}</select></div>
         <div class="col-span-2"><label class="text-[11px] font-bold">備註 (可選不吃原因等)</label><input id="meal-order-remarks" value="${escapeHtml(existing?.remarks||'')}" placeholder="例如 不吃辣、由組別主管代填" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       </div>
@@ -2753,27 +2948,40 @@ class ScoutEventApp{
     const group_name=document.getElementById('meal-order-group').value.trim();
     const selection=document.getElementById('meal-order-selection').value;
     const remarks=document.getElementById('meal-order-remarks').value.trim();
-    if(!user_name||!group_name||!selection){ showToast('請填寫姓名、組別、選擇','error'); return; }
+    if(!user_name||!group_name||!selection){ showToast('請填寫姓名、組別/攤位、選擇','error'); return; }
     const data=this.getMealsData();
     const menu=data.menus.find(m=>m.menu_id===menuId);
     if(menu && this.isMealLocked(menu)){ showToast('已鎖定或已截止，不可更改','error'); return; }
+    let savedOrder=null;
     if(mode==='edit'){
       const idx=data.orders.findIndex(o=>o.order_id===orderId);
-      if(idx>=0) data.orders[idx]={...data.orders[idx], user_name, group_name, selection, remarks, updated_at:new Date().toISOString()};
+      if(idx>=0){
+        if(!this.canEditMealOrder(data.orders[idx])){ showToast('只可以修改自己的訂餐','error'); return; }
+        // 修改後需重新「組長確認 → 行政審批」，防止已批後偷改
+        data.orders[idx]={...data.orders[idx], user_name, group_name, selection, remarks, status:'pending', confirmed_by:'', approved_by:'', updated_at:new Date().toISOString()};
+        savedOrder=data.orders[idx];
+      }
     }else{
-      data.orders.push({order_id:'order_'+Date.now(), menu_id:menuId, user_id:this.currentUser?.user_id||'', user_name, group_name, selection, quantity:1, remarks, created_at:new Date().toISOString(), updated_at:new Date().toISOString()});
+      savedOrder={order_id:'order_'+Date.now(), menu_id:menuId, user_id:this.currentUser?.user_id||'', user_name, group_name, selection, quantity:1, remarks, status:'pending', confirmed_by:'', approved_by:'', created_at:new Date().toISOString(), updated_at:new Date().toISOString()};
+      data.orders.push(savedOrder);
+      this.addMyMealOrderId(savedOrder.order_id);
     }
     this.saveMealsData(data);
+    if(savedOrder) this.syncMealOrderToGas(savedOrder);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast(mode==='edit'?'已修改訂餐':'已填寫訂餐','success');
+    showToast(mode==='edit'?'已修改訂餐（需重新確認審批）':'已提交訂餐 ✓ 狀態：待組長確認','success');
     this.renderMealsModule();
   }
   deleteMealOrder(orderId){
-    if(!confirm('確定刪除此訂餐？')) return;
     const data=this.getMealsData();
+    const target=data.orders.find(o=>o.order_id===orderId);
+    if(target && !this.canEditMealOrder(target)){ showToast('只可以刪除自己的訂餐（管理人員除外）','error'); return; }
+    if(!confirm('確定刪除此訂餐？')) return;
     data.orders=data.orders.filter(o=>o.order_id!==orderId);
     this.saveMealsData(data);
+    if(target) this.deleteMealOrderGas(target);
+    this.removeMyMealOrderId(orderId);
     showToast('已刪除訂餐','warning');
     this.renderMealsModule();
   }
@@ -2791,6 +2999,7 @@ class ScoutEventApp{
   }
   handleMealsFileUpload(file){
     if(!file) return;
+    if(!this.canManageMealMenu() && !this.isAdmin() && !this.isCoordinatorViceChair()){ showToast('僅膳食主任/協調副主席或管理員可上傳','error'); return; }
     const reader=new FileReader();
     reader.onload=(e)=>{
       try{
@@ -4757,7 +4966,7 @@ class ScoutEventApp{
   async uploadFileToDriveFolder(fileName, dataUrl, mimeType=''){
     const cfg=this.getMeetingFolderConfig();
     if(!cfg.id && !cfg.link){ return {success:false, error:'未設定資料夾'}; }
-    if(this.mockMode){ return {success:false, error:'Mock模式不支援上傳到Drive，請關閉Mock'}; }
+    if(this.mockMode){ return {success:false, error:'示範沙盒／未連接後端時不支援上傳到 Drive（正式活動連接後端後可用）'}; }
     if(!this.gasUrl){ return {success:false, error:'未設定GAS URL'}; }
     try{
       const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'uploadFileToFolder',api_key:this.apiKey,file_name:fileName,file_data:dataUrl,mime_type:mimeType,folder_id:cfg.id,folder_link:cfg.link,uploaded_by:this.currentUser?.name||'',meeting_id:this.currentMeetingId||''})});
@@ -4801,7 +5010,7 @@ class ScoutEventApp{
     if(visFilter){ list=list.filter(m=>m.visibility===visFilter); }
     if(list.length===0){ container.innerHTML=`<div class="text-center py-12"><div class="text-4xl mb-3">📭</div><p class="text-sm text-slate-500">無符合條件的會議</p><p class="text-xs text-slate-400 mt-2">${isAdmin?'點擊右上「新增會議」建立第1/2/3次會議':'暫無公開會議'}</p></div>`; return; }
     const isDirector=this.canUploadGroup();
-    const storageInfo=this.mockMode?`瀏覽器 localStorage (Mock 模式，5MB 限制，全前端，無需後端)`:`Google Sheet Meetings 分頁 + localStorage 快取 (GAS 模式，大檔案建議轉 Google Drive 資料夾)`;
+    const storageInfo=this.mockMode?`瀏覽器 localStorage (本地/示範沙盒，5MB 限制，全前端，無需後端)`:`Google Sheet Meetings 分頁 + localStorage 快取 (雲端模式，大檔案建議轉 Google Drive 資料夾)`;
     const usedKB=Math.round(JSON.stringify(list).length/1024);
     const folderCfg=this.getMeetingFolderConfig();
     const folderStatus=folderCfg.id?`✅ 已設定指定資料夾 (ID: ${folderCfg.id})，上傳將自動去到該資料夾`:`⚠️ 未設定資料夾，目前本地儲存 (Mock) / Sheet (GAS)，大檔建議設定 Drive 資料夾`;
@@ -5011,7 +5220,7 @@ class ScoutEventApp{
       agendaArea.classList.remove('hidden'); 
       document.getElementById('md-agenda-file-name').textContent=m.agenda_file_name; 
       document.getElementById('md-agenda-file-meta').textContent=`${m.agenda_uploaded_by||''} · ${m.agenda_uploaded_at?new Date(m.agenda_uploaded_at).toLocaleString():''} · ${m.agenda_file_data? (Math.round(m.agenda_file_data.length/1024)+'KB base64'):''}`;
-      document.getElementById('md-agenda-file-info').innerHTML=`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage (Mock 模式，5MB 限制，全前端)':'Google Sheet cell + localStorage 快取 (GAS 模式)'}</b> | <span class="text-amber-600">大檔案建議轉 Drive 連結</span>`;
+      document.getElementById('md-agenda-file-info').innerHTML=`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage (本地/示範沙盒，5MB 限制，全前端)':'Google Sheet cell + localStorage 快取 (雲端模式)'}</b> | <span class="text-amber-600">大檔案建議轉 Drive 連結</span>`;
       document.getElementById('md-agenda-delete-btn').classList.toggle('hidden',!this.isAdmin());
     } else agendaArea.classList.add('hidden');
     const minutesArea=document.getElementById('md-minutes-file-area'); 
@@ -5019,7 +5228,7 @@ class ScoutEventApp{
       minutesArea.classList.remove('hidden'); 
       document.getElementById('md-minutes-file-name').textContent=m.minutes_file_name;
       document.getElementById('md-minutes-file-meta').textContent=`${m.minutes_uploaded_by||''} · ${m.minutes_uploaded_at?new Date(m.minutes_uploaded_at).toLocaleString():''} · ${m.minutes_file_data? (Math.round(m.minutes_file_data.length/1024)+'KB'):''}`;
-      document.getElementById('md-minutes-file-info').innerHTML=`儲存位置：<b>${this.mockMode?'localStorage (Mock)':'Sheet + 快取'}</b>`;
+      document.getElementById('md-minutes-file-info').innerHTML=`儲存位置：<b>${this.mockMode?'localStorage (本地/示範)':'Sheet + 快取'}</b>`;
       document.getElementById('md-minutes-delete-btn').classList.toggle('hidden',!this.isAdmin());
     } else minutesArea.classList.add('hidden');
     document.getElementById('md-attach-count').textContent=(m.attachments||[]).length;
@@ -5263,7 +5472,7 @@ class ScoutEventApp{
     if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name,job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
   }
-  demoLogin(uid){if(!this.mockMode || !this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>u.user_id===uid)||{user_id:uid,name:'示範帳戶',role:'staff',group_name:'籌委會'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
+  demoLogin(uid){if(!this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>u.user_id===uid)||{user_id:uid,name:'示範帳戶',role:'staff',group_name:'籌委會'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
   openChangePwdModal(){if(!this.currentUser){ showToast('請先登入','warning'); return; } ['cp-old','cp-new','cp-new2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); document.getElementById('modal-changepwd').classList.remove('hidden');}
   async submitChangePassword(e){
     e.preventDefault();
