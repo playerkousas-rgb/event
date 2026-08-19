@@ -1203,6 +1203,47 @@ class ScoutEventApp{
     this.renderActivitiesBooths();
   }
   // 模式 A：直接從 Drive 讀最新（原生 Google Sheet → export=csv；xlsx → 下載後 SheetJS 解析）
+  async fetchDriveSheetRows(sheetId, gid){
+    gid=gid||0;
+    // 1) 原生 Google 試算表：export=csv 直讀（瀏覽器 CORS 友善，最可靠）
+    try{
+      const csvUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+      const res=await fetch(csvUrl);
+      const text=await res.text();
+      if(res.ok && text.trim() && !text.trim().startsWith('<') && text.includes(',')){
+        return {ok:true, rows:parseCSV(text), via:'sheet'};
+      }
+    }catch(e){}
+    // 2) xlsx 後備：下載後用 SheetJS 解析（.xlsx 二進位在瀏覽器可能受 CORS 限制）
+    if(typeof XLSX!=='undefined'){
+      try{
+        const r2=await fetch(`https://drive.google.com/uc?export=download&id=${sheetId}`);
+        if(r2.ok){
+          const ab=await r2.arrayBuffer();
+          const wb=XLSX.read(ab,{type:'array'});
+          return {ok:true, rows:XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}), via:'xlsx'};
+        }
+      }catch(e){}
+    }
+    return {ok:false, rows:[], via:'none'};
+  }
+  // 模式 B：上傳 Excel → SheetJS 解析成 rows（供各卡片「上傳寫後端」共用）
+  async parseExcelToRows(file){
+    const ab=await file.arrayBuffer();
+    if(typeof XLSX==='undefined') throw new Error('未載入 Excel 解析庫 (需連線 CDN)');
+    const wb=XLSX.read(ab,{type:'array'});
+    return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+  }
+  // 依 header map 模糊配對欄位（各卡片用同一套）
+  pickCol(obj, want, fallback){
+    if(!obj) return fallback;
+    const keys=Object.keys(obj);
+    const lower={};
+    keys.forEach(k=>lower[String(k).trim().toLowerCase()]=obj[k]);
+    const wants=(Array.isArray(want)?want:[want]).map(w=>String(w).trim().toLowerCase());
+    for(const w of wants){ if(lower[w]!==undefined && lower[w]!==null && String(lower[w]).trim()!=='') return String(lower[w]).trim(); }
+    return fallback;
+  }
   async syncBoothsFromDrive(){
     const src=(this.getActivitiesData().booth_source)||{};
     const sheetId=src.sheet_id||src.drive_file_id;
@@ -1210,23 +1251,10 @@ class ScoutEventApp{
     showToast('正在從 Drive 讀取最新攤位資料…','');
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
-      const csvUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${src.gid||0}`;
-      const res=await fetch(csvUrl);
-      const text=await res.text();
-      if(res.ok && text.trim() && !text.trim().startsWith('<') && text.includes(',')){
-        const booths=this.rowsToBooths(parseCSV(text));
-        if(booths.length){ this.applyBooths(booths,'Drive 直接同步'); return; }
-      }
-      if(typeof XLSX!=='undefined'){
-        const dl=`https://drive.google.com/uc?export=download&id=${sheetId}`;
-        const r2=await fetch(dl);
-        if(r2.ok){
-          const ab=await r2.arrayBuffer();
-          const wb=XLSX.read(ab,{type:'array'});
-          const sh=wb.Sheets[wb.SheetNames[0]];
-          const booths=this.rowsToBooths(XLSX.utils.sheet_to_json(sh,{defval:''}));
-          if(booths.length){ this.applyBooths(booths,'Drive 直接同步 (xlsx)'); return; }
-        }
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const booths=this.rowsToBooths(got.rows);
+        if(booths.length){ this.applyBooths(booths,'Drive 直接同步 ('+got.via+')'); return; }
       }
       showToast('未能從 Drive 讀取。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
     }catch(e){ showToast('同步失敗：'+e.message+'（如為 CORS，請把 xlsx 轉為 Google 試算表）','error'); }
@@ -1238,11 +1266,8 @@ class ScoutEventApp{
     if(!this.canUploadActivity()){ showToast('僅節目組副主席/主任以上可上傳','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
-      const ab=await file.arrayBuffer();
-      if(typeof XLSX==='undefined'){ showToast('未載入 Excel 解析庫 (需連線 CDN)','error'); return; }
-      const wb=XLSX.read(ab,{type:'array'});
-      const sh=wb.Sheets[wb.SheetNames[0]];
-      const booths=this.rowsToBooths(XLSX.utils.sheet_to_json(sh,{defval:''}));
+      const rows=await this.parseExcelToRows(file);
+      const booths=this.rowsToBooths(rows);
       if(!booths.length){ showToast('解析不到攤位資料，請確認表頭（攤位編號/攤位名稱/組別…）','error'); return; }
       const data=this.getActivitiesData();
       data.booths=booths;
@@ -1266,6 +1291,109 @@ class ScoutEventApp{
     const win=window.open('','_blank');
     win.document.write(`<html><head><title>攤位總表</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px}</style></head><body>${area.innerHTML}<div class="mt-4 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
+  }
+  // ═══ 預算（財務）資料源 + 同步 ═══
+  budgetHeaderMap(){ return { group_name:['組別','組','group','group_name','department','組名'], voucher:['憑單','憑單編號','voucher','voucher no','單號'], item_name:['項目','項目名稱','item','item_name','名稱','name','description','開支項目'], budget:['預算','budget','budget_amt','預算金額','計劃'], actual:['實際','實際金額','actual','actual_amt','實付'], notes:['備註','notes','remark','說明','remarks'] }; }
+  normalizeBudgetRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const item_name=b(this.budgetHeaderMap().item_name);
+    if(!item_name) return null;
+    const budget=parseFloat(String(b(this.budgetHeaderMap().budget)).replace(/[$,]/g,''))||0;
+    const actual=parseFloat(String(b(this.budgetHeaderMap().actual)).replace(/[$,]/g,''))||0;
+    return { voucher:b(this.budgetHeaderMap().voucher), item_name, group_name:b(this.budgetHeaderMap().group_name)||'未分組', budget, actual, notes:b(this.budgetHeaderMap().notes) };
+  }
+  rowsToBudgets(rows){
+    const items=(rows||[]).map(r=>this.normalizeBudgetRow(r)).filter(Boolean);
+    const groups={};
+    items.forEach(it=>{ if(!groups[it.group_name]) groups[it.group_name]=[]; groups[it.group_name].push(it); });
+    return Object.keys(groups).map(g=>({group_name:g, items:groups[g]}));
+  }
+  async syncBudgetFromDrive(){
+    const src=(this.getFinanceData().budget_source)||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ showToast('尚未設定預算資料來源 (budget_source)','warning'); return; }
+    showToast('正在從 Drive 讀取最新預算…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const gb=this.rowsToBudgets(got.rows);
+        if(gb.length){
+          const fin=this.getFinanceData();
+          fin.group_itemized_budgets=gb;
+          this.saveFinanceData(fin);
+          showToast(`已同步 ${gb.length} 組預算（共 ${gb.reduce((s,g)=>s+g.items.length,0)} 項，via ${got.via}）`,'success');
+          this.renderFinanceBudgets();
+          return;
+        }
+      }
+      showToast('未能從 Drive 讀取預算。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+    }catch(e){ showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleBudgetExcelUpload(file){
+    if(!file) return;
+    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳預算','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const gb=this.rowsToBudgets(rows);
+      if(!gb.length){ showToast('解析不到預算，請確認欄位（組別/項目/預算/實際）','error'); return; }
+      const fin=this.getFinanceData();
+      fin.group_itemized_budgets=gb;
+      this.saveFinanceData(fin);
+      showToast(`已解析 ${gb.length} 組預算（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderFinanceBudgets();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  // ═══ 工作人員名單資料源 + 同步 ═══
+  staffHeaderMap(){ return { name:['姓名','name','名字','人員'], role_title:['職銜','職位','role','role_title','title','崗位'], group_name:['組別','組','group','group_name','部門'], contact:['電話','聯絡','聯絡電話','contact','phone','mobile','tel'], job_desc:['職務','job_desc','duty','職責','工作'] }; }
+  normalizeStaffRow(r){
+    const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
+    const name=b(this.staffHeaderMap().name);
+    if(!name) return null;
+    return { name, role_title:b(this.staffHeaderMap().role_title), group_name:b(this.staffHeaderMap().group_name)||'未分組', contact:b(this.staffHeaderMap().contact), job_desc:b(this.staffHeaderMap().job_desc) };
+  }
+  rowsToContacts(rows){ return (rows||[]).map(r=>this.normalizeStaffRow(r)).filter(Boolean); }
+  async syncStaffFromDrive(){
+    const src=(this.getStaffData().staff_source)||this.eventData.staff?.staff_source||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ showToast('尚未設定名單資料來源 (staff_source)','warning'); return; }
+    showToast('正在從 Drive 讀取最新名單…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const contacts=this.rowsToContacts(got.rows);
+        if(contacts.length){
+          const data=this.getStaffData();
+          data.contacts=contacts;
+          this.saveStaffData(data);
+          showToast(`已同步 ${contacts.length} 位工作人員（via ${got.via}）`,'success');
+          this.renderStaffContacts();
+          return;
+        }
+      }
+      showToast('未能自動解析名單。Org Chart 為架構圖，建議另設「聯絡名單」扁平分頁（姓名/職銜/組別/電話）再同步','warning');
+    }catch(e){ showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  async handleStaffExcelUpload(file){
+    if(!file) return;
+    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅主任以上可上傳名單','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const rows=await this.parseExcelToRows(file);
+      const contacts=this.rowsToContacts(rows);
+      if(!contacts.length){ showToast('解析不到名單，請確認欄位（姓名/職銜/組別/電話）','error'); return; }
+      const data=this.getStaffData();
+      data.contacts=contacts;
+      this.saveStaffData(data);
+      showToast(`已解析 ${contacts.length} 位工作人員（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      this.renderStaffContacts();
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
   }
   openGameCardForm(editId=null){
     if(!this.canUploadActivity()){ showToast('僅相關主任、副主席或以上可上傳','error'); return; }
@@ -3074,7 +3202,8 @@ class ScoutEventApp{
         created_at:e.created_at||''
       })),
       drive_folder_link: raw.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C?usp=sharing',
-      drive_folder_id: '1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C'
+      drive_folder_id: '1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C',
+      budget_source: raw.budget_source||null
     };
   }
   saveFinanceData(data){
@@ -3219,7 +3348,12 @@ class ScoutEventApp{
     const income=fin.income||[];
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="flex gap-2"><button onclick="app.openExpenseForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增開支申報</button><button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button></div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.syncBudgetFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新預算 (Drive)</button>
+          ${(this.isAdmin()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 預算<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBudgetExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.openExpenseForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增開支申報</button><button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
+        </div>
+        ${(this.getFinanceData().budget_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">📊 預算來源：「${escapeHtml(this.getFinanceData().budget_source.name||'Budget')}」（由行政組/財務更新）。建議把 xlsx 另存為原生 Google 試算表後，點「同步最新」直接讀取。</div>`:''}
         ${budgets.map(g=>`<div class="border rounded-xl p-4 bg-white"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-sm"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i>${escapeHtml(g.group_name)}</h4><span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded-full">${(g.items||[]).length} 項</span></div><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">憑單</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">預算</th><th class="px-2 py-1 text-left">實際</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${(g.items||[]).map(it=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(it.voucher)}</td><td class="px-2 py-1">${escapeHtml(it.item_name)}</td><td class="px-2 py-1">$${it.budget}</td><td class="px-2 py-1 font-bold text-rose-600">$${it.actual}</td><td class="px-2 py-1">${escapeHtml(it.notes||'')}</td></tr>`).join('')}</tbody></table></div></div>`).join('') || '<p class="text-xs text-slate-400">暫無預算明細</p>'}
         <div class="border rounded-xl p-4 bg-white"><h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i>收入</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1">預算</th><th class="px-2 py-1">實際</th></tr></thead><tbody class="divide-y">${income.map(i=>`<tr><td class="px-2 py-1">${escapeHtml(i.item)}</td><td class="px-2 py-1">$${i.budget}</td><td class="px-2 py-1 font-bold text-emerald-700">$${i.actual}</td></tr>`).join('')}</tbody></table></div></div>
       </div>
@@ -3572,6 +3706,7 @@ class ScoutEventApp{
     const raw=this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
     // Normalize
     return {
+      staff_source: raw.staff_source||null,
       org_chart:(raw.org_chart||[]).map((n,i)=>({id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:this.parseGroupFromLevel(n.level)||n.group||'未分組',title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''})),
       contacts:(raw.contacts||[]).map((c,i)=>({id:c.id||'contact_'+i,name:c.name||'',role_title:c.role_title||c.role||'',group_name:c.group_name||c.group||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'})),
       job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:j.group||'未分組',duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
@@ -3769,12 +3904,15 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="flex flex-wrap gap-2">
+          <button onclick="app.syncStaffFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新名單 (Drive)</button>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleStaffExcelUpload(this.files[0])"></label>
           <button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>單欄新增</button>
           <button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 CSV/JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>
           <button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
           <input id="staff-search" placeholder="搜尋姓名/組別/電話" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
+        ${(data.staff_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組更新。此檔為架構圖，建議另設一個「聯絡名單」扁平分頁（姓名/職銜/組別/電話）即可「同步最新」自動讀取。</div>`:''}
         <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th><th class="px-3 py-2 text-right">操作</th></tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>

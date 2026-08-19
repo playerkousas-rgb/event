@@ -58,6 +58,16 @@
     }
   ],
   "staff": {
+    "staff_source": {
+      "mode": "drive_sheet",
+      "name": "ISD2026 Org Chart and Contact List（持續更新）",
+      "drive_file_id": "1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp",
+      "sheet_id": "1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp",
+      "gid": 0,
+      "folder": "行政組/工作人員",
+      "columns": ["name", "role_title", "group_name", "contact"],
+      "note": "此檔已是原生 Google 試算表，可直接讀取。聯絡名單建議放一個扁平分頁（姓名/職銜/組別/電話），APP 即可同步。"
+    },
     "org_chart": [
       { "level": "顧問團 (Level 2)", "title": "顧問", "names": "黃偉安、何家騏", "desc": "審核活動目的；就活動設計、籌劃、推行提供政策性意見；監察整體運作；與地域總監確認主禮嘉賓／主禮人。" },
       { "level": "籌委會 (Level 2)", "title": "主席", "names": "朱家聰", "desc": "主持籌備委員會所有會議；負責統籌活動一切有關事宜及確保順利進行；對外代表活動籌委會。" },
@@ -202,6 +212,16 @@
     { "id": "doc_booths2025", "title": "ISD2025 攤位資料（參考）", "category": "活動", "summary": "2025 攤位總表（供 2026 參考）。", "description": "ISD2025 攤位資料(參考)", "file_name": "ISD2025 攤位資料(參考)", "file_url": "https://drive.google.com/file/d/179nQJYbzar3AqddmPf3cstWO65LT_gBM/view", "uploaded_by": "主題節目組", "date": "2026-08-14" }
   ],
   "finance": {
+    "budget_source": {
+      "mode": "drive_sheet",
+      "name": "ISD2026 Budget",
+      "drive_file_id": "1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_",
+      "sheet_id": "1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_",
+      "gid": 0,
+      "folder": "行政組/財務",
+      "columns": ["group_name", "voucher", "item_name", "budget", "actual", "notes"],
+      "note": "建議把 xlsx 另存為原生 Google 試算表，APP 即可每次開啟直接讀最新預算。由行政組/財務負責更新。"
+    },
     "group_itemized_budgets": [],
     "income": [],
     "expenses": []
