@@ -129,6 +129,31 @@ function initializeSheets() {
   // 膳食菜單：補回選項／截止／鎖定等欄
   ensureColumns(ss.getSheetByName('Meals'), ['options', 'price', 'deadline', 'locked', 'created_by']);
   seedInitialData();
+  formatSheetsByPurpose();
+}
+
+// 以工作表顏色及標題備註標示用途，方便後台日常維護。
+// 藍色：後台經常改；綠色：活動紀錄；紫色：系統／權限；灰色：外部匯入原始資料。
+function formatSheetsByPurpose() {
+  const ss = getSheet();
+  const frequentlyEdited = ['Events','Account_Setup','Approval_Permissions','Supplies','Finance','Schedule','Meals'];
+  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Vehicle_Passes','Parking_Requests','Oral_Quotes'];
+  const systemSheets = ['Users'];
+  ss.getSheets().forEach(function(sheet) {
+    const name = sheet.getName();
+    let color = '#94a3b8', purpose = '外部匯入／原始資料：由其他 Sheet 或 Drive 提供，請勿直接在此頁修改。';
+    if (frequentlyEdited.indexOf(name) >= 0) { color = '#2563eb'; purpose = '後台經常改動：此頁是管理員／負責組別的主要輸入頁。'; }
+    else if (records.indexOf(name) >= 0) { color = '#16a34a'; purpose = '紀錄資料：APP 提交或由後台記錄，主要用作查閱、追蹤及匯出。'; }
+    else if (systemSheets.indexOf(name) >= 0) { color = '#7c3aed'; purpose = '系統／權限資料：只限管理員維護。'; }
+    sheet.setTabColor(color);
+    if (sheet.getLastColumn() > 0) {
+      sheet.getRange(1, 1, 1, sheet.getLastColumn()).setNote(purpose);
+      sheet.getRange(1, 1, 1, sheet.getLastColumn()).setBackground(color).setFontColor('#ffffff').setFontWeight('bold');
+    }
+    // 明確標示為匯入原始頁的工作表可隱藏，避免誤改；需要時可在 Google Sheet「顯示」還原。
+    if (/(^|[_ -])(raw|import|source|匯入|原始)([_ -]|$)/i.test(name)) sheet.hideSheet();
+  });
+  return {success:true, message:'已按用途套用工作表顏色；匯入原始頁已隱藏'};
 }
 
 function ensureSheet(ss, sheetName, headers) {
@@ -404,6 +429,7 @@ function onOpen() {
     .addItem('開戶（同步 Account_Setup → Users）', 'syncAccountsFromSetup')
     .addItem('同步批核權限（Approval_Permissions）', 'getApprovalPermissions')
     .addItem('刷新 API Key', 'refreshApiKey')
+    .addItem('整理工作表顏色／隱藏匯入頁', 'formatSheetsByPurpose')
     .addToUi();
 }
 
@@ -422,7 +448,7 @@ function seedInitialData() {
   if (uSheet.getLastRow() <= 1) {
     uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', '', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
     uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '籌委會', '主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'vice_chairperson', '行政組', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
@@ -443,7 +469,7 @@ function seedInitialData() {
   if (sSheet.getLastRow() <= 1) {
     const STAFF = [
       ['黃偉安', '顧問', '顧問團'], ['何家騏', '顧問 / 危機處理主任', '顧問團 / 行政組'],
-      ['朱家聰', '主席', '籌委會'], ['袁可秀', '執行副主席', '籌委會'],
+      ['朱家聰', '主席', '主席及執行副主席'], ['袁可秀', '執行副主席', '主席及執行副主席'],
       ['張佳良', '副主席（會操及典禮）', '會操及典禮組'], ['梁文澧', '總主任（會操）', '會操及典禮組'], ['黃志樂', '會操顧問', '會操及典禮組'],
       ['李懷恩', '總主任（典禮）', '會操及典禮組'], ['黃凱琳', '典禮統籌主任', '會操及典禮組'], ['林雋逸', '優異旅團統籌主任', '會操及典禮組'], ['馮玉成', '獎勵統籌主任', '會操及典禮組'], ['范紫晴', '司儀統籌主任', '會操及典禮組'], ['林卓衡', '司儀統籌主任', '會操及典禮組'],
       ['周恒晉', '副主席（主題節目）', '主題節目組'], ['仇紹謙', '總主任（主題節目）', '主題節目組'], ['何令勤', '節目主任 (1)', '主題節目組'], ['陳鋑羲', '節目主任 (2)', '主題節目組'], ['張宏剛', '節目主任 (3)', '主題節目組'], ['羅卓華', '節目主任 (4)', '主題節目組'], ['李庭甄', '節目主任 (5)', '主題節目組'],
