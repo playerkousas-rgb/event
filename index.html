@@ -2394,7 +2394,7 @@ class ScoutEventApp{
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
   downloadScheduleTemplate(){
-    const csv='time_slot,title,location,group_name,description\n07:45 - 08:30,會操及頒獎禮場地設置劃位,大操場,協調組,各功能組別場地佈置\n08:30 - 10:30,參加旅團報到,報到處,行政組,旅團報到及攤位佈置\n10:00 - 12:30,上午主題攤位節目,營地全區,主題節目組,攤位博覽與積極公民工作坊\n12:30 - 14:30,午膳,食堂,協調組,工作人員午膳\n14:45 - 15:45,優異旅團及獎勵頒發儀式,大操場,會操及典禮組,頒發彩帶及證書\n16:00 - 16:40,會操檢閱及頒獎典禮,大操場,會操及典禮組,主禮嘉賓檢閱及頒獎\n';
+    const csv='time_slot,title,location,group_name,description\n07:45 - 08:30,會操及頒獎禮場地設置劃位,大操場,協調組,各功能組別場地佈置\n08:30 - 10:30,參加旅團報到及攤位最後佈置,報到處,行政組,旅團報到及攤位佈置\n10:45 - 10:55,嘉賓接待及就座,莫榮大樓地下,行政組,嘉賓接待後就座大操場\n11:00 - 12:00,第一部分典禮：優異旅團及各項獎勵頒發儀式,大操場,會操及典禮組,吳家麗會長主禮\n12:00 - 13:00,第二部分典禮：會操檢閱及頒獎儀式,大操場,會操及典禮組,區永樑指揮官主禮\n13:00 - 14:00,嘉賓茶聚,莫榮大樓地下,行政組,嘉賓茶聚及工作人員午膳\n14:00 - 17:00,主題攤位節目／參觀主題活動區,營地全區,主題節目組,公眾參觀攤位\n';
     const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='schedule_template.csv'; a.click(); showToast('已下載日程表範本','success');
   }
   downloadParticipantsTemplate(){
@@ -6999,32 +6999,18 @@ class ScoutEventApp{
     const key=LS.ceremony(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
     if(local) return local;
-    if(!this.isDemoEvent()) return {rundown:[],mc_script:[],speech:null,guests:[],seating:[]}; // 真實活動：預留版位
+    // 內建官方典禮程序（2026-10-04 定稿，不會再改）——所有活動一併內建，可於 APP 內編輯覆蓋
+    const officialRundown=[
+      {id:'rd_o0',time:'10:45',program:'嘉賓接待（典禮嘉賓接待處）',location:'莫榮大樓地下'},
+      {id:'rd_o1',time:'10:55',program:'嘉賓就座',location:'大操場'},
+      {id:'rd_o2',time:'11:00',program:'第一部分典禮：優異旅團及各項獎勵頒發儀式（吳家麗會長主禮）— 頒發優異旅團彩帶及證書／頒發支部最高獎章嘉許信／頒發領袖及委員獎勵／致送協助單位紀念品',location:'大操場'},
+      {id:'rd_o3',time:'12:00',program:'第二部分典禮：會操檢閱及頒獎儀式（港島總區指揮官區永樑先生主禮）— 主禮嘉賓進場／檢閱步操比賽隊伍／幼童軍團呼及頒獎／主禮嘉賓致辭／頒發升旗比賽獎項／頒發步操比賽獎項／頒發隊列比賽獎項／頒發區際錦標／步操隊伍離場',location:'大操場'},
+      {id:'rd_o4',time:'13:00',program:'頒獎典禮完畢；嘉賓茶聚（儀式完結後隨即開始）',location:'莫榮大樓地下'},
+      {id:'rd_o5',time:'14:00',program:'參觀主題活動區',location:'全場'}
+    ];
+    if(!this.isDemoEvent()) return {rundown:officialRundown,mc_script:[],speech:null,guests:[],seating:[]}; // 真實活動：內建官方典禮程序
     return {
-      rundown:[
-        // ── 優異旅團及各項獎勵頒發儀式（15:00，參考 2025 程序）──
-        {id:'rd_a0',time:'14:45',program:'嘉賓就座（優異旅團及各項獎勵頒發儀式）',location:'大操場'},
-        {id:'rd_a1',time:'15:00',program:'頒發優異旅團彩帶及證書（小童軍證書／幼童軍、童軍、深資童軍、樂行童軍彩帶）— 石敬文總監頒發，潘志強總監陪同',location:'大操場'},
-        {id:'rd_a2',time:'15:00',program:'頒發支部最高獎章嘉許信（總領袖獎章×3組／榮譽童軍獎章／貝登堡獎章）— 區子君會長頒發',location:'大操場'},
-        {id:'rd_a3',time:'15:00',program:'頒發總監委任書（覆誓）— 石敬文總監',location:'大操場'},
-        {id:'rd_a4',time:'15:00',program:'頒發領袖及委員獎勵（5年/10年長期服務獎狀、長期服務一星/三星/四星獎章、優異服務獎章）— 區子君會長',location:'大操場'},
-        {id:'rd_a5',time:'15:00',program:'地域樂行童軍支部韓國秋夕交流之旅授旗禮 — 石敬文總監（區嘉欣總監見證）',location:'大操場'},
-        {id:'rd_a6',time:'15:00',program:'小童軍填色及幼童軍設計比賽頒獎 — 蔡子豪總監',location:'大操場'},
-        {id:'rd_a7',time:'15:00',program:'小童軍快樂傘表演及頒獎',location:'大操場'},
-        {id:'rd_a8',time:'15:00',program:'致送協助單位紀念品（香港警察學院、聖約翰救護機構感謝狀）— 陳永康主席',location:'大操場'},
-        {id:'rd_a9',time:'15:45',program:'優異旅團頒獎典禮完畢',location:'大操場'},
-        // ── 會操檢閱及頒獎儀式（16:00，參考 2025 程序）──
-        {id:'rd1',time:'16:00',program:'主禮嘉賓到場 — 區子君會長、石敬文總監、陳永康主席、陳子明總監、潘志強總監、梁國豪總監及高家豪總監迎接',location:'大操場'},
-        {id:'rd2',time:'16:00',program:'風笛手引領嘉賓團進場 — 區子君會長、石敬文總監、陳永康主席、各副地域總監及高家豪總監陪同',location:'大操場'},
-        {id:'rd3',time:'16:10',program:'檢閱會操隊伍 — 盧詠儀院長（陳子明總監及梁國豪總監陪同）',location:'大操場'},
-        {id:'rd4',time:'16:10',program:'會操隊伍操過檢閱台向主禮嘉賓致敬／最高致敬',location:'大操場'},
-        {id:'rd5',time:'16:10',program:'主禮嘉賓致辭 — 盧詠儀院長',location:'檢閱台'},
-        {id:'rd6',time:'16:10',program:'頒發升旗比賽獎項（4個）／步操比賽初級組（3個）／選拔組（5個）／隊列比賽（4個）／區際錦標（1個）— 盧詠儀院長（陳子明總監陪同）',location:'檢閱台前'},
-        {id:'rd7',time:'16:10',program:'致送青少年制服團隊感謝狀（2個）',location:'檢閱台前'},
-        {id:'rd8',time:'16:40',program:'會操隊伍離場、頒獎典禮完畢',location:'大操場'},
-        {id:'rd9',time:'16:50',program:'拍照（主禮嘉賓與全體會操隊伍）',location:'有蓋操場 Backdrop'},
-        {id:'rd10',time:'17:00',program:'嘉賓茶聚（莫榮大樓）',location:'莫榮大樓'}
-      ],
+      rundown:officialRundown,
       mc_script:[
         {id:'mc0_1',seq:1,text:'【優異旅團頒獎典禮（15:00）】司儀（蔡小晴）：我係柴灣區副區總監蔡小晴。司儀（曾令勤）：我係港島地域深資童軍議會主席曾令勤。歡迎各位參加「港島童軍繽紛日2025」，典禮即將開始，請各位保持安靜。'},
         {id:'mc0_2',seq:2,text:'司儀（蔡小晴）：「港島童軍繽紛日」係港島地域一年一度的盛事，嘉許優異旅團、表揚有出色表現的青少年成員、領袖及會務委員。司儀（曾令勤）：今年活動以「童心傳承、明日領袖」為主軸。'},
@@ -7099,6 +7085,7 @@ class ScoutEventApp{
           <button onclick="app.switchCeremonyTab('seating')" class="tab-btn ${this.ceremonySubTab==='seating'?'active':''}"><i class="fa-solid fa-chair mr-1"></i> 座位表</button>
           <button onclick="app.switchCeremonyTab('speech')" class="tab-btn ${this.ceremonySubTab==='speech'?'active':''}"><i class="fa-solid fa-comment-dots mr-1"></i> 致辭稿</button>
           <button onclick="app.switchCeremonyTab('awards')" class="tab-btn ${this.ceremonySubTab==='awards'?'active':''}"><i class="fa-solid fa-trophy mr-1"></i> 獲獎名單</button>
+          <button onclick="app.switchCeremonyTab('map')" class="tab-btn ${this.ceremonySubTab==='map'?'active':''}"><i class="fa-solid fa-map-location-dot mr-1"></i> 嘉賓地圖</button>
         </div>
         <div id="ceremony-tab-rundown" class="${this.ceremonySubTab==='rundown'?'':'hidden'}"></div>
         <div id="ceremony-tab-mc" class="${this.ceremonySubTab==='mc'?'':'hidden'}"></div>
@@ -7106,6 +7093,7 @@ class ScoutEventApp{
         <div id="ceremony-tab-seating" class="${this.ceremonySubTab==='seating'?'':'hidden'}"></div>
         <div id="ceremony-tab-speech" class="${this.ceremonySubTab==='speech'?'':'hidden'}"></div>
         <div id="ceremony-tab-awards" class="${this.ceremonySubTab==='awards'?'':'hidden'}"></div>
+        <div id="ceremony-tab-map" class="${this.ceremonySubTab==='map'?'':'hidden'}"></div>
       </div>
     `;
     this.renderCeremonyRundown();
@@ -7113,15 +7101,77 @@ class ScoutEventApp{
     this.renderCeremonyGuests();
     this.renderCeremonySeating();
     this.renderCeremonySpeech();
+    this.renderCeremonyMap();
   }
   switchCeremonyTab(tab){
     this.ceremonySubTab=tab;
-    ['rundown','mc','guests','seating','speech','awards'].forEach(t=>{const el=document.getElementById('ceremony-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
+    ['rundown','mc','guests','seating','speech','awards','map'].forEach(t=>{const el=document.getElementById('ceremony-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
     document.querySelectorAll('[onclick^="app.switchCeremonyTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className=t===tab?'tab-btn active':'tab-btn';
     });
     if(tab==='awards'){ const c=document.getElementById('ceremony-tab-awards'); if(c && !c.dataset.rendered){ c.dataset.rendered='1'; this.renderAwardsModule(c); } }
+    if(tab==='map') this.renderCeremonyMap();
+  }
+  renderCeremonyMap(){
+    const container=document.getElementById('ceremony-tab-map'); if(!container) return;
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
+          <b>🗺️ 嘉賓地圖及交通（內建·官方 2026 地圖資料，已定稿）：</b>香港警察學院場地及嘉賓安排總覽已內建於本卡，毋須另開連結。
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="bg-white border rounded-xl p-4 space-y-2">
+            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-door-open text-rose-600"></i>入口（東閘）</h4>
+            <p class="text-[11px] text-slate-600 leading-relaxed">基於保安原因，<b>所有嘉賓必須利用東閘進入香港警察學院</b>。請按照指示牌，沿著<b>警校道</b>前往位於<b>有蓋操場</b>之<b>嘉賓報到處</b>。</p>
+          </div>
+          <div class="bg-white border rounded-xl p-4 space-y-2">
+            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-mug-hot text-amber-600"></i>典禮嘉賓接待處</h4>
+            <p class="text-[11px] text-slate-600 leading-relaxed">設於<b>莫榮大樓地下</b>。嘉賓接待、典禮後輕食茶點均在此進行。</p>
+          </div>
+          <div class="bg-white border rounded-xl p-4 space-y-2">
+            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-car text-sky-600"></i>停車場</h4>
+            <p class="text-[11px] text-slate-600 leading-relaxed">警察學院<b>不設停車場</b>。駕車赴會請使用<b>海洋公園正門收費停車場</b>【星期日每小時港幣 $55（每日最高收費港幣 $275）】。</p>
+          </div>
+          <div class="bg-white border rounded-xl p-4 space-y-2">
+            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-bus text-emerald-600"></i>穿梭巴士</h4>
+            <p class="text-[11px] text-slate-600 leading-relaxed">去程：<b>10:15</b> 灣仔愛群道伊利沙伯體育館門口開出；回程：<b>14:30</b> 香港警察學院停車場開出。（大會視乎最終示意人數決定是否安排，並另作通知）</p>
+          </div>
+        </div>
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-[13px] mb-3 flex items-center gap-2"><i class="fa-solid fa-map text-slate-600"></i>場地簡化示意（按官方地圖）</h4>
+          <div class="flex flex-col items-stretch gap-2 text-[11px]">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="bg-rose-600 text-white px-3 py-2 rounded-xl font-bold whitespace-nowrap"><i class="fa-solid fa-door-open mr-1"></i>入口（東閘）</span>
+              <span class="text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="bg-sky-100 text-sky-800 border border-sky-200 px-3 py-2 rounded-xl font-bold">警校道</span>
+              <span class="text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-2 rounded-xl font-bold">有蓋操場<br><span class="font-normal text-[10px]">嘉賓報到處</span></span>
+              <span class="text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="bg-amber-100 text-amber-800 border border-amber-200 px-3 py-2 rounded-xl font-bold">大操場<br><span class="font-normal text-[10px]">典禮（11:00 / 12:00）</span></span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="bg-slate-100 text-slate-600 border px-3 py-2 rounded-xl font-bold"><i class="fa-solid fa-building mr-1"></i>莫榮大樓地下<br><span class="font-normal text-[10px]">嘉賓接待處 · 茶聚（13:00）</span></span>
+              <span class="text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-3 py-2 rounded-xl font-bold">主題活動區<br><span class="font-normal text-[10px]">參觀（14:00 起）</span></span>
+            </div>
+            <div class="bg-slate-50 border rounded-xl p-2.5 text-[10px] text-slate-500">註：以上為簡化示意，實際以官方地圖為準。停車場設於海洋公園正門（收費），學院內不設停車場。</div>
+          </div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <a href="https://www.google.com/maps/search/?api=1&query=%E9%A6%99%E6%B8%AF%E8%AD%A6%E5%AF%9F%E5%AD%B8%E9%99%A2+%E9%BB%83%E7%AB%B9%E5%9D%91" target="_blank" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-location-arrow mr-1"></i>導航前往（Google 地圖）</a>
+          <button onclick="app.printCeremonyMap()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
+        </div>
+      </div>
+    `;
+  }
+  printCeremonyMap(){
+    const area=document.getElementById('ceremony-tab-map');
+    if(!area){ showToast('找不到嘉賓地圖內容','error'); return; }
+    const win=window.open('','_blank');
+    if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
+    win.document.write(`<html><head><title>嘉賓地圖</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:sans-serif;padding:20px} @media print{button,a{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.close();
   }
   renderCeremonyRundown(){
     const container=document.getElementById('ceremony-tab-rundown'); if(!container) return;
@@ -8154,13 +8204,12 @@ class ScoutEventApp{
     // ISD typical run down - 上午攤位、下午儀式 (2025 實際流程)；僅模擬示範活動顯示
     const isdRunDown=this.isDemoEvent()?[
       {time:'07:45 - 08:30', location:'大操場 / 有蓋操場', program:'會操及頒獎禮場地設置劃位，各功能組別場地佈置', groups:{'協調組':'場地佈置、物資運送','步操及典禮組':'步操報到處 set up, 樂隊報到','節目組':'到達會場及拿物資','服務組':'到達會場及拿物資','行政組':'行政組 set up、運作'}},
-      {time:'08:30 - 10:00', location:'報到處 / 大操場', program:'參加旅團報到、制服團隊報到，攤位負責人報到及開始佈置', groups:{'協調組':'場內秩序及交通組開始運作','步操及典禮組':'優異旅團/獲獎人士報到，貼嘉賓座位紙','節目組':'攤位負責人報到及開始佈置','行政組':'旅團報到處 set up、運作'}},
-      {time:'10:00 - 12:30', location:'營地全區', program:'上午主題攤位節目：攤位博覽與積極公民工作坊，禮物換領，領袖聯誼閣運作（第一部分）', groups:{'節目組':'攤位遊戲、積極公民工作坊','協調組':'物資運送、攤位支援','行政組':'領袖聯誼閣運作、禮物換領','服務組':'支援'}},
-      {time:'12:30 - 14:30', location:'食堂 / 有蓋操場', program:'午膳、節目（展覽），下午典禮及會操準備', groups:{'協調組':'各組別及義工午膳','步操及典禮組':'步操隊伍集合、嘉賓接待準備','節目組':'攤位午間休息/輪換','行政組':'領袖聯誼閣 set up'}},
-      {time:'14:45 - 15:45', location:'大操場', program:'第二部分：優異旅團及獎勵頒發儀式（頒發彩帶及證書、支部最高獎章嘉許信、總監委任書、領袖獎勵、授旗禮、致送紀念品）', groups:{'步操及典禮組':'典禮主持、頒獎流程','節目組':'可憑飯券領取工作人員飯盒','協調組':'派發工作人員膳食','行政組':'運作'}},
-      {time:'16:00 - 16:40', location:'大操場', program:'第三部分：會操檢閱及頒獎典禮（主禮嘉賓檢閱、分列式、致辭、頒發步操比賽獎項）', groups:{'步操及典禮組':'檢閱、頒獎流程','協調組':'秩序及交通','行政組':'運作'}},
-      {time:'16:50 - 17:00', location:'有蓋操場', program:'拍照（主禮嘉賓與全體會操隊伍）', groups:{'步操及典禮組':'拍照安排'}},
-      {time:'17:00', location:'莫榮大樓', program:'嘉賓茶聚', groups:{'行政組':'接待嘉賓'}},
+      {time:'08:30 - 10:30', location:'報到處 / 大操場', program:'參加旅團報到、制服團隊報到，攤位負責人報到及最後佈置；嘉賓接待處準備', groups:{'協調組':'場內秩序及交通組開始運作','步操及典禮組':'優異旅團/獲獎人士報到，貼嘉賓座位紙','節目組':'攤位負責人報到及最後佈置','行政組':'旅團報到處 set up、運作'}},
+      {time:'10:45 - 10:55', location:'莫榮大樓地下 → 大操場', program:'嘉賓接待（莫榮大樓地下）→ 嘉賓就座（大操場）', groups:{'行政組':'嘉賓接待運作','步操及典禮組':'典禮準備就緒'}},
+      {time:'11:00 - 12:00', location:'大操場', program:'第一部分典禮：優異旅團及各項獎勵頒發儀式（吳家麗會長主禮）— 頒發彩帶及證書、支部最高獎章嘉許信、領袖及委員獎勵、致送紀念品', groups:{'步操及典禮組':'典禮主持、頒獎流程','協調組':'秩序及交通','行政組':'運作'}},
+      {time:'12:00 - 13:00', location:'大操場', program:'第二部分典禮：會操檢閱及頒獎儀式（港島總區指揮官區永樑先生主禮）— 主禮嘉賓進場、檢閱步操隊伍、致辭、頒發升旗／步操／隊列比賽獎項及區際錦標', groups:{'步操及典禮組':'檢閱、頒獎流程','協調組':'秩序及交通','行政組':'運作'}},
+      {time:'13:00 - 14:00', location:'莫榮大樓地下', program:'嘉賓茶聚（莫榮大樓地下）；工作人員午膳', groups:{'行政組':'接待嘉賓','協調組':'派發工作人員膳食','節目組':'攤位午間休息/輪換'}},
+      {time:'14:00 - 17:00', location:'營地全區', program:'主題攤位節目／參觀主題活動區（公眾）：攤位博覽、積極公民工作坊、禮物換領', groups:{'節目組':'攤位遊戲、積極公民工作坊','協調組':'物資運送、攤位支援','行政組':'領袖聯誼閣運作、禮物換領','服務組':'支援'}},
       {time:'17:00 - 18:00', location:'全區', program:'所有節目完結、拆卸設施、清潔、運送物資、對數', groups:{'協調組':'承建商清理場地、運送物資回地域','節目組':'收拾物資+裝箱','行政組':'攤位負責人提交財政報告及收據','常務組':'對數'}}
     ]:[];
     const isAdmin=this.isAdmin();
@@ -8235,11 +8284,14 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-3">
         <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-sm mb-2">典禮程序 (下午：14:45 優異旅團頒獎 / 16:00 會操檢閱)</h4>
+          <h4 class="font-bold text-sm mb-2">典禮程序（2026-10-04 官方定稿，內建於「典禮儀式」卡片）</h4>
           <div class="text-[11px] leading-relaxed space-y-1">
-            <div><b>14:45-15:45 優異旅團及獎勵頒獎典禮：</b>頒發優異旅團彩帶及證書、支部最高獎章嘉許信、總監委任書、領袖獎勵、授旗禮、致送協助單位紀念品</div>
-            <div><b>16:00-16:40 會操檢閱及頒獎典禮：</b>主禮嘉賓到場、檢閱步操隊伍、分列式、主禮嘉賓致辭、頒發升旗/步操/隊列比賽獎項、棍禮致敬、拍照</div>
-            <div class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>司儀稿、獲獎名單：</b>舊版 2017 手冊有 步操檢閱司儀稿 (10-29頁)、優異旅團獲獎名單 (30-31)、支部獎勵 (32)、領袖獎勵 (33)，新版可在文件檔案卡片上傳，全部人可查閱</div>
+            <div><b>10:45</b> 嘉賓接待（莫榮大樓地下） ｜ <b>10:55</b> 嘉賓就座（大操場）</div>
+            <div><b>11:00 第一部分典禮：優異旅團及各項獎勵頒發儀式</b>（吳家麗會長主禮）— 頒發優異旅團彩帶及證書、支部最高獎章嘉許信、領袖及委員獎勵、致送協助單位紀念品</div>
+            <div><b>12:00 第二部分典禮：會操檢閱及頒獎儀式</b>（港島總區指揮官區永樑先生主禮）— 主禮嘉賓進場、檢閱步操比賽隊伍、幼童軍團呼及頒獎、主禮嘉賓致辭、頒發升旗／步操／隊列比賽獎項、頒發區際錦標、步操隊伍離場</div>
+            <div><b>13:00</b> 頒獎典禮完畢；嘉賓茶聚（莫榮大樓地下）</div>
+            <div><b>14:00</b> 參觀主題活動區</div>
+            <div class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>司儀稿、獲獎名單、嘉賓地圖：</b>詳見「典禮儀式」卡片（司儀稿／嘉賓名單／座位表／獲獎名單／嘉賓地圖分頁），全部人可查閱。</div>
           </div>
         </div>
       </div>
