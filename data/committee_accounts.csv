@@ -48,5 +48,8 @@ ymis,name,email,role,group_name,contact,password,can_tick,allowed_modules,squad,
 何仲康,何仲康,,director,行政組,,1234,true,*,,,active,紀念品主任
 莫穎民,莫穎民,,general_director,行政組,,1234,true,*,,,active,總主任（行政）
 蔡天欣,蔡天欣,,director,行政組,,1234,true,*,,,active,財政主任
-何家耀,何家耀,,admin,秘書處,,1234,true,*,,,active,秘書處職員（地域受薪）
-陸詠德,陸詠德,,admin,秘書處,,1234,true,*,,,active,秘書處職員（地域受薪）
+何家耀,何家耀,,admin,秘書處,2835 7712,1234,true,*,,,active,助理執行幹事 (Assistant Scout Executive) Oscar
+陸詠德,陸詠德,,admin,秘書處,2835 7713,1234,true,*,,,active,活動幹事 (Programme Officer) Fiona
+譚健祥,譚健祥,,admin,秘書處,2835 7711,1234,true,*,,,active,執行幹事 (Scout Executive) Figo
+鄧倩姸,鄧倩姸,,admin,秘書處,2835 7714,1234,true,*,,,active,發展幹事 (Development Officer) Cindy
+曾凱瑩,曾凱瑩,,admin,秘書處,2835 7715,1234,true,*,,,active,訓練幹事 (Training Officer) Sandy

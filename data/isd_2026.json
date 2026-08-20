@@ -596,9 +596,9 @@
       "name": "何家耀",
       "role": "admin",
       "group_name": "秘書處",
-      "job_title": "秘書處職員（地域受薪）",
+      "job_title": "助理執行幹事 (Assistant Scout Executive) Oscar",
       "email": "",
-      "contact": "",
+      "contact": "2835 7712",
       "password": "1234",
       "status": "active",
       "can_tick": true
@@ -608,9 +608,45 @@
       "name": "陸詠德",
       "role": "admin",
       "group_name": "秘書處",
-      "job_title": "秘書處職員（地域受薪）",
+      "job_title": "活動幹事 (Programme Officer) Fiona",
       "email": "",
-      "contact": "",
+      "contact": "2835 7713",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "譚健祥",
+      "name": "譚健祥",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "執行幹事 (Scout Executive) Figo",
+      "email": "",
+      "contact": "2835 7711",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "鄧倩姸",
+      "name": "鄧倩姸",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "發展幹事 (Development Officer) Cindy",
+      "email": "",
+      "contact": "2835 7714",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "曾凱瑩",
+      "name": "曾凱瑩",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "訓練幹事 (Training Officer) Sandy",
+      "email": "",
+      "contact": "2835 7715",
       "password": "1234",
       "status": "active",
       "can_tick": true
@@ -973,9 +1009,9 @@
       },
       {
         "level": "秘書處 (Level 2)",
-        "title": "秘書處職員",
-        "names": "何家耀、陸詠德",
-        "desc": "地域受薪職員，負責秘書處行政工作。"
+        "title": "秘書處（地域受薪職員）",
+        "names": "譚健祥、何家耀、陸詠德、鄧倩姸、曾凱瑩",
+        "desc": "地域總會秘書處受薪職員，負責行政、活動、發展及訓練工作。"
       }
     ],
     "contacts": [
@@ -1324,17 +1360,38 @@
       },
       {
         "name": "何家耀",
-        "role_title": "秘書處職員（地域受薪）",
+        "role_title": "助理執行幹事 (Assistant Scout Executive)",
         "group_name": "秘書處",
-        "contact": "",
-        "job_desc": "地域秘書處行政工作"
+        "contact": "2835 7712",
+        "job_desc": "地域秘書處行政工作 (Oscar)"
       },
       {
         "name": "陸詠德",
-        "role_title": "秘書處職員（地域受薪）",
+        "role_title": "活動幹事 (Programme Officer)",
         "group_name": "秘書處",
-        "contact": "",
-        "job_desc": "地域秘書處行政工作"
+        "contact": "2835 7713",
+        "job_desc": "地域秘書處行政工作 (Fiona)"
+      },
+      {
+        "name": "譚健祥",
+        "role_title": "執行幹事 (Scout Executive)",
+        "group_name": "秘書處",
+        "contact": "2835 7711",
+        "job_desc": "地域秘書處行政工作 (Figo)"
+      },
+      {
+        "name": "鄧倩姸",
+        "role_title": "發展幹事 (Development Officer)",
+        "group_name": "秘書處",
+        "contact": "2835 7714",
+        "job_desc": "地域秘書處行政工作 (Cindy)"
+      },
+      {
+        "name": "曾凱瑩",
+        "role_title": "訓練幹事 (Training Officer)",
+        "group_name": "秘書處",
+        "contact": "2835 7715",
+        "job_desc": "地域秘書處行政工作 (Sandy)"
       }
     ],
     "job_duties": [
