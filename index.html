@@ -7258,10 +7258,11 @@ class ScoutEventApp{
         </div>
         <div class="bg-white border rounded-xl p-4">
           <h4 class="font-bold text-[13px] mb-2 flex items-center gap-2"><i class="fa-solid fa-map text-rose-600"></i>官方原圖（Police College Maps – Guest V2）</h4>
-          <iframe src="assets/ceremony/guest_map.pdf" class="w-full h-[65vh] rounded-xl border" title="嘉賓地圖原圖"></iframe>
+          <img id="ceremony-map-img" src="assets/ceremony/guest_map.png" onerror="this.style.display='none';document.getElementById('ceremony-map-pdf')?.classList.remove('hidden')" class="w-full h-auto rounded-xl border cursor-zoom-in" alt="嘉賓地圖原圖" onclick="window.open(this.src,'_blank')" title="點擊放大">
+          <div id="ceremony-map-pdf" class="hidden"><iframe src="assets/ceremony/guest_map.pdf" class="w-full h-[65vh] rounded-xl border" title="嘉賓地圖原圖"></iframe></div>
           <div class="flex gap-2 mt-2 flex-wrap">
-            <a href="assets/ceremony/guest_map.pdf" download class="bg-rose-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載 PDF</a>
-            <a href="assets/ceremony/guest_map.pdf" target="_blank" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">新分頁開啟</a>
+            <a href="assets/ceremony/guest_map.png" download class="bg-rose-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載原圖</a>
+            <a href="assets/ceremony/guest_map.png" target="_blank" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">新分頁開啟</a>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
