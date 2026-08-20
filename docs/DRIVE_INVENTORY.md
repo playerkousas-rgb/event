@@ -50,7 +50,7 @@
   - **ISD2026 Org Chart and Contact List（持續更新）.xlsx** `1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp`（★ 工作人員名單來源）
 - 財務 `1BBD3l1O7NYw5fqkqc7zzmOVTPSdoOIER`
   - 指引 `1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C`（財務指引 + 附件1–6）
-  - ISD2026 Budget.xlsx `1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_`
+  - ISD2026 Budget.xlsx `1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_`（已轉 Google Sheet：`1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE`，APP 財務卡片自動讀取）
 
 ### 協調組
 - ISD2026_ Site setup Quotation Request.pdf `1ryQltDGazkf_l2qPPnxc6DmomfIlMu-x`
@@ -59,7 +59,7 @@
 
 ### 節目組
 - Concept `1Xo7HUE94IWbyvi-OaGh3UgL88zJsQOv1`
-- ISD2025 攤位資料(參考) `179nQJYbzar3AqddmPf3cstWO65LT_gBM`
+- ISD2025 攤位資料(參考) `179nQJYbzar3AqddmPf3cstWO65LT_gBM`（shortcut → Google Sheet `1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY`，用戶指示作為 APP 攤位資料來源）
 - ISD2026 攤位資料.xlsx `1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle`
 
 ## 我可以看到什麼 / 看不到什麼
@@ -72,7 +72,7 @@
 1. **工作人員名單** ✅ 已同步（從 Org Chart xlsx 讀取完整 53 崗位）。
 2. **通告** ✅ 已同步（sp12、sp12a、Donation 4 份、M28 邀請、收受利益政策、工作計劃）。
 3. **財務指引 + 附件1–6 + Budget** ✅ 已同步（Drive 連結 + 摘要）。
-4. **攤位總表** — 需解析 `ISD2026 攤位資料.xlsx` 內文（目前只有檔案連結）→ 已列入 EXCEL_TO_SHEET_LIST.md 請用戶轉 Google Sheet。
+4. **攤位總表** — 用戶指示用 ISD2025 參考 Sheet（`1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY`），APP 已接上自動讀取；`ISD2026 攤位資料.xlsx` 若轉 Sheet 可隨時換入。
 5. **會議文件** — 0–4 會議資料夾內檔案（可進一步逐個列出）。
 6. **聯絡電話** — Org Chart xlsx 的「Contact List」分頁未在此次讀取中顯示，需另取。
 

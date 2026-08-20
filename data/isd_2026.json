@@ -987,12 +987,12 @@
     },
     {
       "id": "doc_budget",
-      "title": "ISD2026 Budget.xlsx",
+      "title": "ISD2026 Budget（Google Sheet）",
       "category": "財務",
       "summary": "2026 港島童軍繽紛日整體預算表。",
-      "description": "ISD2026 Budget.xlsx（收入/支出預算）。",
+      "description": "2026 財務預算（Google Sheet 版，行政組更新，APP 財務卡片自動讀取）。",
       "file_name": "ISD2026 Budget.xlsx",
-      "file_url": "https://drive.google.com/file/d/1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_/view",
+      "file_url": "https://docs.google.com/spreadsheets/d/1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE/edit",
       "uploaded_by": "行政組",
       "date": "2026-08-16"
     },
@@ -1045,7 +1045,7 @@
       "title": "ISD2026 攤位資料",
       "category": "活動",
       "summary": "2026 攤位總表（攤位編號、負責單位、主題）。",
-      "description": "ISD2026 攤位資料.xlsx",
+      "description": "2026 攤位資料 xlsx（未轉 Sheet；APP 暫用 ISD2025 參考攤位表）。",
       "file_name": "ISD2026 攤位資料.xlsx",
       "file_url": "https://drive.google.com/file/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle/view",
       "uploaded_by": "主題節目組",
@@ -1056,9 +1056,9 @@
       "title": "ISD2025 攤位資料（參考）",
       "category": "活動",
       "summary": "2025 攤位總表（供 2026 參考）。",
-      "description": "ISD2025 攤位資料(參考)",
+      "description": "2025 攤位資料參考（Google Sheet，已作為 APP 活動與攤位卡片的資料來源）。",
       "file_name": "ISD2025 攤位資料(參考)",
-      "file_url": "https://drive.google.com/file/d/179nQJYbzar3AqddmPf3cstWO65LT_gBM/view",
+      "file_url": "https://docs.google.com/spreadsheets/d/1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY/edit",
       "uploaded_by": "主題節目組",
       "date": "2026-08-14"
     },
@@ -1290,20 +1290,20 @@
   "finance": {
     "budget_source": {
       "mode": "drive_sheet",
-      "name": "ISD2026 Budget",
-      "drive_file_id": "1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_",
-      "sheet_id": "1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_",
+      "name": "ISD2026 Budget（Google Sheet）",
+      "drive_file_id": "1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE",
+      "sheet_id": "1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE",
       "gid": 0,
+      "kind": "budget_grid",
       "folder": "行政組/財務",
       "columns": [
         "group_name",
-        "voucher",
         "item_name",
         "budget",
         "actual",
         "notes"
       ],
-      "note": "建議把 xlsx 另存為原生 Google 試算表，APP 即可每次開啟直接讀最新預算。由行政組/財務負責更新。"
+      "note": "ISD2026 Budget（Google Sheet 合併儲存格格式），APP 開啟即自動內置讀取最新預算。行政組/財務負責更新。"
     },
     "group_itemized_budgets": [],
     "income": [],
@@ -1312,9 +1312,9 @@
   "activities": {
     "booth_source": {
       "mode": "drive_sheet",
-      "name": "ISD2026 攤位資料",
-      "drive_file_id": "1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle",
-      "sheet_id": "1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle",
+      "name": "ISD2025 攤位資料（參考）",
+      "drive_file_id": "1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY",
+      "sheet_id": "1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY",
       "gid": 0,
       "folder": "節目組",
       "columns": [
@@ -1328,7 +1328,7 @@
         "contact",
         "description"
       ],
-      "note": "建議把 xlsx 另存為原生 Google 試算表，APP 即可每次開啟直接讀最新（內建式，不用跳轉）。由節目組副主席負責更新。"
+      "note": "用戶指示：攤位資料用參考 Sheet（ISD2025 攤位資料）。APP 開啟即自動內置讀取。"
     },
     "activities": [],
     "maps": [],
