@@ -328,13 +328,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     </div>
     <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
       <div id="md-tab-agenda" class="space-y-3">
+        <div id="md-drive-folder-banner" class="hidden"></div>
         <div class="bg-sky-50 border border-sky-200 rounded-xl p-4"><h4 class="font-bold text-sm text-sky-900 mb-2">議程內容</h4><p id="md-agenda-text" class="text-sm leading-relaxed whitespace-pre-line">-</p></div>
-        <div id="md-agenda-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-pdf text-red-500"></i><div class="min-w-0"><div id="md-agenda-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-agenda-file-meta"></span> · 儲存位置：<span class="font-mono text-[10px]">瀏覽器 localStorage (Mock) / Google Sheet cell (GAS)</span></div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 下載</button><button id="md-agenda-delete-btn" onclick="app.deleteMeetingFile('agenda')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-agenda-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
+        <div id="md-agenda-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-pdf text-red-500"></i><div class="min-w-0"><div id="md-agenda-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-agenda-file-meta"></span> · 儲存位置：<span class="font-mono text-[10px]">瀏覽器 localStorage (Mock) / Google Sheet cell (GAS)</span></div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟</button><button id="md-agenda-delete-btn" onclick="app.deleteMeetingFile('agenda')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-agenda-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
         <div id="md-agenda-admin-upload" class="hidden border-2 border-dashed border-sky-300 rounded-xl p-3 bg-sky-50/50"><label class="text-xs font-bold">管理員追加上傳議程檔案</label><div class="flex gap-2 mt-2"><input type="file" id="md-agenda-upload" class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
       </div>
       <div id="md-tab-minutes" class="hidden space-y-3">
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4"><h4 class="font-bold text-sm text-emerald-900 mb-2">會議紀錄</h4><p id="md-minutes-text" class="text-sm leading-relaxed whitespace-pre-line">-</p></div>
-        <div id="md-minutes-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-lines text-emerald-600"></i><div class="min-w-0"><div id="md-minutes-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-minutes-file-meta"></span> · 儲存位置：localStorage / Sheet</div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 下載</button><button id="md-minutes-delete-btn" onclick="app.deleteMeetingFile('minutes')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-minutes-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
+        <div id="md-minutes-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-lines text-emerald-600"></i><div class="min-w-0"><div id="md-minutes-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-minutes-file-meta"></span> · 儲存位置：localStorage / Sheet</div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟</button><button id="md-minutes-delete-btn" onclick="app.deleteMeetingFile('minutes')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-minutes-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
         <div id="md-minutes-admin-upload" class="hidden border-2 border-dashed border-emerald-300 rounded-xl p-3 bg-emerald-50/50"><label class="text-xs font-bold">管理員追加上傳紀錄檔案</label><div class="flex gap-2 mt-2"><input type="file" id="md-minutes-upload" class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
       </div>
       <div id="md-tab-attachments" class="hidden space-y-3">
@@ -449,12 +450,13 @@ const PERM_CARDS=[
   {id:'group_brand',label:'品牌推廣組',icon:'fa-solid fa-bullhorn'},
   {id:'group_reception',label:'嘉賓接待組',icon:'fa-solid fa-handshake-angle'},
   {id:'group_service',label:'服務及發展組',icon:'fa-solid fa-hands-holding-child'},
+  {id:'donations',label:'童心捐贈大行動',icon:'fa-solid fa-hand-holding-heart'},
   {id:'group_secretariat',label:'秘書處',icon:'fa-solid fa-landmark'},
   {id:'group_advisors',label:'顧問團',icon:'fa-solid fa-user-tie'},
   {id:'group_leadership',label:'主席及執行副主席',icon:'fa-solid fa-crown'}
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
-const PUBLIC_CARD_ORDER=['announcements','staff','activities','ceremony','apply_hub','crisis','documents'];
+const PUBLIC_CARD_ORDER=['announcements','staff','activities','ceremony','apply_hub','crisis','documents','donations'];
 const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secretariat','group_ceremony','group_theme','group_brand','group_reception','coordinator_group','group_service','admin_group']);
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
@@ -544,6 +546,7 @@ const DASH_CARD_DEFS=[
   {id:'group_reception',title:'嘉賓接待組',desc:'嘉賓、接待安排、本組內容',icon:'fa-solid fa-handshake-angle',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:20,groups:['嘉賓接待組'],editLevel:40,editGroups:['嘉賓接待組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('嘉賓接待組')"},
   {id:'group_service',title:'服務及發展組',desc:'服務、發展、本組內容',icon:'fa-solid fa-hands-holding-child',cardClass:'bg-white border shadow-sm',iconClass:'bg-lime-100 text-lime-700',minLevel:20,groups:['服務及發展組'],editLevel:40,editGroups:['服務及發展組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('服務及發展組')"},
   {id:'group_secretariat',title:'秘書處',desc:'地域秘書處受薪職員、本組內容',icon:'fa-solid fa-landmark',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,groups:['秘書處'],editLevel:40,editGroups:['秘書處'],editLabel:'秘書處管理員可管理',action:"app.openGroupManagement('秘書處')"},
+  {id:'donations',title:'童心捐贈大行動',desc:'物品捐贈·食品捐贈·QR Code·統計總表（服務及發展組管理）',icon:'fa-solid fa-hand-holding-heart',cardClass:'bg-gradient-to-br from-rose-500 to-pink-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:40,editGroups:['服務及發展組'],editLabel:'服務及發展組可管理捐贈紀錄',action:"app.openModule('donations')"},
   {id:'my_monitor',title:'我的監察 (全部申請批核)',desc:'一頁看齊自己＋下級所有申請批核：先「我自己」，再按組別分開（膳食·物資·車輛·開支·報價）',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,readOnly:true,editLabel:'查看自己及下級的申請進度',action:"app.openModule('my_monitor')"},
   {id:'approvals',title:'批核中心',desc:'各負責組總主任以上按範疇處理膳食、物資、車輛及財務待批項目',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:40,editLevel:40,editLabel:'各負責組總主任以上按範疇批核',action:"app.switchTopTab('approvals')"},
   {id:'account_setup',title:'開戶',desc:'總主任以上為本組逐個開戶；批量開戶 (CSV/JSON) 管理員·超管專用',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可為本組開戶'},
@@ -592,6 +595,8 @@ class ScoutEventApp{
     if(this.currentUser) this.updateUserUI(); this.applyBannerConfig(); this.updateAdminNav();
     if(this.currentEvent){this.showDashboard();} else this.loadEvents();
     this.updateSaveBar();
+    // QR Code hash routing：掃碼後自動開啟捐贈表
+    this.handleHashRoute();
   }
   toggleDrawer(){document.getElementById('mobile-drawer').classList.toggle('active');}
   closeModal(id){document.getElementById(id).classList.add('hidden');}
@@ -783,7 +788,8 @@ class ScoutEventApp{
       meetings:()=>this.isAdmin(),
       approvals:()=>APPROVAL_AREAS.some(a=>this.canApproveArea(a.id)),
       users_bulk:()=>this.isAdmin(),
-      my_monitor:()=>false
+      my_monitor:()=>false,
+      donations:()=>this.isAdmin()||g.includes('服務及發展')
     };
     if(f[def.id]) return f[def.id]();
     if(lvl>=def.editLevel) return true;
@@ -1125,7 +1131,7 @@ class ScoutEventApp{
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (行政組卡片內 · 指引·預算·申報·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程 (公告及溝通分頁)',supplies:'物資申請（車輛通行證／泊車證分頁）',parking:'泊車證＝車輛通行證（已併入協調組）',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (公告及溝通分頁)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN·獲獎名單)',awards:'獲獎名單 (典禮儀式分頁)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章 (公告及溝通分頁)',announcements:'公告及溝通 (含日程·旅團須知·主題章)',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (行政組卡片內 · 指引·預算·申報·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程 (公告及溝通分頁)',supplies:'物資申請（車輛通行證／泊車證分頁）',parking:'泊車證＝車輛通行證（已併入協調組）',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (公告及溝通分頁)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN·獲獎名單)',awards:'獲獎名單 (典禮儀式分頁)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章 (公告及溝通分頁)',announcements:'公告及溝通 (含日程·旅團須知·主題章)',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)',donations:'童心捐贈大行動 (物品·食品捐贈·QR Code·統計)'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
@@ -1147,6 +1153,8 @@ class ScoutEventApp{
       document.getElementById('module-actions').innerHTML=`<span class="text-[11px] bg-teal-50 text-teal-700 px-3 py-2 rounded-full border border-teal-200">開戶（預設密碼 1234）</span>`;
     } else if(key==='my_monitor'||key==='apply_hub'||key==='coordinator_group'){
       document.getElementById('module-actions').innerHTML='';
+    } else if(key==='donations'){
+      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.exportDonationsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出全部</button></div>`;
     } else if(key==='permissions'){
       document.getElementById('module-actions').innerHTML=`<button onclick="app.renderPermissionsModule()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>`;
     } else {
@@ -1363,6 +1371,7 @@ class ScoutEventApp{
     if(mod==='coordinator_group'){this.renderCoordinatorGroupModule(); return;}
     if(mod==='transport'){this.renderTransportModule(); return;}
     if(mod==='schedule'){this.renderScheduleModule(); return;}
+    if(mod==='donations'){this.renderDonationsModule(); return;}
     if(mod==='account_setup'){this.renderAccountSetupModule(); return;}
     if(mod==='permissions'){this.renderPermissionsModule(); return;}
     container.innerHTML='<p class="text-sm text-slate-400">此模組內容 (全前端演示) 尚未有資料，點擊右上新增</p>';
@@ -7028,7 +7037,7 @@ class ScoutEventApp{
                 ${m.author?`<span><i class="fa-solid fa-user mr-1"></i>${escapeHtml(m.author)}</span>`:''}
               </div>
               <div class="mt-2 flex flex-wrap gap-1.5">${agendaBadge}${minutesBadge}${attachCount?`<span class="file-chip"><i class="fa-solid fa-paperclip"></i> ${attachCount} 附件</span>`:''}${groupCount?`<span class="file-chip bg-amber-50 border-amber-200 text-amber-800"><i class="fa-solid fa-users-rectangle"></i> ${groupCount} 組資料</span>`:''}</div>
-              ${(m.classified_files||[]).length?`<div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-1.5" onclick="event.stopPropagation()">${m.classified_files.map(f=>`<a href="${escapeHtml(f.file_url||'#')}" target="_blank" class="text-[10px] px-2 py-1 rounded-lg border bg-white hover:bg-slate-50 truncate"><b>${escapeHtml(f.label||this.classifyMeetingFileLabel(f.kind))}</b> · ${escapeHtml(f.file_name||'')}</a>`).join('')}</div>`:''}
+              ${(m.classified_files||[]).length?`<div class="mt-2 space-y-1.5" onclick="event.stopPropagation()">${m.drive_root_url?`<a href="${escapeHtml(m.drive_root_url)}" target="_blank" class="flex items-center gap-1.5 text-[10px] px-2.5 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 font-bold hover:bg-emerald-100 transition"><i class="fa-brands fa-google-drive text-emerald-600"></i>開啟會議 Drive 資料夾（議程·紀錄·附件）<i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[9px]"></i></a>`:''}<div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">${m.classified_files.map(f=>`<a href="${escapeHtml(f.file_url||'#')}" target="_blank" class="text-[10px] px-2 py-1 rounded-lg border bg-white hover:bg-slate-50 truncate flex items-center gap-1"><i class="fa-solid ${f.kind==='agenda'?'fa-file-lines text-sky-600':f.kind==='minutes'?'fa-clipboard-check text-emerald-600':'fa-paperclip text-amber-600'}"></i><b>${escapeHtml(f.label||this.classifyMeetingFileLabel(f.kind))}</b> · ${escapeHtml(f.file_name||'')}</a>`).join('')}</div></div>`:''}
               ${m.agenda?`<p class="text-[11px] text-slate-600 mt-2 line-clamp-2 leading-relaxed">${escapeHtml(m.agenda.slice(0,80))}...</p>`:''}
             </div>
             <div class="flex flex-col gap-1 flex-shrink-0">
@@ -7185,20 +7194,27 @@ class ScoutEventApp{
     document.getElementById('md-date').textContent=m.date||'-'; document.getElementById('md-time').textContent=m.time||''; document.getElementById('md-location').textContent=m.location||''; document.getElementById('md-author').textContent=m.author||m.created_by||'';
     document.getElementById('md-agenda-text').textContent=m.agenda||'暫無議程內容';
     document.getElementById('md-minutes-text').textContent=m.minutes||'暫無會議紀錄';
+    // Drive 資料夾連結：如會議設有 drive_root_url，在議程分頁頂部顯示
+    const driveFolderHtml=m.drive_root_url?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><i class="fa-brands fa-google-drive text-emerald-600 text-lg flex-shrink-0"></i><div class="min-w-0"><b class="text-[12px] text-emerald-900">會議 Drive 資料夾</b><div class="text-[10px] text-emerald-700 truncate">${escapeHtml(m.drive_root_url)}</div></div></div><a href="${escapeHtml(m.drive_root_url)}" target="_blank" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0 hover:bg-emerald-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</a></div>`:'';
     const agendaArea=document.getElementById('md-agenda-file-area'); 
     if(m.agenda_file_name){ 
       agendaArea.classList.remove('hidden'); 
       document.getElementById('md-agenda-file-name').textContent=m.agenda_file_name; 
-      document.getElementById('md-agenda-file-meta').textContent=`${m.agenda_uploaded_by||''} · ${m.agenda_uploaded_at?new Date(m.agenda_uploaded_at).toLocaleString():''} · ${m.agenda_file_data? (Math.round(m.agenda_file_data.length/1024)+'KB base64'):''}`;
-      document.getElementById('md-agenda-file-info').innerHTML=`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage (本地/示範沙盒，5MB 限制，全前端)':'Google Sheet cell + localStorage 快取 (雲端模式)'}</b> | <span class="text-amber-600">大檔案建議轉 Drive 連結</span>`;
+      const isAgendaDrive=m.agenda_file_url&&String(m.agenda_file_url).includes('drive.google.com');
+      document.getElementById('md-agenda-file-meta').textContent=isAgendaDrive?'Google Drive 資料夾':`${m.agenda_uploaded_by||''} · ${m.agenda_uploaded_at?new Date(m.agenda_uploaded_at).toLocaleString():''}`;
+      document.getElementById('md-agenda-file-info').innerHTML=isAgendaDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有議程檔案</span>`:`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage':'Sheet + 快取'}</b>`;
       document.getElementById('md-agenda-delete-btn').classList.toggle('hidden',!this.isAdmin());
     } else agendaArea.classList.add('hidden');
+    // 插入 Drive 資料夾連結到議程分頁頂部
+    const driveBannerEl=document.getElementById('md-drive-folder-banner');
+    if(driveBannerEl){ driveBannerEl.innerHTML=driveFolderHtml; driveBannerEl.classList.toggle('hidden',!driveFolderHtml); }
     const minutesArea=document.getElementById('md-minutes-file-area'); 
     if(m.minutes_file_name){ 
       minutesArea.classList.remove('hidden'); 
       document.getElementById('md-minutes-file-name').textContent=m.minutes_file_name;
-      document.getElementById('md-minutes-file-meta').textContent=`${m.minutes_uploaded_by||''} · ${m.minutes_uploaded_at?new Date(m.minutes_uploaded_at).toLocaleString():''} · ${m.minutes_file_data? (Math.round(m.minutes_file_data.length/1024)+'KB'):''}`;
-      document.getElementById('md-minutes-file-info').innerHTML=`儲存位置：<b>${this.mockMode?'localStorage (本地/示範)':'Sheet + 快取'}</b>`;
+      const isMinutesDrive=m.minutes_file_url&&String(m.minutes_file_url).includes('drive.google.com');
+      document.getElementById('md-minutes-file-meta').textContent=isMinutesDrive?'Google Drive 資料夾':`${m.minutes_uploaded_by||''} · ${m.minutes_uploaded_at?new Date(m.minutes_uploaded_at).toLocaleString():''}`;
+      document.getElementById('md-minutes-file-info').innerHTML=isMinutesDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有會議紀錄檔案</span>`:`儲存位置：<b>${this.mockMode?'localStorage':'Sheet + 快取'}</b>`;
       document.getElementById('md-minutes-delete-btn').classList.toggle('hidden',!this.isAdmin());
     } else minutesArea.classList.add('hidden');
     document.getElementById('md-attach-count').textContent=(m.attachments||[]).length;
@@ -7246,11 +7262,11 @@ class ScoutEventApp{
   downloadCurrentMeetingFile(type){
     const m=this.getMeetings().find(x=>x.meeting_id===this.currentMeetingId); if(!m) return;
     if(type==='agenda'){
-      if(m.agenda_file_url){ window.open(m.agenda_file_url,'_blank'); showToast('已開啟 Drive 檔案連結','success'); return; }
+      if(m.agenda_file_url){ window.open(m.agenda_file_url,'_blank'); showToast('已開啟 Drive 資料夾','success'); return; }
       if(m.agenda_file_data) downloadDataUrl(m.agenda_file_name||'議程.pdf',m.agenda_file_data);
       else showToast('無文件可下載','warning');
     } else if(type==='minutes'){
-      if(m.minutes_file_url){ window.open(m.minutes_file_url,'_blank'); showToast('已開啟 Drive 檔案連結','success'); return; }
+      if(m.minutes_file_url){ window.open(m.minutes_file_url,'_blank'); showToast('已開啟 Drive 資料夾','success'); return; }
       if(m.minutes_file_data) downloadDataUrl(m.minutes_file_name||'紀錄.pdf',m.minutes_file_data);
       else showToast('無文件可下載','warning');
     }
@@ -7772,6 +7788,18 @@ class ScoutEventApp{
     const canPost=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=30; // 主任以上可發佈
     container.innerHTML=`
       <div class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a href="https://drive.google.com/file/d/1gDvBWNCJq9aVZV7CEClyYqV-GlHxX14E/view" target="_blank" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl p-4 flex items-center gap-3 hover:shadow-lg transition card-hover">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-calendar-days"></i></div>
+            <div class="min-w-0 flex-1"><b class="text-[13px]">ISD2026 日程表 (Run Down)</b><p class="text-[10px] text-sky-100 mt-0.5">活動日程安排，點擊開啟 PDF</p></div>
+            <i class="fa-solid fa-arrow-up-right-from-square text-white/60"></i>
+          </a>
+          <a href="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view" target="_blank" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-4 flex items-center gap-3 hover:shadow-lg transition card-hover">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-map"></i></div>
+            <div class="min-w-0 flex-1"><b class="text-[13px]">香港警察學院場地地圖</b><p class="text-[10px] text-emerald-100 mt-0.5">活動場地地圖，點擊開啟 PDF</p></div>
+            <i class="fa-solid fa-arrow-up-right-from-square text-white/60"></i>
+          </a>
+        </div>
         <div class="flex gap-2 flex-wrap">
           ${canPost?`<button onclick="app.openAnnouncementForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>發佈公告 (主任以上)</button>`:''}
           <input id="announcement-search" placeholder="搜尋公告/協作" oninput="app.renderAnnList(document.getElementById('ann-tab-list'))" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
@@ -9363,20 +9391,28 @@ class ScoutEventApp{
   // 依職稱關鍵字自動對應籌委成員（staff contacts 或 users），帶入姓名電話
   resolveCrisisTeam(data){
     const pool=this.getStaffData().contacts||[];
-    (this.usersList||[]).forEach(u=>{ if(!pool.some(c=>c.name===u.name)) pool.push({name:u.name,role_title:u.role,group_name:u.group_name,contact:u.contact||''}); });
+    // 合併 usersList（登入帳戶）確保電話來源更完整
+    (this.usersList||[]).forEach(u=>{ if(!pool.some(c=>c.name===u.name)) pool.push({name:u.name,role_title:u.job_title||u.role,group_name:u.group_name,contact:u.contact||'',email:u.email||''}); });
     (data.team||[]).forEach(m=>{
       if(!m.auto) return;
       if(m.name && !m._manual) return; // 已手動填過則保留
-      const kw=(m.match||[]).find(k=>k);
+      const kws=(m.match||[]).filter(k=>k);
       let hit=null;
-      if(kw){
+      for(const kw of kws){
+        if(!kw) continue;
         hit=pool.find(c=>{
           const r=c.role_title||''; const g=c.group_name||''; const n=c.name||'';
           if(kw==='行政') return (r.includes('行政')||g.includes('行政')) && !(r.includes('秘書')||g.includes('秘書'));
           return (r.includes(kw)||g.includes(kw)||n.includes(kw));
         });
+        if(hit) break;
       }
-      if(hit){ m.name=hit.name; m.phone=hit.contact||m.phone||''; m._resolvedBy=hit.role_title||hit.group_name; }
+      if(hit){ m.name=hit.name; m.phone=m.phone||hit.contact||''; m._resolvedBy=hit.role_title||hit.group_name; }
+      // 後備：如已有 name 但無 phone，嘗試從 pool 補電話
+      if(m.name && !m.phone){
+        const byName=pool.find(c=>c.name===m.name);
+        if(byName) m.phone=byName.contact||'';
+      }
     });
     return data;
   }
@@ -10253,6 +10289,311 @@ class ScoutEventApp{
   }
 
   sendMeetingEmails(){if(!confirm('發送會議提醒 Email？')) return; showToast('已發送 (Mock)','success');}
+  handleHashRoute(){
+    const hash=window.location.hash;
+    if(hash==='#donate-goods'){
+      setTimeout(()=>{ if(this.currentEvent) this.openGoodsDonationForm(); else this.enterFirstEvent().then(()=>this.openGoodsDonationForm()); },800);
+    } else if(hash==='#donate-food'){
+      setTimeout(()=>{ if(this.currentEvent) this.openFoodDonationForm(); else this.enterFirstEvent().then(()=>this.openFoodDonationForm()); },800);
+    }
+  }
+
+  /* ===================== 童心捐贈大行動 (物品·食品捐贈) ===================== */
+  getDonationsData(){
+    const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_donations';
+    return JSON.parse(localStorage.getItem(key)||'{"goods":[],"food":[]}');
+  }
+  saveDonationsData(data){
+    const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_donations';
+    localStorage.setItem(key,JSON.stringify(data));
+  }
+  renderDonationsModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    if(!this.donSubTab) this.donSubTab='dashboard';
+    const data=this.getDonationsData();
+    const goods=data.goods||[];
+    const food=data.food||[];
+    const canManage=this.isAdmin()||this.isExecViceOrChair()||(this.currentUser?.group_name||'').includes('服務及發展');
+    const tabs=[
+      {k:'dashboard',icon:'fa-solid fa-chart-pie',label:'統計總覽'},
+      {k:'goods',icon:'fa-solid fa-box-open',label:'物品捐贈'},
+      {k:'food',icon:'fa-solid fa-apple-whole',label:'食品捐贈'},
+      {k:'qrcode',icon:'fa-solid fa-qrcode',label:'QR Code'}
+    ];
+    const tabBtns=tabs.map(t=>`<button onclick="app.switchDonTab('${t.k}')" class="tab-btn ${this.donSubTab===t.k?'active':''}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
+          <b><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動：</b>物品捐贈及食品捐贈表格內建於 APP，可填表、產生 QR Code 讓捐贈人士掃碼填表，紀錄自動存入系統。服務及發展組可檢查各捐贈表及統計。
+        </div>
+        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
+        <div id="don-tab-body"></div>
+      </div>`;
+    const body=document.getElementById('don-tab-body');
+    if(this.donSubTab==='dashboard') this.renderDonDashboard(body,goods,food,canManage);
+    else if(this.donSubTab==='goods') this.renderDonGoods(body,goods,canManage);
+    else if(this.donSubTab==='food') this.renderDonFood(body,food,canManage);
+    else this.renderDonQRCode(body);
+  }
+  switchDonTab(tab){ this.donSubTab=tab; this.renderDonationsModule(); }
+  renderDonDashboard(body,goods,food,canManage){
+    const totalForms=goods.length+food.length;
+    const totalDonors=goods.reduce((s,g)=>s+(g.items||[]).length,0)+food.reduce((s,f)=>s+(f.items||[]).length,0);
+    const totalQtyGoods=goods.reduce((s,g)=>s+(g.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
+    const totalQtyFood=food.reduce((s,f)=>s+(f.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">已交表格</div><div class="text-2xl font-extrabold text-rose-600">${totalForms}</div><div class="text-[10px] text-slate-400">物品 ${goods.length} · 食品 ${food.length}</div></div>
+          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">捐贈人次</div><div class="text-2xl font-extrabold text-emerald-600">${totalDonors}</div></div>
+          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">物品總數量</div><div class="text-2xl font-extrabold text-blue-600">${totalQtyGoods}</div><div class="text-[10px] text-slate-400">單位</div></div>
+          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">食品總數量</div><div class="text-2xl font-extrabold text-amber-600">${totalQtyFood}</div><div class="text-[10px] text-slate-400">件</div></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white border rounded-xl p-4">
+            <h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-box-open text-blue-600 mr-1"></i>物品捐贈紀錄 (${goods.length})</h4>
+            <div class="space-y-2 max-h-[300px] overflow-y-auto">${goods.length?goods.map(g=>`<div class="border rounded-lg p-2.5 bg-slate-50"><div class="flex justify-between"><b class="text-[12px]">${escapeHtml(g.scout_group||'未填')}</b><span class="text-[10px] text-slate-400">${escapeHtml(g.date||'')}</span></div><div class="text-[11px] text-slate-600">領袖：${escapeHtml(g.leader_name||'')} · ${(g.items||[]).length} 人捐贈 · 共 ${g.items.reduce((s,i)=>s+(parseInt(i.quantity)||0),0)} 單位</div></div>`).join(''):'<p class="text-xs text-slate-400">暫無物品捐贈紀錄</p>'}</div>
+          </div>
+          <div class="bg-white border rounded-xl p-4">
+            <h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-apple-whole text-amber-600 mr-1"></i>食品捐贈紀錄 (${food.length})</h4>
+            <div class="space-y-2 max-h-[300px] overflow-y-auto">${food.length?food.map(f=>`<div class="border rounded-lg p-2.5 bg-slate-50"><div class="flex justify-between"><b class="text-[12px]">${escapeHtml(f.scout_group||'未填')}</b><span class="text-[10px] text-slate-400">${escapeHtml(f.date||'')}</span></div><div class="text-[11px] text-slate-600">領袖：${escapeHtml(f.leader_name||'')} · ${(f.items||[]).length} 人捐贈 · 共 ${f.items.reduce((s,i)=>s+(parseInt(i.quantity)||0),0)} 件</div></div>`).join(''):'<p class="text-xs text-slate-400">暫無食品捐贈紀錄</p>'}</div>
+          </div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.exportDonationsData()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出全部 JSON</button>
+          <button onclick="app.exportDonationsCSV()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出 CSV</button>
+        </div>
+      </div>`;
+  }
+  renderDonGoods(body,goods,canManage){
+    const baseUrl=window.location.origin+window.location.pathname;
+    const goodsUrl=baseUrl+'#donate-goods';
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4">
+          <div class="flex-1"><h4 class="font-bold text-sm"><i class="fa-solid fa-qrcode mr-1"></i>物品捐贈 QR Code</h4><p class="text-[11px] text-blue-100 mt-1">掃碼填表 → 提交 → 下一個人掃同一個碼再填。一個 QR Code 處理全部捐贈！</p><p class="text-[10px] text-blue-200 mt-1 break-all font-mono">${escapeHtml(goodsUrl)}</p></div>
+          <div id="qr-goods-inline" class="flex-shrink-0"></div>
+          <div class="flex gap-2 flex-shrink-0"><button onclick="app.downloadQR('qr-goods-inline','物品捐贈QRCode')" class="bg-white text-blue-700 px-3 py-2 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載QR</button><button onclick="window.open('${goodsUrl}','_blank')" class="bg-white/20 text-white px-3 py-2 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>預覽</button></div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openGoodsDonationForm()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>填寫物品捐贈表</button>
+          <button onclick="app.exportDonationsCSV('goods')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出物品 CSV</button>
+        </div>
+        ${goods.length?`<div class="space-y-3">${goods.map(g=>{
+          const total=g.items.reduce((s,i)=>s+(parseInt(i.quantity)||0),0);
+          return `<div class="bg-white border rounded-xl p-4 space-y-2">
+            <div class="flex justify-between items-start gap-2"><div><b class="text-[14px]">${escapeHtml(g.scout_group||'未填旅團')}</b><div class="text-[11px] text-slate-500 mt-1">領袖：${escapeHtml(g.leader_name||'')} ${escapeHtml(g.leader_position||'')} · 電話：${escapeHtml(g.leader_phone||'')} · ${escapeHtml(g.leader_email||'')}</div></div><div class="text-right"><div class="text-[10px] text-slate-400">${escapeHtml(g.date||'')}</div>${canManage?`<button onclick="app.deleteDonation('goods','${g.id}')" class="text-rose-500 text-[10px] mt-1"><i class="fa-solid fa-trash"></i></button>`:''}</div></div>
+            <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">捐贈者姓名</th><th class="px-2 py-1 text-center">數量</th></tr></thead><tbody class="divide-y">${(g.items||[]).map((it,i)=>`<tr><td class="px-2 py-1">${i+1}</td><td class="px-2 py-1 font-medium">${escapeHtml(it.name||'')}</td><td class="px-2 py-1 text-center">${escapeHtml(String(it.quantity||''))}</td></tr>`).join('')}</tbody></table></div>
+            <div class="text-[11px] text-emerald-700 font-bold">總數量：${total} 單位 · 共 ${(g.items||[]).length} 人捐贈</div>
+          </div>`;
+        }).join('')}</div>`:'<div class="bg-white border-2 border-dashed border-blue-200 rounded-2xl p-8 text-center"><div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-box-open"></i></div><h4 class="font-bold text-sm mt-3">暫無物品捐贈紀錄</h4><p class="text-xs text-slate-400 mt-1">點擊「填寫物品捐贈表」開始記錄</p></div>'}
+      </div>`;
+    setTimeout(()=>{ this.generateQR('qr-goods-inline',goodsUrl); },100);
+  renderDonFood(body,food,canManage){
+    const baseUrl=window.location.origin+window.location.pathname;
+    const foodUrl=baseUrl+'#donate-food';
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4">
+          <div class="flex-1"><h4 class="font-bold text-sm"><i class="fa-solid fa-qrcode mr-1"></i>食品捐贈 QR Code</h4><p class="text-[11px] text-amber-100 mt-1">掃碼填表 → 提交 → 下一個人掃同一個碼再填。一個 QR Code 處理全部捐贈！</p><p class="text-[10px] text-amber-200 mt-1 break-all font-mono">${escapeHtml(foodUrl)}</p></div>
+          <div id="qr-food-inline" class="flex-shrink-0"></div>
+          <div class="flex gap-2 flex-shrink-0"><button onclick="app.downloadQR('qr-food-inline','食品捐贈QRCode')" class="bg-white text-amber-700 px-3 py-2 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載QR</button><button onclick="window.open('${foodUrl}','_blank')" class="bg-white/20 text-white px-3 py-2 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>預覽</button></div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openFoodDonationForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>填寫食品捐贈表</button>
+          <button onclick="app.exportDonationsCSV('food')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出食品 CSV</button>
+        </div>
+        ${food.length?`<div class="space-y-3">${food.map(f=>{
+          const total=f.items.reduce((s,i)=>s+(parseInt(i.quantity)||0),0);
+          return `<div class="bg-white border rounded-xl p-4 space-y-2">
+            <div class="flex justify-between items-start gap-2"><div><b class="text-[14px]">${escapeHtml(f.scout_group||'未填旅團')}</b><div class="text-[11px] text-slate-500 mt-1">領袖：${escapeHtml(f.leader_name||'')} ${escapeHtml(f.leader_position||'')} · 電話：${escapeHtml(f.leader_phone||'')} · ${escapeHtml(f.leader_email||'')}</div></div><div class="text-right"><div class="text-[10px] text-slate-400">${escapeHtml(f.date||'')}</div>${canManage?`<button onclick="app.deleteDonation('food','${f.id}')" class="text-rose-500 text-[10px] mt-1"><i class="fa-solid fa-trash"></i></button>`:''}</div></div>
+            <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">捐贈者姓名</th><th class="px-2 py-1 text-center">數量</th></tr></thead><tbody class="divide-y">${(f.items||[]).map((it,i)=>`<tr><td class="px-2 py-1">${i+1}</td><td class="px-2 py-1 font-medium">${escapeHtml(it.name||'')}</td><td class="px-2 py-1 text-center">${escapeHtml(String(it.quantity||''))}</td></tr>`).join('')}</tbody></table></div>
+            <div class="text-[11px] text-amber-700 font-bold">總數量：${total} 件 · 共 ${(f.items||[]).length} 人捐贈</div>
+          </div>`;
+        }).join('')}</div>`:'<div class="bg-white border-2 border-dashed border-amber-200 rounded-2xl p-8 text-center"><div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-apple-whole"></i></div><h4 class="font-bold text-sm mt-3">暫無食品捐贈紀錄</h4><p class="text-xs text-slate-400 mt-1">點擊「填寫食品捐贈表」開始記錄</p></div>'}
+      </div>`;
+    setTimeout(()=>{ this.generateQR('qr-food-inline',foodUrl); },100);
+  }
+  renderDonQRCode(body){
+    const baseUrl=window.location.origin+window.location.pathname;
+    const goodsUrl=baseUrl+'#donate-goods';
+    const foodUrl=baseUrl+'#donate-food';
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
+          <b><i class="fa-solid fa-qrcode mr-1"></i>QR Code：</b>產生 QR Code 後，可列印或分享給捐贈人士掃碼填表。掃碼後直接進入 APP 的捐贈填表頁面，填完自動存入系統。
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white border rounded-xl p-5 text-center space-y-3">
+            <h4 class="font-bold text-sm text-blue-700"><i class="fa-solid fa-box-open mr-1"></i>物品捐贈 QR Code</h4>
+            <div id="qr-goods" class="flex justify-center"></div>
+            <p class="text-[10px] text-slate-500 break-all">${escapeHtml(goodsUrl)}</p>
+            <button onclick="app.downloadQR('qr-goods','物品捐贈QRCode')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 QR Code</button>
+          </div>
+          <div class="bg-white border rounded-xl p-5 text-center space-y-3">
+            <h4 class="font-bold text-sm text-amber-700"><i class="fa-solid fa-apple-whole mr-1"></i>食品捐贈 QR Code</h4>
+            <div id="qr-food" class="flex justify-center"></div>
+            <p class="text-[10px] text-slate-500 break-all">${escapeHtml(foodUrl)}</p>
+            <button onclick="app.downloadQR('qr-food','食品捐贈QRCode')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 QR Code</button>
+          </div>
+        </div>
+      </div>`;
+    setTimeout(()=>{
+      this.generateQR('qr-goods',goodsUrl);
+      this.generateQR('qr-food',foodUrl);
+    },100);
+  }
+  generateQR(containerId,text){
+    const container=document.getElementById(containerId);
+    if(!container) return;
+    // 簡易 QR Code 產生（使用 Google Charts API）
+    const size=200;
+    const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
+    container.innerHTML=`<img src="${url}" width="${size}" height="${size}" alt="QR Code" class="rounded-xl border">`;
+  }
+  downloadQR(containerId,fileName){
+    const img=document.querySelector('#'+containerId+' img');
+    if(!img){ showToast('QR Code 尚未產生','warning'); return; }
+    const a=document.createElement('a'); a.href=img.src; a.download=(fileName||'qrcode')+'.png'; a.click();
+    showToast('已下載 QR Code','success');
+  }
+  openGoodsDonationForm(existing=null){
+    let itemsHtml='';
+    for(let i=0;i<30;i++){
+      const val=existing?.items?.[i]?.name||'';
+      const qty=existing?.items?.[i]?.quantity||'';
+      itemsHtml+=`<div class="flex gap-2 items-center"><span class="text-[10px] text-slate-400 w-6 text-right flex-shrink-0">${i+1}</span><input id="gd-name-${i}" value="${escapeHtml(val)}" placeholder="捐贈者姓名" class="flex-1 px-2 py-1.5 border rounded-lg text-sm"><input id="gd-qty-${i}" value="${escapeHtml(qty)}" placeholder="數量" type="number" min="0" class="w-20 px-2 py-1.5 border rounded-lg text-sm text-center"></div>`;
+    }
+    const html=`
+      <input type="hidden" id="gd-mode" value="${existing?'edit':'create'}">
+      <input type="hidden" id="gd-id" value="${existing?.id||''}">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label class="text-[11px] font-bold">所屬童軍旅 *</label><input id="gd-group" value="${escapeHtml(existing?.scout_group||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">負責領袖姓名 *</label><input id="gd-leader" value="${escapeHtml(existing?.leader_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">職位</label><input id="gd-position" value="${escapeHtml(existing?.leader_position||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">聯絡電話</label><input id="gd-phone" value="${escapeHtml(existing?.leader_phone||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="sm:col-span-2"><label class="text-[11px] font-bold">電郵地址</label><input id="gd-email" value="${escapeHtml(existing?.leader_email||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      </div>
+      <div class="mt-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
+        <label class="text-[11px] font-bold text-blue-900"><i class="fa-solid fa-list mr-1"></i>捐贈者名單（最多 30 人）· 文具以 10 件為 1 單位</label>
+        <div class="mt-2 space-y-1.5 max-h-[300px] overflow-y-auto">${itemsHtml}</div>
+      </div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯物品捐贈表':'填寫物品捐贈表（童心捐贈大行動）';
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitGoodsDonationForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+  submitGoodsDonationForm(){
+    const mode=document.getElementById('gd-mode').value;
+    const id=document.getElementById('gd-id').value;
+    const items=[];
+    for(let i=0;i<30;i++){
+      const name=document.getElementById('gd-name-'+i)?.value.trim();
+      const qty=document.getElementById('gd-qty-'+i)?.value.trim();
+      if(name) items.push({name,quantity:qty||'1'});
+    }
+    const record={
+      id:id||('gd_'+Date.now()),
+      scout_group:document.getElementById('gd-group').value.trim(),
+      leader_name:document.getElementById('gd-leader').value.trim(),
+      leader_position:document.getElementById('gd-position').value.trim(),
+      leader_phone:document.getElementById('gd-phone').value.trim(),
+      leader_email:document.getElementById('gd-email').value.trim(),
+      date:todayISO(),
+      items:items
+    };
+    if(!record.scout_group||!record.leader_name){ showToast('請填寫旅團及領袖姓名','error'); return; }
+    const data=this.getDonationsData();
+    if(mode==='edit'){ const idx=data.goods.findIndex(g=>g.id===id); if(idx>=0) data.goods[idx]=record; }
+    else data.goods.push(record);
+    this.saveDonationsData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('物品捐贈表已保存','success');
+    this.renderDonationsModule();
+  }
+  openFoodDonationForm(existing=null){
+    let itemsHtml='';
+    for(let i=0;i<30;i++){
+      const val=existing?.items?.[i]?.name||'';
+      const qty=existing?.items?.[i]?.quantity||'';
+      itemsHtml+=`<div class="flex gap-2 items-center"><span class="text-[10px] text-slate-400 w-6 text-right flex-shrink-0">${i+1}</span><input id="fd-name-${i}" value="${escapeHtml(val)}" placeholder="捐贈者姓名" class="flex-1 px-2 py-1.5 border rounded-lg text-sm"><input id="fd-qty-${i}" value="${escapeHtml(qty)}" placeholder="數量" type="number" min="0" class="w-20 px-2 py-1.5 border rounded-lg text-sm text-center"></div>`;
+    }
+    const html=`
+      <input type="hidden" id="fd-mode" value="${existing?'edit':'create'}">
+      <input type="hidden" id="fd-id" value="${existing?.id||''}">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label class="text-[11px] font-bold">所屬童軍旅 *</label><input id="fd-group" value="${escapeHtml(existing?.scout_group||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">負責領袖姓名 *</label><input id="fd-leader" value="${escapeHtml(existing?.leader_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">職位</label><input id="fd-position" value="${escapeHtml(existing?.leader_position||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">聯絡電話</label><input id="fd-phone" value="${escapeHtml(existing?.leader_phone||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="sm:col-span-2"><label class="text-[11px] font-bold">電郵地址</label><input id="fd-email" value="${escapeHtml(existing?.leader_email||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      </div>
+      <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+        <label class="text-[11px] font-bold text-amber-900"><i class="fa-solid fa-list mr-1"></i>捐贈者名單（最多 30 人）</label>
+        <div class="mt-2 space-y-1.5 max-h-[300px] overflow-y-auto">${itemsHtml}</div>
+      </div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯食品捐贈表':'填寫食品捐贈表（童心捐贈大行動）';
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitFoodDonationForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+  submitFoodDonationForm(){
+    const mode=document.getElementById('fd-mode').value;
+    const id=document.getElementById('fd-id').value;
+    const items=[];
+    for(let i=0;i<30;i++){
+      const name=document.getElementById('fd-name-'+i)?.value.trim();
+      const qty=document.getElementById('fd-qty-'+i)?.value.trim();
+      if(name) items.push({name,quantity:qty||'1'});
+    }
+    const record={
+      id:id||('fd_'+Date.now()),
+      scout_group:document.getElementById('fd-group').value.trim(),
+      leader_name:document.getElementById('fd-leader').value.trim(),
+      leader_position:document.getElementById('fd-position').value.trim(),
+      leader_phone:document.getElementById('fd-phone').value.trim(),
+      leader_email:document.getElementById('fd-email').value.trim(),
+      date:todayISO(),
+      items:items
+    };
+    if(!record.scout_group||!record.leader_name){ showToast('請填寫旅團及領袖姓名','error'); return; }
+    const data=this.getDonationsData();
+    if(mode==='edit'){ const idx=data.food.findIndex(f=>f.id===id); if(idx>=0) data.food[idx]=record; }
+    else data.food.push(record);
+    this.saveDonationsData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('食品捐贈表已保存','success');
+    this.renderDonationsModule();
+  }
+  deleteDonation(type,id){
+    if(!confirm('確定刪除此捐贈紀錄？')) return;
+    const data=this.getDonationsData();
+    if(type==='goods') data.goods=(data.goods||[]).filter(g=>g.id!==id);
+    else data.food=(data.food||[]).filter(f=>f.id!==id);
+    this.saveDonationsData(data);
+    showToast('已刪除','warning');
+    this.renderDonationsModule();
+  }
+  exportDonationsData(){
+    const data=this.getDonationsData();
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`donations_${todayISO()}.json`; a.click();
+    showToast('已匯出捐贈資料 JSON','success');
+  }
+  exportDonationsCSV(type){
+    const data=this.getDonationsData();
+    const rows=[['類型','旅團','領袖','職位','電話','電郵','日期','捐贈者姓名','數量']];
+    const addRows=(list,donType)=>list.forEach(f=>{(f.items||[]).forEach(it=>rows.push([donType,f.scout_group,f.leader_name,f.leader_position,f.leader_phone,f.leader_email,f.date,it.name,it.quantity]));});
+    if(!type||type==='goods') addRows(data.goods||[],'物品');
+    if(!type||type==='food') addRows(data.food||[],'食品');
+    if(rows.length<=1){ showToast('暫無捐贈資料','warning'); return; }
+    this.downloadCSV(`donations_${todayISO()}.csv`,rows);
+  }
 }
 
 const app=window.app=new ScoutEventApp();
