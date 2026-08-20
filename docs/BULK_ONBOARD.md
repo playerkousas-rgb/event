@@ -43,7 +43,9 @@ user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, s
 | name | 必填，姓名 |
 | email | 選填，Email (登入用) |
 | role | 必填，super_admin / advisor / admin / chairperson / vice_chairperson / general_director / director / staff / public |
-| group_name | 必填，組別，例如 主題節目組 |
+| group_name | 必填，組別，例如 主題節目組（組別下拉已移除「顧問團」「主席及執行副主席」兩組） |
+
+> ⚠️ **v7.8 起**：批量 CSV／JSON 屬管理員／超管專用，可填全部職級（副主席及以上由管理員在此處理）；前端「快速批量開戶」逐行選單只提供 工作人員／主任／總主任。
 | contact | 選填，電話 |
 | password | 選填，有填則開立可登入帳號 |
 | can_tick | true/false，是否可批核/可勾選 |

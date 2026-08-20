@@ -2,8 +2,8 @@ ymis,name,email,role,group_name,contact,password,can_tick,allowed_modules,squad,
 00820001,陳小明,chan@example.com,staff,主題節目組,91234567,123456,true,*,紅隊,member,active,遊戲攤位執行 - 由領袖批量開戶
 00820002,李小華,lee@example.com,director,會操及典禮組,92345678,123456,true,*,藍隊,member,active,步操訓練統籌
 00820003,王大明,wang@example.com,general_director,會操及典禮組,93456789,123456,true,*,紅隊,隊長,active,總主任 - 可批核
-00820004,梁文澧,leung@example.com,vice_chairperson,會操及典禮組,94567890,123456,true,*, , ,active,副主席 - 會操
-00820005,黃偉安,wong@example.com,advisor,顧問團,91111111,password123,true,*, , ,active,顧問 - 政策指導
-00820006,朱家聰,chu@example.com,chairperson,籌委會,92222222,password123,true,*, , ,active,主席
-00820007,義工A,volunteerA@isd.local,public,接待組,, ,false,,未分配,member,active,義工 - 只看公開
-00820008,義工B,volunteerB@isd.local,staff,接待組,95550001,,false,meetings,綠隊,member,active,接待組義工 - 只能看會議
+00820004,梁文澧,leung@example.com,director,品牌推廣組,94567890,123456,true,*, , ,active,主任 - 品牌設計
+00820005,黃偉安,wong@example.com,general_director,服務及發展組,91111111,password123,true,*, , ,active,總主任 - 服務發展
+00820006,朱家聰,chu@example.com,general_director,行政組,92222222,password123,true,*, , ,active,總主任 - 行政
+00820007,義工A,volunteerA@isd.local,public,嘉賓接待組,, ,false,,未分配,member,active,義工 - 只看公開
+00820008,義工B,volunteerB@isd.local,staff,嘉賓接待組,95550001,,false,meetings,綠隊,member,active,接待組義工 - 只能看會議
