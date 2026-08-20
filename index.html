@@ -7403,11 +7403,18 @@ class ScoutEventApp{
       return `<div class="border p-3 rounded-xl flex justify-between gap-2"><div class="min-w-0"><b>${escapeHtml(u.name)}</b> ${u.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full border">${escapeHtml(u.job_title)}</span>`:''}<span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(ROLE_LABELS[u.role]||u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')} | 帳號 ${escapeHtml(u.user_id||'')}</div>${pwd}</div><div class="flex gap-1 flex-shrink-0"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button>${permBtn}</div></div>`;
     }).join('')+confirmBar;
   }
-  confirmUsersUpdate(){
+  async confirmUsersUpdate(){
     if(!this.canManageUsersPage()){ showToast('無權更新用戶','error'); return; }
     if(!this.pendingUsers){ showToast('沒有未確定的變更','warning'); return; }
     this.usersList=JSON.parse(JSON.stringify(this.pendingUsers));
     this.setLocalUsers(this.usersList);
+    if(!this.mockMode&&this.gasUrl){
+      try{
+        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveUsers',api_key:this.apiKey,users:this.usersList})});
+        const j=await res.json();
+        if(!j?.success) throw new Error(j?.error||'後端未全部寫入');
+      }catch(e){ showToast('已存本機，後端同步失敗：'+e.message,'warning'); this.renderUsers(); return; }
+    }
     showToast('用戶資料已確定更新','success');
     this.renderUsers();
   }
