@@ -10390,6 +10390,7 @@ class ScoutEventApp{
         }).join('')}</div>`:'<div class="bg-white border-2 border-dashed border-blue-200 rounded-2xl p-8 text-center"><div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-box-open"></i></div><h4 class="font-bold text-sm mt-3">暫無物品捐贈紀錄</h4><p class="text-xs text-slate-400 mt-1">點擊「填寫物品捐贈表」開始記錄</p></div>'}
       </div>`;
     setTimeout(()=>{ this.generateQR('qr-goods-inline',goodsUrl); },100);
+  }
   renderDonFood(body,food,canManage){
     const baseUrl=window.location.origin+window.location.pathname;
     const foodUrl=baseUrl+'#donate-food';
