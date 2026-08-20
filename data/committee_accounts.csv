@@ -1,8 +1,8 @@
 ymis,name,email,role,group_name,contact,password,can_tick,allowed_modules,squad,squad_role,status,job_desc
 黃偉安,黃偉安,,advisor,顧問團,,1234,true,*,,,active,顧問
 何家騏,何家騏,,advisor,顧問團,,1234,true,*,,,active,顧問
-朱家聰,朱家聰,,chairperson,籌委會,,1234,true,*,,,active,主席
-袁可秀,袁可秀,,executive_vice_chairperson,籌委會,,1234,true,*,,,active,執行副主席
+朱家聰,朱家聰,,chairperson,主席及執行副主席,,1234,true,*,,,active,主席
+袁可秀,袁可秀,,executive_vice_chairperson,主席及執行副主席,,1234,true,*,,,active,執行副主席
 張佳良,張佳良,,vice_chairperson,會操及典禮組,,1234,true,*,,,active,副主席（會操及典禮）
 梁文澧,梁文澧,,general_director,會操及典禮組,,1234,true,*,,,active,總主任（會操）
 黃志樂,黃志樂,,director,會操及典禮組,,1234,true,*,,,active,會操顧問
