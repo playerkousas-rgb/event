@@ -1125,33 +1125,17 @@ class ScoutEventApp{
         }
       }catch(e){}
     }
-    const localKey=LS.meetings(this.currentEvent.event_id); const localMeetings=JSON.parse(localStorage.getItem(localKey)||'null'); if(localMeetings&&Array.isArray(localMeetings)&&localMeetings.length){ this.eventData.meetings=localMeetings; }
-    const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){
-      // 合併：保留 localStorage 的 contacts（用戶可能編輯過），但用 JSON 的最新 job_duties/org_chart/source
-      const jsonStaff=this.eventData.staff||{};
-      this.eventData.staff={
-        ...jsonStaff,
-        contacts: (localStaff.contacts&&localStaff.contacts.length)?localStaff.contacts:(jsonStaff.contacts||[]),
-        staff_source: jsonStaff.staff_source||localStaff.staff_source||null,
-        contact_source: jsonStaff.contact_source||localStaff.contact_source||null,
-        duties_source: jsonStaff.duties_source||localStaff.duties_source||null,
-        org_chart: (jsonStaff.org_chart&&jsonStaff.org_chart.length)?jsonStaff.org_chart:(localStaff.org_chart||[]),
-        job_duties: (jsonStaff.job_duties&&jsonStaff.job_duties.length)?jsonStaff.job_duties:(localStaff.job_duties||[])
-      };
+    const localKey=LS.meetings(this.currentEvent.event_id); const localMeetings=JSON.parse(localStorage.getItem(localKey)||'null');
+    // 會議：localStorage 僅作暫存（未上傳的草稿），已上傳的以 JSON 為準
+    if(localMeetings&&Array.isArray(localMeetings)&&localMeetings.length){
+      const jsonMeetings=this.eventData.meetings||[];
+      // 合併：JSON 為主，localStorage 只補充 JSON 沒有的新會議（未上傳草稿）
+      const jsonIds=new Set(jsonMeetings.map(m=>m.meeting_id));
+      const drafts=localMeetings.filter(m=>!jsonIds.has(m.meeting_id));
+      this.eventData.meetings=[...jsonMeetings,...drafts];
     }
-    // 同樣處理 crisis：用 JSON 最新資料覆蓋 localStorage 舊資料
-    const crisisKey=LS.config(this.currentEvent.event_id)+'_crisis'; const localCrisis=JSON.parse(localStorage.getItem(crisisKey)||'null');
-    if(localCrisis && this.eventData.crisis){
-      const jsonCrisis=this.eventData.crisis;
-      this.eventData.crisis={
-        ...jsonCrisis,
-        team: (jsonCrisis.team&&jsonCrisis.team.length)?jsonCrisis.team:(localCrisis.team||[]),
-        contacts: (jsonCrisis.contacts&&jsonCrisis.contacts.length)?jsonCrisis.contacts:(localCrisis.contacts||[]),
-        docs: (jsonCrisis.docs&&jsonCrisis.docs.length)?jsonCrisis.docs:(localCrisis.docs||[]),
-        manuals: (jsonCrisis.manuals&&jsonCrisis.manuals.length)?jsonCrisis.manuals:(localCrisis.manuals||[]),
-        accidents: localCrisis.accidents||jsonCrisis.accidents||[]
-      };
-    }
+    // Staff/Crisis/其他：全部以 JSON 為準，不從 localStorage 覆蓋
+    // localStorage 僅用於暫存未上傳的修改，上傳後 JSON 會更新
     // 正式活動（非示範沙盒）且已連後端：拉取 Meal_Orders 合併（組長確認/行政審批狀態跨裝置同步）
     this.syncApplicationsFromGas();
   }
