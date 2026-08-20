@@ -2277,7 +2277,6 @@ class ScoutEventApp{
   // 開 APP 時自動從 Drive 讀取最新表格（靜默、拆解後內建顯示，不跳轉）
   async autoSyncDriveSources(){
     if(this.isDemoEvent()) return; // 模擬示範活動不使用 Drive 資料源
-    // 只同步攤位和預算（這些 Sheet 是主要來源）
     try{
       const act=this.getActivitiesData();
       if(act.booth_source && (act.booth_source.sheet_id||act.booth_source.drive_file_id)) await this.syncBoothsFromDrive(true);
@@ -2286,8 +2285,18 @@ class ScoutEventApp{
       const fin=this.getFinanceData();
       if(fin.budget_source && (fin.budget_source.sheet_id||fin.budget_source.drive_file_id)) await this.syncBudgetFromDrive(true);
     }catch(e){}
-    // 聯絡表/組織架構/日程表：JSON 為主，不自動同步（避免 Sheet 舊資料覆蓋 JSON 新資料）
-    // 管理員可手動到各卡片按「同步」按鈕觸發
+    try{
+      const st=this.getStaffData();
+      if(st.staff_source && (st.staff_source.sheet_id||st.staff_source.drive_file_id)){
+        if(st.staff_source.kind==='org_chart_grid') await this.syncOrgChartFromDrive(true);
+        else await this.syncStaffFromDrive(true);
+      }
+      if(st.contact_source && (st.contact_source.sheet_id||st.contact_source.drive_file_id)) await this.syncContactListFromDrive(true);
+    }catch(e){}
+    try{
+      const ss=this.eventData['schedule_source'];
+      if(ss && (ss.sheet_id||ss.drive_file_id)) await this.syncScheduleFromDrive(true);
+    }catch(e){}
     try{
       const ps=this.eventData['participants_source'];
       if(ps && (ps.sheet_id||ps.drive_file_id)) await this.syncParticipantsFromDrive(true);
@@ -2450,7 +2459,17 @@ class ScoutEventApp{
       (data.contacts||[]).forEach(c=>{ if(c.name) byName[c.name]=c; });
       list.forEach(n=>{
         const old=byName[n.name]||{};
-        byName[n.name]={...old, ...n, contact:n.contact||old.contact||'', email:n.email||old.email||''};
+        // 只補充，不覆蓋：Sheet 有值才更新，空值保留舊資料
+        byName[n.name]={
+          name: n.name||old.name||'',
+          role_title: n.role_title||old.role_title||'',
+          group_name: n.group_name||old.group_name||'',
+          contact: n.contact||old.contact||'',
+          email: n.email||old.email||'',
+          job_desc: n.job_desc||old.job_desc||'',
+          squad: n.squad||old.squad||'',
+          id: old.id||n.id||('contact_'+Date.now())
+        };
       });
       data.contacts=Object.values(byName);
       data.contact_source=src;
