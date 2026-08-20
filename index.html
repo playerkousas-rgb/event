@@ -2272,6 +2272,7 @@ class ScoutEventApp{
         if(st.staff_source.kind==='org_chart_grid') await this.syncOrgChartFromDrive(true);
         else await this.syncStaffFromDrive(true);
       }
+      if(st.contact_source && (st.contact_source.sheet_id||st.contact_source.drive_file_id)) await this.syncContactListFromDrive(true);
     }catch(e){}
     try{
       const ss=this.eventData['schedule_source'];
@@ -2405,6 +2406,49 @@ class ScoutEventApp{
     return { name, role_title:b(this.staffHeaderMap().role_title), group_name:b(this.staffHeaderMap().group_name)||'未分組', contact:b(this.staffHeaderMap().contact), job_desc:b(this.staffHeaderMap().job_desc) };
   }
   rowsToContacts(rows){ return (rows||[]).map(r=>this.normalizeStaffRow(r)).filter(Boolean); }
+  normalizeContactListRow(r){
+    const cells=Array.isArray(r)?r:null;
+    if(cells){
+      const group=String(cells[0]||'').trim(), level=String(cells[1]||'').trim(), title=String(cells[2]||'').trim(), name=String(cells[3]||'').trim(), phone=String(cells[4]||'').trim(), email=String(cells[5]||'').trim();
+      if(!name || name==='姓名') return null;
+      const gmap={'管理':'顧問團','典禮及會操':'會操及典禮組','主題節目':'主題節目組','品牌推廣':'品牌推廣組','嘉賓接待':'嘉賓接待組','協調':'協調組','服務及發展':'服務及發展組','行政':'行政組','秘書處':'秘書處'};
+      let group_name=gmap[group]||group||'未分組';
+      if(title.includes('顧問')) group_name='顧問團';
+      if(title==='主席'||title.includes('執行副主席')) group_name='主席及執行副主席';
+      return {name, role_title:title||level, group_name, contact:phone, email, job_desc:''};
+    }
+    const name=this.pickCol(r,['姓名','name'],'');
+    if(!name) return null;
+    return {name, role_title:this.pickCol(r,['職位','職銜','title'],''), group_name:this.pickCol(r,['組別','group'],'未分組'), contact:this.pickCol(r,['電話','phone','聯絡'],''), email:this.pickCol(r,['電郵','email'],''), job_desc:''};
+  }
+  async syncContactListFromDrive(silent){
+    const src=(this.getStaffData().contact_source)||this.eventData.staff?.contact_source||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定聯絡表來源','warning'); return; }
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||1330364782);
+      if(!got.ok || !got.rows.length){ if(!silent) showToast('未能讀取聯絡表','warning'); return; }
+      const rows=got.rows;
+      const list=[];
+      rows.forEach(r=>{
+        const rec=this.normalizeContactListRow(r);
+        if(rec) list.push(rec);
+      });
+      if(!list.length){ if(!silent) showToast('聯絡表沒有姓名列','warning'); return; }
+      const data=this.getStaffData();
+      const byName={};
+      (data.contacts||[]).forEach(c=>{ if(c.name) byName[c.name]=c; });
+      list.forEach(n=>{
+        const old=byName[n.name]||{};
+        byName[n.name]={...old, ...n, contact:n.contact||old.contact||'', email:n.email||old.email||''};
+      });
+      data.contacts=Object.values(byName);
+      data.contact_source=src;
+      this.saveStaffData(data);
+      if(!silent) showToast(`已同步聯絡表 ${list.length} 人（via ${got.via}）`,'success');
+      this.renderStaffContacts();
+    }catch(e){ if(!silent) showToast('聯絡表同步失敗：'+e.message,'error'); }
+  }
   async syncStaffFromDrive(silent){
     const src=(this.getStaffData().staff_source)||this.eventData.staff?.staff_source||{};
     const sheetId=src.sheet_id||src.drive_file_id;
@@ -2480,7 +2524,14 @@ class ScoutEventApp{
         recs.push({level:`${group} (Level ${level_num})`, level_num, group, title, names});
       }
     }
-    return recs;
+    // 顧問團兩人分開兩行（黃偉安、何家騏）
+    const split=[];
+    recs.forEach(r=>{
+      if(/^顧問$/.test(r.title||'') && /[、,，/]/.test(r.names||'')){
+        String(r.names).split(/[、,，/]+/).map(s=>s.trim()).filter(Boolean).forEach(nm=>split.push({...r, names:nm}));
+      } else split.push(r);
+    });
+    return split;
   }
   mergeOrgChartPreserveDesc(existing, parsed){
     const descMap={};
@@ -6063,9 +6114,19 @@ class ScoutEventApp{
     const local=JSON.parse(localStorage.getItem(key)||'null');
     const raw=local||this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
     // Normalize both seeded and previously saved data so displayed group names never retain wrapping parentheses.
+    const orgNodes=[];
+    (raw.org_chart||[]).forEach((n,i)=>{
+      const group=((n.title||'').includes('執行副主席')||(n.title||'')==='主席')?'主席及執行副主席':(this.parseGroupFromLevel(n.level)||n.group||'未分組');
+      const base={id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:normalizeGroupName(group),title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''};
+      if(/^顧問$/.test(base.title) && /[、,，/]/.test(base.names||'')){
+        String(base.names).split(/[、,，/]+/).map(s=>s.trim()).filter(Boolean).forEach((nm,k)=>orgNodes.push({...base,id:base.id+'_'+k,names:nm}));
+      } else orgNodes.push(base);
+    });
     return {
       staff_source: raw.staff_source||null,
-      org_chart:(raw.org_chart||[]).map((n,i)=>{const group=((n.title||'').includes('執行副主席')||(n.title||'')==='主席')?'主席及執行副主席':(this.parseGroupFromLevel(n.level)||n.group||'未分組'); return {id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:normalizeGroupName(group),title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''};}),
+      contact_source: raw.contact_source||this.eventData.staff?.contact_source||null,
+      duties_source: raw.duties_source||this.eventData.staff?.duties_source||null,
+      org_chart:orgNodes,
       contacts:(raw.contacts||[]).map((c,i)=>{const roleTitle=c.role_title||c.role||''; const group=(roleTitle.includes('執行副主席')||roleTitle==='主席')?'主席及執行副主席':(c.group_name||c.group||''); return {id:c.id||'contact_'+i,name:c.name||'',role_title:roleTitle,group_name:normalizeGroupName(group),contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'};}),
       job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:normalizeGroupName(j.group||'未分組'),duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
     };
@@ -6109,7 +6170,7 @@ class ScoutEventApp{
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchStaffTab('org_chart')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='org_chart'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-sitemap mr-1"></i> 組織架構圖 (樹形)</button>
           <button onclick="app.switchStaffTab('contacts')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='contacts'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-address-book mr-1"></i> 名單及聯絡 (批量)</button>
-          <button onclick="app.switchStaffTab('job_duties')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='job_duties'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-clipboard-list mr-1"></i> 職務大綱 (Word解析)</button>
+          <button onclick="app.switchStaffTab('job_duties')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='job_duties'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-clipboard-list mr-1"></i> 職務大綱（2026 人名／年份）</button>
         </div>
         <div id="staff-tab-org_chart" class="${this.staffSubTab==='org_chart'?'':'hidden'}"></div>
         <div id="staff-tab-contacts" class="${this.staffSubTab==='contacts'?'':'hidden'}"></div>
@@ -6162,7 +6223,7 @@ class ScoutEventApp{
       ${(data.staff_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>內置讀取：</b>組織架構直接讀取「${escapeHtml(data.staff_source.name||'Google Sheet')}」（行政組在該試算表更新職位／人名），APP 開啟即自動同步最新資料，也可按上方「同步最新架構」手動更新。</div>`:''}
       <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3.5 text-[11px] leading-relaxed text-indigo-950 shadow-sm">
         <div class="font-bold text-[13px] text-indigo-900 mb-1.5 flex items-center"><i class="fa-solid fa-sitemap mr-2 text-indigo-600"></i>組織架構樹形圖 (各副主席可新增下屬)</div>
-        • <b>顧問團是兩人：黃偉安、何家麒</b>（審核活動目的、政策指導與主禮嘉賓確認）<br>
+        • <b>顧問團是兩人、兩行：黃偉安；何家騏</b>（審核活動目的、政策指導與主禮嘉賓確認）<br>
         • <b>樹形圖層級：</b> L2=顧問/主席, L3=副主席層 (各副主席可新增下屬崗位及人名), L4=總主任, L5=主任, L6=工作人員<br>
         • <b>副主席權限：</b>各副主席可於自己組別下點擊「+ 新增下屬」或「+ 新增崗位」，為所屬組別新增下屬崗位及人名；行政副主席、執行副主席或主席可修改全部
       </div>
@@ -6192,7 +6253,7 @@ class ScoutEventApp{
             <div class="flex flex-wrap items-center gap-2">
               <b class="text-[13px]">${escapeHtml(node.title)}</b>
               <span class="text-[11px] text-slate-500">${escapeHtml(node.level||node.group||'')}</span>
-              ${node.names?`<span class="bg-slate-900 text-white text-[11px] px-2 py-0.5 rounded-full font-medium">${escapeHtml(node.names)}</span>`:''}
+              ${(node.names||"").split(/[、,，\/]+/).map(nm=>nm.trim()).filter(Boolean).map(nm=>`<span class="bg-slate-900 text-white text-[11px] px-2 py-0.5 rounded-full font-medium">${escapeHtml(nm)}</span>`).join("")}
             </div>
             ${parentNode?`<div class="text-[10px] text-indigo-600 font-semibold mt-0.5"><i class="fa-solid fa-arrow-turn-up fa-rotate-90 mr-1"></i>上級崗位：${escapeHtml(parentNode.title)} (${escapeHtml(parentNode.names||'待定')})</div>`:''}
             <div class="text-[11px] text-slate-600 mt-1 leading-relaxed">${escapeHtml(node.desc||'暫無描述')}</div>
@@ -6207,7 +6268,7 @@ class ScoutEventApp{
       html+=`</div></div>`;
     });
     html+=`</div></div>
-      <div class="bg-white border rounded-xl p-3 text-[11px] text-slate-500"><b>樹形圖說明：</b> L2=顧問（黃偉安、何家麒）/主席層, L3=副主席層 (可新增下屬), L4=總主任, L5=主任, L6=工作人員。行政副主席、執行副主席、主席可修改全部；各副主席可新增自己組別下的崗位及人名。點擊「新增下屬」可自動關聯上級崗位。</div>
+      <div class="bg-white border rounded-xl p-3 text-[11px] text-slate-500"><b>樹形圖說明：</b> L2=顧問（黃偉安／何家騏 各佔一行）/主席層, L3=副主席層 (可新增下屬), L4=總主任, L5=主任, L6=工作人員。行政副主席、執行副主席、主席可修改全部；各副主席可新增自己組別下的崗位及人名。點擊「新增下屬」可自動關聯上級崗位。</div>
     </div>`;
     container.innerHTML=html;
   }
@@ -6334,7 +6395,8 @@ class ScoutEventApp{
           <input id="staff-search" placeholder="${loggedIn?'搜尋姓名/組別/電話':'搜尋姓名/組別/職務'}" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
         ${(data.staff_source)?this.driveSyncNotice():''}
-        ${(data.staff_source && loggedIn)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組在 Google Sheet 更新，APP 自動內置讀取並同步姓名／職銜／組別。電話可直接在此卡片「✏️」編輯，或日後在試算表加「聯絡電話」欄。</div>`:''}
+        ${(data.contact_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900">📞 聯絡表已連通：「${escapeHtml(data.contact_source.name||'聯絡表 2026')}」（gid ${escapeHtml(String(data.contact_source.gid||''))}）。行政組在該分頁更新電話／電郵後，APP 開啟即自動同步。 ${canManage?`<button onclick="app.syncContactListFromDrive()" class="ml-1 underline font-bold">立即同步</button>`:''}</div>`:''}
+        ${(data.staff_source && loggedIn && !data.contact_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組在 Google Sheet 更新。</div>`:''}
         <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>
@@ -6495,7 +6557,7 @@ class ScoutEventApp{
           <div class="border rounded-xl p-4 bg-white space-y-2">
             <div class="flex justify-between items-start"><div class="font-bold text-[13px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>${escapeHtml(d.group)}</div><div class="flex gap-1">${canEdit?`<button onclick="app.openJobDutyFormModal('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️ 編輯</button>`:''}${isAdmin?`<button onclick="app.deleteJobDuty('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
             <div class="text-[11px] text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50 border rounded-xl p-2.5">${escapeHtml(d.duty)}</div>
-            ${d.file_name?`<div class="text-[10px] text-slate-500"><i class="fa-solid fa-file-word text-sky-600 mr-1"></i>${escapeHtml(d.file_name)} ${d.updated_by?`· ${escapeHtml(d.updated_by)}`:''}</div>`:''}
+            ${d.file_name?`<div class="text-[10px] text-slate-500"><i class="fa-solid fa-file-word text-sky-600 mr-1"></i>${escapeHtml(d.file_name)} ${d.updated_by?`· ${escapeHtml(d.updated_by)}`:''}</div>`:''}${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" class="text-[10px] text-sky-700 underline">開啟工作大綱原文 ↗</a>`:''}
           </div>
         `).join('') || '<p class="text-xs text-slate-400 py-4 text-center col-span-2">暫無職務大綱，請上傳 Word 或新增</p>'}</div>
       </div>
@@ -6745,7 +6807,7 @@ class ScoutEventApp{
     </div>`;
     container.innerHTML=`<div class="space-y-4">${tabBar}
       <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
-        <b>📁 會議 Drive（即時連通）：</b>直接讀取會議 Drive 資料夾，跟 Drive 內嘅<b>分次會議資料夾</b>（0 Pre-Meeting、第1次、第2次…）排列 — 秘書處／管理員喺 Drive 更新檔案後，呢度即刻見到（每次進入自動重新載入）。成員點擊資料夾即可展開睇該次會議嘅議程、紀錄及附件。<br>
+        <b>📁 會議 Drive（即時連通）：</b>直接讀取會議 Drive 資料夾，跟 Drive 內嘅<b>分次會議資料夾</b>（0 Pre-Meeting、第1次、第2次…）排列 — 秘書處／管理員喺 Drive 更新檔案後，呢度即刻見到（每次進入自動重新載入）。成員點擊資料夾即可展開睇該次會議嘅議程、紀錄及附件（已按檔名自動分類：議程／會議紀錄／簡報／其他）。無需在 APP 再上傳一次；秘書處繼續放 Drive 即可。<br>
         ${folderId?`📂 目前資料夾：<code class="font-mono">${escapeHtml(folderId)}</code> <a href="https://drive.google.com/drive/folders/${escapeHtml(folderId)}" target="_blank" class="text-sky-700 underline">開啟 Drive 資料夾 ↗</a>`:'⚠️ 未偵測到會議資料夾，請喺下方貼上 Drive 資料夾連結。'}
       </div>
       <div class="flex items-center justify-between gap-2 flex-wrap bg-white border rounded-xl p-2.5">
@@ -6806,24 +6868,37 @@ class ScoutEventApp{
       <iframe src="https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#list" class="w-full h-[65vh] rounded-xl border" title="會議 Drive"></iframe>
     </div>`;
   }
+  classifyMeetingFileKind(name){
+    const n=String(name||'');
+    if(/議程|agenda/i.test(n)) return 'agenda';
+    if(/紀錄|會議記錄|minutes|minite/i.test(n)) return 'minutes';
+    if(/簡報|ppt|presentation|進度/i.test(n)) return 'slides';
+    return 'other';
+  }
+  classifyMeetingFileLabel(kind){
+    return {agenda:'議程',minutes:'會議紀錄',slides:'簡報／進度',other:'其他資料'}[kind]||'其他資料';
+  }
   renderMeetingDriveTree(body, tree, folderId, fromCache){
     const all=[...(tree.files||[]).map(f=>({...f,_root:true})), ...(tree.subfolders||[]).flatMap(sf=>(sf.files||[]).map(f=>({...f,_folder:sf.name,_folderId:sf.id})))];
     const fmtDate=(iso)=>{ if(!iso) return ''; try{ const d=new Date(iso); return d.toLocaleDateString('zh-HK')+' '+d.toLocaleTimeString('zh-HK',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } };
     const fmtSize=(n)=>{ if(n===undefined||n===null) return ''; if(n>=1048576) return (n/1048576).toFixed(1)+' MB'; if(n>=1024) return Math.round(n/1024)+' KB'; return n+' B'; };
     const iconFor=(m)=>{ m=m||''; if(m.includes('pdf')) return 'fa-file-pdf'; if(m.includes('word')||m.includes('document')) return 'fa-file-word'; if(m.includes('sheet')||m.includes('excel')) return 'fa-file-excel'; if(m.includes('image')) return 'fa-file-image'; if(m.includes('presentation')||m.includes('powerpoint')) return 'fa-file-powerpoint'; if(m.includes('folder')) return 'fa-folder'; return 'fa-file'; };
     const colorFor=(m)=>{ m=m||''; if(m.includes('pdf')) return 'text-rose-500'; if(m.includes('word')) return 'text-sky-600'; if(m.includes('sheet')||m.includes('excel')) return 'text-emerald-600'; if(m.includes('image')) return 'text-purple-500'; if(m.includes('presentation')) return 'text-orange-500'; return 'text-slate-400'; };
-    const fileRow=(f,idx)=>`
+    const kindBadge=k=>{ const m={agenda:'bg-sky-100 text-sky-800 border-sky-200',minutes:'bg-emerald-100 text-emerald-800 border-emerald-200',slides:'bg-amber-100 text-amber-800 border-amber-200',other:'bg-slate-100 text-slate-600 border-slate-200'}; return `<span class="text-[10px] px-1.5 py-0.5 rounded-full border font-bold ${m[k]||m.other}">${this.classifyMeetingFileLabel(k)}</span>`; };
+    const fileRow=(f,idx)=>{
+      const kind=this.classifyMeetingFileKind(f.name);
+      return `
       <div class="px-4 py-2.5 flex items-center justify-between gap-2 hover:bg-slate-50">
         <div class="flex items-center gap-2 min-w-0">
           <i class="fa-solid ${iconFor(f.mimeType)} ${colorFor(f.mimeType)}"></i>
-          <div class="min-w-0"><div class="text-[12px] font-medium truncate">${escapeHtml(f.name)}</div><div class="text-[10px] text-slate-400">${f._folder?escapeHtml(f._folder)+' · ':''}${fmtSize(f.size)}${f.modified?' · '+fmtDate(f.modified):''}</div></div>
+          <div class="min-w-0"><div class="text-[12px] font-medium truncate flex items-center gap-1.5 flex-wrap">${escapeHtml(f.name)} ${kindBadge(kind)}</div><div class="text-[10px] text-slate-400">${f._folder?escapeHtml(f._folder)+' · ':''}${fmtSize(f.size)}${f.modified?' · '+fmtDate(f.modified):''}</div></div>
         </div>
         <div class="flex gap-1 flex-shrink-0">
           <button onclick="app.previewDriveFile('${f.id}')" class="bg-sky-50 border border-sky-200 text-sky-700 px-2 py-1 rounded-lg text-[10px] font-bold">預覽</button>
           <a href="${f.link||('https://drive.google.com/file/d/'+f.id+'/view')}" target="_blank" rel="noopener" class="bg-white border px-2 py-1 rounded-lg text-[10px] font-bold">開啟</a>
           <a href="https://drive.google.com/uc?export=download&id=${f.id}" target="_blank" rel="noopener" class="bg-white border px-2 py-1 rounded-lg text-[10px] font-bold">下載</a>
         </div>
-      </div>`;
+      </div>`; };
     const folderBlock=(sf,idx)=>`
       <div class="border rounded-xl bg-white overflow-hidden">
         <button onclick="app.toggleMdFolder('md-f-${idx}')" class="w-full flex items-center justify-between gap-2 px-4 py-3 hover:bg-slate-50 text-left">
@@ -6831,7 +6906,11 @@ class ScoutEventApp{
           <span class="flex items-center gap-2 flex-shrink-0"><span class="text-[10px] text-slate-400 hidden sm:inline">${sf.modified?fmtDate(sf.modified):''}</span><i id="md-f-${idx}-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i></span>
         </button>
         <div id="md-f-${idx}" class="hidden border-t divide-y divide-slate-100">
-          ${(sf.files||[]).map(fileRow).join('')||'<div class="px-4 py-4 text-[11px] text-slate-400 text-center">（此資料夾暫無檔案）</div>'}
+          ${(()=>{ const files=sf.files||[]; if(!files.length) return '<div class="px-4 py-4 text-[11px] text-slate-400 text-center">（此資料夾暫無檔案）</div>';
+            const groups={agenda:[],minutes:[],slides:[],other:[]};
+            files.forEach(f=>groups[this.classifyMeetingFileKind(f.name)].push(f));
+            return ['agenda','minutes','slides','other'].filter(k=>groups[k].length).map(k=>`<div class="px-3 pt-2 pb-1 text-[10px] font-bold text-slate-500">${this.classifyMeetingFileLabel(k)}</div>${groups[k].map(fileRow).join('')}`).join('');
+          })()}
         </div>
       </div>`;
     const folderIdNow=folderId||this.getMeetingDriveFolderId();
@@ -6949,6 +7028,7 @@ class ScoutEventApp{
                 ${m.author?`<span><i class="fa-solid fa-user mr-1"></i>${escapeHtml(m.author)}</span>`:''}
               </div>
               <div class="mt-2 flex flex-wrap gap-1.5">${agendaBadge}${minutesBadge}${attachCount?`<span class="file-chip"><i class="fa-solid fa-paperclip"></i> ${attachCount} 附件</span>`:''}${groupCount?`<span class="file-chip bg-amber-50 border-amber-200 text-amber-800"><i class="fa-solid fa-users-rectangle"></i> ${groupCount} 組資料</span>`:''}</div>
+              ${(m.classified_files||[]).length?`<div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-1.5" onclick="event.stopPropagation()">${m.classified_files.map(f=>`<a href="${escapeHtml(f.file_url||'#')}" target="_blank" class="text-[10px] px-2 py-1 rounded-lg border bg-white hover:bg-slate-50 truncate"><b>${escapeHtml(f.label||this.classifyMeetingFileLabel(f.kind))}</b> · ${escapeHtml(f.file_name||'')}</a>`).join('')}</div>`:''}
               ${m.agenda?`<p class="text-[11px] text-slate-600 mt-2 line-clamp-2 leading-relaxed">${escapeHtml(m.agenda.slice(0,80))}...</p>`:''}
             </div>
             <div class="flex flex-col gap-1 flex-shrink-0">
@@ -8284,6 +8364,11 @@ class ScoutEventApp{
   getCrisisData(){
     const key=LS.crisis(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
+    const stripMockAcc=arr=>{
+      if(!Array.isArray(arr)) return this.isDemoEvent()?arr:[];
+      if(this.isDemoEvent()) return arr;
+      return arr.filter(a=>a && a.victim_name!=='陳小明' && a.id!=='acc_1');
+    };
     const defaultManuals=[
       {
         id:'cm_1',
@@ -8356,6 +8441,7 @@ class ScoutEventApp{
         claim_status:'已備案 (香港童軍總會活動綜合保險備案編號：ISD2026-INS-042)',
         remarks:'傷者已平安返家，領袖於活動翌日進行電話跟進，康復情況良好。'
       }];
+      if(local) local.accidents=stripMockAcc(local.accidents);
       return local;
     }
     // 內置資料：2026 危機處理計劃（以 2025 手冊為藍本，來自 data/isd_2026.json）
@@ -8425,9 +8511,10 @@ class ScoutEventApp{
         claim_status:'已備案 (香港童軍總會活動綜合保險備案編號：ISD2026-INS-042)',
         remarks:'傷者已平安返家，領袖於活動翌日進行電話跟進，康復情況良好。'
       }];
+      norm.accidents=stripMockAcc(norm.accidents);
       return norm;
     }
-    if(!this.isDemoEvent()) return {team:[],contacts:[],docs:[],manuals:defaultManuals};
+    if(!this.isDemoEvent()) return {team:[],contacts:[],docs:[],manuals:defaultManuals,accidents:[]};
     return {
       team:[
         {id:'ct_preset_1',role:'活動主席（危機處理小組主席）',match:['主席'],auto:1},
@@ -9105,6 +9192,7 @@ class ScoutEventApp{
           ${m.summary?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-950 leading-relaxed"><b class="text-amber-800"><i class="fa-solid fa-align-left mr-1"></i>手冊擇要：</b>${escapeHtml(m.summary)}</div>`:''}
           <div class="text-[10px] text-slate-400">發佈／上載：${escapeHtml(m.uploaded_by||'秘書處')} ${m.date?` | ${escapeHtml(m.date)}`:''}</div>
           <div class="flex gap-2 flex-wrap pt-1">
+            <button onclick="app.openCrisisManualInApp('${m.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-sm"><i class="fa-solid fa-book-open mr-1"></i>在 APP 內開啟 PDF</button>
             <button onclick="app.downloadCrisisManual('${m.id}')" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-sm"><i class="fa-solid fa-download mr-1"></i>下載手冊</button>
             <button onclick="app.toggleCrisisManualDetail('${m.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border px-3.5 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-circle-info mr-1"></i>詳細內容 / 章節</button>
             ${m.file_url?`<a href="${escapeHtml(m.file_url)}" target="_blank" class="bg-sky-50 text-sky-700 border border-sky-200 px-3.5 py-1.5 rounded-xl text-[11px] font-bold inline-flex items-center"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟外部連結</a>`:''}
@@ -9244,6 +9332,27 @@ class ScoutEventApp{
   toggleCrisisManualDetail(id){
     const el=document.getElementById('cman-detail-'+id);
     if(el) el.classList.toggle('hidden');
+  }
+  openCrisisManualInApp(id){
+    const data=this.getCrisisData();
+    const m=(data.manuals||[]).find(x=>x.id===id);
+    if(!m){ showToast('找不到手冊','error'); return; }
+    const driveId=this.docDriveId(m);
+    let viewer='';
+    if(m.file_data && String(m.file_data).startsWith('data:')){
+      viewer=`<iframe src="${m.file_data}" class="w-full h-[75vh] rounded-xl border bg-white" title="手冊預覽"></iframe>`;
+    } else if(driveId){
+      viewer=`<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="w-full h-[75vh] rounded-xl border" allow="autoplay" title="手冊預覽"></iframe>`;
+    } else if(m.file_url){
+      const url=m.file_url.includes('/preview')?m.file_url:m.file_url.replace('/view','/preview');
+      viewer=`<iframe src="${escapeHtml(url)}" class="w-full h-[75vh] rounded-xl border" title="手冊預覽"></iframe>`;
+    } else {
+      viewer=`<div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12px] text-amber-900 leading-relaxed">尚未上載 PDF 檔案。管理員可於本分頁「上傳手冊檔案」加入 PDF 或 Google Drive 連結後，即可在 APP 內直接閱讀（不必先下載）。目前仍可查看下方章節摘要。</div>
+        <div class="text-[12px] text-slate-700 whitespace-pre-line leading-relaxed bg-slate-50 border rounded-xl p-3.5 mt-2">${escapeHtml(m.description||m.summary||'')}</div>`;
+    }
+    document.getElementById('record-modal-title').textContent=m.title||'危機處理計劃手冊';
+    document.getElementById('record-form-fields').innerHTML=`<div class="space-y-2">${viewer}<div class="text-[10px] text-slate-400 text-center">可於 APP 內翻頁閱讀；如預覽未能載入，請改用下載或外部連結。</div></div>`;
+    document.getElementById('modal-record').classList.remove('hidden');
   }
   exportCrisisManuals(){
     const data=this.getCrisisData();
