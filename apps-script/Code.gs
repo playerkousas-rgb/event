@@ -48,55 +48,107 @@ function jsonResponse(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// ═══ 會議 Drive 即時連通：列出資料夾內子資料夾（每次會議一個）及檔案 ═══
-// 前端「會議卡片 → 會議 Drive」分頁每進入自動呼叫；Drive 有更新即時可見
+// ═══ 會議 Drive 公開讀取版：只讀取「知道連結的任何人可查看」資料夾 ═══
+// 不使用需要授權的 Drive 服務，因此部署毋須取得使用者的 Google Drive 權限；UrlFetchApp 只會看到公開內容。
 function listDriveFolder(data) {
   try {
     const folderId = (data.folder_id || data.id || '').toString().trim();
     if (!folderId) return { success: false, error: '缺少 folder_id' };
-    const folder = DriveApp.getFolderById(folderId);
+    const root = fetchPublicDriveFolder(folderId);
     const out = {
       success: true,
-      folder: folder.getName(),
+      folder: root.name || '會議 Drive',
       folder_id: folderId,
       subfolders: [],
-      files: []
+      files: root.files
     };
-    // 根目錄直接存放的檔案
-    const rootFiles = folder.getFiles();
-    while (rootFiles.hasNext()) out.files.push(driveFileInfo(rootFiles.next()));
-    // 子資料夾（＝每次會議）
-    const folders = folder.getFolders();
-    while (folders.hasNext()) {
-      const sf = folders.next();
-      const files = [];
-      const fit = sf.getFiles();
-      while (fit.hasNext()) files.push(driveFileInfo(fit.next()));
-      files.sort(function (a, b) { return String(a.name).localeCompare(String(b.name), 'zh-HK'); });
-      out.subfolders.push({
-        id: sf.getId(),
-        name: sf.getName(),
-        modified: sf.getLastUpdated().toISOString(),
-        files: files
-      });
-    }
-    out.subfolders.sort(function (a, b) { return String(a.name).localeCompare(String(b.name), 'zh-HK'); });
+    // 只展開一層子資料夾（每次會議一個），避免大量遞迴請求超出 Apps Script 時限。
+    root.subfolders.forEach(function (sf) {
+      try {
+        const child = fetchPublicDriveFolder(sf.id);
+        out.subfolders.push({ id: sf.id, name: sf.name, modified: '', files: child.files });
+      } catch (childErr) {
+        out.subfolders.push({ id: sf.id, name: sf.name, modified: '', files: [], error: childErr.toString() });
+      }
+    });
+    out.files.sort(publicDriveNameSort);
+    out.subfolders.sort(publicDriveNameSort);
     return out;
   } catch (err) {
-    return { success: false, error: err.toString() };
+    return {
+      success: false,
+      error: '未能公開讀取 Drive 資料夾：' + err.toString() + '。請確認資料夾及檔案已設為「知道連結的任何人可查看」。'
+    };
   }
 }
 
-function driveFileInfo(f) {
+function fetchPublicDriveFolder(folderId) {
+  const url = 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(folderId) + '#list';
+  const response = UrlFetchApp.fetch(url, {
+    method: 'get',
+    followRedirects: true,
+    muteHttpExceptions: true,
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ScoutEventPublicDrive/1.0)' }
+  });
+  const status = response.getResponseCode();
+  if (status < 200 || status >= 400) throw new Error('HTTP ' + status);
+  const html = response.getContentText();
+  if (/Request access|You need access|要求存取權|需要存取權/i.test(html)) throw new Error('資料夾並非公開');
+  const result = { name: publicDriveFolderName(html), subfolders: [], files: [] };
+  const seenFolders = {};
+  const seenFiles = {};
+  const anchorRe = /<a\b([^>]*?href=["']([^"']+)["'][^>]*)>([\s\S]*?)<\/a>/gi;
+  let match;
+  while ((match = anchorRe.exec(html)) !== null) {
+    const attrs = match[1] || '';
+    const href = decodePublicDriveHtml(match[2] || '');
+    const titleMatch = attrs.match(/\btitle=["']([^"']*)["']/i);
+    const name = decodePublicDriveHtml((titleMatch ? titleMatch[1] : match[3].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim());
+    const folderMatch = href.match(/(?:embeddedfolderview\?id=|\/drive\/folders\/)([-\w]{10,})/i);
+    if (folderMatch && folderMatch[1] !== folderId && !seenFolders[folderMatch[1]]) {
+      seenFolders[folderMatch[1]] = true;
+      result.subfolders.push({ id: folderMatch[1], name: name || '會議資料夾' });
+      continue;
+    }
+    const fileMatch = href.match(/(?:\/file\/d\/|[?&]id=)([-\w]{10,})/i);
+    if (fileMatch && !seenFiles[fileMatch[1]]) {
+      seenFiles[fileMatch[1]] = true;
+      result.files.push(publicDriveFileInfo(fileMatch[1], name));
+    }
+  }
+  return result;
+}
+
+function publicDriveFolderName(html) {
+  const title = String(html || '').match(/<title>([\s\S]*?)<\/title>/i);
+  if (!title) return '';
+  return decodePublicDriveHtml(title[1]).replace(/\s*[-–]\s*Google Drive\s*$/i, '').trim();
+}
+
+function publicDriveFileInfo(id, name) {
   return {
-    id: f.getId(),
-    name: f.getName(),
-    mimeType: f.getMimeType(),
-    modified: f.getLastUpdated().toISOString(),
-    size: f.getSize(),
-    link: f.getUrl(),
-    preview: 'https://drive.google.com/file/d/' + f.getId() + '/preview'
+    id: id,
+    name: name || 'Drive 檔案',
+    mimeType: '',
+    modified: '',
+    size: '',
+    link: 'https://drive.google.com/file/d/' + id + '/view',
+    preview: 'https://drive.google.com/file/d/' + id + '/preview'
   };
+}
+
+function publicDriveNameSort(a, b) {
+  return String(a.name || '').localeCompare(String(b.name || ''), 'zh-HK');
+}
+
+function decodePublicDriveHtml(value) {
+  return String(value || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&#x27;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#(\d+);/g, function (_, n) { return String.fromCharCode(Number(n)); });
 }
 
 const ROLE_HIERARCHY = {
@@ -153,7 +205,7 @@ function initializeSheets() {
   if (apSheet) apSheet.getRange('A1').setNote(
     '批核權限表：每行一位批核人。supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務。\n' +
     '有權的欄位填「Y」或「是」；無權留空。修改後在選單「童軍活動管理 → 同步批核權限」或前端「重新整理」即生效。\n' +
-    '管理層（主席/顧問/管理員/執行副主席/超管）預設全範疇，不在此表亦有效。'
+    '前端只向總主任以上顯示批核中心；物資/車輛限協調組、財務限行政組，會操及典禮組不會批物資。管理層可處理全範疇。'
   );
   // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
   ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
@@ -500,7 +552,7 @@ function seedInitialData() {
     uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', '', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
     uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'vice_chairperson', '行政組', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'executive_vice_chairperson', '主席及執行副主席', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
   }

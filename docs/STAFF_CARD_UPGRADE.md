@@ -29,7 +29,7 @@
 ### 功能
 - **Word 上傳轉 JSON**：管理員上傳 .docx 檔，系統用 `mammoth.js` 解析
   - 引入：`https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js`
-  - 流程：`file.arrayBuffer()` → `mammoth.extractRawText({arrayBuffer})` → 文本 → 按已知組別關鍵字 (顧問團、籌委會、行政組等) 拆分 → 每組生成一筆 `job_duties`
+  - 流程：`file.arrayBuffer()` → `mammoth.extractRawText({arrayBuffer})` → 文本 → 按已知組別關鍵字 (顧問團、主席及執行副主席、行政組等) 拆分 → 每組生成一筆 `job_duties`
   - 每筆包含：`group, duty (多行), file_name, updated_by, updated_at`
   - 解析後自動寫入 JSON，顯示在職務大綱 Tab
 - **前端觀看**：所有人可在「職務大綱」Tab 觀看，卡片式顯示組別 + 職務內容
