@@ -203,7 +203,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     <div class="space-y-3">
       <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-amber-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">3</span>後勤支援 <span class="text-[11px] text-slate-500 font-normal ml-2">籌備與執行所需</span></h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div onclick="app.openModule('supplies')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-boxes-stacked"></i></div><h4 class="font-bold">物資+車輛 (含截止)</h4><p class="text-[11px] text-slate-500 mt-1">申請、批核、通知、截止日期、車輛登記</p></div>
+        <div onclick="app.openModule('supplies')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-boxes-stacked"></i></div><h4 class="font-bold">物資申請</h4><p class="text-[11px] text-slate-500 mt-1">申請、批核、通知及截止日期（車輛申請另列）</p></div>
         <div onclick="app.openModule('parking')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-square-parking"></i></div><h4 class="font-bold">泊車證申請</h4><p class="text-[11px] text-slate-500 mt-1">登入可申請；入口檢查清單總主任以上可見</p></div>
         <div onclick="app.openModule('finance')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-wallet"></i></div><h4 class="font-bold">財務管理</h4><p class="text-[11px] text-slate-500 mt-1">指引、預算、開支申報、結算按銀碼批核</p></div>
         <div onclick="app.openModule('oral_quotes')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-signature"></i></div><h4 class="font-bold">口頭報價登記</h4><p class="text-[11px] text-slate-500 mt-1">總主任以上登記，行政組及執行副主席以上查看</p></div>
@@ -225,7 +225,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     </div>
 
     <!-- 按組別一目了然 - 部門管理中心：每組一張卡片（依組織架構圖，不會多出部門） -->
-    <div id="group-management-section" class="bg-white rounded-2xl p-5 border shadow-sm space-y-4">
+    <div id="group-management-section" class="hidden bg-white rounded-2xl p-5 border shadow-sm space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[15px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>部門管理中心 <span class="text-[11px] text-slate-500 font-normal ml-2">每組一張卡片（依組織架構圖）</span></h3><span class="text-[11px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">各組透過管理卡片修改本組內容</span></div>
       <p class="text-[11px] text-slate-500 leading-relaxed">舊有組別是因為各人不用登入沒身份，方便工作人員按組別找自己需要的資料。現卡片制，各組均可以一眼看到卡片分類就找到自己需要的資料，而各組可以透過一個管理卡片，修改或加入自己組別控制的內容。公開可看，僅修改需登入 (一次登入永久有效，儲存於瀏覽器)。目的：什麼都不知道的人用此APP就可了解整個活動和找到需要的資料。</p>
       <div id="group-quick-access" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
@@ -364,7 +364,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
 // 2026 架構固定組別（用戶確認：不會有新組，可能有新主任）——開戶/登記下拉共用
-const ORG_GROUPS=['顧問團','籌委會','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+const ORG_GROUPS=['顧問團','主席及執行副主席','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
 function orgGroupOptions(selected){ return ORG_GROUPS.map(g=>`<option value="${g}" ${g===selected?'selected':''}>${g}</option>`).join(''); }
 // 權限卡片清單（= 用戶「可看到 / 可編輯」的內容卡片，上級授權給下級）
 const PERM_CARDS=[
@@ -427,12 +427,13 @@ const DASH_CARD_DEFS=[
   // ── 管理資料 (登入後按角色/組別解鎖) ──
   {id:'meetings',title:'會議卡片',desc:'分次會議、上傳議程、會員資料、指定資料夾',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:30,editLevel:80,editLabel:'管理員可新增會議'},
   // 物資+車輛：申請入口在「申請中心」，管理/批核在「協調組 → 物資 / 車輛通行證」，故不另設儀表板卡片
-  {id:'supplies',title:'物資+車輛 (含截止)',desc:'申請、批核、通知、截止日期、車輛登記',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40,editLevel:40,editLabel:'總主任/副主席以上可申請·批核',hideOnDashboard:true},
+  {id:'supplies',title:'物資申請',desc:'物資申請、批核、通知及截止日期（車輛申請另列）',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40,editLevel:40,editLabel:'總主任/副主席以上可申請·批核',hideOnDashboard:true},
+  {id:'vehicle',title:'車輛申請',desc:'車輛通行證、車牌、司機及進出日期（與物資分開）',icon:'fa-solid fa-car',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理',action:"app.openModule('supplies'); setTimeout(()=>app.switchSuppliesTab('vehicle'),300)"},
   // 泊車證：已併入「車輛通行證申請」，只保留入口檢查清單頁（協調組 → 車輛通行證 內可開啟）
   {id:'parking',title:'泊車證/入口檢查清單',desc:'已併入車輛通行證申請；入口檢查清單（已批核）總主任以上可見',icon:'fa-solid fa-square-parking',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-700',minLevel:0,editLevel:40,editLabel:'登入可申請；入口檢查清單總主任以上可見',hideOnDashboard:true},
   // 口頭報價：申請入口在「申請中心」，內容內嵌於財務卡片，故不另設儀表板卡片
   {id:'oral_quotes',title:'口頭報價登記',desc:'總主任以上登記；行政組及執行副主席以上可查看',icon:'fa-solid fa-file-signature',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-700',minLevel:0,editLevel:40,editLabel:'總主任以上可登記',hideOnDashboard:true},
-  {id:'finance',title:'財務管理',desc:'指引、預算、開支申報、結算按銀碼批核',icon:'fa-solid fa-wallet',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-600',minLevel:40,groups:['行政組','財務組'],editLevel:60,editGroups:['行政組','財務組'],editLabel:'副主席以上批核'},
+  {id:'finance',title:'財務管理',desc:'指引、預算、開支申報、結算按銀碼批核',icon:'fa-solid fa-wallet',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-600',minLevel:40,groups:['行政組'],editLevel:60,editGroups:['行政組'],editLabel:'副主席以上批核'},
   {id:'admin_group',title:'行政組',desc:'通告、報名、膳食安排、參加旅團 (取代舊手冊)',icon:'fa-solid fa-building',cardClass:'bg-white border shadow-sm',iconClass:'bg-emerald-100 text-emerald-700',minLevel:40,groups:['行政組'],editLevel:40,editGroups:['行政組'],editLabel:'行政組可管理'},
   {id:'coordinator_group',title:'協調組 (物資·車輛·膳食)',desc:'物資借用、車輛通行證、膳食：批核、統計、列印、匯出最終清單；場地佈置圖及數據',icon:'fa-solid fa-people-roof',cardClass:'bg-gradient-to-br from-orange-500 to-amber-600 text-white',iconClass:'bg-white/20 text-white',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理'},
   {id:'my_monitor',title:'我的監察 (全部申請批核)',desc:'一頁看齊自己＋下級所有申請批核：先「我自己」，再按組別分開（膳食·物資·車輛·開支·報價）',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,readOnly:true,editLabel:'查看自己及下級的申請進度',action:"app.openModule('my_monitor')"},
@@ -578,7 +579,7 @@ class ScoutEventApp{
   async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
   goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.remove('hidden'); await this.loadEventData(); await this.loadUsers(); await this.loadApprovalPermissions(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await this.loadApprovalPermissions(); this.renderGroupQuickAccess(); this.applyDashboardMode(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
   async loadHkoWeather(){
@@ -763,6 +764,8 @@ class ScoutEventApp{
     const staffData=this.getStaffData();
     const set=[];
     const push=(g)=>{
+      // 舊資料的「籌委會」統一顯示為主席及執行副主席，避免把所有部門誤稱籌委會
+      g=String(g||'').replace(/籌委會/g,'主席及執行副主席');
       String(g||'').split(/[\/／、,，]/).forEach(part=>{
         const v=part.trim();
         if(!v||v==='未分組'||v==='未知') return;
@@ -781,7 +784,7 @@ class ScoutEventApp{
   groupMeta(g){
     const M={
       '顧問團':{icon:'fa-solid fa-user-tie',cls:'bg-slate-100 text-slate-700'},
-      '籌委會':{icon:'fa-solid fa-crown',cls:'bg-amber-100 text-amber-700'},
+      '主席及執行副主席':{icon:'fa-solid fa-crown',cls:'bg-amber-100 text-amber-700'},
       '會操及典禮組':{icon:'fa-solid fa-flag',cls:'bg-rose-100 text-rose-700'},
       '主題節目組':{icon:'fa-solid fa-gamepad',cls:'bg-fuchsia-100 text-fuchsia-700'},
       '品牌推廣組':{icon:'fa-solid fa-bullhorn',cls:'bg-sky-100 text-sky-700'},
@@ -812,6 +815,7 @@ class ScoutEventApp{
   renderGroupQuickAccess(){
     const container=document.getElementById('group-quick-access');
     if(!container) return;
+    if(!this.currentUser){ container.innerHTML=''; return; }
     const staffData=this.getStaffData();
     const org=staffData.org_chart||[];
     const contacts=staffData.contacts||[];
@@ -939,7 +943,7 @@ class ScoutEventApp{
     this.syncApplicationsFromGas();
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
-  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知·入口檢查)',parking:'泊車證申請 (申請·入口檢查清單)',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章',announcements:'公告及溝通',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
+  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資申請（車輛申請分開）',parking:'泊車證申請 (申請·入口檢查清單)',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章',announcements:'公告及溝通',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
     if(key==='meetings'){
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
@@ -5614,8 +5618,8 @@ class ScoutEventApp{
     // Normalize
     return {
       staff_source: raw.staff_source||null,
-      org_chart:(raw.org_chart||[]).map((n,i)=>({id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:this.parseGroupFromLevel(n.level)||n.group||'未分組',title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''})),
-      contacts:(raw.contacts||[]).map((c,i)=>({id:c.id||'contact_'+i,name:c.name||'',role_title:c.role_title||c.role||'',group_name:c.group_name||c.group||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'})),
+      org_chart:(raw.org_chart||[]).map((n,i)=>({id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:((n.title||'').includes('執行副主席')?'主席及執行副主席':(this.parseGroupFromLevel(n.level)||n.group||'未分組').replace(/籌委會/g,'主席及執行副主席')),title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''})),
+      contacts:(raw.contacts||[]).map((c,i)=>({id:c.id||'contact_'+i,name:c.name||'',role_title:c.role_title||c.role||'',group_name:((c.role_title||c.role||'').includes('執行副主席')?'主席及執行副主席':(c.group_name||c.group||'').replace(/籌委會/g,'主席及執行副主席')),contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'})),
       job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:j.group||'未分組',duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
     };
   }
@@ -5712,7 +5716,8 @@ class ScoutEventApp{
         <h4 class="font-bold text-sm mb-3"><i class="fa-solid fa-sitemap text-indigo-600 mr-2"></i>組織架構樹形圖 (各副主席可新增下屬)</h4>
         <div class="space-y-6">`;
     // For each group, render as tree
-    Object.keys(groups).sort().forEach(groupName=>{
+    const groupOrder=['顧問團','主席及執行副主席','行政組','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組'];
+    Object.keys(groups).sort((a,b)=>(groupOrder.indexOf(a)<0?999:groupOrder.indexOf(a))-(groupOrder.indexOf(b)<0?999:groupOrder.indexOf(b))).forEach(groupName=>{
       const nodes=groups[groupName];
       html+=`<div class="border border-slate-200 rounded-xl p-3 bg-slate-50">
         <div class="flex justify-between items-center mb-2"><div class="font-bold text-[13px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>${escapeHtml(groupName)} <span class="ml-2 bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full">${nodes.length} 崗位</span></div><div class="flex gap-1">${canAddNode?`<button onclick="app.openOrgNodeForm('${escapeHtml(groupName)}')" class="bg-white border hover:bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-xl text-[11px] font-bold">+ 新增崗位</button>`:''}</div></div>
@@ -5810,11 +5815,18 @@ class ScoutEventApp{
     const lvl=this.roleLevel(this.currentUser.role); const g=this.currentUser.group_name||'';
     return this.isAdmin()||this.isExecViceOrChair()||lvl>=40||g.includes('行政');
   }
+  staffSortKey(person){
+    const role=String(person.role_title||person.title||'');
+    const group=String(person.group_name||person.group||'').replace(/籌委會/g,'主席及執行副主席');
+    const top=group.includes('顧問')?0:group.includes('主席')?1:2;
+    const rank=/副主席/.test(role)?0:/總主任/.test(role)?1:/主任/.test(role)?2:3;
+    return top*10+rank;
+  }
   renderStaffContacts(){
     const container=document.getElementById('staff-tab-contacts');
     if(!container) return;
     const data=this.getStaffData();
-    const contacts=data.contacts||[];
+    const contacts=(data.contacts||[]).slice().sort((a,b)=>this.staffSortKey(a)-this.staffSortKey(b));
     const loggedIn=!!this.currentUser;
     const canManage=this.canManageStaffContacts();
     container.innerHTML=`
