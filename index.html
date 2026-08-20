@@ -2288,7 +2288,6 @@ class ScoutEventApp{
     }catch(e){}
     // 聯絡表/組織架構/日程表：JSON 為主，不自動同步（避免 Sheet 舊資料覆蓋 JSON 新資料）
     // 管理員可手動到各卡片按「同步」按鈕觸發
-  }
     try{
       const ps=this.eventData['participants_source'];
       if(ps && (ps.sheet_id||ps.drive_file_id)) await this.syncParticipantsFromDrive(true);
