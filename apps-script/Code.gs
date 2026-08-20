@@ -1,5 +1,10 @@
 // ============================================================
-// 童軍活動管理系統 - Google Apps Script 後端 v5.0 (零精簡·全文本實戰版)
+// 童軍活動管理系統 - Google Apps Script 後端 v7.7
+//  v7.7 更新：新增 Vehicle_Passes（車輛通行證/泊車）工作表；
+//            Supply_Requests 補 unit/qty_approved/reason/date_needed/deadline/contact/requested_by_id/approved_at/notes 欄；
+//            Meals 補 options/price/deadline/locked/created_by 欄；getEventData 一併回傳 Vehicle_Passes。
+//  ⚠️ 更新後請在 Apps Script 執行一次 initializeSheets（只會新增表／於最右加欄，不會改動或刪除既有資料），然後重新部署。
+// （原 v5.0 零精簡·全文本實戰版）
 // COPY RIGHT Scout System
 // 確保 Google Sheet 內包含所有 30+ 份檔案的完整文本、全套詳細預算明細、完整組織名單與政策
 // ============================================================
@@ -115,6 +120,14 @@ function initializeSheets() {
   ensureSheet(ss, 'Parking_Requests', ['parking_id', 'event_id', 'seq', 'group_name', 'unit', 'plate', 'driver_name', 'position', 'contact', 'park_date', 'entry_time', 'exit_time', 'full_day', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
   // 口頭報價登記（v7.5 新增）：總主任以上登記，行政組及執行副主席以上可查看
   ensureSheet(ss, 'Oral_Quotes', ['oral_id', 'event_id', 'quote_date', 'group_name', 'vendor', 'contact_person', 'contact_phone', 'item_desc', 'amount', 'notes', 'quoted_by', 'quoted_by_id', 'created_at']);
+  // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
+  // 車輛通行證（含泊車）：前端一直有寫出，但舊版 GS 未建立此表 → 之前寫出會被丟棄，現正式建立
+  ensureSheet(ss, 'Vehicle_Passes', ['pass_id', 'event_id', 'plate', 'driver_name', 'driver_contact', 'vehicle_type', 'purpose', 'group_name', 'entry_date', 'exit_date', 'parking_location', 'deadline', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
+  ensureColumns(ss.getSheetByName('Vehicle_Passes'), ['deadline', 'requested_by_id', 'approved_at', 'notes']);
+  // 物資申請：補回批核／需用日期／聯絡等欄，否則協調組批核結果無法寫入試算表
+  ensureColumns(ss.getSheetByName('Supply_Requests'), ['unit', 'qty_approved', 'reason', 'date_needed', 'deadline', 'contact', 'requested_by_id', 'approved_at', 'notes']);
+  // 膳食菜單：補回選項／截止／鎖定等欄
+  ensureColumns(ss.getSheetByName('Meals'), ['options', 'price', 'deadline', 'locked', 'created_by']);
   seedInitialData();
 }
 
@@ -705,7 +718,7 @@ function sendMeetingEmailNotification(data) {
 
 function getEventAllData(eventId) {
   const ss = getSheet();
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Parking_Requests', 'Oral_Quotes', 'Users'];
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Oral_Quotes', 'Users'];
   const result = {};
   
   modules.forEach(mod => {

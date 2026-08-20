@@ -46,3 +46,8 @@
 - 新增：`getEventGroups()`、`groupMeta()`、`groupApplyStats()`、`renderCoordOverview/Supplies/Vehicles/Meals/Docs()`、`printCoordArea()`、`downloadCSV()`、`exportCoordSuppliesCSV/VehiclesCSV/MealsCSV()`、`collectApplications()`、`renderMyMonitorModule()`。
 - 批核動作改用 `refreshSuppliesViews()` / `refreshMealsViews()`：在協調組或部門管理頁按批核後，會**留在原頁**重新整理，不會跳去舊模組。
 - 儀表板卡片以 `hideOnDashboard` 標記隱藏（權限管理／PERM_CARDS 不受影響）。
+
+## 10. 後端 GS（v7.7 一併更新）
+- `apps-script/Code.gs`：新增 `Vehicle_Passes` 工作表；`Supply_Requests`、`Meals` 非破壞性補欄；`getEventData` 回傳 `Vehicle_Passes`。
+- 前端新增 `syncApplicationsFromGas()`：正式活動載入時一次過回讀 膳食訂餐／物資申請／車輛通行證／泊車證，做到跨裝置共用。
+- **更新步驟見 `docs/GS_UPDATE_V7_7.md`（要在 Apps Script 執行一次 initializeSheets 並重新部署）。**
