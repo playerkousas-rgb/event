@@ -1104,7 +1104,9 @@ class ScoutEventApp{
           <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
           <button onclick="app.openModule('coordinator_group')" class="bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-people-roof mr-1"></i>協調組（物資／車輛／膳食批核）</button>
           <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+          ${groupName==='服務及發展組'?`<button onclick="app.openModule('donations')" class="bg-rose-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動</button>`:''}
         </div>
+        ${groupName==='服務及發展組'?this.renderDonationSummaryForGroup():''}
       </div>`;
   }
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
@@ -7758,11 +7760,13 @@ class ScoutEventApp{
           <button onclick="app.switchAnnTab('schedule')" class="tab-btn ${this.annSubTab==='schedule'?'active':''}"><i class="fa-solid fa-calendar-days mr-1"></i> 日程表</button>
           <button onclick="app.switchAnnTab('guide')" class="tab-btn ${this.annSubTab==='guide'?'active':''}"><i class="fa-solid fa-book-open mr-1"></i> 旅團須知</button>
           <button onclick="app.switchAnnTab('theme')" class="tab-btn ${this.annSubTab==='theme'?'active':''}"><i class="fa-solid fa-award mr-1"></i> 活動主題章</button>
+          <button onclick="app.switchAnnTab('map')" class="tab-btn ${this.annSubTab==='map'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 場地地圖</button>
         </div>
         <div id="ann-tab-list" class="${this.annSubTab==='list'?'':'hidden'}"></div>
         <div id="ann-tab-schedule" class="${this.annSubTab==='schedule'?'':'hidden'}"></div>
         <div id="ann-tab-guide" class="${this.annSubTab==='guide'?'':'hidden'}"></div>
         <div id="ann-tab-theme" class="${this.annSubTab==='theme'?'':'hidden'}"></div>
+        <div id="ann-tab-map" class="${this.annSubTab==='map'?'':'hidden'}"></div>
       </div>
     `;
     this.renderAnnList(document.getElementById('ann-tab-list'));
@@ -7772,7 +7776,7 @@ class ScoutEventApp{
   }
   switchAnnTab(tab){
     this.annSubTab=tab;
-    ['list','schedule','guide','theme'].forEach(t=>{const el=document.getElementById('ann-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
+    ['list','schedule','guide','theme','map'].forEach(t=>{const el=document.getElementById('ann-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
     document.querySelectorAll('[onclick^="app.switchAnnTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className=t===tab?'tab-btn active':'tab-btn';
@@ -7780,7 +7784,17 @@ class ScoutEventApp{
     if(tab==='schedule') this.renderScheduleModule(document.getElementById('ann-tab-schedule'));
     else if(tab==='guide') this.renderUnitGuideModule(document.getElementById('ann-tab-guide'));
     else if(tab==='theme') this.renderThemeBadgesModule(document.getElementById('ann-tab-theme'));
+    else if(tab==='map') this.renderAnnMapTab(document.getElementById('ann-tab-map'));
     else if(tab==='list') this.renderAnnList(document.getElementById('ann-tab-list'));
+  }
+  renderAnnMapTab(container){
+    if(!container) return;
+    container.innerHTML='<div class="space-y-4">'
+      +'<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b><i class="fa-solid fa-map mr-1"></i>場地地圖：</b>香港黃竹坑香港警察學院活動場地地圖。</div>'
+      +'<div class="bg-white border rounded-xl p-4 space-y-3">'
+      +'<div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl"><i class="fa-solid fa-map"></i></div><div><b class="text-[14px]">香港警察學院場地地圖</b><div class="text-[11px] text-slate-500 mt-0.5">活動場地地圖 PDF</div></div></div>'
+      +'<a href="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟場地地圖 PDF</a>'
+      +'</div></div>';
   }
   renderAnnList(container){
     if(!container) return;
@@ -7788,18 +7802,6 @@ class ScoutEventApp{
     const canPost=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=30; // 主任以上可發佈
     container.innerHTML=`
       <div class="space-y-3">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <a href="https://drive.google.com/file/d/1gDvBWNCJq9aVZV7CEClyYqV-GlHxX14E/view" target="_blank" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl p-4 flex items-center gap-3 hover:shadow-lg transition card-hover">
-            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-calendar-days"></i></div>
-            <div class="min-w-0 flex-1"><b class="text-[13px]">ISD2026 日程表 (Run Down)</b><p class="text-[10px] text-sky-100 mt-0.5">活動日程安排，點擊開啟 PDF</p></div>
-            <i class="fa-solid fa-arrow-up-right-from-square text-white/60"></i>
-          </a>
-          <a href="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view" target="_blank" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-4 flex items-center gap-3 hover:shadow-lg transition card-hover">
-            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-map"></i></div>
-            <div class="min-w-0 flex-1"><b class="text-[13px]">香港警察學院場地地圖</b><p class="text-[10px] text-emerald-100 mt-0.5">活動場地地圖，點擊開啟 PDF</p></div>
-            <i class="fa-solid fa-arrow-up-right-from-square text-white/60"></i>
-          </a>
-        </div>
         <div class="flex gap-2 flex-wrap">
           ${canPost?`<button onclick="app.openAnnouncementForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>發佈公告 (主任以上)</button>`:''}
           <input id="announcement-search" placeholder="搜尋公告/協作" oninput="app.renderAnnList(document.getElementById('ann-tab-list'))" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
@@ -10306,6 +10308,25 @@ class ScoutEventApp{
   saveDonationsData(data){
     const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_donations';
     localStorage.setItem(key,JSON.stringify(data));
+  }
+  renderDonationSummaryForGroup(){
+    const data=this.getDonationsData();
+    const goods=data.goods||[];
+    const food=data.food||[];
+    const tf=goods.length+food.length;
+    const td=goods.reduce((s,g)=>s+(g.items||[]).length,0)+food.reduce((s,f)=>s+(f.items||[]).length,0);
+    const tqg=goods.reduce((s,g)=>s+(g.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
+    const tqf=food.reduce((s,f)=>s+(f.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
+    return '<div class="bg-rose-50 border border-rose-200 rounded-xl p-4 space-y-3">'
+      +'<h4 class="font-bold text-sm text-rose-900"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動 - 統計總覽</h4>'
+      +'<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">'
+      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">已交表格</div><div class="text-xl font-extrabold text-rose-600">'+tf+'</div></div>'
+      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">捐贈人次</div><div class="text-xl font-extrabold text-emerald-600">'+td+'</div></div>'
+      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">物品總數量</div><div class="text-xl font-extrabold text-blue-600">'+tqg+' 單位</div></div>'
+      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">食品總數量</div><div class="text-xl font-extrabold text-amber-600">'+tqf+' 件</div></div>'
+      +'</div>'
+      +'<button onclick="app.openModule(&quot;donations&quot;)" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整捐贈管理頁</button>'
+      +'</div>';
   }
   renderDonationsModule(){
     const container=document.getElementById('module-content');
