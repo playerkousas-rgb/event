@@ -6749,10 +6749,11 @@ class ScoutEventApp{
   }
   getMeetingFolderConfig(){
     const eventId=this.eventData?.drive?.groups?.['會議']||this.eventData?.drive?.groups?.['會議(0 Pre-Meeting,1,2,3 Meeting)']||'';
+    const uploadFolderId=this.eventData?.drive?.meeting_upload_folder_id||'';
     const configuredLink=this.systemConfig.meeting_folder_link||'';
     const configuredId=this.systemConfig.meeting_folder_id||this.extractDriveFolderId(configuredLink);
-    const id=eventId||configuredId;
-    const link=eventId?`https://drive.google.com/drive/folders/${eventId}`:configuredLink;
+    const id=uploadFolderId||eventId||configuredId;
+    const link=uploadFolderId?`https://drive.google.com/drive/folders/${uploadFolderId}`:(eventId?`https://drive.google.com/drive/folders/${eventId}`:configuredLink);
     return {link,id};
   }
   saveMeetingFolderLink(){
@@ -7793,7 +7794,8 @@ class ScoutEventApp{
       +'<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b><i class="fa-solid fa-map mr-1"></i>場地地圖：</b>香港黃竹坑香港警察學院活動場地地圖。</div>'
       +'<div class="bg-white border rounded-xl p-4 space-y-3">'
       +'<div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl"><i class="fa-solid fa-map"></i></div><div><b class="text-[14px]">香港警察學院場地地圖</b><div class="text-[11px] text-slate-500 mt-0.5">活動場地地圖 PDF</div></div></div>'
-      +'<a href="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟場地地圖 PDF</a>'
+      +'<div class="mt-3"><iframe src="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/preview" class="w-full h-[500px] border rounded-xl" allow="autoplay"></iframe></div>'
+      +'<a href="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 mt-2"><i class="fa-solid fa-download mr-1"></i>下載場地地圖 PDF</a>'
       +'</div></div>';
   }
   renderAnnList(container){
@@ -10122,7 +10124,7 @@ class ScoutEventApp{
     const data=this.getScheduleData();
     const schSrc=this.eventData['schedule_source']||{};
     // ISD typical run down - 上午攤位、下午儀式 (2025 實際流程)；僅模擬示範活動顯示
-    const isdRunDown=this.isDemoEvent()?[
+    const isdRunDown=this.isDemoEvent()||this.currentEvent?.event_id==='isd_2026'?[
       {time:'07:45 - 08:30', location:'大操場 / 有蓋操場', program:'會操及頒獎禮場地設置劃位，各功能組別場地佈置', groups:{'協調組':'場地佈置、物資運送','步操及典禮組':'步操報到處 set up, 樂隊報到','節目組':'到達會場及拿物資','服務組':'到達會場及拿物資','行政組':'行政組 set up、運作'}},
       {time:'08:30 - 10:30', location:'報到處 / 大操場', program:'參加旅團報到、制服團隊報到，攤位負責人報到及最後佈置；嘉賓接待處準備', groups:{'協調組':'場內秩序及交通組開始運作','步操及典禮組':'優異旅團/獲獎人士報到，貼嘉賓座位紙','節目組':'攤位負責人報到及最後佈置','行政組':'旅團報到處 set up、運作'}},
       {time:'10:45 - 10:55', location:'莫榮大樓地下 → 大操場', program:'嘉賓接待（莫榮大樓地下）→ 嘉賓就座（大操場）', groups:{'行政組':'嘉賓接待運作','步操及典禮組':'典禮準備就緒'}},
@@ -10313,17 +10315,13 @@ class ScoutEventApp{
     const data=this.getDonationsData();
     const goods=data.goods||[];
     const food=data.food||[];
-    const tf=goods.length+food.length;
-    const td=goods.reduce((s,g)=>s+(g.items||[]).length,0)+food.reduce((s,f)=>s+(f.items||[]).length,0);
     const tqg=goods.reduce((s,g)=>s+(g.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
     const tqf=food.reduce((s,f)=>s+(f.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
     return '<div class="bg-rose-50 border border-rose-200 rounded-xl p-4 space-y-3">'
       +'<h4 class="font-bold text-sm text-rose-900"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動 - 統計總覽</h4>'
-      +'<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">'
-      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">已交表格</div><div class="text-xl font-extrabold text-rose-600">'+tf+'</div></div>'
-      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">捐贈人次</div><div class="text-xl font-extrabold text-emerald-600">'+td+'</div></div>'
-      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">物品總數量</div><div class="text-xl font-extrabold text-blue-600">'+tqg+' 單位</div></div>'
-      +'<div class="bg-white border rounded-xl p-3 text-center"><div class="text-[10px] text-slate-500">食品總數量</div><div class="text-xl font-extrabold text-amber-600">'+tqf+' 件</div></div>'
+      +'<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">'
+      +'<div class="bg-blue-50 border border-blue-200 rounded-xl p-3"><h5 class="font-bold text-xs text-blue-800 mb-2"><i class="fa-solid fa-box-open mr-1"></i>物品捐贈</h5><div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-[10px] text-slate-500">表格</div><div class="text-lg font-extrabold text-blue-600">'+goods.length+'</div></div><div><div class="text-[10px] text-slate-500">人次</div><div class="text-lg font-extrabold text-blue-600">'+goods.reduce((s,g)=>s+(g.items||[]).length,0)+'</div></div><div><div class="text-[10px] text-slate-500">總數量</div><div class="text-lg font-extrabold text-blue-600">'+tqg+'</div></div></div></div>'
+      +'<div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><h5 class="font-bold text-xs text-amber-800 mb-2"><i class="fa-solid fa-apple-whole mr-1"></i>食品捐贈</h5><div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-[10px] text-slate-500">表格</div><div class="text-lg font-extrabold text-amber-600">'+food.length+'</div></div><div><div class="text-[10px] text-slate-500">人次</div><div class="text-lg font-extrabold text-amber-600">'+food.reduce((s,f)=>s+(f.items||[]).length,0)+'</div></div><div><div class="text-[10px] text-slate-500">總數量</div><div class="text-lg font-extrabold text-amber-600">'+tqf+'</div></div></div></div>'
       +'</div>'
       +'<button onclick="app.openModule(&quot;donations&quot;)" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整捐贈管理頁</button>'
       +'</div>';
@@ -10365,11 +10363,9 @@ class ScoutEventApp{
     const totalQtyFood=food.reduce((s,f)=>s+(f.items||[]).reduce((a,i)=>a+(parseInt(i.quantity)||0),0),0);
     body.innerHTML=`
       <div class="space-y-4">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">已交表格</div><div class="text-2xl font-extrabold text-rose-600">${totalForms}</div><div class="text-[10px] text-slate-400">物品 ${goods.length} · 食品 ${food.length}</div></div>
-          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">捐贈人次</div><div class="text-2xl font-extrabold text-emerald-600">${totalDonors}</div></div>
-          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">物品總數量</div><div class="text-2xl font-extrabold text-blue-600">${totalQtyGoods}</div><div class="text-[10px] text-slate-400">單位</div></div>
-          <div class="bg-white border rounded-xl p-4 text-center"><div class="text-[10px] text-slate-500">食品總數量</div><div class="text-2xl font-extrabold text-amber-600">${totalQtyFood}</div><div class="text-[10px] text-slate-400">件</div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4"><h5 class="font-bold text-sm text-blue-800 mb-3"><i class="fa-solid fa-box-open mr-1"></i>物品捐贈統計</h5><div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-[10px] text-slate-500">表格</div><div class="text-2xl font-extrabold text-blue-600">${goods.length}</div></div><div><div class="text-[10px] text-slate-500">人次</div><div class="text-2xl font-extrabold text-blue-600">${goods.reduce((s,g)=>s+(g.items||[]).length,0)}</div></div><div><div class="text-[10px] text-slate-500">總數量</div><div class="text-2xl font-extrabold text-blue-600">${totalQtyGoods}</div><div class="text-[10px] text-slate-400">單位</div></div></div></div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4"><h5 class="font-bold text-sm text-amber-800 mb-3"><i class="fa-solid fa-apple-whole mr-1"></i>食品捐贈統計</h5><div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-[10px] text-slate-500">表格</div><div class="text-2xl font-extrabold text-amber-600">${food.length}</div></div><div><div class="text-[10px] text-slate-500">人次</div><div class="text-2xl font-extrabold text-amber-600">${food.reduce((s,f)=>s+(f.items||[]).length,0)}</div></div><div><div class="text-[10px] text-slate-500">總數量</div><div class="text-2xl font-extrabold text-amber-600">${totalQtyFood}</div><div class="text-[10px] text-slate-400">件</div></div></div></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-white border rounded-xl p-4">
