@@ -1194,8 +1194,8 @@
       },
       {
         "name": "何家騏",
-        "role_title": "顧問 / 危機處理主任",
-        "group_name": "顧問團 / 行政組",
+        "role_title": "顧問",
+        "group_name": "顧問團",
         "contact": "9020 0716",
         "job_desc": "政策指導與危機處理",
         "email": "dominicho@hkirscout.org.hk"
@@ -1218,7 +1218,7 @@
       },
       {
         "name": "張佳良",
-        "role_title": "副主席（會操及典禮）",
+        "role_title": "副主席（典禮及會操）",
         "group_name": "會操及典禮組",
         "contact": "9272 4291",
         "job_desc": "會操流程與步操後備日",
@@ -1300,7 +1300,7 @@
       },
       {
         "name": "何令勤",
-        "role_title": "節目主任 (1)",
+        "role_title": "節目主任（1）",
         "group_name": "主題節目組",
         "contact": "8494 3252",
         "job_desc": "遊戲攤位執行",
@@ -1308,7 +1308,7 @@
       },
       {
         "name": "陳鋑羲",
-        "role_title": "節目主任 (2)",
+        "role_title": "節目主任（2）",
         "group_name": "主題節目組",
         "contact": "6387 3422",
         "job_desc": "遊戲攤位執行",
@@ -1316,7 +1316,7 @@
       },
       {
         "name": "張宏剛",
-        "role_title": "節目主任 (3)",
+        "role_title": "節目主任（3）",
         "group_name": "主題節目組",
         "contact": "6100 1525",
         "job_desc": "遊戲攤位執行",
@@ -1324,7 +1324,7 @@
       },
       {
         "name": "羅卓華",
-        "role_title": "節目主任 (4)",
+        "role_title": "節目主任（4）",
         "group_name": "主題節目組",
         "contact": "9475 6084",
         "job_desc": "攤位遊戲與印花",
@@ -1332,7 +1332,7 @@
       },
       {
         "name": "李庭甄",
-        "role_title": "節目主任 (5)",
+        "role_title": "節目主任（5）",
         "group_name": "主題節目組",
         "contact": "9028 3305",
         "job_desc": "積極公民工作坊",
@@ -1429,7 +1429,8 @@
         "role_title": "膳食主任",
         "group_name": "協調組",
         "contact": "6596 8526",
-        "job_desc": "膳食統籌"
+        "job_desc": "膳食統籌",
+        "email": ""
       },
       {
         "name": "郭慧敏",
@@ -1566,7 +1567,7 @@
       },
       {
         "name": "何家耀",
-        "role_title": "助理執行幹事 (Assistant Scout Executive)",
+        "role_title": "秘書處",
         "group_name": "秘書處",
         "contact": "2835 7712",
         "job_desc": "地域秘書處行政工作 (Oscar)",
@@ -1574,7 +1575,7 @@
       },
       {
         "name": "陸詠德",
-        "role_title": "活動幹事 (Programme Officer)",
+        "role_title": "秘書處",
         "group_name": "秘書處",
         "contact": "2835 7713",
         "job_desc": "地域秘書處行政工作 (Fiona)",
@@ -1589,17 +1590,19 @@
       },
       {
         "name": "鄧倩姸",
-        "role_title": "發展幹事 (Development Officer)",
+        "role_title": "秘書處",
         "group_name": "秘書處",
-        "contact": "2835 7714",
-        "job_desc": "地域秘書處行政工作 (Cindy)"
+        "contact": "",
+        "job_desc": "地域秘書處行政工作 (Cindy)",
+        "email": ""
       },
       {
         "name": "曾凱瑩",
-        "role_title": "訓練幹事 (Training Officer)",
+        "role_title": "秘書處",
         "group_name": "秘書處",
-        "contact": "2835 7715",
-        "job_desc": "地域秘書處行政工作 (Sandy)"
+        "contact": "",
+        "job_desc": "地域秘書處行政工作 (Sandy)",
+        "email": ""
       }
     ],
     "job_duties": [
