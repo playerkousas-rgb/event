@@ -193,7 +193,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div onclick="app.openModule('theme_badges')" class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-award"></i></div><h4 class="font-bold">活動主題章</h4><p class="text-[11px] text-purple-100 mt-1">主題章介紹，參加條件，全部人可觀看</p></div>
         <div onclick="app.openModule('meals')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-utensils"></i></div><h4 class="font-bold">膳食管理</h4><p class="text-[11px] text-slate-500 mt-1">菜單、截止、可選不吃、列印派發，我的訂餐</p></div>
-        <div onclick="app.openModule('safety')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-red-100 text-red-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-shield-halved"></i></div><h4 class="font-bold">安全及醫療</h4><p class="text-[11px] text-slate-500 mt-1">急救、保險、安全指引、危機處理</p></div>
+        <div onclick="app.openModule('crisis')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-red-100 text-red-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div><h4 class="font-bold">危機處理</h4><p class="text-[11px] text-slate-500 mt-1">應變指引、急救、保險、緊急聯絡，公開可看</p></div>
         <div onclick="app.openModule('documents')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-shield"></i></div><h4 class="font-bold">文件中心</h4><p class="text-[11px] text-slate-500 mt-1">通告、指引、表格，全部公開可看</p></div>
       </div>
     </div>
@@ -368,7 +368,6 @@ const PERM_CARDS=[
   {id:'staff',label:'組織架構與聯絡',icon:'fa-solid fa-sitemap'},
   {id:'theme_badges',label:'活動主題章',icon:'fa-solid fa-award'},
   {id:'meals',label:'膳食管理',icon:'fa-solid fa-utensils'},
-  {id:'safety',label:'安全及醫療',icon:'fa-solid fa-shield-halved'},
   {id:'documents',label:'通告及文件',icon:'fa-solid fa-file-shield'},
   {id:'unit_guide',label:'旅團須知',icon:'fa-solid fa-book-open'},
   {id:'ceremony',label:'典禮儀式',icon:'fa-solid fa-crown'},
@@ -409,8 +408,7 @@ const DASH_CARD_DEFS=[
   {id:'staff',title:'組織架構與聯絡',desc:'架構公開可看；電話/Email 需登入',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0,editLevel:40,editGroups:['行政組'],editLabel:'本組成員/主任以上可管理'},
   {id:'theme_badges',title:'活動主題章',desc:'主題章介紹、參加條件',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'副主席以上可更新'},
   {id:'meals',title:'膳食管理',desc:'菜單、截止、我的訂餐',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:0,editLevel:60,editGroups:['膳食','協調','行政'],editLabel:'膳食主任/協調副主席可管理'},
-  {id:'safety',title:'安全及醫療',desc:'急救、保險、安全指引',icon:'fa-solid fa-shield-halved',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'副主席以上可上傳'},
-  {id:'crisis',title:'危機處理',desc:'危機處理手冊、應變流程，公開可看',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
+  {id:'crisis',title:'危機處理',desc:'危機處理手冊、應變流程、急救及保險安排，公開可看',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
   {id:'documents',title:'通告及文件',desc:'通告、指引、表格，公眾可看',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'管理員/行政總主任以上可上傳'},
   {id:'unit_guide',title:'旅團須知',desc:'參加旅團須知、指引、注意事項',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'管理員/行政總主任以上可上傳'},
   {id:'ceremony',title:'典禮儀式',desc:'司儀稿、嘉賓名單、座位表、RUNDOWN',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
@@ -616,7 +614,6 @@ class ScoutEventApp{
       staff:()=>this.isAdmin()||lvl>=40||g.includes('行政'),
       theme_badges:()=>this.canUploadThemeBadge(),
       meals:()=>this.canManageMealMenu()||this.isCoordinatorViceChair(),
-      safety:()=>lvl>=60,
       documents:()=>this.canUploadDocument(),
       unit_guide:()=>lvl>=60,
       ceremony:()=>lvl>=60,
@@ -815,13 +812,17 @@ class ScoutEventApp{
     `;
   }
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
+    // 危機處理計劃為內置資料（無後端模組）：非示範活動亦載入 JSON 預設，公開可查閱
+    if(!this.isDemoEvent() && !this.eventData.crisis && this.currentEvent){
+      try{const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json(); if(j2 && j2.crisis) this.eventData.crisis=j2.crisis;}catch(e){}
+    }
     const localKey=LS.meetings(this.currentEvent.event_id); const localMeetings=JSON.parse(localStorage.getItem(localKey)||'null'); if(localMeetings&&Array.isArray(localMeetings)&&localMeetings.length){ this.eventData.meetings=localMeetings; }
     const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){ this.eventData.staff=localStaff; }
     // 正式活動（非示範沙盒）且已連後端：拉取 Meal_Orders 合併（組長確認/行政審批狀態跨裝置同步）
     this.syncMealOrdersFromGas();
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
-  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引)',theme_badges:'活動主題章',announcements:'公告及溝通',safety:'安全及醫療',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
+  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章',announcements:'公告及溝通',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
     if(key==='meetings'){
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
@@ -987,7 +988,6 @@ class ScoutEventApp{
     if(mod==='crisis'){this.renderCrisisModule(); return;}
     if(mod==='theme_badges'){this.renderThemeBadgesModule(); return;}
     if(mod==='announcements'){this.renderAnnouncementsModule(); return;}
-    if(mod==='safety'){this.renderSafetyModule(); return;}
     if(mod==='admin_group'){this.renderAdminGroupModule(); return;}
     if(mod==='coordinator_group'){this.renderCoordinatorGroupModule(); return;}
     if(mod==='transport'){this.renderTransportModule(); return;}
@@ -1667,6 +1667,15 @@ class ScoutEventApp{
         }
       }catch(e){}
     }
+    // 3) Google Visualization API 後備：export=csv 被拒或合併儲存格分頁時，仍可直接讀取表格
+    try{
+      const gvizUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+      const res=await fetch(gvizUrl);
+      const text=await res.text();
+      if(res.ok && text.trim() && !text.trim().startsWith('<') && text.includes(',')){
+        return {ok:true, rows:parseCSV(text), via:'gviz'};
+      }
+    }catch(e){}
     return {ok:false, rows:[], via:'none'};
   }
   // 模式 B：上傳 Excel → SheetJS 解析成 rows（供各卡片「上傳寫後端」共用）
@@ -1691,7 +1700,11 @@ class ScoutEventApp{
     }catch(e){}
     try{
       const st=this.getStaffData();
-      if(st.staff_source && (st.staff_source.sheet_id||st.staff_source.drive_file_id)) await this.syncStaffFromDrive(true);
+      if(st.staff_source && (st.staff_source.sheet_id||st.staff_source.drive_file_id)){
+        // 工作人員架構：直接內置讀取 Google Sheet「組織架構圖」分頁（行政組持續更新）
+        if(st.staff_source.kind==='org_chart_grid') await this.syncOrgChartFromDrive(true);
+        else await this.syncStaffFromDrive(true);
+      }
     }catch(e){}
     try{
       const ss=this.eventData['schedule_source'];
@@ -1844,6 +1857,97 @@ class ScoutEventApp{
         }
       }
       if(!silent) showToast('未能自動解析名單。Org Chart 為架構圖，建議另設「聯絡名單」扁平分頁（姓名/職銜/組別/電話）再同步','warning');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  /* ═══ 組織架構圖 (Google Sheet 合併儲存格格式) 解析 + 同步 ═══
+     分頁格式（行政組範本）：職位在某一列，其下一列同一欄為人名；
+     左側「副主席（X）」決定所屬組別；主席/執行副主席 = 籌委會，顧問 = 顧問團 */
+  parseOrgChartGrid(rows){
+    const TITLE_RE=/主席|副主席|顧問|總主任|主任|統籌|司令|總監|秘書|主管|幹事/;
+    const isTitleCell=v=>{ v=String(v||'').trim(); return !!v && TITLE_RE.test(v); };
+    const levelNumOf=t=>{
+      if(/副主席/.test(t)) return 3;
+      if(/總主任|總監/.test(t)) return 4;
+      if(/^顧問$|^主席$/.test(t)) return 2;
+      return 5;
+    };
+    const groupOfTitle=(t,row,rowIdx,colIdx,rows)=>{
+      if(/執行副主席/.test(t)) return '籌委會';
+      if(/副主席/.test(t)) return t.replace(/副主席（|）/g,'').replace(/副主席/,'')+'組';
+      if(/^顧問$/.test(t)) return '顧問團';
+      if(/^主席$/.test(t)) return '籌委會';
+      // 1) 同一列向左找最近的 副主席（決定組別）
+      for(let k=colIdx-1;k>=0;k--){ const c=String(row[k]||'').trim(); if(/副主席/.test(c)) return c.replace(/副主席（|）/g,'').replace(/副主席/,'')+'組'; }
+      // 2) 向上逐列找（該列或左側）最近的 副主席
+      for(let r=rowIdx-1;r>=0;r--){ const rr=rows[r]||[]; for(let k=Math.min(colIdx,rr.length-1);k>=0;k--){ const c=String(rr[k]||'').trim(); if(/副主席/.test(c)) return c.replace(/副主席（|）/g,'').replace(/副主席/,'')+'組'; } }
+      return '未分組';
+    };
+    const normNames=v=>String(v||'').trim().split(/[\n\r,，、/]+/).map(s=>s.trim()).filter(Boolean).join('、');
+    const recs=[];
+    for(let i=0;i<rows.length-1;i++){
+      const row=rows[i]||[];
+      const next=rows[i+1]||[];
+      // 找出本列的職位儲存格
+      const titleCols=[];
+      for(let j=0;j<row.length;j++){ if(isTitleCell(row[j])) titleCols.push(j); }
+      if(!titleCols.length) continue;
+      // 由右至左認領人名（人名可橫跨多個儲存格；已被右方職位認領的即停）
+      const claimed=new Set();
+      for(let ti=titleCols.length-1;ti>=0;ti--){
+        const j=titleCols[ti];
+        const title=String(row[j]||'').trim();
+        const nameParts=[];
+        for(let k=j;k<next.length;k++){
+          if(claimed.has(k)) break;
+          const v=String(next[k]||'').trim();
+          if(!v) break;
+          nameParts.push(v);
+          claimed.add(k);
+        }
+        const names=normNames(nameParts.join('\n'));
+        const level_num=levelNumOf(title);
+        const group=groupOfTitle(title,row,i,j,rows);
+        recs.push({level:`${group} (Level ${level_num})`, level_num, group, title, names});
+      }
+    }
+    return recs;
+  }
+  mergeOrgChartPreserveDesc(existing, parsed){
+    const descMap={};
+    (existing||[]).forEach(n=>{ const k=(n.group||'')+'|'+(n.title||''); descMap[k]=n.desc||''; });
+    return parsed.map((p,i)=>({id:'org_'+i+'_'+Date.now(), ...p, desc:descMap[p.group+'|'+p.title]||'', parent_id:null, created_at:new Date().toISOString()}));
+  }
+  async syncOrgChartFromDrive(silent){
+    const src=(this.getStaffData().staff_source)||this.eventData.staff?.staff_source||{};
+    const sheetId=src.sheet_id||src.drive_file_id;
+    if(!sheetId){ if(!silent) showToast('尚未設定架構資料來源 (staff_source)','warning'); return; }
+    if(!silent) showToast('正在從 Google Sheet 讀取最新組織架構…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const parsed=this.parseOrgChartGrid(got.rows);
+        if(parsed.length){
+          const data=this.getStaffData();
+          // 保留原有職務描述，並同步更新名單（人名 → 職銜/組別）
+          data.org_chart=this.mergeOrgChartPreserveDesc(data.org_chart, parsed);
+          const contactMap={};
+          (data.contacts||[]).forEach(c=>{ contactMap[c.name]=c; });
+          const newContacts=[];
+          parsed.forEach(p=>{ (p.names||'').split('、').filter(Boolean).forEach(nm=>{
+            const old=contactMap[nm]||{};
+            newContacts.push({id:old.id||'contact_'+newContacts.length, name:nm, role_title:old.role_title||p.title, group_name:old.group_name||p.group, contact:old.contact||'', job_desc:old.job_desc||'', email:old.email||'', squad:old.squad||'', status:old.status||'active'});
+          }); });
+          data.contacts=newContacts;
+          this.saveStaffData(data);
+          if(!silent) showToast(`已同步組織架構 ${parsed.length} 個崗位、${newContacts.length} 位成員（via ${got.via}）`,'success');
+          this.renderOrgChartTree();
+          this.renderStaffContacts();
+          return;
+        }
+      }
+      if(!silent) showToast('未能解析架構圖。請確認試算表已設定「任何有連結者均可檢視」，並保留職位／人名分行的格式','warning');
     }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
@@ -4503,7 +4607,9 @@ class ScoutEventApp{
         <button onclick="app.exportStaffData('org_chart')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
         ${canAddNode||isAdmin||isExec?`<button onclick="app.downloadStaffTemplate('org')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
         <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'org_chart')"></label>`:''}
+        ${(data.staff_source)?`<button onclick="app.syncOrgChartFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新架構 (Google Sheet)</button>`:''}
       </div>
+      ${(data.staff_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>內置讀取：</b>組織架構直接讀取「${escapeHtml(data.staff_source.name||'Google Sheet')}」（行政組在該試算表更新職位／人名），APP 開啟即自動同步最新資料，也可按上方「同步最新架構」手動更新。</div>`:''}
       <div class="bg-white border rounded-2xl p-4">
         <h4 class="font-bold text-sm mb-3"><i class="fa-solid fa-sitemap text-indigo-600 mr-2"></i>組織架構樹形圖 (各副主席可新增下屬)</h4>
         <div class="space-y-6">`;
@@ -4617,7 +4723,7 @@ class ScoutEventApp{
       <div class="space-y-4">
         ${!loggedIn?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center gap-2 justify-between"><span><i class="fa-solid fa-lock mr-1"></i><b>聯絡資料受保護：</b>姓名、職銜、組別公開可看；電話及 Email 需登入後才顯示。</span><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入查看聯絡資料</button></div>`:''}
         <div class="flex flex-wrap gap-2">
-          ${canManage?`<button onclick="app.syncStaffFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新名單 (Drive)</button>
+          ${canManage?`<button onclick="app.syncOrgChartFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新架構 (Google Sheet)</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleStaffExcelUpload(this.files[0])"></label>
           <button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>單欄新增</button>
           <button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
@@ -4626,7 +4732,7 @@ class ScoutEventApp{
           <input id="staff-search" placeholder="${loggedIn?'搜尋姓名/組別/電話':'搜尋姓名/組別/職務'}" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
         ${(data.staff_source)?this.driveSyncNotice():''}
-        ${(data.staff_source && loggedIn)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組更新。此檔為架構圖，建議另設一個「聯絡名單」扁平分頁（姓名/職銜/組別/電話）即可「同步最新」自動讀取。</div>`:''}
+        ${(data.staff_source && loggedIn)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組在 Google Sheet 更新，APP 自動內置讀取並同步姓名／職銜／組別。電話可直接在此卡片「✏️」編輯，或日後在試算表加「聯絡電話」欄。</div>`:''}
         <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>
@@ -5609,18 +5715,24 @@ class ScoutEventApp{
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`announcements_${todayISO()}.json`; a.click(); showToast('已匯出公告 JSON','success');
   }
-  getSafetyData(){
-    const key=LS.safety(this.currentEvent?.event_id||'isd_2026');
-    const local=JSON.parse(localStorage.getItem(key)||'null');
-    if(local) return local;
-    if(!this.isDemoEvent()) return {docs:[]}; // 真實活動：預留版位
-    return {docs:[
-      {id:'safety_1',title:'急救申請 (St John)',description:'舊版急救申請回覆，參考行政組頁面的 Reply from St John FA Service',category:'急救',file_name:'',file_url:'',created_at:''},
-      {id:'safety_2',title:'保險安排',description:'參加者保險、責任保險說明',category:'保險',file_name:'',file_url:'',created_at:''},
-      {id:'safety_3',title:'安全指引及危機處理',description:'天氣應變、緊急聯絡、醫療站位置、危機處理流程',category:'安全指引',file_name:'',file_url:'',created_at:''}
-    ]};
+  // 「安全及醫療」卡片已冊除並併入「危機處理」：把舊有 safety 本地資料搬入 crisis（急救/保險/安全指引）
+  migrateLegacySafety(){
+    try{
+      const safetyKey=LS.safety(this.currentEvent?.event_id||'isd_2026');
+      const safetyRaw=JSON.parse(localStorage.getItem(safetyKey)||'null');
+      if(!safetyRaw || !Array.isArray(safetyRaw.docs) || !safetyRaw.docs.length) return;
+      const data=this.getCrisisData();
+      const catMap={'急救':'急救','保險':'保險','安全指引':'其他','危機處理':'其他'};
+      let added=0;
+      (safetyRaw.docs||[]).forEach(d=>{
+        const title=(d.title||'').trim();
+        if(!title) return;
+        if(data.docs.some(x=>x.title===title)) return;
+        data.docs.push({id:'cr_mig_'+Date.now()+'_'+(added++), title, category:catMap[d.category]||'其他', description:d.description||'', created_at:new Date().toISOString(), note:'由「安全及醫療」卡片併入'});
+      });
+      if(added){ this.saveCrisisData(data); localStorage.removeItem(safetyKey); showToast(`已將「安全及醫療」${added} 項內容併入危機處理`,'success'); }
+    }catch(e){}
   }
-  saveSafetyData(data){ localStorage.setItem(LS.safety(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); }
 
   /* ===================== 旅團須知 (公開) ===================== */
   getUnitGuideData(){
@@ -6057,7 +6169,16 @@ class ScoutEventApp{
   getCrisisData(){
     const key=LS.crisis(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
-    if(local) return local;
+    if(local && (local.team?.length||local.contacts?.length||local.docs?.length)) return local;
+    // 內置資料：2026 危機處理計劃（以 2025 手冊為藍本，來自 data/isd_2026.json）
+    const raw=this.eventData['crisis']||null;
+    if(raw && (Array.isArray(raw.team)||Array.isArray(raw.docs)||Array.isArray(raw.contacts))){
+      const norm={team:[],contacts:[],docs:[]};
+      (raw.team||[]).forEach((m,i)=>{ norm.team.push({id:m.id||'ct_'+i,role:m.role||m.role_title||'',name:m.name||'',phone:m.phone||m.contact||'',match:m.match||[],auto:m.auto?1:0}); });
+      (raw.contacts||[]).forEach((c,i)=>{ norm.contacts.push({id:c.id||'cc_'+i,org:c.org||'',name:c.name||'',phone:c.phone||''}); });
+      (raw.docs||[]).forEach((d,i)=>{ norm.docs.push({id:d.id||'cr_'+i,title:d.title||'',category:d.category||'其他',description:d.description||''}); });
+      return norm;
+    }
     if(!this.isDemoEvent()) return {team:[],contacts:[],docs:[]}; // 真實活動：預留版位
     return {
       team:[
@@ -6087,22 +6208,25 @@ class ScoutEventApp{
         {id:'cr_6',title:'嚴重意外事件 - 處理',category:'意外',description:'1. 立即將傷者送往救護站，若不能移動即通知救護站派員救援；\n2. 即時通知活動主席；\n3. 如牽涉人命或眾多傷者，活動主席啟動小組，通知傷者領袖／家長及港島地域總監；\n4. 如傷者送院，有關副主席到醫院協助。'},
         {id:'cr_7',title:'嚴重事故 - 處理',category:'事故',description:'各副主席發現可能對全體參加者有嚴重影響的事故，即通知活動主席。活動主席按嚴重性啟動小組，評估影響、制訂方案、發出指令指揮各單位執行。'},
         {id:'cr_8',title:'取消活動程序',category:'取消',description:'1. 取消指令由活動主席發出並即時生效；\n2. 知會地域總監、副地域總監及執行幹事；\n3. 以廣播、電話、電郵、網頁、短訊通知各參加者、工作人員和嘉賓；\n4. 未能通知者，委員仍須前往集合點通知及照顧；\n5. 如需撤離，副主席（協調）會同秩序及交通主任指示安全離去；\n6. 秘書處返回地域辦事處應付查詢。'},
-        {id:'cr_9',title:'其他大會準備措施',category:'其他',description:'保險：香港童軍總會已購買保險；急救：場地有聖約翰救傷隊駐守；衞生：設洗手間，爆發傳染病時準備洗手設施及口罩；場地：已視察及評估安全；聯絡：秘書處及各組備有負責人名單及電話。'}
+        {id:'cr_9',title:'保險安排',category:'保險',description:'香港童軍總會已為童軍活動購買保險（涵蓋已登記參加者及工作人員）。'},
+        {id:'cr_10',title:'急救安排 (聖約翰救傷隊)',category:'急救',description:'活動場地有聖約翰救傷隊駐守（救傷站），行政組已提交急救服務申請。凡參加者感覺不適，即時送到救傷站處理。'},
+        {id:'cr_11',title:'其他大會準備措施',category:'其他',description:'保險：香港童軍總會已購買保險；急救：場地有聖約翰救傷隊駐守；衞生：設洗手間，爆發傳染病時準備洗手設施及口罩；場地：已視察及評估安全；聯絡：秘書處及各組備有負責人名單及電話。'}
       ]
     };
   }
   saveCrisisData(data){ localStorage.setItem(LS.crisis(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); }
   renderCrisisModule(){
+    this.migrateLegacySafety(); // 舊「安全及醫療」資料自動併入
     const container=document.getElementById('module-content');
     if(!this.crisisSubTab) this.crisisSubTab='docs';
     const data=this.getCrisisData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
-    const cats=['定義','小組','天氣','傳染病','意外','事故','取消','其他'];
+    const cats=['定義','小組','天氣','傳染病','意外','事故','取消','急救','保險','其他'];
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] leading-relaxed text-red-900">
-          <b>⚠️ 危機處理計劃（依上年手冊細分）：</b>危機處理指引與應變流程現已 <b>公開可看</b>（緊急時任何人可查閱），僅修改/更新需副主席以上登入。每年主要只需更新「危機應變小組成員及其聯絡」。<br>
-          <b>資料來源：</b>港島童軍繽紛日危機處理計劃（組織、職責及運作）。
+          <b>⚠️ 危機處理計劃（2026 版・依 2025 手冊更新）：</b>應變指引與流程現已 <b>公開可看</b>（緊急時任何人可查閱），僅修改/更新需副主席以上登入。已更新：活動日期 <b>2026 年 10 月 4 日</b>、危機應變小組成員（按 2026 組織架構圖）、緊急聯絡。原「安全及醫療」卡片已冊除，<b>保險及急救等內容已併入本卡</b>（見「應變指引 → 保險／急救」）。<br>
+          <b>資料來源：</b>港島童軍繽紛日危機處理計劃（組織、職責及運作）2025 版 → 2026 版。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchCrisisTab('team')" class="tab-btn ${this.crisisSubTab==='team'?'active':''}"><i class="fa-solid fa-people-group mr-1"></i> 危機應變小組</button>
@@ -6178,7 +6302,7 @@ class ScoutEventApp{
     const container=document.getElementById('crisis-tab-docs'); if(!container) return;
     const data=this.getCrisisData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
-    const cats=['定義','小組','天氣','傳染病','意外','事故','取消','其他'];
+    const cats=['定義','小組','天氣','傳染病','意外','事故','取消','急救','保險','其他'];
     container.innerHTML=`<div class="space-y-4">${cats.map(cat=>{
       const items=data.docs.filter(d=>d.category===cat);
       if(!items.length) return '';
@@ -6199,7 +6323,7 @@ class ScoutEventApp{
     const existing=id?data.docs.find(d=>d.id===id):null;
     let html=`<input type="hidden" id="cr-mode" value="${existing?'edit':'create'}"><input type="hidden" id="cr-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">標題 *</label><input id="cr-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">分類</label><select id="cr-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="定義">定義</option><option value="小組">小組</option><option value="天氣">天氣</option><option value="傳染病">傳染病</option><option value="意外">意外</option><option value="事故">事故</option><option value="取消">取消</option><option value="其他">其他</option></select></div>
+      <div class="mt-3"><label class="text-[11px] font-bold">分類</label><select id="cr-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="定義">定義</option><option value="小組">小組</option><option value="天氣">天氣</option><option value="傳染病">傳染病</option><option value="意外">意外</option><option value="事故">事故</option><option value="取消">取消</option><option value="急救">急救</option><option value="保險">保險</option><option value="其他">其他</option></select></div>
       <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="cr-desc" rows="6" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>`;
     document.getElementById('record-modal-title').textContent=existing?'編輯危機指引':'新增危機指引';
     document.getElementById('record-form-fields').innerHTML=html;
@@ -6293,73 +6417,6 @@ class ScoutEventApp{
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`crisis_${todayISO()}.json`; a.click();
   }
 
-  renderSafetyModule(){
-    const container=document.getElementById('module-content');
-    const data=this.getSafetyData();
-    const canUpload=this.isAdmin()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
-    container.innerHTML=`
-      <div class="space-y-4">
-        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] leading-relaxed text-red-900">
-          <b>🛡️ 安全及醫療 (完全取代舊手冊分散文件)：</b><br>
-          • 舊手冊行政組有急救申請 (St John)、膳食安排、參加旅團名單；新版集中於此卡片<br>
-          • 全部人可查閱安全指引，僅副主席以上可上傳/修改，公開可看，修改需登入 (永久有效)
-        </div>
-        <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openSafetyForm()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增安全指引</button>`:''}<button onclick="app.exportSafety()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.docs.map(d=>`
-          <div class="border rounded-xl p-4 bg-white space-y-2">
-            <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
-            <div class="text-[11px] text-slate-600 leading-relaxed whitespace-pre-line">${escapeHtml(d.description)}</div>
-            <div class="flex gap-2">${canUpload?`<button onclick="app.openSafetyForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteSafety('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
-          </div>
-        `).join('')}</div>
-      </div>
-    `;
-  }
-  openSafetyForm(id=null){
-    if(!this.isAdmin() && (ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅副主席以上可新增','error'); return; }
-    const data=this.getSafetyData();
-    const existing=id?data.docs.find(d=>d.id===id):null;
-    let html=`<input type="hidden" id="safety-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="safety-form-id" value="${existing?.id||''}">
-      <div><label class="text-[11px] font-bold">標題 *</label><input id="safety-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">分類</label><select id="safety-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="急救" ${existing?.category==='急救'?'selected':''}>急救</option><option value="保險" ${existing?.category==='保險'?'selected':''}>保險</option><option value="安全指引" ${existing?.category==='安全指引'?'selected':''}>安全指引</option><option value="危機處理" ${existing?.category==='危機處理'?'selected':''}>危機處理</option></select></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="safety-desc" rows="5" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>`;
-    document.getElementById('record-modal-title').textContent=existing?'編輯安全指引':'新增安全指引';
-    document.getElementById('record-form-fields').innerHTML=html;
-    const form=document.getElementById('record-form');
-    form.onsubmit=(e)=>{ e.preventDefault(); this.submitSafetyForm(); };
-    document.getElementById('modal-record').classList.remove('hidden');
-  }
-  submitSafetyForm(){
-    const mode=document.getElementById('safety-form-mode').value;
-    const id=document.getElementById('safety-form-id').value;
-    const title=document.getElementById('safety-title').value.trim();
-    const category=document.getElementById('safety-category').value;
-    const desc=document.getElementById('safety-desc').value.trim();
-    if(!title){ showToast('請填寫標題','error'); return; }
-    const data=this.getSafetyData();
-    if(mode==='edit'){
-      const idx=data.docs.findIndex(d=>d.id===id);
-      if(idx>=0) data.docs[idx]={...data.docs[idx], title, category, description:desc};
-    }else data.docs.push({id:'safety_'+Date.now(), title, category, description:desc, created_at:new Date().toISOString()});
-    this.saveSafetyData(data);
-    this.closeModal('modal-record');
-    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast('已保存安全指引','success');
-    this.renderSafetyModule();
-  }
-  deleteSafety(id){
-    if(!this.isAdmin()) return;
-    if(!confirm('確定刪除？')) return;
-    const data=this.getSafetyData();
-    data.docs=data.docs.filter(d=>d.id!==id);
-    this.saveSafetyData(data);
-    this.renderSafetyModule();
-  }
-  exportSafety(){
-    const data=this.getSafetyData();
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`safety_${todayISO()}.json`; a.click();
-  }
   getAdminGroupData(){
     const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_admin_group';
     const local=JSON.parse(localStorage.getItem(key)||'null');
