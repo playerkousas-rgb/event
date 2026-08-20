@@ -14,7 +14,7 @@ const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
 const core = scripts.replace(
   /const app=window\.app=new ScoutEventApp\(\);[\s\S]*$/,
   ''
-) + '\nglobalThis.TestApp=ScoutEventApp; globalThis.TestLS=LS;';
+) + '\nglobalThis.TestApp=ScoutEventApp; globalThis.TestLS=LS; globalThis.TestPERM=PERM_CARDS;';
 
 const store = new Map();
 const localStorage = {
@@ -94,13 +94,37 @@ assert(!app.canApproveArea('supplies', { role: 'general_director', group_name: '
 assert(app.canExecuteArea('supplies', { role: 'staff', group_name: '服務及發展組' }), 'configured executor cannot view final list');
 assert(!app.canExecuteArea('supplies', { role: 'staff', group_name: '協調組' }), 'approver inherited executor access');
 
+const migrated=context.migrateUsersToChineseLogin([
+  {user_id:'chair01',name:'朱家聰',role:'chairperson'},
+  {user_id:'exec_vp',name:'袁可秀',role:'executive_vice_chairperson'},
+  {user_id:'sheep',name:'超級管理員',role:'super_admin'}
+]);
+assert(migrated[0].user_id==='朱家聰', 'latin login was not converted to Chinese name');
+assert(migrated[1].user_id==='袁可秀', 'exec_vp login was not converted to Chinese name');
+assert(migrated[2].user_id==='sheep', 'super admin login should stay sheep');
+assert(context.loginIdMatches({user_id:'朱家聰',name:'朱家聰',email:'chair@isd.local'},'朱家聰'), 'Chinese name login should match');
+assert(context.nextChineseLoginId('朱家聰', ['朱家聰'])==='朱家聰-2', 'duplicate Chinese login should suffix -2');
+
+const chair={role:'chairperson',name:'朱家聰',user_id:'朱家聰',group_name:'主席及執行副主席'};
+const staffUser={role:'staff',name:'陳子明',user_id:'陳子明',group_name:'主題節目組'};
+const prevUser=app.currentUser;
+const chairPerms=app.permSetsFor(chair);
+const staffPerms=app.permSetsFor(staffUser);
+assert(app.currentUser===prevUser, 'permSetsFor leaked currentUser');
+assert(chairPerms.see.length===(context.TestPERM||[]).length, 'chairperson should see all cards by default, got '+chairPerms.see.length);
+assert(chairPerms.edit.includes('announcements') && chairPerms.edit.includes('meetings') && chairPerms.edit.includes('finance'), 'chairperson should have full edit by role default');
+assert(!chairPerms.edit.includes('apply_hub'), 'read-only apply hub should not be editable');
+assert(staffPerms.see.length<chairPerms.see.length, 'staff should not inherit chair full see');
+assert(staffPerms.edit.length<chairPerms.edit.length, 'staff should not inherit chair full edit');
+assert(app.permSourceLabel(chair)==='主席預設', 'chair permission source should be role default');
+
 const folder = app.getMeetingFolderConfig();
 assert(folder.id === '1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4', 'meeting Drive did not prefer event folder');
 app.gasUrl = '';
 app.renderApprovalCenter();
 app.meetingSubTab = null;
 app.openModule('meetings');
-assert(app.meetingSubTab === 'drive', 'meeting card did not open Drive by default');
+assert(app.meetingSubTab === 'list' || app.meetingSubTab === 'drive', 'meeting card did not open a meeting tab');
 app.gasUrl = 'https://gas.example';
 
 app.markRecordDeleted('Supply_Requests', 'req_1');

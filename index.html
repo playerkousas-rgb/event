@@ -266,7 +266,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
 
-<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10px] text-sky-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i>正式帳戶（含超管）任何時候都經後端驗證可直接登入；「模擬示範版」活動為本地沙盒，登入示範帳戶只影響你部裝置，不影響正式資料。</div><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>模擬示範版 (本地沙盒)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('chair01')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('exec_vp')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('gd_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('staff_001')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於「模擬示範版」活動顯示；正式活動請用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="帳號" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
+<div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10px] text-sky-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i>正式帳戶（含超管）任何時候都經後端驗證可直接登入；「模擬示範版」活動為本地沙盒，登入示範帳戶只影響你部裝置，不影響正式資料。</div><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>模擬示範版 (本地沙盒)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('朱家聰')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('羅雅雯')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 副主席</button><button type="button" onclick="app.demoLogin('蘇國樑')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 總主任</button><button type="button" onclick="app.demoLogin('陳子明')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 公開 (登出)</button></div><div class="text-[10px] text-amber-700/80">只於「模擬示範版」活動顯示；正式活動請用管理員開設的帳戶登入（超管帳密僅存於後端 SCRIPT，不在前端顯示）。</div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="中文姓名（登入帳號）" class="w-full px-4 py-3 border rounded-xl text-sm"><p class="text-[10px] text-slate-500 -mt-1">用中文姓名登入，例如「朱家聰」。籌委帳戶帳號＝中文名。</p><input type="password" id="login-password-input" required placeholder="密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form></div></div>
 
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4"><div id="record-form-fields" class="space-y-4"></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
 
@@ -361,7 +361,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
   </div>
 </div>
 
-<div id="modal-user" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">用戶管理</h3><button onclick="app.closeModal('modal-user')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="user-form" onsubmit="app.submitUserForm(event)" class="space-y-3"><input type="hidden" id="u-form-mode" value="create"><input type="hidden" id="u-form-original-id"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">ID*</label><input id="u-ymis" required class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">姓名*</label><input id="u-name" required class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">Email</label><input id="u-email" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">角色</label><select id="u-role" class="w-full px-3 py-2 border rounded-xl text-sm bg-white"><option value="staff">staff</option><option value="director">director</option><option value="general_director">總主任</option><option value="vice_chairperson">副主席</option><option value="chairperson">主席</option><option value="advisor">顧問</option><option value="admin">管理員</option><option value="super_admin">超管</option></select></div><div><label class="text-xs font-bold">組別</label><input id="u-group" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">電話</label><input id="u-contact" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div id="u-pwd-wrap"><label class="text-xs font-bold">密碼（超管／執行副主席及以上可改）</label><input id="u-password" type="text" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="留空則不改"></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-user')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
+<div id="modal-user" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">用戶管理</h3><button onclick="app.closeModal('modal-user')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="user-form" onsubmit="app.submitUserForm(event)" class="space-y-3"><input type="hidden" id="u-form-mode" value="create"><input type="hidden" id="u-form-original-id"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">登入帳號（中文姓名）*</label><input id="u-ymis" required placeholder="例如 朱家聰" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">姓名*</label><input id="u-name" required class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">Email</label><input id="u-email" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">角色</label><select id="u-role" class="w-full px-3 py-2 border rounded-xl text-sm bg-white"><option value="staff">staff</option><option value="director">director</option><option value="general_director">總主任</option><option value="vice_chairperson">副主席</option><option value="chairperson">主席</option><option value="advisor">顧問</option><option value="admin">管理員</option><option value="super_admin">超管</option></select></div><div><label class="text-xs font-bold">組別</label><input id="u-group" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">電話</label><input id="u-contact" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div id="u-pwd-wrap"><label class="text-xs font-bold">密碼（超管／執行副主席及以上可改）</label><input id="u-password" type="text" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="留空則不改"></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-user')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
 
 <div id="modal-bulk" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-3xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">批量開戶</h3><button onclick="app.closeModal('modal-bulk')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button><div class="mt-3"><label class="text-xs font-bold">貼上 JSON</label><textarea id="bulk-json-modal" rows="4" placeholder='[{"ymis":"001","name":"test"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea><button onclick="app.handleBulkJSON(true)" class="mt-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">由 JSON 預覽</button></div><div id="bulk-modal-preview" class="hidden"><div class="flex justify-between mt-3"><h4 class="font-bold text-sm">預覽 <span id="bulk-modal-count">0</span></h4><button onclick="app.confirmBulkCreate(true)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">確認開戶</button></div><div id="bulk-modal-table" class="table-responsive mt-2"></div></div></div></div>
 
@@ -432,6 +432,31 @@ const PUBLIC_CARD_ORDER=['announcements','staff','activities','ceremony','apply_
 const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secretariat','group_ceremony','group_theme','group_brand','group_reception','coordinator_group','group_service','admin_group']);
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
+function hasCjk(s){ return /[\u4e00-\u9fff]/.test(String(s||'')); }
+function isLegacyLatinLogin(id){ const s=String(id||'').trim(); return !!s && s.toLowerCase()!=='sheep' && !hasCjk(s); }
+function nextChineseLoginId(name, used){
+  const base=String(name||'').trim() || '未命名';
+  const set=used instanceof Set ? used : new Set(used||[]);
+  if(!set.has(base)) return base;
+  let n=2; while(set.has(base+'-'+n)) n++;
+  return base+'-'+n;
+}
+function migrateUsersToChineseLogin(list){
+  const used=new Set();
+  return (list||[]).map(u=>{
+    const copy={...u};
+    if(copy.role==='super_admin' || String(copy.user_id||'')==='sheep'){ used.add(copy.user_id); return copy; }
+    if(isLegacyLatinLogin(copy.user_id)){
+      copy.user_id=nextChineseLoginId(copy.name||copy.user_id, used);
+    }
+    used.add(copy.user_id);
+    return copy;
+  });
+}
+function loginIdMatches(u, id){
+  if(!u||!id) return false;
+  return u.user_id===id || u.email===id || u.name===id;
+}
 // 批核範疇（頁）：每類申請可分開設定批核組及執行組。
 const APPROVAL_AREAS=[
   {id:'supplies',label:'物資申請',icon:'fa-solid fa-boxes-stacked',chip:'bg-blue-100 text-blue-700 border-blue-300',dot:'bg-blue-500'},
@@ -524,6 +549,9 @@ class ScoutEventApp{
     if(this.currentUser){
       this.currentUser.group_name=normalizeGroupName(this.currentUser.group_name);
       if(this.currentUser.user_id==='exec_vp'||(this.currentUser.job_title||'').includes('執行副主席')) this.currentUser.role='executive_vice_chairperson';
+      if(this.currentUser.role!=='super_admin' && this.currentUser.user_id!=='sheep' && isLegacyLatinLogin(this.currentUser.user_id) && (this.currentUser.name||'').trim()){
+        this.currentUser.user_id=this.currentUser.name.trim();
+      }
       localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser));
     }
     this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
@@ -1334,6 +1362,42 @@ class ScoutEventApp{
     const edit=PERM_CARDS.filter(c=>{ const d=DASH_CARD_DEFS.find(x=>x.id===c.id); return d&&this.canEditRoleCard(d); }).map(c=>c.id);
     return {see, edit};
   }
+  // 計算任一用戶的「現有／職級預設」看管權（不改 currentUser）。未自訂 perm_see 時，主席／顧問／管理員／執行副主席＝全權。
+  permSetsFor(user){
+    if(!user) return {see:[], edit:[]};
+    const prev=this.currentUser;
+    this.currentUser=user;
+    try{ return this.getMyPermSets(); }
+    finally{ this.currentUser=prev; }
+  }
+  permSourceLabel(user){
+    if(Array.isArray(user?.perm_see)||Array.isArray(user?.perm_edit)) return '已自訂';
+    return (ROLE_LABELS[user?.role]||user?.role||'職級')+'預設';
+  }
+  permOverviewHTML(user){
+    const p=this.permSetsFor(user);
+    const src=this.permSourceLabel(user);
+    const chips=PERM_CARDS.map(c=>{
+      const see=p.see.includes(c.id), edit=p.edit.includes(c.id);
+      if(!see&&!edit) return '';
+      const cls=edit?'bg-emerald-50 text-emerald-800 border-emerald-200':'bg-sky-50 text-sky-800 border-sky-200';
+      return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[10px] ${cls}">${escapeHtml(c.label)} ${edit?'看+管':'只看'}</span>`;
+    }).join('');
+    return `<div class="mt-1.5 text-[11px] text-slate-600">現有權限（${escapeHtml(src)}）：可看 ${p.see.length}／可管 ${p.edit.length}</div><div class="mt-1 flex flex-wrap gap-1 max-h-24 overflow-y-auto">${chips||'<span class="text-[10px] text-slate-400">無卡片權限</span>'}</div>`;
+  }
+  restoreRoleDefaultPerms(){
+    const target=document.getElementById('perm-target')?.value;
+    if(!target) return;
+    if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||[]));
+    const u=(this.pendingUsers||[]).find(x=>x.user_id===target);
+    if(!u){ showToast('找不到該用戶','error'); return; }
+    const roleUser={...u}; delete roleUser.perm_see; delete roleUser.perm_edit;
+    const p=this.permSetsFor(roleUser);
+    u.perm_see=p.see.slice();
+    u.perm_edit=p.edit.slice();
+    this.openPermissionEditor(target);
+    showToast('已還原職級預設權限（尚未寫入，請按儲存後再「確定更新用戶」）','');
+  }
   canOpenAccounts(){ return (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40 || this.isAdmin(); }
   renderAccountSetupModule(){
     const container=document.getElementById('module-content');
@@ -1395,7 +1459,7 @@ class ScoutEventApp{
             <span class="text-[10px] text-slate-400">或</span>
             <button onclick="app.previewAccBulkJSON()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-code mr-1"></i>由下方 JSON 預覽</button>
           </div>
-          <textarea id="acc-bulk-json" rows="3" placeholder='[{"user_id":"00820001","name":"陳小明","role":"staff","group_name":"主題節目組","password":"1234"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea>
+          <textarea id="acc-bulk-json" rows="3" placeholder='[{"user_id":"陳小明","name":"陳小明","role":"staff","group_name":"主題節目組","password":"1234"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea>
           <div id="acc-bulk-preview" class="hidden">
             <div class="flex justify-between items-center mt-1"><h5 class="font-bold text-xs">預覽 <span id="acc-bulk-count" class="bg-slate-900 text-white px-2 py-0.5 rounded-full text-[10px]">0</span> 筆</h5><button onclick="app.confirmAccBulkCreate()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-check mr-1"></i>確認批量開戶</button></div>
             <div id="acc-bulk-table" class="table-responsive mt-2 max-h-56 overflow-y-auto border rounded-xl"></div>
@@ -1568,7 +1632,7 @@ class ScoutEventApp{
     // Mock 模式：本地新增
     const list=this.getLocalUsers();
     if(list.some(x=>x.user_id===uid)){ showToast('帳號已存在','error'); return; }
-    list.push({user_id:uid||('staff_'+Date.now()),name,role,group_name:group,job_title:job,email,contact:'',password:'1234',status:'active',can_tick:false});
+    list.push({user_id:uid||name,name,role,group_name:group,job_title:job,email,contact:'',password:'1234',status:'active',can_tick:false});
     this.setLocalUsers(list);
     await this.loadUsers();
     showToast('已開戶（示範，密碼 1234）','success');
@@ -1583,7 +1647,7 @@ class ScoutEventApp{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
-          <b><i class="fa-solid fa-key mr-1"></i>權限管理：</b>你可把「自己有的」權利授權給下級。<br>
+          <b><i class="fa-solid fa-key mr-1"></i>權限管理：</b>每位用戶已按職級帶有預設權限（例如主席／顧問／管理員／執行副主席＝全看全管），編輯時會先顯示現有權限，只需改要調整的項目。<br>
           • 我「可看」${mine.see.length} 張卡片、「可管」${mine.edit.length} 張卡片<br>
           • 授權給下級時，只能勾選<b>你自己也有的</b>卡片；授出「看」後，才能授「管」
         </div>
@@ -1591,11 +1655,11 @@ class ScoutEventApp{
           <h4 class="font-bold text-sm mb-3">我的下級 (${subs.length})</h4>
           ${subs.length===0?'<p class="text-xs text-slate-400">暫無可授權的下級（同組、層級比你低）</p>':`
           <div class="space-y-2">${subs.map(s=>{
-            const see=s.perm_see&&Array.isArray(s.perm_see)?s.perm_see:[];
-            const edit=s.perm_edit&&Array.isArray(s.perm_edit)?s.perm_edit:[];
-            return `<div class="border rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            const p=this.permSetsFor(s);
+            return `<div class="border rounded-xl p-3 flex flex-col sm:flex-row sm:items-start justify-between gap-2">
               <div class="min-w-0"><b class="text-[13px]">${escapeHtml(s.name)}</b> ${s.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">${escapeHtml(s.job_title)}</span>`:''}<span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(ROLE_LABELS[s.role]||s.role)}</span>
-                <div class="text-[11px] text-slate-500 mt-1">${escapeHtml(s.group_name||'')} · 看 ${see.length} / 管 ${edit.length}</div></div>
+                <div class="text-[11px] text-slate-500 mt-1">${escapeHtml(s.group_name||'')} · ${escapeHtml(this.permSourceLabel(s))} · 看 ${p.see.length} / 管 ${p.edit.length}</div>
+                ${this.permOverviewHTML(s)}</div>
               <button onclick="app.openPermissionEditor('${escapeHtml(s.user_id)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">編輯權限</button>
             </div>`;}).join('')}
           </div>`}
@@ -1608,8 +1672,9 @@ class ScoutEventApp{
     const sub=(this.pendingUsers||this.usersList||[]).find(x=>x.user_id===userId);
     if(!sub){ showToast('找不到該用戶','error'); return; }
     const mine=this.getMyPermSets();
-    const see=Array.isArray(sub.perm_see)?sub.perm_see:[];
-    const edit=Array.isArray(sub.perm_edit)?sub.perm_edit:[];
+    const theirs=this.permSetsFor(sub);
+    const see=theirs.see;
+    const edit=theirs.edit;
     const rows=PERM_CARDS.map(c=>{
       const canSee=mine.see.includes(c.id);
       const canEdit=mine.edit.includes(c.id)&&canSee;
@@ -1621,6 +1686,8 @@ class ScoutEventApp{
     document.getElementById('record-modal-title').textContent=`授權給 ${sub.name}（看 / 管）`;
     document.getElementById('record-form-fields').innerHTML=`
       <input type="hidden" id="perm-target" value="${escapeHtml(userId)}">
+      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-2.5 text-[11px] text-indigo-900 leading-relaxed mb-2">已按<strong>現有／${escapeHtml(this.permSourceLabel(sub))}</strong>勾選（可看 ${see.length}／可管 ${edit.length}）。例如主席本身已有全權限，無需由零開始重新勾選；只需改要調整的項目。</div>
+      <div class="flex flex-wrap gap-2 mb-2"><button type="button" onclick="app.restoreRoleDefaultPerms()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">還原職級預設</button></div>
       <div class="text-[11px] text-slate-500 mb-2">勾選「看」可查看該卡片；勾選「管」可編輯該卡片內容。你只能授出自己有的權利。</div>
       <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">卡片</th><th class="px-2 py-1 text-center">可看</th><th class="px-2 py-1 text-center">可管</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="px-2 py-4 text-center text-slate-400">你目前沒有可授權的卡片</td></tr>'}</tbody></table></div>
     `;
@@ -7177,11 +7244,11 @@ class ScoutEventApp{
     if(!list || !list.length){
       if(this.isDemoEvent()){
         list=[
-          {user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},
-          {user_id:'chair01',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'主席及執行副主席',contact:'92222222',password:'1234',status:'active',can_tick:true},
-          {user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'executive_vice_chairperson',group_name:'主席及執行副主席',contact:'93333333',password:'1234',status:'active',can_tick:true},
-          {user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},
-          {user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}
+          {user_id:'區子君',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},
+          {user_id:'朱家聰',name:'朱家聰',email:'chair@isd.local',role:'chairperson',group_name:'主席及執行副主席',contact:'92222222',password:'1234',status:'active',can_tick:true},
+          {user_id:'羅雅雯',name:'羅雅雯',email:'execvp@isd.local',role:'executive_vice_chairperson',group_name:'主席及執行副主席',contact:'93333333',password:'1234',status:'active',can_tick:true},
+          {user_id:'蘇國樑',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},
+          {user_id:'陳子明',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}
         ];
       } else {
         list=(Array.isArray(this.eventData?.users)?this.eventData.users:[]).map(u=>({user_id:u.user_id,name:u.name,role:u.role,group_name:u.group_name,job_title:u.job_title||'',email:u.email||'',contact:u.contact||'',password:u.password||'1234',status:u.status||'active',can_tick:!!u.can_tick}));
@@ -7193,6 +7260,7 @@ class ScoutEventApp{
       group_name:normalizeGroupName(u.group_name),
       role:(u.user_id==='exec_vp'||(u.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':u.role
     }));
+    list=migrateUsersToChineseLogin(list);
     localStorage.setItem(key,JSON.stringify(list));
     return list;
   }
@@ -7395,7 +7463,7 @@ class ScoutEventApp{
     const showPwd=this.canSeeUserPasswords();
     const dirty=JSON.stringify(this.pendingUsers||[])!==JSON.stringify(this.usersList||[]);
     if(!list.length){container.innerHTML='<p class="text-xs text-slate-400">沒有可見用戶。若已為籌委開戶但仍空白，請重新整理或確認已登入正確活動。</p>'; return;}
-    const permBlock=`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900 leading-relaxed"><b>用戶管理：</b>改角色、組別、密碼或權限只會暫存在此頁，必須按下方「確定更新用戶」才真正套用（與批核權限表相同）。</div>`;
+    const permBlock=`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900 leading-relaxed"><b>用戶管理：</b>登入帳號＝中文姓名。每位用戶已按職級帶有預設權限（主席／顧問／管理員／執行副主席＝全權），下方會顯示現有「可看／可管」，編輯權限時會先勾選現有項目。改角色、組別、密碼或權限只會暫存在此頁，必須按下方「確定更新用戶」才真正套用。</div>`;
     const confirmBar=`<div class="flex justify-end mt-4"><button onclick="app.confirmUsersUpdate()" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow"><i class="fa-solid fa-check mr-1"></i>確定更新用戶</button></div>`;
     container.innerHTML=permBlock+list.map(u=>{
       const pwd=showPwd?`<div class="text-[11px] font-mono text-slate-600 mt-0.5">密碼：${escapeHtml(u.password||'(未顯示)')}</div>`:'';
@@ -7426,11 +7494,11 @@ class ScoutEventApp{
     const sel=document.getElementById('u-role'); if(!sel) return;
     const allowed=this.assignableRoles();
     if(!allowed.includes(curVal) && curVal) allowed.unshift(curVal);
-    sel.innerHTML=allowed.map(r=>`<option value="${r}" ${r===curVal?'selected':''}>${ROLE_LABELS[r]||r}${ROLE_HIERARCHY[r]>=100?'（超管）':''}</option>`).join('')||'<option value="staff">staff</option>';
+    sel.innerHTML=allowed.map(r=>`<option value="${r}" ${r===curVal?'selected':''}>${ROLE_LABELS[r]||r}${ROLE_HIERARCHY[r]>=100?'（超管）':''}</option>`).join('')||'<option value="staff">工作人員</option>';
   }
   editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('u-form-mode').value='edit'; document.getElementById('u-form-original-id').value=u.user_id; document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name; document.getElementById('u-group').value=u.group_name||''; document.getElementById('u-contact').value=u.contact||''; document.getElementById('u-email').value=u.email||''; const pwd=document.getElementById('u-password'); if(pwd){ pwd.value=this.canSeeUserPasswords()?(u.password||''):''; pwd.parentElement?.classList.toggle('hidden', !this.canSeeUserPasswords()); } this.populateUserRoleSelect(u.role||'staff'); document.getElementById('modal-user').classList.remove('hidden');}
-  submitUserForm(e){e.preventDefault(); const uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!uid||!name) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||this.getLocalUsers())); let list=this.pendingUsers; const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.pendingUsers=list; this.closeModal('modal-user'); showToast('已暫存，請按「確定更新用戶」才套用',''); this.renderUsers();}
-  downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n00820001,朱家聰,chair@isd.local,chairperson,主席及執行副主席,,123456,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
+  submitUserForm(e){e.preventDefault(); let uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!name) return; if(!uid) uid=name; if(document.getElementById('u-form-mode').value==='create' && isLegacyLatinLogin(uid) && hasCjk(name)) uid=name; if(!uid) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||this.getLocalUsers())); let list=this.pendingUsers; const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.pendingUsers=list; this.closeModal('modal-user'); showToast('已暫存，請按「確定更新用戶」才套用',''); this.renderUsers();}
+  downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n朱家聰,朱家聰,chair@isd.local,chairperson,主席及執行副主席,,1234,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
   handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請貼上JSON','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('JSON錯誤','error');}}
   confirmBulkCreate(){if(!this.bulkPending.length){showToast('無資料','warning'); return;} let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ list.push({user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,password:r.password||'1234',status:'active',can_tick:r.can_tick}); added++; } }); this.setLocalUsers(list); this.closeModal('modal-bulk'); showToast(`批量完成 成功${added}筆`,'success'); this.loadUsers();}
   applyBannerConfig(){const t=this.systemConfig.bannerText; document.getElementById('banner-meeting-text').textContent=t;}
@@ -7454,7 +7522,7 @@ class ScoutEventApp{
     if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
   }
-  demoLogin(uid){if(!this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>u.user_id===uid)||{user_id:uid,name:'示範帳戶',role:'staff',group_name:'主席及執行副主席'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
+  demoLogin(uid){if(!this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>loginIdMatches(u,uid))||{user_id:uid,name:uid,role:'staff',group_name:'主席及執行副主席'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
   openChangePwdModal(){if(!this.currentUser){ showToast('請先登入','warning'); return; } ['cp-old','cp-new','cp-new2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); document.getElementById('modal-changepwd').classList.remove('hidden');}
   async submitChangePassword(e){
     e.preventDefault();
