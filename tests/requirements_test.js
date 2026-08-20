@@ -47,7 +47,7 @@ assert(html.includes('.ppt') && html.includes('.png') && html.includes('.jpg'), 
 // Check 6: Check JSON data files
 const isd = JSON.parse(fs.readFileSync(path.join(root, 'data/isd_2026.json'), 'utf8'));
 const mock = JSON.parse(fs.readFileSync(path.join(root, 'data/mock_demo.json'), 'utf8'));
-assert(Array.isArray(isd.crisis.accidents) && isd.crisis.accidents.length > 0, 'isd.crisis missing accidents array');
+assert(Array.isArray(isd.crisis.accidents) && isd.crisis.accidents.length === 0, 'ISD 2026 must not contain mock accident records');
 assert(Array.isArray(mock.crisis.accidents) && mock.crisis.accidents.length > 0, 'mock.crisis missing accidents array');
 assert(isd.meetings.every(m => m.agenda_file_url && m.minutes_file_url), 'isd.meetings not all linked to Drive');
 
