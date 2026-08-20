@@ -936,7 +936,7 @@ class ScoutEventApp{
     const localKey=LS.meetings(this.currentEvent.event_id); const localMeetings=JSON.parse(localStorage.getItem(localKey)||'null'); if(localMeetings&&Array.isArray(localMeetings)&&localMeetings.length){ this.eventData.meetings=localMeetings; }
     const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){ this.eventData.staff=localStaff; }
     // 正式活動（非示範沙盒）且已連後端：拉取 Meal_Orders 合併（組長確認/行政審批狀態跨裝置同步）
-    this.syncMealOrdersFromGas();
+    this.syncApplicationsFromGas();
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
   openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知·入口檢查)',parking:'泊車證申請 (申請·入口檢查清單)',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章',announcements:'公告及溝通',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
@@ -2978,6 +2978,90 @@ class ScoutEventApp{
       this.saveMealsData(data);
       if(this.currentModule==='meals') this.refreshMealsViews();
     }catch(e){}
+  }
+  /* ===================== 跨裝置同步：所有申請（v7.7） =====================
+     正式活動（已連後端）一次過從 GAS 拉回 膳食訂餐／物資申請／車輛通行證／泊車證，
+     令協調組在自己部機都睇到其他人提交的申請及批核狀態。示範沙盒永不連線。 */
+  async syncApplicationsFromGas(){
+    if(this.isDemoEvent()||!this.gasUrl) return;
+    const eid=this.currentEvent?.event_id||'isd_2026';
+    let d=null;
+    try{
+      const res=await fetch(`${this.gasUrl}?action=getEventData&event_id=${encodeURIComponent(eid)}&api_key=${encodeURIComponent(this.apiKey)}`);
+      const j=await res.json();
+      d=(j&&j.data)?j.data:null;
+    }catch(e){ return; }
+    if(!d) return;
+    let touched=false;
+    // ── 膳食訂餐 ──
+    const orderRows=Array.isArray(d.Meal_Orders)?d.Meal_Orders:[];
+    if(orderRows.length){
+      const meals=this.getMealsData();
+      const map=new Map((meals.orders||[]).map(o=>[o.order_id,o]));
+      orderRows.forEach(r=>{ if(!r.order_id) return; map.set(String(r.order_id),{order_id:String(r.order_id),menu_id:String(r.menu_id||''),user_id:String(r.user_id||''),user_name:String(r.user_name||''),group_name:String(r.group_name||''),selection:String(r.selection||''),quantity:Number(r.quantity)||1,remarks:String(r.remarks||''),status:String(r.status||'pending'),confirmed_by:String(r.confirmed_by||''),approved_by:String(r.approved_by||''),created_at:String(r.created_at||''),updated_at:String(r.updated_at||'')}); });
+      meals.orders=[...map.values()];
+      this.saveMealsData(meals); touched=true;
+    }
+    // ── 物資申請 + 車輛通行證 ──
+    const reqRows=Array.isArray(d.Supply_Requests)?d.Supply_Requests:[];
+    const vehRows=Array.isArray(d.Vehicle_Passes)?d.Vehicle_Passes:[];
+    if(reqRows.length||vehRows.length){
+      const sup=this.getSuppliesData();
+      if(reqRows.length){
+        const map=new Map((sup.requests||[]).map(r=>[r.request_id,r]));
+        reqRows.forEach(r=>{ if(!r.request_id) return; const prev=map.get(String(r.request_id))||{};
+          map.set(String(r.request_id),{...prev,
+            request_id:String(r.request_id), event_id:String(r.event_id||eid), supply_id:String(r.supply_id||''),
+            item_name:String(r.item_name||prev.item_name||''), qty_requested:Number(r.qty_requested)||0,
+            qty_approved:(r.qty_approved===''||r.qty_approved===undefined||r.qty_approved===null)?null:Number(r.qty_approved),
+            unit:String(r.unit||prev.unit||'個'), group_name:String(r.group_name||''), reason:String(r.reason||prev.reason||''),
+            date_needed:String(r.date_needed||prev.date_needed||''), deadline:String(r.deadline||prev.deadline||''),
+            contact:String(r.contact||prev.contact||''), status:String(r.status||'pending'),
+            requested_by:String(r.requested_by||''), requested_by_id:String(r.requested_by_id||''),
+            approved_by:String(r.approved_by||''), approved_at:String(r.approved_at||''), notes:String(r.notes||''),
+            created_at:String(r.created_at||prev.created_at||'')});
+        });
+        sup.requests=[...map.values()];
+      }
+      if(vehRows.length){
+        const map=new Map((sup.vehicle_passes||[]).map(v=>[v.pass_id,v]));
+        vehRows.forEach(v=>{ if(!v.pass_id) return; const prev=map.get(String(v.pass_id))||{};
+          map.set(String(v.pass_id),{...prev,
+            pass_id:String(v.pass_id), event_id:String(v.event_id||eid), plate:String(v.plate||''),
+            driver_name:String(v.driver_name||''), driver_contact:String(v.driver_contact||''),
+            vehicle_type:String(v.vehicle_type||'私家車'), purpose:String(v.purpose||''), group_name:String(v.group_name||''),
+            entry_date:String(v.entry_date||''), exit_date:String(v.exit_date||''), parking_location:String(v.parking_location||''),
+            deadline:String(v.deadline||prev.deadline||''), status:String(v.status||'pending'),
+            requested_by:String(v.requested_by||''), requested_by_id:String(v.requested_by_id||''),
+            approved_by:String(v.approved_by||''), approved_at:String(v.approved_at||''), notes:String(v.notes||''),
+            created_at:String(v.created_at||prev.created_at||'')});
+        });
+        sup.vehicle_passes=[...map.values()];
+      }
+      // 只寫本地，避免整批倒灌回後端
+      localStorage.setItem(LS.supplies(eid), JSON.stringify(sup));
+      this.eventData['supplies']=sup;
+      touched=true;
+    }
+    // ── 泊車證申請 ──
+    const parkRows=Array.isArray(d.Parking_Requests)?d.Parking_Requests:[];
+    if(parkRows.length){
+      const park=this.getParkingData();
+      const map=new Map((park.applications||[]).map(a=>[a.parking_id,a]));
+      parkRows.forEach(r=>{ if(!r.parking_id) return; const prev=map.get(String(r.parking_id))||{};
+        map.set(String(r.parking_id),{...prev, ...r, parking_id:String(r.parking_id), status:String(r.status||'pending')});
+      });
+      park.applications=[...map.values()];
+      localStorage.setItem(LS.parking(eid), JSON.stringify(park));
+      touched=true;
+    }
+    if(!touched) return;
+    // 留喺目前頁面重新整理
+    if(this.currentModule==='coordinator_group') this.renderCoordinatorGroupModule();
+    else if(this.currentModule==='my_monitor') this.renderMyMonitorModule();
+    else if(this.currentModule==='supplies' && document.getElementById('supplies-tab-requests')) this.renderSuppliesModule();
+    else if(this.currentModule==='meals' && document.getElementById('meals-tab-menus')) this.renderMealsModule();
+    else if(this.currentModule==='group_management' && this.currentGroupManaged) this.openGroupManagement(this.currentGroupManaged);
   }
   canManageMealMenu(){
     // 膳食主任或協調副主席可以加入菜單
