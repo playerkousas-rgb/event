@@ -1,0 +1,55 @@
+ymis,name,email,role,group_name,contact,password,can_tick,allowed_modules,squad,squad_role,status,job_desc
+黃偉安,黃偉安,,advisor,顧問團,,1234,true,*,,,active,顧問
+何家騏,何家騏,,advisor,顧問團,,1234,true,*,,,active,顧問
+朱家聰,朱家聰,,chairperson,籌委會,,1234,true,*,,,active,主席
+袁可秀,袁可秀,,executive_vice_chairperson,籌委會,,1234,true,*,,,active,執行副主席
+張佳良,張佳良,,vice_chairperson,會操及典禮組,,1234,true,*,,,active,副主席（會操及典禮）
+梁文澧,梁文澧,,general_director,會操及典禮組,,1234,true,*,,,active,總主任（會操）
+黃志樂,黃志樂,,director,會操及典禮組,,1234,true,*,,,active,會操顧問
+李懷恩,李懷恩,,general_director,會操及典禮組,,1234,true,*,,,active,總主任（典禮）
+黃凱琳,黃凱琳,,director,會操及典禮組,,1234,true,*,,,active,典禮統籌主任
+林雋逸,林雋逸,,director,會操及典禮組,,1234,true,*,,,active,優異旅團統籌主任
+馮玉成,馮玉成,,director,會操及典禮組,,1234,true,*,,,active,獎勵統籌主任
+范紫晴,范紫晴,,director,會操及典禮組,,1234,true,*,,,active,司儀統籌主任
+林卓衡,林卓衡,,director,會操及典禮組,,1234,true,*,,,active,司儀統籌主任
+周恒晉,周恒晉,,vice_chairperson,主題節目組,,1234,true,*,,,active,副主席（主題節目）
+仇紹謙,仇紹謙,,general_director,主題節目組,,1234,true,*,,,active,總主任（主題節目）
+何令勤,何令勤,,director,主題節目組,,1234,true,*,,,active,節目主任 (1)
+陳鋑羲,陳鋑羲,,director,主題節目組,,1234,true,*,,,active,節目主任 (2)
+張宏剛,張宏剛,,director,主題節目組,,1234,true,*,,,active,節目主任 (3)
+羅卓華,羅卓華,,director,主題節目組,,1234,true,*,,,active,節目主任 (4)
+李庭甄,李庭甄,,director,主題節目組,,1234,true,*,,,active,節目主任 (5)
+何嘉駿,何嘉駿,,vice_chairperson,品牌推廣組,,1234,true,*,,,active,副主席（品牌推廣）
+陳鈞翰,陳鈞翰,,director,品牌推廣組,,1234,true,*,,,active,社交媒體主任
+林耀鏘,林耀鏘,,director,品牌推廣組,,1234,true,*,,,active,拍攝/攝錄統籌主任
+曾麗珊,曾麗珊,,vice_chairperson,嘉賓接待組,,1234,true,*,,,active,副主席（嘉賓接待）
+張嘉政,張嘉政,,general_director,嘉賓接待組,,1234,true,*,,,active,總主任（嘉賓接待）
+黃培芳,黃培芳,,director,嘉賓接待組,,1234,true,*,,,active,嘉賓接待主任
+張敬浩,張敬浩,,director,嘉賓接待組,,1234,true,*,,,active,交通主任
+朱浩銘,朱浩銘,,director,嘉賓接待組,,1234,true,*,,,active,嘉賓支援主任
+羅添駿,羅添駿,,vice_chairperson,協調組,,1234,true,*,,,active,副主席（協調）
+鍾偉志,鍾偉志,,general_director,協調組,,1234,true,*,,,active,總主任（協調）
+馬一波,馬一波,,director,協調組,,1234,true,*,,,active,場地佈置主任
+吳卓藍,吳卓藍,,director,協調組,,1234,true,*,,,active,膳食主任
+郭慧敏,郭慧敏,,director,協調組,,1234,true,*,,,active,後勤主任
+施珍淇,施珍淇,,director,協調組,,1234,true,*,,,active,物資主任
+黃嘉恩,黃嘉恩,,general_director,協調組,,1234,true,*,,,active,總主任（協調）
+布瀚文,布瀚文,,director,協調組,,1234,true,*,,,active,秩序主任
+鄺逸俊,鄺逸俊,,director,協調組,,1234,true,*,,,active,交通管制主任
+李思諭,李思諭,,director,協調組,,1234,true,*,,,active,物流運輸主任
+袁宇靖,袁宇靖,,director,協調組,,1234,true,*,,,active,物流運輸主任
+黎姵伶,黎姵伶,,vice_chairperson,服務及發展組,,1234,true,*,,,active,副主席（服務及發展）
+李卓琪,李卓琪,,general_director,服務及發展組,,1234,true,*,,,active,總主任（服務及發展）
+郭成威,郭成威,,director,服務及發展組,,1234,true,*,,,active,服務主任
+李婉顏,李婉顏,,director,服務及發展組,,1234,true,*,,,active,機構聯絡主任
+徐嘉皓,徐嘉皓,,vice_chairperson,行政組,,1234,true,*,,,active,副主席（行政）
+文幹皓,文幹皓,,general_director,行政組,,1234,true,*,,,active,總主任（運作）
+陳銘彥,陳銘彥,,director,行政組,,1234,true,*,,,active,旅團報到主任
+何仲康,何仲康,,director,行政組,,1234,true,*,,,active,紀念品主任
+莫穎民,莫穎民,,general_director,行政組,,1234,true,*,,,active,總主任（行政）
+蔡天欣,蔡天欣,,director,行政組,,1234,true,*,,,active,財政主任
+何家耀,何家耀,,admin,秘書處,2835 7712,1234,true,*,,,active,助理執行幹事 (Assistant Scout Executive) Oscar
+陸詠德,陸詠德,,admin,秘書處,2835 7713,1234,true,*,,,active,活動幹事 (Programme Officer) Fiona
+譚健祥,譚健祥,,admin,秘書處,2835 7711,1234,true,*,,,active,執行幹事 (Scout Executive) Figo
+鄧倩姸,鄧倩姸,,admin,秘書處,2835 7714,1234,true,*,,,active,發展幹事 (Development Officer) Cindy
+曾凱瑩,曾凱瑩,,admin,秘書處,2835 7715,1234,true,*,,,active,訓練幹事 (Training Officer) Sandy

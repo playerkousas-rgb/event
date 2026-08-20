@@ -2,6 +2,656 @@
   "event_id": "isd_2026",
   "event_name": "2026 港島童軍繽紛日",
   "description": "2026 港島童軍繽紛日（正式活動）。工作人員名單、通告及文件已從 ISD 2026 Staff Drive 同步至此。",
+  "users": [
+    {
+      "user_id": "黃偉安",
+      "name": "黃偉安",
+      "role": "advisor",
+      "group_name": "顧問團",
+      "job_title": "顧問",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "何家騏",
+      "name": "何家騏",
+      "role": "advisor",
+      "group_name": "顧問團",
+      "job_title": "顧問",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "朱家聰",
+      "name": "朱家聰",
+      "role": "chairperson",
+      "group_name": "籌委會",
+      "job_title": "主席",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "袁可秀",
+      "name": "袁可秀",
+      "role": "executive_vice_chairperson",
+      "group_name": "籌委會",
+      "job_title": "執行副主席",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "張佳良",
+      "name": "張佳良",
+      "role": "vice_chairperson",
+      "group_name": "會操及典禮組",
+      "job_title": "副主席（會操及典禮）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "梁文澧",
+      "name": "梁文澧",
+      "role": "general_director",
+      "group_name": "會操及典禮組",
+      "job_title": "總主任（會操）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "黃志樂",
+      "name": "黃志樂",
+      "role": "director",
+      "group_name": "會操及典禮組",
+      "job_title": "會操顧問",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "李懷恩",
+      "name": "李懷恩",
+      "role": "general_director",
+      "group_name": "會操及典禮組",
+      "job_title": "總主任（典禮）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "黃凱琳",
+      "name": "黃凱琳",
+      "role": "director",
+      "group_name": "會操及典禮組",
+      "job_title": "典禮統籌主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "林雋逸",
+      "name": "林雋逸",
+      "role": "director",
+      "group_name": "會操及典禮組",
+      "job_title": "優異旅團統籌主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "馮玉成",
+      "name": "馮玉成",
+      "role": "director",
+      "group_name": "會操及典禮組",
+      "job_title": "獎勵統籌主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "范紫晴",
+      "name": "范紫晴",
+      "role": "director",
+      "group_name": "會操及典禮組",
+      "job_title": "司儀統籌主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "林卓衡",
+      "name": "林卓衡",
+      "role": "director",
+      "group_name": "會操及典禮組",
+      "job_title": "司儀統籌主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "周恒晉",
+      "name": "周恒晉",
+      "role": "vice_chairperson",
+      "group_name": "主題節目組",
+      "job_title": "副主席（主題節目）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "仇紹謙",
+      "name": "仇紹謙",
+      "role": "general_director",
+      "group_name": "主題節目組",
+      "job_title": "總主任（主題節目）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "何令勤",
+      "name": "何令勤",
+      "role": "director",
+      "group_name": "主題節目組",
+      "job_title": "節目主任 (1)",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "陳鋑羲",
+      "name": "陳鋑羲",
+      "role": "director",
+      "group_name": "主題節目組",
+      "job_title": "節目主任 (2)",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "張宏剛",
+      "name": "張宏剛",
+      "role": "director",
+      "group_name": "主題節目組",
+      "job_title": "節目主任 (3)",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "羅卓華",
+      "name": "羅卓華",
+      "role": "director",
+      "group_name": "主題節目組",
+      "job_title": "節目主任 (4)",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "李庭甄",
+      "name": "李庭甄",
+      "role": "director",
+      "group_name": "主題節目組",
+      "job_title": "節目主任 (5)",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "何嘉駿",
+      "name": "何嘉駿",
+      "role": "vice_chairperson",
+      "group_name": "品牌推廣組",
+      "job_title": "副主席（品牌推廣）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "陳鈞翰",
+      "name": "陳鈞翰",
+      "role": "director",
+      "group_name": "品牌推廣組",
+      "job_title": "社交媒體主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "林耀鏘",
+      "name": "林耀鏘",
+      "role": "director",
+      "group_name": "品牌推廣組",
+      "job_title": "拍攝/攝錄統籌主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "曾麗珊",
+      "name": "曾麗珊",
+      "role": "vice_chairperson",
+      "group_name": "嘉賓接待組",
+      "job_title": "副主席（嘉賓接待）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "張嘉政",
+      "name": "張嘉政",
+      "role": "general_director",
+      "group_name": "嘉賓接待組",
+      "job_title": "總主任（嘉賓接待）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "黃培芳",
+      "name": "黃培芳",
+      "role": "director",
+      "group_name": "嘉賓接待組",
+      "job_title": "嘉賓接待主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "張敬浩",
+      "name": "張敬浩",
+      "role": "director",
+      "group_name": "嘉賓接待組",
+      "job_title": "交通主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "朱浩銘",
+      "name": "朱浩銘",
+      "role": "director",
+      "group_name": "嘉賓接待組",
+      "job_title": "嘉賓支援主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "羅添駿",
+      "name": "羅添駿",
+      "role": "vice_chairperson",
+      "group_name": "協調組",
+      "job_title": "副主席（協調）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "鍾偉志",
+      "name": "鍾偉志",
+      "role": "general_director",
+      "group_name": "協調組",
+      "job_title": "總主任（協調）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "馬一波",
+      "name": "馬一波",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "場地佈置主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "吳卓藍",
+      "name": "吳卓藍",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "膳食主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "郭慧敏",
+      "name": "郭慧敏",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "後勤主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "施珍淇",
+      "name": "施珍淇",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "物資主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "黃嘉恩",
+      "name": "黃嘉恩",
+      "role": "general_director",
+      "group_name": "協調組",
+      "job_title": "總主任（協調）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "布瀚文",
+      "name": "布瀚文",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "秩序主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "鄺逸俊",
+      "name": "鄺逸俊",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "交通管制主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "李思諭",
+      "name": "李思諭",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "物流運輸主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "袁宇靖",
+      "name": "袁宇靖",
+      "role": "director",
+      "group_name": "協調組",
+      "job_title": "物流運輸主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "黎姵伶",
+      "name": "黎姵伶",
+      "role": "vice_chairperson",
+      "group_name": "服務及發展組",
+      "job_title": "副主席（服務及發展）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "李卓琪",
+      "name": "李卓琪",
+      "role": "general_director",
+      "group_name": "服務及發展組",
+      "job_title": "總主任（服務及發展）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "郭成威",
+      "name": "郭成威",
+      "role": "director",
+      "group_name": "服務及發展組",
+      "job_title": "服務主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "李婉顏",
+      "name": "李婉顏",
+      "role": "director",
+      "group_name": "服務及發展組",
+      "job_title": "機構聯絡主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "徐嘉皓",
+      "name": "徐嘉皓",
+      "role": "vice_chairperson",
+      "group_name": "行政組",
+      "job_title": "副主席（行政）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "文幹皓",
+      "name": "文幹皓",
+      "role": "general_director",
+      "group_name": "行政組",
+      "job_title": "總主任（運作）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "陳銘彥",
+      "name": "陳銘彥",
+      "role": "director",
+      "group_name": "行政組",
+      "job_title": "旅團報到主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "何仲康",
+      "name": "何仲康",
+      "role": "director",
+      "group_name": "行政組",
+      "job_title": "紀念品主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "莫穎民",
+      "name": "莫穎民",
+      "role": "general_director",
+      "group_name": "行政組",
+      "job_title": "總主任（行政）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "蔡天欣",
+      "name": "蔡天欣",
+      "role": "director",
+      "group_name": "行政組",
+      "job_title": "財政主任",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "何家耀",
+      "name": "何家耀",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "助理執行幹事 (Assistant Scout Executive) Oscar",
+      "email": "",
+      "contact": "2835 7712",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "陸詠德",
+      "name": "陸詠德",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "活動幹事 (Programme Officer) Fiona",
+      "email": "",
+      "contact": "2835 7713",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "譚健祥",
+      "name": "譚健祥",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "執行幹事 (Scout Executive) Figo",
+      "email": "",
+      "contact": "2835 7711",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "鄧倩姸",
+      "name": "鄧倩姸",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "發展幹事 (Development Officer) Cindy",
+      "email": "",
+      "contact": "2835 7714",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "曾凱瑩",
+      "name": "曾凱瑩",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "訓練幹事 (Training Officer) Sandy",
+      "email": "",
+      "contact": "2835 7715",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    }
+  ],
   "drive": {
     "root_folder_id": "1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
     "root_folder_link": "https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
@@ -356,6 +1006,12 @@
         "title": "財政主任",
         "names": "蔡天欣",
         "desc": "統籌財政及結算。"
+      },
+      {
+        "level": "秘書處 (Level 2)",
+        "title": "秘書處（地域受薪職員）",
+        "names": "譚健祥、何家耀、陸詠德、鄧倩姸、曾凱瑩",
+        "desc": "地域總會秘書處受薪職員，負責行政、活動、發展及訓練工作。"
       }
     ],
     "contacts": [
@@ -701,44 +1357,120 @@
         "group_name": "行政組",
         "contact": "",
         "job_desc": "財政及結算"
+      },
+      {
+        "name": "何家耀",
+        "role_title": "助理執行幹事 (Assistant Scout Executive)",
+        "group_name": "秘書處",
+        "contact": "2835 7712",
+        "job_desc": "地域秘書處行政工作 (Oscar)"
+      },
+      {
+        "name": "陸詠德",
+        "role_title": "活動幹事 (Programme Officer)",
+        "group_name": "秘書處",
+        "contact": "2835 7713",
+        "job_desc": "地域秘書處行政工作 (Fiona)"
+      },
+      {
+        "name": "譚健祥",
+        "role_title": "執行幹事 (Scout Executive)",
+        "group_name": "秘書處",
+        "contact": "2835 7711",
+        "job_desc": "地域秘書處行政工作 (Figo)"
+      },
+      {
+        "name": "鄧倩姸",
+        "role_title": "發展幹事 (Development Officer)",
+        "group_name": "秘書處",
+        "contact": "2835 7714",
+        "job_desc": "地域秘書處行政工作 (Cindy)"
+      },
+      {
+        "name": "曾凱瑩",
+        "role_title": "訓練幹事 (Training Officer)",
+        "group_name": "秘書處",
+        "contact": "2835 7715",
+        "job_desc": "地域秘書處行政工作 (Sandy)"
       }
     ],
     "job_duties": [
       {
+        "id": "duty_0",
         "group": "顧問團",
-        "duty": "1. 審核活動目的；\n2. 就活動設計、籌劃、推行提供政策性意見；\n3. 監察整體運作；\n4. 與地域總監確認主禮嘉賓／主禮人。"
+        "duty": "顧問（黃偉安、何家騏）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       },
       {
+        "id": "duty_1",
         "group": "主席",
-        "duty": "1. 主持籌備委員會所有會議；\n2. 統籌活動一切有關事宜並確保順利進行；\n3. 監察各功能組別進度及對外代表活動籌委會。"
+        "duty": "主席（朱家聰）：\n1. 主持籌備委員會所有會議；\n2. 負責統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察及協調各副主席及各組的工作進度使之順利完成；\n4. 編訂及策劃大會節目程序；及\n5. 建議及邀請繽紛日主禮嘉賓／主禮人。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       },
       {
+        "id": "duty_2",
+        "group": "主席",
+        "duty": "執行副主席（袁可秀）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 主席不能履行職務時將代理其職務；\n4. 策劃及執行已編訂的大會節目程序；及\n5. 協助主席及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
+      },
+      {
+        "id": "duty_3",
         "group": "行政組",
-        "duty": "1. 擬訂財政指引及會計程序；\n2. 開設活動檔案、發布總通告與提名信；\n3. 統籌參加者保險、秘書處會議紀錄及各組開支報銷審批。"
+        "duty": "副主席（行政）（徐嘉皓）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日行政、財政及常務等事宜；\n3. 設立及管理指揮中心；\n4. 制訂行政組財政預算；及\n5. 協助主席及執行其分配的工作。\n\n總主任（行政）（莫穎民）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作，如行政、旅團報到、紀念品、財政、危機處理及工作人員統籌等事宜；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n行政主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日行政工作：撰寫籌備委員會會議紀錄；活動日維持詢問處和失物認領處的運作；跟進參加旅團的一般事宜；\n3. 協助指揮中心運作；\n4. 統籌行政組內的物資安排；及\n5. 協助總主任（行政）及執行其分配的工作。\n\n旅團報到主任（陳銘彥）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日旅團報到工作：制訂活動報名表及報名程序；制訂繽紛日參加者報到程序；跟進參加旅團的報名和報到事宜；\n3. 活動日維持旅團報到處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n紀念品主任（何仲康）：\n1. 參與籌備委員會會議並提供意見；\n2. 安排紀念品（包括紀念章）的包裝及分發事宜；\n3. 活動日維持禮物換領處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n參事主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日工作人員傳訊事宜：編制工作人員手冊；編制工作人員感謝狀；分發工作人員紀念品；活動日對講機分配；\n3. 協助總主任（行政）及執行其分配的工作。\n\n財務主任（蔡天欣）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及處理繽紛日財政事宜：收集及綜合各組之財政預算；協調及控制各小組財政收支平衡；制訂財政指引及會計程序；處理財政結算工作及草擬財政報告；\n3. 協助總主任（行政）及執行其分配的工作。\n\n危機處理主任（何家騏）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂繽紛日危機處理手冊；\n3. 執行危機處理及應變程序；\n4. 協助副地域總監（活動與訓練）、主席、副主席（行政）主持危機小組會議及工作；及\n5. 協助總主任（行政）及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       },
       {
+        "id": "duty_4",
         "group": "會操及典禮組",
-        "duty": "1. 擬訂會操及典禮流程及時間表；\n2. 開設步操比賽後備日與綵排安排；\n3. 統籌優異旅團獎勵計劃、支部獎勵及嘉賓接待。"
+        "duty": "副主席（會操及典禮）（張佳良）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌會操、優異旅團及各項嘉許獎勵頒授典禮事宜；\n3. 制訂會操及典禮組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（會操）（梁文澧）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日會操事宜：負責草擬會操之內容及程序；建議及邀請會操之工作人員；草擬步操組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n步操統籌主任：\n1. 參與籌備委員會會議並提供意見；\n2. 推行會操流程及安排事宜；及\n3. 協助總主任（會操）及執行其分配的工作。\n\n司令員：待定\n\n會操顧問（黃志樂）：待定\n\n總主任（典禮）（李懷恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日典禮事宜：負責草擬典禮之內容及程序；建議及邀請典禮之工作人員；草擬典禮組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n典禮統籌主任（黃凱琳）：待定\n優異旅團統籌主任（林雋逸）：待定\n獎勵統籌主任（馮玉成）：待定\n司儀統籌主任（范紫晴、林卓衡）：待定",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       },
       {
+        "id": "duty_5",
         "group": "主題節目組",
-        "duty": "1. 設計攤位遊戲內容、遊戲卡、遊戲獎品；\n2. 統籌積極公民獎章系列工作坊及獎章證書；\n3. 協調各旅團攤位設置。"
+        "duty": "副主席（主題節目）（周恒晉）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席設計、組織、推行繽紛日主題節目活動；\n3. 制訂主題節目組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（主題節目）（仇紹謙）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行主題節目活動；及\n3. 協助副主席（主題節目）及執行其分配的工作。\n\n節目主任（何令勤、陳鋑羲、張宏剛、羅卓華、李庭甄）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日主題節目活動事宜；\n3. 構思及設計配合主題節目之遊戲禮物；及\n4. 協助總主任（主題節目）及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       },
       {
-        "group": "品牌推廣組",
-        "duty": "1. 擬訂宣傳構思及計劃（海報、場刊、橫額）；\n2. 統籌社交媒體宣傳與活動當日攝影攝錄。"
-      },
-      {
-        "group": "嘉賓接待組",
-        "duty": "1. 統籌嘉賓邀請、回條及名單；\n2. 安排嘉賓交通、接待及支援。"
-      },
-      {
+        "id": "duty_6",
         "group": "協調組",
-        "duty": "1. 收集場地佈置需求、制訂場地分佈及警察學院建設初稿；\n2. 設計物資清單、借用表格及車輛通行證審批；\n3. 統籌秩序、交通管制及物流運輸。"
+        "duty": "副主席（協調）（羅添駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日膳食、秩序、交通、衛生、場地佈置及協調、物資等事宜；\n3. 制訂協調組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（協調）（鍾偉志、黃嘉恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（協調）推行繽紛日秩序、交通、膳食、衛生、場地佈置及物資設備等事宜；及\n3. 協助副主席（協調）及執行其分配的工作。\n\n膳食主任（吳卓藍）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日膳食提供意見；\n3. 協調及統籌繽紛日膳食事宜：編排旅團及工作人員用餐時段；印製參加旅團餐券；派發工作人員膳食或餐券；安排嘉賓之茶點及飲品；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n秩序主任（布瀚文）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之秩序及人流管理提供意見；\n3. 協調及統籌繽紛日保安及秩序事宜：場地秩序及人流管理；確保典禮進行期間各嘉賓及參加者遵守大會程序；安排適當場地指示配合整個活動進行；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（交通管制）（鄺逸俊）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之交通管理提供意見；\n3. 協調及統籌繽紛日交通管理事宜：場內嘉賓及工作人員車輛管制；安排適當場地交通指示；協調參加者及嘉賓往返場地交通安排；管理停車場進出管制儀器（如電子泊車咭）；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n後勤主任（郭慧敏）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日後勤支援服務提供意見；\n3. 協調及統籌繽紛日後勤支援事宜；\n4. 監察及確保衛生服務承辦商妥善清理洗手間及垃圾；及\n5. 協助總主任（協調）及執行其分配的工作。\n\n場地佈置主任（馬一波）：\n1. 參與籌備委員會會議並提供意見；\n2. 與各個組別協調，就繽紛日場地佈置提供意見；\n3. 協調及統籌繽紛日場地佈置事宜：場地佈置（包括場地指示製作）；音響、燈光佈置；監察及確保場地佈置承辦商妥善清理及還原場地；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（物流）（李思諭、袁宇靖）：待定\n物資主任（施珍淇）：待定",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       },
       {
+        "id": "duty_7",
         "group": "服務及發展組",
-        "duty": "1. 統籌服務及發展項目；\n2. 統籌募捐及機構聯絡。"
+        "duty": "副主席（服務及發展）（黎姵伶）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日服務、成員招募及拓展等事宜，並聯絡各志願機構及持份者；\n3. 制訂服務組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（服務及發展）（李卓琪）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（服務及發展）統籌繽紛日服務及聯絡各志願機構及持份者事宜；\n3. 構思及制訂服務項目及執行策略；及\n4. 協助副主席（服務及發展）及執行其分配的工作。\n\n服務主任（郭成威）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日服務及聯絡各志願機構及持份者；及\n3. 協助總主任（服務及發展）及執行其分配的工作。\n\n發展主任（李婉顏）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日的成員招募及拓展、持份者參與策略；及\n3. 協助總主任（服務及發展）及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
+      },
+      {
+        "id": "duty_8",
+        "group": "品牌推廣組",
+        "duty": "副主席（品牌推廣）（何嘉駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日品牌推廣、宣傳及設計相關事宜；\n3. 制訂品牌推廣組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（宣傳）（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（品牌推廣）統籌繽紛日宣傳及推廣事宜；\n3. 構思及制訂宣傳及推廣策略；及\n4. 協助副主席（品牌推廣）及執行其分配的工作。\n\n設計主任（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂及推行繽紛日宣傳工作：設計繽紛日標誌和各項宣傳品（包括紀念章）及製作；撰寫文章向地域季刊及香港童軍月刊投稿；撰寫文章及準備材料以供港島童軍面書專頁（Facebook Page）及 Instagram 專頁等平台發布；及\n3. 協助總主任（品牌推廣）及執行其分配的工作。\n\n宣傳主任（待定）：待定\n社交媒體主任（陳鈞翰）：待定\n攝影／攝錄主任（林耀鏘）：\n1. 參與籌備委員會會議並提供意見；\n2. 就宣傳及活動日當日的攝錄安排提供意見；\n3. 協調攝影師在活動日攝錄事宜；及\n4. 協助總主任（品牌推廣）及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
+      },
+      {
+        "id": "duty_9",
+        "group": "嘉賓接待組",
+        "duty": "副主席（嘉賓接待）（曾麗珊）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌嘉賓接待及支援相關事宜；\n3. 制訂嘉賓接待組的財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（嘉賓接待）（張嘉政）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（嘉賓接待）及執行其分配的工作。\n\n嘉賓接待及交通主任（黃培芳、張敬浩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通及接待報到；\n3. 安排在頒獎典禮前的場內參觀；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n嘉賓支援主任（朱浩銘）：\n1. 參與籌備委員會會議並提供意見；\n2. 在頒獎典禮及會操進行期間協助嘉賓席相關事宜；\n3. 安排在頒獎典禮前及會操後的輕便茶點；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
+      },
+      {
+        "id": "duty_10",
+        "group": "秘書處",
+        "duty": "秘書處（譚健祥、何家耀、陸詠德、鄧倩姸、曾凱瑩）：\n1. 參與籌備委員會會議；\n2. 會議前準備工作；\n3. 發出及處理所有與政府部門及相關機構的往來書信；\n4. 處理所有報名工作；\n5. 稽查各組的財務；\n6. 支援各組的行政工作；及\n7. 協助主席及執行其分配的工作。\n\n指揮中心（活動日）成員：主席、各副主席、行政主任、危機處理主任、秘書處主管。\n\n危機應變小組成員：主席、副地域總監（活動與訓練）、助理地域總監（活動）、各副主席、危機處理主任、秘書處主管。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
       }
     ]
   },

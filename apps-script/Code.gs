@@ -48,6 +48,57 @@ function jsonResponse(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// ═══ 會議 Drive 即時連通：列出資料夾內子資料夾（每次會議一個）及檔案 ═══
+// 前端「會議卡片 → 會議 Drive」分頁每進入自動呼叫；Drive 有更新即時可見
+function listDriveFolder(data) {
+  try {
+    const folderId = (data.folder_id || data.id || '').toString().trim();
+    if (!folderId) return { success: false, error: '缺少 folder_id' };
+    const folder = DriveApp.getFolderById(folderId);
+    const out = {
+      success: true,
+      folder: folder.getName(),
+      folder_id: folderId,
+      subfolders: [],
+      files: []
+    };
+    // 根目錄直接存放的檔案
+    const rootFiles = folder.getFiles();
+    while (rootFiles.hasNext()) out.files.push(driveFileInfo(rootFiles.next()));
+    // 子資料夾（＝每次會議）
+    const folders = folder.getFolders();
+    while (folders.hasNext()) {
+      const sf = folders.next();
+      const files = [];
+      const fit = sf.getFiles();
+      while (fit.hasNext()) files.push(driveFileInfo(fit.next()));
+      files.sort(function (a, b) { return String(a.name).localeCompare(String(b.name), 'zh-HK'); });
+      out.subfolders.push({
+        id: sf.getId(),
+        name: sf.getName(),
+        modified: sf.getLastUpdated().toISOString(),
+        files: files
+      });
+    }
+    out.subfolders.sort(function (a, b) { return String(a.name).localeCompare(String(b.name), 'zh-HK'); });
+    return out;
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
+}
+
+function driveFileInfo(f) {
+  return {
+    id: f.getId(),
+    name: f.getName(),
+    mimeType: f.getMimeType(),
+    modified: f.getLastUpdated().toISOString(),
+    size: f.getSize(),
+    link: f.getUrl(),
+    preview: 'https://drive.google.com/file/d/' + f.getId() + '/preview'
+  };
+}
+
 const ROLE_HIERARCHY = {
   'super_admin': 100,
   'advisor': 80,
@@ -625,6 +676,7 @@ function doPost(e) {
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
     else if (action === 'sendMeetingEmail') return jsonResponse(sendMeetingEmailNotification(data));
+    else if (action === 'listDriveFolder') return jsonResponse(listDriveFolder(data));
     else return jsonResponse({ success: false, error: 'Unknown POST action' });
   } catch (err) {
     return jsonResponse({ success: false, error: err.toString() });
