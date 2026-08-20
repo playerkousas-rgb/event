@@ -361,11 +361,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 <script>
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
-// 2026 架構固定組別（用戶確認：不會有新組，可能有新主任）——開戶/登記下拉共用
-// 顧問團、主席及執行副主席兩組不設卡片：副主席及以上職級已確定，由管理員直接處理
-const ORG_GROUPS=['會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
-const EXCLUDED_GROUPS=['顧問團','主席及執行副主席'];
-function orgGroupOptions(selected){ return ORG_GROUPS.map(g=>`<option value="${g}" ${g===selected?'selected':''}>${g}</option>`).join(''); }
+// 2026 架構固定組別（用戶確認：不會有新組，可能有新主任）
+// 部門管理中心＝全部 9 組（含 顧問團、主席及執行副主席，可查看/統計）
+// 開戶/登記下拉只提供 7 個組別：顧問團、主席及執行副主席不設組卡片，其職級已確定由管理員直接處理
+const ORG_GROUPS=['顧問團','主席及執行副主席','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+const ACCOUNT_GROUPS=['會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+function orgGroupOptions(selected){ return ACCOUNT_GROUPS.map(g=>`<option value="${g}" ${g===selected?'selected':''}>${g}</option>`).join(''); }
 // 開戶職級：副主席及以上（副主席/執行副主席/主席/顧問/管理員）已全確定由管理員處理，開戶頁只提供以下三級
 const ACCOUNT_SETUP_ROLES=['general_director','director','staff'];
 function accountSetupRoleOptions(selected){ return ACCOUNT_SETUP_ROLES.map(r=>`<option value="${r}" ${r===selected?'selected':''}>${ROLE_LABELS[r]||r}</option>`).join(''); }
@@ -795,7 +796,6 @@ class ScoutEventApp{
       String(g||'').split(/[\/／、,，]/).forEach(part=>{
         const v=part.trim();
         if(!v||v==='未分組'||v==='未知') return;
-        if(EXCLUDED_GROUPS.includes(v)) return; // 顧問團/主席及執行副主席不設組卡片
         if(!set.includes(v)) set.push(v);
       });
     };
@@ -6660,7 +6660,11 @@ class ScoutEventApp{
   removeTempAttachment(fileId){/* for form */ }
 
   /* ===== Users & Others (simplified) ===== */
-  getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){ if(this.isDemoEvent()){ list=[{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; } else { list=[]; } localStorage.setItem(key,JSON.stringify(list)); } return list;}
+  getLocalUsers(){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); let list=JSON.parse(localStorage.getItem(key)||'null'); if(!list){ if(this.isDemoEvent()){ list=[{user_id:'advisor01',name:'區子君',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},{user_id:'chair01',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'籌委會',contact:'92222222',password:'1234',status:'active',can_tick:true},{user_id:'exec_vp',name:'羅雅雯',email:'execvp@isd.local',role:'vice_chairperson',group_name:'行政組',contact:'93333333',password:'1234',status:'active',can_tick:true},{user_id:'gd_001',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},{user_id:'staff_001',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}]; } else {
+      // 真實活動：預設帳戶由事件資料 users 提供（副主席及以上已由管理員預先開好，其餘逐個開戶）
+      const seeded=(Array.isArray(this.eventData?.users)?this.eventData.users:[]).map(u=>({user_id:u.user_id,name:u.name,role:u.role,group_name:u.group_name,job_title:u.job_title||'',email:u.email||'',contact:u.contact||'',password:u.password||'1234',status:u.status||'active',can_tick:!!u.can_tick}));
+      list=seeded;
+    } localStorage.setItem(key,JSON.stringify(list)); } return list;}
   setLocalUsers(l){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
   async loadUsers(){let list=[]; if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:u.role,group_name:u.group_name||u.branch,job_title:u.job_title||'',contact:u.contact||'',perm_see:parsePerm(u.perm_see),perm_edit:parsePerm(u.perm_edit),password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); this.usersList=list; this.renderUsers();}
   async loadApprovalPermissions(){ this.approvalPerms=[]; if(!this.mockMode && this.gasUrl){ try{ const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getApprovalPermissions',api_key:this.apiKey})}); const j=await res.json(); if(j && j.success && Array.isArray(j.permissions)) this.approvalPerms=j.permissions; }catch(e){} } return this.approvalPerms; }

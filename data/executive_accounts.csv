@@ -1,0 +1,12 @@
+ymis,name,email,role,group_name,contact,password,can_tick,allowed_modules,squad,squad_role,status,job_desc
+黃偉安,黃偉安,,advisor,顧問團,,1234,true,*, , ,active,顧問 - 政策指導與主禮嘉賓確認
+何家騏,何家騏,,advisor,顧問團,,1234,true,*, , ,active,顧問（兼危機處理主任）
+朱家聰,朱家聰,,chairperson,主席及執行副主席,,1234,true,*, , ,active,主席 - 全域統籌
+袁可秀,袁可秀,,executive_vice_chairperson,主席及執行副主席,,1234,true,*, , ,active,執行副主席 - 統籌各組行政
+張佳良,張佳良,,vice_chairperson,會操及典禮組,,1234,true,*, , ,active,副主席（會操及典禮）
+周恒晉,周恒晉,,vice_chairperson,主題節目組,,1234,true,*, , ,active,副主席（主題節目）
+何嘉駿,何嘉駿,,vice_chairperson,品牌推廣組,,1234,true,*, , ,active,副主席（品牌推廣）
+曾麗珊,曾麗珊,,vice_chairperson,嘉賓接待組,,1234,true,*, , ,active,副主席（嘉賓接待）
+羅添駿,羅添駿,,vice_chairperson,協調組,,1234,true,*, , ,active,副主席（協調）
+黎姵伶,黎姵伶,,vice_chairperson,服務及發展組,,1234,true,*, , ,active,副主席（服務及發展）
+徐嘉皓,徐嘉皓,,vice_chairperson,行政組,,1234,true,*, , ,active,副主席（行政）

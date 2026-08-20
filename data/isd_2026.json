@@ -2,6 +2,19 @@
   "event_id": "isd_2026",
   "event_name": "2026 港島童軍繽紛日",
   "description": "2026 港島童軍繽紛日（正式活動）。工作人員名單、通告及文件已從 ISD 2026 Staff Drive 同步至此。",
+  "users": [
+    {"user_id":"黃偉安","name":"黃偉安","role":"advisor","group_name":"顧問團","job_title":"顧問","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"何家騏","name":"何家騏","role":"advisor","group_name":"顧問團","job_title":"顧問（兼危機處理主任）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"朱家聰","name":"朱家聰","role":"chairperson","group_name":"主席及執行副主席","job_title":"主席","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"袁可秀","name":"袁可秀","role":"executive_vice_chairperson","group_name":"主席及執行副主席","job_title":"執行副主席","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"張佳良","name":"張佳良","role":"vice_chairperson","group_name":"會操及典禮組","job_title":"副主席（會操及典禮）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"周恒晉","name":"周恒晉","role":"vice_chairperson","group_name":"主題節目組","job_title":"副主席（主題節目）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"何嘉駿","name":"何嘉駿","role":"vice_chairperson","group_name":"品牌推廣組","job_title":"副主席（品牌推廣）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"曾麗珊","name":"曾麗珊","role":"vice_chairperson","group_name":"嘉賓接待組","job_title":"副主席（嘉賓接待）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"羅添駿","name":"羅添駿","role":"vice_chairperson","group_name":"協調組","job_title":"副主席（協調）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"黎姵伶","name":"黎姵伶","role":"vice_chairperson","group_name":"服務及發展組","job_title":"副主席（服務及發展）","email":"","contact":"","password":"1234","status":"active","can_tick":true},
+    {"user_id":"徐嘉皓","name":"徐嘉皓","role":"vice_chairperson","group_name":"行政組","job_title":"副主席（行政）","email":"","contact":"","password":"1234","status":"active","can_tick":true}
+  ],
   "drive": {
     "root_folder_id": "1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
     "root_folder_link": "https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
