@@ -111,6 +111,10 @@ function initializeSheets() {
   ensureSheet(ss, 'Schedule', ['schedule_id', 'event_id', 'time_slot', 'title', 'description', 'location', 'group_name', 'created_at']);
   ensureSheet(ss, 'Supplies', ['supply_id', 'event_id', 'item_name', 'total_qty', 'unit', 'category', 'created_at']);
   ensureSheet(ss, 'Supply_Requests', ['request_id', 'event_id', 'supply_id', 'item_name', 'qty_requested', 'group_name', 'status', 'requested_by', 'approved_by', 'created_at']);
+  // 泊車證申請（v7.5 新增）：登入用戶申請，行政組於已批核清單 Sheet 統一處理
+  ensureSheet(ss, 'Parking_Requests', ['parking_id', 'event_id', 'seq', 'group_name', 'unit', 'plate', 'driver_name', 'position', 'contact', 'park_date', 'entry_time', 'exit_time', 'full_day', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
+  // 口頭報價登記（v7.5 新增）：總主任以上登記，行政組及執行副主席以上可查看
+  ensureSheet(ss, 'Oral_Quotes', ['oral_id', 'event_id', 'quote_date', 'group_name', 'vendor', 'contact_person', 'contact_phone', 'item_desc', 'amount', 'notes', 'quoted_by', 'quoted_by_id', 'created_at']);
   seedInitialData();
 }
 
@@ -701,7 +705,7 @@ function sendMeetingEmailNotification(data) {
 
 function getEventAllData(eventId) {
   const ss = getSheet();
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Users'];
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Parking_Requests', 'Oral_Quotes', 'Users'];
   const result = {};
   
   modules.forEach(mod => {
