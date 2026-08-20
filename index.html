@@ -1115,11 +1115,10 @@ class ScoutEventApp{
       try{
         const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json();
         if(j2){
-          ['documents','crisis','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements','meetings'].forEach(k=>{ if(j2[k]!==undefined && (this.eventData[k]===undefined||this.eventData[k]===null||(Array.isArray(this.eventData[k])&&!this.eventData[k].length))) this.eventData[k]=j2[k]; });
-          // finance / activities / staff：只併入「資料來源指標」，實際數據以 Drive 同步及後端為準
+          ['documents','crisis','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements','meetings','staff'].forEach(k=>{ if(j2[k]!==undefined && (this.eventData[k]===undefined||this.eventData[k]===null||(Array.isArray(this.eventData[k])&&!this.eventData[k].length))) this.eventData[k]=j2[k]; });
+          // finance / activities：只併入「資料來源指標」
           if(j2.finance && j2.finance.budget_source) this.eventData.finance={budget_source:j2.finance.budget_source};
           if(j2.activities && j2.activities.booth_source) this.eventData.activities={booth_source:j2.activities.booth_source};
-          if(j2.staff && j2.staff.staff_source && (!this.eventData.staff || !this.eventData.staff.staff_source)){ this.eventData.staff={staff_source:j2.staff.staff_source, org_chart:[],contacts:[],job_duties:[]}; }
           if(!this.eventData.meetings||!this.eventData.meetings.length) this.eventData.meetings=Array.isArray(j2.meetings)?j2.meetings:[];
           if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
         }
