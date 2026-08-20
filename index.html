@@ -203,6 +203,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-amber-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">3</span>後勤支援 <span class="text-[11px] text-slate-500 font-normal ml-2">籌備與執行所需</span></h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div onclick="app.openModule('supplies')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-boxes-stacked"></i></div><h4 class="font-bold">物資+車輛 (含截止)</h4><p class="text-[11px] text-slate-500 mt-1">申請、批核、通知、截止日期、車輛登記</p></div>
+        <div onclick="app.openModule('parking')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-square-parking"></i></div><h4 class="font-bold">泊車證申請</h4><p class="text-[11px] text-slate-500 mt-1">所有人可申請，行政/管理層批核，Google Sheet 同步</p></div>
         <div onclick="app.openModule('finance')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-wallet"></i></div><h4 class="font-bold">財務管理</h4><p class="text-[11px] text-slate-500 mt-1">指引、預算、開支申報、結算按銀碼批核</p></div>
         <div onclick="app.openModule('admin_group')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-building"></i></div><h4 class="font-bold">行政組</h4><p class="text-[11px] text-slate-500 mt-1">通告、報名、膳食安排、參加旅團 (取代舊手冊)</p></div>
         <div onclick="app.openModule('coordinator_group')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-orange-100 text-orange-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-people-roof"></i></div><h4 class="font-bold">協調組</h4><p class="text-[11px] text-slate-500 mt-1">場地佈置圖、物資借用、箱頭紙、數據</p></div>
@@ -375,6 +376,7 @@ const PERM_CARDS=[
   {id:'crisis',label:'危機處理',icon:'fa-solid fa-triangle-exclamation'},
   {id:'meetings',label:'會議卡片',icon:'fa-solid fa-handshake'},
   {id:'supplies',label:'物資+車輛',icon:'fa-solid fa-boxes-stacked'},
+  {id:'parking',label:'泊車證申請',icon:'fa-solid fa-square-parking'},
   {id:'finance',label:'財務管理',icon:'fa-solid fa-wallet'},
   {id:'admin_group',label:'行政組',icon:'fa-solid fa-building'},
   {id:'coordinator_group',label:'協調組',icon:'fa-solid fa-people-roof'}
@@ -416,6 +418,7 @@ const DASH_CARD_DEFS=[
   // ── 管理資料 (登入後按角色/組別解鎖) ──
   {id:'meetings',title:'會議卡片',desc:'分次會議、上傳議程、會員資料、指定資料夾',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:30,editLevel:80,editLabel:'管理員可新增會議'},
   {id:'supplies',title:'物資+車輛 (含截止)',desc:'申請、批核、通知、截止日期、車輛登記',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40,editLevel:40,editLabel:'總主任/副主席以上可申請·批核'},
+  {id:'parking',title:'泊車證申請',desc:'所有人可申請泊車證，行政副主席/執行副主席/主席/顧問/秘書處/超管批核',icon:'fa-solid fa-square-parking',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-700',minLevel:0,editLevel:60,editLabel:'所有人可申請；行政副主席/執行副主席/主席/顧問/秘書處/超管批核'},
   {id:'finance',title:'財務管理',desc:'指引、預算、開支申報、結算按銀碼批核',icon:'fa-solid fa-wallet',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-600',minLevel:40,groups:['行政組','財務組'],editLevel:60,editGroups:['行政組','財務組'],editLabel:'副主席以上批核'},
   {id:'admin_group',title:'行政組',desc:'通告、報名、膳食安排、參加旅團 (取代舊手冊)',icon:'fa-solid fa-building',cardClass:'bg-white border shadow-sm',iconClass:'bg-emerald-100 text-emerald-700',minLevel:40,groups:['行政組'],editLevel:40,editGroups:['行政組'],editLabel:'行政組可管理'},
   {id:'coordinator_group',title:'協調組',desc:'場地佈置圖、物資借用、箱頭紙、數據',icon:'fa-solid fa-people-roof',cardClass:'bg-white border shadow-sm',iconClass:'bg-orange-100 text-orange-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理'},
@@ -424,7 +427,7 @@ const DASH_CARD_DEFS=[
   {id:'account_setup',title:'開戶',desc:'總主任以上為本組逐個開戶；批量開戶 (CSV/JSON) 管理員·超管專用',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可為本組開戶'},
   {id:'permissions',title:'權限管理',desc:'把「看到/編輯」權限授權給下級',icon:'fa-solid fa-key',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-700',minLevel:40,editLevel:40,editLabel:'上級可授權給下級'}
 ];
-const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,myMealOrders:(eid)=>`event_my_meal_orders_v7_${eid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,parking:(eid)=>`event_parking_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,myMealOrders:(eid)=>`event_my_meal_orders_v7_${eid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
@@ -620,6 +623,7 @@ class ScoutEventApp{
       awards:()=>lvl>=60,
       crisis:()=>lvl>=60,
       supplies:()=>this.canSubmitSupply(),
+      parking:()=>this.canApproveParking(),
       finance:()=>this.canApproveFinance()||this.isAdmin(),
       admin_group:()=>this.isAdmin()||g.includes('行政'),
       coordinator_group:()=>this.isAdmin()||g.includes('協調'),
@@ -812,9 +816,9 @@ class ScoutEventApp{
     `;
   }
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
-    // 危機處理計劃為內置資料（無後端模組）：非示範活動亦載入 JSON 預設，公開可查閱
-    if(!this.isDemoEvent() && !this.eventData.crisis && this.currentEvent){
-      try{const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json(); if(j2 && j2.crisis) this.eventData.crisis=j2.crisis;}catch(e){}
+    // 危機處理計劃及泊車證來源為內置資料（無後端模組）：非示範活動亦載入 JSON 預設，公開可查閱
+    if(!this.isDemoEvent() && (!this.eventData.crisis || !this.eventData.parking_source) && this.currentEvent){
+      try{const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json(); if(j2 && j2.crisis) this.eventData.crisis=j2.crisis; if(j2 && j2.parking_source) this.eventData.parking_source=j2.parking_source;}catch(e){}
     }
     const localKey=LS.meetings(this.currentEvent.event_id); const localMeetings=JSON.parse(localStorage.getItem(localKey)||'null'); if(localMeetings&&Array.isArray(localMeetings)&&localMeetings.length){ this.eventData.meetings=localMeetings; }
     const staffKey=LS.staff(this.currentEvent.event_id); const localStaff=JSON.parse(localStorage.getItem(staffKey)||'null'); if(localStaff){ this.eventData.staff=localStaff; }
@@ -822,7 +826,7 @@ class ScoutEventApp{
     this.syncMealOrdersFromGas();
   }
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
-  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章',announcements:'公告及溝通',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
+  openModule(key){this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (指引·填表·列印·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程',supplies:'物資+車輛 (申請·批核·通知)',parking:'泊車證申請 (申請·批核)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (參加旅團指引·注意事項)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN)',awards:'獲獎名單 (優異旅團·支部·領袖獎勵)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章',announcements:'公告及溝通',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
     if(key==='meetings'){
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
@@ -858,13 +862,16 @@ class ScoutEventApp{
     if(!container) return;
     const sup=this.getSuppliesData();
     const fin=this.getFinanceData();
+    const park=this.getParkingData();
     const pendingSupplies=(sup.requests||[]).filter(r=>r.status==='pending');
     const pendingVehicles=(sup.vehicle_passes||[]).filter(v=>v.status==='pending');
     const pendingExpenses=(fin.expenses||[]).filter(e=>e.status==='pending');
+    const pendingParking=(park.applications||[]).filter(p=>p.status==='pending');
     const canSup=this.canApproveArea('supplies');
     const canVeh=this.canApproveArea('vehicle');
     const canFin=this.canApproveArea('finance');
-    const pendingTotal=pendingSupplies.length+pendingVehicles.length+pendingExpenses.length;
+    const canPark=this.canApproveParking();
+    const pendingTotal=pendingSupplies.length+pendingVehicles.length+pendingExpenses.length+pendingParking.length;
     const badge=document.getElementById('badge-pending-count');
     if(badge){ if(pendingTotal>0){ badge.textContent=pendingTotal; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
     const section=(icon,color,title,count,rowsHTML)=>`
@@ -884,6 +891,10 @@ class ScoutEventApp{
         <div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">金額 $${e.actual} · ${escapeHtml(e.submitted_by||'')}</div></div>
         ${canFin?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveExpense('${e.id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectExpense('${e.id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
       </div>`).join('');
+    const parkRows=pendingParking.map(p=>`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
+        <div class="min-w-0"><b class="text-[12px]">${escapeHtml(p.plate||'')}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(p.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">司機 ${escapeHtml(p.driver_name||'')} · ${escapeHtml(p.park_date||'')} ${escapeHtml(p.entry_time||'')}→${escapeHtml(p.exit_time||'')}</div></div>
+        ${canPark?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.approveParking('${p.parking_id}');app.renderApprovalCenter()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectParking('${p.parking_id}');app.renderApprovalCenter()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">你無批核權</span>'}
+      </div>`).join('');
     // ── 我的申請（申請人視角：訂餐／物資／車位 狀態）──
     const mealsData=this.getMealsData();
     const myName=this.currentUser?.name||'';
@@ -891,6 +902,7 @@ class ScoutEventApp{
     const myMeals=(mealsData.orders||[]).filter(o=>o.user_id===myId||o.user_name===myName);
     const mySupplies=(sup.requests||[]).filter(r=>r.requested_by_id===myId||r.requested_by===myName);
     const myVehicles=(sup.vehicle_passes||[]).filter(v=>v.requested_by_id===myId||v.requested_by===myName);
+    const myParking=(park.applications||[]).filter(p=>p.requested_by_id===myId||(myName&&p.requested_by===myName));
     const myExpenses=(fin.expenses||[]).filter(e=>e.submitted_by===myName||e.submitted_by_id===myId);
     const stLabel={pending:'待批',approved:'已批',modified:'已批(修改)',rejected:'已拒絕'};
     const stCls={pending:'bg-amber-100 text-amber-700',approved:'bg-emerald-100 text-emerald-700',modified:'bg-sky-100 text-sky-700',rejected:'bg-rose-100 text-rose-700'};
@@ -898,13 +910,15 @@ class ScoutEventApp{
     const mySupRows=mySupplies.map(r=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(r.item_name)} x ${r.qty_requested}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">批核 ${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:r.qty_requested} ${escapeHtml(r.unit||'個')}${r.approved_by?` · ${escapeHtml(r.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[r.status]||'bg-slate-100 text-slate-600'}">${stLabel[r.status]||r.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無物資申請</p>';
     const myVehRows=myVehicles.map(v=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(v.plate||'')} - ${escapeHtml(v.driver_name||'')}</b><div class="text-[11px] text-slate-500 mt-0.5">停泊 ${escapeHtml(v.parking_location||'待定')}${v.approved_by?` · ${escapeHtml(v.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[v.status]||'bg-slate-100 text-slate-600'}">${stLabel[v.status]||v.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無車輛申請</p>';
     const myExpRows=myExpenses.map(e=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span><div class="text-[11px] text-slate-500 mt-0.5">$${e.actual}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[e.status]||'bg-slate-100 text-slate-600'}">${stLabel[e.status]||e.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無開支申報</p>';
-    const hasAnyMine=myMeals.length||mySupplies.length||myVehicles.length||myExpenses.length;
+    const myParkRows=myParking.map(p=>`<div class="flex items-center justify-between gap-2 border rounded-xl p-2.5 bg-slate-50"><div class="min-w-0"><b class="text-[12px]">${escapeHtml(p.plate||'')} - ${escapeHtml(p.driver_name||'')}</b><div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(p.park_date||'')}${p.approved_by?` · ${escapeHtml(p.approved_by)}`:''}</div></div><span class="text-[10px] px-2 py-0.5 rounded-full border ${stCls[p.status]||'bg-slate-100 text-slate-600'}">${stLabel[p.status]||p.status}</span></div>`).join('')||'<p class="text-xs text-slate-400">暫無泊車證申請</p>';
+    const hasAnyMine=myMeals.length||mySupplies.length||myVehicles.length||myExpenses.length||myParking.length;
     const mySection=`<div class="border rounded-xl p-4 bg-white">
       <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-user text-indigo-600"></i><b class="text-[13px]">我的申請</b><span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border">${myMeals.length+mySupplies.length+myVehicles.length+myExpenses.length} 項</span></div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div><h5 class="font-bold text-[11px] text-purple-700 mb-1"><i class="fa-solid fa-utensils mr-1"></i>我的訂餐 (${myMeals.length})</h5><div class="space-y-1.5">${myMealRows}</div></div>
         <div><h5 class="font-bold text-[11px] text-blue-700 mb-1"><i class="fa-solid fa-boxes-stacked mr-1"></i>我的物資 (${mySupplies.length})</h5><div class="space-y-1.5">${mySupRows}</div></div>
         <div><h5 class="font-bold text-[11px] text-amber-700 mb-1"><i class="fa-solid fa-car mr-1"></i>我的車位 (${myVehicles.length})</h5><div class="space-y-1.5">${myVehRows}</div></div>
+        <div><h5 class="font-bold text-[11px] text-sky-700 mb-1"><i class="fa-solid fa-square-parking mr-1"></i>我的泊車證 (${myParking.length})</h5><div class="space-y-1.5">${myParkRows}</div></div>
         <div><h5 class="font-bold text-[11px] text-emerald-700 mb-1"><i class="fa-solid fa-wallet mr-1"></i>我的開支 (${myExpenses.length})</h5><div class="space-y-1.5">${myExpRows}</div></div>
       </div>
       ${!hasAnyMine?'<p class="text-xs text-slate-400 mt-2">你暫時未有申請紀錄。</p>':''}
@@ -917,6 +931,7 @@ class ScoutEventApp{
         <div class="flex gap-2"><button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button><button onclick="app.switchTopTab('approvalmatrix')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-table-cells mr-1"></i>查看批核權限表</button></div>
         ${section('fa-solid fa-boxes-stacked','text-blue-600','物資待批',pendingSupplies.length,supRows)}
         ${section('fa-solid fa-car','text-amber-600','車位/車輛待批',pendingVehicles.length,vehRows)}
+        ${section('fa-solid fa-square-parking','text-sky-600','泊車證待批',pendingParking.length,parkRows)}
         ${section('fa-solid fa-wallet','text-emerald-600','財務待批',pendingExpenses.length,finRows)}
         ${mySection}
       </div>
@@ -979,6 +994,7 @@ class ScoutEventApp{
     if(mod==='finance'){ this.renderFinanceModule(); return;}
     if(mod==='meetings'){this.renderMeetingsList(); return;}
     if(mod==='supplies'){this.renderSuppliesModule(); return;}
+    if(mod==='parking'){this.renderParkingModule(); return;}
     if(mod==='meals'){this.renderMealsModule(); return;}
     if(mod==='activities'){this.renderActivitiesModule(); return;}
     if(mod==='documents'){this.renderDocumentsModule(); return;}
@@ -3982,6 +3998,306 @@ class ScoutEventApp{
     this.renderSuppliesModule();
   }
 
+  /* ===================== 泊車證申請 (Parking Permit) =====================
+     申請：所有人可申請（公開，免登入填表）
+     批核：行政副主席、執行副主席、主席、顧問、秘書處(管理員)、超管
+     資料來源：Google Sheet（parking_source）＋ 本地申請 */
+  canApproveParking(){
+    if(!this.currentUser) return false;
+    const r=this.currentUser.role, g=this.currentUser.group_name||'';
+    // 行政副主席、執行副主席、主席、顧問、秘書處(管理員)、超管 都可批
+    if(['super_admin','admin','chairperson','executive_vice_chairperson','advisor'].includes(r)) return true;
+    if(r==='vice_chairperson' && g.includes('行政')) return true;
+    return false;
+  }
+  getParkingData(){
+    const key=LS.parking(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    if(local && Array.isArray(local.applications)) return local;
+    return {source:this.eventData['parking_source']||null, applications:[]};
+  }
+  saveParkingData(data){
+    const key=LS.parking(this.currentEvent?.event_id||'isd_2026');
+    localStorage.setItem(key,JSON.stringify(data));
+    // 同步到後端 Parking_Permits
+    if(!this.mockMode && this.gasUrl){
+      (data.applications||[]).forEach(p=>{
+        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Parking_Permits',record:{parking_id:p.parking_id,event_id:this.currentEvent?.event_id||'isd_2026',seq:p.seq||'',group_name:p.group_name||'',unit:p.unit||'',plate:p.plate||'',driver_name:p.driver_name||'',position:p.position||'',contact:p.contact||'',park_date:p.park_date||'',entry_time:p.entry_time||'',exit_time:p.exit_time||'',full_day:p.full_day||'',status:p.status||'',requested_by:p.requested_by||'',requested_by_id:p.requested_by_id||'',approved_by:p.approved_by||'',approved_at:p.approved_at||'',notes:p.notes||'',created_at:p.created_at||''}})}).catch(()=>{});
+      });
+    }
+  }
+  // 從 Google Sheet 同步泊車證申請總表（合併：以車牌+司機為鍵，保留本地批核狀態）
+  async syncParkingFromDrive(silent){
+    const src=this.eventData['parking_source']||this.getParkingData().source;
+    const sheetId=src&&(src.sheet_id||src.drive_file_id);
+    if(!sheetId){ if(!silent) showToast('尚未設定泊車證資料來源 (parking_source)','warning'); return; }
+    if(!silent) showToast('正在從 Google Sheet 讀取泊車證申請…','');
+    const overlay=document.getElementById('savingOverlay'); if(overlay&&!silent) overlay.classList.add('active');
+    try{
+      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+      if(got.ok && got.rows.length){
+        const data=this.getParkingData();
+        const keyOf=p=>String(p.plate||'').trim()+'|'+String(p.driver_name||'').trim();
+        const have={}; (data.applications||[]).forEach(p=>{ if(p.plate) have[keyOf(p)]=p; });
+        let added=0;
+        got.rows.forEach(r=>{
+          const plate=String(r['車牌']||r.plate||r.car_plate||'').trim();
+          if(!plate) return;
+          const driver=String(r['司機姓名']||r.driver_name||r.driver||'').trim();
+          const k=plate+'|'+driver;
+          if(have[k]) return;
+          const rec={
+            parking_id:'park_'+Date.now()+'_'+(added++),
+            seq:r['編號']||'',
+            group_name:r['組別']||r.group_name||r.group||'',
+            unit:r['所屬單位／機構']||r.unit||'',
+            plate,
+            driver_name:driver,
+            position:r['職位']||r.position||'',
+            contact:r['聯絡電話']||r.contact||r.phone||'',
+            park_date:r['停泊日期']||r.park_date||'',
+            entry_time:r['入場時間']||r.entry_time||'',
+            exit_time:r['預計離場時間']||r.exit_time||'',
+            full_day:r['全日停泊']||r.full_day||'',
+            status:'approved', // 已在 Google Sheet 總表者視為已確認
+            requested_by:r['申請人']||r.requested_by||'Google Sheet',
+            requested_by_id:'', approved_by:'Google Sheet 同步', approved_at:new Date().toISOString(),
+            notes:r['備註']||r.notes||'', created_at:new Date().toISOString(), source:'sheet'
+          };
+          data.applications.push(rec); have[k]=rec;
+        });
+        this.saveParkingData(data);
+        if(!silent) showToast(`已同步 Google Sheet 泊車證（新增 ${added} 筆）`,'success');
+        this.renderParkingModule();
+        return;
+      }
+      if(!silent) showToast('未能讀取泊車證 Google Sheet。請確認已設定「任何有連結者均可檢視」','warning');
+    }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+  renderParkingModule(){
+    const container=document.getElementById('module-content');
+    if(!this.parkingSubTab) this.parkingSubTab='apply';
+    const data=this.getParkingData();
+    const canApprove=this.canApproveParking();
+    const apps=data.applications||[];
+    const myName=this.currentUser?.name||'';
+    const myApps=apps.filter(p=> p.requested_by_id===this.currentUser?.user_id || (myName&&p.requested_by===myName));
+    const pending=apps.filter(p=>p.status==='pending');
+    const src=this.eventData['parking_source']||data.source;
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
+          <b>🅿️ 泊車證申請（所有人可申請）：</b><br>
+          • 任何人（包括工作人員、攤位、嘉賓）均可於 APP 內直接填表申請，免登入亦可<br>
+          • 由 <b>行政副主席、執行副主席、主席、顧問、秘書處(管理員)、超管</b> 批核<br>
+          • ${src?`泊車證總表已連至 Google Sheet：<a href="https://docs.google.com/spreadsheets/d/${escapeHtml(src.sheet_id||src.drive_file_id)}/edit" target="_blank" class="underline font-bold">開啟 Google Sheet</a>（行政組／協調組更新，APP 可一鍵同步）`:''}
+        </div>
+        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
+          <button onclick="app.switchParkingTab('apply')" class="tab-btn ${this.parkingSubTab==='apply'?'active':''}"><i class="fa-solid fa-pen-to-square mr-1"></i> 申請泊車證</button>
+          <button onclick="app.switchParkingTab('list')" class="tab-btn ${this.parkingSubTab==='list'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 全部申請 (${apps.length})</button>
+          <button onclick="app.switchParkingTab('mine')" class="tab-btn ${this.parkingSubTab==='mine'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的申請 (${myApps.length})</button>
+          ${canApprove?`<button onclick="app.switchParkingTab('pending')" class="tab-btn ${this.parkingSubTab==='pending'?'active':''}"><i class="fa-solid fa-hourglass-half mr-1"></i> 待批核 (${pending.length})</button>`:''}
+        </div>
+        <div id="parking-tab-apply" class="${this.parkingSubTab==='apply'?'':'hidden'}"></div>
+        <div id="parking-tab-list" class="${this.parkingSubTab==='list'?'':'hidden'}"></div>
+        <div id="parking-tab-mine" class="${this.parkingSubTab==='mine'?'':'hidden'}"></div>
+        <div id="parking-tab-pending" class="${this.parkingSubTab==='pending'?'':'hidden'}"></div>
+      </div>
+    `;
+    this.renderParkingApply();
+    this.renderParkingList();
+    this.renderParkingMine();
+    if(canApprove) this.renderParkingPending();
+    const actionsEl=document.getElementById('module-actions');
+    if(actionsEl){
+      actionsEl.innerHTML=`
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openParkingApplyForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-pen-to-square mr-1"></i>申請泊車證</button>
+          ${src?`<button onclick="app.syncParkingFromDrive()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步 Google Sheet</button>`:''}
+          <button onclick="app.exportParkingData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>
+        </div>
+      `;
+    }
+  }
+  switchParkingTab(tab){
+    this.parkingSubTab=tab;
+    document.querySelectorAll('[id^="parking-tab-"]').forEach(el=>el.classList.add('hidden'));
+    document.getElementById('parking-tab-'+tab)?.classList.remove('hidden');
+    document.querySelectorAll('[onclick^="app.switchParkingTab"]').forEach(btn=>{
+      const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+      btn.className=t===tab?'tab-btn active':'tab-btn';
+    });
+  }
+  renderParkingApply(){
+    const container=document.getElementById('parking-tab-apply'); if(!container) return;
+    container.innerHTML=`
+      <div class="bg-white border rounded-xl p-4">
+        <div class="flex justify-between items-center gap-2 flex-wrap mb-3">
+          <h4 class="font-bold text-[13px]"><i class="fa-solid fa-square-parking text-sky-600 mr-2"></i>泊車證申請須知</h4>
+          <button onclick="app.openParkingApplyForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-pen-to-square mr-1"></i>立即申請 (免登入)</button>
+        </div>
+        <ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
+          <li>所有需要泊車的工作人員／攤位／嘉賓均須申請泊車證，憑證進入警察學院停車場。</li>
+          <li>請填寫車牌、司機姓名、聯絡電話、停泊日期（場地佈置 3/10/2026 及／或 正日 4/10/2026）、入場及離場時間。</li>
+          <li>提交後由 行政副主席／執行副主席／主席／顧問／秘書處／超管 批核，批核結果可在「我的申請」查看。</li>
+          <li>申請為公開免登入，請如實填寫姓名及聯絡電話，方便批核後聯絡。</li>
+        </ul>
+      </div>
+    `;
+  }
+  openParkingApplyForm(editId=null){
+    const data=this.getParkingData();
+    const existing=editId?(data.applications||[]).find(p=>p.parking_id===editId):null;
+    const title=existing?'編輯泊車證申請':'泊車證申請 (所有人可申請，免登入)';
+    let html=`
+      <input type="hidden" id="parking-form-mode" value="${existing?'edit':'create'}">
+      <input type="hidden" id="parking-form-id" value="${existing?.parking_id||''}">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label class="text-[11px] font-bold">車牌號碼 *</label><input id="parking-plate" value="${escapeHtml(existing?.plate||'')}" required placeholder="例如 AM1234" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">司機姓名 *</label><input id="parking-driver" value="${escapeHtml(existing?.driver_name||this.currentUser?.name||'')}" required placeholder="司機姓名" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">聯絡電話 *</label><input id="parking-contact" value="${escapeHtml(existing?.contact||this.currentUser?.contact||'')}" required placeholder="電話" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">所屬組別／攤位 *</label><input id="parking-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required placeholder="例如 會操及典禮組／攤位12" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">所屬單位／機構</label><input id="parking-unit" value="${escapeHtml(existing?.unit||'')}" placeholder="例如 港島童軍、XXX 公司" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">職位</label><input id="parking-position" value="${escapeHtml(existing?.position||this.currentUser?.job_title||'')}" placeholder="例如 司機／總主任" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">停泊日期 *</label><div class="flex gap-3 mt-1 flex-wrap">
+          <label class="flex items-center gap-1 text-xs bg-slate-50 border rounded-xl px-3 py-2"><input type="checkbox" id="parking-date-setup" ${existing?.park_date?.includes('佈置')?'checked':''}> 3/10/2026（場地佈置）</label>
+          <label class="flex items-center gap-1 text-xs bg-slate-50 border rounded-xl px-3 py-2"><input type="checkbox" id="parking-date-main" ${existing?.park_date?.includes('正日')||!existing?'checked':''}> 4/10/2026（正日）</label>
+        </div></div>
+        <div><label class="text-[11px] font-bold">入場時間</label><input type="time" id="parking-entry" value="${escapeHtml(existing?.entry_time||'0700')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">預計離場時間</label><input type="time" id="parking-exit" value="${escapeHtml(existing?.exit_time||'1800')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="flex items-center gap-2 text-xs bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2"><input type="checkbox" id="parking-full-day" ${existing?.full_day==='全日'?'checked':''}> 全日停泊（不需離場時間）</label></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">備註</label><textarea id="parking-notes" rows="2" placeholder="例如 運送物資、嘉賓車輛等" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.notes||'')}</textarea></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">申請人姓名</label><input id="parking-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" placeholder="未登入請填姓名，方便聯絡" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-2">所有人可申請（免登入）。提交後由 行政副主席／執行副主席／主席／顧問／秘書處／超管 批核。</div>
+    `;
+    document.getElementById('record-modal-title').textContent=title;
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitParkingApplyForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+  submitParkingApplyForm(){
+    const mode=document.getElementById('parking-form-mode').value;
+    const id=document.getElementById('parking-form-id').value;
+    const plate=document.getElementById('parking-plate').value.trim();
+    const driver_name=document.getElementById('parking-driver').value.trim();
+    const contact=document.getElementById('parking-contact').value.trim();
+    const group_name=document.getElementById('parking-group').value.trim();
+    const unit=document.getElementById('parking-unit').value.trim();
+    const position=document.getElementById('parking-position').value.trim();
+    const setup=document.getElementById('parking-date-setup').checked;
+    const main=document.getElementById('parking-date-main').checked;
+    const entry_time=document.getElementById('parking-entry').value;
+    const exit_time=document.getElementById('parking-exit').value;
+    const full_day=document.getElementById('parking-full-day').checked?'全日':'';
+    const notes=document.getElementById('parking-notes').value.trim();
+    const requested_by=document.getElementById('parking-requested-by').value.trim()||this.currentUser?.name||'';
+    if(!plate||!driver_name||!contact||!group_name){ showToast('請填寫車牌、司機、電話、組別/攤位','error'); return; }
+    if(!setup&&!main){ showToast('請選擇至少一個停泊日期','error'); return; }
+    const park_date=[setup?'3/10/2026（佈置）':'',main?'4/10/2026（正日）':''].filter(Boolean).join('、');
+    const data=this.getParkingData();
+    if(mode==='edit'){
+      const idx=(data.applications||[]).findIndex(p=>p.parking_id===id);
+      if(idx>=0) data.applications[idx]={...data.applications[idx], plate, driver_name, contact, group_name, unit, position, park_date, entry_time, exit_time, full_day, notes, requested_by, status:'pending', approved_by:'', approved_at:''};
+    }else{
+      if(!data.applications) data.applications=[];
+      data.applications.push({
+        parking_id:'park_'+Date.now(),
+        event_id:this.currentEvent?.event_id||'isd_2026',
+        seq:'', plate, driver_name, contact, group_name, unit, position, park_date, entry_time, exit_time, full_day, notes,
+        status:'pending', requested_by, requested_by_id:this.currentUser?.user_id||'', approved_by:'', approved_at:'', created_at:new Date().toISOString(), source:'app'
+      });
+    }
+    this.saveParkingData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast(mode==='edit'?'已更新泊車證申請':'已提交泊車證申請 (待批核)','success');
+    this.renderParkingModule();
+  }
+  renderParkingList(){
+    const container=document.getElementById('parking-tab-list'); if(!container) return;
+    const data=this.getParkingData();
+    const apps=[...(data.applications||[])].sort((a,b)=> new Date(b.created_at||0)-new Date(a.created_at||0));
+    const canApprove=this.canApproveParking();
+    container.innerHTML=`
+      <div class="space-y-3">${apps.length?apps.map(p=>{
+        const st={pending:['bg-amber-100 text-amber-700 border-amber-200','待批核'],approved:['bg-emerald-100 text-emerald-700 border-emerald-200','已批核'],rejected:['bg-rose-100 text-rose-700 border-rose-200','已拒絕']}[p.status]||['bg-slate-100','—'];
+        return `<div class="border rounded-xl p-3 bg-white space-y-1">
+          <div class="flex justify-between items-start gap-2">
+            <div class="flex flex-wrap items-center gap-2"><b class="text-[13px]">${escapeHtml(p.plate)}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${st[0]}">${st[1]}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(p.group_name||'-')}</span>${p.source==='sheet'?'<span class="bg-emerald-50 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full border border-emerald-200">Google Sheet</span>':''}</div>
+            <div class="flex gap-1 flex-shrink-0">
+              ${canApprove&&p.status==='pending'?`<button onclick="app.approveParking('${p.parking_id}')" class="bg-emerald-600 text-white px-2.5 py-1 rounded-xl text-[10px] font-bold">批准</button><button onclick="app.rejectParking('${p.parking_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1 rounded-xl text-[10px] font-bold">拒絕</button>`:''}
+              ${canApprove?`<button onclick="app.openParkingApplyForm('${p.parking_id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteParking('${p.parking_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-600">司機: ${escapeHtml(p.driver_name)} | 電話: ${escapeHtml(p.contact)} | 職位: ${escapeHtml(p.position||'-')} | 單位: ${escapeHtml(p.unit||'-')}</div>
+          <div class="text-[11px] text-slate-600">停泊: <b>${escapeHtml(p.park_date||'-')}</b> ${escapeHtml(p.entry_time||'')}→${escapeHtml(p.exit_time||'')} ${p.full_day?'<span class="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded-full">全日</span>':''} | 申請人: ${escapeHtml(p.requested_by||'-')}</div>
+          ${p.notes?`<div class="text-[10px] bg-slate-50 border rounded-xl p-1.5 mt-1">${escapeHtml(p.notes)}</div>`:''}
+          <div class="text-[10px] text-slate-400">${p.approved_by?`批核: ${escapeHtml(p.approved_by)}${p.approved_at?' · '+new Date(p.approved_at).toLocaleString():''}`:''}</div>
+        </div>`;
+      }).join(''):'<p class="text-xs text-slate-400 py-8 text-center">暫無泊車證申請，點擊「申請泊車證」提交</p>'}</div>
+    `;
+  }
+  renderParkingMine(){
+    const container=document.getElementById('parking-tab-mine'); if(!container) return;
+    const data=this.getParkingData();
+    const myName=this.currentUser?.name||'';
+    const myId=this.currentUser?.user_id||'';
+    const apps=[...(data.applications||[])].filter(p=> p.requested_by_id===myId || (myName&&p.requested_by===myName)).sort((a,b)=> new Date(b.created_at)-new Date(a.created_at));
+    container.innerHTML=`<div class="space-y-3">${apps.length?apps.map(p=>{
+      const st={pending:['bg-amber-100 text-amber-700','待批核'],approved:['bg-emerald-100 text-emerald-700','已批核'],rejected:['bg-rose-100 text-rose-700','已拒絕']}[p.status]||['bg-slate-100','—'];
+      return `<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(p.plate)}</b> <span class="text-[10px] px-2 py-0.5 rounded-full ${st[0]}">${st[1]}</span><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(p.park_date||'-')} ${escapeHtml(p.entry_time||'')}→${escapeHtml(p.exit_time||'')} | ${escapeHtml(p.group_name)}</div></div><div class="text-[10px] text-slate-400">${p.approved_by?`批核: ${escapeHtml(p.approved_by)}`:''}</div></div></div>`;
+    }).join(''):'<p class="text-xs text-slate-400 py-8 text-center">暫無我的泊車證申請。未登入時只顯示此裝置提交的申請。</p>'}</div>`;
+  }
+  renderParkingPending(){
+    const container=document.getElementById('parking-tab-pending'); if(!container) return;
+    const data=this.getParkingData();
+    const pending=(data.applications||[]).filter(p=>p.status==='pending').sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
+    container.innerHTML=`<div class="space-y-3"><div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-[11px] text-orange-900">待批核 ${pending.length} 筆。行政副主席、執行副主席、主席、顧問、秘書處(管理員)、超管均可批核；批准後可在「全部申請」查看，申請人於「我的申請」查看結果。</div>${pending.length?pending.map(p=>`
+      <div class="border rounded-xl p-3 bg-white space-y-2">
+        <div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(p.plate)}</b> <span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(p.group_name||'-')}</span><div class="text-[11px] text-slate-500 mt-1">司機: ${escapeHtml(p.driver_name)} | 電話: ${escapeHtml(p.contact)} | 職位: ${escapeHtml(p.position||'-')} | 單位: ${escapeHtml(p.unit||'-')}</div><div class="text-[11px] text-slate-500">停泊: ${escapeHtml(p.park_date||'-')} ${escapeHtml(p.entry_time||'')}→${escapeHtml(p.exit_time||'')} ${p.full_day?'全日':''}</div>${p.notes?`<div class="text-[11px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(p.notes)}</div>`:''}</div><div class="flex flex-col gap-1 flex-shrink-0"><button onclick="app.approveParking('${p.parking_id}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.rejectParking('${p.parking_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div></div>
+      </div>
+    `).join(''):'<p class="text-xs text-slate-400 py-8 text-center">暫無待批核泊車證申請</p>'}</div>`;
+  }
+  approveParking(id){
+    if(!this.canApproveParking()){ showToast('你無泊車證批核權','error'); return; }
+    const data=this.getParkingData();
+    const p=(data.applications||[]).find(x=>x.parking_id===id);
+    if(!p) return;
+    p.status='approved'; p.approved_by=this.currentUser?.name||'管理員'; p.approved_at=new Date().toISOString();
+    this.saveParkingData(data);
+    showToast('已批准泊車證申請','success');
+    this.renderParkingModule();
+  }
+  rejectParking(id){
+    if(!this.canApproveParking()){ showToast('你無泊車證批核權','error'); return; }
+    if(!confirm('拒絕此泊車證申請？')) return;
+    const data=this.getParkingData();
+    const p=(data.applications||[]).find(x=>x.parking_id===id);
+    if(!p) return;
+    p.status='rejected'; p.approved_by=this.currentUser?.name||'管理員'; p.approved_at=new Date().toISOString();
+    this.saveParkingData(data);
+    showToast('已拒絕泊車證申請','warning');
+    this.renderParkingModule();
+  }
+  deleteParking(id){
+    if(!this.canApproveParking()){ showToast('僅批核人可刪除','error'); return; }
+    if(!confirm('確定刪除此泊車證申請？')) return;
+    const data=this.getParkingData();
+    data.applications=(data.applications||[]).filter(p=>p.parking_id!==id);
+    this.saveParkingData(data);
+    showToast('已刪除泊車證申請','warning');
+    this.renderParkingModule();
+  }
+  exportParkingData(){
+    const data=this.getParkingData();
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`parking_${todayISO()}.json`; a.click();
+    showToast('已匯出泊車證 JSON','success');
+  }
+
   /* ===================== Finance Enhanced Module v6.4 ===================== */
   getFinanceData(){
     const key=LS.finance?LS.finance(this.currentEvent?.event_id||'isd_2026'):`event_finance_v6_${this.currentEvent?.event_id||'isd_2026'}`;
@@ -6620,7 +6936,7 @@ class ScoutEventApp{
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`coordinator_group_${todayISO()}.json`; a.click();
   }
-  renderTransportModule(){ document.getElementById('module-content').innerHTML=`<div class="bg-white border rounded-xl p-4"><h4 class="font-bold text-sm">交通及泊車 (已整合至物資管理→車輛通行證)</h4><p class="text-[11px] text-slate-500 mt-2">車輛通行證申請已在物資管理卡片內，包含車牌、司機、用途、進出日期、停泊位置、截止日期、批核、通知、後台紀錄。另可在此補充交通流量、泊車位置圖等。</p><button onclick="app.openModule('supplies')" class="mt-3 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">前往物資+車輛</button></div>`; }
+  renderTransportModule(){ document.getElementById('module-content').innerHTML=`<div class="bg-white border rounded-xl p-4"><h4 class="font-bold text-sm">交通及泊車</h4><p class="text-[11px] text-slate-500 mt-2">泊車證申請已設獨立卡片（所有人可申請，行政/管理層批核）。車輛通行證申請在物資管理卡片內，包含車牌、司機、用途、進出日期、停泊位置、截止日期、批核、通知、後台紀錄。</p><div class="flex gap-2 mt-3 flex-wrap"><button onclick="app.openModule('parking')" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">前往泊車證申請</button><button onclick="app.openModule('supplies')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">前往物資+車輛</button></div></div>`; }
   renderScheduleModule(){
     const container=document.getElementById('module-content');
     if(!this.scheduleSubTab) this.scheduleSubTab='overall';

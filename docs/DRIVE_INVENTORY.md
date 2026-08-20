@@ -55,7 +55,7 @@
 ### 協調組
 - ISD2026_ Site setup Quotation Request.pdf `1ryQltDGazkf_l2qPPnxc6DmomfIlMu-x`
 - ISD2026_Cleaning Quotation request.pdf `1n_vRIZ4X_NV3523r89hd8mODQpyNMvbL`
-- 港島童軍繽紛日2026－泊車證申請表格.xlsx `1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7`
+- 港島童軍繽紛日2026－泊車證申請表格.xlsx `1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7`（已轉 Google Sheet：`1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4`，APP 泊車證卡片內置讀取）
 
 ### 節目組
 - Concept `1Xo7HUE94IWbyvi-OaGh3UgL88zJsQOv1`
@@ -72,7 +72,7 @@
 1. **工作人員名單** ✅ 已同步（從 Org Chart xlsx 讀取完整 53 崗位）。
 2. **通告** ✅ 已同步（sp12、sp12a、Donation 4 份、M28 邀請、收受利益政策、工作計劃）。
 3. **財務指引 + 附件1–6 + Budget** ✅ 已同步（Drive 連結 + 摘要）。
-4. **攤位總表** — 需解析 `ISD2026 攤位資料.xlsx` 內文（目前只有檔案連結）。
+4. **攤位總表** — 需解析 `ISD2026 攤位資料.xlsx` 內文（目前只有檔案連結）→ 已列入 EXCEL_TO_SHEET_LIST.md 請用戶轉 Google Sheet。
 5. **會議文件** — 0–4 會議資料夾內檔案（可進一步逐個列出）。
 6. **聯絡電話** — Org Chart xlsx 的「Contact List」分頁未在此次讀取中顯示，需另取。
 

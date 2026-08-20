@@ -1031,12 +1031,12 @@
     },
     {
       "id": "doc_parking",
-      "title": "港島童軍繽紛日2026－泊車證申請表格",
+      "title": "港島童軍繽紛日2026－泊車證申請表格（Google Sheet）",
       "category": "協調",
       "summary": "泊車證／車輛通行證申請表格。",
-      "description": "港島童軍繽紛日2026－泊車證申請表格.xlsx",
+      "description": "泊車證申請表格（Google Sheet 版）。可在 APP「泊車證申請」卡片直接申請及批核，此表為行政組／協調組總表。",
       "file_name": "港島童軍繽紛日2026－泊車證申請表格.xlsx",
-      "file_url": "https://drive.google.com/file/d/1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7/view",
+      "file_url": "https://docs.google.com/spreadsheets/d/1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4/edit",
       "uploaded_by": "協調組",
       "date": "2026-07-20"
     },
@@ -1061,6 +1061,230 @@
       "file_url": "https://drive.google.com/file/d/179nQJYbzar3AqddmPf3cstWO65LT_gBM/view",
       "uploaded_by": "主題節目組",
       "date": "2026-08-14"
+    },
+    {
+      "title": "特別通告第01/26號－地域總監嘉許計劃 2026",
+      "category": "通告",
+      "file_url": "https://www.scout.org.hk/uploads/tc/circulars/23224/Sp01_26_RCAward2026.pdf",
+      "description": "已出街官方通告（港島童軍繽紛日2026相關：獎勵計劃）。",
+      "id": "doc_30",
+      "created_at": ""
+    },
+    {
+      "title": "特別通告第02/26號－區總監嘉許計劃 2026",
+      "category": "通告",
+      "file_url": "https://www.scout.org.hk/uploads/tc/circulars/23225/Sp02_26_DCAward2026.pdf",
+      "description": "已出街官方通告（港島童軍繽紛日2026相關：獎勵計劃）。",
+      "id": "doc_32",
+      "created_at": ""
+    },
+    {
+      "title": "特別通告第03/26號－2026年優異旅團獎勵計劃",
+      "category": "通告",
+      "file_url": "https://www.scout.org.hk/uploads/tc/circulars/23226/Sp03_26_DGA2026.pdf",
+      "description": "已出街官方通告（與繽紛日典禮頒獎相關）。",
+      "id": "doc_34",
+      "created_at": ""
+    },
+    {
+      "title": "特別通告第11/26號－2026/2027年度活動與訓練行事曆",
+      "category": "通告",
+      "file_url": "https://www.scout.org.hk/uploads/tc/circulars/24389/Sp11_26_Calendar_of_Event-2026-2027.pdf",
+      "description": "已出街官方通告（行事曆）。",
+      "id": "doc_36",
+      "created_at": ""
+    },
+    {
+      "title": "特別通告第15/26號－幼童軍及童軍積極公民獎章系列·機電先鋒章考驗",
+      "category": "通告",
+      "file_url": "https://www.scout.org.hk/uploads/tc/circulars/25709/sp15_26_isd2026_csactivecitizenshipbadgee_m.pdf",
+      "description": "已出街官方通告（機電先鋒章考驗）。",
+      "id": "doc_38",
+      "created_at": ""
+    },
+    {
+      "title": "特別通告第16/26號－深資童軍及樂行童軍積極公民獎章系列·機電先鋒章工作坊",
+      "category": "通告",
+      "file_url": "https://www.scout.org.hk/uploads/tc/circulars/25710/sp16_26_isd2026_vsrsactivecitizenshipbadgee_m.pdf",
+      "description": "已出街官方通告（機電先鋒章工作坊）。",
+      "id": "doc_40",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 邀請函 (Invitation Letter) 04102026",
+      "category": "嘉賓及典禮",
+      "file_url": "https://drive.google.com/file/d/1mAP7Qq0UbdDy7PZB9npVzoUIFl_kXwPY/view",
+      "description": "Invitation Card 資料夾",
+      "id": "doc_36",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 邀請卡－會長 04102026",
+      "category": "嘉賓及典禮",
+      "file_url": "https://drive.google.com/file/d/16oB9SIq5_ugp8e3B99hYuL5HL_jodXse/view",
+      "description": "Invitation Card 資料夾",
+      "id": "doc_38",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 邀請卡－主禮嘉賓 (GoH) 04102026",
+      "category": "嘉賓及典禮",
+      "file_url": "https://drive.google.com/file/d/1OrV3danpfjhuEJlyNIxU96nhBji-CHrR/view",
+      "description": "Invitation Card 資料夾",
+      "id": "doc_40",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 回條 (IN reply) 04102026",
+      "category": "嘉賓及典禮",
+      "file_url": "https://drive.google.com/file/d/1SfKgQmB4m-uMF7dxbGKzewBtvyQPz95P/view",
+      "description": "Invitation Card 資料夾",
+      "id": "doc_42",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+      "category": "嘉賓及典禮",
+      "file_url": "https://drive.google.com/file/d/1PFspBoKN0Nv4KvpinZS7MFlmolL3Kyvu/view",
+      "description": "Invitation Card 資料夾",
+      "id": "doc_44",
+      "created_at": ""
+    },
+    {
+      "title": "警察學院實地視察 18.8.2026－內容及程序 2026",
+      "category": "典禮儀式",
+      "file_url": "https://drive.google.com/file/d/1-AdQ4UVfMt9eglwaVMYZLwbxWqCGnI-C/view",
+      "description": "Police College Site Visit 18.8.2026 資料夾（PDF）",
+      "id": "doc_46",
+      "created_at": ""
+    },
+    {
+      "title": "Parade Ceremony Rundown 2026 (典禮程序)",
+      "category": "典禮儀式",
+      "file_url": "https://drive.google.com/file/d/1JQRvk1vYDvUip3cL2bBQ-zciwC2-19mD/view",
+      "description": "Police College Site Visit 18.8.2026 資料夾",
+      "id": "doc_48",
+      "created_at": ""
+    },
+    {
+      "title": "Wish List 2026",
+      "category": "典禮儀式",
+      "file_url": "https://drive.google.com/file/d/1BBhz4gWd3OY2QIqY3s8dGaUQP9BJ5IGd/view",
+      "description": "Police College Site Visit 18.8.2026 資料夾",
+      "id": "doc_50",
+      "created_at": ""
+    },
+    {
+      "title": "20260818 品牌推廣組 (Google Doc)",
+      "category": "品牌推廣",
+      "file_url": "https://docs.google.com/document/d/19z-1pSG6NRnAhGOMe1phQZ656rb5xo6TQsWiXBcGyoI/edit",
+      "description": "品牌推廣組 Google Doc",
+      "id": "doc_52",
+      "created_at": ""
+    },
+    {
+      "title": "WFQ26070315 香港童軍總會港島地域 4-10 (報價)",
+      "category": "嘉賓及典禮",
+      "file_url": "https://drive.google.com/file/d/1jaIqdBHkF39Ist62hjUWqEKqGMljWP1n/view",
+      "description": "嘉賓接待組報價文件",
+      "id": "doc_54",
+      "created_at": ""
+    },
+    {
+      "title": "4_Agenda 籌備委員會議程 (20260818)",
+      "category": "會議",
+      "file_url": "https://drive.google.com/file/d/1iCYG0wbev_paJhVvWAasbtFe-j0wLv5K/view",
+      "description": "第4次籌備委員會議程",
+      "id": "doc_56",
+      "created_at": ""
+    },
+    {
+      "title": "App1-ISD2026-籌備委員會第3次會議記錄 Ver1",
+      "category": "會議",
+      "file_url": "https://drive.google.com/file/d/1BFyL3_i4xXhlpm8cOPl9il1Iy7JVbGTC/view",
+      "description": "第3次會議記錄（4 Meeting 資料夾）",
+      "id": "doc_58",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 - 主題節目組報告 (20260616) Rev.1",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1cbmYoNOhlP3EQcNrSMgSycELQYsLpj4o/view",
+      "description": "主題節目組報告 PDF",
+      "id": "doc_60",
+      "created_at": ""
+    },
+    {
+      "title": "ISD2026 - 主題節目組報告 (20260818) Rev.1",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1E2EyyxLqeEqKQrYUoBNiHILSt3VkfEkr/view",
+      "description": "主題節目組報告 PPTX（第4次會議）",
+      "id": "doc_62",
+      "created_at": ""
+    },
+    {
+      "title": "積極公民獎章－機電先鋒章（Full Set）",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/19Wy-9FU5zh399e6XFU1PgeXS1bAy9QcP/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_64",
+      "created_at": ""
+    },
+    {
+      "title": "積極公民獎章－機電先鋒章 A2 100%",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1pSFhBS0ABvl3cxwtG6W54u0hcn_1qd3I/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_66",
+      "created_at": ""
+    },
+    {
+      "title": "積極公民獎章－機電先鋒：幼童軍支部 A2",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1jLmNGafyZ6JdGGSUno7e9rJrZ_sqFGCY/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_68",
+      "created_at": ""
+    },
+    {
+      "title": "積極公民獎章－機電先鋒：童軍支部 A2",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1P_geoygn4mE1ZXcnk3-dr74OhcLUtMs4/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_70",
+      "created_at": ""
+    },
+    {
+      "title": "積極公民獎章－機電先鋒：深資童軍支部 A2",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1b-kItukpLqcs5PpkBF71CjY2WlN7hdTI/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_72",
+      "created_at": ""
+    },
+    {
+      "title": "積極公民獎章－機電先鋒：樂行童軍支部 A2",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1f1JYpZEA5_NUJXVLEY1RSQ8BQiupknft/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_74",
+      "created_at": ""
+    },
+    {
+      "title": "機電先鋒－家居電力安全手冊 (Cub Appendix)",
+      "category": "活動",
+      "file_url": "https://drive.google.com/file/d/1JGwVHA2BDPvg2r9-B8-79E718sn4S5Yi/view",
+      "description": "積極公民－機電先鋒資料夾",
+      "id": "doc_76",
+      "created_at": ""
+    },
+    {
+      "title": "MAP.gif（場地地圖）",
+      "category": "協調",
+      "file_url": "https://drive.google.com/file/d/1OrnF4mWDpYEQ04I-wN2t32pDeVJmfjbP/view",
+      "description": "秘書處及文件類 MAP.gif",
+      "id": "doc_78",
+      "created_at": ""
     }
   ],
   "finance": {
@@ -1449,5 +1673,28 @@
         "description": "主禮嘉賓：如主禮嘉賓未能主持儀式，可請地域總監代替（預先知會地域總監）。\n後備日期：2026 年 10 月 4 日。\n聯絡：秘書處及各組別負責人備有各參加單位的負責人名單及聯絡電話號碼。"
       }
     ]
+  },
+  "parking_source": {
+    "mode": "drive_sheet",
+    "name": "港島童軍繽紛日2026－泊車證申請表格（Google Sheet）",
+    "sheet_id": "1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4",
+    "drive_file_id": "1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4",
+    "gid": 0,
+    "folder": "協調組",
+    "columns": [
+      "seq",
+      "group_name",
+      "unit",
+      "plate",
+      "driver_name",
+      "position",
+      "contact",
+      "park_date",
+      "entry_time",
+      "exit_time",
+      "full_day",
+      "notes"
+    ],
+    "note": "行政組／協調組在 Google Sheet 更新泊車證申請總表，APP 開啟即自動內置讀取。"
   }
 }
