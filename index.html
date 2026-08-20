@@ -2616,7 +2616,12 @@ class ScoutEventApp{
     if(Array.isArray(raw)) return raw;
     return [];
   }
-  saveScheduleData(data){ localStorage.setItem(LS.schedule(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['schedule']=data||[]; }
+  saveScheduleData(data){ localStorage.setItem(LS.schedule(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['schedule']=data||[];
+    // 同步到後端（GAS）
+    if(!this.mockMode && this.gasUrl){
+      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Schedule',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data||[]),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
+    }
+  }
   scheduleHeaderMap(){ return { time_slot:['時段','時間','time','time_slot','slot'], title:['節目','項目','title','program','內容','活動'], location:['位置','地點','location','place'], group_name:['組別','組','group','group_name','負責組'], description:['說明','描述','description','備註','desc','notes'] }; }
   normalizeScheduleRow(r){
     const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
@@ -6165,11 +6170,9 @@ class ScoutEventApp{
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key,JSON.stringify(data));
     this.eventData['staff']=data;
-    // Try save to GAS
+    // 同步到後端（GAS）
     if(!this.mockMode && this.gasUrl){
-      // Save org_chart each as record? Simplified: save whole as JSON to SystemConfig or as separate? We'll save via saveRecord for each module? For demo, we save contacts to Staff sheet via batch
-      // For contacts, we can batch save via batchAddUsers alternative? For now, just save first contact as example
-      // We'll also save job_duties to a custom endpoint if exists, otherwise keep local
+      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Staff_Contacts',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data.contacts||[]),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
     }
   }
   renderStaffModule(){
@@ -7752,6 +7755,10 @@ class ScoutEventApp{
   saveAnnouncementsData(data){
     const key=LS.announcements(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
+    this.eventData['announcements']=data;
+    if(!this.mockMode && this.gasUrl){
+      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Announcements',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
+    }
   }
   renderAnnouncementsModule(){
     const container=document.getElementById('module-content');
@@ -8646,7 +8653,11 @@ class ScoutEventApp{
       }]
     };
   }
-  saveCrisisData(data){ localStorage.setItem(LS.crisis(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); }
+  saveCrisisData(data){ localStorage.setItem(LS.crisis(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data));
+    if(!this.mockMode && this.gasUrl){
+      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Crisis',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
+    }
+  }
   renderCrisisModule(){
     this.migrateLegacySafety(); // 舊「安全及醫療」資料自動併入
     const container=document.getElementById('module-content');
@@ -10319,6 +10330,10 @@ class ScoutEventApp{
   saveDonationsData(data){
     const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_donations';
     localStorage.setItem(key,JSON.stringify(data));
+    // 同步到後端（GAS）
+    if(!this.mockMode && this.gasUrl){
+      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Donations',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
+    }
   }
   renderDonationSummaryForGroup(){
     const data=this.getDonationsData();
