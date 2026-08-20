@@ -362,14 +362,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
 // 2026 架構固定組別（用戶確認：不會有新組，可能有新主任）
-// 部門管理中心＝全部 9 組（含 顧問團、主席及執行副主席，可查看/統計）
-// 開戶/登記下拉只提供 7 個組別：顧問團、主席及執行副主席不設組卡片，其職級已確定由管理員直接處理
-const ORG_GROUPS=['顧問團','主席及執行副主席','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
-const ACCOUNT_GROUPS=['會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+// 部門管理中心＝全部 10 組（含 顧問團、主席及執行副主席、秘書處，可查看/統計）
+// 開戶/登記下拉提供 8 個組別：顧問團、主席及執行副主席不設組卡片，其職級已確定由管理員直接處理
+const ORG_GROUPS=['顧問團','主席及執行副主席','秘書處','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+const ACCOUNT_GROUPS=['秘書處','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
 function orgGroupOptions(selected){ return ACCOUNT_GROUPS.map(g=>`<option value="${g}" ${g===selected?'selected':''}>${g}</option>`).join(''); }
-// 開戶職級：副主席及以上（副主席/執行副主席/主席/顧問/管理員）已全確定由管理員處理，開戶頁只提供以下三級
+// 開戶職級：副主席及以上（副主席/執行副主席/主席/顧問）已全確定由管理員處理
+// 一般總主任/主任開戶頁只提供以下三級；管理員（如秘書處受薪職員）可另開「管理員」級帳戶
 const ACCOUNT_SETUP_ROLES=['general_director','director','staff'];
-function accountSetupRoleOptions(selected){ return ACCOUNT_SETUP_ROLES.map(r=>`<option value="${r}" ${r===selected?'selected':''}>${ROLE_LABELS[r]||r}</option>`).join(''); }
+const ADMIN_ACCOUNT_SETUP_ROLES=['admin',...ACCOUNT_SETUP_ROLES];
+function accountSetupRoleOptions(selected,isAdmin){ const roles=isAdmin?ADMIN_ACCOUNT_SETUP_ROLES:ACCOUNT_SETUP_ROLES; return roles.map(r=>`<option value="${r}" ${r===selected?'selected':''}>${ROLE_LABELS[r]||r}</option>`).join(''); }
+function canSetupRole(role,isAdmin){ return (isAdmin?ADMIN_ACCOUNT_SETUP_ROLES:ACCOUNT_SETUP_ROLES).includes(role); }
 // 權限卡片清單（= 用戶「可看到 / 可編輯」的內容卡片，上級授權給下級）
 const PERM_CARDS=[
   {id:'announcements',label:'公告及溝通',icon:'fa-solid fa-bullhorn'},
@@ -395,7 +398,8 @@ const PERM_CARDS=[
   {id:'group_theme',label:'主題節目組',icon:'fa-solid fa-gamepad'},
   {id:'group_brand',label:'品牌推廣組',icon:'fa-solid fa-bullhorn'},
   {id:'group_reception',label:'嘉賓接待組',icon:'fa-solid fa-handshake-angle'},
-  {id:'group_service',label:'服務及發展組',icon:'fa-solid fa-hands-holding-child'}
+  {id:'group_service',label:'服務及發展組',icon:'fa-solid fa-hands-holding-child'},
+  {id:'group_secretariat',label:'秘書處',icon:'fa-solid fa-landmark'}
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
@@ -451,6 +455,7 @@ const DASH_CARD_DEFS=[
   {id:'group_brand',title:'品牌推廣組',desc:'宣傳、設計、本組內容',icon:'fa-solid fa-bullhorn',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-700',minLevel:40,groups:['品牌推廣組'],editLevel:40,editGroups:['品牌推廣組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('品牌推廣組')"},
   {id:'group_reception',title:'嘉賓接待組',desc:'嘉賓、接待安排、本組內容',icon:'fa-solid fa-handshake-angle',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,groups:['嘉賓接待組'],editLevel:40,editGroups:['嘉賓接待組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('嘉賓接待組')"},
   {id:'group_service',title:'服務及發展組',desc:'服務、發展、本組內容',icon:'fa-solid fa-hands-holding-child',cardClass:'bg-white border shadow-sm',iconClass:'bg-lime-100 text-lime-700',minLevel:40,groups:['服務及發展組'],editLevel:40,editGroups:['服務及發展組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('服務及發展組')"},
+  {id:'group_secretariat',title:'秘書處',desc:'地域秘書處（受薪職員）、本組內容',icon:'fa-solid fa-landmark',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,groups:['秘書處'],editLevel:40,editGroups:['秘書處'],editLabel:'秘書處管理員可管理',action:"app.openGroupManagement('秘書處')"},
   {id:'my_monitor',title:'我的監察 (全部申請批核)',desc:'一頁看齊自己＋下級所有申請批核：先「我自己」，再按組別分開（膳食·物資·車輛·開支·報價）',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,readOnly:true,editLabel:'查看自己及下級的申請進度',action:"app.openModule('my_monitor')"},
   {id:'approvals',title:'批核中心',desc:'膳食、物資、財務待批項目',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:60,editLevel:60,editLabel:'副主席以上可批核',action:"app.switchTopTab('approvals')"},
   {id:'account_setup',title:'開戶',desc:'總主任以上為本組逐個開戶；批量開戶 (CSV/JSON) 管理員·超管專用',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可為本組開戶'},
@@ -673,6 +678,7 @@ class ScoutEventApp{
       group_brand:()=>this.isAdmin()||g.includes('品牌推廣'),
       group_reception:()=>this.isAdmin()||g.includes('嘉賓接待'),
       group_service:()=>this.isAdmin()||g.includes('服務及發展'),
+      group_secretariat:()=>this.isAdmin()||g.includes('秘書處'),
       meetings:()=>this.isAdmin(),
       approvals:()=>this.canApproveFinance()||this.isAdmin(),
       users_bulk:()=>this.isAdmin(),
@@ -812,6 +818,7 @@ class ScoutEventApp{
     const M={
       '顧問團':{icon:'fa-solid fa-user-tie',cls:'bg-slate-100 text-slate-700'},
       '主席及執行副主席':{icon:'fa-solid fa-crown',cls:'bg-amber-100 text-amber-700'},
+      '秘書處':{icon:'fa-solid fa-landmark',cls:'bg-slate-100 text-slate-700'},
       '會操及典禮組':{icon:'fa-solid fa-flag',cls:'bg-rose-100 text-rose-700'},
       '主題節目組':{icon:'fa-solid fa-gamepad',cls:'bg-fuchsia-100 text-fuchsia-700'},
       '品牌推廣組':{icon:'fa-solid fa-bullhorn',cls:'bg-sky-100 text-sky-700'},
@@ -1180,14 +1187,14 @@ class ScoutEventApp{
     const u=this.currentUser;
     const myGroup=u.group_name||'';
     const isAdmin=this.isAdmin();
-    const roleOptions=accountSetupRoleOptions();
+    const roleOptions=accountSetupRoleOptions('',isAdmin);
     const myAccounts=(this.usersList||[]).filter(x=>isAdmin?true:(x.group_name||'')===myGroup);
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900">
           <b><i class="fa-solid fa-user-plus mr-1"></i>開戶（預設密碼 1234，登入後自行修改）：</b><br>
           • 總主任或以上可為<b>本組</b>開戶（管理員/超管可跨組）<br>
-          • 職級僅提供 <b>工作人員／主任／總主任</b>（副主席及以上已確定，由管理員直接處理，不會在此選擇）<br>
+          • 職級僅提供 <b>工作人員／主任／總主任</b>；管理員（如秘書處受薪職員）可另開「管理員」級帳戶（副主席及以上已確定，由管理員直接處理）<br>
           • <b>登入帳號留空＝自動用中文姓名</b>（例：朱家聰），同名自動加 -2/-3；預設密碼 1234
         </div>
         <div class="bg-white border rounded-xl p-4 space-y-3">
@@ -1247,7 +1254,7 @@ class ScoutEventApp{
   renderQuickBulkTable(){
     const tb=document.getElementById('quick-bulk-tbody'); if(!tb) return;
     if(!this._quickBulkRows || !this._quickBulkRows.length) this._quickBulkRows=[{name:'',job:'',role:'staff',group:''}];
-    const roleOptions=accountSetupRoleOptions();
+    const roleOptions=accountSetupRoleOptions('',this.isAdmin());
     tb.innerHTML=this._quickBulkRows.map((row,i)=>`
       <tr class="border-b">
         <td class="px-1 py-1"><input class="qb-name w-full px-2 py-1.5 border rounded-lg text-xs" placeholder="中文姓名" value="${escapeHtml(row.name)}"></td>
@@ -1293,7 +1300,7 @@ class ScoutEventApp{
     const used=new Set((this.usersList||[]).map(u=>u.user_id));
     let ok=0, fail=[];
     for(const r of rows){
-      if(!ACCOUNT_SETUP_ROLES.includes(r.role)){ fail.push(`${r.name}：副主席及以上職級由管理員處理`); continue; }
+      if(!canSetupRole(r.role,this.isAdmin())){ fail.push(`${r.name}：副主席及以上職級由管理員處理`); continue; }
       let uid=r.uid||r.name;
       if(used.has(uid)){ let base=uid, n=2; while(used.has(base+'-'+n)) n++; uid=base+'-'+n; }
       used.add(uid);
@@ -1385,7 +1392,7 @@ class ScoutEventApp{
     let uid=(document.getElementById('acc-id')?.value||'').trim();
     const email=(document.getElementById('acc-email')?.value||'').trim();
     if(!name){ showToast('請填寫名字','error'); return; }
-    if(!ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理，此處只可開設 工作人員/主任/總主任','error'); return; }
+    if(!canSetupRole(role,this.isAdmin())){ showToast('此職級不可在此開設（副主席及以上由管理員處理）','error'); return; }
     // 帳號留空＝自動用中文姓名作登入帳號；同名自動加 -2/-3
     if(!uid) uid=name;
     const used=new Set((this.usersList||[]).map(u=>u.user_id));

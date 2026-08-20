@@ -590,6 +590,30 @@
       "password": "1234",
       "status": "active",
       "can_tick": true
+    },
+    {
+      "user_id": "何家耀",
+      "name": "何家耀",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "秘書處職員（地域受薪）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
+    },
+    {
+      "user_id": "陸詠德",
+      "name": "陸詠德",
+      "role": "admin",
+      "group_name": "秘書處",
+      "job_title": "秘書處職員（地域受薪）",
+      "email": "",
+      "contact": "",
+      "password": "1234",
+      "status": "active",
+      "can_tick": true
     }
   ],
   "drive": {
@@ -946,6 +970,12 @@
         "title": "財政主任",
         "names": "蔡天欣",
         "desc": "統籌財政及結算。"
+      },
+      {
+        "level": "秘書處 (Level 2)",
+        "title": "秘書處職員",
+        "names": "何家耀、陸詠德",
+        "desc": "地域受薪職員，負責秘書處行政工作。"
       }
     ],
     "contacts": [
@@ -1291,6 +1321,20 @@
         "group_name": "行政組",
         "contact": "",
         "job_desc": "財政及結算"
+      },
+      {
+        "name": "何家耀",
+        "role_title": "秘書處職員（地域受薪）",
+        "group_name": "秘書處",
+        "contact": "",
+        "job_desc": "地域秘書處行政工作"
+      },
+      {
+        "name": "陸詠德",
+        "role_title": "秘書處職員（地域受薪）",
+        "group_name": "秘書處",
+        "contact": "",
+        "job_desc": "地域秘書處行政工作"
       }
     ],
     "job_duties": [
