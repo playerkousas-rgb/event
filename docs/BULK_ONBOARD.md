@@ -39,7 +39,7 @@ user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, s
 
 | 欄位 | 說明 |
 |---|---|
-| ymis / user_id | 必填，帳號ID，建議 8-10 位數字或自訂ID，例如 00820001 |
+| ymis / user_id | 必填，登入帳號＝中文姓名（例如 陳小明）；同名自動加 -2/-3 |
 | name | 必填，姓名 |
 | email | 選填，Email (登入用) |
 | role | 必填，super_admin / advisor / admin / chairperson / vice_chairperson / general_director / director / staff / public |
@@ -61,8 +61,8 @@ user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, s
 
 ```json
 [
-  {"user_id":"00820001","name":"陳小明","role":"staff","group_name":"主題節目組","password":"1234","can_tick":false},
-  {"user_id":"00820002","name":"李小華","role":"vice_chairperson","group_name":"行政組","password":"1234","can_tick":true,"allowed_modules":"*"}
+  {"user_id":"陳小明","name":"陳小明","role":"staff","group_name":"主題節目組","password":"1234","can_tick":false},
+  {"user_id":"李小華","name":"李小華","role":"vice_chairperson","group_name":"行政組","password":"1234","can_tick":true,"allowed_modules":"*"}
 ]
 ```
 

@@ -170,6 +170,51 @@ function getRoleLevel(r) {
   return ROLE_HIERARCHY[r] !== undefined ? ROLE_HIERARCHY[r] : 0;
 }
 
+function hasCjk(s) {
+  return /[\u4e00-\u9fff]/.test(String(s || ''));
+}
+
+function uniqueChineseUserId(name, existingMap) {
+  var base = String(name || '').trim() || '未命名';
+  if (!existingMap[base]) return base;
+  var n = 2;
+  while (existingMap[base + '-' + n]) n++;
+  return base + '-' + n;
+}
+
+function migrateLegacyEnglishLogins() {
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users || users.getLastRow() <= 1) return { success: true, updated: 0 };
+  ensureColumns(users, ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const uId = col('user_id'), uName = col('name'), uRole = col('role');
+  if (uId < 0 || uName < 0) return { success: false, error: 'Users 缺欄' };
+  const taken = {};
+  for (let i = 1; i < rows.length; i++) taken[String(rows[i][uId] || '')] = true;
+  let updated = 0;
+  for (let i = 1; i < rows.length; i++) {
+    const uid = String(rows[i][uId] || '').trim();
+    const name = String(rows[i][uName] || '').trim();
+    const role = String(uRole >= 0 ? rows[i][uRole] : '');
+    if (role === 'super_admin' || uid.toLowerCase() === 'sheep') continue;
+    if (!name || hasCjk(uid)) continue;
+    let next = name;
+    let n = 2;
+    while (taken[next] && next !== uid) { next = name + '-' + n; n++; }
+    if (next !== uid) {
+      users.getRange(i + 1, uId + 1).setValue(next);
+      delete taken[uid];
+      taken[next] = true;
+      updated++;
+    }
+  }
+  return { success: true, updated: updated };
+}
+
+
 // 開戶表職位層級：中文下拉選項 → 系統角色
 const ROLE_LABELS_CN = {
   '主席': 'chairperson',
@@ -224,6 +269,7 @@ function initializeSheets() {
   // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
   ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
   seedCommitteeAccounts();
+  migrateLegacyEnglishLogins();
   setupAccountSetupSheet(ss);
   ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at']);
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
@@ -311,7 +357,7 @@ function setupAccountSetupSheet(ss) {
   const dv = SpreadsheetApp.newDataValidation().requireValueInList(labels, true).setAllowInvalid(true).build();
   sheet.getRange(2, 2, 100, 1).setDataValidation(dv); // B 欄 (role) 下拉
   sheet.getRange('A1').setNote(
-    '開戶表：從第 2 行起逐行填寫 —— 名字(name)、職位層級(role，下拉選)、職稱(job_title)、組別(group_name)、帳號(user_id 可留空，系統自動產生)、電郵(email)、電話(contact)。\n' +
+    '開戶表：從第 2 行起逐行填寫 —— 名字(name)、職位層級(role，下拉選)、職稱(job_title)、組別(group_name)、帳號(user_id 可留空＝自動用中文姓名)、電郵(email)、電話(contact)。\n' +
     '填好後在選單「童軍活動管理 → 開戶（同步帳戶）」執行，即開戶完成。\n' +
     '預設密碼為 1234，用戶登入後可在 APP 內自行修改密碼。'
   );
@@ -352,7 +398,7 @@ function syncAccountsFromSetup() {
     const contact = sRows[i][iContact] || '';
     let uid = sRows[i][iId];
     if (!uid || String(uid).trim() === '') {
-      uid = 'staff_' + (10000 + i);
+      uid = uniqueChineseUserId(nameStr, existing);
       setup.getRange(i + 1, iId + 1).setValue(uid);
     }
     uid = String(uid).trim();
@@ -425,9 +471,6 @@ function createAccount(data) {
   const job = data.job_title || '';
   const email = (data.email || '').trim();
   const contact = data.contact || '';
-  let uid = (data.user_id || '').trim();
-  if (!uid) uid = 'staff_' + Date.now();
-
   // 輕量防呆：開戶者只能是總主任以上，且只能開自己組別（管理層/執行副主席/超管可跨組）
   const byRole = data.by_role || '';
   const byGroup = data.by_group || '';
@@ -444,6 +487,10 @@ function createAccount(data) {
   const headers = rows[0].map(String);
   const col = function (h) { return headers.indexOf(h); };
   const uId = col('user_id'), uEmail = col('email');
+  const existing = {};
+  for (let i = 1; i < rows.length; i++) existing[String(rows[i][uId])] = true;
+  let uid = (data.user_id || '').trim();
+  if (!uid) uid = uniqueChineseUserId(name, existing);
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][uId]) === uid) return { success: false, error: '帳號已存在：' + uid };
     if (email && String(rows[i][uEmail]) === email) return { success: false, error: '電郵已存在：' + email };
@@ -776,6 +823,7 @@ function onOpen() {
     .addItem('初始化工作表', 'initializeSheets')
     .addItem('開戶（同步 Account_Setup → Users）', 'syncAccountsFromSetup')
     .addItem('補齊籌委帳戶（不覆蓋現有）', 'seedCommitteeAccounts')
+    .addItem('登入帳號改為中文姓名', 'migrateLegacyEnglishLogins')
     .addItem('同步批核權限（Approval_Permissions）', 'getApprovalPermissions')
     .addItem('刷新 API Key', 'refreshApiKey')
     .addItem('整理工作表顏色／隱藏匯入頁', 'formatSheetsByPurpose')
@@ -796,11 +844,11 @@ function seedInitialData() {
   const uSheet = ss.getSheetByName('Users');
   if (uSheet.getLastRow() <= 1) {
     uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '系統', '超管', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
-    uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'executive_vice_chairperson', '主席及執行副主席', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['vp_parade', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
-    uSheet.appendRow(['vp_program', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['黃偉安', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['朱家聰', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['袁可秀', '袁可秀', 'execvp@isd.local', 'executive_vice_chairperson', '主席及執行副主席', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['張佳良', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['周恒晉', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
   }
   
   // 3. Meetings
@@ -1041,7 +1089,7 @@ function handleLogin(data) {
     headers.forEach((h, idx) => { rowObj[h] = rows[i][idx]; });
     if (rowObj.role === 'super_admin' && rowObj.user_id === 'sheep') continue;
     
-    if (rowObj.user_id === loginId || rowObj.email === loginId) {
+    if (rowObj.user_id === loginId || rowObj.email === loginId || String(rowObj.name || '') === loginId) {
       if (rowObj.password_hash === hashPassword(password)) {
         delete rowObj.password_hash;
         return { success: true, user: rowObj };
