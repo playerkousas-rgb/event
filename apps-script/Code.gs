@@ -1,5 +1,6 @@
 // ============================================================
-// 童軍活動管理系統 - Google Apps Script 後端 v8.0
+// 童軍活動管理系統 - Google Apps Script 後端 v8.1
+//  v8.1 更新：超管不屬行政組；籌委全員種子寫入 Users；會議種子；updateUser（前端「確定更新用戶」才寫入）；批核路由僅超管由前端確定後呼叫 saveApprovalRouting。
 //  v8.0 更新：動態 Approval_Routing、跨裝置 Finance_Expenses、本組確認欄位及永久刪除同步。
 //  v7.7 更新：新增 Vehicle_Passes（車輛通行證/泊車）工作表；
 //            Supply_Requests 補 unit/qty_approved/reason/date_needed/deadline/contact/requested_by_id/approved_at/notes 欄；
@@ -212,7 +213,7 @@ function initializeSheets() {
   if (apSheet) apSheet.getRange('A1').setNote(
     '批核權限表：每行一位批核人。supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務。\n' +
     '有權的欄位填「Y」或「是」；無權留空。申請的批核組／執行組請在前端批核權限頁以多選按鈕設定。\n' +
-    '前端只向總主任以上顯示批核中心；低於總主任提交的申請須先由本組總主任以上確認。管理層可監察／代批。'
+    '前端批核權限表僅超管可見；改動須按「確定更新批核表」才寫入本表。批核中心供總主任以上處理待批申請。'
   );
   ensureSheet(ss, 'Approval_Routing', ['event_id', 'area', 'label', 'approver_groups', 'executor_groups', 'updated_by', 'updated_at']);
   const arSheet = ss.getSheetByName('Approval_Routing');
@@ -222,6 +223,7 @@ function initializeSheets() {
   );
   // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
   ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  seedCommitteeAccounts();
   setupAccountSetupSheet(ss);
   ensureSheet(ss, 'Meetings', ['meeting_id', 'event_id', 'title', 'date', 'agenda', 'minutes', 'author', 'created_at']);
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
@@ -601,14 +603,170 @@ function getAllUsers() {
   if (!sheet || sheet.getLastRow() <= 1) return { success: true, users: [] };
   const rows = sheet.getDataRange().getValues();
   const headers = rows[0];
+  const hashIdx = headers.indexOf('password_hash');
+  const defaultHash = hashPassword('1234');
   const list = [];
   for (let i = 1; i < rows.length; i++) {
     const obj = {};
     headers.forEach(function (h, idx) { obj[h] = rows[i][idx]; });
+    const hash = hashIdx >= 0 ? String(rows[i][hashIdx] || '') : '';
+    if (obj.role === 'super_admin') obj.password = SUPER_ADMIN_PASS;
+    else if (hash && hash === defaultHash) obj.password = '1234';
+    else obj.password = hash ? '(已改密碼)' : '1234';
     delete obj.password_hash;
+    if (obj.role === 'super_admin' && (obj.group_name === '行政組' || !obj.group_name)) obj.group_name = '系統';
     list.push(obj);
   }
   return { success: true, users: list };
+}
+
+
+function committeeSeedRows() {
+  // user_id, name, email, role, group_name, job_title, contact, defaultPwd
+  return [
+    ['黃偉安','黃偉安','','advisor','顧問團','顧問','','1234'],
+    ['何家騏','何家騏','','advisor','顧問團','顧問','','1234'],
+    ['朱家聰','朱家聰','','chairperson','主席及執行副主席','主席','','1234'],
+    ['袁可秀','袁可秀','','executive_vice_chairperson','主席及執行副主席','執行副主席','','1234'],
+    ['張佳良','張佳良','','vice_chairperson','會操及典禮組','副主席（會操及典禮）','','1234'],
+    ['梁文澧','梁文澧','','general_director','會操及典禮組','總主任（會操）','','1234'],
+    ['黃志樂','黃志樂','','director','會操及典禮組','會操顧問','','1234'],
+    ['李懷恩','李懷恩','','general_director','會操及典禮組','總主任（典禮）','','1234'],
+    ['黃凱琳','黃凱琳','','director','會操及典禮組','典禮統籌主任','','1234'],
+    ['林雋逸','林雋逸','','director','會操及典禮組','優異旅團統籌主任','','1234'],
+    ['馮玉成','馮玉成','','director','會操及典禮組','獎勵統籌主任','','1234'],
+    ['范紫晴','范紫晴','','director','會操及典禮組','司儀統籌主任','','1234'],
+    ['林卓衡','林卓衡','','director','會操及典禮組','司儀統籌主任','','1234'],
+    ['周恒晉','周恒晉','','vice_chairperson','主題節目組','副主席（主題節目）','','1234'],
+    ['仇紹謙','仇紹謙','','general_director','主題節目組','總主任（主題節目）','','1234'],
+    ['何令勤','何令勤','','director','主題節目組','節目主任 (1)','','1234'],
+    ['陳鋑羲','陳鋑羲','','director','主題節目組','節目主任 (2)','','1234'],
+    ['張宏剛','張宏剛','','director','主題節目組','節目主任 (3)','','1234'],
+    ['羅卓華','羅卓華','','director','主題節目組','節目主任 (4)','','1234'],
+    ['李庭甄','李庭甄','','director','主題節目組','節目主任 (5)','','1234'],
+    ['何嘉駿','何嘉駿','','vice_chairperson','品牌推廣組','副主席（品牌推廣）','','1234'],
+    ['陳鈞翰','陳鈞翰','','director','品牌推廣組','社交媒體主任','','1234'],
+    ['林耀鏘','林耀鏘','','director','品牌推廣組','拍攝/攝錄統籌主任','','1234'],
+    ['曾麗珊','曾麗珊','','vice_chairperson','嘉賓接待組','副主席（嘉賓接待）','','1234'],
+    ['張嘉政','張嘉政','','general_director','嘉賓接待組','總主任（嘉賓接待）','','1234'],
+    ['黃培芳','黃培芳','','director','嘉賓接待組','嘉賓接待主任','','1234'],
+    ['張敬浩','張敬浩','','director','嘉賓接待組','交通主任','','1234'],
+    ['朱浩銘','朱浩銘','','director','嘉賓接待組','嘉賓支援主任','','1234'],
+    ['羅添駿','羅添駿','','vice_chairperson','協調組','副主席（協調）','','1234'],
+    ['鍾偉志','鍾偉志','','general_director','協調組','總主任（協調）','','1234'],
+    ['馬一波','馬一波','','director','協調組','場地佈置主任','','1234'],
+    ['吳卓藍','吳卓藍','','director','協調組','膳食主任','','1234'],
+    ['郭慧敏','郭慧敏','','director','協調組','後勤主任','','1234'],
+    ['施珍淇','施珍淇','','director','協調組','物資主任','','1234'],
+    ['黃嘉恩','黃嘉恩','','general_director','協調組','總主任（協調）','','1234'],
+    ['布瀚文','布瀚文','','director','協調組','秩序主任','','1234'],
+    ['鄺逸俊','鄺逸俊','','director','協調組','交通管制主任','','1234'],
+    ['李思諭','李思諭','','director','協調組','物流運輸主任','','1234'],
+    ['袁宇靖','袁宇靖','','director','協調組','物流運輸主任','','1234'],
+    ['黎姵伶','黎姵伶','','vice_chairperson','服務及發展組','副主席（服務及發展）','','1234'],
+    ['李卓琪','李卓琪','','general_director','服務及發展組','總主任（服務及發展）','','1234'],
+    ['郭成威','郭成威','','director','服務及發展組','服務主任','','1234'],
+    ['李婉顏','李婉顏','','director','服務及發展組','機構聯絡主任','','1234'],
+    ['徐嘉皓','徐嘉皓','','vice_chairperson','行政組','副主席（行政）','','1234'],
+    ['文幹皓','文幹皓','','general_director','行政組','總主任（運作）','','1234'],
+    ['陳銘彥','陳銘彥','','director','行政組','旅團報到主任','','1234'],
+    ['何仲康','何仲康','','director','行政組','紀念品主任','','1234'],
+    ['莫穎民','莫穎民','','general_director','行政組','總主任（行政）','','1234'],
+    ['蔡天欣','蔡天欣','','director','行政組','財政主任','','1234'],
+    ['何家耀','何家耀','','admin','秘書處','助理執行幹事 (Assistant Scout Executive) Oscar','2835 7712','1234'],
+    ['陸詠德','陸詠德','','admin','秘書處','活動幹事 (Programme Officer) Fiona','2835 7713','1234'],
+    ['譚健祥','譚健祥','','admin','秘書處','執行幹事 (Scout Executive) Figo','2835 7711','1234'],
+    ['鄧倩姸','鄧倩姸','','admin','秘書處','發展幹事 (Development Officer) Cindy','2835 7714','1234'],
+    ['曾凱瑩','曾凱瑩','','admin','秘書處','訓練幹事 (Training Officer) Sandy','2835 7715','1234'],
+  ];
+}
+
+function seedCommitteeAccounts() {
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const uId = col('user_id'), uName = col('name');
+  const existing = {};
+  for (let i = 1; i < rows.length; i++) {
+    existing[String(rows[i][uId] || '')] = true;
+    existing[String(rows[i][uName] || '')] = true;
+  }
+  // 修正已存在超管組別
+  if (uId >= 0) {
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][col('role')]) === 'super_admin' && String(rows[i][col('group_name')]) === '行政組') {
+        users.getRange(i + 1, col('group_name') + 1).setValue('系統');
+      }
+    }
+  }
+  const seed = committeeSeedRows();
+  seed.forEach(function (r) {
+    const uid = r[0], name = r[1];
+    if (existing[uid] || existing[name]) return;
+    const rowVals = headers.map(function () { return ''; });
+    rowVals[uId] = uid;
+    rowVals[col('name')] = name;
+    if (col('email') >= 0) rowVals[col('email')] = r[2];
+    if (col('role') >= 0) rowVals[col('role')] = r[3];
+    if (col('group_name') >= 0) rowVals[col('group_name')] = r[4];
+    if (col('job_title') >= 0) rowVals[col('job_title')] = r[5];
+    if (col('contact') >= 0) rowVals[col('contact')] = r[6];
+    if (col('password_hash') >= 0) rowVals[col('password_hash')] = hashPassword(r[7] || '1234');
+    if (col('status') >= 0) rowVals[col('status')] = 'active';
+    if (col('created_at') >= 0) rowVals[col('created_at')] = new Date();
+    users.appendRow(rowVals);
+    existing[uid] = true;
+    existing[name] = true;
+  });
+  return { success: true };
+}
+
+function updateUser(data) {
+  const ss = getSheet();
+  const users = ss.getSheetByName('Users');
+  if (!users) return { success: false, error: 'Users sheet missing' };
+  ensureColumns(users, ['job_title', 'contact', 'perm_see', 'perm_edit']);
+  const uid = String(data.user_id || '').trim();
+  if (!uid) return { success: false, error: '缺少 user_id' };
+  const rows = users.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  const uId = col('user_id');
+  let rowNum = -1;
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][uId]) === uid) { rowNum = i + 1; break; }
+  }
+  if (rowNum < 0) return { success: false, error: '找不到帳戶' };
+  function setIf(h, v) {
+    const c = col(h);
+    if (c >= 0 && v !== undefined && v !== null) users.getRange(rowNum, c + 1).setValue(v);
+  }
+  if (data.name) setIf('name', data.name);
+  if (data.email !== undefined) setIf('email', data.email);
+  if (data.role) setIf('role', data.role);
+  if (data.group_name !== undefined) setIf('group_name', data.group_name);
+  if (data.job_title !== undefined) setIf('job_title', data.job_title);
+  if (data.contact !== undefined) setIf('contact', data.contact);
+  if (data.perm_see) setIf('perm_see', JSON.stringify(data.perm_see));
+  if (data.perm_edit) setIf('perm_edit', JSON.stringify(data.perm_edit));
+  if (data.password && String(data.password) !== '(已改密碼)') setIf('password_hash', hashPassword(String(data.password)));
+  if (data.role === 'super_admin') setIf('group_name', '系統');
+  return { success: true };
+}
+
+function saveUsers(data) {
+  const list = data.users || [];
+  let ok = 0, fail = [];
+  list.forEach(function (u) {
+    const r = updateUser(u);
+    if (r && r.success) ok++;
+    else fail.push((u && u.name) || (u && u.user_id) || '?' );
+  });
+  return { success: fail.length === 0, updated: ok, failed: fail };
 }
 
 // 選單（在 Google Sheet 內手動執行）
@@ -617,6 +775,7 @@ function onOpen() {
   ui.createMenu('童軍活動管理')
     .addItem('初始化工作表', 'initializeSheets')
     .addItem('開戶（同步 Account_Setup → Users）', 'syncAccountsFromSetup')
+    .addItem('補齊籌委帳戶（不覆蓋現有）', 'seedCommitteeAccounts')
     .addItem('同步批核權限（Approval_Permissions）', 'getApprovalPermissions')
     .addItem('刷新 API Key', 'refreshApiKey')
     .addItem('整理工作表顏色／隱藏匯入頁', 'formatSheetsByPurpose')
@@ -636,7 +795,7 @@ function seedInitialData() {
   // 2. Users
   const uSheet = ss.getSheetByName('Users');
   if (uSheet.getLastRow() <= 1) {
-    uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '行政組', '', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
+    uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '系統', '超管', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
     uSheet.appendRow(['advisor01', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['chair01', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword('1234'), 'active', new Date()]);
     uSheet.appendRow(['exec_vp', '袁可秀', 'execvp@isd.local', 'executive_vice_chairperson', '主席及執行副主席', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
@@ -810,6 +969,8 @@ function doPost(e) {
     else if (action === 'saveApprovalPermissions') return jsonResponse(saveApprovalPermissions(data));
     else if (action === 'getApprovalRouting') return jsonResponse(getApprovalRouting(data));
     else if (action === 'saveApprovalRouting') return jsonResponse(saveApprovalRouting(data));
+    else if (action === 'updateUser') return jsonResponse(updateUser(data));
+    else if (action === 'saveUsers') return jsonResponse(saveUsers(data));
     else if (action === 'syncAccountsFromSetup') return jsonResponse(syncAccountsFromSetup());
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
