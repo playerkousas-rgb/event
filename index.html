@@ -73,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-sm transition btn-mobile"><i class="fa-solid fa-right-from-bracket"></i></button>
     </div>
   </div>
-  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶管理</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="approvalmatrix" onclick="app.switchTopTab('approvalmatrix',this)"><i class="fa-solid fa-table-cells mr-1"></i> 批核權限表</button><button class="nav-tab" data-view="system" onclick="app.switchTopTab('system',this)"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 控制台</button></div></div>
+  <div id="top-tabs-wrap" class="hidden md:flex bg-slate-800/80 border-t border-slate-700/50 overflow-x-auto"><div class="max-w-7xl mx-auto px-4 flex gap-1 w-full"><button class="nav-tab active" data-view="landing" onclick="app.switchTopTab('landing',this)"><i class="fa-solid fa-house mr-1"></i> 首頁</button><button class="nav-tab" data-view="dashboard" onclick="app.switchTopTab('dashboard',this)"><i class="fa-solid fa-gauge mr-1"></i> 儀表板</button><button class="nav-tab" data-view="users" onclick="app.switchTopTab('users',this)"><i class="fa-solid fa-users mr-1"></i> 用戶管理</button><button class="nav-tab" data-view="approvals" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核<span id="badge-pending-count" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 hidden">0</span></button><button class="nav-tab" data-view="approvalmatrix" onclick="app.switchTopTab('approvalmatrix',this)"><i class="fa-solid fa-table-cells mr-1"></i> 批核權限表</button></div></div>
 </header>
 
 <div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goHome();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-house text-sky-600 w-5"></i> 首頁</button><button onclick="app.showDashboard();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-gauge w-5"></i> 儀表板</button><button onclick="app.openModule('meetings');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-handshake text-sky-600 w-5"></i> 會議卡片 (升級)</button><button onclick="app.openModule('staff');app.toggleDrawer()" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-slate-50 border flex items-center gap-3"><i class="fa-solid fa-sitemap text-indigo-600 w-5"></i> 工作人員</button><button id="drawer-users" onclick="app.switchTopTab('users');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-users text-emerald-700 w-5"></i> 用戶管理</button><button id="drawer-accounts" onclick="app.showDashboard();app.toggleDrawer();setTimeout(()=>app.openModule('account_setup'),200)" class="w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-user-plus text-amber-700 w-5"></i> 開戶 / 批量開戶</button></div><div class="p-3 border-t text-[11px] text-slate-500">v6.1 會議卡片全面升級<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
@@ -261,7 +261,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 
 </main>
 
-<nav id="bottom-nav" class="bottom-nav md:hidden"><button id="bn-home" class="active" onclick="app.goHome()"><i class="fa-solid fa-house"></i><span>首頁</span></button><button onclick="app.openModule('meetings')"><i class="fa-solid fa-handshake"></i><span>會議</span></button><button id="bn-members" onclick="app.switchTopTab('users')"><i class="fa-solid fa-users"></i><span>成員</span></button><button id="bn-accounts" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus"></i><span>開戶</span></button><button onclick="app.switchTopTab('system')"><i class="fa-solid fa-gear"></i><span>設定</span></button></nav>
+<nav id="bottom-nav" class="bottom-nav md:hidden"><button id="bn-home" class="active" onclick="app.goHome()"><i class="fa-solid fa-house"></i><span>首頁</span></button><button onclick="app.openModule('meetings')"><i class="fa-solid fa-handshake"></i><span>會議</span></button><button id="bn-members" onclick="app.switchTopTab('users')"><i class="fa-solid fa-users"></i><span>成員</span></button><button id="bn-accounts" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus"></i><span>開戶</span></button></nav>
 
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
@@ -871,7 +871,7 @@ class ScoutEventApp{
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
     document.querySelectorAll('.nav-tab[data-view="approvals"]').forEach(t=>{ t.style.display = chiefOrAbove ? '' : 'none'; });
     document.querySelectorAll('.nav-tab[data-view="approvalmatrix"]').forEach(t=>{ t.style.display = this.isSuperAdmin() ? '' : 'none'; });
-    document.querySelectorAll('.nav-tab[data-view="system"]').forEach(t=>{ t.style.display = this.isSuperAdmin() ? '' : 'none'; });
+    document.querySelectorAll('.nav-tab[data-view="system"]').forEach(t=>{ t.style.display = 'none'; });
     const bnAccounts=document.getElementById('bn-accounts');
     if(bnAccounts) bnAccounts.style.display = chiefOrAbove ? '' : 'none';
     const drawerAccounts=document.getElementById('drawer-accounts');
@@ -1053,12 +1053,12 @@ class ScoutEventApp{
       try{
         const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json();
         if(j2){
-          ['documents','crisis','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements'].forEach(k=>{ if(j2[k]!==undefined && (this.eventData[k]===undefined||this.eventData[k]===null)) this.eventData[k]=j2[k]; });
+          ['documents','crisis','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements','meetings'].forEach(k=>{ if(j2[k]!==undefined && (this.eventData[k]===undefined||this.eventData[k]===null||(Array.isArray(this.eventData[k])&&!this.eventData[k].length))) this.eventData[k]=j2[k]; });
           // finance / activities / staff：只併入「資料來源指標」，實際數據以 Drive 同步及後端為準
           if(j2.finance && j2.finance.budget_source) this.eventData.finance={budget_source:j2.finance.budget_source};
           if(j2.activities && j2.activities.booth_source) this.eventData.activities={booth_source:j2.activities.booth_source};
           if(j2.staff && j2.staff.staff_source && (!this.eventData.staff || !this.eventData.staff.staff_source)){ this.eventData.staff={staff_source:j2.staff.staff_source, org_chart:[],contacts:[],job_duties:[]}; }
-          if(!this.eventData.meetings) this.eventData.meetings=[];
+          if(!this.eventData.meetings||!this.eventData.meetings.length) this.eventData.meetings=Array.isArray(j2.meetings)?j2.meetings:[];
           if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
         }
       }catch(e){}
@@ -1074,7 +1074,7 @@ class ScoutEventApp{
     this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (行政組卡片內 · 指引·預算·申報·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程 (公告及溝通分頁)',supplies:'物資申請（車輛通行證／泊車證分頁）',parking:'泊車證＝車輛通行證（已併入協調組）',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (公告及溝通分頁)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN·獲獎名單)',awards:'獲獎名單 (典禮儀式分頁)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章 (公告及溝通分頁)',announcements:'公告及溝通 (含日程·旅團須知·主題章)',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
-      this.meetingSubTab=this.getMeetingDriveFolderId()?'drive':'list';
+      this.meetingSubTab='list';
       const isAdmin=this.isAdmin();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
     } else if(key==='staff'){
@@ -1605,7 +1605,7 @@ class ScoutEventApp{
   }
   openPermissionEditor(userId){
     if(!this.currentUser){ showToast('請先登入','error'); return; }
-    const sub=(this.usersList||[]).find(x=>x.user_id===userId);
+    const sub=(this.pendingUsers||this.usersList||[]).find(x=>x.user_id===userId);
     if(!sub){ showToast('找不到該用戶','error'); return; }
     const mine=this.getMyPermSets();
     const see=Array.isArray(sub.perm_see)?sub.perm_see:[];
@@ -1644,24 +1644,13 @@ class ScoutEventApp{
       const ec=document.getElementById('pedit-'+c.id);
       if(ec && ec.checked && perm_see.includes(c.id)) perm_edit.push(c.id);
     });
-    if(!this.mockMode && this.gasUrl){
-      try{
-        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveUserPermissions',api_key:this.apiKey,user_id:target,perm_see,perm_edit})});
-        const j=await res.json();
-        if(j&&j.success){ this.closeModal('modal-record'); document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e); showToast('權限已更新','success'); await this.loadUsers(); this.renderPermissionsModule(); }
-        else showToast('儲存失敗：'+(j&&j.error||'未知錯誤'),'error');
-      }catch(e){ showToast('無法連線後端：'+e.message,'error'); }
-      return;
-    }
-    // Mock：本地更新
-    const list=this.getLocalUsers();
-    const u=list.find(x=>x.user_id===target);
-    if(u){ u.perm_see=perm_see; u.perm_edit=perm_edit; this.setLocalUsers(list); }
+    if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||[]));
+    const u=(this.pendingUsers||[]).find(x=>x.user_id===target);
+    if(u){ u.perm_see=perm_see; u.perm_edit=perm_edit; }
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast('權限已更新（示範）','success');
-    await this.loadUsers();
-    this.renderPermissionsModule();
+    showToast('權限已暫存，請按「確定更新用戶」才套用','');
+    this.renderUsers();
   }
 
   /* ===================== Activities Enhanced Module v6.8 ===================== */
@@ -6767,7 +6756,7 @@ class ScoutEventApp{
     }
     if(q){ list=list.filter(m=> (m.title+m.agenda+m.minutes+m.location).toLowerCase().includes(q) || String(m.meeting_number).includes(q) ); }
     if(visFilter){ list=list.filter(m=>m.visibility===visFilter); }
-    if(list.length===0){ container.innerHTML=`<div class="text-center py-12"><div class="text-4xl mb-3">📭</div><p class="text-sm text-slate-500">無符合條件的會議</p><p class="text-xs text-slate-400 mt-2">${isAdmin?'點擊右上「新增會議」建立第1/2/3次會議':'暫無公開會議'}</p></div>`; return; }
+    if(list.length===0){ container.innerHTML=`<div class="text-center py-12 space-y-2"><div class="text-4xl mb-3">📭</div><p class="text-sm text-slate-500">暫無會議紀錄</p><p class="text-xs text-slate-400 mt-2">會議列表用來存放各次籌備會議的議程、會議紀錄與附件。${isAdmin?'管理員可按右上「新增會議」，或到「會議 Drive」看秘書處資料夾。':'若你應看到會議，請聯絡秘書處確認已上載議程／紀錄。'}</p><button onclick="app.switchMeetingSubTab('drive')" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟會議 Drive</button></div>`; return; }
     const isDirector=this.canUploadGroup();
     const storageInfo=this.mockMode?`瀏覽器 localStorage (本地/示範沙盒，5MB 限制，全前端，無需後端)`:`Google Sheet Meetings 分頁 + localStorage 快取 (雲端模式，大檔案建議轉 Google Drive 資料夾)`;
     const usedKB=Math.round(JSON.stringify(list).length/1024);
@@ -7212,7 +7201,7 @@ class ScoutEventApp{
   canSeeAllUsers(){ const r=this.currentUser?.role; return ['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(r); }
   canSeeUserPasswords(){ return this.isSuperAdmin() || ['executive_vice_chairperson','chairperson','admin','advisor'].includes(this.currentUser?.role); }
   visibleUsersForManager(){
-    const list=this.usersList||[];
+    const list=this.pendingUsers||this.usersList||[];
     const me=this.currentUser; if(!me) return [];
     if(this.canSeeAllUsers()||this.isSuperAdmin()) return list;
     const myG=normalizeGroupName(me.group_name);
@@ -7235,7 +7224,7 @@ class ScoutEventApp{
     }catch(e){ this._committeeSeed=[]; }
     return this._committeeSeed;
   }
-  async loadUsers(){let list=[]; await this.ensureCommitteeAccounts(); if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:(u.user_id==='exec_vp'||(u.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':u.role,group_name:normalizeGroupName(u.group_name||u.branch),job_title:u.job_title||'',contact:u.contact||'',perm_see:parsePerm(u.perm_see),perm_edit:parsePerm(u.perm_edit),password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); if(!list.length && this._committeeSeed?.length){ list=this._committeeSeed.slice(); this.setLocalUsers(list); } this.usersList=list; this.renderUsers();}
+  async loadUsers(){let list=[]; await this.ensureCommitteeAccounts(); if(!this.mockMode&&this.gasUrl){try{const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getAllUsers',api_key:this.apiKey})}); const j=await res.json(); if(j.success&&j.users) list=j.users.map(u=>({user_id:u.user_id||u.ymis,name:u.name,email:u.email,role:(u.user_id==='exec_vp'||(u.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':u.role,group_name:normalizeGroupName(u.group_name||u.branch),job_title:u.job_title||'',contact:u.contact||'',perm_see:parsePerm(u.perm_see),perm_edit:parsePerm(u.perm_edit),password:u.password||'',status:u.status||'active',can_tick:u.can_tick}));}catch(e){}} if(!list.length) list=this.getLocalUsers(); if(!list.length && this._committeeSeed?.length){ list=this._committeeSeed.slice(); this.setLocalUsers(list); } this.usersList=list; this.pendingUsers=JSON.parse(JSON.stringify(list)); this.renderUsers();}
   getLocalApprovalRouting(){
     const eid=this.currentEvent?.event_id||'isd_2026';
     let stored={};
@@ -7401,15 +7390,26 @@ class ScoutEventApp{
   renderUsers(){
     const container=document.getElementById('users-container'); if(!container) return;
     if(!this.canManageUsersPage()){ container.innerHTML='<p class="text-xs text-slate-400">用戶管理只供主任以上使用。</p>'; return; }
+    if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||[]));
     const list=this.visibleUsersForManager();
     const showPwd=this.canSeeUserPasswords();
+    const dirty=JSON.stringify(this.pendingUsers||[])!==JSON.stringify(this.usersList||[]);
     if(!list.length){container.innerHTML='<p class="text-xs text-slate-400">沒有可見用戶。若已為籌委開戶但仍空白，請重新整理或確認已登入正確活動。</p>'; return;}
-    const permBlock=this.roleLevel(this.currentUser?.role)>=40?`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900"><b>權限管理已併入此頁。</b>編輯用戶時可改角色、組別、密碼；下級卡片權限請按「權限」。</div>`:'';
+    const permBlock=`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900 leading-relaxed"><b>用戶管理：</b>改角色、組別、密碼或權限只會暫存在此頁，必須按下方「確定更新用戶」才真正套用（與批核權限表相同）。</div>`;
+    const confirmBar=`<div class="flex justify-end mt-4"><button onclick="app.confirmUsersUpdate()" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow"><i class="fa-solid fa-check mr-1"></i>確定更新用戶</button></div>`;
     container.innerHTML=permBlock+list.map(u=>{
       const pwd=showPwd?`<div class="text-[11px] font-mono text-slate-600 mt-0.5">密碼：${escapeHtml(u.password||'(未顯示)')}</div>`:'';
       const permBtn=this.roleLevel(this.currentUser?.role)>=40?`<button onclick="app.openPermissionEditor('${u.user_id}')" class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-1 rounded-xl text-[11px]">權限</button>`:'';
       return `<div class="border p-3 rounded-xl flex justify-between gap-2"><div class="min-w-0"><b>${escapeHtml(u.name)}</b> ${u.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full border">${escapeHtml(u.job_title)}</span>`:''}<span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(ROLE_LABELS[u.role]||u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')} | 帳號 ${escapeHtml(u.user_id||'')}</div>${pwd}</div><div class="flex gap-1 flex-shrink-0"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button>${permBtn}</div></div>`;
-    }).join('');
+    }).join('')+confirmBar;
+  }
+  confirmUsersUpdate(){
+    if(!this.canManageUsersPage()){ showToast('無權更新用戶','error'); return; }
+    if(!this.pendingUsers){ showToast('沒有未確定的變更','warning'); return; }
+    this.usersList=JSON.parse(JSON.stringify(this.pendingUsers));
+    this.setLocalUsers(this.usersList);
+    showToast('用戶資料已確定更新','success');
+    this.renderUsers();
   }
   openUserFormModal(){document.getElementById('u-form-mode').value='create'; document.getElementById('u-form-original-id').value=''; document.getElementById('u-ymis').value=''; document.getElementById('u-name').value=''; this.populateUserRoleSelect('staff'); document.getElementById('modal-user').classList.remove('hidden');}
   // 上級可改下級權限：最多可設定到與自己相同的權限 (super_admin 例外可設全部)
@@ -7422,7 +7422,7 @@ class ScoutEventApp{
     sel.innerHTML=allowed.map(r=>`<option value="${r}" ${r===curVal?'selected':''}>${ROLE_LABELS[r]||r}${ROLE_HIERARCHY[r]>=100?'（超管）':''}</option>`).join('')||'<option value="staff">staff</option>';
   }
   editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('u-form-mode').value='edit'; document.getElementById('u-form-original-id').value=u.user_id; document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name; document.getElementById('u-group').value=u.group_name||''; document.getElementById('u-contact').value=u.contact||''; document.getElementById('u-email').value=u.email||''; const pwd=document.getElementById('u-password'); if(pwd){ pwd.value=this.canSeeUserPasswords()?(u.password||''):''; pwd.parentElement?.classList.toggle('hidden', !this.canSeeUserPasswords()); } this.populateUserRoleSelect(u.role||'staff'); document.getElementById('modal-user').classList.remove('hidden');}
-  submitUserForm(e){e.preventDefault(); const uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!uid||!name) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } let list=this.getLocalUsers(); const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.setLocalUsers(list); this.closeModal('modal-user'); showToast('已保存','success'); this.loadUsers();}
+  submitUserForm(e){e.preventDefault(); const uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!uid||!name) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||this.getLocalUsers())); let list=this.pendingUsers; const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.pendingUsers=list; this.closeModal('modal-user'); showToast('已暫存，請按「確定更新用戶」才套用',''); this.renderUsers();}
   downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n00820001,朱家聰,chair@isd.local,chairperson,主席及執行副主席,,123456,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
   handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請貼上JSON','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('JSON錯誤','error');}}
   confirmBulkCreate(){if(!this.bulkPending.length){showToast('無資料','warning'); return;} let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ list.push({user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,password:r.password||'1234',status:'active',can_tick:r.can_tick}); added++; } }); this.setLocalUsers(list); this.closeModal('modal-bulk'); showToast(`批量完成 成功${added}筆`,'success'); this.loadUsers();}
