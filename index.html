@@ -1218,7 +1218,7 @@ class ScoutEventApp{
     </div>`;
   }
   // 「批核權限表」分頁（橫看人×頁 / 直看頁×人）
-  async async renderApprovalMatrixView(){
+  async renderApprovalMatrixView(){
     if(!this.isSuperAdmin()){ showToast('批核權限表只供超管查看','warning'); this.showDashboard(); return; }
     document.getElementById('view-landing').classList.add('hidden');
     document.getElementById('view-dashboard').classList.add('hidden');
