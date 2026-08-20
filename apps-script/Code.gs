@@ -1,5 +1,6 @@
 // ============================================================
-// 童軍活動管理系統 - Google Apps Script 後端 v7.7
+// 童軍活動管理系統 - Google Apps Script 後端 v8.0
+//  v8.0 更新：動態 Approval_Routing、跨裝置 Finance_Expenses、本組確認欄位及永久刪除同步。
 //  v7.7 更新：新增 Vehicle_Passes（車輛通行證/泊車）工作表；
 //            Supply_Requests 補 unit/qty_approved/reason/date_needed/deadline/contact/requested_by_id/approved_at/notes 欄；
 //            Meals 補 options/price/deadline/locked/created_by 欄；getEventData 一併回傳 Vehicle_Passes。
@@ -180,8 +181,14 @@ const ROLE_LABELS_CN = {
   '工作人員': 'staff'
 };
 
-// 批核範疇（頁）：可批核的業務領域
+// 批核範疇（頁）：每類申請可分開、多選批核組別及執行／最後名單組別。
 const APPROVAL_AREAS = ['supplies', 'vehicle', 'meals', 'finance'];
+const APPROVAL_ROUTING_DEFAULTS = {
+  supplies: { approver_groups: ['協調組'], executor_groups: ['協調組'] },
+  vehicle: { approver_groups: ['協調組'], executor_groups: ['協調組'] },
+  meals: { approver_groups: ['行政組'], executor_groups: ['協調組'] },
+  finance: { approver_groups: ['行政組'], executor_groups: ['行政組'] }
+};
 
 function isYes(v) {
   if (v === true || v === 1 || v === '1') return true;
@@ -194,7 +201,7 @@ function initializeSheets() {
   const ss = getSheet();
   ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at']);
   ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
-  // 訂餐紀錄（v7.1 新增）：免登入訂餐 → 組長確認 → 行政審批 的兩級流程狀態都存呢度
+  // 訂餐紀錄：登入提交 → 低於總主任先由本組確認 → 指定組別最終批核；完整狀態存於此表。
   // ⚠️ 舊部署更新後，請在 Apps Script 手動執行一次 initializeSheets（只會新增此表，絕不影響舊資料）
   ensureSheet(ss, 'Meal_Orders', ['order_id', 'event_id', 'menu_id', 'user_id', 'user_name', 'group_name', 'selection', 'quantity', 'remarks', 'status', 'confirmed_by', 'approved_by', 'created_at', 'updated_at']);
   // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
@@ -204,8 +211,14 @@ function initializeSheets() {
   const apSheet = ss.getSheetByName('Approval_Permissions');
   if (apSheet) apSheet.getRange('A1').setNote(
     '批核權限表：每行一位批核人。supplies=物資、vehicle=車位/車輛、meals=膳食、finance=財務。\n' +
-    '有權的欄位填「Y」或「是」；無權留空。修改後在選單「童軍活動管理 → 同步批核權限」或前端「重新整理」即生效。\n' +
-    '前端只向總主任以上顯示批核中心；物資/車輛限協調組、財務限行政組，會操及典禮組不會批物資。管理層可處理全範疇。'
+    '有權的欄位填「Y」或「是」；無權留空。申請的批核組／執行組請在前端批核權限頁以多選按鈕設定。\n' +
+    '前端只向總主任以上顯示批核中心；低於總主任提交的申請須先由本組總主任以上確認。管理層可監察／代批。'
+  );
+  ensureSheet(ss, 'Approval_Routing', ['event_id', 'area', 'label', 'approver_groups', 'executor_groups', 'updated_by', 'updated_at']);
+  const arSheet = ss.getSheetByName('Approval_Routing');
+  if (arSheet) arSheet.getRange('A1').setNote(
+    '每類申請的動態路由。approver_groups 及 executor_groups 以 JSON 多選陣列儲存。建議直接在 APP「批核權限表」用組別按鈕修改。\n' +
+    '膳食預設：行政組批核、協調組執行及持有最後名單。'
   );
   // 遷移舊 Users 表：補上 job_title / contact / perm_see / perm_edit 欄（非破壞性）
   ensureColumns(ss.getSheetByName('Users'), ['job_title', 'contact', 'perm_see', 'perm_edit']);
@@ -214,21 +227,25 @@ function initializeSheets() {
   ensureSheet(ss, 'Staff', ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at']);
   ensureSheet(ss, 'Documents', ['doc_id', 'event_id', 'title', 'category', 'file_url', 'uploaded_by', 'date', 'created_at']);
   ensureSheet(ss, 'Finance', ['finance_id', 'event_id', 'category', 'item', 'budget_amt', 'actual_amt', 'group_name', 'notes', 'created_at']);
+  ensureSheet(ss, 'Finance_Expenses', ['id', 'event_id', 'voucher', 'item_name', 'group_name', 'budget', 'actual', 'date', 'description', 'receipt_name', 'receipt_url', 'status', 'submitted_by', 'submitted_by_id', 'requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at', 'approved_by', 'approved_at', 'created_at']);
   ensureSheet(ss, 'Activities', ['activity_id', 'event_id', 'title', 'type', 'location', 'description', 'details_json', 'created_at']);
   ensureSheet(ss, 'Meals', ['meal_id', 'event_id', 'date', 'meal_type', 'menu_desc', 'headcount', 'group_name', 'status', 'requested_by', 'approved_by', 'created_at']);
   ensureSheet(ss, 'Schedule', ['schedule_id', 'event_id', 'time_slot', 'title', 'description', 'location', 'group_name', 'created_at']);
   ensureSheet(ss, 'Supplies', ['supply_id', 'event_id', 'item_name', 'total_qty', 'unit', 'category', 'created_at']);
   ensureSheet(ss, 'Supply_Requests', ['request_id', 'event_id', 'supply_id', 'item_name', 'qty_requested', 'group_name', 'status', 'requested_by', 'approved_by', 'created_at']);
-  // 泊車證申請（v7.5 新增）：登入用戶申請，行政組於已批核清單 Sheet 統一處理
+  // 泊車證申請：登入用戶申請，沿用車輛動態路由完成本組確認、最終批核及入口清單執行。
   ensureSheet(ss, 'Parking_Requests', ['parking_id', 'event_id', 'seq', 'group_name', 'unit', 'plate', 'driver_name', 'position', 'contact', 'park_date', 'entry_time', 'exit_time', 'full_day', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
   // 口頭報價登記（v7.5 新增）：總主任以上登記，行政組及執行副主席以上可查看
   ensureSheet(ss, 'Oral_Quotes', ['oral_id', 'event_id', 'quote_date', 'group_name', 'vendor', 'contact_person', 'contact_phone', 'item_desc', 'amount', 'notes', 'quoted_by', 'quoted_by_id', 'created_at']);
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
   // 車輛通行證（含泊車）：前端一直有寫出，但舊版 GS 未建立此表 → 之前寫出會被丟棄，現正式建立
   ensureSheet(ss, 'Vehicle_Passes', ['pass_id', 'event_id', 'plate', 'driver_name', 'driver_contact', 'vehicle_type', 'purpose', 'group_name', 'entry_date', 'exit_date', 'parking_location', 'deadline', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
-  ensureColumns(ss.getSheetByName('Vehicle_Passes'), ['deadline', 'requested_by_id', 'approved_at', 'notes']);
-  // 物資申請：補回批核／需用日期／聯絡等欄，否則協調組批核結果無法寫入試算表
-  ensureColumns(ss.getSheetByName('Supply_Requests'), ['unit', 'qty_approved', 'reason', 'date_needed', 'deadline', 'contact', 'requested_by_id', 'approved_at', 'notes']);
+  ensureColumns(ss.getSheetByName('Vehicle_Passes'), ['deadline', 'requested_by_id', 'approved_at', 'notes', 'requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at']);
+  // 物資申請：補回批核／需用日期／聯絡及本組確認欄。
+  ensureColumns(ss.getSheetByName('Supply_Requests'), ['unit', 'qty_approved', 'reason', 'date_needed', 'deadline', 'contact', 'requested_by_id', 'approved_at', 'notes', 'requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at']);
+  ensureColumns(ss.getSheetByName('Meal_Orders'), ['requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at']);
+  ensureColumns(ss.getSheetByName('Parking_Requests'), ['requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at']);
+  ensureColumns(ss.getSheetByName('Finance_Expenses'), ['event_id', 'voucher', 'item_name', 'group_name', 'budget', 'actual', 'date', 'description', 'receipt_name', 'receipt_url', 'status', 'submitted_by', 'submitted_by_id', 'requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at', 'approved_by', 'approved_at', 'created_at']);
   // 膳食菜單：補回選項／截止／鎖定等欄
   ensureColumns(ss.getSheetByName('Meals'), ['options', 'price', 'deadline', 'locked', 'created_by']);
   seedInitialData();
@@ -239,8 +256,8 @@ function initializeSheets() {
 // 藍色：後台經常改；綠色：活動紀錄；紫色：系統／權限；灰色：外部匯入原始資料。
 function formatSheetsByPurpose() {
   const ss = getSheet();
-  const frequentlyEdited = ['Events','Account_Setup','Approval_Permissions','Supplies','Finance','Schedule','Meals'];
-  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Vehicle_Passes','Parking_Requests','Oral_Quotes'];
+  const frequentlyEdited = ['Events','Account_Setup','Approval_Permissions','Approval_Routing','Supplies','Finance','Schedule','Meals'];
+  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Vehicle_Passes','Parking_Requests','Finance_Expenses','Oral_Quotes'];
   const systemSheets = ['Users'];
   ss.getSheets().forEach(function(sheet) {
     const name = sheet.getName();
@@ -507,6 +524,76 @@ function saveApprovalPermissions(data) {
   return { success: true, count: permissions.length };
 }
 
+function parseGroupArray(value, fallback) {
+  if (Array.isArray(value)) return value.map(String).filter(Boolean);
+  if (value !== '' && value != null) {
+    try {
+      const parsed = JSON.parse(String(value));
+      if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+    } catch (e) {
+      return String(value).split(/[、,，]/).map(function (x) { return x.trim(); }).filter(Boolean);
+    }
+  }
+  return (fallback || []).slice();
+}
+
+// 讀取每類申請的「批核組別／執行組別」多選路由；未初始化時直接回傳安全預設。
+function getApprovalRouting(data) {
+  const eventId = String((data && data.event_id) || 'isd_2026');
+  const routing = {};
+  APPROVAL_AREAS.forEach(function (area) {
+    routing[area] = {
+      approver_groups: APPROVAL_ROUTING_DEFAULTS[area].approver_groups.slice(),
+      executor_groups: APPROVAL_ROUTING_DEFAULTS[area].executor_groups.slice()
+    };
+  });
+  const sheet = getSheet().getSheetByName('Approval_Routing');
+  if (!sheet || sheet.getLastRow() <= 1) return { success: true, event_id: eventId, routing: routing };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const col = function (h) { return headers.indexOf(h); };
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][col('event_id')] || 'isd_2026') !== eventId) continue;
+    const area = String(rows[i][col('area')] || '');
+    if (APPROVAL_AREAS.indexOf(area) === -1) continue;
+    routing[area] = {
+      approver_groups: parseGroupArray(rows[i][col('approver_groups')], routing[area].approver_groups),
+      executor_groups: parseGroupArray(rows[i][col('executor_groups')], routing[area].executor_groups)
+    };
+  }
+  return { success: true, event_id: eventId, routing: routing };
+}
+
+// 整批儲存單一活動的多選路由，保留工作表內其他活動的設定。
+function saveApprovalRouting(data) {
+  const eventId = String(data.event_id || 'isd_2026');
+  const incoming = data.routing || {};
+  const ss = getSheet();
+  let sheet = ss.getSheetByName('Approval_Routing');
+  if (!sheet) {
+    sheet = ss.insertSheet('Approval_Routing');
+    sheet.appendRow(['event_id', 'area', 'label', 'approver_groups', 'executor_groups', 'updated_by', 'updated_at']);
+    sheet.setFrozenRows(1);
+  }
+  ensureColumns(sheet, ['event_id', 'area', 'label', 'approver_groups', 'executor_groups', 'updated_by', 'updated_at']);
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0].map(String);
+  const eventIdx = headers.indexOf('event_id');
+  // 只刪除此活動的舊路由列，其他活動原位保留，避免 clearContent 後累積空白列。
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (String(rows[i][eventIdx] || 'isd_2026') === eventId) sheet.deleteRow(i + 1);
+  }
+  const labelMap = {supplies:'物資申請', vehicle:'車位／車輛申請', meals:'膳食申請', finance:'財務申請'};
+  APPROVAL_AREAS.forEach(function (area) {
+    const base = APPROVAL_ROUTING_DEFAULTS[area];
+    const row = incoming[area] || base;
+    const approvers = parseGroupArray(row.approver_groups, base.approver_groups);
+    const executors = parseGroupArray(row.executor_groups, base.executor_groups);
+    sheet.appendRow([eventId, area, labelMap[area], JSON.stringify(approvers), JSON.stringify(executors), data.updated_by || '', new Date()]);
+  });
+  return { success: true, event_id: eventId, routing: getApprovalRouting({event_id:eventId}).routing };
+}
+
 // 列出所有用戶（不含密碼），供前端用戶管理
 function getAllUsers() {
   const ss = getSheet();
@@ -673,11 +760,8 @@ function seedInitialData() {
     supSheet.appendRow(['sup_3', 'isd_2026', '車輛通行證 (11-12/10佈置/正日)', 35, '張', '交通', new Date()]);
   }
   
-  // 11. Supply_Requests
-  const reqSheet = ss.getSheetByName('Supply_Requests');
-  if (reqSheet.getLastRow() <= 1) {
-    reqSheet.appendRow(['req_1', 'isd_2026', 'sup_1', '對講機 Walkie-Talkie', 5, '主題節目組', 'pending', '周恒晉', '', new Date()]);
-  }
+  // 11. Supply_Requests 是真實申請紀錄，不加入測試資料。
+  // 即使超管清空工作表後再次執行 initializeSheets，也不會重新建立「周恒晉／對講機」示例。
   
   SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 零精簡、完整文本政策、詳細預算與完整職員名單已寫入 Google Sheet。');
 }
@@ -724,6 +808,8 @@ function doPost(e) {
     else if (action === 'saveUserPermissions') return jsonResponse(saveUserPermissions(data));
     else if (action === 'getApprovalPermissions') return jsonResponse(getApprovalPermissions());
     else if (action === 'saveApprovalPermissions') return jsonResponse(saveApprovalPermissions(data));
+    else if (action === 'getApprovalRouting') return jsonResponse(getApprovalRouting(data));
+    else if (action === 'saveApprovalRouting') return jsonResponse(saveApprovalRouting(data));
     else if (action === 'syncAccountsFromSetup') return jsonResponse(syncAccountsFromSetup());
     else if (action === 'deleteRecord') return jsonResponse(deleteRecord(data));
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
@@ -848,7 +934,7 @@ function sendMeetingEmailNotification(data) {
 
 function getEventAllData(eventId) {
   const ss = getSheet();
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Oral_Quotes', 'Users'];
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Users'];
   const result = {};
   
   modules.forEach(mod => {
