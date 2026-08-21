@@ -14,6 +14,7 @@
   - 「議程（內建·即睇）」→ `renderBuiltInAgendaHtml()`：議程表（項次／議題／負責）
   - 「會議紀錄（內建·即睇）」→ `renderBuiltInMinutesHtml()`：重點分段 + 議決事項 + 跟進事項表
   - 「檔案（頁內預覽）」→ `renderMeetingFilesHtml()` + `toggleInlineDrivePreview()`：Drive PDF 以頁內 `iframe .../preview` 打開
+- **摘要為主、全文按需**（用戶定案）：內建 JSON 只放摘要／重點；每個議程／紀錄面板底部有「睇全文（頁內開啟）／下載原檔／Drive 開啟 ↗」，用家主動按先會載入原檔（`builtInFullTextBar()`，卡片與詳情各自獨立容器 id）。
 - **下載唔再彈 Drive APP**：`downloadDriveFile()` 用隱藏 iframe 觸發 `uc?export=download`，會議詳情、附件、組資料、打包下載全部改用此方法。
 - **會議詳情**：議程／紀錄分頁直接渲染內建 JSON 內容；檔案區由「開啟」改為「頁內預覽 + 下載」。
 - **秘書處更新流程**：管理員 → 會議卡片 → 右上「內建議程 JSON」→ 直接改 JSON → 「儲存到本機並套用」即時預覽 → 「匯出 JSON」覆蓋 `data/meeting_records.json` 發佈；「還原內建版本」可清走本機覆蓋。

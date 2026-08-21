@@ -6846,12 +6846,34 @@ class ScoutEventApp{
     return `<span class="text-[10px] px-2 py-0.5 rounded-full border font-bold ${full?'bg-emerald-100 text-emerald-800 border-emerald-200':'bg-amber-100 text-amber-800 border-amber-200'}">${full?'已錄入全文':'摘要／重點版'}</span>`;
   }
   /* 內建議程（HTML，直接嵌喺頁面／卡片，無彈窗） */
-  renderBuiltInAgendaHtml(m){
+  /* 摘要下面的「睇全文」入口：頁內預覽原檔（iframe）＋ 需要時先跳去 Drive 原檔 */
+  builtInFullTextBar(m,kind,ctx){
+    const rec=this.getMeetingRecord(m);
+    const url=(kind==='agenda'?(m.agenda_file_url||rec?.source?.agenda_file_url):(m.minutes_file_url||rec?.source?.minutes_file_url))||'';
+    const name=(kind==='agenda'?(m.agenda_file_name||rec?.source?.agenda_file_name):(m.minutes_file_name||rec?.source?.minutes_file_name))||'原檔';
+    const folder=m.drive_root_url||rec?.source?.folder_url||'';
+    const id=this.driveFileIdFromUrl(url);
+    const pid=`mrfull-${m.meeting_id}-${kind}-${ctx||'inline'}`;
+    if(!id){
+      return folder?`<div class="mt-2 pt-2 border-t border-white/60 flex flex-wrap items-center gap-2 text-[10px] text-slate-500"><span><i class="fa-solid fa-circle-info mr-1"></i>以上為摘要／重點；此次會議未有指定原檔。</span><a href="${escapeHtml(folder)}" target="_blank" rel="noopener" class="underline text-sky-700 font-bold">去 Drive 資料夾睇全文 ↗</a></div>`:'';
+    }
+    return `<div class="mt-2 pt-2 border-t border-white/60 space-y-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-[10px] text-slate-500"><i class="fa-solid fa-circle-info mr-1"></i>以上為摘要／重點，全文請按右邊：</span>
+        <button onclick="app.toggleInlineDrivePreview('${pid}','${id}')" class="text-[10px] px-2.5 py-1.5 rounded-lg bg-slate-900 text-white font-bold"><i class="fa-solid fa-book-open-reader mr-1"></i>睇全文（頁內開啟）</button>
+        <button onclick="app.downloadDriveFile('${escapeHtml(url)}')" class="text-[10px] px-2.5 py-1.5 rounded-lg bg-white border font-bold"><i class="fa-solid fa-download mr-1"></i>下載原檔</button>
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="text-[10px] underline text-slate-500">Drive 開啟 ↗</a>
+        <span class="text-[10px] text-slate-400 truncate">${escapeHtml(name)}</span>
+      </div>
+      <div id="${pid}" class="hidden"></div>
+    </div>`;
+  }
+  renderBuiltInAgendaHtml(m,ctx){
     const rec=this.getMeetingRecord(m);
     const items=rec?.agenda_items||[];
     if(!items.length){
       const txt=(m.agenda||'').trim();
-      return `<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[12px] leading-relaxed whitespace-pre-line">${txt?escapeHtml(txt):'暫無內建議程內容（秘書處可於 data/meeting_records.json 補上，或喺下方編輯內建內容）。'}</div>`;
+      return `<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[12px] leading-relaxed whitespace-pre-line">${txt?escapeHtml(txt):'暫無內建議程內容（秘書處可於 data/meeting_records.json 補上，或喺下方編輯內建內容）。'}${this.builtInFullTextBar(m,'agenda',ctx)}</div>`;
     }
     const head=`<div class="flex flex-wrap items-center gap-2 mb-2">
       <b class="text-[12px] text-sky-900"><i class="fa-solid fa-list-check mr-1"></i>議程（APP 內建 · 免開 Drive）</b>
@@ -6867,17 +6889,18 @@ class ScoutEventApp{
     </tr>`).join('');
     return `<div class="bg-sky-50 border border-sky-200 rounded-xl p-3">${head}${meta}
       <div class="bg-white border rounded-xl overflow-hidden"><table class="min-w-full"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left text-[10px]">項</th><th class="px-2 py-1 text-left text-[10px]">議題</th><th class="px-2 py-1 text-left text-[10px]">負責</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${this.builtInFullTextBar(m,'agenda',ctx)}
     </div>`;
   }
   /* 內建會議紀錄（HTML，直接嵌喺頁面／卡片，無彈窗） */
-  renderBuiltInMinutesHtml(m){
+  renderBuiltInMinutesHtml(m,ctx){
     const rec=this.getMeetingRecord(m);
     const secs=rec?.minutes_sections||[];
     const decisions=rec?.decisions||[];
     const actions=rec?.action_items||[];
     if(!secs.length && !decisions.length && !actions.length){
       const txt=(m.minutes||'').trim();
-      return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] leading-relaxed whitespace-pre-line">${txt?escapeHtml(txt):'暫無內建會議紀錄（會後由秘書處錄入，Drive PDF 仍可內嵌預覽）。'}</div>`;
+      return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] leading-relaxed whitespace-pre-line">${txt?escapeHtml(txt):'暫無內建會議紀錄（會後由秘書處錄入，Drive PDF 仍可內嵌預覽）。'}${this.builtInFullTextBar(m,'minutes',ctx)}</div>`;
     }
     const head=`<div class="flex flex-wrap items-center gap-2 mb-2">
       <b class="text-[12px] text-emerald-900"><i class="fa-solid fa-clipboard-check mr-1"></i>會議紀錄（APP 內建 · 免開 Drive）</b>
@@ -6895,7 +6918,7 @@ class ScoutEventApp{
       <b class="text-[12px] text-amber-800"><i class="fa-solid fa-list-check mr-1"></i>跟進事項</b>
       <div class="mt-1 overflow-hidden rounded-lg border"><table class="min-w-full"><thead class="bg-amber-50"><tr><th class="px-2 py-1 text-left text-[10px]">事項</th><th class="px-2 py-1 text-left text-[10px]">負責</th><th class="px-2 py-1 text-left text-[10px]">限期</th></tr></thead><tbody>${actions.map(a=>`<tr class="border-t align-top"><td class="px-2 py-1.5 text-[12px]">${escapeHtml(a.item||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.owner||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.due||'')}</td></tr>`).join('')}</tbody></table></div>
     </div>`:'';
-    return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2">${head}${secHtml}${decHtml}${actHtml}</div>`;
+    return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2">${head}${secHtml}${decHtml}${actHtml}${this.builtInFullTextBar(m,'minutes',ctx)}</div>`;
   }
   /* 內嵌預覽 Drive 檔案（頁內 iframe，唔會彈去 Drive APP） */
   renderMeetingFilesHtml(m){
@@ -6935,8 +6958,8 @@ class ScoutEventApp{
     const m=this.getMeetings().find(x=>x.meeting_id===meetingId); if(!m) return;
     if(!panel.classList.contains('hidden') && panel.dataset.kind===kind){ panel.classList.add('hidden'); panel.innerHTML=''; panel.dataset.kind=''; this.markMeetingInlineButtons(meetingId,''); return; }
     let html='';
-    if(kind==='agenda') html=this.renderBuiltInAgendaHtml(m);
-    else if(kind==='minutes') html=this.renderBuiltInMinutesHtml(m);
+    if(kind==='agenda') html=this.renderBuiltInAgendaHtml(m,'card');
+    else if(kind==='minutes') html=this.renderBuiltInMinutesHtml(m,'card');
     else html=this.renderMeetingFilesHtml(m);
     panel.innerHTML=html;
     panel.dataset.kind=kind;
@@ -7460,8 +7483,8 @@ class ScoutEventApp{
     document.getElementById('md-status-badge').textContent={upcoming:'即將舉行',completed:'已完成',draft:'草稿整理中'}[m.status]||m.status;
     document.getElementById('md-title').textContent=m.title;
     document.getElementById('md-date').textContent=m.date||'-'; document.getElementById('md-time').textContent=m.time||''; document.getElementById('md-location').textContent=m.location||''; document.getElementById('md-author').textContent=m.author||m.created_by||'';
-    document.getElementById('md-agenda-text').innerHTML=this.renderBuiltInAgendaHtml(m);
-    document.getElementById('md-minutes-text').innerHTML=this.renderBuiltInMinutesHtml(m);
+    document.getElementById('md-agenda-text').innerHTML=this.renderBuiltInAgendaHtml(m,'detail');
+    document.getElementById('md-minutes-text').innerHTML=this.renderBuiltInMinutesHtml(m,'detail');
     ['md-agenda-preview','md-minutes-preview'].forEach(id=>{const el=document.getElementById(id); if(el){ el.innerHTML=''; el.classList.add('hidden'); }});
     // Drive 資料夾連結：如會議設有 drive_root_url，在議程分頁頂部顯示
     const driveFolderHtml=m.drive_root_url?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-book-open text-emerald-600 text-lg flex-shrink-0"></i><div class="min-w-0"><b class="text-[12px] text-emerald-900">議程／紀錄已內建喺 APP（免開 Drive）</b><div class="text-[10px] text-emerald-700">下方文字版即時可讀；Drive 原檔可用「頁內預覽」或下載。</div></div></div><a href="${escapeHtml(m.drive_root_url)}" target="_blank" rel="noopener" class="text-[10px] text-emerald-700 underline flex-shrink-0">Drive 資料夾</a></div></div>`:'';

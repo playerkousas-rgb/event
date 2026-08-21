@@ -109,11 +109,16 @@ isd.meetings.forEach(m => {
 
 const app = new Stub(users[0], users, records);
 const meeting = { meeting_id: 'm_1', meeting_number: 1, title: '第1次籌備委員會議', agenda: '', minutes: '' };
-const agendaHtml = app.renderBuiltInAgendaHtml(meeting);
+const agendaHtml = app.renderBuiltInAgendaHtml(meeting, 'card');
 assert(agendaHtml.includes('利益申報政策'), '內建議程未渲染議程項目');
-assert(!/target="_blank"/.test(agendaHtml), '內建議程不應包含彈出新分頁的連結');
-const minutesHtml = app.renderBuiltInMinutesHtml(meeting);
+// 摘要為預設；全文需要用家主動按（頁內開啟 / Drive 跳轉），唔會自動彈出
+assert(agendaHtml.includes('睇全文（頁內開啟）'), '內建議程缺少「睇全文」入口');
+assert(agendaHtml.includes('toggleInlineDrivePreview'), '「睇全文」應可頁內開啟原檔');
+const minutesHtml = app.renderBuiltInMinutesHtml(meeting, 'card');
 assert(minutesHtml.includes('議決事項') && minutesHtml.includes('跟進事項'), '內建紀錄未渲染議決／跟進事項');
+assert(minutesHtml.includes('睇全文（頁內開啟）'), '內建紀錄缺少「睇全文」入口');
+// 卡片與詳情各自獨立 id，唔會撞
+assert(app.renderBuiltInAgendaHtml(meeting, 'detail').includes('mrfull-m_1-agenda-detail'), '詳情頁全文容器 id 應獨立');
 
 // 檔案改為頁內 iframe 預覽，唔會彈出 Drive APP
 const filesHtml = app.renderMeetingFilesHtml({
