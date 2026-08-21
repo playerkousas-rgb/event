@@ -663,7 +663,9 @@
       "協調組": "1OFugENuzbu8gIPr-tsXfBOG0_Un9QJ2n",
       "節目組": "1EYw48Lh_UrTfpFDpNifHO7Wd1kjWOi15",
       "財務指引": "1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C"
-    }
+    },
+    "meeting_upload_folder_id": "13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+    "meeting_upload_folder_link": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
   },
   "meetings": [
     {
@@ -674,10 +676,10 @@
       "minutes": "主席朱家聰主持，確認 2026 ISD 於 10 月 4 日警察學院舉行，主軸定為 Scout for SDGs。",
       "author": "主席 朱家聰",
       "meeting_number": 0,
-      "agenda_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "minutes_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "agenda_file_name": "第0次會議_議程.pdf",
-      "minutes_file_name": "第0次會議_紀錄.pdf",
+      "agenda_file_url": "https://drive.google.com/file/d/1SxRCj6NxEKB_CgQp6hXSo3ByAWZtzibX/view",
+      "minutes_file_url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view",
+      "agenda_file_name": "0_Pre-Meeting 議程.pdf",
+      "minutes_file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
       "visibility": "public",
       "status": "completed",
       "drive_root_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
@@ -686,14 +688,14 @@
         {
           "kind": "agenda",
           "label": "議程",
-          "file_name": "第0次會議_議程.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "0_Pre-Meeting 議程.pdf",
+          "file_url": "https://drive.google.com/file/d/1SxRCj6NxEKB_CgQp6hXSo3ByAWZtzibX/view"
         },
         {
           "kind": "minutes",
           "label": "會議紀錄",
-          "file_name": "第0次會議_紀錄.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
+          "file_url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view"
         },
         {
           "kind": "other",
@@ -711,32 +713,32 @@
       "minutes": "正式通過利益申報政策與個人私隱政策，議決各組財政指引、會計程序及步操檢閱流程方向。",
       "author": "主席 朱家聰",
       "meeting_number": 1,
-      "agenda_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "minutes_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "agenda_file_name": "第1次會議_議程.pdf",
-      "minutes_file_name": "第1次會議_紀錄.pdf",
+      "agenda_file_url": "https://drive.google.com/file/d/1tYIifGR10RI63xLdraLqgibjZJQZMyVv/view",
+      "minutes_file_url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view",
+      "agenda_file_name": "1_Agenda 籌備委員會議程.pdf",
+      "minutes_file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
+      "drive_root_url": "https://drive.google.com/drive/folders/1Q_0MwS9JYvr2vdWr4xMvYpRJqEdU0Zsy",
       "attachments": [],
       "classified_files": [
         {
           "kind": "agenda",
           "label": "議程",
-          "file_name": "第1次會議_議程.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "1_Agenda 籌備委員會議程.pdf",
+          "file_url": "https://drive.google.com/file/d/1tYIifGR10RI63xLdraLqgibjZJQZMyVv/view"
         },
         {
           "kind": "minutes",
           "label": "會議紀錄",
-          "file_name": "第1次會議_紀錄.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
+          "file_url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view"
         },
         {
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_url": "https://drive.google.com/drive/folders/1Q_0MwS9JYvr2vdWr4xMvYpRJqEdU0Zsy"
         }
       ]
     },
@@ -748,32 +750,38 @@
       "minutes": "重點推進積極公民獎章工作坊、攤位設計及嘉賓邀請。",
       "author": "執行副主席 袁可秀",
       "meeting_number": 2,
-      "agenda_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "minutes_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "agenda_file_name": "第2次會議_議程.pdf",
-      "minutes_file_name": "第2次會議_紀錄.pdf",
+      "agenda_file_url": "https://drive.google.com/file/d/1vQRmiIToJd5Py-EjyYIYbNd6yHKL7Xj8/view",
+      "minutes_file_url": "https://drive.google.com/file/d/1VqiKvRBVwbSn9ZyjEQeq3jgGg0pHkTpz/view",
+      "agenda_file_name": "2_Agenda 籌備委員會議程.pdf",
+      "minutes_file_name": "App1-ISD2026-籌備委員會第1次會議記錄_Ver1.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
+      "drive_root_url": "https://drive.google.com/drive/folders/1DIjanPDviWgTa4hKanOiQTrq9o3bQTx1",
       "attachments": [],
       "classified_files": [
         {
           "kind": "agenda",
           "label": "議程",
-          "file_name": "第2次會議_議程.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "2_Agenda 籌備委員會議程.pdf",
+          "file_url": "https://drive.google.com/file/d/1vQRmiIToJd5Py-EjyYIYbNd6yHKL7Xj8/view"
         },
         {
           "kind": "minutes",
           "label": "會議紀錄",
-          "file_name": "第2次會議_紀錄.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "App1-ISD2026-籌備委員會第1次會議記錄_Ver1.pdf",
+          "file_url": "https://drive.google.com/file/d/1VqiKvRBVwbSn9ZyjEQeq3jgGg0pHkTpz/view"
         },
         {
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_url": "https://drive.google.com/drive/folders/1DIjanPDviWgTa4hKanOiQTrq9o3bQTx1"
+        },
+        {
+          "kind": "slides",
+          "label": "主題節目組報告",
+          "file_name": "ISD2026 - 主題節目組報告 (20260616) Rev.1.pdf",
+          "file_url": "https://drive.google.com/file/d/1cbmYoNOhlP3EQcNrSMgSycELQYsLpj4o/view"
         }
       ]
     },
@@ -785,32 +793,32 @@
       "minutes": "審議財務指引、報價門檻 ($500/$2000/$5000) 及結算總表 (附件5)。",
       "author": "主席 朱家聰",
       "meeting_number": 3,
-      "agenda_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "minutes_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "agenda_file_name": "第3次會議_議程.pdf",
-      "minutes_file_name": "第3次會議_紀錄.pdf",
+      "agenda_file_url": "https://drive.google.com/file/d/1CRDJo6LGfXCM5jjeyjzXtbNpi2Jict0C/view",
+      "minutes_file_url": "https://drive.google.com/file/d/1GZtQgV4vLMVIQMX3J5uEHTumVazpBgH1/view",
+      "agenda_file_name": "3_Agenda 籌備委員會議程.pdf",
+      "minutes_file_name": "App1-ISD2026-籌備委員會第2次會議記錄_Ver1.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
+      "drive_root_url": "https://drive.google.com/drive/folders/1aExU8X7KDqurCxI1T3YKtagvEliInBq1",
       "attachments": [],
       "classified_files": [
         {
           "kind": "agenda",
           "label": "議程",
-          "file_name": "第3次會議_議程.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "3_Agenda 籌備委員會議程.pdf",
+          "file_url": "https://drive.google.com/file/d/1CRDJo6LGfXCM5jjeyjzXtbNpi2Jict0C/view"
         },
         {
           "kind": "minutes",
           "label": "會議紀錄",
-          "file_name": "第3次會議_紀錄.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "App1-ISD2026-籌備委員會第2次會議記錄_Ver1.pdf",
+          "file_url": "https://drive.google.com/file/d/1GZtQgV4vLMVIQMX3J5uEHTumVazpBgH1/view"
         },
         {
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_url": "https://drive.google.com/drive/folders/1aExU8X7KDqurCxI1T3YKtagvEliInBq1"
         }
       ]
     },
@@ -822,32 +830,44 @@
       "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室。",
       "author": "秘書處",
       "meeting_number": 4,
-      "agenda_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "minutes_file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
-      "agenda_file_name": "第4次會議_議程.pdf",
-      "minutes_file_name": "第4次會議_紀錄.pdf",
+      "agenda_file_url": "https://drive.google.com/file/d/1iCYG0wbev_paJhVvWAasbtFe-j0wLv5K/view",
+      "minutes_file_url": "https://drive.google.com/file/d/1BFyL3_i4xXhlpm8cOPl9il1Iy7JVbGTC/view",
+      "agenda_file_name": "4_Agenda 籌備委員會議程.pdf",
+      "minutes_file_name": "App1-ISD2026-籌備委員會第3次會議記錄_Ver1.pdf",
       "visibility": "public",
       "status": "upcoming",
-      "drive_root_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
+      "drive_root_url": "https://drive.google.com/drive/folders/1DSHW1KAJDU-GYrHOXYx2ig6yG4LJnrCy",
       "attachments": [],
       "classified_files": [
         {
           "kind": "agenda",
           "label": "議程",
-          "file_name": "第4次會議_議程.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "4_Agenda 籌備委員會議程.pdf",
+          "file_url": "https://drive.google.com/file/d/1iCYG0wbev_paJhVvWAasbtFe-j0wLv5K/view"
         },
         {
           "kind": "minutes",
           "label": "會議紀錄",
-          "file_name": "第4次會議_紀錄.pdf",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_name": "App1-ISD2026-籌備委員會第3次會議記錄_Ver1.pdf",
+          "file_url": "https://drive.google.com/file/d/1BFyL3_i4xXhlpm8cOPl9il1Iy7JVbGTC/view"
+        },
+        {
+          "kind": "slides",
+          "label": "主題節目組報告",
+          "file_name": "ISD2026 - 主題節目組報告 (20260818) Rev.1.pptx",
+          "file_url": "https://drive.google.com/file/d/1E2EyyxLqeEqKQrYUoBNiHILSt3VkfEkr/view"
         },
         {
           "kind": "other",
-          "label": "其他資料",
-          "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "label": "典禮程序",
+          "file_name": "Parade Ceremony Rundown 2026.pdf",
+          "file_url": "https://drive.google.com/file/d/1JQRvk1vYDvUip3cL2bBQ-zciwC2-19mD/view"
+        },
+        {
+          "kind": "other",
+          "label": "場地地圖",
+          "file_name": "MAP.gif",
+          "file_url": "https://drive.google.com/file/d/1OrnF4mWDpYEQ04I-wN2t32pDeVJmfjbP/view"
         }
       ]
     }
@@ -1171,15 +1191,13 @@
         "role_title": "顧問",
         "group_name": "顧問團",
         "contact": "9215 7472",
-        "job_desc": "政策指導與主禮嘉賓確認",
         "email": "edward_wo_wong@yahoo.com.hk"
       },
       {
         "name": "何家騏",
-        "role_title": "顧問 / 危機處理主任",
-        "group_name": "顧問團 / 行政組",
+        "role_title": "顧問",
+        "group_name": "顧問團",
         "contact": "9020 0716",
-        "job_desc": "政策指導與危機處理",
         "email": "dominicho@hkirscout.org.hk"
       },
       {
@@ -1187,7 +1205,6 @@
         "role_title": "主席",
         "group_name": "主席及執行副主席",
         "contact": "6022 2665",
-        "job_desc": "全域統籌與會議主持",
         "email": "chukachung@gmail.com"
       },
       {
@@ -1195,15 +1212,13 @@
         "role_title": "執行副主席",
         "group_name": "主席及執行副主席",
         "contact": "6534 3478",
-        "job_desc": "行政、秘書處與財政審批",
         "email": "allisoncorner@gmail.com"
       },
       {
         "name": "張佳良",
-        "role_title": "副主席（會操及典禮）",
+        "role_title": "副主席（典禮及會操）",
         "group_name": "會操及典禮組",
         "contact": "9272 4291",
-        "job_desc": "會操流程與步操後備日",
         "email": "kenckl.scout@gmail.com"
       },
       {
@@ -1211,7 +1226,6 @@
         "role_title": "總主任（會操）",
         "group_name": "會操及典禮組",
         "contact": "9439 6543",
-        "job_desc": "會操項目統籌",
         "email": "radioedric@gmail.com"
       },
       {
@@ -1219,14 +1233,13 @@
         "role_title": "會操顧問",
         "group_name": "會操及典禮組",
         "contact": "",
-        "job_desc": "步操檢閱指揮"
+        "email": ""
       },
       {
         "name": "李懷恩",
         "role_title": "總主任（典禮）",
         "group_name": "會操及典禮組",
         "contact": "9218 4670",
-        "job_desc": "優異旅團與獎勵頒發",
         "email": "fionalee1215@gmail.com"
       },
       {
@@ -1234,42 +1247,41 @@
         "role_title": "典禮統籌主任",
         "group_name": "會操及典禮組",
         "contact": "",
-        "job_desc": "典禮流程統籌"
+        "email": ""
       },
       {
         "name": "林雋逸",
         "role_title": "優異旅團統籌主任",
         "group_name": "會操及典禮組",
         "contact": "",
-        "job_desc": "優異旅團頒發"
+        "email": ""
       },
       {
         "name": "馮玉成",
         "role_title": "獎勵統籌主任",
         "group_name": "會操及典禮組",
         "contact": "",
-        "job_desc": "獎勵頒發"
+        "email": ""
       },
       {
         "name": "范紫晴",
         "role_title": "司儀統籌主任",
         "group_name": "會操及典禮組",
         "contact": "",
-        "job_desc": "司儀統籌"
+        "email": ""
       },
       {
         "name": "林卓衡",
         "role_title": "司儀統籌主任",
         "group_name": "會操及典禮組",
         "contact": "",
-        "job_desc": "司儀統籌"
+        "email": ""
       },
       {
         "name": "周恒晉",
         "role_title": "副主席（主題節目）",
         "group_name": "主題節目組",
         "contact": "6471 9696",
-        "job_desc": "攤位與遊戲統籌",
         "email": "jimmychc2001@yahoo.com.hk"
       },
       {
@@ -1277,47 +1289,41 @@
         "role_title": "總主任（主題節目）",
         "group_name": "主題節目組",
         "contact": "5403 3041",
-        "job_desc": "節目內容策劃",
         "email": "andycsh_2005@hotmail.com"
       },
       {
         "name": "何令勤",
-        "role_title": "節目主任 (1)",
+        "role_title": "節目主任（1）",
         "group_name": "主題節目組",
         "contact": "8494 3252",
-        "job_desc": "遊戲攤位執行",
         "email": "lincolnho.scouting@gmail.com"
       },
       {
         "name": "陳鋑羲",
-        "role_title": "節目主任 (2)",
+        "role_title": "節目主任（2）",
         "group_name": "主題節目組",
         "contact": "6387 3422",
-        "job_desc": "遊戲攤位執行",
         "email": "aldencch.scout@gmail.com"
       },
       {
         "name": "張宏剛",
-        "role_title": "節目主任 (3)",
+        "role_title": "節目主任（3）",
         "group_name": "主題節目組",
         "contact": "6100 1525",
-        "job_desc": "遊戲攤位執行",
         "email": "kongivan_2003@yahoo.com.hk"
       },
       {
         "name": "羅卓華",
-        "role_title": "節目主任 (4)",
+        "role_title": "節目主任（4）",
         "group_name": "主題節目組",
         "contact": "9475 6084",
-        "job_desc": "攤位遊戲與印花",
         "email": "adcventure@wanchaiscout.org.hk"
       },
       {
         "name": "李庭甄",
-        "role_title": "節目主任 (5)",
+        "role_title": "節目主任（5）",
         "group_name": "主題節目組",
         "contact": "9028 3305",
-        "job_desc": "積極公民工作坊",
         "email": "tweenylee1112@gmail.com"
       },
       {
@@ -1325,7 +1331,6 @@
         "role_title": "副主席（品牌推廣）",
         "group_name": "品牌推廣組",
         "contact": "6197 5747",
-        "job_desc": "宣傳與攝錄統籌",
         "email": "leoho1993@gmail.com"
       },
       {
@@ -1333,21 +1338,20 @@
         "role_title": "社交媒體主任",
         "group_name": "品牌推廣組",
         "contact": "",
-        "job_desc": "社交媒體宣傳"
+        "email": ""
       },
       {
         "name": "林耀鏘",
         "role_title": "拍攝/攝錄統籌主任",
         "group_name": "品牌推廣組",
         "contact": "",
-        "job_desc": "活動當日錄影及拍照"
+        "email": ""
       },
       {
         "name": "曾麗珊",
         "role_title": "副主席（嘉賓接待）",
         "group_name": "嘉賓接待組",
         "contact": "9278 1576",
-        "job_desc": "嘉賓接待統籌",
         "email": "carmen0236@gmail.com"
       },
       {
@@ -1355,7 +1359,6 @@
         "role_title": "總主任（嘉賓接待）",
         "group_name": "嘉賓接待組",
         "contact": "9340 8134",
-        "job_desc": "嘉賓接待流程",
         "email": "jackcheung@hkirscout.org.hk"
       },
       {
@@ -1363,7 +1366,6 @@
         "role_title": "嘉賓接待主任",
         "group_name": "嘉賓接待組",
         "contact": "9878 1745",
-        "job_desc": "嘉賓接待執行",
         "email": "teresawg1021@gmail.com"
       },
       {
@@ -1371,7 +1373,6 @@
         "role_title": "交通主任",
         "group_name": "嘉賓接待組",
         "contact": "6223 5842",
-        "job_desc": "嘉賓交通",
         "email": "marscheung@hkirscout.org.hk"
       },
       {
@@ -1379,7 +1380,6 @@
         "role_title": "嘉賓支援主任",
         "group_name": "嘉賓接待組",
         "contact": "6909 0831",
-        "job_desc": "嘉賓支援",
         "email": "minghochu2004@yahoo.com.hk"
       },
       {
@@ -1387,7 +1387,6 @@
         "role_title": "副主席（協調）",
         "group_name": "協調組",
         "contact": "6840 0436",
-        "job_desc": "協調統籌",
         "email": "timki0801@gmail.com"
       },
       {
@@ -1395,15 +1394,20 @@
         "role_title": "總主任（協調）",
         "group_name": "協調組",
         "contact": "9308 1134",
-        "job_desc": "場地佈置、膳食、後勤、物資",
         "email": "chungwaicity@hotmail.com"
+      },
+      {
+        "name": "黃嘉恩",
+        "role_title": "總主任（協調）",
+        "group_name": "協調組",
+        "contact": "9225 7684",
+        "email": "regengenwong@hotmail.com"
       },
       {
         "name": "馬一波",
         "role_title": "場地佈置主任",
         "group_name": "協調組",
         "contact": "6778 1644",
-        "job_desc": "場地佈置",
         "email": "bobbyma246@gmail.com"
       },
       {
@@ -1411,14 +1415,13 @@
         "role_title": "膳食主任",
         "group_name": "協調組",
         "contact": "6596 8526",
-        "job_desc": "膳食統籌"
+        "email": ""
       },
       {
         "name": "郭慧敏",
         "role_title": "後勤主任",
         "group_name": "協調組",
         "contact": "5542 8632",
-        "job_desc": "後勤支援",
         "email": "huiguo794@gmail.com"
       },
       {
@@ -1426,23 +1429,13 @@
         "role_title": "物資主任",
         "group_name": "協調組",
         "contact": "5532 0707",
-        "job_desc": "物資統籌",
         "email": "szq0803@gmail.com"
-      },
-      {
-        "name": "黃嘉恩",
-        "role_title": "總主任（協調）",
-        "group_name": "協調組",
-        "contact": "9225 7684",
-        "job_desc": "秩序、交通管制、物流運輸",
-        "email": "regengenwong@hotmail.com"
       },
       {
         "name": "布瀚文",
         "role_title": "秩序主任",
         "group_name": "協調組",
         "contact": "5406 3207",
-        "job_desc": "場內秩序",
         "email": "ansonpo0326@gmail.com"
       },
       {
@@ -1450,7 +1443,6 @@
         "role_title": "交通管制主任",
         "group_name": "協調組",
         "contact": "9817 6010",
-        "job_desc": "交通管制",
         "email": "nzsss5965@gmail.com"
       },
       {
@@ -1458,22 +1450,13 @@
         "role_title": "物流運輸主任",
         "group_name": "協調組",
         "contact": "5110 0112",
-        "job_desc": "物流運輸",
         "email": "51100112lee@gmail.com"
-      },
-      {
-        "name": "袁宇靖",
-        "role_title": "物流運輸主任",
-        "group_name": "協調組",
-        "contact": "",
-        "job_desc": "物流運輸"
       },
       {
         "name": "黎姵伶",
         "role_title": "副主席（服務及發展）",
         "group_name": "服務及發展組",
         "contact": "9620 4146",
-        "job_desc": "服務及發展統籌",
         "email": "pannielai@hkirscout.org.hk"
       },
       {
@@ -1481,7 +1464,6 @@
         "role_title": "總主任（服務及發展）",
         "group_name": "服務及發展組",
         "contact": "9099 9528",
-        "job_desc": "服務及發展項目",
         "email": "reginalicheukki@gmail.com"
       },
       {
@@ -1489,7 +1471,6 @@
         "role_title": "服務主任",
         "group_name": "服務及發展組",
         "contact": "6996 0363",
-        "job_desc": "服務項目",
         "email": "g2832454514@gmail.com"
       },
       {
@@ -1497,14 +1478,13 @@
         "role_title": "機構聯絡主任",
         "group_name": "服務及發展組",
         "contact": "",
-        "job_desc": "機構聯絡"
+        "email": ""
       },
       {
         "name": "徐嘉皓",
         "role_title": "副主席（行政）",
         "group_name": "行政組",
         "contact": "9243 7655",
-        "job_desc": "行政統籌",
         "email": "alantsui2005@gmail.com"
       },
       {
@@ -1512,157 +1492,148 @@
         "role_title": "總主任（運作）",
         "group_name": "行政組",
         "contact": "6857 2996",
-        "job_desc": "當日運作",
         "email": "jamesman@hkirscout.org.hk"
-      },
-      {
-        "name": "陳銘彥",
-        "role_title": "旅團報到主任",
-        "group_name": "行政組",
-        "contact": "",
-        "job_desc": "旅團報到"
-      },
-      {
-        "name": "何仲康",
-        "role_title": "紀念品主任",
-        "group_name": "行政組",
-        "contact": "9365 5225",
-        "job_desc": "紀念品",
-        "email": "benky_hch@outlook.com"
       },
       {
         "name": "莫穎民",
         "role_title": "總主任（行政）",
         "group_name": "行政組",
         "contact": "6107 0452",
-        "job_desc": "行政統籌",
         "email": "playerkousas@hotmail.com"
+      },
+      {
+        "name": "陳銘彥",
+        "role_title": "旅團報到主任",
+        "group_name": "行政組",
+        "contact": "",
+        "email": ""
+      },
+      {
+        "name": "何仲康",
+        "role_title": "紀念品主任",
+        "group_name": "行政組",
+        "contact": "9365 5225",
+        "email": "benky_hch@outlook.com"
       },
       {
         "name": "蔡天欣",
         "role_title": "財政主任",
         "group_name": "行政組",
         "contact": "6201 9484",
-        "job_desc": "財政及結算",
         "email": "tinachoi@outlook.com"
       },
       {
         "name": "何家耀",
-        "role_title": "助理執行幹事 (Assistant Scout Executive)",
+        "role_title": "助理執行幹事",
         "group_name": "秘書處",
         "contact": "2835 7712",
-        "job_desc": "地域秘書處行政工作 (Oscar)",
         "email": "hkrase@scout.org.hk"
       },
       {
         "name": "陸詠德",
-        "role_title": "活動幹事 (Programme Officer)",
+        "role_title": "活動幹事",
         "group_name": "秘書處",
         "contact": "2835 7713",
-        "job_desc": "地域秘書處行政工作 (Fiona)",
         "email": "hkroffp@scout.org.hk"
       },
       {
         "name": "譚健祥",
-        "role_title": "執行幹事 (Scout Executive)",
+        "role_title": "執行幹事",
         "group_name": "秘書處",
         "contact": "2835 7711",
-        "job_desc": "地域秘書處行政工作 (Figo)"
+        "email": ""
       },
       {
         "name": "鄧倩姸",
-        "role_title": "發展幹事 (Development Officer)",
+        "role_title": "發展幹事",
         "group_name": "秘書處",
         "contact": "2835 7714",
-        "job_desc": "地域秘書處行政工作 (Cindy)"
+        "email": ""
       },
       {
         "name": "曾凱瑩",
-        "role_title": "訓練幹事 (Training Officer)",
+        "role_title": "訓練幹事",
         "group_name": "秘書處",
         "contact": "2835 7715",
-        "job_desc": "地域秘書處行政工作 (Sandy)"
+        "email": ""
       }
     ],
     "job_duties": [
       {
-        "group": "顧問團",
-        "duty": "顧問（黃偉安）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。\n\n顧問（何家騏）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。",
         "id": "duty_0",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "顧問團",
+        "duty": "顧問（黃偉安、何家騏）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "主席及執行副主席",
-        "duty": "主席（朱家聰）：\n1. 主持籌備委員會所有會議；\n2. 負責統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察及協調各副主席及各組的工作進度使之順利完成；\n4. 編訂及策劃大會節目程序；及\n5. 建議及邀請繽紛日主禮嘉賓／主禮人。\n\n執行副主席（袁可秀）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 主席不能履行職務時將代理其職務；\n4. 策劃及執行已編訂的大會節目程序；及\n5. 協助主席及執行其分配的工作。",
         "id": "duty_1",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "主席",
+        "duty": "主席（朱家聰）：\n1. 主持籌備委員會所有會議；\n2. 負責統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察及協調各副主席及各組的工作進度使之順利完成；\n4. 編訂及策劃大會節目程序；及\n5. 建議及邀請繽紛日主禮嘉賓／主禮人。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "行政組",
-        "duty": "副主席（行政）（徐嘉皓）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日行政、財政及常務等事宜；\n3. 設立及管理指揮中心；\n4. 制訂行政組財政預算；及\n5. 協助主席及執行其分配的工作。\n\n總主任（運作）（文幹皓）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n總主任（行政）（莫穎民）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作，如行政、旅團報到、紀念品、財政、危機處理及工作人員統籌等事宜；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n行政主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日行政工作：撰寫籌備委員會會議紀錄；活動日維持詢問處和失物認領處的運作；跟進參加旅團的一般事宜；\n3. 協助指揮中心運作；\n4. 統籌行政組內的物資安排；及\n5. 協助總主任（行政）及執行其分配的工作。\n\n旅團報到主任：待定\n\n紀念品主任（何仲康）：\n1. 參與籌備委員會會議並提供意見；\n2. 安排紀念品（包括紀念章）的包裝及分發事宜；\n3. 活動日維持禮物換領處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n參事主任：待定\n\n財務主任（蔡天欣）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及處理繽紛日財政事宜：收集及綜合各組之財政預算；協調及控制各小組財政收支平衡；制訂財政指引及會計程序；處理財政結算工作及草擬財政報告；\n3. 協助總主任（行政）及執行其分配的工作。\n\n危機處理主任（何家騏）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂繽紛日危機處理手冊；\n3. 執行危機處理及應變程序；\n4. 協助副地域總監（活動與訓練）、主席、副主席（行政）主持危機小組會議及工作；及\n5. 協助總主任（行政）及執行其分配的工作。",
         "id": "duty_2",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "主席",
+        "duty": "執行副主席（袁可秀）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 主席不能履行職務時將代理其職務；\n4. 策劃及執行已編訂的大會節目程序；及\n5. 協助主席及執行其分配的工作。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "會操及典禮組",
-        "duty": "副主席（會操及典禮）（張佳良）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌會操、優異旅團及各項嘉許獎勵頒授典禮事宜；\n3. 制訂會操及典禮組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（會操）（梁文澧）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日會操事宜：負責草擬會操之內容及程序；建議及邀請會操之工作人員；草擬步操組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n步操統籌主任：待定\n司令員：待定\n會操顧問（黃志樂）：待定\n\n總主任（典禮）（李懷恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日典禮事宜：負責草擬典禮之內容及程序；建議及邀請典禮之工作人員；草擬典禮組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n典禮統籌主任：待定\n優異旅團統籌主任：待定\n獎勵統籌主任：待定\n司儀統籌主任：待定",
         "id": "duty_3",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "行政組",
+        "duty": "副主席（行政）（徐嘉皓）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日行政、財政及常務等事宜；\n3. 設立及管理指揮中心；\n4. 制訂行政組財政預算；及\n5. 協助主席及執行其分配的工作。\n\n總主任（行政）（莫穎民）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作，如行政、旅團報到、紀念品、財政、危機處理及工作人員統籌等事宜；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n行政主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日行政工作：撰寫籌備委員會會議紀錄；活動日維持詢問處和失物認領處的運作；跟進參加旅團的一般事宜；\n3. 協助指揮中心運作；\n4. 統籌行政組內的物資安排；及\n5. 協助總主任（行政）及執行其分配的工作。\n\n旅團報到主任（陳銘彥）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日旅團報到工作：制訂活動報名表及報名程序；制訂繽紛日參加者報到程序；跟進參加旅團的報名和報到事宜；\n3. 活動日維持旅團報到處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n紀念品主任（何仲康）：\n1. 參與籌備委員會會議並提供意見；\n2. 安排紀念品（包括紀念章）的包裝及分發事宜；\n3. 活動日維持禮物換領處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n參事主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日工作人員傳訊事宜：編制工作人員手冊；編制工作人員感謝狀；分發工作人員紀念品；活動日對講機分配；\n3. 協助總主任（行政）及執行其分配的工作。\n\n財務主任（蔡天欣）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及處理繽紛日財政事宜：收集及綜合各組之財政預算；協調及控制各小組財政收支平衡；制訂財政指引及會計程序；處理財政結算工作及草擬財政報告；\n3. 協助總主任（行政）及執行其分配的工作。\n\n危機處理主任（何家騏）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂繽紛日危機處理手冊；\n3. 執行危機處理及應變程序；\n4. 協助副地域總監（活動與訓練）、主席、副主席（行政）主持危機小組會議及工作；及\n5. 協助總主任（行政）及執行其分配的工作。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
+        "id": "duty_4",
+        "group": "會操及典禮組",
+        "duty": "副主席（會操及典禮）（張佳良）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌會操、優異旅團及各項嘉許獎勵頒授典禮事宜；\n3. 制訂會操及典禮組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（會操）（梁文澧）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日會操事宜：負責草擬會操之內容及程序；建議及邀請會操之工作人員；草擬步操組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n步操統籌主任：\n1. 參與籌備委員會會議並提供意見；\n2. 推行會操流程及安排事宜；及\n3. 協助總主任（會操）及執行其分配的工作。\n\n司令員：待定\n\n會操顧問（黃志樂）：待定\n\n總主任（典禮）（李懷恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日典禮事宜：負責草擬典禮之內容及程序；建議及邀請典禮之工作人員；草擬典禮組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n典禮統籌主任（黃凱琳）：待定\n優異旅團統籌主任（林雋逸）：待定\n獎勵統籌主任（馮玉成）：待定\n司儀統籌主任（范紫晴、林卓衡）：待定",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
+      },
+      {
+        "id": "duty_5",
         "group": "主題節目組",
         "duty": "副主席（主題節目）（周恒晉）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席設計、組織、推行繽紛日主題節目活動；\n3. 制訂主題節目組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（主題節目）（仇紹謙）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行主題節目活動；及\n3. 協助副主席（主題節目）及執行其分配的工作。\n\n節目主任（何令勤、陳鋑羲、張宏剛、羅卓華、李庭甄）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日主題節目活動事宜；\n3. 構思及設計配合主題節目之遊戲禮物；及\n4. 協助總主任（主題節目）及執行其分配的工作。",
-        "id": "duty_4",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "協調組",
-        "duty": "副主席（協調）（羅添駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日膳食、秩序、交通、衛生、場地佈置及協調、物資等事宜；\n3. 制訂協調組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（協調）（鍾偉志、黃嘉恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（協調）推行繽紛日秩序、交通、膳食、衛生、場地佈置及物資設備等事宜；及\n3. 協助副主席（協調）及執行其分配的工作。\n\n膳食主任（吳卓藍）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日膳食提供意見；\n3. 協調及統籌繽紛日膳食事宜：編排旅團及工作人員用餐時段；印製參加旅團餐券；派發工作人員膳食或餐券；安排嘉賓之茶點及飲品；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n秩序主任（布瀚文）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之秩序及人流管理提供意見；\n3. 協調及統籌繽紛日保安及秩序事宜：場地秩序及人流管理；確保典禮進行期間各嘉賓及參加者遵守大會程序；安排適當場地指示配合整個活動進行；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（交通管制）（鄺逸俊）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之交通管理提供意見；\n3. 協調及統籌繽紛日交通管理事宜：場內嘉賓及工作人員車輛管制；安排適當場地交通指示；協調參加者及嘉賓往返場地交通安排；管理停車場進出管制儀器（如電子泊車咭）；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n後勤主任（郭慧敏）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日後勤支援服務提供意見；\n3. 協調及統籌繽紛日後勤支援事宜；\n4. 監察及確保衛生服務承辦商妥善清理洗手間及垃圾；及\n5. 協助總主任（協調）及執行其分配的工作。\n\n場地佈置主任（馬一波）：\n1. 參與籌備委員會會議並提供意見；\n2. 與各個組別協調，就繽紛日場地佈置提供意見；\n3. 協調及統籌繽紛日場地佈置事宜：場地佈置（包括場地指示製作）；音響、燈光佈置；監察及確保場地佈置承辦商妥善清理及還原場地；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（物流）（李思諭）：待定\n物資主任（施珍淇）：待定",
-        "id": "duty_5",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
-        "updated_at": "2026-08-20"
-      },
-      {
-        "group": "服務及發展組",
-        "duty": "副主席（服務及發展）（黎姵伶）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日服務、成員招募及拓展等事宜，並聯絡各志願機構及持份者；\n3. 制訂服務組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（服務及發展）（李卓琪）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（服務及發展）統籌繽紛日服務及聯絡各志願機構及持份者事宜；\n3. 構思及制訂服務項目及執行策略；及\n4. 協助副主席（服務及發展）及執行其分配的工作。\n\n服務主任（郭成威）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日服務及聯絡各志願機構及持份者；及\n3. 協助總主任（服務及發展）及執行其分配的工作。\n\n發展主任：待定",
         "id": "duty_6",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "協調組",
+        "duty": "副主席（協調）（羅添駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日膳食、秩序、交通、衛生、場地佈置及協調、物資等事宜；\n3. 制訂協調組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（協調）（鍾偉志、黃嘉恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（協調）推行繽紛日秩序、交通、膳食、衛生、場地佈置及物資設備等事宜；及\n3. 協助副主席（協調）及執行其分配的工作。\n\n膳食主任（吳卓藍）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日膳食提供意見；\n3. 協調及統籌繽紛日膳食事宜：編排旅團及工作人員用餐時段；印製參加旅團餐券；派發工作人員膳食或餐券；安排嘉賓之茶點及飲品；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n秩序主任（布瀚文）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之秩序及人流管理提供意見；\n3. 協調及統籌繽紛日保安及秩序事宜：場地秩序及人流管理；確保典禮進行期間各嘉賓及參加者遵守大會程序；安排適當場地指示配合整個活動進行；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（交通管制）（鄺逸俊）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之交通管理提供意見；\n3. 協調及統籌繽紛日交通管理事宜：場內嘉賓及工作人員車輛管制；安排適當場地交通指示；協調參加者及嘉賓往返場地交通安排；管理停車場進出管制儀器（如電子泊車咭）；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n後勤主任（郭慧敏）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日後勤支援服務提供意見；\n3. 協調及統籌繽紛日後勤支援事宜；\n4. 監察及確保衛生服務承辦商妥善清理洗手間及垃圾；及\n5. 協助總主任（協調）及執行其分配的工作。\n\n場地佈置主任（馬一波）：\n1. 參與籌備委員會會議並提供意見；\n2. 與各個組別協調，就繽紛日場地佈置提供意見；\n3. 協調及統籌繽紛日場地佈置事宜：場地佈置（包括場地指示製作）；音響、燈光佈置；監察及確保場地佈置承辦商妥善清理及還原場地；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（物流）（李思諭、袁宇靖）：待定\n物資主任（施珍淇）：待定",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "品牌推廣組",
-        "duty": "副主席（品牌推廣）（何嘉駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日品牌推廣、宣傳及設計相關事宜；\n3. 制訂品牌推廣組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（品牌推廣）：待定\n設計主任：待定\n宣傳主任：待定\n社交媒體主任：待定\n攝影／攝錄主任：待定",
         "id": "duty_7",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "服務及發展組",
+        "duty": "副主席（服務及發展）（黎姵伶）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日服務、成員招募及拓展等事宜，並聯絡各志願機構及持份者；\n3. 制訂服務組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（服務及發展）（李卓琪）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（服務及發展）統籌繽紛日服務及聯絡各志願機構及持份者事宜；\n3. 構思及制訂服務項目及執行策略；及\n4. 協助副主席（服務及發展）及執行其分配的工作。\n\n服務主任（郭成威）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日服務及聯絡各志願機構及持份者；及\n3. 協助總主任（服務及發展）及執行其分配的工作。\n\n發展主任（李婉顏）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日的成員招募及拓展、持份者參與策略；及\n3. 協助總主任（服務及發展）及執行其分配的工作。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "嘉賓接待組",
-        "duty": "副主席（嘉賓接待）（曾麗珊）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌嘉賓接待及支援相關事宜；\n3. 制訂嘉賓接待組的財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（嘉賓接待）（張嘉政）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（嘉賓接待）及執行其分配的工作。\n\n嘉賓接待主任（黃培芳）：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通及接待報到；\n3. 安排在頒獎典禮前的場內參觀；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n交通主任（張敬浩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通；\n3. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n嘉賓支援主任（朱浩銘）：\n1. 參與籌備委員會會議並提供意見；\n2. 在頒獎典禮及會操進行期間協助嘉賓席相關事宜；\n3. 安排在頒獎典禮前及會操後的輕便茶點；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。",
         "id": "duty_8",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "品牌推廣組",
+        "duty": "副主席（品牌推廣）（何嘉駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日品牌推廣、宣傳及設計相關事宜；\n3. 制訂品牌推廣組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（宣傳）（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（品牌推廣）統籌繽紛日宣傳及推廣事宜；\n3. 構思及制訂宣傳及推廣策略；及\n4. 協助副主席（品牌推廣）及執行其分配的工作。\n\n設計主任（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂及推行繽紛日宣傳工作：設計繽紛日標誌和各項宣傳品（包括紀念章）及製作；撰寫文章向地域季刊及香港童軍月刊投稿；撰寫文章及準備材料以供港島童軍面書專頁（Facebook Page）及 Instagram 專頁等平台發布；及\n3. 協助總主任（品牌推廣）及執行其分配的工作。\n\n宣傳主任（待定）：待定\n社交媒體主任（陳鈞翰）：待定\n攝影／攝錄主任（林耀鏘）：\n1. 參與籌備委員會會議並提供意見；\n2. 就宣傳及活動日當日的攝錄安排提供意見；\n3. 協調攝影師在活動日攝錄事宜；及\n4. 協助總主任（品牌推廣）及執行其分配的工作。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       },
       {
-        "group": "秘書處",
-        "duty": "秘書處（何家耀、陸詠德、鄧倩姸、曾凱瑩）：\n1. 參與籌備委員會會議；\n2. 會議前準備工作；\n3. 發出及處理所有與政府部門及相關機構的往來書信；\n4. 處理所有報名工作；\n5. 稽查各組的財務；\n6. 支援各組的行政工作；及\n7. 協助主席及執行其分配的工作。\n\n指揮中心（活動日）成員：主席、各副主席、行政主任、危機處理主任、秘書處主管。\n\n危機應變小組成員：主席、副地域總監（活動與訓練）、助理地域總監（活動）、各副主席、危機處理主任、秘書處主管。",
         "id": "duty_9",
-        "file_url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
-        "file_name": "籌備委員會工作大綱（2026年修訂，人名依聯絡表）",
+        "group": "嘉賓接待組",
+        "duty": "副主席（嘉賓接待）（曾麗珊）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌嘉賓接待及支援相關事宜；\n3. 制訂嘉賓接待組的財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（嘉賓接待）（張嘉政）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（嘉賓接待）及執行其分配的工作。\n\n嘉賓接待及交通主任（黃培芳、張敬浩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通及接待報到；\n3. 安排在頒獎典禮前的場內參觀；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n嘉賓支援主任（朱浩銘）：\n1. 參與籌備委員會會議並提供意見；\n2. 在頒獎典禮及會操進行期間協助嘉賓席相關事宜；\n3. 安排在頒獎典禮前及會操後的輕便茶點；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。",
+        "updated_by": "秘書處",
+        "updated_at": "2026-08-20"
+      },
+      {
+        "id": "duty_10",
+        "group": "秘書處",
+        "duty": "秘書處（譚健祥、何家耀、陸詠德、鄧倩姸、曾凱瑩）：\n1. 參與籌備委員會會議；\n2. 會議前準備工作；\n3. 發出及處理所有與政府部門及相關機構的往來書信；\n4. 處理所有報名工作；\n5. 稽查各組的財務；\n6. 支援各組的行政工作；及\n7. 協助主席及執行其分配的工作。\n\n指揮中心（活動日）成員：主席、各副主席、行政主任、危機處理主任、秘書處主管。\n\n危機應變小組成員：主席、副地域總監（活動與訓練）、助理地域總監（活動）、各副主席、危機處理主任、秘書處主管。",
+        "updated_by": "秘書處",
         "updated_at": "2026-08-20"
       }
     ],
@@ -2234,6 +2205,28 @@
       "description": "秘書處及文件類 MAP.gif",
       "id": "doc_78",
       "created_at": ""
+    },
+    {
+      "id": "doc_isd_schedule",
+      "title": "ISD2026 日程表 (Run Down)",
+      "category": "公告",
+      "summary": "2026 港島童軍繽紛日活動日程表。",
+      "description": "ISD2026 活動日程表，包含各時段節目安排。",
+      "file_name": "ISD2026_RunDown.pdf",
+      "file_url": "https://drive.google.com/file/d/1gDvBWNCJq9aVZV7CEClyYqV-GlHxX14E/view",
+      "uploaded_by": "秘書處",
+      "date": "2026-08-21"
+    },
+    {
+      "id": "doc_police_map",
+      "title": "香港警察學院場地地圖",
+      "category": "公告",
+      "summary": "活動場地地圖：香港黃竹坑香港警察學院。",
+      "description": "ISD2026 活動場地地圖，標示各功能區域位置。",
+      "file_name": "PoliceCollege_Map.pdf",
+      "file_url": "https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view",
+      "uploaded_by": "秘書處",
+      "date": "2026-08-21"
     }
   ],
   "finance": {
@@ -2329,20 +2322,20 @@
     "source_note": "以 2025 年《港島童軍繽紛日危機處理計劃》為藍本更新：活動日期、危機應變小組成員（按 2026 組織架構圖）、緊急聯絡及日期等。",
     "team": [
       {
-        "id": "ct_1",
-        "role": "活動主席（危機處理小組主席）",
-        "name": "朱家聰",
+        "id": "ct_new_1",
+        "role": "地域總監",
+        "name": "楊國光",
         "phone": "",
         "match": [
-          "主席"
+          "地域總監"
         ],
         "auto": 1
       },
       {
         "id": "ct_2",
         "role": "副地域總監（活動與訓練）",
-        "name": "",
-        "phone": "",
+        "name": "黃偉安",
+        "phone": "9215 7472",
         "match": [
           "副地域總監",
           "活動與訓練"
@@ -2352,7 +2345,7 @@
       {
         "id": "ct_3",
         "role": "副地域總監（行政）",
-        "name": "",
+        "name": "鍾震宇",
         "phone": "",
         "match": [
           "副地域總監",
@@ -2361,10 +2354,20 @@
         "auto": 1
       },
       {
+        "id": "ct_1",
+        "role": "活動主席（危機處理小組主席）",
+        "name": "朱家聰",
+        "phone": "6022 2665",
+        "match": [
+          "主席"
+        ],
+        "auto": 1
+      },
+      {
         "id": "ct_4",
         "role": "執行副主席（行政）",
         "name": "袁可秀",
-        "phone": "",
+        "phone": "6534 3478",
         "match": [
           "執行副主席"
         ],
@@ -2374,7 +2377,7 @@
         "id": "ct_5",
         "role": "副主席（會操及典禮）",
         "name": "張佳良",
-        "phone": "",
+        "phone": "9272 4291",
         "match": [
           "會操及典禮"
         ],
@@ -2384,7 +2387,7 @@
         "id": "ct_6",
         "role": "副主席（主題節目）",
         "name": "周恒晉",
-        "phone": "",
+        "phone": "6471 9696",
         "match": [
           "主題節目"
         ],
@@ -2394,7 +2397,7 @@
         "id": "ct_7",
         "role": "副主席（品牌推廣）",
         "name": "何嘉駿",
-        "phone": "",
+        "phone": "6197 5747",
         "match": [
           "品牌推廣"
         ],
@@ -2404,7 +2407,7 @@
         "id": "ct_8",
         "role": "副主席（嘉賓接待）",
         "name": "曾麗珊",
-        "phone": "",
+        "phone": "9278 1576",
         "match": [
           "嘉賓接待"
         ],
@@ -2414,7 +2417,7 @@
         "id": "ct_9",
         "role": "副主席（協調）",
         "name": "羅添駿",
-        "phone": "",
+        "phone": "6840 0436",
         "match": [
           "協調"
         ],
@@ -2424,7 +2427,7 @@
         "id": "ct_10",
         "role": "副主席（服務及發展）",
         "name": "黎姵伶",
-        "phone": "",
+        "phone": "9620 4146",
         "match": [
           "服務及發展"
         ],
@@ -2434,7 +2437,7 @@
         "id": "ct_11",
         "role": "副主席（行政）",
         "name": "徐嘉皓",
-        "phone": "",
+        "phone": "9243 7655",
         "match": [
           "行政"
         ],
@@ -2444,7 +2447,7 @@
         "id": "ct_12",
         "role": "危機處理主任",
         "name": "何家騏",
-        "phone": "",
+        "phone": "9020 0716",
         "match": [
           "危機"
         ],
