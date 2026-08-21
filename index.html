@@ -567,7 +567,7 @@ function splitCSVLines(text){
   if(cur.trim()) lines.push(cur.replace(/\r$/,''));
   return lines;
 }
-function parseCSV(text){const lines=splitCSVLines(text);if(!lines.length)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^\"|\"$/g,''));const out=[];for(let i=1;i<lines.length;i++){const line=lines[i];if(!line.trim())continue;const cols=[];let cur='',inQ=false;for(let c=0;c<line.length;c++){const ch=line[c];if(ch==='\"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim().replace(/^\"|\"$/g,''));cur='';}else cur+=ch;}cols.push(cur.trim().replace(/^\"|\"$/g,''));const obj={};headers.forEach((h,idx)=>obj[h]=cols[idx]||'');out.push(obj);}return out;}
+function parseCSV(text){let lines=splitCSVLines(text);while(lines.length&&!String(lines[0]||'').replace(/[",]/g,'').trim())lines.shift();if(!lines.length)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^\"|\"$/g,''));const out=[];for(let i=1;i<lines.length;i++){const line=lines[i];if(!line.trim())continue;const cols=[];let cur='',inQ=false;for(let c=0;c<line.length;c++){const ch=line[c];if(ch==='\"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim().replace(/^\"|\"$/g,''));cur='';}else cur+=ch;}cols.push(cur.trim().replace(/^\"|\"$/g,''));const obj={};headers.forEach((h,idx)=>obj[h]=cols[idx]||'');out.push(obj);}return out;}
 function downloadDataUrl(fileName,dataUrl){const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();a.remove();}
 function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
 
@@ -585,7 +585,7 @@ class ScoutEventApp{
     }
     this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
     this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda'; this.meetingDriveViewMode=localStorage.getItem('meeting_drive_view_mode')||'list'; this.approvalPerms=[]; this.approvalRouting=this.getLocalApprovalRouting(); this.approvalViewMode='byPerson';
-    this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'',meeting_folder_id:''};
+    this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM',meeting_folder_id:'13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM'};
     this.init();
   }
   // 本地資料模式 (無開關)：「模擬示範版」活動永遠是 100% 本地沙盒 (改動不會寫出後端，介紹/示範用)；未設定後端網址時整站亦以本地資料運行。正式活動在已設定 GAS 時自動連線同步，無需人手切換。
@@ -2443,52 +2443,39 @@ class ScoutEventApp{
     const cells=Array.isArray(r)?r:null;
     if(cells){
       const group=String(cells[0]||'').trim(), level=String(cells[1]||'').trim(), title=String(cells[2]||'').trim(), name=String(cells[3]||'').trim(), phone=String(cells[4]||'').trim(), email=String(cells[5]||'').trim();
-      if(!name || name==='姓名') return null;
-      const gmap={'管理':'顧問團','典禮及會操':'會操及典禮組','主題節目':'主題節目組','品牌推廣':'品牌推廣組','嘉賓接待':'嘉賓接待組','協調':'協調組','服務及發展':'服務及發展組','行政':'行政組','秘書處':'秘書處'};
-      let group_name=gmap[group]||group||'未分組';
-      if(title.includes('顧問')) group_name='顧問團';
-      if(title==='主席'||title.includes('執行副主席')) group_name='主席及執行副主席';
-      return {name, role_title:title||level, group_name, contact:phone, email, job_desc:''};
+      if((!name && !title) || name==='姓名' || title==='職位' || group==='組別') return null;
+      return {name, role_title:title, group_name:group, level, contact:phone, email, job_desc:''};
     }
     const name=this.pickCol(r,['姓名','name'],'');
-    if(!name) return null;
-    return {name, role_title:this.pickCol(r,['職位','職銜','title'],''), group_name:this.pickCol(r,['組別','group'],'未分組'), contact:this.pickCol(r,['電話','phone','聯絡'],''), email:this.pickCol(r,['電郵','email'],''), job_desc:''};
+    const title=this.pickCol(r,['職位','職銜','title'],'');
+    const group=this.pickCol(r,['組別','group'],'');
+    if((!name && !title) || name==='姓名' || title==='職位' || group==='組別') return null;
+    return {name, role_title:title, group_name:group, level:this.pickCol(r,['級別','level'],''), contact:this.pickCol(r,['電話','phone','聯絡'],''), email:this.pickCol(r,['電郵','email'],''), job_desc:''};
   }
   async syncContactListFromDrive(silent){
     const src=(this.getStaffData().contact_source)||this.eventData.staff?.contact_source||{};
     const sheetId=src.sheet_id||src.drive_file_id;
     if(!sheetId){ if(!silent) showToast('尚未設定聯絡表來源','warning'); return; }
     try{
-      const got=await this.fetchDriveSheetRows(sheetId, src.gid||1330364782);
-      if(!got.ok || !got.rows.length){ if(!silent) showToast('未能讀取聯絡表','warning'); return; }
-      const rows=got.rows;
+      let via='none', rows=[];
+      const raw=await this.fetchDriveSheetGridRaw(sheetId, src.gid||1330364782);
+      if(raw.ok && raw.rows.length){ rows=this.gridToObjects(raw.rows); via=raw.via; }
+      if(!rows.length){
+        const got=await this.fetchDriveSheetRows(sheetId, src.gid||1330364782);
+        if(got.ok && got.rows.length){ rows=(Array.isArray(got.rows[0]))?this.gridToObjects(got.rows):got.rows; via=got.via; }
+      }
+      if(!rows.length){ if(!silent) showToast('未能讀取聯絡表','warning'); return; }
       const list=[];
-      rows.forEach(r=>{
+      rows.forEach((r,i)=>{
         const rec=this.normalizeContactListRow(r);
-        if(rec) list.push(rec);
+        if(rec){ rec.id='contact_'+i; list.push(rec); }
       });
-      if(!list.length){ if(!silent) showToast('聯絡表沒有姓名列','warning'); return; }
+      if(!list.length){ if(!silent) showToast('聯絡表沒有資料列','warning'); return; }
       const data=this.getStaffData();
-      const byName={};
-      (data.contacts||[]).forEach(c=>{ if(c.name) byName[c.name]=c; });
-      list.forEach(n=>{
-        const old=byName[n.name]||{};
-        // 只補充，不覆蓋：Sheet 有值才更新，空值保留舊資料
-        byName[n.name]={
-          name: n.name||old.name||'',
-          role_title: n.role_title||old.role_title||'',
-          group_name: n.group_name||old.group_name||'',
-          contact: n.contact||old.contact||'',
-          email: n.email||old.email||'',
-          job_desc: n.job_desc||old.job_desc||'',
-          squad: n.squad||old.squad||'',
-          id: old.id||n.id||('contact_'+Date.now())
-        };
-      });
-      data.contacts=Object.values(byName);
+      data.contacts=list;
       data.contact_source=src;
       this.saveStaffData(data);
-      if(!silent) showToast(`已同步聯絡表 ${list.length} 人（via ${got.via}）`,'success');
+      if(!silent) showToast(`已同步聯絡表 ${list.length} 列（via ${via}，與試算表一致）`,'success');
       this.renderStaffContacts();
     }catch(e){ if(!silent) showToast('聯絡表同步失敗：'+e.message,'error'); }
   }
@@ -2595,16 +2582,8 @@ class ScoutEventApp{
           const data=this.getStaffData();
           // 保留原有職務描述，並同步更新名單（人名 → 職銜/組別）
           data.org_chart=this.mergeOrgChartPreserveDesc(data.org_chart, parsed);
-          const contactMap={};
-          (data.contacts||[]).forEach(c=>{ contactMap[c.name]=c; });
-          const newContacts=[];
-          parsed.forEach(p=>{ (p.names||'').split('、').filter(Boolean).forEach(nm=>{
-            const old=contactMap[nm]||{};
-            newContacts.push({id:old.id||'contact_'+newContacts.length, name:nm, role_title:old.role_title||p.title, group_name:old.group_name||p.group, contact:old.contact||'', job_desc:old.job_desc||'', email:old.email||'', squad:old.squad||'', status:old.status||'active'});
-          }); });
-          data.contacts=newContacts;
           this.saveStaffData(data);
-          if(!silent) showToast(`已同步組織架構 ${parsed.length} 個崗位、${newContacts.length} 位成員（via ${got.via}）`,'success');
+          if(!silent) showToast(`已同步組織架構 ${parsed.length} 個崗位（via ${got.via}）。聯絡表獨立同步，不會被架構圖覆蓋。`,'success');
           this.renderOrgChartTree();
           this.renderStaffContacts();
           return;
@@ -6204,7 +6183,7 @@ class ScoutEventApp{
       contact_source: raw.contact_source||this.eventData.staff?.contact_source||null,
       duties_source: raw.duties_source||this.eventData.staff?.duties_source||null,
       org_chart:orgNodes,
-      contacts:(raw.contacts||[]).map((c,i)=>{const roleTitle=c.role_title||c.role||''; const group=(roleTitle.includes('執行副主席')||roleTitle==='主席')?'主席及執行副主席':(c.group_name||c.group||''); return {id:c.id||'contact_'+i,name:c.name||'',role_title:roleTitle,group_name:normalizeGroupName(group),contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'};}),
+      contacts:(raw.contacts||[]).map((c,i)=>{const roleTitle=c.role_title||c.role||''; const group=c.group_name||c.group||''; return {id:c.id||'contact_'+i,name:c.name||'',role_title:roleTitle,group_name:group,level:c.level||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'};}),
       job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:normalizeGroupName(j.group||'未分組'),duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
     };
   }
@@ -6478,7 +6457,7 @@ class ScoutEventApp{
         ${(data.staff_source)?this.driveSyncNotice():''}
         ${(data.contact_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900">📞 聯絡表已連通：「${escapeHtml(data.contact_source.name||'聯絡表 2026')}」（gid ${escapeHtml(String(data.contact_source.gid||''))}）。行政組在該分頁更新電話／電郵後，APP 開啟即自動同步。 ${canManage?`<button onclick="app.syncContactListFromDrive()" class="ml-1 underline font-bold">立即同步</button>`:''}</div>`:''}
         ${(data.staff_source && loggedIn && !data.contact_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組在 Google Sheet 更新。</div>`:''}
-        <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">職銜</th><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">職務</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
+        <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">級別</th><th class="px-3 py-2 text-left">職位</th><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">電郵</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>
     `;
@@ -6491,12 +6470,13 @@ class ScoutEventApp{
     const canManage=this.canManageStaffContacts();
     // 未登入：不以電話欄位搜尋（避免藉搜尋反查電話）
     let list=data.contacts||[];
-    if(q) list=list.filter(c=> (loggedIn?(c.name+c.role_title+c.group_name+c.contact+c.job_desc):(c.name+c.role_title+c.group_name+c.job_desc)).toLowerCase().includes(q));
-    const phoneCell=(c,cls)=>loggedIn?`<span class="${cls||''}">${escapeHtml(c.contact)}</span>`:`<button onclick="app.openLoginModal()" class="bg-slate-100 hover:bg-slate-200 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="登入後可見"><i class="fa-solid fa-lock mr-0.5"></i>登入可見</button>`;
+    if(q) list=list.filter(c=> (loggedIn?(c.name+c.role_title+c.group_name+(c.level||'')+c.contact+(c.email||'')+c.job_desc):(c.name+c.role_title+c.group_name+(c.level||'')+c.job_desc)).toLowerCase().includes(q));
+    const phoneCell=(c,cls)=>loggedIn?`<span class="${cls||''}">${escapeHtml(c.contact||'—')}</span>`:`<button onclick="app.openLoginModal()" class="bg-slate-100 hover:bg-slate-200 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="登入後可見"><i class="fa-solid fa-lock mr-0.5"></i>登入可見</button>`;
+    const emailCell=(c)=>loggedIn?`<span class="font-mono text-[11px]">${escapeHtml(c.email||'—')}</span>`:`<button onclick="app.openLoginModal()" class="bg-slate-100 hover:bg-slate-200 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="登入後可見"><i class="fa-solid fa-lock mr-0.5"></i>登入可見</button>`;
     const tbody=document.getElementById('staff-contacts-tbody');
     const cards=document.getElementById('staff-contacts-cards');
-    if(tbody) tbody.innerHTML=list.map(c=>`<tr class="hover:bg-slate-50"><td class="px-3 py-2 font-bold" data-label="姓名">${escapeHtml(c.name)}</td><td class="px-3 py-2" data-label="職銜">${escapeHtml(c.role_title)}</td><td class="px-3 py-2" data-label="組別">${escapeHtml(c.group_name)}</td><td class="px-3 py-2 font-mono text-sky-700" data-label="電話">${phoneCell(c)}</td><td class="px-3 py-2 text-xs" data-label="職務">${escapeHtml(c.job_desc)}</td>${canManage?`<td class="px-3 py-2 text-right" data-label="操作"><div class="flex gap-1 justify-end"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div></td>`:''}</tr>`).join('') || `<tr><td colspan="${canManage?6:5}" class="px-3 py-4 text-center text-slate-400">無符合條件</td></tr>`;
-    if(cards) cards.innerHTML=list.map(c=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><div><b>${escapeHtml(c.name)}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(c.role_title)}</span><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(c.group_name)} | ${phoneCell(c)}</div><div class="text-[11px] text-slate-600 mt-1">${escapeHtml(c.job_desc)}</div></div>${canManage?`<div class="flex flex-col gap-1"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div>`:''}</div></div>`).join('');
+    if(tbody) tbody.innerHTML=list.map(c=>`<tr class="hover:bg-slate-50"><td class="px-3 py-2" data-label="組別">${escapeHtml(c.group_name||'')}</td><td class="px-3 py-2" data-label="級別">${escapeHtml(c.level||'')}</td><td class="px-3 py-2" data-label="職位">${escapeHtml(c.role_title||'')}</td><td class="px-3 py-2 font-bold" data-label="姓名">${escapeHtml(c.name||'（待定）')}</td><td class="px-3 py-2 font-mono text-sky-700" data-label="電話">${phoneCell(c)}</td><td class="px-3 py-2" data-label="電郵">${emailCell(c)}</td>${canManage?`<td class="px-3 py-2 text-right" data-label="操作"><div class="flex gap-1 justify-end"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div></td>`:''}</tr>`).join('') || `<tr><td colspan="${canManage?7:6}" class="px-3 py-4 text-center text-slate-400">無符合條件</td></tr>`;
+    if(cards) cards.innerHTML=list.map(c=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><div><b>${escapeHtml(c.name||'（待定）')}</b> <span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(c.role_title||'')}</span><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(c.group_name||'')} ${c.level?('· '+escapeHtml(c.level)):''} | ${phoneCell(c)}</div><div class="text-[11px] text-slate-600 mt-1">${emailCell(c)}</div></div>${canManage?`<div class="flex flex-col gap-1"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div>`:''}</div></div>`).join('');
   }
   openStaffFormModal(id=null){
     if(!this.canManageStaffContacts()){ showToast(this.currentUser?'你無權限修改名單':'請先登入（名單管理需總主任以上/行政組）','warning'); if(!this.currentUser) this.openLoginModal(); return; }
@@ -6790,13 +6770,17 @@ class ScoutEventApp{
       agenda:m.agenda||'',
       agenda_file_name:m.agenda_file_name||m.agenda_file||'',
       agenda_file_data:m.agenda_file_data||'',
+      agenda_file_url:m.agenda_file_url||'',
       agenda_uploaded_by:m.agenda_uploaded_by||m.author||'',
       agenda_uploaded_at:m.agenda_uploaded_at||'',
       minutes:m.minutes||'',
       minutes_file_name:m.minutes_file_name||m.minutes_file||'',
       minutes_file_data:m.minutes_file_data||'',
+      minutes_file_url:m.minutes_file_url||'',
       minutes_uploaded_by:m.minutes_uploaded_by||'',
       minutes_uploaded_at:m.minutes_uploaded_at||'',
+      classified_files:m.classified_files||[],
+      drive_root_url:m.drive_root_url||'',
       attachments:m.attachments||[],
       group_uploads:m.group_uploads||[],
       created_by:m.created_by||m.author||'',
@@ -6876,9 +6860,7 @@ class ScoutEventApp{
   }
   // ── 會議 Drive 即時連通 ──
   getMeetingDriveFolderId(){
-    const fromEvent=this.eventData?.drive?.groups?.['會議']||this.eventData?.drive?.groups?.['會議(0 Pre-Meeting,1,2,3 Meeting)']||'';
-    const fromCfg=this.systemConfig?.meeting_folder_id||this.extractDriveFolderId(this.systemConfig?.meeting_folder_link||'');
-    return fromEvent||fromCfg||'';
+    return this.getMeetingFolderConfig().id||'';
   }
   renderMeetingDriveTab(container){
     if(!container) return;
@@ -7270,9 +7252,9 @@ class ScoutEventApp{
     // Drive 資料夾連結：如會議設有 drive_root_url，在議程分頁頂部顯示
     const driveFolderHtml=m.drive_root_url?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><i class="fa-brands fa-google-drive text-emerald-600 text-lg flex-shrink-0"></i><div class="min-w-0"><b class="text-[12px] text-emerald-900">會議 Drive 資料夾</b><div class="text-[10px] text-emerald-700 truncate">${escapeHtml(m.drive_root_url)}</div></div></div><a href="${escapeHtml(m.drive_root_url)}" target="_blank" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0 hover:bg-emerald-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</a></div>`:'';
     const agendaArea=document.getElementById('md-agenda-file-area'); 
-    if(m.agenda_file_name){ 
+    if(m.agenda_file_name||m.agenda_file_url||m.agenda_file_data){ 
       agendaArea.classList.remove('hidden'); 
-      document.getElementById('md-agenda-file-name').textContent=m.agenda_file_name; 
+      document.getElementById('md-agenda-file-name').textContent=m.agenda_file_name||'議程檔案'; 
       const isAgendaDrive=m.agenda_file_url&&String(m.agenda_file_url).includes('drive.google.com');
       document.getElementById('md-agenda-file-meta').textContent=isAgendaDrive?'Google Drive 資料夾':`${m.agenda_uploaded_by||''} · ${m.agenda_uploaded_at?new Date(m.agenda_uploaded_at).toLocaleString():''}`;
       document.getElementById('md-agenda-file-info').innerHTML=isAgendaDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有議程檔案</span>`:`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage':'Sheet + 快取'}</b>`;
@@ -7282,9 +7264,9 @@ class ScoutEventApp{
     const driveBannerEl=document.getElementById('md-drive-folder-banner');
     if(driveBannerEl){ driveBannerEl.innerHTML=driveFolderHtml; driveBannerEl.classList.toggle('hidden',!driveFolderHtml); }
     const minutesArea=document.getElementById('md-minutes-file-area'); 
-    if(m.minutes_file_name){ 
+    if(m.minutes_file_name||m.minutes_file_url||m.minutes_file_data){ 
       minutesArea.classList.remove('hidden'); 
-      document.getElementById('md-minutes-file-name').textContent=m.minutes_file_name;
+      document.getElementById('md-minutes-file-name').textContent=m.minutes_file_name||'會議紀錄檔案';
       const isMinutesDrive=m.minutes_file_url&&String(m.minutes_file_url).includes('drive.google.com');
       document.getElementById('md-minutes-file-meta').textContent=isMinutesDrive?'Google Drive 資料夾':`${m.minutes_uploaded_by||''} · ${m.minutes_uploaded_at?new Date(m.minutes_uploaded_at).toLocaleString():''}`;
       document.getElementById('md-minutes-file-info').innerHTML=isMinutesDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有會議紀錄檔案</span>`:`儲存位置：<b>${this.mockMode?'localStorage':'Sheet + 快取'}</b>`;
@@ -7334,12 +7316,15 @@ class ScoutEventApp{
   }
   downloadCurrentMeetingFile(type){
     const m=this.getMeetings().find(x=>x.meeting_id===this.currentMeetingId); if(!m) return;
+    const classified=(m.classified_files||[]).find(f=>f.kind===type && f.file_url);
     if(type==='agenda'){
-      if(m.agenda_file_url){ window.open(m.agenda_file_url,'_blank'); showToast('已開啟 Drive 資料夾','success'); return; }
+      const url=m.agenda_file_url||classified?.file_url||'';
+      if(url){ window.open(url,'_blank'); showToast('已開啟議程檔案','success'); return; }
       if(m.agenda_file_data) downloadDataUrl(m.agenda_file_name||'議程.pdf',m.agenda_file_data);
       else showToast('無文件可下載','warning');
     } else if(type==='minutes'){
-      if(m.minutes_file_url){ window.open(m.minutes_file_url,'_blank'); showToast('已開啟 Drive 資料夾','success'); return; }
+      const url=m.minutes_file_url||classified?.file_url||'';
+      if(url){ window.open(url,'_blank'); showToast('已開啟會議紀錄','success'); return; }
       if(m.minutes_file_data) downloadDataUrl(m.minutes_file_name||'紀錄.pdf',m.minutes_file_data);
       else showToast('無文件可下載','warning');
     }
@@ -10722,6 +10707,10 @@ class ScoutEventApp{
 
 const app=window.app=new ScoutEventApp();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
+</script>
+</body>
+</html>
+'keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
 </script>
 </body>
 </html>

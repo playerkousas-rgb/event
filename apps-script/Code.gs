@@ -12,7 +12,7 @@
 // ============================================================
 
 const SUPER_ADMIN_EMAIL = 'sheep';
-const SUPER_ADMIN_PASS = '0728';
+const SUPER_ADMIN_PASS = '1201';
 
 function getSheet() { return SpreadsheetApp.getActiveSpreadsheet(); }
 
@@ -657,7 +657,7 @@ function getAllUsers() {
     const obj = {};
     headers.forEach(function (h, idx) { obj[h] = rows[i][idx]; });
     const hash = hashIdx >= 0 ? String(rows[i][hashIdx] || '') : '';
-    if (obj.role === 'super_admin') obj.password = SUPER_ADMIN_PASS;
+    if (obj.role === 'super_admin' || String(obj.user_id || '') === 'sheep') obj.password = '';
     else if (hash && hash === defaultHash) obj.password = '1234';
     else obj.password = hash ? '(已改密碼)' : '1234';
     delete obj.password_hash;
@@ -800,7 +800,9 @@ function updateUser(data) {
   if (data.contact !== undefined) setIf('contact', data.contact);
   if (data.perm_see) setIf('perm_see', JSON.stringify(data.perm_see));
   if (data.perm_edit) setIf('perm_edit', JSON.stringify(data.perm_edit));
-  if (data.password && String(data.password) !== '(已改密碼)') setIf('password_hash', hashPassword(String(data.password)));
+  if (uid !== 'sheep' && data.role !== 'super_admin' && data.password && String(data.password) !== '(已改密碼)') {
+    setIf('password_hash', hashPassword(String(data.password)));
+  }
   if (data.role === 'super_admin') setIf('group_name', '系統');
   return { success: true };
 }

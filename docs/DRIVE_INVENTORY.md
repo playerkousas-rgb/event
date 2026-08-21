@@ -41,7 +41,7 @@
 ### 秘書處及文件類 → 其他
 - Memo_Invite_OC `1aLgtIFi8br-Wh9OyTyy97yCJ0HgiZJpX`：M28_2026 邀請函 (Councils/District/DRCs) + M28a 回條 + M48_2025 參考
 - 收受利益及申報政策 `1pR0lO-QlE5H19bVKCXnE6OBA6kjnj72N`：pc132018c.pdf、pc142018c.pdf
-- 會議 `1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4`：0 Pre-Meeting 20260501、1 Meeting 20260512、2 Meeting 20260616、3 Meeting 20260721、4 Meeting 20260818
+- 會議 `13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM`：會議卡片／會議列表指定資料夾（議程、會議紀錄及附件）
 - 1_App 8_工作計劃及進度 V2.docx `1OPRHxG3x_fLvpLDBEqmdb8dlsq0HuSe1`
 - MAP.gif `1OrnF4mWDpYEQ04I-wN2t32pDeVJmfjbP`
 

@@ -658,7 +658,7 @@
     "groups": {
       "秘書處及文件類": "1q65ci_5185w2IeDujy_Pnq4KtzId02Nq",
       "通告": "1zZsgcH4DyAWKrwdXvcOs_gwtMaRI5VVH",
-      "會議": "1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
+      "會議": "13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "行政組": "1f36teUWdBPMm1rmkSlENguJgSm-MGJ5C",
       "協調組": "1OFugENuzbu8gIPr-tsXfBOG0_Un9QJ2n",
       "節目組": "1EYw48Lh_UrTfpFDpNifHO7Wd1kjWOi15",
@@ -682,7 +682,7 @@
       "minutes_file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4",
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "attachments": [],
       "classified_files": [
         {
@@ -701,7 +701,7 @@
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4"
+          "file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
         }
       ]
     },
@@ -719,7 +719,7 @@
       "minutes_file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1Q_0MwS9JYvr2vdWr4xMvYpRJqEdU0Zsy",
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "attachments": [],
       "classified_files": [
         {
@@ -738,7 +738,7 @@
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1Q_0MwS9JYvr2vdWr4xMvYpRJqEdU0Zsy"
+          "file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
         }
       ]
     },
@@ -756,7 +756,7 @@
       "minutes_file_name": "App1-ISD2026-籌備委員會第1次會議記錄_Ver1.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1DIjanPDviWgTa4hKanOiQTrq9o3bQTx1",
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "attachments": [],
       "classified_files": [
         {
@@ -775,7 +775,7 @@
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1DIjanPDviWgTa4hKanOiQTrq9o3bQTx1"
+          "file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
         },
         {
           "kind": "slides",
@@ -799,7 +799,7 @@
       "minutes_file_name": "App1-ISD2026-籌備委員會第2次會議記錄_Ver1.pdf",
       "visibility": "public",
       "status": "completed",
-      "drive_root_url": "https://drive.google.com/drive/folders/1aExU8X7KDqurCxI1T3YKtagvEliInBq1",
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "attachments": [],
       "classified_files": [
         {
@@ -818,7 +818,7 @@
           "kind": "other",
           "label": "其他資料",
           "file_name": "該次會議資料夾內其他檔案（簡報／附件）",
-          "file_url": "https://drive.google.com/drive/folders/1aExU8X7KDqurCxI1T3YKtagvEliInBq1"
+          "file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
         }
       ]
     },
@@ -836,7 +836,7 @@
       "minutes_file_name": "App1-ISD2026-籌備委員會第3次會議記錄_Ver1.pdf",
       "visibility": "public",
       "status": "upcoming",
-      "drive_root_url": "https://drive.google.com/drive/folders/1DSHW1KAJDU-GYrHOXYx2ig6yG4LJnrCy",
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "attachments": [],
       "classified_files": [
         {
@@ -1189,490 +1189,490 @@
       {
         "name": "黃偉安",
         "role_title": "顧問",
-        "group_name": "顧問及主席團",
+        "group_name": "管理",
+        "level": "",
         "contact": "9215 7472",
-        "email": "edward_wo_wong@yahoo.com.hk",
-        "level": ""
+        "email": "edward_wo_wong@yahoo.com.hk"
       },
       {
         "name": "何家騏",
         "role_title": "顧問",
-        "group_name": "顧問及主席團",
+        "group_name": "管理",
+        "level": "",
         "contact": "9020 0716",
-        "email": "dominicho@hkirscout.org.hk",
-        "level": ""
+        "email": "dominicho@hkirscout.org.hk"
       },
       {
         "name": "朱家聰",
         "role_title": "主席",
-        "group_name": "顧問及主席團",
+        "group_name": "管理",
+        "level": "",
         "contact": "6022 2665",
-        "email": "chukachung@gmail.com",
-        "level": ""
+        "email": "chukachung@gmail.com"
       },
       {
         "name": "袁可秀",
         "role_title": "執行副主席",
-        "group_name": "顧問及主席團",
+        "group_name": "管理",
+        "level": "",
         "contact": "6534 3478",
-        "email": "allisoncorner@gmail.com",
-        "level": ""
+        "email": "allisoncorner@gmail.com"
       },
       {
         "name": "張佳良",
         "role_title": "副主席（典禮及會操）",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "副主席",
         "contact": "9272 4291",
-        "email": "kenckl.scout@gmail.com",
-        "level": "副主席"
+        "email": "kenckl.scout@gmail.com"
       },
       {
         "name": "梁文澧",
         "role_title": "總主任（會操）",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "總主任",
         "contact": "9439 6543",
-        "email": "radioedric@gmail.com",
-        "level": "總主任"
+        "email": "radioedric@gmail.com"
       },
       {
         "name": "李懷恩",
         "role_title": "總主任（典禮）",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "總主任",
         "contact": "9218 4670",
-        "email": "fionalee1215@gmail.com",
-        "level": "總主任"
+        "email": "fionalee1215@gmail.com"
       },
       {
         "name": "",
         "role_title": "步操統籌主任",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "步操統籌主任",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "司令員",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "典禮統籌主任",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "優異旅團統籌主任",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "獎勵統籌主任",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "司儀統籌主任",
-        "group_name": "典禮及會操組",
+        "group_name": "典禮及會操",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "周恒晉",
         "role_title": "副主席（主題節目）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "副主席",
         "contact": "6471 9696",
-        "email": "jimmychc2001@yahoo.com.hk",
-        "level": "副主席"
+        "email": "jimmychc2001@yahoo.com.hk"
       },
       {
         "name": "仇紹謙",
         "role_title": "總主任（主題節目）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "總主任",
         "contact": "5403 3041",
-        "email": "andycsh_2005@hotmail.com",
-        "level": "總主任"
+        "email": "andycsh_2005@hotmail.com"
       },
       {
         "name": "何令勤",
         "role_title": "節目主任（1）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "主任",
         "contact": "8494 3252",
-        "email": "lincolnho.scouting@gmail.com",
-        "level": "主任"
+        "email": "lincolnho.scouting@gmail.com"
       },
       {
         "name": "陳鋑羲",
         "role_title": "節目主任（2）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "主任",
         "contact": "6387 3422",
-        "email": "aldencch.scout@gmail.com",
-        "level": "主任"
+        "email": "aldencch.scout@gmail.com"
       },
       {
         "name": "張宏剛",
         "role_title": "節目主任（3）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "主任",
         "contact": "6100 1525",
-        "email": "kongivan_2003@yahoo.com.hk",
-        "level": "主任"
+        "email": "kongivan_2003@yahoo.com.hk"
       },
       {
         "name": "羅卓華",
         "role_title": "節目主任（4）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "主任",
         "contact": "9475 6084",
-        "email": "adcventure@wanchaiscout.org.hk",
-        "level": "主任"
+        "email": "adcventure@wanchaiscout.org.hk"
       },
       {
         "name": "李庭甄",
         "role_title": "節目主任（5）",
-        "group_name": "主題節目組",
+        "group_name": "主題節目",
+        "level": "主任",
         "contact": "9028 3305",
-        "email": "tweenylee1112@gmail.com",
-        "level": "主任"
+        "email": "tweenylee1112@gmail.com"
       },
       {
         "name": "何嘉駿",
         "role_title": "副主席（品牌推廣）",
-        "group_name": "品牌推廣組",
+        "group_name": "品牌推廣",
+        "level": "副主席",
         "contact": "6197 5747",
-        "email": "leoho1993@gmail.com",
-        "level": "副主席"
+        "email": "leoho1993@gmail.com"
       },
       {
         "name": "",
         "role_title": "總主任（品牌推廣）",
-        "group_name": "品牌推廣組",
+        "group_name": "品牌推廣",
+        "level": "總主任",
         "contact": "",
-        "email": "",
-        "level": "總主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "設計主任",
-        "group_name": "品牌推廣組",
+        "group_name": "品牌推廣",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "宣傳主任",
-        "group_name": "品牌推廣組",
+        "group_name": "品牌推廣",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "社交媒體主任",
-        "group_name": "品牌推廣組",
+        "group_name": "品牌推廣",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "拍攝/攝錄主任",
-        "group_name": "品牌推廣組",
+        "group_name": "品牌推廣",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "曾麗珊",
         "role_title": "副主席（嘉賓接待）",
-        "group_name": "嘉賓接待組",
+        "group_name": "嘉賓接待",
+        "level": "副主席",
         "contact": "9278 1576",
-        "email": "carmen0236@gmail.com",
-        "level": "副主席"
+        "email": "carmen0236@gmail.com"
       },
       {
         "name": "張嘉政",
         "role_title": "總主任（嘉賓接待）",
-        "group_name": "嘉賓接待組",
+        "group_name": "嘉賓接待",
+        "level": "總主任",
         "contact": "9340 8134",
-        "email": "jackcheung@hkirscout.org.hk",
-        "level": "總主任"
+        "email": "jackcheung@hkirscout.org.hk"
       },
       {
         "name": "黃培芳",
         "role_title": "嘉賓接待主任",
-        "group_name": "嘉賓接待組",
+        "group_name": "嘉賓接待",
+        "level": "主任",
         "contact": "9878 1745",
-        "email": "teresawg1021@gmail.com",
-        "level": "主任"
+        "email": "teresawg1021@gmail.com"
       },
       {
         "name": "張敬浩",
         "role_title": "交通主任",
-        "group_name": "嘉賓接待組",
+        "group_name": "嘉賓接待",
+        "level": "主任",
         "contact": "6223 5842",
-        "email": "marscheung@hkirscout.org.hk",
-        "level": "主任"
+        "email": "marscheung@hkirscout.org.hk"
       },
       {
         "name": "朱浩銘",
         "role_title": "嘉賓支援主任",
-        "group_name": "嘉賓接待組",
+        "group_name": "嘉賓接待",
+        "level": "主任",
         "contact": "6909 0831",
-        "email": "minghochu2004@yahoo.com.hk",
-        "level": "主任"
+        "email": "minghochu2004@yahoo.com.hk"
       },
       {
         "name": "羅添駿",
         "role_title": "副主席（協調）",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "副主席",
         "contact": "6840 0436",
-        "email": "timki0801@gmail.com",
-        "level": "副主席"
+        "email": "timki0801@gmail.com"
       },
       {
         "name": "鍾偉志",
         "role_title": "總主任（協調）",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "總主任",
         "contact": "9308 1134",
-        "email": "chungwaicity@hotmail.com",
-        "level": "總主任"
+        "email": "chungwaicity@hotmail.com"
       },
       {
         "name": "黃嘉恩",
         "role_title": "總主任（協調）",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "總主任",
         "contact": "9225 7684",
-        "email": "regengenwong@hotmail.com",
-        "level": "總主任"
+        "email": "regengenwong@hotmail.com"
       },
       {
         "name": "馬一波",
         "role_title": "場地佈置主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "6778 1644",
-        "email": "bobbyma246@gmail.com",
-        "level": "主任"
+        "email": "bobbyma246@gmail.com"
       },
       {
         "name": "吳卓藍",
         "role_title": "膳食主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "6596 8526",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "郭慧敏",
         "role_title": "後勤主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "5542 8632",
-        "email": "huiguo794@gmail.com",
-        "level": "主任"
+        "email": "huiguo794@gmail.com"
       },
       {
         "name": "施珍淇",
         "role_title": "物資主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "5532 0707",
-        "email": "szq0803@gmail.com",
-        "level": "主任"
+        "email": "szq0803@gmail.com"
       },
       {
         "name": "布瀚文",
         "role_title": "秩序主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "5406 3207",
-        "email": "ansonpo0326@gmail.com",
-        "level": "主任"
+        "email": "ansonpo0326@gmail.com"
       },
       {
         "name": "鄺逸俊",
         "role_title": "交通管制主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "9817 6010",
-        "email": "nzsss5965@gmail.com",
-        "level": "主任"
+        "email": "nzsss5965@gmail.com"
       },
       {
         "name": "李思諭",
         "role_title": "物流運輸主任",
-        "group_name": "協調組",
+        "group_name": "協調",
+        "level": "主任",
         "contact": "5110 0112",
-        "email": "51100112lee@gmail.com",
-        "level": "主任"
+        "email": "51100112lee@gmail.com"
       },
       {
         "name": "黎姵伶",
         "role_title": "副主席（服務及發展）",
-        "group_name": "服務及發展組",
+        "group_name": "服務及發展",
+        "level": "副主席",
         "contact": "9620 4146",
-        "email": "pannielai@hkirscout.org.hk",
-        "level": "副主席"
+        "email": "pannielai@hkirscout.org.hk"
       },
       {
         "name": "李卓琪",
         "role_title": "總主任（服務及發展）",
-        "group_name": "服務及發展組",
+        "group_name": "服務及發展",
+        "level": "總主任",
         "contact": "9099 9528",
-        "email": "reginalicheukki@gmail.com",
-        "level": "總主任"
+        "email": "reginalicheukki@gmail.com"
       },
       {
         "name": "郭成威",
         "role_title": "服務主任",
-        "group_name": "服務及發展組",
+        "group_name": "服務及發展",
+        "level": "主任",
         "contact": "6996 0363",
-        "email": "g2832454514@gmail.com",
-        "level": "主任"
+        "email": "g2832454514@gmail.com"
       },
       {
         "name": "",
         "role_title": "發展主任",
-        "group_name": "服務及發展組",
+        "group_name": "服務及發展",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "募捐主任",
-        "group_name": "服務及發展組",
+        "group_name": "服務及發展",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "機構聯絡主任",
-        "group_name": "服務及發展組",
+        "group_name": "服務及發展",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "徐嘉皓",
         "role_title": "副主席（行政）",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "副主席",
         "contact": "9243 7655",
-        "email": "alantsui2005@gmail.com",
-        "level": "副主席"
+        "email": "alantsui2005@gmail.com"
       },
       {
         "name": "文幹皓",
         "role_title": "總主任（運作）",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "總主任",
         "contact": "6857 2996",
-        "email": "jamesman@hkirscout.org.hk",
-        "level": "總主任"
+        "email": "jamesman@hkirscout.org.hk"
       },
       {
         "name": "莫穎民",
         "role_title": "總主任（行政）",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "6107 0452",
-        "email": "playerkousas@hotmail.com",
-        "level": "主任"
+        "email": "playerkousas@hotmail.com"
       },
       {
         "name": "",
         "role_title": "旅團報到主任",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "何仲康",
         "role_title": "紀念品主任",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "9365 5225",
-        "email": "benky_hch@outlook.com",
-        "level": "主任"
+        "email": "benky_hch@outlook.com"
       },
       {
         "name": "何家騏",
         "role_title": "危機處理主任",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "9020 0716",
-        "email": "dominicho@hkirscout.org.hk",
-        "level": "主任"
+        "email": "dominicho@hkirscout.org.hk"
       },
       {
         "name": "",
         "role_title": "行政主任",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "",
         "role_title": "參事主任",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "",
-        "email": "",
-        "level": "主任"
+        "email": ""
       },
       {
         "name": "蔡天欣",
         "role_title": "財政主任",
-        "group_name": "行政組",
+        "group_name": "行政",
+        "level": "主任",
         "contact": "6201 9484",
-        "email": "tinachoi@outlook.com",
-        "level": "主任"
+        "email": "tinachoi@outlook.com"
       },
       {
         "name": "何家耀",
         "role_title": "秘書處",
         "group_name": "秘書處",
+        "level": "",
         "contact": "2835 7712",
-        "email": "hkrase@scout.org.hk",
-        "level": ""
+        "email": "hkrase@scout.org.hk"
       },
       {
         "name": "陸詠德",
         "role_title": "秘書處",
         "group_name": "秘書處",
+        "level": "",
         "contact": "2835 7713",
-        "email": "hkroffp@scout.org.hk",
-        "level": ""
+        "email": "hkroffp@scout.org.hk"
       },
       {
         "name": "曾凱瑩",
         "role_title": "秘書處",
         "group_name": "秘書處",
+        "level": "",
         "contact": "",
-        "email": "",
-        "level": ""
+        "email": ""
       },
       {
         "name": "鄧倩姸",
         "role_title": "秘書處",
         "group_name": "秘書處",
+        "level": "",
         "contact": "",
-        "email": "",
-        "level": ""
+        "email": ""
       }
     ],
     "job_duties": [
@@ -2782,5 +2782,5 @@
     ],
     "note": "行政組／協調組在 Google Sheet 更新泊車證申請總表，APP 開啟即自動內置讀取。"
   },
-  "data_version": "2026-08-21T00:00:00Z-v2"
+  "data_version": "2026-08-21T12:00:00Z-v3"
 }
