@@ -1113,9 +1113,24 @@ class ScoutEventApp{
     // 正式活動（已連後端）：內置靜態資料仍從 JSON 載入（無後端模組），後端/本地改動優先
     if(!this.isDemoEvent() && this.currentEvent){
       try{
-        const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json();
+        const r2=await fetch(`data/${this.currentEvent.event_id}.json?t=${Date.now()}`); const j2=await r2.json();
         if(j2){
-          ['documents','crisis','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements','meetings','staff'].forEach(k=>{ if(j2[k]!==undefined && (this.eventData[k]===undefined||this.eventData[k]===null||(Array.isArray(this.eventData[k])&&!this.eventData[k].length))) this.eventData[k]=j2[k]; });
+          // v8.2：JSON 版本檢查。data_version 變更時，自動清 staff / crisis 舊 localStorage 快取，
+          // 讓「秘書處在 JSON 更新後強制刷新也看不到」的問題不再發生。
+          try{
+            const dvKey='event_data_version_'+this.currentEvent.event_id;
+            const lastDv=localStorage.getItem(dvKey);
+            const newDv=j2.data_version||'';
+            if(newDv && newDv!==lastDv){
+              localStorage.removeItem(LS.staff(this.currentEvent.event_id));
+              localStorage.removeItem(LS.crisis(this.currentEvent.event_id));
+              this._crisisLocalKept=null;
+              localStorage.setItem(dvKey, newDv);
+              console.log('[ISD] data_version changed → cleared staff/crisis local cache:', lastDv, '→', newDv);
+            }
+          }catch(e){}
+          // 「以 JSON 為單一事實來源」的模組：只要 JSON 有,一律覆蓋（避免空 skeleton 卡住新資料）
+          ['staff','crisis','documents','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements'].forEach(k=>{ if(j2[k]!==undefined && j2[k]!==null) this.eventData[k]=j2[k]; });
           // finance / activities：只併入「資料來源指標」
           if(j2.finance && j2.finance.budget_source) this.eventData.finance={budget_source:j2.finance.budget_source};
           if(j2.activities && j2.activities.booth_source) this.eventData.activities={booth_source:j2.activities.booth_source};
@@ -6142,10 +6157,39 @@ class ScoutEventApp{
 
   /* ===================== Staff Enhanced Module ===================== */
   getStaffData(){
-    // Try localStorage override first
+    // v8.2：JSON 為單一事實來源。localStorage 只允許保留帶 _userEdited 標記的項目
+    // （防止過往 localStorage 快取住舊的排序 / 舊聯絡表，強制刷新也沒用的問題）。
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
-    const raw=local||this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
+    const jsonStaff=this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
+    let raw;
+    if(this.isDemoEvent()){
+      // 示範沙盒 (mock_demo)：維持原本 local 優先的行為，方便自由玩沙
+      raw=local||jsonStaff;
+    } else {
+      // 正式活動：JSON 為底，若 local 有 _userEdited 項則覆蓋 / 追加對應 id
+      raw={
+        staff_source: jsonStaff.staff_source||local?.staff_source||null,
+        contact_source: jsonStaff.contact_source||local?.contact_source||null,
+        duties_source: jsonStaff.duties_source||local?.duties_source||null,
+        org_chart: [...(jsonStaff.org_chart||[])],
+        contacts: [...(jsonStaff.contacts||[])],
+        job_duties: [...(jsonStaff.job_duties||[])],
+      };
+      if(local){
+        const mergeUser=(baseArr,localArr,keyField)=>{
+          if(!Array.isArray(localArr)) return baseArr;
+          const edits=localArr.filter(x=>x&&x._userEdited);
+          if(!edits.length) return baseArr;
+          const out=[...baseArr];
+          edits.forEach(u=>{ const idx=out.findIndex(x=>x[keyField]===u[keyField]); if(idx>=0) out[idx]={...out[idx],...u}; else out.push(u); });
+          return out;
+        };
+        raw.org_chart=mergeUser(raw.org_chart, local.org_chart, 'id');
+        raw.contacts=mergeUser(raw.contacts, local.contacts, 'id');
+        raw.job_duties=mergeUser(raw.job_duties, local.job_duties, 'id');
+      }
+    }
     // Normalize both seeded and previously saved data so displayed group names never retain wrapping parentheses.
     const orgNodes=[];
     (raw.org_chart||[]).forEach((n,i)=>{
@@ -6176,6 +6220,12 @@ class ScoutEventApp{
   }
   saveStaffData(data){
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
+    // v8.2：正式活動中把即將寫入 localStorage 的項目全部打上 _userEdited，
+    // 這樣 getStaffData() 才會保留這些改動（其他項目仍以 JSON 為準）。
+    if(!this.isDemoEvent() && data && typeof data==='object'){
+      const stamp=(arr)=>Array.isArray(arr)?arr.map(x=>({...x,_userEdited:true})):arr;
+      data={...data, org_chart:stamp(data.org_chart), contacts:stamp(data.contacts), job_duties:stamp(data.job_duties)};
+    }
     localStorage.setItem(key,JSON.stringify(data));
     this.eventData['staff']=data;
     // 同步到後端（GAS）
@@ -8440,7 +8490,23 @@ class ScoutEventApp{
         date:'2026-08-20'
       }
     ];
-    if(local && (local.team?.length||local.contacts?.length||local.docs?.length||local.manuals?.length||local.accidents?.length)){
+    // v8.2：localStorage 只保留使用者產生的 accidents(意外報告)，
+    // team/contacts/docs/manuals 一律以 data/isd_2026.json 為單一事實來源，
+    // 這樣秘書處在 JSON 更新的排序／人員異動可以立即反映到 App，不會被舊 local 卡住。
+    const rawJson=this.eventData['crisis']||null;
+    const jsonHasCore=rawJson && (Array.isArray(rawJson.team)||Array.isArray(rawJson.docs)||Array.isArray(rawJson.contacts)||Array.isArray(rawJson.manuals));
+    if(local && jsonHasCore){
+      // 只保留 accidents，其他清空以走 JSON path
+      const kept={ accidents: Array.isArray(local.accidents)?stripMockAcc(local.accidents):[] };
+      // 若 user 曾經編輯 team/contacts/docs 並打上 _userEdited 標記，才保留其對應項目
+      if(Array.isArray(local.team) && local.team.some(x=>x&&x._userEdited)) kept._userTeam=local.team.filter(x=>x&&x._userEdited);
+      if(Array.isArray(local.contacts) && local.contacts.some(x=>x&&x._userEdited)) kept._userContacts=local.contacts.filter(x=>x&&x._userEdited);
+      if(Array.isArray(local.docs) && local.docs.some(x=>x&&x._userEdited)) kept._userDocs=local.docs.filter(x=>x&&x._userEdited);
+      // 覆寫 localStorage 為精簡版
+      localStorage.setItem(key, JSON.stringify(kept));
+      // 讓下面 JSON 分支處理（把 accidents 合併回去）
+      this._crisisLocalKept=kept;
+    } else if(local && (local.team?.length||local.contacts?.length||local.docs?.length||local.manuals?.length||local.accidents?.length)){
       if(!Array.isArray(local.manuals)) local.manuals=defaultManuals;
       if(!Array.isArray(local.accidents)) local.accidents=[{
         id:'acc_1',
@@ -8568,6 +8634,14 @@ class ScoutEventApp{
         remarks:'傷者已平安返家，領袖於活動翌日進行電話跟進，康復情況良好。'
       }];
       norm.accidents=stripMockAcc(norm.accidents);
+      // v8.2：合併使用者保存的 accidents / 手動編輯項
+      const kept=this._crisisLocalKept;
+      if(kept){
+        if(Array.isArray(kept.accidents)&&kept.accidents.length) norm.accidents=stripMockAcc(kept.accidents);
+        if(Array.isArray(kept._userTeam)){ kept._userTeam.forEach(u=>{ const i=norm.team.findIndex(x=>x.id===u.id); if(i>=0) norm.team[i]={...norm.team[i],...u}; else norm.team.push(u); }); }
+        if(Array.isArray(kept._userContacts)){ kept._userContacts.forEach(u=>{ const i=norm.contacts.findIndex(x=>x.id===u.id); if(i>=0) norm.contacts[i]={...norm.contacts[i],...u}; else norm.contacts.push(u); }); }
+        if(Array.isArray(kept._userDocs)){ kept._userDocs.forEach(u=>{ const i=norm.docs.findIndex(x=>x.id===u.id); if(i>=0) norm.docs[i]={...norm.docs[i],...u}; else norm.docs.push(u); }); }
+      }
       return norm;
     }
     if(!this.isDemoEvent()) return {team:[],contacts:[],docs:[],manuals:defaultManuals,accidents:[]};
