@@ -59,7 +59,7 @@ Object.assign(app, {
   currentEvent: { event_id: 'isd_2026' },
   currentUser: { role: 'super_admin', name: '超管', user_id: 'sheep', group_name: '主席及執行副主席' },
   eventData: {
-    drive: { groups: { '會議': '1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4' } },
+    drive: { groups: { '會議': '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM' }, meeting_upload_folder_id: '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM' },
     supplies: { inventory: [], requests: [{ request_id: 'req_1', item_name: '對講機' }], vehicle_passes: [] },
     meals: { menus: [], orders: [] },
     finance: { expenses: [], income: [], group_itemized_budgets: [] }
@@ -119,7 +119,7 @@ assert(staffPerms.edit.length<chairPerms.edit.length, 'staff should not inherit 
 assert(app.permSourceLabel(chair)==='主席預設', 'chair permission source should be role default');
 
 const folder = app.getMeetingFolderConfig();
-assert(folder.id === '1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4', 'meeting Drive did not prefer event folder');
+assert(folder.id === '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM', 'meeting Drive did not prefer event folder');
 app.gasUrl = '';
 app.renderApprovalCenter();
 app.meetingSubTab = null;

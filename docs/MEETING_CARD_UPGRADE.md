@@ -4,7 +4,7 @@
 
 ## 0. ISD 2026 會議 Drive 即時同步（目前預設入口）
 
-- 點擊「會議卡片」會直接開啟公開 Drive 根目錄 `1-abBGIs37E_cvrHacd1tG9wgWiDRXnz4`，毋須先進入本地會議列表。
+- 點擊「會議卡片」會直接開啟公開 Drive 根目錄 `13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM`，毋須先進入本地會議列表。
 - 畫面按 0 Pre-Meeting、第1次、第2次等子資料夾排列議程、會議紀錄及附件；可切換清單／內嵌模式。
 - 秘書處直接在該 Drive 上載或更新檔案後，使用者重新進入卡片或按「重新整理（讀取最新）」即可看到變更。
 - 正式環境由 GAS `listDriveFolder` 以 `UrlFetchApp` 讀取公開內容；未連後端時使用 Google Drive 內嵌資料夾。資料夾及檔案必須設為「知道連結的任何人可查看」。
