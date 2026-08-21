@@ -253,7 +253,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     <div class="bg-white rounded-2xl shadow-sm border p-4 sm:p-6"><div id="module-content"></div></div>
   </div>
 
-  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：超管／執行副主席及以上看全部；副主席、總主任看本組；主任看本組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
+  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>超管</b>睇全部人（包括自己）；<b>執行副主席／主席／顧問／管理員</b>睇除超管以外全部人；<b>副主席</b>只睇自己組；<b>總主任</b>睇自己組但不包括副主席；<b>主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
   <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
   <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm space-y-3"><h3 class="font-bold">控制台（超管）</h3><p class="text-xs text-slate-500 leading-relaxed">此頁只供超管調整後端連線（GAS URL／API Key）。一般籌委不需要進入。會議預告、開戶、批核等都在儀表板卡片處理，不是在這裡。</p><button onclick="app.openSettingsModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟系統設定</button></div></div>
   <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
@@ -329,13 +329,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
       <div id="md-tab-agenda" class="space-y-3">
         <div id="md-drive-folder-banner" class="hidden"></div>
-        <div class="bg-sky-50 border border-sky-200 rounded-xl p-4"><h4 class="font-bold text-sm text-sky-900 mb-2">議程內容</h4><p id="md-agenda-text" class="text-sm leading-relaxed whitespace-pre-line">-</p></div>
-        <div id="md-agenda-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-pdf text-red-500"></i><div class="min-w-0"><div id="md-agenda-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-agenda-file-meta"></span> · 儲存位置：<span class="font-mono text-[10px]">瀏覽器 localStorage (Mock) / Google Sheet cell (GAS)</span></div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟</button><button id="md-agenda-delete-btn" onclick="app.deleteMeetingFile('agenda')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-agenda-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
+        <div id="md-agenda-text" class="space-y-2"></div>
+        <div id="md-agenda-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-pdf text-red-500"></i><div class="min-w-0"><div id="md-agenda-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-agenda-file-meta"></span> · 儲存位置：<span class="font-mono text-[10px]">瀏覽器 localStorage (Mock) / Google Sheet cell (GAS)</span></div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.toggleMeetingDetailPreview('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i> 頁內預覽</button><button onclick="app.downloadCurrentMeetingFile('agenda')" class="bg-white border px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 下載</button><button id="md-agenda-delete-btn" onclick="app.deleteMeetingFile('agenda')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-agenda-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div><div id="md-agenda-preview" class="hidden mt-2"></div></div>
         <div id="md-agenda-admin-upload" class="hidden border-2 border-dashed border-sky-300 rounded-xl p-3 bg-sky-50/50"><label class="text-xs font-bold">管理員追加上傳議程檔案</label><div class="flex gap-2 mt-2"><input type="file" id="md-agenda-upload" class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('agenda')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
       </div>
       <div id="md-tab-minutes" class="hidden space-y-3">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4"><h4 class="font-bold text-sm text-emerald-900 mb-2">會議紀錄</h4><p id="md-minutes-text" class="text-sm leading-relaxed whitespace-pre-line">-</p></div>
-        <div id="md-minutes-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-lines text-emerald-600"></i><div class="min-w-0"><div id="md-minutes-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-minutes-file-meta"></span> · 儲存位置：localStorage / Sheet</div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.downloadCurrentMeetingFile('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟</button><button id="md-minutes-delete-btn" onclick="app.deleteMeetingFile('minutes')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-minutes-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div></div>
+        <div id="md-minutes-text" class="space-y-2"></div>
+        <div id="md-minutes-file-area" class="hidden"><div class="flex items-center justify-between bg-white border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file-lines text-emerald-600"></i><div class="min-w-0"><div id="md-minutes-file-name" class="text-sm font-medium truncate">-</div><div class="text-[10px] text-slate-500"><span id="md-minutes-file-meta"></span> · 儲存位置：localStorage / Sheet</div></div></div><div class="flex gap-1 flex-shrink-0"><button onclick="app.toggleMeetingDetailPreview('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i> 頁內預覽</button><button onclick="app.downloadCurrentMeetingFile('minutes')" class="bg-white border px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> 下載</button><button id="md-minutes-delete-btn" onclick="app.deleteMeetingFile('minutes')" class="hidden bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash"></i> 刪除</button></div></div><div id="md-minutes-file-info" class="text-[10px] text-slate-500 mt-1 px-1"></div><div id="md-minutes-preview" class="hidden mt-2"></div></div>
         <div id="md-minutes-admin-upload" class="hidden border-2 border-dashed border-emerald-300 rounded-xl p-3 bg-emerald-50/50"><label class="text-xs font-bold">管理員追加上傳紀錄檔案</label><div class="flex gap-2 mt-2"><input type="file" id="md-minutes-upload" class="text-xs flex-1"><button onclick="app.uploadMeetingFileInDetail('minutes')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">上傳</button></div></div>
       </div>
       <div id="md-tab-attachments" class="hidden space-y-3">
@@ -1150,6 +1150,8 @@ class ScoutEventApp{
     }
     // Staff/Crisis/其他：全部以 JSON 為準，不從 localStorage 覆蓋
     // localStorage 僅用於暫存未上傳的修改，上傳後 JSON 會更新
+    // 會議議程／紀錄「內建 JSON」：data/meeting_records.json（+ 本機編輯覆蓋），令成員唔使彈出 Drive APP 都睇到全文
+    await this.loadMeetingRecords();
     // 正式活動（非示範沙盒）且已連後端：拉取 Meal_Orders 合併（組長確認/行政審批狀態跨裝置同步）
     this.syncApplicationsFromGas();
   }
@@ -1161,7 +1163,7 @@ class ScoutEventApp{
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
       const isAdmin=this.isAdmin();
-      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button><button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
+      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>${isAdmin?'<button onclick="app.toggleMeetingRecordsEditor()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-code mr-1"></i>內建議程 JSON</button>':''}<button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
     } else if(key==='staff'){
       const canManageStaff=this.canManageStaffContacts();
       document.getElementById('module-actions').innerHTML=canManageStaff
@@ -1407,9 +1409,11 @@ class ScoutEventApp{
   getMySubordinates(){
     const u=this.currentUser; if(!u) return [];
     const myLvl=this.roleLevel(u.role);
+    const iAmSuper=this.isSuperAdmin();
     const isAdmin=this.isAdmin()||myLvl>=100;
     return (this.usersList||[]).filter(x=>{
       if(!x || x.user_id===u.user_id) return false;
+      if(!iAmSuper && this.isSuperAdminUser(x)) return false; // 超管帳戶只有超管自己睇到
       const lvl=this.roleLevel(x.role);
       if(isAdmin) return true;
       if(lvl>=myLvl) return false;         // 只能授權給層級比自己低的下級
@@ -6790,6 +6794,224 @@ class ScoutEventApp{
       attendees:m.attendees||[]
     };
   }
+  /* ===================== 內建議程／會議紀錄 (JSON, 免彈出 Drive) v8.3 =====================
+     來源：data/meeting_records.json（隨 APP 一齊發佈）＋ 本機編輯覆蓋（localStorage）。
+     目的：成員喺會議卡片入面直接讀晒議程、決議、跟進事項，唔使彈去 Google Drive / Drive APP。
+     Drive PDF 仍然保留：喺卡片內用「內嵌預覽」睇，或按下載。                                   */
+  meetingRecordsKey(){ return 'isd_meeting_records_'+(this.currentEvent?.event_id||'isd_2026'); }
+  async loadMeetingRecords(){
+    let base={meetings:[]};
+    try{
+      const res=await fetch(`data/meeting_records.json?t=${Date.now()}`);
+      const j=await res.json();
+      if(j && Array.isArray(j.meetings)) base=j;
+    }catch(e){}
+    try{
+      const local=JSON.parse(localStorage.getItem(this.meetingRecordsKey())||'null');
+      if(local && Array.isArray(local.meetings) && local.meetings.length){
+        const byId=new Map((base.meetings||[]).map(r=>[String(r.meeting_id),r]));
+        local.meetings.forEach(r=>{
+          const k=String(r.meeting_id);
+          byId.set(k,{...(byId.get(k)||{}),...r,_local:true});
+        });
+        base={...base,meetings:[...byId.values()]};
+      }
+    }catch(e){}
+    this.meetingRecords=base;
+    return base;
+  }
+  getMeetingRecord(m){
+    if(!m) return null;
+    const list=this.meetingRecords?.meetings||[];
+    if(!list.length) return null;
+    return list.find(r=>String(r.meeting_id)===String(m.meeting_id))
+        || list.find(r=>r.meeting_number!==undefined && Number(r.meeting_number)===Number(m.meeting_number))
+        || null;
+  }
+  hasBuiltInRecord(m,kind){
+    const r=this.getMeetingRecord(m); if(!r) return false;
+    if(kind==='agenda') return !!(r.agenda_items||[]).length;
+    if(kind==='minutes') return !!((r.minutes_sections||[]).length||(r.decisions||[]).length||(r.action_items||[]).length);
+    return !!((r.agenda_items||[]).length||(r.minutes_sections||[]).length);
+  }
+  driveFileIdFromUrl(url){
+    if(!url) return '';
+    const s=String(url);
+    let m=s.match(/\/file\/d\/([a-zA-Z0-9-_]+)/); if(m) return m[1];
+    m=s.match(/[?&]id=([a-zA-Z0-9-_]+)/); if(m) return m[1];
+    return '';
+  }
+  builtInStatusBadge(rec){
+    const full=rec?.content_status==='full';
+    return `<span class="text-[10px] px-2 py-0.5 rounded-full border font-bold ${full?'bg-emerald-100 text-emerald-800 border-emerald-200':'bg-amber-100 text-amber-800 border-amber-200'}">${full?'已錄入全文':'摘要／重點版'}</span>`;
+  }
+  /* 內建議程（HTML，直接嵌喺頁面／卡片，無彈窗） */
+  /* 摘要下面的「睇全文」入口：頁內預覽原檔（iframe）＋ 需要時先跳去 Drive 原檔 */
+  builtInFullTextBar(m,kind,ctx){
+    const rec=this.getMeetingRecord(m);
+    const url=(kind==='agenda'?(m.agenda_file_url||rec?.source?.agenda_file_url):(m.minutes_file_url||rec?.source?.minutes_file_url))||'';
+    const name=(kind==='agenda'?(m.agenda_file_name||rec?.source?.agenda_file_name):(m.minutes_file_name||rec?.source?.minutes_file_name))||'原檔';
+    const folder=m.drive_root_url||rec?.source?.folder_url||'';
+    const id=this.driveFileIdFromUrl(url);
+    const pid=`mrfull-${m.meeting_id}-${kind}-${ctx||'inline'}`;
+    if(!id){
+      return folder?`<div class="mt-2 pt-2 border-t border-white/60 flex flex-wrap items-center gap-2 text-[10px] text-slate-500"><span><i class="fa-solid fa-circle-info mr-1"></i>以上為摘要／重點；此次會議未有指定原檔。</span><a href="${escapeHtml(folder)}" target="_blank" rel="noopener" class="underline text-sky-700 font-bold">去 Drive 資料夾睇全文 ↗</a></div>`:'';
+    }
+    return `<div class="mt-2 pt-2 border-t border-white/60 space-y-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-[10px] text-slate-500"><i class="fa-solid fa-circle-info mr-1"></i>以上為摘要／重點，全文請按右邊：</span>
+        <button onclick="app.toggleInlineDrivePreview('${pid}','${id}')" class="text-[10px] px-2.5 py-1.5 rounded-lg bg-slate-900 text-white font-bold"><i class="fa-solid fa-book-open-reader mr-1"></i>睇全文（頁內開啟）</button>
+        <button onclick="app.downloadDriveFile('${escapeHtml(url)}')" class="text-[10px] px-2.5 py-1.5 rounded-lg bg-white border font-bold"><i class="fa-solid fa-download mr-1"></i>下載原檔</button>
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="text-[10px] underline text-slate-500">Drive 開啟 ↗</a>
+        <span class="text-[10px] text-slate-400 truncate">${escapeHtml(name)}</span>
+      </div>
+      <div id="${pid}" class="hidden"></div>
+    </div>`;
+  }
+  renderBuiltInAgendaHtml(m,ctx){
+    const rec=this.getMeetingRecord(m);
+    const items=rec?.agenda_items||[];
+    if(!items.length){
+      const txt=(m.agenda||'').trim();
+      return `<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[12px] leading-relaxed whitespace-pre-line">${txt?escapeHtml(txt):'暫無內建議程內容（秘書處可於 data/meeting_records.json 補上，或喺下方編輯內建內容）。'}${this.builtInFullTextBar(m,'agenda',ctx)}</div>`;
+    }
+    const head=`<div class="flex flex-wrap items-center gap-2 mb-2">
+      <b class="text-[12px] text-sky-900"><i class="fa-solid fa-list-check mr-1"></i>議程（APP 內建 · 免開 Drive）</b>
+      ${this.builtInStatusBadge(rec)}
+      ${rec.chair?`<span class="text-[10px] text-slate-500">主持：${escapeHtml(rec.chair)}</span>`:''}
+      ${rec.recorder?`<span class="text-[10px] text-slate-500">紀錄：${escapeHtml(rec.recorder)}</span>`:''}
+    </div>`;
+    const meta=`<div class="text-[10px] text-slate-500 mb-2"><i class="fa-solid fa-calendar mr-1"></i>${escapeHtml(rec.date||m.date||'')} ${escapeHtml(rec.time||m.time||'')} · <i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(rec.location||m.location||'')}</div>`;
+    const rows=items.map(it=>`<tr class="border-b last:border-0 align-top">
+      <td class="px-2 py-1.5 text-[11px] font-bold text-slate-500 whitespace-nowrap">${escapeHtml(String(it.no||''))}</td>
+      <td class="px-2 py-1.5 text-[12px] font-semibold">${escapeHtml(it.topic||'')}${it.notes?`<div class="text-[11px] font-normal text-slate-600 mt-0.5 leading-relaxed">${escapeHtml(it.notes)}</div>`:''}</td>
+      <td class="px-2 py-1.5 text-[11px] text-slate-500 whitespace-nowrap">${escapeHtml(it.presenter||'')}</td>
+    </tr>`).join('');
+    return `<div class="bg-sky-50 border border-sky-200 rounded-xl p-3">${head}${meta}
+      <div class="bg-white border rounded-xl overflow-hidden"><table class="min-w-full"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left text-[10px]">項</th><th class="px-2 py-1 text-left text-[10px]">議題</th><th class="px-2 py-1 text-left text-[10px]">負責</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${this.builtInFullTextBar(m,'agenda',ctx)}
+    </div>`;
+  }
+  /* 內建會議紀錄（HTML，直接嵌喺頁面／卡片，無彈窗） */
+  renderBuiltInMinutesHtml(m,ctx){
+    const rec=this.getMeetingRecord(m);
+    const secs=rec?.minutes_sections||[];
+    const decisions=rec?.decisions||[];
+    const actions=rec?.action_items||[];
+    if(!secs.length && !decisions.length && !actions.length){
+      const txt=(m.minutes||'').trim();
+      return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] leading-relaxed whitespace-pre-line">${txt?escapeHtml(txt):'暫無內建會議紀錄（會後由秘書處錄入，Drive PDF 仍可內嵌預覽）。'}${this.builtInFullTextBar(m,'minutes',ctx)}</div>`;
+    }
+    const head=`<div class="flex flex-wrap items-center gap-2 mb-2">
+      <b class="text-[12px] text-emerald-900"><i class="fa-solid fa-clipboard-check mr-1"></i>會議紀錄（APP 內建 · 免開 Drive）</b>
+      ${this.builtInStatusBadge(rec)}
+    </div>`;
+    const secHtml=secs.map(s=>`<div class="bg-white border rounded-xl p-2.5">
+      <b class="text-[12px]">${escapeHtml(s.heading||'')}</b>
+      <ul class="mt-1 space-y-1 list-disc pl-4 text-[12px] leading-relaxed">${(s.points||[]).map(p=>`<li>${escapeHtml(p)}</li>`).join('')}</ul>
+    </div>`).join('');
+    const decHtml=decisions.length?`<div class="bg-white border border-emerald-300 rounded-xl p-2.5">
+      <b class="text-[12px] text-emerald-800"><i class="fa-solid fa-gavel mr-1"></i>議決事項</b>
+      <ol class="mt-1 space-y-1 list-decimal pl-4 text-[12px] leading-relaxed">${decisions.map(d=>`<li>${escapeHtml(d)}</li>`).join('')}</ol>
+    </div>`:'';
+    const actHtml=actions.length?`<div class="bg-white border border-amber-300 rounded-xl p-2.5">
+      <b class="text-[12px] text-amber-800"><i class="fa-solid fa-list-check mr-1"></i>跟進事項</b>
+      <div class="mt-1 overflow-hidden rounded-lg border"><table class="min-w-full"><thead class="bg-amber-50"><tr><th class="px-2 py-1 text-left text-[10px]">事項</th><th class="px-2 py-1 text-left text-[10px]">負責</th><th class="px-2 py-1 text-left text-[10px]">限期</th></tr></thead><tbody>${actions.map(a=>`<tr class="border-t align-top"><td class="px-2 py-1.5 text-[12px]">${escapeHtml(a.item||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.owner||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.due||'')}</td></tr>`).join('')}</tbody></table></div>
+    </div>`:'';
+    return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2">${head}${secHtml}${decHtml}${actHtml}${this.builtInFullTextBar(m,'minutes',ctx)}</div>`;
+  }
+  /* 內嵌預覽 Drive 檔案（頁內 iframe，唔會彈去 Drive APP） */
+  renderMeetingFilesHtml(m){
+    const rec=this.getMeetingRecord(m);
+    const files=[];
+    const push=(kind,label,name,url)=>{ if(url||name) files.push({kind,label,file_name:name||label,file_url:url||''}); };
+    push('agenda','議程',m.agenda_file_name||rec?.source?.agenda_file_name,m.agenda_file_url||rec?.source?.agenda_file_url);
+    push('minutes','會議紀錄',m.minutes_file_name||rec?.source?.minutes_file_name,m.minutes_file_url||rec?.source?.minutes_file_url);
+    (m.classified_files||[]).forEach(f=>{ if(f.kind!=='agenda'&&f.kind!=='minutes') push(f.kind||'other',f.label||'其他資料',f.file_name,f.file_url); });
+    (m.attachments||[]).forEach(a=>push('other','附件',a.file_name,a.file_url));
+    if(!files.length) return `<div class="bg-white border rounded-xl p-3 text-[11px] text-slate-500">此會議暫未關聯 Drive 檔案。內建議程／紀錄已可直接喺上面閱讀。</div>`;
+    const rows=files.map((f,i)=>{
+      const fid=this.driveFileIdFromUrl(f.file_url);
+      const pid=`mfp-${m.meeting_id}-${i}`;
+      return `<div class="bg-white border rounded-xl p-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0"><div class="text-[12px] font-semibold truncate"><i class="fa-solid ${f.kind==='agenda'?'fa-file-lines text-sky-600':f.kind==='minutes'?'fa-clipboard-check text-emerald-600':'fa-paperclip text-amber-600'} mr-1"></i>${escapeHtml(f.label)} · ${escapeHtml(f.file_name||'')}</div></div>
+          <div class="flex gap-1 flex-shrink-0">
+            ${fid?`<button onclick="app.toggleInlineDrivePreview('${pid}','${fid}')" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-eye mr-1"></i>頁內預覽</button>
+            <a href="https://drive.google.com/uc?export=download&id=${fid}" class="bg-white border px-2.5 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</a>`:`<span class="text-[10px] text-slate-400">未有檔案連結</span>`}
+          </div>
+        </div>
+        <div id="${pid}" class="hidden mt-2"></div>
+      </div>`;
+    }).join('');
+    return `<div class="space-y-2">${rows}<div class="text-[10px] text-slate-400">「頁內預覽」直接喺 APP 內開啟檔案，唔會跳去 Google Drive APP；如需正式存檔請按下載。</div></div>`;
+  }
+  toggleInlineDrivePreview(containerId,fileId){
+    const el=document.getElementById(containerId); if(!el) return;
+    if(!el.classList.contains('hidden')){ el.classList.add('hidden'); el.innerHTML=''; return; }
+    el.innerHTML=`<iframe src="https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview" class="w-full h-[60vh] rounded-xl border" title="檔案內嵌預覽" allow="autoplay"></iframe><div class="text-[10px] text-slate-400 mt-1">如預覽空白，代表該檔案未設為「知道連結的任何人可查看」，請通知秘書處。</div>`;
+    el.classList.remove('hidden');
+  }
+  /* 會議卡片內的頁內展開（議程／紀錄／檔案），完全唔使彈窗 */
+  toggleMeetingInline(meetingId,kind){
+    const panel=document.getElementById('mi-'+meetingId); if(!panel) return;
+    const m=this.getMeetings().find(x=>x.meeting_id===meetingId); if(!m) return;
+    if(!panel.classList.contains('hidden') && panel.dataset.kind===kind){ panel.classList.add('hidden'); panel.innerHTML=''; panel.dataset.kind=''; this.markMeetingInlineButtons(meetingId,''); return; }
+    let html='';
+    if(kind==='agenda') html=this.renderBuiltInAgendaHtml(m,'card');
+    else if(kind==='minutes') html=this.renderBuiltInMinutesHtml(m,'card');
+    else html=this.renderMeetingFilesHtml(m);
+    panel.innerHTML=html;
+    panel.dataset.kind=kind;
+    panel.classList.remove('hidden');
+    this.markMeetingInlineButtons(meetingId,kind);
+  }
+  markMeetingInlineButtons(meetingId,kind){
+    ['agenda','minutes','files'].forEach(k=>{
+      const b=document.getElementById(`mib-${meetingId}-${k}`); if(!b) return;
+      b.classList.toggle('ring-2',k===kind);
+      b.classList.toggle('ring-sky-400',k===kind);
+    });
+  }
+  exportMeetingRecordsJson(){
+    const data=this.meetingRecords||{meetings:[]};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='meeting_records.json'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    showToast('已匯出 meeting_records.json，可覆蓋 data/meeting_records.json 發佈','success');
+  }
+  toggleMeetingRecordsEditor(){
+    const box=document.getElementById('meeting-records-editor'); if(!box) return;
+    if(!box.classList.contains('hidden')){ box.classList.add('hidden'); box.innerHTML=''; return; }
+    if(!this.isAdmin()){ showToast('只有管理員可編輯內建議程／紀錄','error'); return; }
+    const json=JSON.stringify(this.meetingRecords||{meetings:[]},null,2);
+    box.innerHTML=`<div class="bg-white border rounded-xl p-3 space-y-2">
+      <div class="text-[11px] text-slate-600 leading-relaxed"><b><i class="fa-solid fa-pen-to-square mr-1 text-indigo-600"></i>編輯內建議程／會議紀錄（JSON）：</b>喺下面直接改文字，按「儲存到本機」即時生效（只影響本裝置）；正式發佈請按「匯出 JSON」並覆蓋 <code class="font-mono">data/meeting_records.json</code>。結構：<code class="font-mono">meetings[].agenda_items / minutes_sections / decisions / action_items</code>。</div>
+      <textarea id="meeting-records-json" class="w-full h-[45vh] px-3 py-2 border rounded-xl text-[11px] font-mono" spellcheck="false">${escapeHtml(json)}</textarea>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="app.saveMeetingRecordsJson()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>儲存到本機並套用</button>
+        <button onclick="app.exportMeetingRecordsJson()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 JSON</button>
+        <button onclick="app.resetMeetingRecordsLocal()" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate-left mr-1"></i>還原內建版本</button>
+      </div>
+    </div>`;
+    box.classList.remove('hidden');
+  }
+  saveMeetingRecordsJson(){
+    const ta=document.getElementById('meeting-records-json'); if(!ta) return;
+    let parsed;
+    try{ parsed=JSON.parse(ta.value); }catch(e){ showToast('JSON 格式錯誤：'+e.message,'error'); return; }
+    if(!parsed||!Array.isArray(parsed.meetings)){ showToast('JSON 必須包含 meetings 陣列','error'); return; }
+    localStorage.setItem(this.meetingRecordsKey(),JSON.stringify(parsed));
+    this.meetingRecords=parsed;
+    showToast('已儲存並套用內建議程／紀錄（本機）','success');
+    this.renderMeetingsList();
+  }
+  async resetMeetingRecordsLocal(){
+    localStorage.removeItem(this.meetingRecordsKey());
+    await this.loadMeetingRecords();
+    showToast('已還原為 data/meeting_records.json 內建版本','success');
+    this.renderMeetingsList();
+  }
   extractDriveFolderId(link){
     if(!link) return '';
     let m=link.match(/\/folders\/([a-zA-Z0-9-_]+)/);
@@ -6958,11 +7180,11 @@ class ScoutEventApp{
           <div class="min-w-0"><div class="text-[12px] font-medium truncate flex items-center gap-1.5 flex-wrap">${escapeHtml(f.name)} ${kindBadge(kind)}</div><div class="text-[10px] text-slate-400">${f._folder?escapeHtml(f._folder)+' · ':''}${fmtSize(f.size)}${f.modified?' · '+fmtDate(f.modified):''}</div></div>
         </div>
         <div class="flex gap-1 flex-shrink-0">
-          <button onclick="app.previewDriveFile('${f.id}')" class="bg-sky-50 border border-sky-200 text-sky-700 px-2 py-1 rounded-lg text-[10px] font-bold">預覽</button>
-          <a href="${f.link||('https://drive.google.com/file/d/'+f.id+'/view')}" target="_blank" rel="noopener" class="bg-white border px-2 py-1 rounded-lg text-[10px] font-bold">開啟</a>
-          <a href="https://drive.google.com/uc?export=download&id=${f.id}" target="_blank" rel="noopener" class="bg-white border px-2 py-1 rounded-lg text-[10px] font-bold">下載</a>
+          <button onclick="app.toggleInlineDrivePreview('mdp-${f.id}','${f.id}')" class="bg-sky-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-eye mr-1"></i>頁內預覽</button>
+          <button onclick="app.downloadDriveFile('https://drive.google.com/file/d/${f.id}/view')" class="bg-white border px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</button>
         </div>
-      </div>`; };
+      </div>
+      <div id="mdp-${f.id}" class="hidden px-4 pb-3"></div>`; };
     const folderBlock=(sf,idx)=>`
       <div class="border rounded-xl bg-white overflow-hidden">
         <button onclick="app.toggleMdFolder('md-f-${idx}')" class="w-full flex items-center justify-between gap-2 px-4 py-3 hover:bg-slate-50 text-left">
@@ -7048,6 +7270,13 @@ class ScoutEventApp{
         <button onclick="app.switchMeetingSubTab('list')" class="tab-btn ${this.meetingSubTab==='list'?'active':''}"><i class="fa-solid fa-list mr-1"></i>會議列表</button>
         <button onclick="app.switchMeetingSubTab('drive')" class="tab-btn ${this.meetingSubTab==='drive'?'active':''}"><i class="fa-solid fa-folder-open mr-1"></i>會議 Drive（即時）</button>
       </div>
+      <div id="meeting-records-editor" class="hidden"></div>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900">
+        <b><i class="fa-solid fa-book-open mr-1"></i>議程／會議紀錄已「內建」喺 APP（免彈出 Google Drive APP）：</b>
+        每張會議卡片下面按 <b>「議程（內建·即睇）」</b> 或 <b>「會議紀錄（內建·即睇）」</b>，內容會即刻喺卡片內展開（文字版：議程項目、議決事項、跟進事項），唔會跳去 Drive。
+        原始 PDF 想睇就按 <b>「檔案（頁內預覽）」</b>，一樣係喺 APP 內用內嵌視窗打開，或直接下載。<br>
+        資料來源：<code class="font-mono">data/meeting_records.json</code>（隨 APP 發佈，離線都睇到）${isAdmin?' · 管理員可按右上「內建議程 JSON」直接編輯／匯出':''}。
+      </div>
       <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900 space-y-2">
         <div><b>會議卡片升級說明：</b><br>• 管理員可上傳議程及會議紀錄 (PDF/Word/圖片)，全部籌委成員點擊卡片即可觀看<br>• 分不同會議 (第0/1/2/3/4次) 上傳及觀看<br>• 各小組可上傳開會專用附件（簡報 PPT/PDF、活動章設計圖檔 PNG/JPG 等），議程及會議紀錄已直接關聯 Google Drive<br>• 全部文件支援下載 (單個或打包下載) · 管理員可刪除任何檔案 / 會議 / 組資料<br>• <b>指定資料夾 (FOLDER LINK)</b>：管理員可設定 Google Drive 資料夾連結，上傳時自動上傳到該資料夾，突破 5MB 限制</div>
         <div class="bg-white border border-sky-200 rounded-xl p-2.5">
@@ -7092,7 +7321,14 @@ class ScoutEventApp{
                 ${m.author?`<span><i class="fa-solid fa-user mr-1"></i>${escapeHtml(m.author)}</span>`:''}
               </div>
               <div class="mt-2 flex flex-wrap gap-1.5">${agendaBadge}${minutesBadge}${attachCount?`<span class="file-chip"><i class="fa-solid fa-paperclip"></i> ${attachCount} 附件</span>`:''}${groupCount?`<span class="file-chip bg-amber-50 border-amber-200 text-amber-800"><i class="fa-solid fa-users-rectangle"></i> ${groupCount} 組資料</span>`:''}</div>
-              ${(m.classified_files||[]).length?`<div class="mt-2 space-y-1.5" onclick="event.stopPropagation()">${m.drive_root_url?`<a href="${escapeHtml(m.drive_root_url)}" target="_blank" class="flex items-center gap-1.5 text-[10px] px-2.5 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 font-bold hover:bg-emerald-100 transition"><i class="fa-brands fa-google-drive text-emerald-600"></i>開啟會議 Drive 資料夾（議程·紀錄·附件）<i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[9px]"></i></a>`:''}<div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">${m.classified_files.map(f=>`<a href="${escapeHtml(f.file_url||'#')}" target="_blank" class="text-[10px] px-2 py-1 rounded-lg border bg-white hover:bg-slate-50 truncate flex items-center gap-1"><i class="fa-solid ${f.kind==='agenda'?'fa-file-lines text-sky-600':f.kind==='minutes'?'fa-clipboard-check text-emerald-600':'fa-paperclip text-amber-600'}"></i><b>${escapeHtml(f.label||this.classifyMeetingFileLabel(f.kind))}</b> · ${escapeHtml(f.file_name||'')}</a>`).join('')}</div></div>`:''}
+              <div class="mt-2 space-y-1.5" onclick="event.stopPropagation()">
+                <div class="flex flex-wrap gap-1.5">
+                  <button id="mib-${m.meeting_id}-agenda" onclick="app.toggleMeetingInline('${m.meeting_id}','agenda')" class="text-[10px] px-2.5 py-1.5 rounded-lg border border-sky-300 bg-sky-50 text-sky-800 font-bold hover:bg-sky-100 transition"><i class="fa-solid fa-list-check mr-1"></i>議程（內建·即睇）</button>
+                  <button id="mib-${m.meeting_id}-minutes" onclick="app.toggleMeetingInline('${m.meeting_id}','minutes')" class="text-[10px] px-2.5 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 font-bold hover:bg-emerald-100 transition"><i class="fa-solid fa-clipboard-check mr-1"></i>會議紀錄（內建·即睇）</button>
+                  <button id="mib-${m.meeting_id}-files" onclick="app.toggleMeetingInline('${m.meeting_id}','files')" class="text-[10px] px-2.5 py-1.5 rounded-lg border bg-white text-slate-700 font-bold hover:bg-slate-50 transition"><i class="fa-solid fa-paperclip mr-1"></i>檔案（頁內預覽）</button>
+                </div>
+                <div id="mi-${m.meeting_id}" class="hidden" data-kind=""></div>
+              </div>
               ${m.agenda?`<p class="text-[11px] text-slate-600 mt-2 line-clamp-2 leading-relaxed">${escapeHtml(m.agenda.slice(0,80))}...</p>`:''}
             </div>
             <div class="flex flex-col gap-1 flex-shrink-0">
@@ -7247,10 +7483,11 @@ class ScoutEventApp{
     document.getElementById('md-status-badge').textContent={upcoming:'即將舉行',completed:'已完成',draft:'草稿整理中'}[m.status]||m.status;
     document.getElementById('md-title').textContent=m.title;
     document.getElementById('md-date').textContent=m.date||'-'; document.getElementById('md-time').textContent=m.time||''; document.getElementById('md-location').textContent=m.location||''; document.getElementById('md-author').textContent=m.author||m.created_by||'';
-    document.getElementById('md-agenda-text').textContent=m.agenda||'暫無議程內容';
-    document.getElementById('md-minutes-text').textContent=m.minutes||'暫無會議紀錄';
+    document.getElementById('md-agenda-text').innerHTML=this.renderBuiltInAgendaHtml(m,'detail');
+    document.getElementById('md-minutes-text').innerHTML=this.renderBuiltInMinutesHtml(m,'detail');
+    ['md-agenda-preview','md-minutes-preview'].forEach(id=>{const el=document.getElementById(id); if(el){ el.innerHTML=''; el.classList.add('hidden'); }});
     // Drive 資料夾連結：如會議設有 drive_root_url，在議程分頁頂部顯示
-    const driveFolderHtml=m.drive_root_url?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><i class="fa-brands fa-google-drive text-emerald-600 text-lg flex-shrink-0"></i><div class="min-w-0"><b class="text-[12px] text-emerald-900">會議 Drive 資料夾</b><div class="text-[10px] text-emerald-700 truncate">${escapeHtml(m.drive_root_url)}</div></div></div><a href="${escapeHtml(m.drive_root_url)}" target="_blank" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0 hover:bg-emerald-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</a></div>`:'';
+    const driveFolderHtml=m.drive_root_url?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-book-open text-emerald-600 text-lg flex-shrink-0"></i><div class="min-w-0"><b class="text-[12px] text-emerald-900">議程／紀錄已內建喺 APP（免開 Drive）</b><div class="text-[10px] text-emerald-700">下方文字版即時可讀；Drive 原檔可用「頁內預覽」或下載。</div></div></div><a href="${escapeHtml(m.drive_root_url)}" target="_blank" rel="noopener" class="text-[10px] text-emerald-700 underline flex-shrink-0">Drive 資料夾</a></div></div>`:'';
     const agendaArea=document.getElementById('md-agenda-file-area'); 
     if(m.agenda_file_name||m.agenda_file_url||m.agenda_file_data){ 
       agendaArea.classList.remove('hidden'); 
@@ -7314,25 +7551,46 @@ class ScoutEventApp{
     if(btn) btn.classList.add('active'); else document.querySelector(`.tab-btn[data-tab="${tab}"]`)?.classList.add('active');
     ['agenda','minutes','attachments','group'].forEach(t=>{const el=document.getElementById('md-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
   }
+  /* 直接下載 Drive 檔案（用隱藏 iframe，唔會彈出 Google Drive APP／新分頁） */
+  downloadDriveFile(url,name){
+    const id=this.driveFileIdFromUrl(url);
+    if(!id){ if(url) window.open(url,'_blank','noopener'); return false; }
+    const fr=document.createElement('iframe');
+    fr.style.display='none';
+    fr.src=`https://drive.google.com/uc?export=download&id=${id}`;
+    document.body.appendChild(fr);
+    setTimeout(()=>fr.remove(),60000);
+    return true;
+  }
   downloadCurrentMeetingFile(type){
     const m=this.getMeetings().find(x=>x.meeting_id===this.currentMeetingId); if(!m) return;
     const classified=(m.classified_files||[]).find(f=>f.kind===type && f.file_url);
     if(type==='agenda'){
       const url=m.agenda_file_url||classified?.file_url||'';
-      if(url){ window.open(url,'_blank'); showToast('已開啟議程檔案','success'); return; }
+      if(url){ this.downloadDriveFile(url,m.agenda_file_name); showToast('議程檔案下載中（唔會跳去 Drive APP）','success'); return; }
       if(m.agenda_file_data) downloadDataUrl(m.agenda_file_name||'議程.pdf',m.agenda_file_data);
       else showToast('無文件可下載','warning');
     } else if(type==='minutes'){
       const url=m.minutes_file_url||classified?.file_url||'';
-      if(url){ window.open(url,'_blank'); showToast('已開啟會議紀錄','success'); return; }
+      if(url){ this.downloadDriveFile(url,m.minutes_file_name); showToast('會議紀錄下載中（唔會跳去 Drive APP）','success'); return; }
       if(m.minutes_file_data) downloadDataUrl(m.minutes_file_name||'紀錄.pdf',m.minutes_file_data);
       else showToast('無文件可下載','warning');
     }
   }
+  /* 會議詳情：頁內預覽議程／紀錄 PDF（iframe，唔彈窗） */
+  toggleMeetingDetailPreview(type){
+    const m=this.getMeetings().find(x=>x.meeting_id===this.currentMeetingId); if(!m) return;
+    const classified=(m.classified_files||[]).find(f=>f.kind===type && f.file_url);
+    const rec=this.getMeetingRecord(m);
+    const url=(type==='agenda'?(m.agenda_file_url||rec?.source?.agenda_file_url):(m.minutes_file_url||rec?.source?.minutes_file_url))||classified?.file_url||'';
+    const id=this.driveFileIdFromUrl(url);
+    if(!id){ showToast('此會議未有可預覽的 Drive 檔案（內建文字版已在上方）','warning'); return; }
+    this.toggleInlineDrivePreview('md-'+type+'-preview',id);
+  }
   downloadAttachment(meetingId,fileId){
     const m=this.getMeetings().find(x=>x.meeting_id===meetingId); if(!m) return;
     const f=(m.attachments||[]).find(x=>x.file_id===fileId); if(!f){ showToast('文件不存在','error'); return; }
-    if(f.file_url){ window.open(f.file_url,'_blank'); showToast('已開啟 Drive 檔案連結','success'); return; }
+    if(f.file_url){ this.downloadDriveFile(f.file_url,f.file_name); showToast('檔案下載中（唔會跳去 Drive APP）','success'); return; }
     if(!f.file_data){ showToast('文件不存在','error'); return; }
     downloadDataUrl(f.file_name,f.file_data);
   }
@@ -7340,7 +7598,7 @@ class ScoutEventApp{
     const m=this.getMeetings().find(x=>x.meeting_id===meetingId); if(!m) return;
     const u=(m.group_uploads||[]).find(x=>x.upload_id===uploadId); 
     if(!u){ showToast('找不到資料','error'); return; }
-    if(u.file_url){ window.open(u.file_url,'_blank'); showToast('已開啟 Drive 檔案連結','success'); return; }
+    if(u.file_url){ this.downloadDriveFile(u.file_url,u.file_name); showToast('檔案下載中（唔會跳去 Drive APP）','success'); return; }
     if(!u.file_data){ if(u.member_data){ const blob=new Blob([u.member_data],{type:'text/plain'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=(u.group_name||'group')+'_會員資料.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); return;} showToast('無檔案，僅有文字資料','warning'); return; }
     downloadDataUrl(u.file_name||'group_file',u.file_data);
   }
@@ -7348,19 +7606,19 @@ class ScoutEventApp{
     const id=meetingId||this.currentMeetingId;
     const m=this.getMeetings().find(x=>x.meeting_id===id); if(!m){ showToast('找不到會議','error'); return; }
     let count=0; let driveCount=0;
-    if(m.agenda_file_url){ setTimeout(()=>window.open(m.agenda_file_url,'_blank'),count*300); driveCount++; count++; }
+    if(m.agenda_file_url){ setTimeout(()=>this.downloadDriveFile(m.agenda_file_url,m.agenda_file_name),count*300); driveCount++; count++; }
     else if(m.agenda_file_data){ setTimeout(()=>downloadDataUrl(m.agenda_file_name||'議程',m.agenda_file_data),count*400); count++; }
-    if(m.minutes_file_url){ setTimeout(()=>window.open(m.minutes_file_url,'_blank'),count*300); driveCount++; count++; }
+    if(m.minutes_file_url){ setTimeout(()=>this.downloadDriveFile(m.minutes_file_url,m.minutes_file_name),count*300); driveCount++; count++; }
     else if(m.minutes_file_data){ setTimeout(()=>downloadDataUrl(m.minutes_file_name||'紀錄',m.minutes_file_data),count*400); count++; }
     (m.attachments||[]).forEach(a=>{ 
-      if(a.file_url){ setTimeout(()=>window.open(a.file_url,'_blank'),count*300); driveCount++; count++; }
+      if(a.file_url){ setTimeout(()=>this.downloadDriveFile(a.file_url,a.file_name),count*300); driveCount++; count++; }
       else if(a.file_data){ setTimeout(()=>downloadDataUrl(a.file_name,a.file_data),count*400); count++; } 
     });
     (m.group_uploads||[]).forEach(u=>{ if(this.isAdmin()||u.visibility!=='private'){ 
-      if(u.file_url){ setTimeout(()=>window.open(u.file_url,'_blank'),count*300); driveCount++; count++; }
+      if(u.file_url){ setTimeout(()=>this.downloadDriveFile(u.file_url,u.file_name),count*300); driveCount++; count++; }
       else if(u.file_data){ setTimeout(()=>downloadDataUrl(u.file_name||'會員資料',u.file_data),count*400); count++; } 
     } });
-    if(count===0) showToast('此會議暫無可下載文件','warning'); else showToast(`已開始下載 ${count} 個文件 (其中 ${driveCount} 個 Drive 連結將開啟新分頁)`, 'success');
+    if(count===0) showToast('此會議暫無可下載文件','warning'); else showToast(`已開始下載 ${count} 個文件（其中 ${driveCount} 個由 Drive 直接下載，唔會彈去 Drive APP）`, 'success');
   }
   downloadAllMeetingsFiles(){
     const list=this.getMeetings(); if(!list.length){ showToast('暫無會議','warning'); return; }
@@ -7368,17 +7626,17 @@ class ScoutEventApp{
     if(!confirm(`確定打包下載全部 ${list.length} 場會議的所有文件？瀏覽器會逐個彈出/開啟新分頁，共約 ${total} 個文件`)) return;
     let delay=0;
     list.forEach(m=>{
-      if(m.agenda_file_url){ setTimeout(()=>window.open(m.agenda_file_url,'_blank'),delay); delay+=400; }
+      if(m.agenda_file_url){ setTimeout(()=>this.downloadDriveFile(m.agenda_file_url,m.agenda_file_name),delay); delay+=400; }
       else if(m.agenda_file_data){ setTimeout(()=>downloadDataUrl(`第${m.meeting_number}次_${m.agenda_file_name||'議程'}`,m.agenda_file_data),delay); delay+=500; }
-      if(m.minutes_file_url){ setTimeout(()=>window.open(m.minutes_file_url,'_blank'),delay); delay+=400; }
+      if(m.minutes_file_url){ setTimeout(()=>this.downloadDriveFile(m.minutes_file_url,m.minutes_file_name),delay); delay+=400; }
       else if(m.minutes_file_data){ setTimeout(()=>downloadDataUrl(`第${m.meeting_number}次_${m.minutes_file_name||'紀錄'}`,m.minutes_file_data),delay); delay+=500; }
       (m.attachments||[]).forEach(a=>{ 
-        if(a.file_url) setTimeout(()=>window.open(a.file_url,'_blank'),delay);
+        if(a.file_url) setTimeout(()=>this.downloadDriveFile(a.file_url,a.file_name),delay);
         else setTimeout(()=>downloadDataUrl(`第${m.meeting_number}次_${a.file_name}`,a.file_data),delay);
         delay+=500; 
       });
     });
-    showToast(`已開始打包下載全部會議文件，共約 ${delay/500} 個 (Drive 連結開啟新分頁)`, 'success');
+    showToast(`已開始打包下載全部會議文件，共約 ${Math.round(delay/500)} 個（Drive 檔案直接下載，唔會彈去 Drive APP）`, 'success');
   }
   exportMeetings(){
     const list=this.getMeetings(); const blob=new Blob([JSON.stringify(list,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`meetings_${todayISO()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); showToast('已匯出會議 JSON','success');
@@ -7494,15 +7752,36 @@ class ScoutEventApp{
   canManageUsersPage(){ return this.roleLevel(this.currentUser?.role)>=30 || this.isSuperAdmin(); }
   canSeeAllUsers(){ const r=this.currentUser?.role; return ['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(r); }
   canSeeUserPasswords(){ return this.isSuperAdmin() || ['executive_vice_chairperson','chairperson','admin','advisor'].includes(this.currentUser?.role); }
+  isSuperAdminUser(u){ return (u?.role)==='super_admin'; }
+  /* 用戶管理可視範圍（v8.3 定案）
+     ├ 超管（你）              ：全部人（包括自己）
+     ├ 執行副主席或以上         ：除超管以外全部人（執副／主席／顧問／管理員）
+     ├ 副主席                  ：只睇自己組（本組全部職級）
+     ├ 總主任                  ：自己組，唔包括副主席（及以上）
+     └ 主任                    ：自己組普通工作人員（staff）                       */
   visibleUsersForManager(){
     const list=this.pendingUsers||this.usersList||[];
     const me=this.currentUser; if(!me) return [];
-    if(this.canSeeAllUsers()||this.isSuperAdmin()) return list;
+    if(this.isSuperAdmin()) return list;                                        // 超管：全部人（包括自己）
+    const noSuper=list.filter(u=>!this.isSuperAdminUser(u));                    // 其他人一律看唔到超管
+    if(this.canSeeAllUsers()) return noSuper;                                   // 執副／主席／顧問／管理員：除超管以外全部人
     const myG=normalizeGroupName(me.group_name);
     const myLv=this.roleLevel(me.role);
-    if(myLv>=40) return list.filter(u=>normalizeGroupName(u.group_name)===myG); // 副主席／總主任看本組
-    if(myLv>=30) return list.filter(u=>normalizeGroupName(u.group_name)===myG && this.roleLevel(u.role)<=20); // 主任看本組普通工作人員
+    const sameGroup=noSuper.filter(u=>normalizeGroupName(u.group_name)===myG);
+    if(myLv>=60) return sameGroup;                                              // 副主席：只睇自己組
+    if(myLv>=40) return sameGroup.filter(u=>this.roleLevel(u.role)<60);         // 總主任：自己組，不包括副主席及以上
+    if(myLv>=30) return sameGroup.filter(u=>this.roleLevel(u.role)<=20);        // 主任：自己組普通工作人員
     return [];
+  }
+  visibleUsersScopeLabel(){
+    if(this.isSuperAdmin()) return '超管：可見全部人（包括自己）';
+    if(this.canSeeAllUsers()) return '執行副主席／主席／顧問／管理員：可見除超管以外全部人';
+    const lv=this.roleLevel(this.currentUser?.role);
+    const g=normalizeGroupName(this.currentUser?.group_name)||'本組';
+    if(lv>=60) return `副主席：只可見自己組（${g}）全部成員`;
+    if(lv>=40) return `總主任：只可見自己組（${g}），不包括副主席`;
+    if(lv>=30) return `主任：只可見自己組（${g}）的普通工作人員`;
+    return '目前職級不可查看用戶名單';
   }
   async ensureCommitteeAccounts(){
     if(this._committeeSeed) return this._committeeSeed;
@@ -7688,10 +7967,11 @@ class ScoutEventApp{
     const list=this.visibleUsersForManager();
     const showPwd=this.canSeeUserPasswords();
     const dirty=JSON.stringify(this.pendingUsers||[])!==JSON.stringify(this.usersList||[]);
-    if(!list.length){container.innerHTML='<p class="text-xs text-slate-400">沒有可見用戶。若已為籌委開戶但仍空白，請重新整理或確認已登入正確活動。</p>'; return;}
+    const scopeBar=`<div class="bg-slate-900 text-white rounded-xl p-3 mb-3 text-[11px] leading-relaxed"><b><i class="fa-solid fa-eye mr-1"></i>你的可見範圍：</b>${escapeHtml(this.visibleUsersScopeLabel())} <span class="opacity-70">（共 ${list.length} 人）</span><div class="mt-1 opacity-80">規則：超管＝全部人（包括自己）｜執副／主席／顧問／管理員＝除超管以外全部人｜副主席＝只睇自己組｜總主任＝自己組（不包括副主席）｜主任＝自己組普通工作人員</div></div>`;
+    if(!list.length){container.innerHTML=scopeBar+'<p class="text-xs text-slate-400">沒有可見用戶。若已為籌委開戶但仍空白，請重新整理或確認已登入正確活動。</p>'; return;}
     const permBlock=`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900 leading-relaxed"><b>用戶管理：</b>登入帳號＝中文姓名。每位用戶已按職級帶有預設權限（主席／顧問／管理員／執行副主席＝全權），下方會顯示現有「可看／可管」，編輯權限時會先勾選現有項目。改角色、組別、密碼或權限只會暫存在此頁，必須按下方「確定更新用戶」才真正套用。</div>`;
     const confirmBar=`<div class="flex justify-end mt-4"><button onclick="app.confirmUsersUpdate()" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow"><i class="fa-solid fa-check mr-1"></i>確定更新用戶</button></div>`;
-    container.innerHTML=permBlock+list.map(u=>{
+    container.innerHTML=scopeBar+permBlock+list.map(u=>{
       const pwd=showPwd?`<div class="text-[11px] font-mono text-slate-600 mt-0.5">密碼：${escapeHtml(u.password||'(未顯示)')}</div>`:'';
       const permBtn=this.roleLevel(this.currentUser?.role)>=40?`<button onclick="app.openPermissionEditor('${u.user_id}')" class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-1 rounded-xl text-[11px]">權限</button>`:'';
       return `<div class="border p-3 rounded-xl flex justify-between gap-2"><div class="min-w-0"><b>${escapeHtml(u.name)}</b> ${u.job_title?`<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full border">${escapeHtml(u.job_title)}</span>`:''}<span class="text-[10px] bg-slate-900 text-white px-2 py-0.5 rounded-full">${escapeHtml(ROLE_LABELS[u.role]||u.role)}</span><div class="text-[11px] text-slate-500">${escapeHtml(u.group_name||'')} | ${escapeHtml(u.contact||'')} | 帳號 ${escapeHtml(u.user_id||'')}</div>${pwd}</div><div class="flex gap-1 flex-shrink-0"><button onclick="app.editUser('${u.user_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">編輯</button>${permBtn}</div></div>`;

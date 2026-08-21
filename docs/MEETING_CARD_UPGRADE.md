@@ -2,7 +2,25 @@
 
 > 根據用戶需求：管理員上傳議程及紀錄、所有籌委可觀看、分次會議、上傳會員資料、權限控制、下載
 
-## 0. ISD 2026 會議 Drive 即時同步（目前預設入口）
+## 0-A. 內建議程／會議紀錄 JSON（v8.3，免彈出 Drive APP）
+
+> 需求：「唔想彈出 APP……可以將議程紀錄轉為 JSON 內建嗎？唔係同去 Drive 睇有咩分別。」
+
+- **資料檔**：`data/meeting_records.json`（隨 APP 發佈，離線可讀）
+  - 結構：`meetings[] = { meeting_id, meeting_number, title, date, time, location, chair, recorder, content_status, agenda_items[{no,topic,presenter,notes}], minutes_sections[{heading,points[]}], decisions[], action_items[{item,owner,due}], source{...} }`
+  - `content_status`：`summary`（摘要／重點版）或 `full`（已錄入全文）→ 卡片會顯示對應徽章。
+- **讀取**：`loadEventData()` 內 `await this.loadMeetingRecords()`；本機編輯版本（localStorage `isd_meeting_records_{event_id}`）會覆蓋內建版本。
+- **頁內閱讀（無彈窗）**：每張會議卡片有三個按鈕，直接喺卡片內展開，唔會開新分頁／Drive APP
+  - 「議程（內建·即睇）」→ `renderBuiltInAgendaHtml()`：議程表（項次／議題／負責）
+  - 「會議紀錄（內建·即睇）」→ `renderBuiltInMinutesHtml()`：重點分段 + 議決事項 + 跟進事項表
+  - 「檔案（頁內預覽）」→ `renderMeetingFilesHtml()` + `toggleInlineDrivePreview()`：Drive PDF 以頁內 `iframe .../preview` 打開
+- **摘要為主、全文按需**（用戶定案）：內建 JSON 只放摘要／重點；每個議程／紀錄面板底部有「睇全文（頁內開啟）／下載原檔／Drive 開啟 ↗」，用家主動按先會載入原檔（`builtInFullTextBar()`，卡片與詳情各自獨立容器 id）。
+- **下載唔再彈 Drive APP**：`downloadDriveFile()` 用隱藏 iframe 觸發 `uc?export=download`，會議詳情、附件、組資料、打包下載全部改用此方法。
+- **會議詳情**：議程／紀錄分頁直接渲染內建 JSON 內容；檔案區由「開啟」改為「頁內預覽 + 下載」。
+- **秘書處更新流程**：管理員 → 會議卡片 → 右上「內建議程 JSON」→ 直接改 JSON → 「儲存到本機並套用」即時預覽 → 「匯出 JSON」覆蓋 `data/meeting_records.json` 發佈；「還原內建版本」可清走本機覆蓋。
+- **測試**：`node tests/user_visibility_and_meeting_records_test.js`
+
+## 0. ISD 2026 會議 Drive 即時同步（原有分頁，仍保留）
 
 - 點擊「會議卡片」會直接開啟公開 Drive 根目錄 `13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM`，毋須先進入本地會議列表。
 - 畫面按 0 Pre-Meeting、第1次、第2次等子資料夾排列議程、會議紀錄及附件；可切換清單／內嵌模式。
