@@ -1,0 +1,257 @@
+{
+  "event_id": "isd_2026",
+  "data_version": "2026-08-21",
+  "title": "ISD 2026 籌備委員會會議 — 內建議程及會議紀錄",
+  "note": "此檔案為 APP 內建（offline）的議程及會議紀錄文字版本，令成員唔使彈出 Google Drive / Drive APP 就可以喺卡片內直接閱讀。秘書處更新流程：直接修改本檔案 meetings[] 內容並上傳（或喺會議卡片按「編輯內建議程／紀錄」後匯出 JSON 覆蓋本檔案）。Drive PDF 仍然保留作正式存檔及下載。",
+  "content_legend": {
+    "full": "已錄入全文（以 Drive 正式文件為準校對）",
+    "summary": "目前只有摘要／重點，全文待秘書處補錄"
+  },
+  "meetings": [
+    {
+      "meeting_id": "m_0",
+      "meeting_number": 0,
+      "title": "0 Pre-Meeting 20260501 (Zoom)",
+      "date": "2026-05-01",
+      "time": "20:00",
+      "location": "Zoom 線上會議",
+      "chair": "主席 朱家聰",
+      "recorder": "秘書處",
+      "content_status": "summary",
+      "agenda_items": [
+        { "no": "1", "topic": "活動背景簡介", "presenter": "主席 朱家聰", "notes": "介紹 ISD（國際童軍日）背景、歷屆規模及本屆定位。" },
+        { "no": "2", "topic": "上屆活動檢討", "presenter": "秘書處", "notes": "回顧 ISD 2025 檢討報告要點（見 Drive：ISD2025 籌備委員會檢討會議記錄）。" },
+        { "no": "3", "topic": "籌備委員會架構確認", "presenter": "主席 朱家聰", "notes": "確認顧問團、主席及執行副主席、秘書處及 7 個功能組別架構。" },
+        { "no": "4", "topic": "活動初步計劃與日期", "presenter": "全體", "notes": "訂定活動日期、場地及主軸方向。" }
+      ],
+      "minutes_sections": [
+        {
+          "heading": "會議重點",
+          "points": [
+            "主席朱家聰主持會議，全體委員線上出席。",
+            "確認 2026 ISD 於 2026 年 10 月 4 日（星期日）假香港警察學院舉行。",
+            "確認活動主軸定為 Scout for SDGs（童軍與可持續發展目標）。",
+            "通過沿用上屆籌委架構，並按需要增設功能組別。"
+          ]
+        },
+        {
+          "heading": "上屆檢討跟進",
+          "points": [
+            "ISD 2025 檢討報告要點納入本屆籌備考慮（人流、物資、膳食及交通安排）。"
+          ]
+        }
+      ],
+      "decisions": [
+        "活動日期：2026-10-04（日）；場地：香港警察學院。",
+        "活動主軸：Scout for SDGs。",
+        "籌備委員會架構按上屆基礎確認，稍後公布名單。"
+      ],
+      "action_items": [
+        { "item": "草擬籌委會架構名單及各組職務大綱", "owner": "秘書處", "due": "第1次會議前" },
+        { "item": "各組提交初步構思", "owner": "各功能組別總主任", "due": "第1次會議" }
+      ],
+      "source": {
+        "agenda_file_name": "0_Pre-Meeting 議程.pdf",
+        "agenda_file_url": "https://drive.google.com/file/d/1SxRCj6NxEKB_CgQp6hXSo3ByAWZtzibX/view",
+        "minutes_file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
+        "minutes_file_url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view",
+        "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      }
+    },
+    {
+      "meeting_id": "m_1",
+      "meeting_number": 1,
+      "title": "第1次籌備委員會議",
+      "date": "2026-05-12",
+      "time": "19:15",
+      "location": "百周年紀念大樓 1704 室",
+      "chair": "主席 朱家聰",
+      "recorder": "秘書處",
+      "content_status": "summary",
+      "agenda_items": [
+        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "0 Pre-Meeting 會議紀錄。" },
+        { "no": "2", "topic": "利益申報政策", "presenter": "主席 朱家聰", "notes": "所有籌委須就採購、報價及供應商關係作出申報。" },
+        { "no": "3", "topic": "保護個人私隱政策", "presenter": "秘書處", "notes": "參加者及工作人員個人資料的收集、使用及保存安排。" },
+        { "no": "4", "topic": "各功能組別初步構思", "presenter": "各組總主任", "notes": "會操及典禮組、主題節目組、品牌推廣組、嘉賓接待組、協調組、服務及發展組、行政組。" },
+        { "no": "5", "topic": "其他事項", "presenter": "全體", "notes": "" }
+      ],
+      "minutes_sections": [
+        {
+          "heading": "政策通過",
+          "points": [
+            "正式通過「利益申報政策」：涉及報價、採購或與供應商有關連的委員須即時申報並避席相關決定。",
+            "正式通過「保護個人私隱政策」：個人資料只作本活動用途，活動後按指引銷毀。"
+          ]
+        },
+        {
+          "heading": "財政及會計",
+          "points": [
+            "議決各組須依統一財政指引及會計程序處理開支。",
+            "所有開支須先有預算，超出預算須事先申請。"
+          ]
+        },
+        {
+          "heading": "會操及典禮",
+          "points": [
+            "議決步操檢閱流程方向，細節交會操及典禮組跟進。"
+          ]
+        }
+      ],
+      "decisions": [
+        "通過利益申報政策及保護個人私隱政策。",
+        "通過各組財政指引及會計程序方向。",
+        "通過步操檢閱流程方向。"
+      ],
+      "action_items": [
+        { "item": "各組提交初步預算", "owner": "各功能組別總主任", "due": "第2次會議" },
+        { "item": "整理利益申報表並派發", "owner": "秘書處", "due": "第2次會議前" }
+      ],
+      "source": {
+        "agenda_file_name": "1_Agenda 籌備委員會議程.pdf",
+        "agenda_file_url": "https://drive.google.com/file/d/1tYIifGR10RI63xLdraLqgibjZJQZMyVv/view",
+        "minutes_file_name": "ISD2025 籌備委員會檢討會議記錄.pdf",
+        "minutes_file_url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view",
+        "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      }
+    },
+    {
+      "meeting_id": "m_2",
+      "meeting_number": 2,
+      "title": "第2次籌備委員會議",
+      "date": "2026-06-16",
+      "time": "19:15",
+      "location": "百周年紀念大樓 1704 室",
+      "chair": "執行副主席 袁可秀",
+      "recorder": "秘書處",
+      "content_status": "summary",
+      "agenda_items": [
+        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "第1次籌備委員會議紀錄。" },
+        { "no": "2", "topic": "各功能組別進度匯報", "presenter": "各組總主任", "notes": "每組 5 分鐘進度匯報。" },
+        { "no": "3", "topic": "節目細節確認", "presenter": "主題節目組", "notes": "主題活動區、攤位及遊戲記錄冊。" },
+        { "no": "4", "topic": "嘉賓邀請進度", "presenter": "嘉賓接待組", "notes": "嘉賓名單、邀請函及接待流程。" },
+        { "no": "5", "topic": "其他事項", "presenter": "全體", "notes": "" }
+      ],
+      "minutes_sections": [
+        {
+          "heading": "主題節目",
+          "points": [
+            "重點推進積極公民獎章工作坊，確認名額及導師安排。",
+            "攤位設計以六大範疇（積極公民／創新變革／服務社群／持續發展／品格價值／身心全健）為框架。",
+            "遊戲記錄冊（集印章換紀念章）方向獲通過。"
+          ]
+        },
+        {
+          "heading": "嘉賓接待",
+          "points": [
+            "確認優先邀請名單並開始發出邀請函。",
+            "嘉賓接待流程、報到處及泊車安排交協調組配合。"
+          ]
+        }
+      ],
+      "decisions": [
+        "通過積極公民獎章工作坊安排。",
+        "通過攤位設計方向及遊戲記錄冊概念。",
+        "通過嘉賓邀請名單及邀請函格式。"
+      ],
+      "action_items": [
+        { "item": "提交攤位詳細設計及物資清單", "owner": "主題節目組", "due": "第3次會議" },
+        { "item": "跟進嘉賓回覆及座位安排", "owner": "嘉賓接待組", "due": "第3次會議" }
+      ],
+      "source": {
+        "agenda_file_name": "2_Agenda 籌備委員會議程.pdf",
+        "agenda_file_url": "",
+        "minutes_file_name": "",
+        "minutes_file_url": "",
+        "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      }
+    },
+    {
+      "meeting_id": "m_3",
+      "meeting_number": 3,
+      "title": "第3次籌備委員會議",
+      "date": "2026-07-21",
+      "time": "19:15",
+      "location": "百周年紀念大樓 1704 室",
+      "chair": "主席 朱家聰",
+      "recorder": "秘書處",
+      "content_status": "summary",
+      "agenda_items": [
+        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "第2次籌備委員會議紀錄。" },
+        { "no": "2", "topic": "各功能組別進度匯報", "presenter": "各組總主任", "notes": "" },
+        { "no": "3", "topic": "財政預算審批", "presenter": "行政組", "notes": "各組預算表、報價門檻及結算安排。" },
+        { "no": "4", "topic": "其他事項", "presenter": "全體", "notes": "" }
+      ],
+      "minutes_sections": [
+        {
+          "heading": "財務指引",
+          "points": [
+            "審議並通過財務指引 ver1（見 Drive 財務指引資料夾）。",
+            "報價門檻：$500 以下可直接購買並保留單據；$500–$2,000 須口頭報價（附件3）；$2,000–$5,000 須書面報價比較（附件4）；$5,000 以上須依附件4 流程：主席推薦 → 助理地域總監認可 → 副地域總監批核。",
+            "結算須填寫附件5 結算總表，並依附件6 四格印簽名位置辦理。"
+          ]
+        },
+        {
+          "heading": "預算審批",
+          "points": [
+            "各組預算經行政組整理後提交會議審議。",
+            "超出預算之開支須事先另行申請批核。"
+          ]
+        }
+      ],
+      "decisions": [
+        "通過財務指引 ver1 及報價門檻（$500 / $2,000 / $5,000）。",
+        "通過使用附件5 結算總表作統一結算。"
+      ],
+      "action_items": [
+        { "item": "各組依批准預算執行並登記口頭報價", "owner": "各功能組別總主任", "due": "持續" },
+        { "item": "整理結算總表範本並派發", "owner": "行政組", "due": "第4次會議" }
+      ],
+      "source": {
+        "agenda_file_name": "3_Agenda 籌備委員會議程.pdf",
+        "agenda_file_url": "",
+        "minutes_file_name": "",
+        "minutes_file_url": "",
+        "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      }
+    },
+    {
+      "meeting_id": "m_4",
+      "meeting_number": 4,
+      "title": "第4次籌備委員會議（下次會議）",
+      "date": "2026-08-18",
+      "time": "19:15",
+      "location": "百周年紀念大樓 1704 室",
+      "chair": "主席 朱家聰",
+      "recorder": "秘書處",
+      "content_status": "summary",
+      "agenda_items": [
+        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "第3次籌備委員會議紀錄。" },
+        { "no": "2", "topic": "各功能組別進度最後衝刺", "presenter": "各組總主任", "notes": "距活動日約 6 星期，逐組匯報未完成事項。" },
+        { "no": "3", "topic": "物資點算", "presenter": "協調組", "notes": "總物資清單、各組申請、租借及運送安排。" },
+        { "no": "4", "topic": "場地及交通安排", "presenter": "協調組／嘉賓接待組", "notes": "泊車證、車輛通行證及穿梭巴士。" },
+        { "no": "5", "topic": "其他事項", "presenter": "全體", "notes": "" }
+      ],
+      "minutes_sections": [
+        {
+          "heading": "會前提示",
+          "points": [
+            "主任或以上委員請準時出席百周年紀念大樓 1704 室。",
+            "各組請於會前於系統更新物資申請及預算執行進度。",
+            "會議紀錄將於會後由秘書處上載（Drive 及本 APP 內建版本同步更新）。"
+          ]
+        }
+      ],
+      "decisions": [],
+      "action_items": [
+        { "item": "會前提交物資申請及點算表", "owner": "各功能組別總主任", "due": "2026-08-18 前" }
+      ],
+      "source": {
+        "agenda_file_name": "4_Agenda 籌備委員會議程.pdf",
+        "agenda_file_url": "",
+        "minutes_file_name": "",
+        "minutes_file_url": "",
+        "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      }
+    }
+  ]
+}
