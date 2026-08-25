@@ -11,44 +11,12 @@
 // 確保 Google Sheet 內包含所有 30+ 份檔案的完整文本、全套詳細預算明細、完整組織名單與政策
 // ============================================================
 
-// ============================================================
-// ✅ 簡潔填寫區（只需要改呢一段；不要再另開／保留舊 CONFIG）
-// ============================================================
-// 電郵說明：
-// - Apps Script 寄信一定用「部署／授權此 GS 的 Google 帳戶」寄出。
-// - NOTIFY_STAFF_EMAIL / approverEmail 是收件人或副本，可填任何可收信電郵。
-// - notifyFrom 只是寄件人顯示名稱，不是登入用 Gmail。
-const CONFIG = {
-  API_KEY: '',                         // 可留空：系統會自動產生；如 Vercel 已有固定 API Key，可填同一個 scout_xxx
-  SUPER_ADMIN_LOGIN: 'sheep',          // 超管登入帳號
-  SUPER_ADMIN_PASSWORD: '1201',        // 超管登入密碼
-  DEFAULT_USER_PASSWORD: '1234',       // 新開戶預設密碼
-  DEFAULT_EVENT_PASSWORD: '1234',      // 公開活動進入密碼
-
-  NOTIFY_STAFF_EMAIL: '',              // 選填：系統通知副本／工作人員收件箱，例如 staff@example.com
-  notifyFrom: '童軍活動管理系統',       // 選填：電郵顯示寄件人名稱（不是 Gmail 帳戶）
-  approverEmail: ''                    // 選填：集中批核收件人；可與上面相同或不同
-};
-
-const SUPER_ADMIN_EMAIL = CONFIG.SUPER_ADMIN_LOGIN;
-const SUPER_ADMIN_PASS = CONFIG.SUPER_ADMIN_PASSWORD;
-const DEFAULT_USER_PASSWORD = CONFIG.DEFAULT_USER_PASSWORD || '1234';
-const DEFAULT_EVENT_PASSWORD = CONFIG.DEFAULT_EVENT_PASSWORD || DEFAULT_USER_PASSWORD;
+const SUPER_ADMIN_EMAIL = 'sheep';
+const SUPER_ADMIN_PASS = '1201';
 
 function getSheet() { return SpreadsheetApp.getActiveSpreadsheet(); }
 
-function getConfigEmail_(key) {
-  const value = String((CONFIG && CONFIG[key]) || '').trim();
-  return value && value.indexOf('@') !== -1 ? value : '';
-}
-
-function getMailSenderName_() {
-  return String((CONFIG && CONFIG.notifyFrom) || '').trim() || '童軍活動管理系統';
-}
-
 function getApiKey() {
-  const fixedApiKey = String((CONFIG && CONFIG.API_KEY) || '').trim();
-  if (fixedApiKey) return fixedApiKey;
   const props = PropertiesService.getScriptProperties();
   let apiKey = props.getProperty('API_KEY');
   if (!apiKey) {
@@ -282,7 +250,7 @@ function initializeSheets() {
   // 訂餐紀錄：登入提交 → 低於總主任先由本組確認 → 指定組別最終批核；完整狀態存於此表。
   // ⚠️ 舊部署更新後，請在 Apps Script 手動執行一次 initializeSheets（只會新增此表，絕不影響舊資料）
   ensureSheet(ss, 'Meal_Orders', ['order_id', 'event_id', 'menu_id', 'user_id', 'user_name', 'group_name', 'selection', 'quantity', 'remarks', 'status', 'confirmed_by', 'approved_by', 'created_at', 'updated_at']);
-  // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼見 CONFIG.DEFAULT_USER_PASSWORD）
+  // 開戶表：供超管填「名字 / 職位層級 / 職稱 / 組別」一鍵開戶（預設密碼 1234）
   ensureSheet(ss, 'Account_Setup', ['name', 'role', 'job_title', 'group_name', 'user_id', 'email', 'contact']);
   // 批核權限表：供超管直接填「誰有哪個批核範疇的權」（supplies/vehicle/meals/finance）
   ensureSheet(ss, 'Approval_Permissions', ['user_id', 'name', 'group_name', 'supplies', 'vehicle', 'meals', 'finance']);
@@ -391,11 +359,11 @@ function setupAccountSetupSheet(ss) {
   sheet.getRange('A1').setNote(
     '開戶表：從第 2 行起逐行填寫 —— 名字(name)、職位層級(role，下拉選)、職稱(job_title)、組別(group_name)、帳號(user_id 可留空＝自動用中文姓名)、電郵(email)、電話(contact)。\n' +
     '填好後在選單「童軍活動管理 → 開戶（同步帳戶）」執行，即開戶完成。\n' +
-    '預設密碼為 ' + DEFAULT_USER_PASSWORD + '，用戶登入後可在 APP 內自行修改密碼。'
+    '預設密碼為 1234，用戶登入後可在 APP 內自行修改密碼。'
   );
 }
 
-// 開戶：把 Account_Setup 的內容同步成 Users（預設密碼見 CONFIG.DEFAULT_USER_PASSWORD；已存在則更新資料但保留其已改密碼）
+// 開戶：把 Account_Setup 的內容同步成 Users（預設密碼 1234；已存在則更新資料但保留其已改密碼）
 function syncAccountsFromSetup() {
   const ss = getSheet();
   const setup = ss.getSheetByName('Account_Setup');
@@ -453,7 +421,7 @@ function syncAccountsFromSetup() {
       rowVals[uGrp] = grp;
       rowVals[uEmail] = email;
       rowVals[uContact] = contact;
-      rowVals[uPass] = hashPassword(DEFAULT_USER_PASSWORD);
+      rowVals[uPass] = hashPassword('1234');
       rowVals[uStatus] = 'active';
       rowVals[uCreated] = new Date();
       users.appendRow(rowVals);
@@ -461,7 +429,7 @@ function syncAccountsFromSetup() {
       created++;
     }
   }
-  return { success: true, created: created, updated: updated, message: '開戶完成：新增 ' + created + ' 人，更新 ' + updated + ' 人（預設密碼 ' + DEFAULT_USER_PASSWORD + '，登入後可自行修改）' };
+  return { success: true, created: created, updated: updated, message: '開戶完成：新增 ' + created + ' 人，更新 ' + updated + ' 人（預設密碼 1234，登入後可自行修改）' };
 }
 
 // 修改密碼（登入用戶自行修改）
@@ -490,7 +458,7 @@ function changePassword(data) {
   return { success: false, error: '找不到帳戶' };
 }
 
-// 前端開戶（總主任以上，只能幫自己組別開戶；預設密碼見 CONFIG.DEFAULT_USER_PASSWORD）
+// 前端開戶（總主任以上，只能幫自己組別開戶；預設密碼 1234）
 function createAccount(data) {
   const ss = getSheet();
   const users = ss.getSheetByName('Users');
@@ -535,7 +503,7 @@ function createAccount(data) {
   rowVals[col('group_name')] = group;
   rowVals[uEmail] = email;
   rowVals[col('contact')] = contact;
-  rowVals[col('password_hash')] = hashPassword(DEFAULT_USER_PASSWORD);
+  rowVals[col('password_hash')] = hashPassword('1234');
   rowVals[col('status')] = 'active';
   rowVals[col('created_at')] = new Date();
   users.appendRow(rowVals);
@@ -683,7 +651,7 @@ function getAllUsers() {
   const rows = sheet.getDataRange().getValues();
   const headers = rows[0];
   const hashIdx = headers.indexOf('password_hash');
-  const defaultHash = hashPassword(DEFAULT_USER_PASSWORD);
+  const defaultHash = hashPassword('1234');
   const list = [];
   for (let i = 1; i < rows.length; i++) {
     const obj = {};
@@ -871,18 +839,18 @@ function seedInitialData() {
   // 1. Events
   const evSheet = ss.getSheetByName('Events');
   if (evSheet.getLastRow() <= 1) {
-    evSheet.appendRow(['isd_2026', '2026 ISD 港島童軍繽紛日', hashPassword(DEFAULT_EVENT_PASSWORD), '港島地域年度旗艦盛事：步操檢閱與攤位博覽', '2026-10-04', '2026-10-04', 'active', new Date()]);
+    evSheet.appendRow(['isd_2026', '2026 ISD 港島童軍繽紛日', hashPassword('1234'), '港島地域年度旗艦盛事：步操檢閱與攤位博覽', '2026-10-04', '2026-10-04', 'active', new Date()]);
   }
   
   // 2. Users
   const uSheet = ss.getSheetByName('Users');
   if (uSheet.getLastRow() <= 1) {
     uSheet.appendRow(['sheep', '超級管理員', SUPER_ADMIN_EMAIL, 'super_admin', '系統', '超管', '', hashPassword(SUPER_ADMIN_PASS), 'active', new Date()]);
-    uSheet.appendRow(['黃偉安', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword(DEFAULT_USER_PASSWORD), 'active', new Date()]);
-    uSheet.appendRow(['朱家聰', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword(DEFAULT_USER_PASSWORD), 'active', new Date()]);
-    uSheet.appendRow(['袁可秀', '袁可秀', 'execvp@isd.local', 'executive_vice_chairperson', '主席及執行副主席', '執行副主席', '', hashPassword(DEFAULT_USER_PASSWORD), 'active', new Date()]);
-    uSheet.appendRow(['張佳良', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword(DEFAULT_USER_PASSWORD), 'active', new Date()]);
-    uSheet.appendRow(['周恒晉', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword(DEFAULT_USER_PASSWORD), 'active', new Date()]);
+    uSheet.appendRow(['黃偉安', '黃偉安', 'advisor1@isd.local', 'advisor', '顧問團', '顧問', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['朱家聰', '朱家聰', 'chair@isd.local', 'chairperson', '主席及執行副主席', '主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['袁可秀', '袁可秀', 'execvp@isd.local', 'executive_vice_chairperson', '主席及執行副主席', '執行副主席', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['張佳良', '張佳良', 'vpparade@isd.local', 'vice_chairperson', '會操及典禮組', '副主席（會操及典禮）', '', hashPassword('1234'), 'active', new Date()]);
+    uSheet.appendRow(['周恒晉', '周恒晉', 'vpprogram@isd.local', 'vice_chairperson', '主題節目組', '副主席（主題節目）', '', hashPassword('1234'), 'active', new Date()]);
   }
   
   // 3. Meetings
@@ -1161,21 +1129,11 @@ function sendMeetingEmailNotification(data) {
     const name = rows[i][nameIdx];
     if (email && email.indexOf('@') !== -1) {
       try {
-        const subject = `[童軍活動管理系統] 會議提醒 (主任或以上)：${meetingTitle}`;
-        const body = `親愛的 ${name} 委員：\n\n這是一封來自「童軍活動管理系統」的自動會議提示。\n\n會議名稱：${meetingTitle}\n會議時間：${meetingDate}\n地點：香港童軍百周年紀念大樓 1704 室\n\n請依時出席。\n\nCOPY RIGHT Scout System`;
-        const options = {
-          to: email,
-          subject: subject,
-          body: body,
-          name: getMailSenderName_()
-        };
-        const notifyStaffEmail = getConfigEmail_('NOTIFY_STAFF_EMAIL');
-        if (notifyStaffEmail && notifyStaffEmail !== email) options.bcc = notifyStaffEmail;
-        const approverEmail = getConfigEmail_('approverEmail');
-        if (approverEmail && approverEmail !== email && approverEmail !== notifyStaffEmail) {
-          options.replyTo = approverEmail;
-        }
-        MailApp.sendEmail(options);
+        MailApp.sendEmail(
+          email,
+          `[童軍活動管理系統] 會議提醒 (主任或以上)：${meetingTitle}`,
+          `親愛的 ${name} 委員：\n\n這是一封來自「童軍活動管理系統」的自動會議提示。\n\n會議名稱：${meetingTitle}\n會議時間：${meetingDate}\n地點：香港童軍百周年紀念大樓 1704 室\n\n請依時出席。\n\nCOPY RIGHT Scout System`
+        );
         count++;
       } catch (err) {
         Logger.log(`Failed to email ${email}: ${err}`);
