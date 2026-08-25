@@ -256,7 +256,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     <div class="bg-white rounded-2xl shadow-sm border p-4 sm:p-6"><div id="module-content"></div></div>
   </div>
 
-  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>超管</b>睇全部人（包括自己）；<b>執行副主席／主席／顧問／管理員</b>睇除超管以外全部人；<b>副主席</b>只睇自己組；<b>總主任</b>睇自己組但不包括副主席；<b>主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
+  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>L0 超管（不顯示）</b>＝全部人；<b>L1 執行副主席／主席／顧問／管理員</b>＝可見全部人；<b>L3 副主席</b>只睇自己組；<b>L4 總主任</b>睇自己組但不包括副主席；<b>L5 主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
   <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
   <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm space-y-3"><h3 class="font-bold">控制台（超管）</h3><p class="text-xs text-slate-500 leading-relaxed">此頁只供超管調整後端連線（GAS URL／API Key）。一般籌委不需要進入。會議預告、開戶、批核等都在儀表板卡片處理，不是在這裡。</p><button onclick="app.openSettingsModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟系統設定</button></div></div>
   <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
@@ -462,6 +462,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">職級</th><th class="px-2 py-1 text-left">預設權限</th></tr></thead>
             <tbody class="divide-y">
+              <tr><td class="px-2 py-1">L0</td><td class="px-2 py-1 font-medium">超級管理員（不顯示）</td><td>僅後台／系統授權管理，不向其他職級顯示</td></tr>
               <tr><td class="px-2 py-1">L1</td><td class="px-2 py-1 font-medium">管理員／主席／顧問</td><td>全部可看可管；用戶管理＝可見全部人</td></tr>
               <tr><td class="px-2 py-1">L2</td><td class="px-2 py-1 font-medium">執行副主席</td><td>高層統籌；大部分可看可管；用戶管理＝可見全部人</td></tr>
               <tr><td class="px-2 py-1">L3</td><td class="px-2 py-1 font-medium">副主席</td><td>可更新日程／主題章／儀式／危機等；管理本組；只睇自己組</td></tr>
@@ -477,7 +478,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <li><b>卡片修改權：</b>達 editLevel 或屬 editGroups 才顯示「可修改」，否則「只讀」。</li>
           <li><b>角色授權：</b>上級可透過「權限管理」設定用戶的「可看／可管」清單（perm_see／perm_edit）。</li>
           <li><b>開戶權限：</b>前端開戶只提供工作人員／主任／總主任；副主席及以上由管理員處理；批量開戶管理員專用。</li>
-          <li><b>批核路由：</b>管理層可在「批核權限表」按類別多選「批核組」及「執行／最後名單組」；低於總主任申請先由本組總主任以上確認。</li>
+          <li><b>批核權限表：</b>L1 或以上（管理員／顧問／主席／執行副主席）可修改及使用「批核權限表」。</li>
+          <li><b>批核路由：</b>按類別多選「批核組」及「執行／最後名單組」；低於總主任申請先由本組總主任以上確認。</li>
         </ul>
       </div>
 
@@ -729,7 +731,7 @@ class ScoutEventApp{
   openBulkModal(){document.getElementById('modal-bulk').classList.remove('hidden');}
   switchTopTab(view,btn){
     if(view==='approvals' && this.roleLevel(this.currentUser?.role)<40){ showToast('批核中心只供總主任以上查看；各負責組按範疇批核','warning'); return; }
-    if(view==='approvalmatrix' && !this.isSuperAdmin()){ showToast('批核權限表只供超管查看及修改','warning'); return; }
+    if(view==='approvalmatrix' && !this.isAdmin()){ showToast('批核權限表只供 L1 或以上（管理員／顧問／主席／執行副主席）使用','warning'); return; }
     if(view==='users' && !this.canManageUsersPage()){ showToast('用戶管理只供主任以上使用','warning'); return; }
     ['landing','dashboard','module','users','bulk','approvals','approvalmatrix','system'].forEach(v=>{const el=document.getElementById('view-'+v); if(el) el.classList.add('hidden');});
     const target=document.getElementById('view-'+view); if(target) target.classList.remove('hidden');
@@ -1054,7 +1056,7 @@ class ScoutEventApp{
     if(drawerUsers) drawerUsers.style.display = usersView ? '' : 'none';
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
     document.querySelectorAll('.nav-tab[data-view="approvals"]').forEach(t=>{ t.style.display = chiefOrAbove ? '' : 'none'; });
-    document.querySelectorAll('.nav-tab[data-view="approvalmatrix"]').forEach(t=>{ t.style.display = this.isSuperAdmin() ? '' : 'none'; });
+    document.querySelectorAll('.nav-tab[data-view="approvalmatrix"]').forEach(t=>{ t.style.display = this.isAdmin() ? '' : 'none'; });
     document.querySelectorAll('.nav-tab[data-view="system"]').forEach(t=>{ t.style.display = 'none'; });
     const bnAccounts=document.getElementById('bn-accounts');
     if(bnAccounts) bnAccounts.style.display = chiefOrAbove ? '' : 'none';
@@ -1418,7 +1420,7 @@ class ScoutEventApp{
       <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
         <b>批核中心用途：</b>這裡集中處理各組已提交、正等候確認／批准的膳食、物資、車輛及財務申請。你只會看到自己有權處理的項目，按按鈕批准或拒絕。<br>
         流程：低於總主任提交 → 本組總主任以上確認 → 指定組別批核 → 指定組別執行／取得最後名單。總主任以上親自提交則跳過第一步。<br>
-        誰批核、誰執行由超管在「批核權限表」設定（不會即時生效，須按確定）。
+        誰批核、誰執行由 L1 或以上在「批核權限表」設定（不會即時生效，須按確定）。
       </div>
       <div class="flex gap-2 flex-wrap"><button onclick="app.renderApprovalCenter()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button><button onclick="app.switchTopTab('approvalmatrix')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-route mr-1"></i>設定批核／執行組別（多選）</button></div>
       ${section('meals','fa-solid fa-utensils','text-purple-600','膳食待確認／批核',pendingMeals,mealRows)}
@@ -1432,7 +1434,7 @@ class ScoutEventApp{
   }
   // 「批核權限表」分頁（橫看人×頁 / 直看頁×人）
   async renderApprovalMatrixView(){
-    if(!this.isSuperAdmin()){ showToast('批核權限表只供超管查看','warning'); this.showDashboard(); return; }
+    if(!this.isAdmin()){ showToast('批核權限表只供 L1 或以上（管理員／顧問／主席／執行副主席）使用','warning'); this.showDashboard(); return; }
     document.getElementById('view-landing').classList.add('hidden');
     document.getElementById('view-dashboard').classList.add('hidden');
     document.getElementById('view-module').classList.add('hidden');
@@ -1467,7 +1469,7 @@ class ScoutEventApp{
         <div class="flex flex-wrap gap-1.5">${holders.length?holders.map(p=>`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full border text-[11px] font-bold ${a.chip}">${escapeHtml(p.name||p.user_id)}${p.group_name?`<span class="text-[9px] font-normal opacity-70">${escapeHtml(p.group_name)}</span>`:''}</span>`).join(''):'<span class="text-[11px] text-slate-400">暫無批核人</span>'}</div>
       </div>`;
     }).join('');
-    const canRoute=this.isSuperAdmin();
+    const canRoute=this.isAdmin(); // L1 或以上（管理員／顧問／主席／執行副主席）可修改
     const groupButtons=(area,field)=>ORG_GROUPS.map(group=>{
       const selected=((this.pendingApprovalRouting?.[area]||this.getApprovalRoute(area))[field]||[]).includes(group);
       return `<button type="button" aria-pressed="${selected?'true':'false'}" ${canRoute?`onclick="app.toggleApprovalRouting('${area}','${field}','${group}')"`:'disabled'} class="px-2.5 py-1.5 rounded-xl border text-[10px] font-bold transition ${selected?'bg-indigo-600 text-white border-indigo-600 shadow-sm':'bg-white text-slate-500 border-slate-200'} ${canRoute?'hover:border-indigo-400':'opacity-80 cursor-default'}"><i class="fa-solid ${selected?'fa-square-check':'fa-square'} mr-1"></i>${escapeHtml(group)}</button>`;
@@ -1481,7 +1483,7 @@ class ScoutEventApp{
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
           <b><i class="fa-solid fa-route mr-1"></i>申請流程：</b>低於總主任提交的所有申請，先由<b>本組總主任以上確認</b>，再交下方所選「批核組別」；批准後由所選「執行／最後名單組別」跟進。<br>
-          每格均為<b>多選按鈕</b>，不是下拉選單；可同時交多個組別執行。${canRoute?'改動只暫存在此頁，必須按下方「確定更新批核表」才會套用。':'只有超管可修改。'}
+          每格均為<b>多選按鈕</b>，不是下拉選單；可同時交多個組別執行。${canRoute?'改動只暫存在此頁，必須按下方「確定更新批核表」才會套用。':'只限 L1 或以上（管理員／顧問／主席／執行副主席）可修改。'}
         </div>
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">${routingCards}</div>
         ${canRoute?`<div class="flex justify-end"><button onclick="app.confirmApprovalRouting()" class="bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow"><i class="fa-solid fa-check mr-1"></i>確定更新批核表</button></div>`:''}
@@ -7898,13 +7900,13 @@ class ScoutEventApp{
     return [];
   }
   visibleUsersScopeLabel(){
-    if(this.isSuperAdmin()) return '超管：可見全部人（包括自己）';
-    if(this.canSeeAllUsers()) return '執行副主席／主席／顧問／管理員：可見除超管以外全部人';
+    if(this.isSuperAdmin()) return 'L0 超管（不顯示）：可見全部人（包括自己）';
+    if(this.canSeeAllUsers()) return 'L1 執行副主席／主席／顧問／管理員：可見全部人';
     const lv=this.roleLevel(this.currentUser?.role);
     const g=normalizeGroupName(this.currentUser?.group_name)||'本組';
-    if(lv>=60) return `副主席：只可見自己組（${g}）全部成員`;
-    if(lv>=40) return `總主任：只可見自己組（${g}），不包括副主席`;
-    if(lv>=30) return `主任：只可見自己組（${g}）的普通工作人員`;
+    if(lv>=60) return `L3 副主席：只可見自己組（${g}）全部成員`;
+    if(lv>=40) return `L4 總主任：只可見自己組（${g}），不包括副主席`;
+    if(lv>=30) return `L5 主任：只可見自己組（${g}）的普通工作人員`;
     return '目前職級不可查看用戶名單';
   }
   async ensureCommitteeAccounts(){
@@ -7976,7 +7978,7 @@ class ScoutEventApp{
     return this.approvalRouting;
   }
   async toggleApprovalRouting(area,field,group){
-    if(!this.isSuperAdmin()){ showToast('只有超管可修改批核權限表','error'); return; }
+    if(!this.isAdmin()){ showToast('批核權限表只供 L1 或以上（管理員／顧問／主席／執行副主席）使用','error'); return; }
     if(!APPROVAL_IDS.has(area)||!['approver_groups','executor_groups'].includes(field)) return;
     group=normalizeGroupName(group);
     if(!this.pendingApprovalRouting) this.pendingApprovalRouting=JSON.parse(JSON.stringify(this.approvalRouting||{}));
@@ -7993,7 +7995,7 @@ class ScoutEventApp{
     showToast('已暫存變更，請按下方「確定更新批核表」才生效','');
   }
   async confirmApprovalRouting(){
-    if(!this.isSuperAdmin()){ showToast('只有超管可修改批核權限表','error'); return; }
+    if(!this.isAdmin()){ showToast('批核權限表只供 L1 或以上（管理員／顧問／主席／執行副主席）使用','error'); return; }
     if(!this.pendingApprovalRouting){ showToast('沒有未確定的變更','warning'); return; }
     this.approvalRouting=JSON.parse(JSON.stringify(this.pendingApprovalRouting));
     this.setLocalApprovalRouting(this.approvalRouting);
@@ -8091,7 +8093,7 @@ class ScoutEventApp{
     const list=this.visibleUsersForManager();
     const showPwd=this.canSeeUserPasswords();
     const dirty=JSON.stringify(this.pendingUsers||[])!==JSON.stringify(this.usersList||[]);
-    const scopeBar=`<div class="bg-slate-900 text-white rounded-xl p-3 mb-3 text-[11px] leading-relaxed"><b><i class="fa-solid fa-eye mr-1"></i>你的可見範圍：</b>${escapeHtml(this.visibleUsersScopeLabel())} <span class="opacity-70">（共 ${list.length} 人）</span><div class="mt-1 opacity-80">規則：超管＝全部人（包括自己）｜執副／主席／顧問／管理員＝除超管以外全部人｜副主席＝只睇自己組｜總主任＝自己組（不包括副主席）｜主任＝自己組普通工作人員</div></div>`;
+    const scopeBar=`<div class="bg-slate-900 text-white rounded-xl p-3 mb-3 text-[11px] leading-relaxed"><b><i class="fa-solid fa-eye mr-1"></i>你的可見範圍：</b>${escapeHtml(this.visibleUsersScopeLabel())} <span class="opacity-70">（共 ${list.length} 人）</span><div class="mt-1 opacity-80">規則：L0 超管（不顯示）＝全部人｜L1 執副／主席／顧問／管理員＝可見全部人｜L3 副主席＝只睇自己組｜L4 總主任＝自己組（不包括副主席）｜L5 主任＝自己組普通工作人員</div></div>`;
     if(!list.length){container.innerHTML=scopeBar+'<p class="text-xs text-slate-400">沒有可見用戶。若已為籌委開戶但仍空白，請重新整理或確認已登入正確活動。</p>'; return;}
     const permBlock=`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900 leading-relaxed"><b>用戶管理：</b>登入帳號＝中文姓名。每位用戶已按職級帶有預設權限（主席／顧問／管理員／執行副主席＝全權），下方會顯示現有「可看／可管」，編輯權限時會先勾選現有項目。改角色、組別、密碼或權限只會暫存在此頁，必須按下方「確定更新用戶」才真正套用。</div>`;
     const confirmBar=`<div class="flex justify-end mt-4"><button onclick="app.confirmUsersUpdate()" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow"><i class="fa-solid fa-check mr-1"></i>確定更新用戶</button></div>`;
