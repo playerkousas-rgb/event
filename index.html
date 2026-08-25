@@ -462,14 +462,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">職級</th><th class="px-2 py-1 text-left">預設權限</th></tr></thead>
             <tbody class="divide-y">
-              <tr><td class="px-2 py-1">L1</td><td class="px-2 py-1 font-medium">超級管理員（隱藏）</td><td>全部資料、全部功能；對其他職級完全隱藏</td></tr>
-              <tr><td class="px-2 py-1">L2</td><td class="px-2 py-1 font-medium">管理員／主席／顧問</td><td>全部可看可管；用戶管理＝除超管以外全部人</td></tr>
-              <tr><td class="px-2 py-1">L3</td><td class="px-2 py-1 font-medium">執行副主席</td><td>高層統籌；大部分可看可管；用戶管理＝除超管以外全部人</td></tr>
-              <tr><td class="px-2 py-1">L4</td><td class="px-2 py-1 font-medium">副主席</td><td>可更新日程／主題章／儀式／危機等；管理本組；只睇自己組</td></tr>
-              <tr><td class="px-2 py-1">L5</td><td class="px-2 py-1 font-medium">總主任</td><td>可管理本組、申請、批核、開戶、報價；只睇自己組（不含副主席以上）</td></tr>
-              <tr><td class="px-2 py-1">L6</td><td class="px-2 py-1 font-medium">主任</td><td>可管理本組內容、上傳活動、提交申請；只睇自己組工作人員</td></tr>
-              <tr><td class="px-2 py-1">L7</td><td class="px-2 py-1 font-medium">工作人員</td><td>可登入、提交申請、查看自己組</td></tr>
-              <tr><td class="px-2 py-1">L8</td><td class="px-2 py-1 font-medium">公開</td><td>只可看公開資料</td></tr>
+              <tr><td class="px-2 py-1">L1</td><td class="px-2 py-1 font-medium">管理員／主席／顧問</td><td>全部可看可管；用戶管理＝可見全部人</td></tr>
+              <tr><td class="px-2 py-1">L2</td><td class="px-2 py-1 font-medium">執行副主席</td><td>高層統籌；大部分可看可管；用戶管理＝可見全部人</td></tr>
+              <tr><td class="px-2 py-1">L3</td><td class="px-2 py-1 font-medium">副主席</td><td>可更新日程／主題章／儀式／危機等；管理本組；只睇自己組</td></tr>
+              <tr><td class="px-2 py-1">L4</td><td class="px-2 py-1 font-medium">總主任</td><td>可管理本組、申請、批核、開戶、報價；只睇自己組（不含副主席以上）</td></tr>
+              <tr><td class="px-2 py-1">L5</td><td class="px-2 py-1 font-medium">主任</td><td>可管理本組內容、上傳活動、提交申請；只睇自己組工作人員</td></tr>
+              <tr><td class="px-2 py-1">L6</td><td class="px-2 py-1 font-medium">工作人員</td><td>可登入、提交申請、查看自己組</td></tr>
+              <tr><td class="px-2 py-1">L7</td><td class="px-2 py-1 font-medium">公開</td><td>只可看公開資料</td></tr>
             </tbody>
           </table>
         </div>
@@ -477,8 +476,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <li><b>卡片可見度：</b>minLevel=0 公開；minLevel&gt;0 需登入且職級達標／屬指定組別。</li>
           <li><b>卡片修改權：</b>達 editLevel 或屬 editGroups 才顯示「可修改」，否則「只讀」。</li>
           <li><b>角色授權：</b>上級可透過「權限管理」設定用戶的「可看／可管」清單（perm_see／perm_edit）。</li>
-          <li><b>開戶權限：</b>前端開戶只提供工作人員／主任／總主任；副主席及以上由管理員處理；批量開戶管理員／超管專用。</li>
-          <li><b>批核路由：</b>超管可在「批核權限表」按類別多選「批核組」及「執行／最後名單組」；低於總主任申請先由本組總主任以上確認。</li>
+          <li><b>開戶權限：</b>前端開戶只提供工作人員／主任／總主任；副主席及以上由管理員處理；批量開戶管理員專用。</li>
+          <li><b>批核路由：</b>管理層可在「批核權限表」按類別多選「批核組」及「執行／最後名單組」；低於總主任申請先由本組總主任以上確認。</li>
         </ul>
       </div>
 
@@ -506,7 +505,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
           <li><b>示範沙盒：</b>「模擬示範版」只作介紹／測試，改動不會影響正式活動。</li>
           <li><b>資料：</b>正式活動可連接 Google Sheet／GAS 後端實時同步；內建資料（活動、會議紀錄等）來自 data/JSON 檔。</li>
-          <li><b>私隱：</b>聯絡電話／Email 需登入才可查看／匯出；超管帳密不會在前端顯示。</li>
+          <li><b>私隱：</b>聯絡電話／Email 需登入才可查看／匯出；敏感帳密不會在前端頁面顯示。</li>
           <li><b>手機：</b>已優化手機版；表格會轉為「標籤＋值」顯示。</li>
           <li><b>提示：</b>若見「只讀」，表示你冇修改權限；請看卡片上的「可修改：誰」提示。</li>
         </ul>
