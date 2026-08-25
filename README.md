@@ -2,6 +2,8 @@
 
 > 參考 `indonesia-trip` 及 `vsbadge` 架構，結合 Google Sheet 與 Google Apps Script (GAS) 遠端控制，支援多活動接入、活動密碼私隱保護、7級角色權限控制與 8大卡片管理模組。
 
+> 📖 **功能介紹及使用說明書**：見 [`docs/FEATURE_GUIDE.md`](docs/FEATURE_GUIDE.md)。APP 內亦提供「功能介紹」按鈕，不登入也可查看（三類卡片、各卡片功能、職級權限制度、可延展功能及 FAQ）。
+
 ---
 
 ## ✨ 系統核心功能特色

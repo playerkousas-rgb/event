@@ -68,6 +68,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     </div>
     <div class="flex items-center space-x-2 flex-shrink-0">
       <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[80px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
+      <button onclick="app.openGuideModal()" id="guide-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile" title="功能介紹及使用說明"><i class="fa-solid fa-book-open mr-1"></i><span id="guide-btn-text" class="hidden sm:inline">功能介紹</span><span class="sm:hidden">介紹</span></button>
       <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i> <span id="login-btn-text" class="hidden sm:inline">登入</span><span class="sm:hidden">登入</span></button>
       <button id="changepwd-btn" onclick="app.openChangePwdModal()" class="hidden bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-xl text-xs transition btn-mobile"><i class="fa-solid fa-key mr-1"></i><span class="hidden sm:inline">修改密碼</span></button>
       <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-sm transition btn-mobile"><i class="fa-solid fa-right-from-bracket"></i></button>
@@ -90,6 +91,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <span class="bg-white/20 text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30 inline-flex items-center"><i class="fa-solid fa-eye mr-1.5"></i> 公開查閱 · 無需登入即可查看所有資料</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold mt-3">童軍活動管理系統</h2>
         <p class="mt-2 text-white/80 text-[13px] leading-relaxed">選擇一個活動，進入後即可查閱該活動的所有資訊卡片（公告、日程、活動、膳食、物資、財務等）。全部資料公開可看，僅修改需登入（一次登入永久有效）。</p>
+        <button onclick="app.openGuideModal()" class="mt-4 inline-flex items-center gap-2 bg-white text-slate-800 px-4 py-2.5 rounded-xl text-[12px] font-bold btn-mobile shadow"><i class="fa-solid fa-book-open text-purple-600"></i> 功能介紹 / 使用說明（毋須登入）</button>
       </div>
     </div>
 
@@ -142,6 +144,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           </div>
         </div>
         <div class="flex gap-2 flex-shrink-0 flex-wrap">
+          <button onclick="app.openGuideModal()" class="bg-white border border-purple-200 text-purple-700 px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-book-open mr-1"></i>功能介紹</button>
           <button id="identity-login-btn" onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button>
           <button id="identity-logout-btn" onclick="app.logout()" class="hidden bg-white border border-rose-200 text-rose-600 px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-right-from-bracket mr-1"></i>登出</button>
           <button onclick="app.toggleDashboardMode()" id="dashboard-mode-toggle" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap btn-mobile"><i class="fa-solid fa-table-cells-large mr-1"></i> 完整模式</button>
@@ -396,6 +399,127 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 
 <div id="modal-changepwd" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-key text-sky-600 mr-2"></i>修改密碼</h3><button onclick="app.closeModal('modal-changepwd')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitChangePassword(event)" class="space-y-3"><input type="password" id="cp-old" required placeholder="舊密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="cp-new" required placeholder="新密碼 (至少 4 字元)" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="cp-new2" required placeholder="再次輸入新密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-changepwd')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">儲存</button></div></form></div></div>
 
+<div id="modal-guide" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4">
+  <div class="bg-white rounded-[20px] max-w-4xl w-full shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white/95 backdrop-blur border-b p-5 flex justify-between items-center z-10">
+      <h3 class="font-bold text-base"><i class="fa-solid fa-book-open text-purple-600 mr-2"></i>功能介紹及使用說明</h3>
+      <button onclick="app.closeModal('modal-guide')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-6 text-[12px] text-slate-700 leading-relaxed">
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-emerald-900">
+        <b>定位：</b>「一個什麼都不知道的人，用此 APP 就可了解整個活動和找到需要的資料。」<br>
+        <b>公開查閱：</b>所有公開資料無需登入即可查看；只有修改資料、提交申請、批核及開戶才需登入（一次登入永久有效）。
+      </div>
+
+      <!-- 1. 三類卡片 -->
+      <div class="space-y-2">
+        <h4 class="font-bold text-[15px] text-slate-900">1️⃣ 現有功能：三類卡片</h4>
+        <p>進入活動後，儀表板會根據身分顯示三類卡片；登入後會先顯示「我的組別」。</p>
+        <div class="table-responsive">
+          <table class="min-w-full text-xs">
+            <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">類型</th><th class="px-2 py-1 text-left">需登入？</th><th class="px-2 py-1 text-left">內容</th><th class="px-2 py-1 text-left">修改權限</th></tr></thead>
+            <tbody class="divide-y">
+              <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>你所屬組別的卡片，排最前並標亮</td><td>由組別權限決定</td></tr>
+              <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告、申請中心、日程、場地、組織、主題章、膳食、危機、文件、典禮、捐贈等</td><td>只讀；修改需對應職級／組別登入</td></tr>
+              <tr><td class="px-2 py-1 font-medium">② 其他組別及工作卡片</td><td>需要</td><td>其他組別、會議、物資、車輛、財務、監察等</td><td>預設只讀；依「可看／可管」權限解鎖</td></tr>
+              <tr><td class="px-2 py-1 font-medium">③ 管理工具</td><td>需要</td><td>開戶、批核中心、權限管理</td><td>僅總主任以上可見／使用</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-[11px] text-slate-500">首頁另將活動分為：港島童軍繽紛日、港島毅行、其他大型活動、模擬示範版。</p>
+      </div>
+
+      <!-- 2. 各卡片功能 -->
+      <div class="space-y-2">
+        <h4 class="font-bold text-[15px] text-slate-900">2️⃣ 主要功能：各卡片功能</h4>
+        <p class="text-[12px]"><b>公開類（無需登入可看）：</b>公告及溝通・申請中心・日程表・場地與活動總覽・組織架構與聯絡・活動主題章・膳食管理・危機處理・通告及文件・旅團須知・典禮儀式・獲獎名單・童心捐贈大行動。</p>
+        <div class="table-responsive">
+          <table class="min-w-full text-xs">
+            <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">卡片</th><th class="px-2 py-1 text-left">主要功能</th><th class="px-2 py-1 text-left">預設修改權限</th></tr></thead>
+            <tbody class="divide-y">
+              <tr><td class="px-2 py-1 font-medium">公告及溝通</td><td>公告、日程表、旅團須知、主題章；跨部門溝通、搜尋</td><td>主任以上可發佈</td></tr>
+              <tr><td class="px-2 py-1 font-medium">申請中心</td><td>物資、車輛／泊車證、膳食、口頭報價、開支申報統一入口</td><td>各表按權限進入</td></tr>
+              <tr><td class="px-2 py-1 font-medium">日程表</td><td>全活動時間表、各組行程、典禮程序（已併入公告卡）</td><td>副主席以上可上傳</td></tr>
+              <tr><td class="px-2 py-1 font-medium">場地與活動總覽</td><td>地圖、攤位總表、遊戲卡、活動項目</td><td>主任／副主席以上可上傳</td></tr>
+              <tr><td class="px-2 py-1 font-medium">組織架構與聯絡</td><td>組織架構、職員名單、職務大綱、聯絡資料</td><td>行政組／總主任以上可管理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">活動主題章</td><td>活動主題、徽章、素材（已併入公告卡）</td><td>副主席以上可更新</td></tr>
+              <tr><td class="px-2 py-1 font-medium">膳食管理</td><td>菜單、截止、我的訂餐、統計、列印派發清單</td><td>指定膳食執行組主任以上可管理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">危機處理</td><td>應變指引、急救、保險、危機手冊、緊急聯絡</td><td>管理員／副主席以上可更新</td></tr>
+              <tr><td class="px-2 py-1 font-medium">通告及文件</td><td>通告、指引、表格、活動文件</td><td>管理員／行政總主任以上可上傳</td></tr>
+              <tr><td class="px-2 py-1 font-medium">典禮儀式</td><td>典禮程序、司儀稿、嘉賓名單、座位表、獲獎名單</td><td>管理員／副主席以上可更新</td></tr>
+              <tr><td class="px-2 py-1 font-medium">童心捐贈大行動</td><td>物品／食品捐贈、QR Code 登記、統計總表</td><td>服務及發展組可管理</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-[12px]"><b>工作／組別類（登入後按權限）：</b>會議卡片・物資申請・車輛通行證（含泊車證）・口頭報價登記・財務管理・行政組・協調組・顧問團・主席及執行副主席・會操及典禮組・主題節目組・品牌推廣組・嘉賓接待組・服務及發展組・秘書處。</p>
+        <p class="text-[12px]"><b>管理／監察類：</b>我的監察（自己＋下級申請進度）・批核中心（膳食／物資／車輛／財務）・批核權限表（設定批核組／執行組）・開戶（總主任以上）・權限管理（上級授權下級）。</p>
+      </div>
+
+      <!-- 3. 權限 -->
+      <div class="space-y-2">
+        <h4 class="font-bold text-[15px] text-slate-900">3️⃣ 各職級權限及權限制度</h4>
+        <div class="table-responsive">
+          <table class="min-w-full text-xs">
+            <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">職級</th><th class="px-2 py-1 text-left">預設權限</th></tr></thead>
+            <tbody class="divide-y">
+              <tr><td class="px-2 py-1">L1</td><td class="px-2 py-1 font-medium">超級管理員（隱藏）</td><td>全部資料、全部功能；對其他職級完全隱藏</td></tr>
+              <tr><td class="px-2 py-1">L2</td><td class="px-2 py-1 font-medium">管理員／主席／顧問</td><td>全部可看可管；用戶管理＝除超管以外全部人</td></tr>
+              <tr><td class="px-2 py-1">L3</td><td class="px-2 py-1 font-medium">執行副主席</td><td>高層統籌；大部分可看可管；用戶管理＝除超管以外全部人</td></tr>
+              <tr><td class="px-2 py-1">L4</td><td class="px-2 py-1 font-medium">副主席</td><td>可更新日程／主題章／儀式／危機等；管理本組；只睇自己組</td></tr>
+              <tr><td class="px-2 py-1">L5</td><td class="px-2 py-1 font-medium">總主任</td><td>可管理本組、申請、批核、開戶、報價；只睇自己組（不含副主席以上）</td></tr>
+              <tr><td class="px-2 py-1">L6</td><td class="px-2 py-1 font-medium">主任</td><td>可管理本組內容、上傳活動、提交申請；只睇自己組工作人員</td></tr>
+              <tr><td class="px-2 py-1">L7</td><td class="px-2 py-1 font-medium">工作人員</td><td>可登入、提交申請、查看自己組</td></tr>
+              <tr><td class="px-2 py-1">L8</td><td class="px-2 py-1 font-medium">公開</td><td>只可看公開資料</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="list-disc pl-5 space-y-1 text-[12px]">
+          <li><b>卡片可見度：</b>minLevel=0 公開；minLevel&gt;0 需登入且職級達標／屬指定組別。</li>
+          <li><b>卡片修改權：</b>達 editLevel 或屬 editGroups 才顯示「可修改」，否則「只讀」。</li>
+          <li><b>角色授權：</b>上級可透過「權限管理」設定用戶的「可看／可管」清單（perm_see／perm_edit）。</li>
+          <li><b>開戶權限：</b>前端開戶只提供工作人員／主任／總主任；副主席及以上由管理員處理；批量開戶管理員／超管專用。</li>
+          <li><b>批核路由：</b>超管可在「批核權限表」按類別多選「批核組」及「執行／最後名單組」；低於總主任申請先由本組總主任以上確認。</li>
+        </ul>
+      </div>
+
+      <!-- 4. 可延展 -->
+      <div class="space-y-2">
+        <h4 class="font-bold text-[15px] text-slate-900">4️⃣ 可延展的功能</h4>
+        <ul class="list-disc pl-5 space-y-1 text-[12px]">
+          <li>多活動接入／新增不同年度、類別的大型活動。</li>
+          <li>通用化：把童軍專屬內容參數化，供其他活動類型重用。</li>
+          <li>動態批核路由：按銀碼、組別、日期等條件自動分流。</li>
+          <li>細粒度權限授權：每一張卡片、每一個動作皆可授權。</li>
+          <li>統計儀表板：跨活動匯總、圖表、匯出。</li>
+          <li>文件／Drive 自動同步、版本記錄、全文檢索。</li>
+          <li>批量匯入人員／物資／財務／攤位／日程。</li>
+          <li>全域搜尋擴充為跨卡片全文檢索。</li>
+          <li>離線／快取同步，後端自動補齊欄位（不會覆蓋舊資料）。</li>
+        </ul>
+      </div>
+
+      <!-- 5. 其他 -->
+      <div class="space-y-2">
+        <h4 class="font-bold text-[15px] text-slate-900">5️⃣ 其他你需要了解</h4>
+        <ul class="list-disc pl-5 space-y-1 text-[12px]">
+          <li><b>登入：</b>帳號＝中文姓名，初始密碼 1234；首次登入建議改密碼；登入狀態會保存於瀏覽器，一次登入永久有效。</li>
+          <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
+          <li><b>示範沙盒：</b>「模擬示範版」只作介紹／測試，改動不會影響正式活動。</li>
+          <li><b>資料：</b>正式活動可連接 Google Sheet／GAS 後端實時同步；內建資料（活動、會議紀錄等）來自 data/JSON 檔。</li>
+          <li><b>私隱：</b>聯絡電話／Email 需登入才可查看／匯出；超管帳密不會在前端顯示。</li>
+          <li><b>手機：</b>已優化手機版；表格會轉為「標籤＋值」顯示。</li>
+          <li><b>提示：</b>若見「只讀」，表示你冇修改權限；請看卡片上的「可修改：誰」提示。</li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-500 flex flex-wrap gap-2 justify-between items-center">
+        <span>完整說明書（Markdown）：<a href="docs/FEATURE_GUIDE.md" target="_blank" rel="noopener" class="text-purple-700 font-bold underline">開啟 docs/FEATURE_GUIDE.md</a></span>
+        <button onclick="app.closeModal('modal-guide')" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[12px] font-bold">了解，關閉</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="saveBar" class="save-bar"><div class="flex items-center gap-2 text-sm"><span class="dot"></span><span id="pendingText">0 項未保存</span></div><div class="flex gap-2"><button onclick="app.discardChanges()" class="px-4 py-2 border bg-white rounded-xl text-xs font-bold">捨棄</button><button onclick="app.saveChanges()" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold">確認寫入</button></div></div>
 <div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#6d28d9] transition-all"></div></div></div>
 <div id="toast" class="toast"></div>
@@ -602,6 +726,7 @@ class ScoutEventApp{
   closeModal(id){document.getElementById(id).classList.add('hidden');}
   openSettingsModal(){document.getElementById('gas-url-input').value=this.gasUrl; document.getElementById('api-key-input').value=this.apiKey; document.getElementById('modal-settings').classList.remove('hidden');}
   openLoginModal(){const demo=document.getElementById('mock-demo-login'); if(demo) demo.classList.toggle('hidden', !(this.mockMode && this.isDemoEvent())); document.getElementById('modal-login').classList.remove('hidden');}
+  openGuideModal(){document.getElementById('modal-guide').classList.remove('hidden');}
   openBulkModal(){document.getElementById('modal-bulk').classList.remove('hidden');}
   switchTopTab(view,btn){
     if(view==='approvals' && this.roleLevel(this.currentUser?.role)<40){ showToast('批核中心只供總主任以上查看；各負責組按範疇批核','warning'); return; }
