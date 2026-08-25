@@ -4,14 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>童軍活動管理系統 - 會議卡片全面升級版 v6.1</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/tailwind.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
-window.tailwind=window.tailwind||{};
-tailwind.config={theme:{extend:{colors:{brand:{50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',300:'#c4b5fd',400:'#a78bfa',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9',800:'#5b21b6',900:'#4c1d95'}}}}}
-</script>
 <style>
 :root{--brand:#6d28d9;--brand-dark:#5b21b6;--brand-deep:#4c1d95;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-hover:0 8px 24px rgba(0,0,0,0.12);}
 *{ -webkit-tap-highlight-color:transparent; }
@@ -2502,7 +2498,7 @@ class ScoutEventApp{
     const area=document.getElementById('booths-print-area');
     if(!area){ showToast('找不到列印區域','error'); return; }
     const win=window.open('','_blank');
-    win.document.write(`<html><head><title>攤位總表</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px}</style></head><body>${area.innerHTML}<div class="mt-4 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.write(`<html><head><title>攤位總表</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px}</style></head><body>${area.innerHTML}<div class="mt-4 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   }
   // ═══ 預算（財務）資料源 + 同步 ═══
@@ -3989,7 +3985,7 @@ class ScoutEventApp{
     const area=document.getElementById('meals-print-area');
     if(!area){ showToast('找不到列印區域','error'); return; }
     const win=window.open('','_blank');
-    win.document.write(`<html><head><title>膳食派發清單</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button{display:none}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.write(`<html><head><title>膳食派發清單</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button{display:none}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   }
   exportMealsData(){
@@ -6260,7 +6256,7 @@ class ScoutEventApp{
     const area=document.getElementById('settlement-print-area');
     if(!area){ showToast('找不到列印區域','error'); return; }
     const win=window.open('','_blank');
-    win.document.write(`<html><head><title>結算總表</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button{display:none}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.write(`<html><head><title>結算總表</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button{display:none}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   }
 
@@ -8620,7 +8616,7 @@ class ScoutEventApp{
     if(!area){ showToast('找不到嘉賓地圖內容','error'); return; }
     const win=window.open('','_blank');
     if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
-    win.document.write(`<html><head><title>嘉賓地圖</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:sans-serif;padding:20px} @media print{button,a{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.write(`<html><head><title>嘉賓地圖</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{font-family:sans-serif;padding:20px} @media print{button,a{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   }
   renderCeremonyRundown(){
@@ -10722,7 +10718,7 @@ class ScoutEventApp{
     if(!area){ showToast('找不到日程內容','error'); return; }
     const win=window.open('','_blank');
     if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
-    win.document.write(`<html><head><title>日程表</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button,label,input,select{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.write(`<html><head><title>日程表</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button,label,input,select{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   }
   exportSchedule(){
@@ -11113,10 +11109,6 @@ class ScoutEventApp{
 
 const app=window.app=new ScoutEventApp();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
-</script>
-</body>
-</html>
-'keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
 </script>
 </body>
 </html>
