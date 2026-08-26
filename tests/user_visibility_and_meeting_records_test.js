@@ -13,7 +13,9 @@ const vm = require('vm');
 const assert = require('assert');
 
 const root = path.resolve(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const htmlSrc = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const html = htmlSrc + '\n' + [...htmlSrc.matchAll(/<script src="(js\/[^"]+)"><\/script>/g)]
+  .map(m => fs.readFileSync(path.join(root, m[1]), 'utf8')).join('\n');
 
 function slice(startMarker, endMarker) {
   const i = html.indexOf(startMarker);
@@ -26,8 +28,10 @@ const ROLE_HIERARCHY_SRC = html.match(/const ROLE_HIERARCHY=\{[^}]+\};/)[0];
 const NORMALIZE_SRC = slice('function normalizeGroupName(value){', '// 2026 架構固定組別');
 const ESCAPE_SRC = html.match(/function escapeHtml\(s\)\{.*?\}\n/s)[0].split('\n')[0];
 
-const userMethods = slice('  canSeeAllUsers(){', '  async ensureCommitteeAccounts()');
-const meetingMethods = slice('  meetingRecordsKey(){', '  extractDriveFolderId(link){');
+// js/ 拆檔後方法之間有 Object.assign 的 "," 分隔行；貼入 class Stub 前要清走
+const stripCommaLines = (src) => src.replace(/^[ \t]*,[ \t]*$/gm, '');
+const userMethods = stripCommaLines(slice('  canSeeAllUsers(){', '  async ensureCommitteeAccounts()'));
+const meetingMethods = stripCommaLines(slice('  meetingRecordsKey(){', '  extractDriveFolderId(link){'));
 
 const code = `
 ${NORMALIZE_SRC}

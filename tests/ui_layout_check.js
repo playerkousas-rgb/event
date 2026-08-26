@@ -8,9 +8,16 @@ const vm = require('vm');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+// 依 <script> 標籤順序載入：本機 js/ 檔讀檔案內容，無 src 的 inline 直接取內文（CDN 外部檔跳過）
 const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
-  .filter(match => !match[1].toLowerCase().includes('src='))
-  .map(match => match[2])
+  .map(match => {
+    const attrs = match[1] || '';
+    if (/src=/i.test(attrs)) {
+      const src = (attrs.match(/src="([^"]+)"/) || [])[1] || '';
+      return src.startsWith('js/') ? fs.readFileSync(path.join(root, src), 'utf8') : '';
+    }
+    return match[2];
+  })
   .join('\n');
 const core = scripts.replace(
   /const app=window\.app=new ScoutEventApp\(\);\s*[\s\S]*$/,

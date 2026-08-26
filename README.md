@@ -47,19 +47,20 @@
 
 ## ⚠️ 開發守則（必讀）
 
-`index.html` 是整個前端（約 1MB、一萬多行，內嵌全部 JS）。**絕對不要再用一次性 Node 腳本＋正則去批量改寫 `index.html`** —— 這種做法曾兩次弄壞網站（正則截斷方法、整段吞掉仍在用的方法），導致整頁只顯示靜態首頁。
+前端結構（2026-08-27 起）：`index.html` 只剩 HTML 骨架（約 84KB），全部 JS 按功能拆在 `js/` 目錄，**必須按檔名順序載入**（`00-config.js` → `10-app-core.js`（class 主體）→ `20-38` 各功能模組（以 `Object.assign(ScoutEventApp.prototype,{...})` 掛上方法）→ `90-bootstrap.js`（啟動））。**絕對不要再用一次性 Node 腳本＋正則去批量改寫**——這種做法曾兩次弄壞網站（正則截斷方法、整段吞掉仍在用的方法），導致整頁只顯示靜態首頁。
 
 正確做法：
-1. **慢慢手改**：小步修改，每次改完即時驗證（見下）。
+1. **慢慢手改**：小步修改，改邊個 `js/*.js` 就只改嗰個檔；新增方法放在對應模組的 `Object.assign` 區塊內。
 2. **每次修改後必跑檢查**：
    ```bash
-   # 1) 抽出內嵌 JS 做語法檢查
-   node -e "const fs=require('fs');const h=fs.readFileSync('index.html','utf8');const m=[...h.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/g)].map(x=>x[1]).join('\n');fs.writeFileSync('/tmp/app.js',m)" && node --check /tmp/app.js
+   # 1) 每個檔案語法檢查
+   for f in js/*.js; do node --check "$f" || echo "FAIL: $f"; done
    # 2) 跑全部測試
    for t in tests/*.js; do node "$t"; done
    ```
 3. **檢查「呼叫 ↔ 定義」**：改動若刪走方法，先全 `app.方法名(` 有沒有殘留呼叫。
 4. 歷史上的一次性補丁腳本（`rewrite_parking.js`、`fix_*.js`、`test*.js` 等）已於 2026-08-27 刪除，只留在 git 歷史內，**不要重跑**。
+5. 拆檔經「重組還原恆等式」驗證（所有方法依序串接與原本逐 byte 相同），方法內容零改寫；`js/` 檔案之間的頂層 `const`／`class` 不可重名（瀏覽器共享全域詞法環境，重名即 SyntaxError）。
 
 ### 第一步：設置 Google Sheet 與 Apps Script 後端
 1. 在 Google Drive 建立一個新的 **Google 試算表**（例如命名為「活動行政管理總庫」）。

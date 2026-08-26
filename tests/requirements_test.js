@@ -7,7 +7,9 @@ const vm = require('vm');
 const assert = require('assert');
 
 const root = path.resolve(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const htmlSrc = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const html = htmlSrc + '\n' + [...htmlSrc.matchAll(/<script src="(js\/[^"]+)"><\/script>/g)]
+  .map(m => fs.readFileSync(path.join(root, m[1]), 'utf8')).join('\n');
 
 console.log('=== Running Full Requirements Validation ===');
 
