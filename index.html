@@ -36,6 +36,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:4000;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(6px)} .saving-overlay.active{display:flex} .spinner{width:46px;height:46px;border:4px solid #e2e8f0;border-top-color:#6d28d9;border-radius:50%;animation:spin 1s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
 .modal{backdrop-filter:blur(6px)} .modal-content-anim{animation:modalPop .28s cubic-bezier(0.34,1.56,0.64,1)} @keyframes modalPop{from{opacity:0;transform:scale(.92) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .nav-tab{flex:1 1 0;min-width:0;padding:11px 4px;text-align:center;cursor:pointer;border:none;background:none;font-size:12px;font-weight:600;color:#64748b;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;border-radius:8px 8px 0 0} .nav-tab:hover{background:#f1f5f9;color:#0f172a} .nav-tab.active{color:#6d28d9;border-bottom-color:#6d28d9;background:#ede9fe}
+.header-chip{display:inline-flex;align-items:center;padding:7px 11px;border-radius:12px;font-size:11.5px;font-weight:700;line-height:1;white-space:nowrap;transition:.2s;border:1px solid transparent;cursor:pointer}
+/* 補回編譯 tailwind.css 欠缺的工具類（新排版／監察統計格線用到） */
+.grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.col-span-4{grid-column:span 4/span 4}
+.gap-0\.5{gap:.125rem}
+.gap-x-2{column-gap:.5rem}
+.max-w-\[72px\]{max-width:72px}
+@media(min-width:640px){
+  .sm\:gap-1{gap:.25rem}
+  .sm\:p-2\.5{padding:.625rem}
+  .sm\:py-3{padding-top:.75rem;padding-bottom:.75rem}
+  .sm\:w-auto{width:auto}
+  .sm\:flex-1{flex:1 1 0%}
+  .sm\:ml-auto{margin-left:auto}
+}
+/* 全站防左右滑動：clip 不會產生捲軸容器，sticky 頂 BAR 不受影響 */
+html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:hidden}}
 .drawer{position:fixed;inset:0;z-index:60;display:none} .drawer.active{display:flex} .drawer-backdrop{flex:1;background:rgba(15,23,42,0.55);backdrop-filter:blur(2px)} .drawer-panel{width:84%;max-width:320px;background:#fff;height:100%;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:flex;flex-direction:column;}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
@@ -46,7 +63,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 .file-chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;transition:.15s} .file-chip:hover{background:#ede9fe;border-color:#8b5cf6;color:#6d28d9}
 .tab-btn{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#64748b;transition:.2s} .tab-btn.active{background:#6d28d9;color:#fff;border-color:#6d28d9;box-shadow:0 2px 8px rgba(109,40,217,0.25)}
 @media(max-width:768px){
-  .nav-tab{font-size:11.5px;padding:10px 2px;border-radius:0}
+  .nav-tab{font-size:11px;padding:10px 2px;border-radius:0}
+  .header-chip{padding:6px 9px;font-size:10.5px;border-radius:10px} .header-chip i{margin-right:2px}
   body{font-size:15px} .table-responsive table{min-width:0;width:100%} .table-responsive thead{display:none} .table-responsive tbody tr{display:block;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;padding:8px;background:#fff} .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:none;border-bottom:1px dashed #f1f5f9;font-size:13px} .table-responsive tbody td:last-child{border-bottom:none} .table-responsive tbody td::before{content:attr(data-label);font-weight:700;color:#475569;font-size:11px;flex-shrink:0;margin-right:12px}
   .modal{align-items:flex-end!important;padding:0!important} .modal>div{border-radius:16px 16px 0 0!important;max-height:88vh!important;width:100%!important;max-width:100%!important} .hero-gradient{border-radius:16px!important;padding:18px!important} .bottom-pad{padding-bottom:78px} .btn-mobile{min-height:44px} .form-group input,.form-group select,.form-group textarea{min-height:44px;font-size:16px!important}
   /* 手機：儀表板卡片由 1 個長方形開成 2 個正方形（兩欄），卡片內容相應縮小 */
@@ -56,28 +74,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
   .dash-card .dash-title{font-size:12px!important;line-height:1.3}
   .dash-card .dash-desc{font-size:10px!important;margin-top:.15rem!important;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .dash-card .dash-footer{display:none}
+  /* 手機：部門管理中心及首頁選活動格線同樣 1 個長方形開成 2 個正方形 */
+  #group-quick-access{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.6rem}
+  #group-quick-access>div{padding:.7rem!important;border-radius:14px!important}
+  #group-quick-access .w-10{width:2.1rem!important;height:2.1rem!important;font-size:13px!important}
+  #events-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.6rem}
+  #events-grid>div{border-radius:14px!important;overflow:hidden}
+  #events-grid .p-4{padding:.65rem!important}
+  #events-grid .px-4{padding-left:.6rem!important;padding-right:.6rem!important}
+  #events-grid .py-3{padding-top:.5rem!important;padding-bottom:.5rem!important}
+  #events-grid .w-9{width:2rem!important;height:2rem!important;font-size:13px!important}
+  #events-grid h4{font-size:12.5px!important}
+  #events-grid select{font-size:12px!important;padding:.45rem .5rem!important}
 }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col bottom-pad">
 
 <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-3 sm:px-4 py-3 flex justify-between items-center">
-    <div class="flex items-center space-x-3 min-w-0 flex-1">
-      <button onclick="app.toggleDrawer()" class="md:hidden bg-slate-800 p-2.5 rounded-xl border border-slate-700 mr-1 btn-mobile"><i class="fa-solid fa-bars"></i></button>
-      <div class="flex items-center space-x-3 cursor-pointer min-w-0 flex-1" onclick="app.goHome()">
-        <div class="bg-sky-600 text-white p-2.5 rounded-xl font-bold text-lg shadow flex-shrink-0"><i class="fa-solid fa-tent"></i></div>
+  <!-- 最頂 BAR（標題列）：童軍活動管理系統・v6.1・活動名稱｜身份(登入後)・我的監察・介紹・改密碼・登出（登入後只顯示登出，不顯示登入；手機自動分行，不用左右滑動） -->
+  <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+      <button onclick="app.toggleDrawer()" class="md:hidden bg-slate-800 p-2.5 rounded-xl border border-slate-700 btn-mobile" aria-label="功能選單"><i class="fa-solid fa-bars"></i></button>
+      <div class="flex items-center space-x-2.5 cursor-pointer min-w-0 w-full sm:w-auto sm:flex-1" onclick="app.goHome()">
+        <div class="bg-sky-600 text-white p-2 sm:p-2.5 rounded-xl font-bold text-lg shadow flex-shrink-0"><i class="fa-solid fa-tent"></i></div>
         <div class="min-w-0 flex-1"><div class="flex items-center space-x-2 flex-wrap"><h1 class="font-bold text-[15px] sm:text-lg leading-tight truncate">童軍活動管理系統</h1><span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold whitespace-nowrap">v6.1 會議升級</span></div><p class="text-[11px] sm:text-xs text-slate-400 truncate" id="current-event-subtitle">會議卡片·全前端上傳·分次管理·權限下載</p></div>
       </div>
-    </div>
-    <div class="flex items-center space-x-2 flex-shrink-0">
-      <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[80px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
-      <button onclick="app.openLoginModal()" id="login-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs sm:text-sm border border-slate-700 transition btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i><span id="login-btn-text">登入</span></button>
-      <button id="logout-btn" onclick="app.logout()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-xl text-xs sm:text-sm transition btn-mobile"><i class="fa-solid fa-right-from-bracket mr-1"></i><span>登出</span></button>
+      <div class="flex items-center gap-1.5 flex-wrap justify-end sm:ml-auto w-full sm:w-auto">
+        <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2" title="身份"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[72px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
+        <button onclick="app.openModule('my_monitor')" class="header-chip bg-indigo-600 hover:bg-indigo-700 text-white"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+        <button onclick="app.openGuideModal()" class="header-chip bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"><i class="fa-solid fa-book-open mr-1"></i>介紹</button>
+        <button id="topbar-changepwd" style="display:none" onclick="app.openChangePwdModal()" class="header-chip bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"><i class="fa-solid fa-key mr-1"></i>改密碼</button>
+        <button id="logout-btn" style="display:none" onclick="app.logout()" class="header-chip bg-rose-600 hover:bg-rose-700 text-white"><i class="fa-solid fa-right-from-bracket mr-1"></i>登出</button>
+        <button id="login-toggle-btn" onclick="app.openLoginModal()" class="header-chip bg-sky-600 hover:bg-sky-700 text-white"><i class="fa-solid fa-right-to-bracket mr-1"></i><span id="login-btn-text">登入</span></button>
+      </div>
     </div>
   </div>
-  <!-- 最頂置頂 BAR（一頁睇晒，唔使左右滑動）：身份・我的監察・介紹・改密碼・登出（登入後不顯示登入，只顯示登出） -->
-  <div id="top-tabs-wrap" class="bg-slate-800/80 border-t border-slate-700/50"><div class="max-w-7xl mx-auto px-1 sm:px-4 flex gap-0.5 sm:gap-1 w-full"><button class="nav-tab active" data-view="dashboard" onclick="app.goIdentity(this)"><i class="fa-solid fa-id-card mr-1"></i> 身份</button><button class="nav-tab" onclick="app.openModule('my_monitor')"><i class="fa-solid fa-eye mr-1"></i> 我的監察</button><button class="nav-tab" onclick="app.openGuideModal()"><i class="fa-solid fa-book-open mr-1"></i> 介紹</button><button id="topbar-changepwd" class="nav-tab hidden" onclick="app.openChangePwdModal()"><i class="fa-solid fa-key mr-1"></i> 改密碼</button><button id="topbar-logout" class="nav-tab hidden" onclick="app.logout()"><i class="fa-solid fa-right-from-bracket mr-1"></i> 登出</button><button id="topbar-login" class="nav-tab" onclick="app.openLoginModal()"><i class="fa-solid fa-right-to-bracket mr-1"></i> 登入</button></div></div>
+  <!-- 下方 BAR：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）；四個按鈕均分寬度，毋須左右滑動 -->
+  <div id="top-tabs-wrap" class="bg-slate-800/80 border-t border-slate-700/50"><div class="max-w-7xl mx-auto px-1 sm:px-4 flex gap-0.5 sm:gap-1 w-full"><button id="subnav-exec" class="nav-tab" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book mr-1"></i> 執行手冊</button><button id="subnav-apply" class="nav-tab" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen mr-1"></i> 申請中心</button><button id="subnav-approvals" style="display:none" class="nav-tab" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核中心</button><button id="subnav-accounts" style="display:none" class="nav-tab" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus mr-1"></i> 開戶</button></div></div>
 </header>
 
 <div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goIdentity();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-id-card text-sky-600 w-5"></i> 身份（儀表板）</button><button onclick="app.openModule('my_monitor');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-eye text-indigo-600 w-5"></i> 我的監察</button><button onclick="app.openGuideModal();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-book-open text-purple-600 w-5"></i> 功能介紹</button><button onclick="app.openModule('exec_manual');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-book text-slate-700 w-5"></i> 執行手冊</button><button onclick="app.openModule('apply_hub');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-file-pen text-emerald-700 w-5"></i> 申請中心</button><button id="drawer-approvals" onclick="app.switchTopTab('approvals');app.toggleDrawer()" class="hidden w-full text-left px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-user-check text-rose-600 w-5"></i> 批核中心</button><button id="drawer-accounts" onclick="app.showDashboard();app.toggleDrawer();setTimeout(()=>app.openModule('account_setup'),200)" class="hidden w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-user-plus text-amber-700 w-5"></i> 開戶 / 批量開戶</button><button id="drawer-login" onclick="app.openLoginModal();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-right-to-bracket text-sky-600 w-5"></i> 登入</button><button id="drawer-changepwd" onclick="app.openChangePwdModal();app.toggleDrawer()" class="hidden w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-key text-slate-600 w-5"></i> 修改密碼</button><button id="drawer-logout" onclick="app.logout();app.toggleDrawer()" class="hidden w-full text-left px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-right-from-bracket text-rose-600 w-5"></i> 登出</button></div><div class="p-3 border-t text-[11px] text-slate-500">童軍活動管理系統<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
@@ -185,7 +219,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div id="management-tools-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序：<b>公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具</b>。未登入＝一般工作人員／公眾：只有「公告及溝通、申請中心」有顏色；我的監察已寫入身份卡片內。</div>
+      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序（公開資料後）：<b>公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具</b>。最頂 BAR＝<b>身份・我的監察・介紹・改密碼・登出</b>；下方 BAR＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。未登入＝一般工作人員／公眾：只有「公告及溝通、申請中心」有顏色；我的監察已寫入身份卡片內。</div>
     </div>
 
     <div id="full-dashboard-sections" class="space-y-6">
@@ -410,12 +444,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <!-- 1. 三類卡片 -->
       <div class="space-y-2">
         <h4 class="font-bold text-[15px] text-slate-900">1️⃣ 現有功能：三類卡片</h4>
-        <p>進入活動後，儀表板會根據身分顯示卡片。<b>未登入＝一般工作人員／公眾</b>：只有<b>公告及溝通</b>及<b>申請中心</b>有顏色，其餘卡片一律無顏色（白底），方便一眼找到重點。<br><b>排序：</b><b>公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具</b>（總主任以上）。<br><b>我的監察</b>已寫入<b>身份卡片</b>內（自己＋下級申請批核進度）；沒有批核權限人士只看到自己身份＋未有申請紀錄提示，可到「申請中心」提交。</p>
+        <p>進入活動後，儀表板會根據身分顯示卡片。<b>未登入＝一般工作人員／公眾</b>：只有<b>公告及溝通</b>及<b>申請中心</b>有顏色，其餘卡片一律無顏色（白底），方便一眼找到重點。<br><b>排序：</b><b>公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具</b>（總主任以上）。<br><b>我的監察</b>像功能介紹一樣寫入<b>身份卡片</b>內（一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到自己身份＋未有申請紀錄提示，可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・我的監察・介紹・改密碼・登出</b>（登入後不顯示登入，只顯示登出）；<b>下方 BAR</b>＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。</p>
         <div class="table-responsive">
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">類型</th><th class="px-2 py-1 text-left">需登入？</th><th class="px-2 py-1 text-left">內容</th><th class="px-2 py-1 text-left">修改權限</th></tr></thead>
             <tbody class="divide-y">
-              <tr><td class="px-2 py-1 font-medium">我的監察</td><td>需要</td><td>已寫入身份卡片內：自己＋下級申請批核進度；有權限人士另見總申請／待處理／已批核／已拒絕（可跳轉批核中心）</td><td>只讀監察；批核在批核中心處理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">我的監察</td><td>需要</td><td>寫入身份卡片內（跳轉框）：自己＋下級申請批核進度；有權限人士另見總申請／待處理／已批核／已拒絕（可跳轉批核中心）</td><td>只讀監察；批核在批核中心處理</td></tr>
               <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>已併入「其他組別及工作卡片」，自己的組別標亮</td><td>由組別權限決定</td></tr>
               <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告及溝通、執行手冊（組織架構・場地・典禮・危機・通告）、申請中心、童心捐贈</td><td>只讀；修改需對應職級／組別登入</td></tr>
               <tr><td class="px-2 py-1 font-medium">② 其他組別及工作卡片</td><td>需要</td><td>其他組別、會議、物資、車輛、財務、監察等</td><td>預設只讀；依「可看／可管」權限解鎖</td></tr>
@@ -493,7 +527,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <h4 class="font-bold text-[15px] text-slate-900">5️⃣ 其他你需要了解</h4>
         <ul class="list-disc pl-5 space-y-1 text-[12px]">
           <li><b>登入：</b>帳號＝中文姓名，初始密碼 1234；首次登入建議改密碼；登入狀態會保存於瀏覽器，一次登入永久有效。</li>
-          <li><b>儀表板：</b>未登入只有「公告及溝通、申請中心」有顏色；排序＝公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具；我的監察寫入身份卡片內。</li>
+          <li><b>儀表板：</b>未登入只有「公告及溝通、申請中心」有顏色；排序（公開資料後）＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察寫入身份卡片內。最頂 BAR＝身份・我的監察・介紹・改密碼・登出；下方 BAR＝執行手冊・申請中心・批核中心・開戶（後兩者需權限）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
           <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
           <li><b>示範沙盒：</b>「模擬示範版」只作介紹／測試，改動不會影響正式活動。</li>
           <li><b>資料：</b>正式活動可連接 Google Sheet／GAS 後端實時同步；內建資料（活動、會議紀錄等）來自 data/JSON 檔。</li>
@@ -990,16 +1024,21 @@ class ScoutEventApp{
     if(monitorEl){
       const sum=this.monitorSummary();
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
-      const clickAttr=canGoApprovals?'onclick="app.switchTopTab(\'approvals\')" ':'';
-      const hoverCls=canGoApprovals?'cursor-pointer hover:shadow':'';
+      // 有權限人士：數字跳轉批核中心處理；無權限人士：數字帶自己到「我的監察」看自己進度
+      const clickAttr=canGoApprovals?'onclick="app.switchTopTab(\'approvals\')" ':'onclick="app.openModule(\'my_monitor\')" ';
+      const hoverCls='cursor-pointer hover:shadow';
       const chipBase='rounded-xl px-2 py-1.5 text-center border';
       const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase} ${hoverCls}"><span class="block text-[15px] font-extrabold leading-none">${v}</span><span class="block text-[9.5px] mt-0.5">${l}</span></button>`;
+      const minePending=sum.mine.filter(r=>r.color_name==='amber'||r.color_name==='sky').length;
+      const mineApproved=sum.mine.filter(r=>r.color_name==='emerald').length;
+      const mineRejected=sum.mine.filter(r=>r.color_name==='rose').length;
+      const descText=sum.privileged?'自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理。':(sum.mine.length?'只顯示你自己的申請批核進度；點擊數字查看詳情。':'你暫時未有申請紀錄，可到「申請中心」提交。');
       monitorEl.classList.remove('hidden');
       monitorEl.innerHTML=`<div class="border-t pt-3">
         <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 text-[11px] font-bold text-indigo-700"><i class="fa-solid fa-eye"></i>我的監察 <span class="text-[9.5px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-1.5 py-0.5 rounded-full font-normal">${escapeHtml(sum.scopeText)}</span></div>
-            <p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理。</p>
+            <p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">${descText}</p>
           </div>
           <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
         </div>
@@ -1009,7 +1048,12 @@ class ScoutEventApp{
             chip(sum.pending,'待處理',(sum.pending?'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-500 border-slate-200'))+
             chip(sum.approved,'已批核','bg-emerald-50 text-emerald-700 border-emerald-200')+
             chip(sum.rejected,'已拒絕','bg-rose-50 text-rose-700 border-rose-200')
-          :`<div class="col-span-4 flex flex-col sm:flex-row sm:items-center gap-2"><span class="text-[10.5px] text-slate-500">你暫時未有申請紀錄，可到「申請中心」提交</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`}
+          :(sum.mine.length?
+            chip(sum.mine.length,'總申請','bg-slate-100 text-slate-700 border-slate-200')+
+            chip(minePending,'待處理',(minePending?'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-500 border-slate-200'))+
+            chip(mineApproved,'已批核','bg-emerald-50 text-emerald-700 border-emerald-200')+
+            chip(mineRejected,'已拒絕','bg-rose-50 text-rose-700 border-rose-200')
+          :`<div class="col-span-4 flex flex-col sm:flex-row sm:items-center gap-2"><span class="text-[10.5px] text-slate-500">你暫時未有申請紀錄，可到「申請中心」提交</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`)}
         </div>
       </div>`;
     }
@@ -1071,26 +1115,27 @@ class ScoutEventApp{
     if(toolsSection) toolsSection.classList.toggle('hidden',!visibleTools.length);
     toolsGrid.innerHTML=visibleTools.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join('');
     if(toolsCount) toolsCount.textContent=`${visibleTools.length} 張`;
-    if(note) note.innerHTML=`排序：<b>公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具</b>。自己的組別已標亮；我的監察寫入身份卡片內。`;
+    if(note) note.innerHTML=`排序（公開資料後）：<b>公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具</b>。自己的組別已標亮；我的監察寫入身份卡片內。最頂 BAR＝身份・我的監察・介紹・改密碼・登出；下方 BAR＝執行手冊・申請中心・批核中心・開戶（後兩者需權限）。`;
   }
   updateAdminNav(){
-    // 最頂置頂 BAR 及 手機底部導覽列：永遠顯示（身份・我的監察・介紹 / 執行手冊・申請中心）；登入後才顯示 改密碼・登出・批核中心・開戶
+    // 最頂 BAR（標題列）：身份・我的監察・介紹・改密碼・登出（登入後不顯示登入，只顯示登出）
+    // 下方 BAR：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）
     const topTabs=document.getElementById('top-tabs-wrap');
     if(topTabs) topTabs.style.display='';
     const loggedIn=!!this.currentUser;
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
-    // 頂部 BAR：登入／登出／改密碼
-    const tl=document.getElementById('topbar-login'); if(tl) tl.style.display=loggedIn?'none':'';
-    const tlo=document.getElementById('topbar-logout'); if(tlo) tlo.style.display=loggedIn?'':'none';
-    const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
-    // 頂部右側：登入後只顯示登出，不顯示登入
+    // 最頂 BAR 右側：登入後只顯示登出＋改密碼，不顯示登入
     const hLogin=document.getElementById('login-toggle-btn'); if(hLogin) hLogin.style.display=loggedIn?'none':'';
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
+    const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
+    // 下方 BAR：批核中心／開戶 僅登入後總主任以上（有權限人士）可見
+    const snApprovals=document.getElementById('subnav-approvals'); if(snApprovals) snApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
+    const snAccounts=document.getElementById('subnav-accounts'); if(snAccounts) snAccounts.style.display=(loggedIn&&chiefOrAbove)?'':'none';
     // 側欄選單：登入／登出／改密碼
     const dl=document.getElementById('drawer-login'); if(dl) dl.style.display=loggedIn?'none':'';
     const dlo=document.getElementById('drawer-logout'); if(dlo) dlo.style.display=loggedIn?'':'none';
     const dcp=document.getElementById('drawer-changepwd'); if(dcp) dcp.style.display=loggedIn?'':'none';
-    // 批核中心／開戶：登入後有權限人士（總主任以上）才可見
+    // 手機底部導覽列與側欄：批核中心／開戶同樣限有權限人士
     const bnApprovals=document.getElementById('bn-approvals'); if(bnApprovals) bnApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
     const bnAccounts=document.getElementById('bn-accounts'); if(bnAccounts) bnAccounts.style.display=(loggedIn&&chiefOrAbove)?'':'none';
     const drawerApprovals=document.getElementById('drawer-approvals'); if(drawerApprovals) drawerApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
@@ -1110,14 +1155,16 @@ class ScoutEventApp{
   // 手機底部導覽列：按目前頁面標示 active
   updateBottomNav(){
     document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
-    let id=null;
+    document.querySelectorAll('#top-tabs-wrap .nav-tab').forEach(b=>b.classList.remove('active'));
+    let id=null, subId=null;
     const mod=this.currentModule;
-    if(mod==='exec_manual') id='bn-exec';
-    else if(mod==='apply_hub') id='bn-apply';
-    else if(mod==='account_setup') id='bn-accounts';
+    if(mod==='exec_manual'){ id='bn-exec'; subId='subnav-exec'; }
+    else if(mod==='apply_hub'){ id='bn-apply'; subId='subnav-apply'; }
+    else if(mod==='account_setup'){ id='bn-accounts'; subId='subnav-accounts'; }
     const apprEl=document.getElementById('view-approvals');
-    if(apprEl && !apprEl.classList.contains('hidden')) id='bn-approvals';
+    if(apprEl && !apprEl.classList.contains('hidden')){ id='bn-approvals'; subId='subnav-approvals'; }
     if(id){ const el=document.getElementById(id); if(el) el.classList.add('active'); }
+    if(subId){ const el=document.getElementById(subId); if(el) el.classList.add('active'); }
   }
 
   applyDashboardMode(){
