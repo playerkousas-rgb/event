@@ -147,17 +147,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         </div>
       </div>
 
-      <!-- 登入者所屬組別：永遠排最前並重點標示 -->
+      <!-- 登入後置頂核心卡片：我的監察 → 會議卡片（L3 或以下連同自己組別僅此區共 3 張） -->
+      <div id="pinned-cards-section" class="hidden space-y-2">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-bolt"></i></span><span id="pinned-section-title">我的監察・會議</span> <span id="pinned-section-sub" class="text-[10px] text-slate-400 font-normal">登入後置頂顯示</span></h3>
+          <span id="pinned-cards-count" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200"></span>
+        </div>
+        <div id="pinned-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+      </div>
+
+      <!-- 登入者所屬組別：L2 或以上在「我的監察・會議」之後顯示；L3 或以下連同監察／會議併入核心卡片區 -->
       <div id="my-group-section" class="hidden space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-star"></i></span>我的組別 <span class="text-[10px] text-indigo-600 font-normal">登入後優先顯示</span></h3>
+          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-star"></i></span>我的組別 <span class="text-[10px] text-indigo-600 font-normal">我的監察・會議之後顯示（L2 或以上）</span></h3>
           <span id="my-group-count" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200"></span>
         </div>
         <div id="my-group-card-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
       <!-- 公開資料：固定按「公告、組織、場地、典禮、申請、危機、通告」排列 -->
-      <div class="space-y-2">
+      <div id="public-section" class="space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-globe"></i></span>公開資料 <span class="text-[10px] text-slate-400 font-normal">所有人可見，無需登入</span></h3>
           <span id="public-count" class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200"></span>
@@ -166,7 +175,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       </div>
 
       <!-- 其他組別及工作卡片 -->
-      <div class="space-y-2">
+      <div id="identity-section" class="space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-slate-700 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-people-group"></i></span><span id="identity-section-title">其他組別及工作卡片</span> <span class="text-[10px] text-slate-400 font-normal">本組以外內容預設只讀</span></h3>
           <span id="identity-count" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200"></span>
@@ -183,7 +192,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div id="management-tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">🔒 登入後會先顯示並標亮你的組別，再顯示公開資料、其他組別及工作卡片；管理工具固定放最後。</div>
+      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 未登入＝一般工作人員／公眾：只有「公告及溝通、申請中心」有顏色；登入後按職級顯示（L2 或以上完整檢視；L3 或以下只顯示我的監察、會議卡片、自己組 3 張）。</div>
     </div>
 
     <div id="full-dashboard-sections" class="space-y-6">
@@ -410,12 +419,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <!-- 1. 三類卡片 -->
       <div class="space-y-2">
         <h4 class="font-bold text-[15px] text-slate-900">1️⃣ 現有功能：三類卡片</h4>
-        <p>進入活動後，儀表板會根據身分顯示三類卡片；登入後會先顯示「我的組別」。</p>
+        <p>進入活動後，儀表板會根據身分顯示卡片。<b>未登入＝一般工作人員／公眾</b>：只有<b>公告及溝通</b>及<b>申請中心</b>有顏色，其餘卡片一律無顏色（白底），方便一眼找到重點。<br><b>登入後</b>（L2 執行副主席或以上）：<b>我的監察 → 會議卡片 → 我的組別 → 公開資料 → 其他組別及工作卡片 → 管理工具</b>。<br><b>L3 或以下</b>（副主席／總主任／主任／工作人員）：儀表板只顯示 <b>我的監察、會議卡片、自己組</b> 3 張卡片。</p>
         <div class="table-responsive">
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">類型</th><th class="px-2 py-1 text-left">需登入？</th><th class="px-2 py-1 text-left">內容</th><th class="px-2 py-1 text-left">修改權限</th></tr></thead>
             <tbody class="divide-y">
-              <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>你所屬組別的卡片，排最前並標亮</td><td>由組別權限決定</td></tr>
+              <tr><td class="px-2 py-1 font-medium">我的監察・會議</td><td>需要</td><td>登入後排最前；L3 或以下連同自己組別共 3 張卡片</td><td>只讀監察；會議由管理員整理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>你所屬組別的卡片（L2 或以上位於監察／會議之後並標亮）</td><td>由組別權限決定</td></tr>
               <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告、申請中心、日程、場地、組織、主題章、膳食、危機、文件、典禮、捐贈等</td><td>只讀；修改需對應職級／組別登入</td></tr>
               <tr><td class="px-2 py-1 font-medium">② 其他組別及工作卡片</td><td>需要</td><td>其他組別、會議、物資、車輛、財務、監察等</td><td>預設只讀；依「可看／可管」權限解鎖</td></tr>
               <tr><td class="px-2 py-1 font-medium">③ 管理工具</td><td>需要</td><td>開戶、批核中心、權限管理</td><td>僅總主任以上可見／使用</td></tr>
@@ -497,6 +507,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <h4 class="font-bold text-[15px] text-slate-900">5️⃣ 其他你需要了解</h4>
         <ul class="list-disc pl-5 space-y-1 text-[12px]">
           <li><b>登入：</b>帳號＝中文姓名，初始密碼 1234；首次登入建議改密碼；登入狀態會保存於瀏覽器，一次登入永久有效。</li>
+          <li><b>儀表板：</b>未登入只有「公告及溝通、申請中心」有顏色；L2 或以上見完整排序（我的監察 → 會議卡片 → …）；L3 或以下只顯示「我的監察、會議卡片、自己組」3 張。</li>
           <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
           <li><b>示範沙盒：</b>「模擬示範版」只作介紹／測試，改動不會影響正式活動。</li>
           <li><b>資料：</b>正式活動可連接 Google Sheet／GAS 後端實時同步；內建資料（活動、會議紀錄等）來自 data/JSON 檔。</li>
@@ -655,7 +666,7 @@ const DASH_CARD_DEFS=[
   {id:'finance',title:'財務管理',desc:'已歸入行政組卡片：指引、預算、開支申報、結算按銀碼批核',icon:'fa-solid fa-wallet',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-600',minLevel:40,groups:['行政組'],editLevel:60,editGroups:['行政組'],editLabel:'副主席以上批核',hideOnDashboard:true},
   {id:'admin_group',title:'行政組',desc:'通告、報名、膳食安排、參加旅團 (取代舊手冊)',icon:'fa-solid fa-building',cardClass:'bg-white border shadow-sm',iconClass:'bg-emerald-100 text-emerald-700',minLevel:20,groups:['行政組'],editLevel:40,editGroups:['行政組'],editLabel:'行政組可管理'},
   {id:'coordinator_group',title:'協調組',desc:'物資、車輛、膳食及場地管理',icon:'fa-solid fa-people-roof',cardClass:'bg-gradient-to-br from-orange-500 to-amber-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理'},
-  // 全部 10 個組別均有對應卡片；登入者自己的組別會排最前並標亮。
+  // 全部 10 個組別均有對應卡片；L2 或以上在監察／會議之後顯示自己的組別並標亮；L3 或以下只顯示共 3 張核心卡片。
   {id:'group_advisors',title:'顧問團',desc:'政策指導、整體監察及顧問資料',icon:'fa-solid fa-user-tie',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,groups:['顧問團'],editLevel:80,editGroups:['顧問團'],editLabel:'顧問／管理員可管理',action:"app.openGroupManagement('顧問團')"},
   {id:'group_leadership',title:'主席及執行副主席',desc:'主席、執行副主席及整體統籌資料',icon:'fa-solid fa-crown',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:20,groups:['主席及執行副主席'],editLevel:70,editGroups:['主席及執行副主席'],editLabel:'主席／執行副主席可管理',action:"app.openGroupManagement('主席及執行副主席')"},
   {id:'group_ceremony',title:'會操及典禮組',desc:'步操檢閱、典禮程序、本組內容',icon:'fa-solid fa-flag',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-700',minLevel:20,groups:['會操及典禮組'],editLevel:40,editGroups:['會操及典禮組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('會操及典禮組')"},
@@ -920,7 +931,10 @@ class ScoutEventApp{
     const badge=opts&&opts.badge;
     const canEdit=opts&&opts.canEdit;
     const isOwnGroup=!!(opts&&opts.isOwnGroup);
-    const whiteCard=!def.cardClass.includes('text-white');
+    // 需要「無顏色」的卡片（未登入時除公告／申請中心外全部）以白底中性卡顯示
+    const neutral=!!(opts&&opts.neutral);
+    const cardClass=neutral?'bg-white border shadow-sm':def.cardClass;
+    const whiteCard=!cardClass.includes('text-white');
     const badgeHTML=locked
       ?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-amber-700 border border-amber-200 whitespace-nowrap"><i class="fa-solid fa-lock mr-0.5"></i>登入解鎖</span>'
       :(badge==='可修改'?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white whitespace-nowrap"><i class="fa-solid fa-pen mr-0.5"></i>可修改</span>'
@@ -929,7 +943,7 @@ class ScoutEventApp{
     const footer=(!locked&&(badge==='可修改'||badge==='只讀'))?`<div class="mt-1.5 text-[9.5px] font-semibold ${canEdit?'text-emerald-600':'text-slate-400'}"><i class="fa-solid ${canEdit?'fa-pen':'fa-eye'} mr-1"></i>${canEdit?'可修改':'只讀'} · ${def.editLabel||''}</div>`:'';
     const overlay=locked?'<div class="absolute inset-0 bg-white/30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition"><span class="bg-slate-900 text-white text-[10px] px-3 py-1.5 rounded-full font-bold"><i class="fa-solid fa-lock mr-1"></i>登入解鎖</span></div>':'';
     const ownGroupBanner=isOwnGroup?'<div class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2.5 shadow-sm"><i class="fa-solid fa-star"></i>我的組別</div>':'';
-    return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${def.cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="w-11 h-11 ${def.iconClass} rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4><p class="text-[11px] ${whiteCard?'text-slate-500':'text-white/80'} mt-0.5">${escapeHtml(def.desc)}</p>${footer}${overlay}</div>`;
+    return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="w-11 h-11 ${def.iconClass} rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4><p class="text-[11px] ${whiteCard?'text-slate-500':'text-white/80'} mt-0.5">${escapeHtml(def.desc)}</p>${footer}${overlay}</div>`;
   }
   renderIdentityBar(){
     const user=this.currentUser;
@@ -970,6 +984,13 @@ class ScoutEventApp{
     const toolsGrid=document.getElementById('management-tools-grid');
     const myGroupSection=document.getElementById('my-group-section');
     const toolsSection=document.getElementById('management-tools-section');
+    const publicSection=document.getElementById('public-section');
+    const identitySection=document.getElementById('identity-section');
+    const pinnedSection=document.getElementById('pinned-cards-section');
+    const pinnedGrid=document.getElementById('pinned-cards-grid');
+    const pinnedCount=document.getElementById('pinned-cards-count');
+    const pinnedTitle=document.getElementById('pinned-section-title');
+    const pinnedSub=document.getElementById('pinned-section-sub');
     const publicCount=document.getElementById('public-count');
     const identityCount=document.getElementById('identity-count');
     const myGroupCount=document.getElementById('my-group-count');
@@ -983,20 +1004,24 @@ class ScoutEventApp{
     const identityDefs=DASH_CARD_DEFS.filter(d=>d.minLevel>0&&!d.hideOnDashboard);
     const groupDefs=identityDefs.filter(d=>GROUP_CARD_IDS.has(d.id)).sort((a,b)=>ORG_GROUPS.indexOf(normalizeGroupName(a.groups?.[0]))-ORG_GROUPS.indexOf(normalizeGroupName(b.groups?.[0])));
     const toolDefs=byOrder(identityDefs.filter(d=>MANAGEMENT_TOOL_ORDER.includes(d.id)),MANAGEMENT_TOOL_ORDER);
+    // 未登入＝一般工作人員／公眾：只有「公告及溝通」及「申請中心」有顏色，其餘卡片一律無色（白底），方便找重點
+    const COLORED_FOR_GUEST=['announcements','apply_hub'];
+    const guestNeutral=(d)=>!COLORED_FOR_GUEST.includes(d.id);
     this.renderIdentityBar();
 
     // 公開資料固定順序：公告、組織、場地、典禮、申請、危機、通告。
-    publicGrid.innerHTML=publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony});}).join('');
+    publicGrid.innerHTML=publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony,neutral:!user&&guestNeutral(d)});}).join('');
     if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
 
     if(!user){
       if(myGroupSection) myGroupSection.classList.add('hidden');
       if(toolsSection) toolsSection.classList.add('hidden');
+      if(pinnedSection) pinnedSection.classList.add('hidden');
       if(identityTitle) identityTitle.textContent='登入後解鎖';
       const guestDefs=[...identityDefs.filter(d=>!MANAGEMENT_TOOL_ORDER.includes(d.id)),...toolDefs];
-      identityGrid.innerHTML=guestDefs.map(d=>this.cardHTML(d,{locked:true})).join('');
+      identityGrid.innerHTML=guestDefs.map(d=>this.cardHTML(d,{locked:true,neutral:guestNeutral(d)})).join('');
       if(identityCount) identityCount.textContent=`${guestDefs.length} 張 · 登入解鎖`;
-      if(note) note.innerHTML='🔒 登入後會先顯示並標亮你的組別，再顯示公開資料、其他組別及工作卡片；開戶、批核中心及權限管理固定放最後，總主任以上才會看到。';
+      if(note) note.innerHTML='👀 未登入＝一般工作人員／公眾：<b>公告及溝通、申請中心</b>以彩色標示，其餘卡片無顏色，方便一眼找到重點。登入後（按職級）才顯示其他卡片。';
       return;
     }
 
@@ -1009,22 +1034,49 @@ class ScoutEventApp{
     const workDefs=identityDefs.filter(d=>!GROUP_CARD_IDS.has(d.id)&&!MANAGEMENT_TOOL_ORDER.includes(d.id)&&this.canSeeRoleCard(d));
     const visibleTools=this.roleLevel(user.role)>=40?toolDefs.filter(d=>this.canSeeRoleCard(d)):[];
 
+    // 登入後置頂：我的監察 → 會議卡片
+    const pinIds=['my_monitor','meetings'];
+    const pinnedDefs=pinIds.map(id=>workDefs.find(d=>d.id===id)).filter(Boolean);
+    const restWork=workDefs.filter(d=>!pinIds.includes(d.id));
+
+    // L3 或以下（副主席／總主任／主任／工作人員）：儀表板只顯示 3 張卡＝我的監察、會議卡片、自己組
+    if(this.roleLevel(user.role)<70){
+      const compactDefs=[...pinnedDefs,...ownGroupDefs];
+      if(pinnedTitle) pinnedTitle.textContent='我的核心卡片';
+      if(pinnedSub) pinnedSub.textContent='我的監察 · 會議 · 自己組（L3 或以下只顯示此 3 張）';
+      if(pinnedCount) pinnedCount.textContent=`${compactDefs.length} 張`;
+      if(pinnedGrid) pinnedGrid.innerHTML=compactDefs.map(d=>{const canEdit=this.canEditRoleCard(d); const isOwn=GROUP_CARD_IDS.has(d.id); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit,isOwnGroup:isOwn});}).join('');
+      if(pinnedSection) pinnedSection.classList.remove('hidden');
+      if(myGroupSection) myGroupSection.classList.add('hidden');
+      if(publicSection) publicSection.classList.add('hidden');
+      if(identitySection) identitySection.classList.add('hidden');
+      if(toolsSection) toolsSection.classList.add('hidden');
+      const grpSec=document.getElementById('group-management-section');
+      if(grpSec) grpSec.classList.add('hidden');
+      if(note) note.innerHTML=`🔒 儀表板（L3 或以下）只顯示 3 張卡：<b>我的監察 → 會議卡片 → ${escapeHtml(userGroup||'我的組別')}</b>。開戶／批核等由頂部導覽列進入。`;
+      return;
+    }
+
+    // L2 或以上（執行副主席／主席／顧問／管理員）：我的監察 → 會議卡片 → 自己組 → 公開資料 → 其他組別及工作卡片 → 管理工具
+    if(pinnedTitle) pinnedTitle.textContent='我的監察・會議';
+    if(pinnedSub) pinnedSub.textContent='登入後置頂；僅 L2 或以上顯示完整檢視';
+    if(pinnedCount) pinnedCount.textContent=`${pinnedDefs.length} 張`;
+    if(pinnedGrid) pinnedGrid.innerHTML=pinnedDefs.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join('');
+    if(pinnedSection) pinnedSection.classList.remove('hidden');
+
     if(myGroupSection) myGroupSection.classList.toggle('hidden',!ownGroupDefs.length);
     myGroupGrid.innerHTML=ownGroupDefs.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit,isOwnGroup:true});}).join('');
     if(myGroupCount) myGroupCount.textContent=ownGroupDefs.length?`${userGroup} · ${ownGroupDefs.length} 張`:'';
 
-    const pinIds=['my_monitor','meetings'];
-    const pinned=workDefs.filter(d=>pinIds.includes(d.id));
-    const restWork=workDefs.filter(d=>!pinIds.includes(d.id));
-    const remaining=[...pinned,...otherGroupDefs,...restWork];
     if(identityTitle) identityTitle.textContent='其他組別及工作卡片';
+    const remaining=[...otherGroupDefs,...restWork];
     identityGrid.innerHTML=remaining.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join('')||'<div class="col-span-full text-center text-[12px] text-slate-400 bg-white border rounded-2xl p-6">暫無其他卡片</div>';
     if(identityCount) identityCount.textContent=`${remaining.length} 張`;
 
     if(toolsSection) toolsSection.classList.toggle('hidden',!visibleTools.length);
     toolsGrid.innerHTML=visibleTools.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join('');
     if(toolsCount) toolsCount.textContent=`${visibleTools.length} 張`;
-    if(note) note.innerHTML=`排序：<b>${escapeHtml(userGroup||'我的組別')}</b> → 公開資料 → 其他組別及工作卡片 → 管理工具。自己的組別已標亮；其他組別預設只讀。`;
+    if(note) note.innerHTML=`排序：<b>我的監察 → 會議卡片 → ${escapeHtml(userGroup||'我的組別')} → 公開資料 → 其他組別及工作卡片 → 管理工具</b>（L2 或以上完整檢視）。自己的組別已標亮；其他組別預設只讀。`;
   }
   applyDashboardMode(){
     // 參考 VSBADGE：一律用卡片檢視，不再顯示「認識/參與/後勤/協作」儀表板行；公眾亦不顯示頂部管理列
