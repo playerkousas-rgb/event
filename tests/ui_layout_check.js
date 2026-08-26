@@ -103,6 +103,7 @@ app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', grou
 app.renderRoleCards();
 pub = htmlOf('public-cards-grid');
 assert(pub.includes('公告及溝通'), '登入後公開資料仍最先顯示');
+assert(!pub.includes('dash-desc') && !pub.includes('<p class="dash-desc'), '卡片不應再顯示詳細介紹（只留名稱）');
 const ids = htmlOf('identity-cards-grid');
 // 會議卡片應在功能卡片最前（在所有 group 卡之前）
 assert(ids.includes('會議卡片'), '其他組別及工作卡片應含會議卡片');
@@ -151,6 +152,9 @@ const headerHtml = html.slice(html.indexOf('<header'), html.indexOf('</header>')
 assert(headerHtml.includes('身份') && headerHtml.includes('我的監察') && headerHtml.includes('介紹')
   && headerHtml.includes('改密碼') && headerHtml.includes('登出'), '頂部 BAR 應有 身份/我的監察/介紹/改密碼/登出');
 assert(headerHtml.includes('topbar-login'), '頂部 BAR 未登入時應有登入');
+assert(!headerHtml.slice(headerHtml.indexOf('id="top-tabs-wrap"'), headerHtml.indexOf('id="top-tabs-wrap"')+120).includes('overflow-x-auto'),
+  '頂部 BAR 不應左右滑動 (無 overflow-x-auto)');
+assert(html.includes('.nav-tab{flex:1 1 0;'), '頂部 BAR 按鈕應均分寬度（flex:1）');
 const navHtml = html.slice(html.indexOf('<nav id="bottom-nav"'), html.indexOf('</nav>'));
 assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && navHtml.includes('批核中心') && navHtml.includes('開戶'),
   '底部導覽應有 執行手冊/申請中心/批核中心/開戶');
