@@ -62,6 +62,52 @@
 4. 歷史上的一次性補丁腳本（`rewrite_parking.js`、`fix_*.js`、`test*.js` 等）已於 2026-08-27 刪除，只留在 git 歷史內，**不要重跑**。
 5. 拆檔經「重組還原恆等式」驗證（所有方法依序串接與原本逐 byte 相同），方法內容零改寫；`js/` 檔案之間的頂層 `const`／`class` 不可重名（瀏覽器共享全域詞法環境，重名即 SyntaxError）。
 
+### 🤖 AI Agent 協作規則（本倉庫主要由 AI Agent 修改）
+
+**開工前：**
+1. 先讀本節＋跑一次 `for t in tests/*.js; do node "$t"; done` 確認基線全綠（4 個測試都要 PASS）。
+2. 用下面檔案地圖定位目標檔；搵唔到就 `grep -rn "方法名或關鍵字" js/`，或搜 `app.方法名(` 的呼叫處反查定義。
+
+**改動時：**
+- 只改與任務相關的 `js/*.js`；新增方法放在該模組 `Object.assign(ScoutEventApp.prototype,{ ... })` 區塊內，**沿用 2 空格縮排＋既有命名風格**。
+- 頂層 `const`／`class` 只可加在 `00-config.js` 或 `10-app-core.js`，且**不可與其他檔重名**。
+- 小步為主：一次任務改一個功能；跨模組改動分開 commit。
+- **絕對禁止**：寫一次性腳本＋正則批量改寫任何檔案；未跑檢查就 commit；「順手」重構無關代碼。
+
+**收工前（必做）：**
+```bash
+node --check <改過的每個檔>          # 語法
+for f in js/*.js; do node --check "$f" || echo "FAIL: $f"; done   # 全檔
+for t in tests/*.js; do node "$t"; done   # 測試全綠
+```
+若改動刪走/改名方法：`grep -rn "app\.舊方法名(" index.html js/` 確認無殘留呼叫。commit message 講明改了什麼、為什麼。
+
+### 📁 js/ 檔案地圖
+
+| 檔案 | 內容 |
+|---|---|
+| `js/00-config.js` | 常量表（角色/權限卡/儀表板卡定義/LS key/審批路由）＋通用工具（escapeHtml、CSV 解析、登入 ID 遷移等） |
+| `js/10-app-core.js` | `class ScoutEventApp` 聲明＋constructor、init、儀表板/卡片渲染/導覽/登入/活動選擇/天氣/通知等核心方法 |
+| `js/20-accounts.js` | 開戶＋權限管理（總主任以上） |
+| `js/21-activities.js` | 活動卡片模組 v6.8＋文件＋主題章 |
+| `js/22-meals.js` | 膳食模組 v6.7 |
+| `js/23-sync.js` | 跨裝置同步（所有申請 v7.7） |
+| `js/24-supplies.js` | 物資申請＋審批 |
+| `js/25-vehicle.js` | 車輛通行證（同物資審批流程） |
+| `js/26-monitor-apply.js` | 我的監察＋申請中心 (Apply Hub)＋執行手冊 |
+| `js/27-parking.js` | 泊車證申請＋入口檢查清單 |
+| `js/28-oral-quotes.js` | 口頭報價登記 |
+| `js/30-finance.js` | 財務模組 v6.4 |
+| `js/31-staff.js` | 職員/組織架構/聯絡表 |
+| `js/32-meetings.js` | 會議功能＋內建議程／會議紀錄 JSON (v8.3) |
+| `js/33-users.js` | 用戶管理（可見範圍 v8.3 定案） |
+| `js/34-announcements.js` | 公告＋旅團須知（公開） |
+| `js/35-ceremony.js` | 典禮儀式＋獲獎名單（公開） |
+| `js/36-crisis.js` | 危機處理（含意外事件報告表） |
+| `js/37-coordinator.js` | 協調組（物資·車輛·膳食·場地） |
+| `js/38-donations.js` | 童心捐贈大行動（物品·食品捐贈） |
+| `js/90-bootstrap.js` | 啟動（`const app=new ScoutEventApp()`＋Escape 鍵處理） |
+
 ### 第一步：設置 Google Sheet 與 Apps Script 後端
 1. 在 Google Drive 建立一個新的 **Google 試算表**（例如命名為「活動行政管理總庫」）。
 2. 點擊頂部選單的 **擴充功能 (Extensions)** ➔ **Apps Script**。
