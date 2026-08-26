@@ -5662,16 +5662,41 @@ class ScoutEventApp{
     win.document.write(`<html><head><title>車輛通行證入口檢查清單</title><style>body{padding:20px;font-family:Noto Sans TC,sans-serif} h1{font-size:16px} table{width:100%;border-collapse:collapse;margin-top:10px} th,td{border:1px solid #999;padding:6px;font-size:12px} th{background:#eee}</style></head><body><h1>🚦 車輛通行證入口檢查清單（已批核）</h1><p>列印日期 ${new Date().toLocaleDateString()}</p>${area.innerHTML}<script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);
     win.document.close();
   }
+  approveParkingRequest(id){
+    const data=this.getParkingData(),p=(data.applications||[]).find(x=>x.parking_id===id);
+    if(!p){ showToast('找不到泊車證申請','error'); return; }
+    if(!this.applicationReadyForApproval(p)){ showToast('此申請尚待本組總主任確認','warning'); return; }
+    if(!this.canApproveArea('vehicle')){ showToast(`只供 ${this.approvalRouteLabel('vehicle','approver_groups')} 批核`,'error'); return; }
+    p.status='approved'; p.approved_by=this.currentUser?.name||''; p.approved_at=new Date().toISOString();
+    this.saveParkingData(data); showToast('泊車證申請已批准','success');
+    if(this.currentModule==='parking') this.renderParkingModule();
+  }
+  rejectParkingRequest(id){
+    const data=this.getParkingData(),p=(data.applications||[]).find(x=>x.parking_id===id);
+    if(!p){ showToast('找不到泊車證申請','error'); return; }
+    if(!this.applicationReadyForApproval(p)){ showToast('此申請尚待本組總主任確認','warning'); return; }
+    if(!this.canApproveArea('vehicle')){ showToast(`只供 ${this.approvalRouteLabel('vehicle','approver_groups')} 批核`,'error'); return; }
+    p.status='rejected'; p.approved_by=this.currentUser?.name||''; p.approved_at=new Date().toISOString();
+    this.saveParkingData(data); showToast('泊車證申請已拒絕','warning');
+    if(this.currentModule==='parking') this.renderParkingModule();
+  }
+  async deleteParkingRequest(id){
+    if(!this.isSuperAdmin()){ showToast('僅超管可永久刪除泊車證紀錄','error'); return; }
+    if(!confirm('確定永久刪除此泊車證申請？APP、本機快取及後台紀錄都會刪除。')) return;
+    this.markRecordDeleted('Parking_Requests',id);
+    const data=this.getParkingData();
+    data.applications=(data.applications||[]).filter(p=>p.parking_id!==id);
+    this.saveParkingData(data);
+    const result=await this.deleteGasRecord('Parking_Requests',id);
+    showToast(result.success?'已從 APP 及後台永久刪除':`APP 已隱藏，但後台刪除失敗：${result.error}`,result.success?'warning':'error');
+    if(this.currentModule==='parking') this.renderParkingModule();
+    if(!document.getElementById('view-approvals')?.classList.contains('hidden')) this.renderApprovalCenter();
+  }
   exportParkingData(){
     const data=this.getSuppliesData();
     const blob=new Blob([JSON.stringify(data.vehicle_passes||[],null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`vehicle_passes_${todayISO()}.json`; a.click();
     showToast('已匯出 JSON','success');
-  }
-    const data=this.getParkingData();
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`parking_${todayISO()}.json`; a.click();
-    showToast('已匯出泊車證 JSON','success');
   }
 
   /* ===================== 口頭報價登記 (Oral Quotes) =====================
