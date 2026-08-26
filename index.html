@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>童軍活動管理系統 - 會議卡片全面升級版 v6.1</title>
+<title>童軍活動管理系統 v6.1</title>
 <link rel="stylesheet" href="assets/tailwind.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
@@ -53,8 +53,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 }
 /* 全站防左右滑動：clip 不會產生捲軸容器，sticky 頂 BAR 不受影響 */
 html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:hidden}}
-.drawer{position:fixed;inset:0;z-index:60;display:none} .drawer.active{display:flex} .drawer-backdrop{flex:1;background:rgba(15,23,42,0.55);backdrop-filter:blur(2px)} .drawer-panel{width:84%;max-width:320px;background:#fff;height:100%;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:flex;flex-direction:column;}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
+/* 底部導覽列：執行手冊・申請中心・批核中心・開戶，手機／電腦同步顯示（原本上方 BAR 重覆，已刪） */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;max-width:180px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
 .meeting-card{border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:#fff;transition:all .22s ease;cursor:pointer} .meeting-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:#8b5cf6}
 .meeting-number{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
@@ -92,33 +92,28 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col bottom-pad">
 
 <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
-  <!-- 最頂 BAR（標題列）：童軍活動管理系統・v6.1・活動名稱｜身份(登入後)・我的監察・介紹・改密碼・登出（登入後只顯示登出，不顯示登入；手機自動分行，不用左右滑動） -->
+  <!-- 最頂 BAR（標題列）：童軍活動管理系統・v6.1・活動名稱｜身份(登入後)・改密碼・登出（登入後只顯示登出，不顯示登入；手機自動分行，不用左右滑動） -->
+  <!-- 已精簡：手機三畫功能鍵已刪；其餘功能集中在底部導覽列（手機／電腦同步）及儀表板身份卡片內，不再重覆 -->
   <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
     <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-      <button onclick="app.toggleDrawer()" class="md:hidden bg-slate-800 p-2.5 rounded-xl border border-slate-700 btn-mobile" aria-label="功能選單"><i class="fa-solid fa-bars"></i></button>
       <div class="flex items-center space-x-2.5 cursor-pointer min-w-0 w-full sm:w-auto sm:flex-1" onclick="app.goHome()">
         <div class="bg-sky-600 text-white p-2 sm:p-2.5 rounded-xl font-bold text-lg shadow flex-shrink-0"><i class="fa-solid fa-tent"></i></div>
-        <div class="min-w-0 flex-1"><div class="flex items-center space-x-2 flex-wrap"><h1 class="font-bold text-[15px] sm:text-lg leading-tight truncate">童軍活動管理系統</h1><span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold whitespace-nowrap">v6.1 會議升級</span></div><p class="text-[11px] sm:text-xs text-slate-400 truncate" id="current-event-subtitle">會議卡片·全前端上傳·分次管理·權限下載</p></div>
+        <div class="min-w-0 flex-1"><div class="flex items-center space-x-2 flex-wrap"><h1 class="font-bold text-[15px] sm:text-lg leading-tight truncate">童軍活動管理系統</h1><span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold whitespace-nowrap">v6.1</span></div><p class="text-[11px] sm:text-xs text-slate-400 truncate" id="current-event-subtitle">選擇活動後即可查看該活動全部資料</p></div>
       </div>
       <div class="flex items-center gap-1.5 flex-wrap justify-end sm:ml-auto w-full sm:w-auto">
         <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2" title="身份"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[72px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
-        <button onclick="app.openModule('my_monitor')" class="header-chip bg-indigo-600 hover:bg-indigo-700 text-white"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
-        <button onclick="app.openGuideModal()" class="header-chip bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"><i class="fa-solid fa-book-open mr-1"></i>介紹</button>
         <button id="topbar-changepwd" style="display:none" onclick="app.openChangePwdModal()" class="header-chip bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"><i class="fa-solid fa-key mr-1"></i>改密碼</button>
         <button id="logout-btn" style="display:none" onclick="app.logout()" class="header-chip bg-rose-600 hover:bg-rose-700 text-white"><i class="fa-solid fa-right-from-bracket mr-1"></i>登出</button>
         <button id="login-toggle-btn" onclick="app.openLoginModal()" class="header-chip bg-sky-600 hover:bg-sky-700 text-white"><i class="fa-solid fa-right-to-bracket mr-1"></i><span id="login-btn-text">登入</span></button>
       </div>
     </div>
   </div>
-  <!-- 下方 BAR：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）；四個按鈕均分寬度，毋須左右滑動 -->
-  <div id="top-tabs-wrap" class="bg-slate-800/80 border-t border-slate-700/50"><div class="max-w-7xl mx-auto px-1 sm:px-4 flex gap-0.5 sm:gap-1 w-full"><button id="subnav-exec" class="nav-tab" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book mr-1"></i> 執行手冊</button><button id="subnav-apply" class="nav-tab" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen mr-1"></i> 申請中心</button><button id="subnav-approvals" style="display:none" class="nav-tab" onclick="app.switchTopTab('approvals',this)"><i class="fa-solid fa-user-check mr-1"></i> 批核中心</button><button id="subnav-accounts" style="display:none" class="nav-tab" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus mr-1"></i> 開戶</button></div></div>
 </header>
 
-<div id="mobile-drawer" class="drawer"><div class="drawer-panel"><div class="p-4 bg-slate-900 text-white flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-tent"></i><b>功能選單</b></div><button onclick="app.toggleDrawer()" class="bg-slate-800 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button></div><div class="p-3 space-y-2 overflow-y-auto flex-1"><button onclick="app.goIdentity();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-id-card text-sky-600 w-5"></i> 身份（儀表板）</button><button onclick="app.openModule('my_monitor');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-eye text-indigo-600 w-5"></i> 我的監察</button><button onclick="app.openGuideModal();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-book-open text-purple-600 w-5"></i> 功能介紹</button><button onclick="app.openModule('exec_manual');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-book text-slate-700 w-5"></i> 執行手冊</button><button onclick="app.openModule('apply_hub');app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-file-pen text-emerald-700 w-5"></i> 申請中心</button><button id="drawer-approvals" onclick="app.switchTopTab('approvals');app.toggleDrawer()" class="hidden w-full text-left px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-user-check text-rose-600 w-5"></i> 批核中心</button><button id="drawer-accounts" onclick="app.showDashboard();app.toggleDrawer();setTimeout(()=>app.openModule('account_setup'),200)" class="hidden w-full text-left px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-user-plus text-amber-700 w-5"></i> 開戶 / 批量開戶</button><button id="drawer-login" onclick="app.openLoginModal();app.toggleDrawer()" class="w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-right-to-bracket text-sky-600 w-5"></i> 登入</button><button id="drawer-changepwd" onclick="app.openChangePwdModal();app.toggleDrawer()" class="hidden w-full text-left px-4 py-3 rounded-xl bg-slate-50 border flex items-center gap-3 btn-mobile"><i class="fa-solid fa-key text-slate-600 w-5"></i> 修改密碼</button><button id="drawer-logout" onclick="app.logout();app.toggleDrawer()" class="hidden w-full text-left px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-3 btn-mobile"><i class="fa-solid fa-right-from-bracket text-rose-600 w-5"></i> 登出</button></div><div class="p-3 border-t text-[11px] text-slate-500">童軍活動管理系統<br>COPYRIGHT 2026</div></div><div class="drawer-backdrop" onclick="app.toggleDrawer()"></div></div>
 
 <div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-3 sm:px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-sm gap-2"><div class="flex items-start sm:items-center gap-2 flex-1 min-w-0"><span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase flex-shrink-0"><i class="fa-regular fa-bell mr-1"></i> 會議預告</span><span id="banner-meeting-text" class="font-medium leading-snug flex-1">第4次籌備會議：2026-08-18 19:15 @ 1704室</span></div><div id="banner-admin-actions" class="hidden flex items-center gap-2 flex-shrink-0"><button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1.5 rounded-xl text-xs shadow btn-mobile"><i class="fa-solid fa-paper-plane mr-1"></i> 發送提醒</button></div></div>
 
-<main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 pb-[90px] md:pb-6">
+<main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 pb-[90px]">
 
   <div id="view-landing" class="space-y-5">
     <!-- 首頁：先選擇活動 (像 trip APP，一進來就先選活動) -->
@@ -219,7 +214,7 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
         <div id="management-tools-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序（公開資料後）：<b>公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具</b>。最頂 BAR＝<b>身份・我的監察・介紹・改密碼・登出</b>；下方 BAR＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。未登入＝一般工作人員／公眾：只有「公告及溝通、申請中心」有顏色；我的監察已寫入身份卡片內。</div>
+      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序（公開資料後）：<b>公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具</b>。全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。我的監察已寫入身份卡片內。</div>
     </div>
 
     <div id="full-dashboard-sections" class="space-y-6">
@@ -294,7 +289,8 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
 
 </main>
 
-<nav id="bottom-nav" class="bottom-nav md:hidden"><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-accounts" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus"></i><span>開戶</span></button></nav>
+<!-- 底部導覽列：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）。手機／電腦都顯示（同步），原本頂部重覆的 BAR 已刪 -->
+<nav id="bottom-nav" class="bottom-nav"><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-accounts" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus"></i><span>開戶</span></button></nav>
 
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
@@ -444,7 +440,7 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
       <!-- 1. 三類卡片 -->
       <div class="space-y-2">
         <h4 class="font-bold text-[15px] text-slate-900">1️⃣ 現有功能：三類卡片</h4>
-        <p>進入活動後，儀表板會根據身分顯示卡片。<b>未登入＝一般工作人員／公眾</b>：只有<b>公告及溝通</b>及<b>申請中心</b>有顏色，其餘卡片一律無顏色（白底），方便一眼找到重點。<br><b>排序：</b><b>公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具</b>（總主任以上）。<br><b>我的監察</b>像功能介紹一樣寫入<b>身份卡片</b>內（一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到自己身份＋未有申請紀錄提示，可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・我的監察・介紹・改密碼・登出</b>（登入後不顯示登入，只顯示登出）；<b>下方 BAR</b>＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。</p>
+        <p>進入活動後，儀表板會根據身分顯示卡片。<b>全部卡片一律白底無顏色</b>（更整潔），只靠「可修改／只讀／公開可看」小標籤分辨，自己的組別會標亮。<br><b>排序：</b><b>公開資料 → 其他組別及工作卡片（會議卡片最前）→ 管理工具</b>（總主任以上）。<br><b>我的監察</b>像功能介紹一樣寫入<b>身份卡片</b>內（一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到自己身份＋未有申請紀錄提示，可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<b>有批核權同時自己亦有申請</b>的人士：四個數字＝自己＋下級合計，下方另有一行「<b>我的申請</b>」只計自己（含待處理數），點擊即到「我的監察」查看。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・改密碼・登出</b>（登入後不顯示登入，只顯示登出；手機版無三畫功能鍵）；<b>底部導覽列</b>＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見），手機／電腦同步顯示。</p>
         <div class="table-responsive">
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">類型</th><th class="px-2 py-1 text-left">需登入？</th><th class="px-2 py-1 text-left">內容</th><th class="px-2 py-1 text-left">修改權限</th></tr></thead>
@@ -527,7 +523,7 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
         <h4 class="font-bold text-[15px] text-slate-900">5️⃣ 其他你需要了解</h4>
         <ul class="list-disc pl-5 space-y-1 text-[12px]">
           <li><b>登入：</b>帳號＝中文姓名，初始密碼 1234；首次登入建議改密碼；登入狀態會保存於瀏覽器，一次登入永久有效。</li>
-          <li><b>儀表板：</b>未登入只有「公告及溝通、申請中心」有顏色；排序（公開資料後）＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察寫入身份卡片內。最頂 BAR＝身份・我的監察・介紹・改密碼・登出；下方 BAR＝執行手冊・申請中心・批核中心・開戶（後兩者需權限）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
+          <li><b>儀表板：</b>全部卡片一律白底無顏色（更整潔）；排序（公開資料後）＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察寫入身份卡片內。最頂 BAR＝身份・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心・開戶（後兩者需權限，手機／電腦同步）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
           <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
           <li><b>示範沙盒：</b>「模擬示範版」只作介紹／測試，改動不會影響正式活動。</li>
           <li><b>資料：</b>正式活動可連接 Google Sheet／GAS 後端實時同步；內建資料（活動、會議紀錄等）來自 data/JSON 檔。</li>
@@ -549,7 +545,7 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
 <div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#6d28d9] transition-all"></div></div></div>
 <div id="toast" class="toast"></div>
 
-<footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4"><p>童軍活動管理系統 v7.7 · 申請中心（統一入口）· 協調組管理中心（物資·車輛·膳食）· 部門管理中心（每組一卡）· 我的監察（自己＋下級） · COPYRIGHT 2026</p></footer>
+<footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v6.1 · COPYRIGHT 2026</p></footer>
 
 <script>
 const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
@@ -750,7 +746,6 @@ class ScoutEventApp{
     // QR Code hash routing：掃碼後自動開啟捐贈表
     this.handleHashRoute();
   }
-  toggleDrawer(){document.getElementById('mobile-drawer').classList.toggle('active');}
   closeModal(id){document.getElementById(id).classList.add('hidden');}
   openSettingsModal(){document.getElementById('gas-url-input').value=this.gasUrl; document.getElementById('api-key-input').value=this.apiKey; document.getElementById('modal-settings').classList.remove('hidden');}
   openLoginModal(){const demo=document.getElementById('mock-demo-login'); if(demo) demo.classList.toggle('hidden', !(this.mockMode && this.isDemoEvent())); document.getElementById('modal-login').classList.remove('hidden');}
@@ -854,7 +849,7 @@ class ScoutEventApp{
   accessEvent(id){this.pendingEventId=id; this.verifyAndEnterEvent(id);}
   submitEventPassword(e){e.preventDefault(); this.verifyAndEnterEvent(this.pendingEventId);}
   async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; this.approvalRouting=this.getLocalApprovalRouting(); localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
-  goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='會議卡片全面升級'; this.updateBottomNav(); this.loadEvents();}
+  goHome(){this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='選擇活動後即可查看該活動全部資料'; this.updateBottomNav(); this.loadEvents();}
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
   async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 
@@ -954,10 +949,8 @@ class ScoutEventApp{
     const badge=opts&&opts.badge;
     const canEdit=opts&&opts.canEdit;
     const isOwnGroup=!!(opts&&opts.isOwnGroup);
-    // 需要「無顏色」的卡片（未登入時除公告／申請中心外全部）以白底中性卡顯示
-    const neutral=!!(opts&&opts.neutral);
-    const cardClass=neutral?'bg-white border shadow-sm':def.cardClass;
-    const whiteCard=!cardClass.includes('text-white');
+    // 全部卡片統一白底無顏色（更整潔）；圖示一律中性灰，不再使用彩色卡面
+    const cardClass='bg-white border shadow-sm';
     const badgeHTML=locked
       ?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-amber-700 border border-amber-200 whitespace-nowrap"><i class="fa-solid fa-lock mr-0.5"></i>登入解鎖</span>'
       :(badge==='可修改'?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white whitespace-nowrap"><i class="fa-solid fa-pen mr-0.5"></i>可修改</span>'
@@ -966,7 +959,7 @@ class ScoutEventApp{
     const footer=(!locked&&(badge==='可修改'||badge==='只讀'))?`<div class="dash-footer mt-1.5 text-[9.5px] font-semibold ${canEdit?'text-emerald-600':'text-slate-400'}"><i class="fa-solid ${canEdit?'fa-pen':'fa-eye'} mr-1"></i>${canEdit?'可修改':'只讀'} · ${def.editLabel||''}</div>`:'';
     const overlay=locked?'<div class="absolute inset-0 bg-white/30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition"><span class="bg-slate-900 text-white text-[10px] px-3 py-1.5 rounded-full font-bold"><i class="fa-solid fa-lock mr-1"></i>登入解鎖</span></div>':'';
     const ownGroupBanner=isOwnGroup?'<div class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2.5 shadow-sm"><i class="fa-solid fa-star"></i>我的組別</div>':'';
-    return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative dash-card p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="dash-icon w-11 h-11 ${def.iconClass} rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="dash-title font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4>${def.desc?`<p class="dash-desc text-[11px] ${whiteCard?'text-slate-500':'text-white/80'} mt-0.5">${escapeHtml(def.desc)}</p>`:''}${footer}${overlay}</div>`;
+    return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative dash-card p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="dash-icon w-11 h-11 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="dash-title font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4>${def.desc?`<p class="dash-desc text-[11px] text-slate-500 mt-0.5">${escapeHtml(def.desc)}</p>`:''}${footer}${overlay}</div>`;
   }
   // 我的監察摘要：供身份卡片及「我的監察」頁共用
   monitorSummary(){
@@ -1032,7 +1025,9 @@ class ScoutEventApp{
       const minePending=sum.mine.filter(r=>r.color_name==='amber'||r.color_name==='sky').length;
       const mineApproved=sum.mine.filter(r=>r.color_name==='emerald').length;
       const mineRejected=sum.mine.filter(r=>r.color_name==='rose').length;
-      const descText=sum.privileged?'自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理。':(sum.mine.length?'只顯示你自己的申請批核進度；點擊數字查看詳情。':'你暫時未有申請紀錄，可到「申請中心」提交。');
+      const descText=sum.privileged
+        ?(sum.mine.length?'自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理；下方「我的申請」一行只計你自己（含待處理數）。':'自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理。')
+        :(sum.mine.length?'只顯示你自己的申請批核進度；點擊數字查看詳情。':'你暫時未有申請紀錄，可到「申請中心」提交。');
       monitorEl.classList.remove('hidden');
       monitorEl.innerHTML=`<div class="border-t pt-3">
         <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
@@ -1055,6 +1050,7 @@ class ScoutEventApp{
             chip(mineRejected,'已拒絕','bg-rose-50 text-rose-700 border-rose-200')
           :`<div class="col-span-4 flex flex-col sm:flex-row sm:items-center gap-2"><span class="text-[10.5px] text-slate-500">你暫時未有申請紀錄，可到「申請中心」提交</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`)}
         </div>
+        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-1.5 w-full max-w-md flex items-center justify-between gap-2 bg-slate-50 border rounded-xl px-2.5 py-1.5 text-[10.5px] text-slate-600 hover:shadow"><span class="truncate text-left"><i class="fa-solid fa-user mr-1 text-indigo-600"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="text-indigo-600 font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
       </div>`;
     }
   }
@@ -1075,13 +1071,11 @@ class ScoutEventApp{
     const identityDefs=DASH_CARD_DEFS.filter(d=>d.minLevel>0&&!d.hideOnDashboard);
     const groupDefs=identityDefs.filter(d=>GROUP_CARD_IDS.has(d.id)).sort((a,b)=>ORG_GROUPS.indexOf(normalizeGroupName(a.groups?.[0]))-ORG_GROUPS.indexOf(normalizeGroupName(b.groups?.[0])));
     const toolDefs=byOrder(identityDefs.filter(d=>MANAGEMENT_TOOL_ORDER.includes(d.id)),MANAGEMENT_TOOL_ORDER);
-    // 未登入＝一般工作人員／公眾：只有「公告及溝通」及「申請中心」有顏色，其餘卡片一律無色（白底），方便找重點
-    const COLORED_FOR_GUEST=['announcements','apply_hub'];
-    const guestNeutral=(d)=>!COLORED_FOR_GUEST.includes(d.id);
+    // 全部卡片一律白底無顏色（更整潔）；未登入／已登入都是同一款白底卡，只靠「可修改／只讀／公開可看」小標籤分辨
     this.renderIdentityBar();
 
     // 公開資料固定順序（最先顯示）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動。
-    publicGrid.innerHTML=publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony,neutral:!user&&guestNeutral(d)});}).join('');
+    publicGrid.innerHTML=publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony});}).join('');
     if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
 
     if(!user){
@@ -1089,7 +1083,7 @@ class ScoutEventApp{
       if(identityTitle) identityTitle.textContent='登入後解鎖';
       identityGrid.innerHTML='';
       if(identityCount) identityCount.textContent='登入後解鎖';
-      if(note) note.innerHTML='👀 未登入＝一般工作人員／公眾：<b>公告及溝通、申請中心</b>以彩色標示，其餘卡片無顏色，方便一眼找到重點。登入後（按職級）才顯示其他卡片。';
+      if(note) note.innerHTML='👀 全部卡片一律白底（更整潔）。未登入＝一般工作人員／公眾：可看<b>公開資料</b>；登入後（按職級）才顯示其他卡片。';
       return;
     }
 
@@ -1115,34 +1109,21 @@ class ScoutEventApp{
     if(toolsSection) toolsSection.classList.toggle('hidden',!visibleTools.length);
     toolsGrid.innerHTML=visibleTools.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join('');
     if(toolsCount) toolsCount.textContent=`${visibleTools.length} 張`;
-    if(note) note.innerHTML=`排序（公開資料後）：<b>公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具</b>。自己的組別已標亮；我的監察寫入身份卡片內。最頂 BAR＝身份・我的監察・介紹・改密碼・登出；下方 BAR＝執行手冊・申請中心・批核中心・開戶（後兩者需權限）。`;
+    if(note) note.innerHTML=`排序（公開資料後）：<b>公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具</b>。全部卡片白底無顏色；自己的組別已標亮；我的監察寫入身份卡片內。最頂 BAR＝身份・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心・開戶（後兩者需權限）。`;
   }
   updateAdminNav(){
-    // 最頂 BAR（標題列）：身份・我的監察・介紹・改密碼・登出（登入後不顯示登入，只顯示登出）
-    // 下方 BAR：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）
-    const topTabs=document.getElementById('top-tabs-wrap');
-    if(topTabs) topTabs.style.display='';
+    // 最頂 BAR（標題列）：身份・改密碼・登出（登入後不顯示登入，只顯示登出）
+    // 底部導覽列（手機／電腦同步）：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）
     const loggedIn=!!this.currentUser;
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
     // 最頂 BAR 右側：登入後只顯示登出＋改密碼，不顯示登入
     const hLogin=document.getElementById('login-toggle-btn'); if(hLogin) hLogin.style.display=loggedIn?'none':'';
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
     const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
-    // 下方 BAR：批核中心／開戶 僅登入後總主任以上（有權限人士）可見
-    const snApprovals=document.getElementById('subnav-approvals'); if(snApprovals) snApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    const snAccounts=document.getElementById('subnav-accounts'); if(snAccounts) snAccounts.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    // 側欄選單：登入／登出／改密碼
-    const dl=document.getElementById('drawer-login'); if(dl) dl.style.display=loggedIn?'none':'';
-    const dlo=document.getElementById('drawer-logout'); if(dlo) dlo.style.display=loggedIn?'':'none';
-    const dcp=document.getElementById('drawer-changepwd'); if(dcp) dcp.style.display=loggedIn?'':'none';
-    // 手機底部導覽列與側欄：批核中心／開戶同樣限有權限人士
+    // 底部導覽列：批核中心／開戶 僅登入後總主任以上（有權限人士）可見；執行手冊・申請中心人人可用
     const bnApprovals=document.getElementById('bn-approvals'); if(bnApprovals) bnApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
     const bnAccounts=document.getElementById('bn-accounts'); if(bnAccounts) bnAccounts.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    const drawerApprovals=document.getElementById('drawer-approvals'); if(drawerApprovals) drawerApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    const drawerAccounts=document.getElementById('drawer-accounts'); if(drawerAccounts) drawerAccounts.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    // 手機底部導覽列與側欄：公開資料（執行手冊・申請中心）人人可用
     const bn=document.getElementById('bottom-nav'); if(bn) bn.style.display='';
-    const drawer=document.getElementById('mobile-drawer'); if(drawer) drawer.style.display='';
     this.updateBottomNav();
   }
   // 頂部 BAR「身份」：回到儀表板（未進入活動時回首頁）
@@ -1152,19 +1133,17 @@ class ScoutEventApp{
     if(!this.currentEvent){ this.goHome(); return; }
     this.showDashboard();
   }
-  // 手機底部導覽列：按目前頁面標示 active
+  // 底部導覽列：按目前頁面標示 active
   updateBottomNav(){
     document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('#top-tabs-wrap .nav-tab').forEach(b=>b.classList.remove('active'));
-    let id=null, subId=null;
+    let id=null;
     const mod=this.currentModule;
-    if(mod==='exec_manual'){ id='bn-exec'; subId='subnav-exec'; }
-    else if(mod==='apply_hub'){ id='bn-apply'; subId='subnav-apply'; }
-    else if(mod==='account_setup'){ id='bn-accounts'; subId='subnav-accounts'; }
+    if(mod==='exec_manual'){ id='bn-exec'; }
+    else if(mod==='apply_hub'){ id='bn-apply'; }
+    else if(mod==='account_setup'){ id='bn-accounts'; }
     const apprEl=document.getElementById('view-approvals');
-    if(apprEl && !apprEl.classList.contains('hidden')){ id='bn-approvals'; subId='subnav-approvals'; }
+    if(apprEl && !apprEl.classList.contains('hidden')){ id='bn-approvals'; }
     if(id){ const el=document.getElementById(id); if(el) el.classList.add('active'); }
-    if(subId){ const el=document.getElementById(subId); if(el) el.classList.add('active'); }
   }
 
   applyDashboardMode(){
@@ -5329,7 +5308,7 @@ class ScoutEventApp{
               <span class="flex items-center gap-2"><span class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[12px]"><i class="fa-solid fa-user"></i></span><b class="text-[13px]">我自己 · ${escapeHtml(this.currentUser.name||'')}</b><span class="text-[10px] bg-white border px-2 py-0.5 rounded-full">${mine.length} 項</span></span>
               ${pendingCount(mine)?`<span class="text-[10px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold">${pendingCount(mine)} 待處理</span>`:'<span class="text-[10px] text-emerald-600 font-bold">全部已處理</span>'}
             </div>
-            <div class="p-3 space-y-1.5">${mine.map(r=>this.monitorRowHTML(r)).join('')||'<p class="text-[11px] text-slate-400 py-3 text-center">你暫時未有申請紀錄，可到「申請中心」提交</p>'}</div>
+            <div class="p-3 space-y-1.5">${mine.map(r=>this.monitorRowHTML(r)).join('')||`<div class="py-3 text-center"><p class="text-[11px] text-slate-400">你暫時未有申請紀錄，可到「申請中心」提交</p><button onclick="app.openModule('apply_hub')" class="mt-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`}</div>
           </div>
           ${scope.level!=='self'?(groupSections||'<p class="text-[11px] text-slate-400 py-3 text-center bg-white border rounded-2xl">下級暫未有申請紀錄</p>'):''}
         </div>
@@ -11339,7 +11318,7 @@ class ScoutEventApp{
 }
 
 const app=window.app=new ScoutEventApp();
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.getElementById('mobile-drawer').classList.remove('active');}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));}});
 </script>
 </body>
 </html>
