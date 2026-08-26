@@ -252,7 +252,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     <div class="bg-white rounded-2xl shadow-sm border p-4 sm:p-6"><div id="module-content"></div></div>
   </div>
 
-  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>L0 超管（不顯示）</b>＝全部人；<b>L1 執行副主席／主席／顧問／管理員</b>＝可見全部人；<b>L3 副主席</b>只睇自己組；<b>L4 總主任</b>睇自己組但不包括副主席；<b>L5 主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
+  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>執行副主席／主席／顧問／管理員</b>＝可見全部人；<b>副主席</b>只睇自己組；<b>總主任</b>睇自己組但不包括副主席；<b>主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
   <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
   <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm space-y-3"><h3 class="font-bold">控制台（超管）</h3><p class="text-xs text-slate-500 leading-relaxed">此頁只供超管調整後端連線（GAS URL／API Key）。一般籌委不需要進入。會議預告、開戶、批核等都在儀表板卡片處理，不是在這裡。</p><button onclick="app.openSettingsModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟系統設定</button></div></div>
   <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
@@ -456,7 +456,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">職級</th><th class="px-2 py-1 text-left">預設權限</th></tr></thead>
             <tbody class="divide-y">
-              <tr><td class="px-2 py-1">L0</td><td class="px-2 py-1 font-medium">超級管理員（不顯示）</td><td>僅後台／系統授權管理，不向其他職級顯示</td></tr>
               <tr><td class="px-2 py-1">L1</td><td class="px-2 py-1 font-medium">管理員／主席／顧問</td><td>全部可看可管；用戶管理＝可見全部人</td></tr>
               <tr><td class="px-2 py-1">L2</td><td class="px-2 py-1 font-medium">執行副主席</td><td>高層統籌；大部分可看可管；用戶管理＝可見全部人</td></tr>
               <tr><td class="px-2 py-1">L3</td><td class="px-2 py-1 font-medium">副主席</td><td>可更新日程／主題章／儀式／危機等；管理本組；只睇自己組</td></tr>
@@ -473,7 +472,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
           <li><b>角色授權：</b>上級可透過「權限管理」設定用戶的「可看／可管」清單（perm_see／perm_edit）。</li>
           <li><b>開戶權限：</b>前端開戶只提供工作人員／主任／總主任；副主席及以上由管理員處理；批量開戶管理員專用。</li>
           <li><b>批核權限表：</b>L1 或以上（管理員／顧問／主席／執行副主席）可修改及使用「批核權限表」。</li>
-          <li><b>批核路由：</b>按類別多選「批核組」及「執行／最後名單組」；低於總主任申請先由本組總主任以上確認。</li>
+          <li><b>批核路由：</b>每類申請（物資／車輛／膳食／財務）可分別指定「批核組」（＝決定批唔批）及「執行／最後名單組」（＝批准後負責跟進、持最後名單），兩組都可多選、可隨時改。主任／工作人員提交後，先由<b>所屬組總主任以上</b>確認，再交指定批核組批核，批准後由指定執行組跟進。</li>
         </ul>
       </div>
 
@@ -8087,7 +8086,7 @@ class ScoutEventApp{
     const list=this.visibleUsersForManager();
     const showPwd=this.canSeeUserPasswords();
     const dirty=JSON.stringify(this.pendingUsers||[])!==JSON.stringify(this.usersList||[]);
-    const scopeBar=`<div class="bg-slate-900 text-white rounded-xl p-3 mb-3 text-[11px] leading-relaxed"><b><i class="fa-solid fa-eye mr-1"></i>你的可見範圍：</b>${escapeHtml(this.visibleUsersScopeLabel())} <span class="opacity-70">（共 ${list.length} 人）</span><div class="mt-1 opacity-80">規則：L0 超管（不顯示）＝全部人｜L1 執副／主席／顧問／管理員＝可見全部人｜L3 副主席＝只睇自己組｜L4 總主任＝自己組（不包括副主席）｜L5 主任＝自己組普通工作人員</div></div>`;
+    const scopeBar=`<div class="bg-slate-900 text-white rounded-xl p-3 mb-3 text-[11px] leading-relaxed"><b><i class="fa-solid fa-eye mr-1"></i>你的可見範圍：</b>${escapeHtml(this.visibleUsersScopeLabel())} <span class="opacity-70">（共 ${list.length} 人）</span><div class="mt-1 opacity-80">規則：執行副主席／主席／顧問／管理員＝可見全部人｜副主席＝只睇自己組｜總主任＝自己組（不包括副主席）｜主任＝自己組普通工作人員</div></div>`;
     if(!list.length){container.innerHTML=scopeBar+'<p class="text-xs text-slate-400">沒有可見用戶。若已為籌委開戶但仍空白，請重新整理或確認已登入正確活動。</p>'; return;}
     const permBlock=`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-3 text-[11px] text-indigo-900 leading-relaxed"><b>用戶管理：</b>登入帳號＝中文姓名。每位用戶已按職級帶有預設權限（主席／顧問／管理員／執行副主席＝全權），下方會顯示現有「可看／可管」，編輯權限時會先勾選現有項目。改角色、組別、密碼或權限只會暫存在此頁，必須按下方「確定更新用戶」才真正套用。</div>`;
     const confirmBar=`<div class="flex justify-end mt-4"><button onclick="app.confirmUsersUpdate()" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow"><i class="fa-solid fa-check mr-1"></i>確定更新用戶</button></div>`;
@@ -8191,7 +8190,7 @@ class ScoutEventApp{
     if(local) return local;
     if(!this.isDemoEvent()) return {announcements:[]}; // 真實活動：預留版位
     return {announcements:[
-      {id:'ann_1',title:'歡迎使用全新執行手冊 v7.0',content:'本系統已完全取代舊 Google Sites，所有資料公開可看，僅修改需登入，登入一次永久有效 (儲存於瀏覽器)。各部門間可在此發佈公告、溝通協作。',category:'系統公告',created_by:'超級管理員',created_at:new Date().toISOString(),pinned:true},
+      {id:'ann_1',title:'歡迎使用全新執行手冊 v7.0',content:'本系統已完全取代舊 Google Sites，所有資料公開可看，僅修改需登入，登入一次永久有效 (儲存於瀏覽器)。各部門間可在此發佈公告、溝通協作。',category:'系統公告',created_by:'系統',created_at:new Date().toISOString(),pinned:true},
       {id:'ann_2',title:'跨部門溝通指引',content:'各組如有需要協調事項，請在此發佈公告並@相關組別，其他組會收到通知。主任以上可發佈公告。',category:'協作指引',created_by:'主席 何家聰',created_at:new Date().toISOString(),pinned:false}
     ]};
   }
