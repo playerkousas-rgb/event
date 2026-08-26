@@ -1,0 +1,629 @@
+/* 30-finance.js — 由 index.html 內嵌腳本原樣拆出（v-split 2026-08-27）；方法內容未經任何改寫 */
+Object.assign(ScoutEventApp.prototype,{
+
+  /* ===================== Finance Enhanced Module v6.4 ===================== */
+  getFinanceData(){
+    const key=LS.finance?LS.finance(this.currentEvent?.event_id||'isd_2026'):`event_finance_v6_${this.currentEvent?.event_id||'isd_2026'}`;
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    if(local){
+      (local.group_itemized_budgets||[]).forEach(b=>{b.group_name=normalizeGroupName(b.group_name);});
+      (local.income||[]).forEach(i=>{i.group_name=normalizeGroupName(i.group_name);});
+      const deleted=this.getDeletedRecordIds('Finance_Expenses');
+      local.expenses=(local.expenses||[]).filter(e=>!deleted.has(String(e.id)));
+      local.expenses.forEach(e=>{e.group_name=normalizeGroupName(e.group_name);});
+      return local;
+    }
+    const raw=this.eventData['finance']||{group_itemized_budgets:[],income:[],expenses:[]};
+    // Normalize expenses
+    return {
+      group_itemized_budgets: (raw.group_itemized_budgets||[]).map(b=>({...b,group_name:normalizeGroupName(b.group_name||b.group)})),
+      income: (raw.income||[]).map(i=>({...i,group_name:normalizeGroupName(i.group_name||i.group)})),
+      expenses: (raw.expenses||[]).map((e,i)=>({
+        id:e.id||'exp_'+i,
+        voucher:e.voucher||'',
+        item_name:e.item_name||e.item||'',
+        group_name:normalizeGroupName(e.group_name),
+        budget:e.budget||0,
+        actual:e.actual||e.actual_amt||0,
+        date:e.date||'',
+        description:e.description||e.notes||'',
+        receipt_name:e.receipt_name||'',
+        receipt_data:e.receipt_data||'',
+        receipt_url:e.receipt_url||'',
+        status:e.status||'pending',
+        submitted_by:e.submitted_by||'',
+        submitted_by_id:e.submitted_by_id||'',
+        requester_role:e.requester_role||'',
+        group_confirmation_status:e.group_confirmation_status||'',
+        group_confirmed_by:e.group_confirmed_by||'',
+        group_confirmed_at:e.group_confirmed_at||'',
+        approved_by:e.approved_by||'',
+        created_at:e.created_at||''
+      })).filter(e=>!this.getDeletedRecordIds('Finance_Expenses').has(String(e.id))),
+      drive_folder_link: raw.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C?usp=sharing',
+      drive_folder_id: '1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C',
+      budget_source: raw.budget_source||null
+    };
+  }
+,
+  saveFinanceData(data){
+    const eid=this.currentEvent?.event_id||'isd_2026';
+    const key=LS.finance?LS.finance(eid):`event_finance_v6_${eid}`;
+    localStorage.setItem(key, JSON.stringify(data));
+    this.eventData['finance']=data;
+    if(!this.mockMode&&this.gasUrl){
+      (data.expenses||[]).forEach(e=>{
+        const record={id:e.id,event_id:e.event_id||eid,voucher:e.voucher||'',item_name:e.item_name||'',group_name:e.group_name||'',budget:e.budget||0,actual:e.actual||0,date:e.date||'',description:e.description||'',receipt_name:e.receipt_name||'',receipt_url:e.receipt_url||'',status:e.status||'pending',submitted_by:e.submitted_by||'',submitted_by_id:e.submitted_by_id||'',requester_role:e.requester_role||'',group_confirmation_status:e.group_confirmation_status||'',group_confirmed_by:e.group_confirmed_by||'',group_confirmed_at:e.group_confirmed_at||'',approved_by:e.approved_by||'',approved_at:e.approved_at||'',created_at:e.created_at||''};
+        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Finance_Expenses',record})}).catch(()=>{});
+      });
+    }
+  }
+,
+  renderFinanceModule(){
+    const container=document.getElementById('module-content');
+    const isAdmin=this.isAdmin();
+    const canApprove=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
+    if(!this.financeSubTab) this.financeSubTab='guidance';
+    const fin=this.getFinanceData();
+    const folderLink=fin.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C?usp=sharing';
+    // Drive files list from user provided
+    const driveFiles=[
+      {name:'ISD2026 財務指引及會計程序 ver 1.docx', id:'1QNWNG1BnVab3oHlI7yvIK_2YMMSFV-p4', type:'docx', desc:'總指引，含報銷程序、預算控制、會計程序'},
+      {name:'ISD2026 附件1 - 報價要求.docx', id:'176X1zGzH_k7DJzzuzE5fHkAr6GE3_IHm', type:'docx', desc:'報價要求範本'},
+      {name:'ISD2026 附件2 - 豁免商戶名單 (Rev Dec 2025).pdf', id:'1Z_VqtQ1LjKGI7fFqRCvN9sI8XrmJLbL2', type:'pdf', desc:'豁免報價商戶清單'},
+      {name:'ISD2026 附件3 - 口頭報價資料記錄.xlsx', id:'1s5X9v7FJfbCZG1zDX5GX_yXpE2C_8BIq', type:'xlsx', desc:'口頭報價記錄表格'},
+      {name:'ISD2026 附件4 - 書面報價比較表.docx', id:'1Qal9KVjgN54cb6GwxideH_lsRXJquVWy', type:'docx', desc:'書面報價比較表 (需3間報價)'},
+      {name:'ISD2026 附件5 - 結算總表 (WORD).docx', id:'1FwpuK79mWDToX_p_csO_8Fg085lT0QkC', type:'docx', desc:'結算總表 Word 版'},
+      {name:'ISD2026 附件5A - 結算總表 (WORD w autosum).docx', id:'16krtzQYD11b2cyL8h_Qdb0a8X4_wyDN-', type:'docx', desc:'結算總表 Word 自動計算版'},
+      {name:'ISD2026 附件5B - 結算總表 (EXCEL).xlsx', id:'1boZYb4XxiZllAP_2sxxcdatiOQIZMfbJ', type:'xlsx', desc:'結算總表 Excel 版 (推薦)'},
+      {name:'ISD2026 附件6 - 四格印簽名位置.docx', id:'19bmvieiDcnFBcQ6qPAGagN8UDXc3tAG2', type:'docx', desc:'簽名位置範本'},
+    ];
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed">
+          <b>💰 財務卡片升級：</b>已整合 Drive 指引 <a href="${folderLink}" target="_blank" class="text-sky-700 underline">📂 ${folderLink}</a><br>
+          • 所有工作人員可查閱指引 (嵌入預覽 + 下載)<br>
+          • 表格可在 APP 內填寫 + 上傳單據副本 (支援指定資料夾)<br>
+          • 可列印結算總表 (含四格印簽名) + 批核功能 + 後台紀錄
+        </div>
+        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
+          <button onclick="app.switchFinanceTab('guidance')" class="tab-btn ${this.financeSubTab==='guidance'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 指引文件 (Drive)</button>
+          <button onclick="app.switchFinanceTab('budgets')" class="tab-btn ${this.financeSubTab==='budgets'?'active':''}"><i class="fa-solid fa-wallet mr-1"></i> 預算明細</button>
+          <button onclick="app.switchFinanceTab('expense')" class="tab-btn ${this.financeSubTab==='expense'?'active':''}"><i class="fa-solid fa-receipt mr-1"></i> 開支申報 (填表+上傳單據)</button>
+          <button onclick="app.switchFinanceTab('oral_quotes')" class="tab-btn ${this.financeSubTab==='oral_quotes'?'active':''}"><i class="fa-solid fa-file-signature mr-1"></i> 口頭報價登記</button>
+          <button onclick="app.switchFinanceTab('settlement')" class="tab-btn ${this.financeSubTab==='settlement'?'active':''}"><i class="fa-solid fa-print mr-1"></i> 結算總表 (列印+批核)</button>
+        </div>
+        <div id="finance-tab-guidance" class="${this.financeSubTab==='guidance'?'':'hidden'}"></div>
+        <div id="finance-tab-budgets" class="${this.financeSubTab==='budgets'?'':'hidden'}"></div>
+        <div id="finance-tab-expense" class="${this.financeSubTab==='expense'?'':'hidden'}"></div>
+        <div id="finance-tab-oral_quotes" class="${this.financeSubTab==='oral_quotes'?'':'hidden'}"></div>
+        <div id="finance-tab-settlement" class="${this.financeSubTab==='settlement'?'':'hidden'}"></div>
+      </div>
+    `;
+    this.renderFinanceGuidance(driveFiles, folderLink);
+    this.renderFinanceBudgets();
+    this.renderFinanceExpense();
+    this.renderFinanceOralQuotesTab();
+    this.renderFinanceSettlement();
+  }
+,
+  switchFinanceTab(tab){
+    this.financeSubTab=tab;
+    document.querySelectorAll('[id^="finance-tab-"]').forEach(el=>el.classList.add('hidden'));
+    document.getElementById('finance-tab-'+tab)?.classList.remove('hidden');
+    document.querySelectorAll('[onclick^="app.switchFinanceTab"]').forEach(btn=>{
+      const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+      btn.className=t===tab?'tab-btn active':'tab-btn';
+    });
+  }
+,
+  renderFinanceOralQuotesTab(){
+    const container=document.getElementById('finance-tab-oral_quotes'); if(!container) return;
+    const canRecord=this.canRecordOralQuote();
+    const data=this.getOralQuotesData();
+    const canAll=this.canViewOralQuotesAll();
+    const quotes=(data.quotes||[]).filter(q=>this.canViewOralQuote(q)).sort((a,b)=> (b.quote_date||'').localeCompare(a.quote_date||''));
+    container.innerHTML=`
+      <div class="space-y-3">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
+          <b>📝 口頭報價登記（對應附件3 口頭報價資料記錄）：</b>總主任以上可登記；行政組及執行副主席以上可查看全部，登記人及該組上級可查看本組/自己。報價金額達 $500 或以上須作書面報價（見財務指引）。<br>
+          <span class="text-[10px] text-indigo-700">此分頁與「口頭報價登記」卡片內容一致，方便在財務內一併處理。</span>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          ${canRecord?`<button onclick="app.openOralQuoteForm()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>登記口頭報價</button>`:''}
+          <button onclick="app.exportOralQuotes()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>
+          <span class="text-[11px] bg-indigo-100 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200">可見 ${quotes.length} 筆${canAll?'（全部）':'（本組/自己）'}</span>
+        </div>
+        <div class="space-y-3">${quotes.length?quotes.map(q=>`
+          <div class="border rounded-xl p-3 bg-white space-y-1">
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <div class="flex flex-wrap items-center gap-2"><b class="text-[13px]">${escapeHtml(q.vendor||'-')}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(q.group_name||'-')}</span><span class="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200">$${Number(q.amount)||0}</span></div>
+              <div class="text-[10px] text-slate-400">${escapeHtml(q.quote_date||'')} | 登記人: ${escapeHtml(q.quoted_by||'-')}</div>
+            </div>
+            <div class="text-[11px] text-slate-600">項目: ${escapeHtml(q.item_desc||'-')}</div>
+            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?`| ${escapeHtml(q.contact_phone)}`:''}</div>
+            ${q.notes?`<div class="text-[10px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(q.notes)}</div>`:''}
+          </div>`).join(''):'<p class="text-xs text-slate-400 py-8 text-center">暫無口頭報價登記</p>'}</div>
+      </div>`;
+  }
+,
+  renderFinanceGuidance(driveFiles, folderLink){
+    const container=document.getElementById('finance-tab-guidance');
+    if(!container) return;
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="flex flex-wrap gap-2">
+          <a href="${folderLink}" target="_blank" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-folder-open mr-1"></i> 開啟 Drive 指引資料夾</a>
+          <button onclick="app.saveFinanceFolderLink()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">設定財務資料夾</button>
+          <input id="finance-folder-link-input" value="${escapeHtml(folderLink)}" placeholder="貼上 Drive 資料夾連結" class="flex-1 min-w-[240px] px-3 py-2 border rounded-xl text-xs font-mono">
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white border rounded-xl p-4 space-y-3">
+            <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open text-amber-600 mr-2"></i>財務指引文件 (來自 Drive，已整合至 APP，所有人可查閱)</h4>
+            <div class="space-y-2">${driveFiles.map(f=>{
+              const previewUrl=`https://drive.google.com/file/d/${f.id}/preview`;
+              const viewUrl=`https://drive.google.com/file/d/${f.id}/view`;
+              const icon={docx:'fa-file-word text-sky-600',pdf:'fa-file-pdf text-red-600',xlsx:'fa-file-excel text-emerald-600'}[f.type]||'fa-file';
+              return `<div class="border rounded-xl p-3 bg-slate-50 hover:bg-white transition">
+                <div class="flex gap-3">
+                  <div class="w-10 h-10 bg-white border rounded-xl flex items-center justify-center flex-shrink-0"><i class="fa-solid ${icon}"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-bold text-[12px] leading-snug truncate">${escapeHtml(f.name)}</div>
+                    <div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(f.desc)}</div>
+                    <div class="flex gap-1 mt-2 flex-wrap">
+                      <a href="${viewUrl}" target="_blank" class="bg-sky-600 text-white px-2.5 py-1 rounded-xl text-[10px] font-bold">👁️ 查看</a>
+                      <a href="https://drive.google.com/uc?export=download&id=${f.id}" target="_blank" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">⬇️ 下載</a>
+                      <button onclick="app.previewDriveFile('${f.id}','${escapeHtml(f.name)}')" class="bg-amber-50 border border-amber-200 text-amber-800 px-2.5 py-1 rounded-xl text-[10px] font-bold">嵌入預覽</button>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
+            }).join('')}</div>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-white border rounded-xl p-4">
+              <h5 class="font-bold text-xs mb-2">指引摘要 (已摘錄至 APP，方便手機查閱)</h5>
+              <div class="text-[11px] leading-relaxed space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                <div class="bg-slate-50 border rounded-xl p-2.5"><b>報價門檻：</b><br>• ≤$500 (豁免名單 $2,000)：免報價，副主席批核<br>• $500-$5,000：1個口頭報價 (附件3)，副主席推薦主席批核<br>• $5,001-$30,000：書面報價比較表 (附件4，需最少3間)<br>• >$30,000：需招標程序</div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>豁免商戶：</b>附件2 清單內商戶可豁免報價，但需保留單據 (Rev Dec 2025 版本)</div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5"><b>單據要求：</b>必須有商戶名稱、日期、金額、項目、簽收；電子單據可截圖上傳；所有單據副本需上傳至指定資料夾</div>
+                <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5"><b>結算總表：</b>附件5/5A/5B 三版本，APP 內可填寫，自動計算，支援列印 (含四格印簽名位置附件6)</div>
+              </div>
+            </div>
+            <div class="bg-white border rounded-xl p-3">
+              <h5 class="font-bold text-xs mb-2">嵌入預覽</h5>
+              <div id="finance-preview-area" class="bg-slate-100 border rounded-xl h-[320px] flex items-center justify-center text-xs text-slate-500">點擊左側「嵌入預覽」按鈕，此處顯示文件預覽 (Google Drive preview)</div>
+            </div>
+            <div class="bg-slate-900 text-white rounded-xl p-3 text-[11px] leading-relaxed">
+              <b>財務資料夾：</b><br>
+              <span class="font-mono text-[10px] break-all">${escapeHtml(folderLink)}</span><br>
+              管理員可在上方可改資料夾連結，所有上傳單據副本將自動去到該資料夾 (透過 GAS uploadFileToFolder)
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+,
+  previewDriveFile(fileId, fileName){
+    const area=document.getElementById('finance-preview-area');
+    if(!area) return;
+    area.innerHTML=`<iframe src="https://drive.google.com/file/d/${fileId}/preview" class="w-full h-[320px] border-0 rounded-xl" allow="autoplay"></iframe><div class="mt-2 flex justify-between items-center text-[11px]"><span class="font-bold truncate">${escapeHtml(fileName)}</span><a href="https://drive.google.com/file/d/${fileId}/view" target="_blank" class="text-sky-600 underline">新分頁開啟</a></div>`;
+  }
+,
+  saveFinanceFolderLink(){
+    const input=document.getElementById('finance-folder-link-input');
+    const link=input?input.value.trim():'';
+    const fin=this.getFinanceData();
+    fin.drive_folder_link=link;
+    fin.drive_folder_id=this.extractDriveFolderId(link);
+    this.saveFinanceData(fin);
+    // Sync to system config
+    this.systemConfig.meeting_folder_link=link;
+    this.systemConfig.meeting_folder_id=fin.drive_folder_id;
+    localStorage.setItem(LS.config(this.currentEvent?.event_id||'global'), JSON.stringify(this.systemConfig));
+    showToast(fin.drive_folder_id?`已設定財務資料夾，ID: ${fin.drive_folder_id}`:'已清除財務資料夾','success');
+    this.renderFinanceModule();
+  }
+,
+  renderFinanceBudgets(){
+    const container=document.getElementById('finance-tab-budgets');
+    if(!container) return;
+    const fin=this.getFinanceData();
+    const budgets=fin.group_itemized_budgets||[];
+    const income=fin.income||[];
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.syncBudgetFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新預算 (Drive)</button>
+          ${(this.isAdmin()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 預算<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBudgetExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.openExpenseForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增開支申報</button>${(this.canApproveArea('finance')||this.canExecuteArea('finance'))?`<button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
+        </div>
+        ${(this.getFinanceData().budget_source)?this.driveSyncNotice():''}
+        ${(this.getFinanceData().budget_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">📊 預算來源：「${escapeHtml(this.getFinanceData().budget_source.name||'Budget')}」（由行政組/財務更新）。建議把 xlsx 另存為原生 Google 試算表後，點「同步最新」直接讀取。</div>`:''}
+        ${budgets.map(g=>`<div class="border rounded-xl p-4 bg-white"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-sm"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i>${escapeHtml(g.group_name)}</h4><span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded-full">${(g.items||[]).length} 項</span></div><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">憑單</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">預算</th><th class="px-2 py-1 text-left">實際</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${(g.items||[]).map(it=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(it.voucher)}</td><td class="px-2 py-1">${escapeHtml(it.item_name)}</td><td class="px-2 py-1">$${it.budget}</td><td class="px-2 py-1 font-bold text-rose-600">$${it.actual}</td><td class="px-2 py-1">${escapeHtml(it.notes||'')}</td></tr>`).join('')}</tbody></table></div></div>`).join('') || '<p class="text-xs text-slate-400">暫無預算明細</p>'}
+        <div class="border rounded-xl p-4 bg-white"><h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i>收入</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1">預算</th><th class="px-2 py-1">實際</th></tr></thead><tbody class="divide-y">${income.map(i=>`<tr><td class="px-2 py-1">${escapeHtml(i.item)}</td><td class="px-2 py-1">$${i.budget}</td><td class="px-2 py-1 font-bold text-emerald-700">$${i.actual}</td></tr>`).join('')}</tbody></table></div></div>
+      </div>
+    `;
+  }
+,
+  renderFinanceExpense(){
+    const container=document.getElementById('finance-tab-expense');
+    if(!container) return;
+    const fin=this.getFinanceData();
+    const expenses=fin.expenses||[];
+    const myId=this.currentUser?.user_id||'',myName=this.currentUser?.name||'',myGroup=normalizeGroupName(this.currentUser?.group_name),lvl=this.roleLevel(this.currentUser?.role);
+    const isMine=e=>(e.submitted_by_id&&e.submitted_by_id===myId)||(myName&&e.submitted_by===myName);
+    const canSeePendingAll=this.canApproveArea('finance')||this.canManageApprovalRouting();
+    const canSeeFinalAll=this.canExecuteArea('finance')||this.canManageApprovalRouting();
+    const pending=expenses.filter(e=>e.status==='pending'&&(canSeePendingAll||(lvl>=40&&normalizeGroupName(e.group_name)===myGroup)||isMine(e)));
+    const approved=expenses.filter(e=>e.status==='approved'&&(canSeeFinalAll||isMine(e)));
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px]">
+          <b>開支申報 (可在 APP 內填寫 + 上傳單據副本)</b><br>
+          • 填寫憑單、項目、金額、組別、日期、說明<br>
+          • 上傳單據副本 (圖片/PDF)，支援指定資料夾自動上傳到 Drive<br>
+          • 低於總主任提交會先由本組確認，再交 ${escapeHtml(this.approvalRouteLabel('finance','approver_groups'))} 批核；批准後由 ${escapeHtml(this.approvalRouteLabel('finance','executor_groups'))} 檢視及執行<br>
+          • 後台紀錄：全部寫入 localStorage + GAS Finance Sheet + AuditLog
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="app.openExpenseForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增開支申報</button>
+          <button onclick="app.downloadFinanceTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載申報範本 CSV</button>
+          ${(this.canApproveArea('finance')||this.canManageApprovalRouting())?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳 CSV 批量申報<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleFinanceFileUpload(this.files[0])"></label>`:''}
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white border rounded-xl p-4">
+            <h4 class="font-bold text-xs mb-2">待確認／批核開支 (${pending.length}) ${pending.some(e=>this.applicationReadyForApproval(e))&&this.canApproveFinance()?`<button onclick="app.batchApproveExpenses()" class="ml-2 bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px]">批量批准</button>`:''}</h4>
+            <div class="space-y-2 max-h-[420px] overflow-y-auto">${pending.length?pending.map(e=>`
+              <div class="border rounded-xl p-3 bg-amber-50 border-amber-200">
+                <div class="flex justify-between"><div><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="text-[10px] bg-white border px-1.5 py-0.5 rounded-full">${escapeHtml(e.group_name)}</span><div class="text-[11px] text-slate-600 mt-1">憑單: ${escapeHtml(e.voucher)} | $${e.actual} | ${escapeHtml(e.date||'')} | ${escapeHtml(e.submitted_by||'')}</div><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(e.description||'')}</div></div><div class="flex flex-col gap-1">
+                  ${e.receipt_url?`<a href="${e.receipt_url}" target="_blank" class="bg-white border px-2 py-1 rounded-xl text-[10px] font-bold text-sky-700">查看單據</a>`:''}
+                  ${e.receipt_data?`<button onclick="app.downloadFinanceReceipt('${e.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">下載單據</button>`:''}
+                  ${this.canConfirmApplication(e)?`<button onclick="app.confirmApplication('finance','${e.id}')" class="bg-sky-600 text-white px-2 py-1 rounded-xl text-[10px] font-bold">本組確認</button>`:''}
+                  ${this.canApproveFinance()&&this.applicationReadyForApproval(e)?`<button onclick="app.approveExpense('${e.id}')" class="bg-emerald-600 text-white px-2 py-1 rounded-xl text-[10px] font-bold">批准</button><button onclick="app.rejectExpense('${e.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">拒絕</button>`:''}
+                  ${this.isSuperAdmin()?`<button onclick="app.deleteExpense('${e.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}
+                </div></div>
+              </div>
+            `).join(''):'<p class="text-xs text-slate-400 py-4 text-center">暫無待批</p>'}</div>
+          </div>
+          <div class="bg-white border rounded-xl p-4">
+            <h4 class="font-bold text-xs mb-2">已批核/已記錄 (${approved.length})</h4>
+            <div class="space-y-2 max-h-[420px] overflow-y-auto">${approved.length?approved.map(e=>`
+              <div class="border rounded-xl p-3 bg-emerald-50 border-emerald-200">
+                <div class="flex justify-between"><div><b class="text-[12px]">${escapeHtml(e.item_name)}</b> <span class="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded-full border border-emerald-200">已批核</span><div class="text-[11px] text-slate-600 mt-1">憑單: ${escapeHtml(e.voucher)} | $${e.actual} | 批核: ${escapeHtml(e.approved_by||'')}</div></div><div class="flex flex-col gap-1">${e.receipt_url?`<a href="${e.receipt_url}" target="_blank" class="bg-white border px-2 py-1 rounded-xl text-[10px]">查看單據</a>`:''}</div></div>
+              </div>
+            `).join(''):'<p class="text-xs text-slate-400 py-4 text-center">暫無已批核</p>'}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+,
+  canApproveFinance(){ return this.canApproveArea('finance'); }
+,
+  openExpenseForm(editId=null){
+    if(!this.currentUser){ showToast('請先登入後提交開支申報','warning'); this.openLoginModal(); return; }
+    const fin=this.getFinanceData();
+    const existing=editId?fin.expenses.find(e=>e.id===editId):null;
+    const title=existing?'編輯開支申報':'新增開支申報 (填表+上傳單據)';
+    let html=`
+      <input type="hidden" id="exp-form-mode" value="${existing?'edit':'create'}">
+      <input type="hidden" id="exp-form-id" value="${existing?.id||''}">
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-[11px] font-bold">憑單編號 *</label><input id="exp-voucher" value="${escapeHtml(existing?.voucher||'')}" required placeholder="例如 憑單#01" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">所屬組別 *</label><input id="exp-group" value="${escapeHtml(existing?.group_name||'主題節目組')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">支出項目 *</label><input id="exp-item" value="${escapeHtml(existing?.item_name||'')}" required placeholder="例如 嘉賓紀念品" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">預算金額</label><input type="number" id="exp-budget" value="${existing?.budget||''}" placeholder="0" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">實際金額 *</label><input type="number" id="exp-actual" value="${existing?.actual||''}" required placeholder="金額" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">日期</label><input type="date" id="exp-date" value="${existing?.date||todayISO()}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">提交人</label><input id="exp-submitter" value="${escapeHtml(existing?.submitted_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">說明/備註</label><textarea id="exp-desc" rows="2" placeholder="實體單據須交行政組，報價門檻..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+        <div class="col-span-2">
+          <label class="text-[11px] font-bold">單據副本 (圖片/PDF，可多張，支援指定資料夾)</label>
+          <input type="file" id="exp-receipt" accept=".jpg,.jpeg,.png,.pdf" multiple class="w-full text-xs mt-1">
+          <div class="text-[10px] text-slate-500 mt-1">已設財務資料夾則自動上傳到 Drive，否則存本地 base64，後台紀錄好</div>
+          ${existing?.receipt_name?`<div class="mt-2 text-[11px]">已上傳: ${escapeHtml(existing.receipt_name)} ${existing.receipt_url?`<a href="${existing.receipt_url}" target="_blank" class="text-sky-600 underline">查看</a>`:''}</div>`:''}
+        </div>
+      </div>
+    `;
+    document.getElementById('record-modal-title').textContent=title;
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitExpenseForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+,
+  async submitExpenseForm(){
+    const mode=document.getElementById('exp-form-mode').value;
+    const id=document.getElementById('exp-form-id').value;
+    const fin=this.getFinanceData();
+    let receiptName='', receiptData='', receiptUrl='';
+    const files=document.getElementById('exp-receipt').files;
+    if(files && files.length){
+      const f=files[0]; // take first for simplicity, could handle multiple
+      receiptName=f.name;
+      const data=await fileToDataUrl(f);
+      // check folder
+      const folderCfg={link:fin.drive_folder_link, id:fin.drive_folder_id||this.extractDriveFolderId(fin.drive_folder_link)};
+      const useDrive=!!folderCfg.id && !this.mockMode && this.gasUrl;
+      if(useDrive){
+        showToast('正在上傳單據到指定資料夾...','warning');
+        const res=await this.uploadFileToDriveFolder(f.name, data, f.type);
+        if(res.success){ receiptUrl=res.file_url||res.download_url; receiptData=''; showToast('單據已上傳到財務資料夾','success'); }
+        else { receiptData=data; showToast('Drive上傳失敗，改本地','warning'); }
+      } else receiptData=data;
+    }
+    const obj={
+      id:id||'exp_'+Date.now(),
+      event_id:this.currentEvent?.event_id||'isd_2026',
+      voucher:document.getElementById('exp-voucher').value.trim(),
+      item_name:document.getElementById('exp-item').value.trim(),
+      group_name:document.getElementById('exp-group').value.trim(),
+      budget:parseFloat(document.getElementById('exp-budget').value)||0,
+      actual:parseFloat(document.getElementById('exp-actual').value)||0,
+      date:document.getElementById('exp-date').value,
+      submitted_by:document.getElementById('exp-submitter').value.trim(),
+      submitted_by_id:this.currentUser?.user_id||'',
+      ...this.applicationConfirmationMeta(this.currentUser),
+      description:document.getElementById('exp-desc').value.trim(),
+      receipt_name: receiptName || (mode==='edit'? (fin.expenses.find(e=>e.id===id)?.receipt_name||'') : ''),
+      receipt_data: receiptData,
+      receipt_url: receiptUrl,
+      status: 'pending',
+      created_at:new Date().toISOString()
+    };
+    if(this.roleLevel(this.currentUser?.role)<40) obj.group_name=normalizeGroupName(this.currentUser?.group_name);
+    if(!obj.voucher||!obj.item_name||!obj.group_name){ showToast('請填寫憑單、項目、組別','error'); return; }
+    if(mode==='edit'){
+      const idx=fin.expenses.findIndex(e=>e.id===id);
+      if(idx>=0){
+        // keep old receipt if no new
+        if(!receiptName){
+          obj.receipt_name=fin.expenses[idx].receipt_name;
+          obj.receipt_data=fin.expenses[idx].receipt_data;
+          obj.receipt_url=fin.expenses[idx].receipt_url;
+        }
+        // 修改後重新進入「本組確認 → 指定組批核」流程。
+        obj.status='pending';
+        obj.approved_by='';
+        obj.approved_at='';
+        fin.expenses[idx]={...fin.expenses[idx],...obj};
+      }
+    }else{
+      obj.status='pending';
+      fin.expenses.push(obj);
+    }
+    this.saveFinanceData(fin);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast(mode==='edit'?'已更新開支並重新進入流程':(this.applicationNeedsGroupConfirmation(obj)?'已提交開支：待本組總主任確認':'已提交開支：已交指定批核組'),'success');
+    this.renderFinanceExpense();
+    this.renderFinanceSettlement();
+  }
+,
+  downloadFinanceReceipt(expId){
+    const fin=this.getFinanceData();
+    const e=fin.expenses.find(x=>x.id===expId);
+    if(!e){ showToast('找不到','error'); return; }
+    const mine=(e.submitted_by_id&&e.submitted_by_id===this.currentUser?.user_id)||(e.submitted_by&&e.submitted_by===this.currentUser?.name);
+    if(!mine&&!this.canApproveArea('finance')&&!(e.status==='approved'&&this.canExecuteArea('finance'))){ showToast('你無權下載此單據','error'); return; }
+    if(e.receipt_url){ window.open(e.receipt_url,'_blank'); return; }
+    if(e.receipt_data) downloadDataUrl(e.receipt_name||'receipt', e.receipt_data);
+    else showToast('無單據','warning');
+  }
+,
+  approveExpense(expId){
+    if(!this.canApproveFinance()){ showToast('你不屬於目前指定的財務批核組別','error'); return; }
+    const fin=this.getFinanceData();
+    const idx=fin.expenses.findIndex(e=>e.id===expId);
+    if(idx<0) return;
+    if(!this.applicationReadyForApproval(fin.expenses[idx])){ showToast('須先由申請人所屬組別總主任以上確認','warning'); return; }
+    fin.expenses[idx].status='approved';
+    fin.expenses[idx].approved_by=(this.currentUser?.name||'')+`（${this.approvalRouteLabel('finance','approver_groups')}）`;
+    fin.expenses[idx].approved_at=new Date().toISOString();
+    this.saveFinanceData(fin);
+    showToast('已批准開支','success');
+    this.renderFinanceExpense();
+    this.renderFinanceSettlement();
+  }
+,
+  rejectExpense(expId){
+    if(!this.canApproveFinance()) return;
+    const fin=this.getFinanceData();
+    const idx=fin.expenses.findIndex(e=>e.id===expId);
+    if(idx<0) return;
+    if(!this.applicationReadyForApproval(fin.expenses[idx])){ showToast('須先完成本組確認','warning'); return; }
+    fin.expenses[idx].status='rejected';
+    fin.expenses[idx].approved_by=this.currentUser?.name||'';
+    fin.expenses[idx].approved_at=new Date().toISOString();
+    this.saveFinanceData(fin);
+    showToast('已拒絕','warning');
+    this.renderFinanceExpense();
+  }
+,
+  async deleteExpense(expId){
+    if(!this.isSuperAdmin()){ showToast('僅超管可永久刪除開支紀錄','error'); return; }
+    if(!confirm('確定永久刪除此開支申報？APP、本機快取及後台紀錄都會刪除。')) return;
+    this.markRecordDeleted('Finance_Expenses',expId);
+    const fin=this.getFinanceData();
+    fin.expenses=fin.expenses.filter(e=>e.id!==expId);
+    this.saveFinanceData(fin);
+    const result=await this.deleteGasRecord('Finance_Expenses',expId);
+    this.renderFinanceExpense();
+    this.renderFinanceSettlement();
+    if(!document.getElementById('view-approvals')?.classList.contains('hidden')) this.renderApprovalCenter();
+    showToast(result.success?'已從 APP 及後台永久刪除':`APP 已隱藏，但後台刪除失敗：${result.error}`,result.success?'warning':'error');
+  }
+,
+  batchApproveExpenses(){
+    if(!this.canApproveFinance()) return;
+    if(!confirm('確定批量批准全部待批開支？')) return;
+    const fin=this.getFinanceData();
+    let count=0;
+    fin.expenses.forEach(e=>{ if(e.status==='pending'&&this.applicationReadyForApproval(e)){ e.status='approved'; e.approved_by=(this.currentUser?.name||'')+`（${this.approvalRouteLabel('finance','approver_groups')}）`; e.approved_at=new Date().toISOString(); count++; } });
+    this.saveFinanceData(fin);
+    showToast(`已批量批准 ${count} 項；未完成本組確認的申請不會被批准`,'success');
+    this.renderFinanceExpense();
+    this.renderFinanceSettlement();
+  }
+,
+  downloadFinanceTemplate(){
+    const csv='voucher,item_name,group_name,budget,actual,date,description\n憑單#01,嘉賓紀念品,會操及典禮組,500,246,2026-10-04,不超過$500免報價\n憑單#02,遊戲道具,主題節目組,26000,13872.53,2026-10-04,各旅團支援費\n';
+    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='finance_expense_template.csv'; a.click(); showToast('已下載申報範本','success');
+  }
+,
+  handleFinanceFileUpload(file){
+    if(!this.canApproveArea('finance')&&!this.canManageApprovalRouting()){ showToast('只供指定財務批核組批量匯入','error'); return; }
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      try{
+        const text=e.target.result;
+        let parsed=[];
+        if(file.name.endsWith('.json')){
+          const json=JSON.parse(text);
+          parsed=Array.isArray(json)?json:json.expenses||[json];
+        }else{
+          const rows=parseCSV(text);
+          parsed=rows.map(r=>({id:'exp_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),voucher:r.voucher||'',item_name:r.item_name||r.item||'',group_name:r.group_name||r.group||'',budget:parseFloat(r.budget||0),actual:parseFloat(r.actual||0),date:r.date||todayISO(),description:r.description||r.notes||'',status:'pending',submitted_by:this.currentUser?.name||'',created_at:new Date().toISOString()})).filter(r=>r.item_name);
+        }
+        if(!parsed.length){ showToast('無有效資料','error'); return; }
+        const fin=this.getFinanceData();
+        fin.expenses=[...fin.expenses,...parsed];
+        this.saveFinanceData(fin);
+        showToast(`已批量匯入 ${parsed.length} 筆開支申報`,'success');
+        this.renderFinanceExpense();
+        this.renderFinanceSettlement();
+      }catch(err){ showToast('解析失敗:'+err.message,'error'); }
+    };
+    reader.readAsText(file);
+  }
+,
+  exportFinanceData(){
+    const canApprove=this.canApproveArea('finance'),canExecute=this.canExecuteArea('finance');
+    if(!canApprove&&!canExecute){ showToast('只供指定財務批核或執行組匯出','error'); return; }
+    const source=this.getFinanceData();
+    const fin={...source,expenses:canApprove?(source.expenses||[]):(source.expenses||[]).filter(e=>e.status==='approved')};
+    const blob=new Blob([JSON.stringify(fin,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`finance_${todayISO()}.json`; a.click(); showToast('已匯出財務 JSON','success');
+  }
+,
+  renderFinanceSettlement(){
+    const container=document.getElementById('finance-tab-settlement');
+    if(!container) return;
+    if(!this.canExecuteArea('finance')){ container.innerHTML=`<div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[11px] text-amber-900">財務結算／最後名單只供 ${escapeHtml(this.approvalRouteLabel('finance','executor_groups'))} 檢視。</div>`; return; }
+    const fin=this.getFinanceData();
+    const expenses=(fin.expenses||[]).filter(e=>e.status==='approved'||this.canApproveArea('finance'));
+    const approved=expenses.filter(e=>e.status==='approved');
+    const pending=expenses.filter(e=>e.status==='pending');
+    const totalBudget=fin.group_itemized_budgets?.reduce((sum,g)=>sum+(g.items?.reduce((s,it)=>s+it.budget,0)||0),0) || expenses.reduce((s,e)=>s+e.budget,0);
+    const totalActual=approved.reduce((s,e)=>s+e.actual,0);
+    const totalPending=pending.reduce((s,e)=>s+e.actual,0);
+    const totalAll=expenses.reduce((s,e)=>s+e.actual,0);
+    // Approval chain based on attachment 1
+    const getApprovalChain=(amount, isExempt=false)=>{
+      // isExempt = shop in exempt list
+      if(isExempt){
+        if(amount<=2000) return {quotation:'無須報價 (豁免名單內 $2,000)', steps:[{role:'各副主席', action:'批核', by:'vice_chair'}]};
+        if(amount<=5000) return {quotation:'1個口頭報價 (附件3)', steps:[{role:'各副主席', action:'推薦', by:'vice_chair'},{role:'主席', action:'批核', by:'chair'}]};
+      }else{
+        if(amount<=500) return {quotation:'無須報價 (其他商舖 ≤$500)', steps:[{role:'各副主席', action:'批核', by:'vice_chair'}]};
+        if(amount<=5000) return {quotation:'1個口頭報價 (附件3)', steps:[{role:'各副主席', action:'推薦', by:'vice_chair'},{role:'主席', action:'批核', by:'chair'}]};
+      }
+      if(amount>=5001 && amount<=30000) return {quotation:'2個口頭報價 (附件3)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動)', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練)', action:'批核', by:'deputy_rc'}]};
+      if(amount>=30001 && amount<=100000) return {quotation:'2個書面報價 (附件4)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動)', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練)', action:'批核', by:'deputy_rc'}]};
+      if(amount>=10001 && amount<=300000) return {quotation:'3個書面報價 (附件4)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動)', action:'認可', by:'assistant_rc'},{role:'副地域總監(活動與訓練)', action:'批核', by:'deputy_rc'}]};
+      if(amount>=300001 && amount<=1000000) return {quotation:'5個書面報價 (附件4)', steps:[{role:'主席', action:'推薦', by:'chair'},{role:'助理地域總監(活動) 及 副地域總監', action:'認可', by:'assistant_deputy'},{role:'地域總監', action:'批核', by:'regional'}]};
+      if(amount>1000000) return {quotation:'投標，至少5個報價', steps:[{role:'投標小組委員會', action:'推薦', by:'tender'},{role:'地域總監', action:'批核', by:'regional'}]};
+      return {quotation:'未知', steps:[]};
+    };
+    // Four-grid stamp explanation from guidance + attachment 6
+    const fourGridInfo=[
+      {pos:'第一格 (經辦人)', who:'經辦人 (申請人)，按附件6「經辦人無須簽署」', desc:'填寫人姓名，貼單據，無須簽署'},
+      {pos:'第二格 Checked by', who:'各組副主席', desc:'有關副主席在 Checked by 位置簽名，核實支出屬實'},
+      {pos:'第三格 Certified by', who:'財政主任 或 總主任(行政) 或 副主席(行政)', desc:'審核真確性及是否在預算內，金額不超出預算則簽署'},
+      {pos:'第四格 Approved / 秘書處', who:'秘書處安排支票 / 按銀碼由主席/助理地域總監/副地域總監/地域總監批核', desc:'見下表按銀碼批核鏈'}
+    ];
+    const overallChain=getApprovalChain(totalAll, false);
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed">
+          <b>⚠️ 結算總表批核已修正 (按附件1銀碼區分)：</b><br>
+          舊版四格印僅寫「組別總主任/副主席」「行政/財務」「主席」，現已按附件1 <b>報價要求</b> 修正為不同銀碼不同批核鏈，並保留四格印 Checked/Certified 流程。請參照下表：<br>
+          <div class="mt-2 bg-white border rounded-xl overflow-hidden">
+            <table class="min-w-full text-[10px] border-collapse">
+              <thead class="bg-slate-100 font-bold"><tr><th class="border px-2 py-1">支出金額</th><th class="border px-2 py-1">報價要求</th><th class="border px-2 py-1">批核人士 (申請→批→再確認)</th></tr></thead>
+              <tbody>
+                <tr><td class="border px-2 py-1">豁免名單 ≤$2,000 或其他 ≤$500</td><td class="border px-2 py-1">無須報價</td><td class="border px-2 py-1">各副主席批核</td></tr>
+                <tr class="bg-amber-50"><td class="border px-2 py-1">豁免> $2,000 或其他 >$500 且 ≤$5,000</td><td class="border px-2 py-1">1個口頭報價 (附件3)</td><td class="border px-2 py-1">各副主席推薦 → 主席批核</td></tr>
+                <tr><td class="border px-2 py-1">$5,001-$30,000</td><td class="border px-2 py-1">2個口頭報價</td><td class="border px-2 py-1">主席推薦 → 助理地域總監(活動)認可 → 副地域總監(活動與訓練)批核</td></tr>
+                <tr class="bg-slate-50"><td class="border px-2 py-1">$30,001-$100,000</td><td class="border px-2 py-1">2個書面報價 (附件4)</td><td class="border px-2 py-1">主席推薦 → 助理地域總監認可 → 副地域總監批核</td></tr>
+                <tr><td class="border px-2 py-1">$10,001-$300,000</td><td class="border px-2 py-1">3個書面報價</td><td class="border px-2 py-1">主席推薦 → 助理地域總監認可 → 副地域總監批核</td></tr>
+                <tr class="bg-slate-50"><td class="border px-2 py-1">$300,001-$1,000,000</td><td class="border px-2 py-1">5個書面報價</td><td class="border px-2 py-1">主席推薦 → 助理+副地域總監認可 → 地域總監批核</td></tr>
+                <tr><td class="border px-2 py-1">>$1,000,000</td><td class="border px-2 py-1">投標+5報價</td><td class="border px-2 py-1">投標小組推薦 → 地域總監批核</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-2">本結算總表總額 <b>$${totalAll}</b> 屬於：<b>${overallChain.quotation}</b> → 批核鏈：${overallChain.steps.map(s=>`${s.role} ${s.action}`).join(' → ')}</div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="app.printSettlement()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印結算總表 (含正確批核)</button>
+          <button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
+          <span class="text-[11px] bg-slate-100 px-3 py-2 rounded-full border">已批核 $${totalActual} | 待批 $${totalPending} | 總計 $${totalAll} | 預算 $${totalBudget}</span>
+        </div>
+        <div id="settlement-print-area" class="bg-white border rounded-xl p-6 space-y-4">
+          <div class="text-center border-b-2 border-slate-900 pb-3">
+            <h2 class="text-lg font-extrabold">港島童軍繽紛日 2026 結算總表 (附件5) - 已修正批核流程</h2>
+            <p class="text-[11px] text-slate-500 mt-1">按附件1銀碼區分報價及批核，含四格印流程，後台紀錄</p>
+            <div class="text-[11px] mt-2 flex justify-center gap-4 flex-wrap"><span>活動: ${escapeHtml(this.currentEvent?.event_name||'ISD2026')}</span><span>列印日期: ${todayISO()}</span><span>列印人: ${escapeHtml(this.currentUser?.name||'')}</span><span>總額: $${totalAll} (${overallChain.quotation})</span></div>
+          </div>
+          <div class="table-responsive"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100 font-bold"><tr><th class="border px-2 py-1 text-left">憑單編號</th><th class="border px-2 py-1 text-left">支出項目</th><th class="border px-2 py-1 text-left">組別</th><th class="border px-2 py-1 text-left">金額</th><th class="border px-2 py-1 text-left">報價要求</th><th class="border px-2 py-1 text-left">單據</th><th class="border px-2 py-1 text-left">申請→批核→再確認 (按銀碼)</th></tr></thead><tbody>${expenses.map(e=>{
+            const chain=getApprovalChain(e.actual, false);
+            return `
+            <tr class="${e.status==='approved'?'bg-emerald-50':e.status==='pending'?'bg-amber-50':''}">
+              <td class="border px-2 py-1 font-mono">${escapeHtml(e.voucher)}</td>
+              <td class="border px-2 py-1 font-medium">${escapeHtml(e.item_name)}<div class="text-[10px] text-slate-500">${escapeHtml(e.description||'')}</div><div class="text-[10px] text-slate-400">申請人: ${escapeHtml(e.submitted_by||'經辦人')}</div></td>
+              <td class="border px-2 py-1">${escapeHtml(e.group_name)}</td>
+              <td class="border px-2 py-1 font-bold text-rose-700">$${e.actual}<div class="text-[9px] text-slate-500">預算 $${e.budget}</div></td>
+              <td class="border px-2 py-1 text-[10px]">${escapeHtml(chain.quotation)}</td>
+              <td class="border px-2 py-1">${e.receipt_name?`<span class="bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">${escapeHtml(e.receipt_name)}</span>${e.receipt_url?`<br><a href="${e.receipt_url}" target="_blank" class="text-sky-600 underline text-[10px]">查看單據</a>`:''}`:'無'}</td>
+              <td class="border px-2 py-1 text-[10px] leading-relaxed">
+                <div><b>申請:</b> ${escapeHtml(e.submitted_by||'經辦人')} (經辦人無須簽署)</div>
+                <div><b>Checked by:</b> 各組副主席 (${escapeHtml(e.group_name)}副主席)</div>
+                <div><b>Certified by:</b> 財政主任 / 總主任(行政) / 副主席(行政)</div>
+                <div><b>批核鏈 (${chain.quotation}):</b><br>${chain.steps.map(s=>`${s.role} ${s.action}`).join(' → ')}</div>
+                <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded-full ${e.status==='approved'?'bg-emerald-100 text-emerald-700 border border-emerald-200':e.status==='pending'?'bg-amber-100 text-amber-700 border border-amber-200':'bg-slate-100'}">${e.status==='approved'?'已批核 '+escapeHtml(e.approved_by||''):e.status==='pending'?'待批核':'已拒絕'}</span></div>
+              </td>
+            </tr>
+          `}).join('') || '<tr><td colspan="7" class="border px-2 py-4 text-center text-slate-400">暫無開支申報</td></tr>'}
+          <tr class="bg-slate-900 text-white font-bold"><td class="border px-2 py-1" colspan="3">總計 (實際)</td><td class="border px-2 py-1">$${totalAll}</td><td class="border px-2 py-1" colspan="3">已批核 $${totalActual} | 待批 $${totalPending} | 批核鏈: ${overallChain.steps.map(s=>`${s.role} ${s.action}`).join(' → ')}</td></tr>
+          </tbody></table></div>
+          <div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed">
+            <b>四格印簽署位置說明 (附件6)：</b><br>
+            ${fourGridInfo.map((g,i)=>`<div class="flex gap-2 mt-1"><span class="bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded-full">${i+1}</span><b>${escapeHtml(g.pos)}：</b>${escapeHtml(g.who)} - ${escapeHtml(g.desc)}</div>`).join('')}
+            <div class="mt-2 text-[10px] text-slate-600">註：各組副主席（經辦人無須簽署）→ 財政主任或總主任（行政）或副主席（行政）→ 按銀碼再由主席/助理地域總監/副地域總監/地域總監批核 (見附件1)</div>
+          </div>
+          <div class="grid grid-cols-2 gap-6 pt-4">
+            <div class="border rounded-xl p-3 h-[110px]"><div class="text-[11px] font-bold">1. 經辦人 / 申請人 (無須簽署，按附件6)：</div><div class="text-[10px] text-slate-500 mt-1">姓名：___________ 組別：___________</div><div class="mt-8 border-t border-slate-400 pt-1 text-[10px] text-slate-500">經辦人無須簽署 (附件6註明)</div></div>
+            <div class="border rounded-xl p-3 h-[110px]"><div class="text-[11px] font-bold">2. Checked by 各組副主席：</div><div class="text-[10px] text-slate-500 mt-1">核實支出屬實</div><div class="mt-8 border-t border-slate-400 pt-1 text-[10px] text-slate-500">各組副主席簽名 / 日期 (第二行)</div></div>
+            <div class="border rounded-xl p-3 h-[110px]"><div class="text-[11px] font-bold">3. Certified by 財政主任 / 總主任(行政) / 副主席(行政)：</div><div class="text-[10px] text-slate-500 mt-1">審核真確性及預算</div><div class="mt-8 border-t border-slate-400 pt-1 text-[10px] text-slate-500">財政主任或總主任(行政)或副主席(行政)簽名 / 日期 (第三行)</div></div>
+            <div class="border rounded-xl p-3 h-[110px] bg-amber-50 border-amber-200"><div class="text-[11px] font-bold">4. Approved by 按銀碼批核 (附件1)：</div><div class="text-[10px] mt-1 leading-relaxed">${overallChain.steps.map(s=>`<div>• ${escapeHtml(s.role)}：${escapeHtml(s.action)}</div>`).join('')}${overallChain.steps.length===0?'<div>• 各副主席批核 (≤$500)</div>':''}</div><div class="mt-2 border-t border-amber-300 pt-1 text-[9px] text-amber-800">總額 $${totalAll} → ${escapeHtml(overallChain.quotation)}</div></div>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-4 border-t pt-2">
+            說明：本結算總表已修正，按附件1 <b>報價要求及批核人士</b> 區分銀碼，不同級數不同批核鏈；四格印按指引：第二行 Checked by 各組副主席，第三行 Certified by 財政主任/總主任(行政)/副主席(行政)，第一行經辦人無須簽署，第四行按銀碼由主席/助理地域總監/副地域總監/地域總監批核。所有單據需蓋四格印至少1/3在單據上，熱感式需影印加COPY章。後台已紀錄於 localStorage + GAS Finance Sheet + AuditLog。<br>
+            指引文件：<a href="https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C" target="_blank" class="text-sky-600 underline">Drive 指引資料夾</a> 含財務指引 ver1、附件1報價要求 (本表依據)、附件2豁免名單、附件3口頭報價、附件4書面報價比較表 (主席推薦→助理地域總監認可→副地域總監批核)、附件5結算總表、附件6四格印簽名位置。
+          </div>
+        </div>
+      </div>
+    `;
+  }
+,
+  printSettlement(){
+    const area=document.getElementById('settlement-print-area');
+    if(!area){ showToast('找不到列印區域','error'); return; }
+    const win=window.open('','_blank');
+    win.document.write(`<html><head><title>結算總表</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{font-family:sans-serif;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px} @media print{button{display:none}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.close();
+  }
+,
+});

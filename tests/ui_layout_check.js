@@ -8,9 +8,16 @@ const vm = require('vm');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+// 依 <script> 標籤順序載入：本機 js/ 檔讀檔案內容，無 src 的 inline 直接取內文（CDN 外部檔跳過）
 const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
-  .filter(match => !match[1].toLowerCase().includes('src='))
-  .map(match => match[2])
+  .map(match => {
+    const attrs = match[1] || '';
+    if (/src=/i.test(attrs)) {
+      const src = (attrs.match(/src="([^"]+)"/) || [])[1] || '';
+      return src.startsWith('js/') ? fs.readFileSync(path.join(root, src), 'utf8') : '';
+    }
+    return match[2];
+  })
   .join('\n');
 const core = scripts.replace(
   /const app=window\.app=new ScoutEventApp\(\);\s*[\s\S]*$/,
@@ -105,11 +112,13 @@ pub = htmlOf('public-cards-grid');
 assert(pub.includes('公告及溝通'), '登入後公開資料仍最先顯示');
 assert(!pub.includes('dash-desc') && !pub.includes('<p class="dash-desc'), '卡片不應再顯示詳細介紹（只留名稱）');
 const ids = htmlOf('identity-cards-grid');
-// 會議卡片應在功能卡片最前（在所有 group 卡之前）
-assert(ids.includes('會議卡片'), '其他組別及工作卡片應含會議卡片');
+// v8.4 起：工作卡片只餘功能卡（會議卡片最前）；組別卡片已移至「部門管理中心」(group-quick-access)
+assert(ids.includes('會議卡片'), '工作卡片應含會議卡片');
 const idxMeeting = ids.indexOf('會議卡片');
-const idxOwnGroup = ids.indexOf('主題節目組');
-assert(idxMeeting !== -1 && idxOwnGroup !== -1 && idxMeeting < idxOwnGroup, '會議卡片應在組別卡片之前');
+const idxOtherWork = ids.indexOf('物資申請');
+assert(idxMeeting !== -1 && (idxOtherWork === -1 || idxMeeting < idxOtherWork), '會議卡片應在其餘工作卡片之前');
+assert(!ids.includes('主題節目組'), '組別卡片應已移至部門管理中心，不在工作卡片格線');
+
 mon = htmlOf('identity-monitor');
 assert(mon.includes('總申請') || mon.includes('你暫時未有申請紀錄'), '身份卡片我的監察區塊應有內容');
 assert(mon.includes('申請中心'), '無權限人士身份卡應提供前往申請中心');
