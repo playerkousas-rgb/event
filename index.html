@@ -1014,9 +1014,8 @@ class ScoutEventApp{
       if(toolsSection) toolsSection.classList.add('hidden');
       if(pinnedSection) pinnedSection.classList.add('hidden');
       if(identityTitle) identityTitle.textContent='登入後解鎖';
-      const guestDefs=[...identityDefs.filter(d=>!MANAGEMENT_TOOL_ORDER.includes(d.id)),...toolDefs];
-      identityGrid.innerHTML=guestDefs.map(d=>this.cardHTML(d,{locked:true,neutral:guestNeutral(d)})).join('');
-      if(identityCount) identityCount.textContent=`${guestDefs.length} 張 · 登入解鎖`;
+      identityGrid.innerHTML='';
+      if(identityCount) identityCount.textContent='登入後解鎖';
       if(note) note.innerHTML='👀 未登入＝一般工作人員／公眾：<b>公告及溝通、申請中心</b>以彩色標示，其餘卡片無顏色，方便一眼找到重點。登入後（按職級）才顯示其他卡片。';
       return;
     }
