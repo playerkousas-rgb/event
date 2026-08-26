@@ -147,17 +147,18 @@ const mgmtIdx = dashHtml.indexOf('id="management-tools-section"');
 assert(pubIdx !== -1 && idIdx !== -1 && pubIdx < idIdx && idIdx < mgmtIdx,
   '靜態 HTML：公開資料 → 其他組別及工作卡片 → 管理工具 順序錯誤');
 
-/* ---------- 5. 最頂 BAR（標題列）及下方 BAR 及底部導覽列 ---------- */
+/* ---------- 5. 最頂 BAR（標題列）及底部導覽列 ---------- */
 const headerHtml = html.slice(html.indexOf('<header'), html.indexOf('</header>'));
-// 最頂 BAR＝標題列本身：身份・我的監察・介紹・改密碼・登出（未登入顯示登入）
-assert(headerHtml.includes('身份') && headerHtml.includes('我的監察') && headerHtml.includes('介紹')
-  && headerHtml.includes('改密碼') && headerHtml.includes('登出') && headerHtml.includes('登入'), '最頂 BAR 標題列應有 身份/我的監察/介紹/改密碼/登出（未登入顯示登入）');
-// 下方 BAR＝執行手冊・申請中心・批核中心・開戶；不再放 身份/我的監察/介紹
-const tabsHtml = headerHtml.slice(headerHtml.indexOf('id="top-tabs-wrap"'));
-['執行手冊','申請中心','批核中心','開戶'].forEach(t=>assert(tabsHtml.includes(t), `下方 BAR 應有 ${t}`));
-assert(!tabsHtml.includes('我的監察') && !tabsHtml.includes('介紹') && !tabsHtml.includes('> 身份<'), '下方 BAR 不應再放 我的監察/介紹/身份');
-assert(!headerHtml.includes('overflow-x-auto'), '頂部/下方 BAR 不應左右滑動 (無 overflow-x-auto)');
-assert(html.includes('.nav-tab{flex:1 1 0;'), '下方 BAR 按鈕應均分寬度（flex:1）');
+// 最頂 BAR＝標題列本身：身份・改密碼・登出（未登入顯示登入）；我的監察／介紹已寫入身份卡片，不再佔用頂部
+assert(headerHtml.includes('身份') && headerHtml.includes('改密碼')
+  && headerHtml.includes('登出') && headerHtml.includes('登入'), '最頂 BAR 標題列應有 身份/改密碼/登出（未登入顯示登入）');
+assert(!headerHtml.includes('我的監察') && !headerHtml.includes('介紹'), '最頂 BAR 不應再有 我的監察/介紹（已寫入身份卡片）');
+// 手機三畫功能鍵及側欄選單已刪除
+assert(!headerHtml.includes('fa-bars'), '不應有手機三畫功能鍵');
+assert(!html.includes('id="mobile-drawer"') && !html.includes('toggleDrawer'), '側欄功能選單（drawer）已刪除');
+// 執行手冊・申請中心・批核中心・開戶 只集中在底部導覽列（頂部重覆 BAR 已刪）
+assert(!html.includes('id="top-tabs-wrap"'), '頂部重覆的 執行手冊/申請中心/批核中心/開戶 BAR 已刪（集中在底部導覽列）');
+assert(!headerHtml.includes('overflow-x-auto'), '頂部 BAR 不應左右滑動 (無 overflow-x-auto)');
 assert(html.includes('html,body{overflow-x:clip}'), '全站應防左右滑動 (overflow-x:clip)');
 // 手機：長方形卡片開成 2 個正方形（兩欄）
 const mqStart = html.indexOf('@media(max-width:768px)');
@@ -167,6 +168,7 @@ assert(mq.includes('#group-quick-access{grid-template-columns:repeat(2,minmax(0,
 const navHtml = html.slice(html.indexOf('<nav id="bottom-nav"'), html.indexOf('</nav>'));
 assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && navHtml.includes('批核中心') && navHtml.includes('開戶'),
   '底部導覽應有 執行手冊/申請中心/批核中心/開戶');
+assert(!navHtml.includes('md:hidden'), '底部導覽列應手機／電腦同步顯示（不再只限手機）');
 
 /* ---------- 6. updateAdminNav：登入後只顯示登出，批核中心／開戶僅有權限人士可見 ---------- */
 function styleOf(id) { return store.get(id) ? store.get(id).style.display : 'MISSING'; }
@@ -175,17 +177,12 @@ app.updateAdminNav();
 assert(styleOf('login-toggle-btn') === 'none', '登入後最頂 BAR 不應顯示登入');
 assert(styleOf('logout-btn') === '', '登入後最頂 BAR 應顯示登出');
 assert(styleOf('topbar-changepwd') === '', '登入後最頂 BAR 應顯示改密碼');
-assert(styleOf('subnav-approvals') === 'none', '工作人員不應見下方 BAR 批核中心');
-assert(styleOf('subnav-accounts') === 'none', '工作人員不應見下方 BAR 開戶');
 assert(styleOf('bn-approvals') === 'none', '工作人員不應見底部批核中心');
 assert(styleOf('bn-accounts') === 'none', '工作人員不應見底部開戶');
 assert(styleOf('bn-exec') !== 'none' && styleOf('bn-apply') !== 'none', '執行手冊／申請中心人人可用');
-assert(styleOf('subnav-exec') !== 'none' && styleOf('subnav-apply') !== 'none', '下方 BAR 執行手冊／申請中心人人可用');
 
 app.currentUser = { role: 'general_director', name: '蘇國樑', user_id: '蘇國樑', group_name: '主題節目組' };
 app.updateAdminNav();
-assert(styleOf('subnav-approvals') === '', '總主任應見下方 BAR 批核中心');
-assert(styleOf('subnav-accounts') === '', '總主任應見下方 BAR 開戶');
 assert(styleOf('bn-approvals') === '', '總主任應見底部批核中心');
 assert(styleOf('bn-accounts') === '', '總主任應見底部開戶');
 
@@ -194,7 +191,38 @@ app.updateAdminNav();
 assert(styleOf('login-toggle-btn') === '', '未登入最頂 BAR 應顯示登入');
 assert(styleOf('logout-btn') === 'none', '未登入最頂 BAR 不應顯示登出');
 assert(styleOf('topbar-changepwd') === 'none', '未登入不應顯示改密碼');
-assert(styleOf('subnav-approvals') === 'none', '未登入不應見批核中心');
 assert(styleOf('bn-approvals') === 'none', '未登入不應見底部批核中心');
+
+/* ---------- 7. 全部卡片白底無顏色；頁尾精簡；有批核權＋自己有申請的身份卡顯示 ---------- */
+app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組' };
+app.renderRoleCards();
+pub = htmlOf('public-cards-grid');
+assert(!pub.includes('bg-gradient') && pub.includes('bg-white border shadow-sm'), '公開資料卡片應全部白底無顏色');
+assert(!htmlOf('identity-cards-grid').includes('bg-gradient'), '功能／組別卡片應全部白底無顏色');
+assert(!htmlOf('management-tools-grid').includes('bg-gradient'), '管理工具卡片應全部白底無顏色');
+
+// 頁尾精簡（刪走 v7.7 及長功能描述）
+const footerHtml = html.slice(html.indexOf('<footer'), html.indexOf('</footer>'));
+assert(!footerHtml.includes('v7.7') && !footerHtml.includes('協調組管理中心'), '頁尾不應再有 v7.7 及長功能描述');
+
+// 有批核權＋自己亦有申請：身份卡片四個數字（自己＋下級合計）之外，另有「我的申請」一行只計自己
+app.currentUser = { role: 'general_director', name: '蘇國樑', user_id: '蘇國樑', group_name: '主題節目組' };
+app.monitorScope = () => ({ level: 'group', groups: ['主題節目組'] });
+app.canApproveArea = () => true;
+app.collectApplications = () => [
+  { type:'supplies', typeLabel:'物資', icon:'fa-solid fa-boxes-stacked', color:'text-blue-600', person:'蘇國樑', person_id:'蘇國樑', group:'主題節目組', title:'膠尺 × 10', sub:'', status:'待批核', color_name:'amber', who:'', date:'' },
+  { type:'meals', typeLabel:'膳食', icon:'fa-solid fa-utensils', color:'text-purple-600', person:'陳大文', person_id:'陳大文', group:'主題節目組', title:'午宴 · 白飯', sub:'', status:'待批核', color_name:'amber', who:'', date:'' }
+];
+app.renderRoleCards();
+mon = htmlOf('identity-monitor');
+assert(mon.includes('總申請') && mon.includes('待處理') && mon.includes("app.switchTopTab('approvals')"), '有權限人士身份卡片應見可跳轉批核中心的數字');
+assert(mon.includes('我的申請') && mon.includes("app.openModule('my_monitor')"), '有批核權同時自己有申請：身份卡應有「我的申請」一行（跳轉我的監察）');
+
+// 我的監察頁：有權限人士「我自己」未有紀錄時，也應有「前往申請中心」跳轉按鈕
+app.collectApplications = () => [];
+app.renderMyMonitorModule();
+monPage = htmlOf('module-content');
+assert(monPage.includes('總申請'), '有權限人士我的監察頁應見統計');
+assert(monPage.includes('你暫時未有申請紀錄') && monPage.includes("app.openModule('apply_hub')"), '有權限人士我自己未有紀錄時應有前往申請中心按鈕');
 
 console.log('UI_LAYOUT_CHECK_OK');
