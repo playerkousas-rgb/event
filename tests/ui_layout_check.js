@@ -147,14 +147,23 @@ const mgmtIdx = dashHtml.indexOf('id="management-tools-section"');
 assert(pubIdx !== -1 && idIdx !== -1 && pubIdx < idIdx && idIdx < mgmtIdx,
   '靜態 HTML：公開資料 → 其他組別及工作卡片 → 管理工具 順序錯誤');
 
-/* ---------- 5. 頂部 BAR 及底部導覽列 ---------- */
+/* ---------- 5. 最頂 BAR（標題列）及下方 BAR 及底部導覽列 ---------- */
 const headerHtml = html.slice(html.indexOf('<header'), html.indexOf('</header>'));
+// 最頂 BAR＝標題列本身：身份・我的監察・介紹・改密碼・登出（未登入顯示登入）
 assert(headerHtml.includes('身份') && headerHtml.includes('我的監察') && headerHtml.includes('介紹')
-  && headerHtml.includes('改密碼') && headerHtml.includes('登出'), '頂部 BAR 應有 身份/我的監察/介紹/改密碼/登出');
-assert(headerHtml.includes('topbar-login'), '頂部 BAR 未登入時應有登入');
-assert(!headerHtml.slice(headerHtml.indexOf('id="top-tabs-wrap"'), headerHtml.indexOf('id="top-tabs-wrap"')+120).includes('overflow-x-auto'),
-  '頂部 BAR 不應左右滑動 (無 overflow-x-auto)');
-assert(html.includes('.nav-tab{flex:1 1 0;'), '頂部 BAR 按鈕應均分寬度（flex:1）');
+  && headerHtml.includes('改密碼') && headerHtml.includes('登出') && headerHtml.includes('登入'), '最頂 BAR 標題列應有 身份/我的監察/介紹/改密碼/登出（未登入顯示登入）');
+// 下方 BAR＝執行手冊・申請中心・批核中心・開戶；不再放 身份/我的監察/介紹
+const tabsHtml = headerHtml.slice(headerHtml.indexOf('id="top-tabs-wrap"'));
+['執行手冊','申請中心','批核中心','開戶'].forEach(t=>assert(tabsHtml.includes(t), `下方 BAR 應有 ${t}`));
+assert(!tabsHtml.includes('我的監察') && !tabsHtml.includes('介紹') && !tabsHtml.includes('> 身份<'), '下方 BAR 不應再放 我的監察/介紹/身份');
+assert(!headerHtml.includes('overflow-x-auto'), '頂部/下方 BAR 不應左右滑動 (無 overflow-x-auto)');
+assert(html.includes('.nav-tab{flex:1 1 0;'), '下方 BAR 按鈕應均分寬度（flex:1）');
+assert(html.includes('html,body{overflow-x:clip}'), '全站應防左右滑動 (overflow-x:clip)');
+// 手機：長方形卡片開成 2 個正方形（兩欄）
+const mqStart = html.indexOf('@media(max-width:768px)');
+const mq = html.slice(mqStart, html.indexOf('}\n</style>') > mqStart ? html.indexOf('}\n</style>') : mqStart+4000);
+assert(mq.includes('.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important'), '手機儀表板卡片應兩欄正方形');
+assert(mq.includes('#group-quick-access{grid-template-columns:repeat(2,minmax(0,1fr))!important') && mq.includes('#events-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important'), '部門管理中心及首頁活動卡手機應兩欄正方形');
 const navHtml = html.slice(html.indexOf('<nav id="bottom-nav"'), html.indexOf('</nav>'));
 assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && navHtml.includes('批核中心') && navHtml.includes('開戶'),
   '底部導覽應有 執行手冊/申請中心/批核中心/開戶');
@@ -163,24 +172,29 @@ assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && n
 function styleOf(id) { return store.get(id) ? store.get(id).style.display : 'MISSING'; }
 app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組' };
 app.updateAdminNav();
-assert(styleOf('topbar-login') === 'none', '登入後頂部 BAR 不應顯示登入');
-assert(styleOf('topbar-logout') === '', '登入後頂部 BAR 應顯示登出');
-assert(styleOf('topbar-changepwd') === '', '登入後頂部 BAR 應顯示改密碼');
-assert(styleOf('login-toggle-btn') === 'none', '登入後頂部右側不應顯示登入');
-assert(styleOf('logout-btn') === '', '登入後頂部右側應顯示登出');
+assert(styleOf('login-toggle-btn') === 'none', '登入後最頂 BAR 不應顯示登入');
+assert(styleOf('logout-btn') === '', '登入後最頂 BAR 應顯示登出');
+assert(styleOf('topbar-changepwd') === '', '登入後最頂 BAR 應顯示改密碼');
+assert(styleOf('subnav-approvals') === 'none', '工作人員不應見下方 BAR 批核中心');
+assert(styleOf('subnav-accounts') === 'none', '工作人員不應見下方 BAR 開戶');
 assert(styleOf('bn-approvals') === 'none', '工作人員不應見底部批核中心');
 assert(styleOf('bn-accounts') === 'none', '工作人員不應見底部開戶');
 assert(styleOf('bn-exec') !== 'none' && styleOf('bn-apply') !== 'none', '執行手冊／申請中心人人可用');
+assert(styleOf('subnav-exec') !== 'none' && styleOf('subnav-apply') !== 'none', '下方 BAR 執行手冊／申請中心人人可用');
 
 app.currentUser = { role: 'general_director', name: '蘇國樑', user_id: '蘇國樑', group_name: '主題節目組' };
 app.updateAdminNav();
+assert(styleOf('subnav-approvals') === '', '總主任應見下方 BAR 批核中心');
+assert(styleOf('subnav-accounts') === '', '總主任應見下方 BAR 開戶');
 assert(styleOf('bn-approvals') === '', '總主任應見底部批核中心');
 assert(styleOf('bn-accounts') === '', '總主任應見底部開戶');
 
 app.currentUser = null;
 app.updateAdminNav();
-assert(styleOf('topbar-login') === '', '未登入頂部 BAR 應顯示登入');
-assert(styleOf('topbar-logout') === 'none', '未登入頂部 BAR 不應顯示登出');
-assert(styleOf('bn-approvals') === 'none', '未登入不應見批核中心');
+assert(styleOf('login-toggle-btn') === '', '未登入最頂 BAR 應顯示登入');
+assert(styleOf('logout-btn') === 'none', '未登入最頂 BAR 不應顯示登出');
+assert(styleOf('topbar-changepwd') === 'none', '未登入不應顯示改密碼');
+assert(styleOf('subnav-approvals') === 'none', '未登入不應見批核中心');
+assert(styleOf('bn-approvals') === 'none', '未登入不應見底部批核中心');
 
 console.log('UI_LAYOUT_CHECK_OK');
