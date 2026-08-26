@@ -165,7 +165,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
         <div id="my-group-card-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <!-- 公開資料：固定按「公告、組織、場地、典禮、申請、危機、通告」排列 -->
+      <!-- 公開資料：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動 -->
       <div id="public-section" class="space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-globe"></i></span>公開資料 <span class="text-[10px] text-slate-400 font-normal">所有人可見，無需登入</span></h3>
@@ -250,9 +250,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
     <!-- 按組別一目了然 - 部門管理中心：每組一張卡片（依組織架構圖，不會多出部門） -->
     <div id="group-management-section" class="hidden bg-white rounded-2xl p-5 border shadow-sm space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[15px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>部門管理中心 <span class="text-[11px] text-slate-500 font-normal ml-2">每組一張卡片（依組織架構圖）</span></h3><span class="text-[11px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">各組透過管理卡片修改本組內容</span></div>
-      <p class="text-[11px] text-slate-500 leading-relaxed">舊有組別是因為各人不用登入沒身份，方便工作人員按組別找自己需要的資料。現卡片制，各組均可以一眼看到卡片分類就找到自己需要的資料，而各組可以透過一個管理卡片，修改或加入自己組別控制的內容。公開可看，僅修改需登入 (一次登入永久有效，儲存於瀏覽器)。目的：什麼都不知道的人用此APP就可了解整個活動和找到需要的資料。</p>
       <div id="group-quick-access" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-      <div class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">說明：點擊組別卡片進入該組管理中心，可管理本組控制的內容 (成員、職務、文件、攤位、預算、物資等)，僅本組成員或管理員可修改，其他人公開可看。參考舊手冊組別分類，現優化為卡片制更直觀，部門間溝通更完善。</div>
     </div>
   </div>
 
@@ -426,7 +424,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
             <tbody class="divide-y">
               <tr><td class="px-2 py-1 font-medium">我的監察・會議</td><td>需要</td><td>登入後排最前；L3 或以下連同自己組別共 3 張卡片</td><td>只讀監察；會議由管理員整理</td></tr>
               <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>你所屬組別的卡片（L2 或以上位於監察／會議之後並標亮）</td><td>由組別權限決定</td></tr>
-              <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告、申請中心、日程、場地、組織、主題章、膳食、危機、文件、典禮、捐贈等</td><td>只讀；修改需對應職級／組別登入</td></tr>
+              <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告及溝通、執行手冊（組織架構・場地・典禮・危機・通告）、申請中心、童心捐贈</td><td>只讀；修改需對應職級／組別登入</td></tr>
               <tr><td class="px-2 py-1 font-medium">② 其他組別及工作卡片</td><td>需要</td><td>其他組別、會議、物資、車輛、財務、監察等</td><td>預設只讀；依「可看／可管」權限解鎖</td></tr>
               <tr><td class="px-2 py-1 font-medium">③ 管理工具</td><td>需要</td><td>開戶、批核中心、權限管理</td><td>僅總主任以上可見／使用</td></tr>
             </tbody>
@@ -438,20 +436,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
       <!-- 2. 各卡片功能 -->
       <div class="space-y-2">
         <h4 class="font-bold text-[15px] text-slate-900">2️⃣ 主要功能：各卡片功能</h4>
-        <p class="text-[12px]"><b>公開類（無需登入可看）：</b>公告及溝通（內含日程表・旅團須知・活動主題章）・申請中心・場地與活動總覽・組織架構與聯絡・膳食管理・危機處理・通告及文件・典禮儀式（內含獲獎名單）・童心捐贈大行動。</p>
+        <p class="text-[12px]"><b>公開類（無需登入可看）：</b>公告及溝通（內含日程表・旅團須知・活動主題章）・<b>執行手冊</b>（內含組織架構與聯絡・場地與活動總覽・典禮儀式・危機處理・通告及文件）・申請中心・童心捐贈大行動（統計只供服務及發展組／管理層）。</p>
         <div class="table-responsive">
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">卡片</th><th class="px-2 py-1 text-left">主要功能</th><th class="px-2 py-1 text-left">預設修改權限</th></tr></thead>
             <tbody class="divide-y">
               <tr><td class="px-2 py-1 font-medium">公告及溝通</td><td>公告、日程表、旅團須知、主題章；跨部門溝通、搜尋</td><td>主任以上可發佈</td></tr>
+              <tr><td class="px-2 py-1 font-medium">執行手冊</td><td>內部分頁：組織架構與聯絡・場地與活動總覽・典禮儀式・危機處理・通告及文件</td><td>各頁按權限；公開可看</td></tr>
               <tr><td class="px-2 py-1 font-medium">申請中心</td><td>物資、車輛／泊車證、膳食、口頭報價、開支申報統一入口</td><td>各表按權限進入</td></tr>
-              <tr><td class="px-2 py-1 font-medium">場地與活動總覽</td><td>地圖、攤位總表、遊戲卡、活動項目</td><td>主任／副主席以上可上傳</td></tr>
-              <tr><td class="px-2 py-1 font-medium">組織架構與聯絡</td><td>組織架構、職員名單、職務大綱、聯絡資料</td><td>行政組／總主任以上可管理</td></tr>
-              <tr><td class="px-2 py-1 font-medium">膳食管理</td><td>菜單、截止、我的訂餐、統計、列印派發清單</td><td>指定膳食執行組主任以上可管理</td></tr>
-              <tr><td class="px-2 py-1 font-medium">危機處理</td><td>應變指引、急救、保險、危機手冊、緊急聯絡</td><td>管理員／副主席以上可更新</td></tr>
-              <tr><td class="px-2 py-1 font-medium">通告及文件</td><td>通告、指引、表格、活動文件</td><td>管理員／行政總主任以上可上傳</td></tr>
-              <tr><td class="px-2 py-1 font-medium">典禮儀式</td><td>典禮程序、司儀稿、嘉賓名單、座位表、獲獎名單</td><td>管理員／副主席以上可更新</td></tr>
-              <tr><td class="px-2 py-1 font-medium">童心捐贈大行動</td><td>物品／食品捐贈、QR Code 登記、統計總表</td><td>服務及發展組可管理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">童心捐贈大行動</td><td>物品／食品捐贈、QR Code 登記；<b>統計只供服務及發展組／管理層</b></td><td>服務及發展組可管理</td></tr>
             </tbody>
           </table>
         </div>
@@ -557,6 +550,7 @@ function canSetupRole(role,isAdmin){ return (isAdmin?ADMIN_ACCOUNT_SETUP_ROLES:A
 // 權限卡片清單（= 用戶「可看到 / 可編輯」的內容卡片，上級授權給下級）
 const PERM_CARDS=[
   {id:'announcements',label:'公告及溝通',icon:'fa-solid fa-bullhorn'},
+  {id:'exec_manual',label:'執行手冊（組織架構·場地·典禮·危機·通告）',icon:'fa-solid fa-book'},
   {id:'apply_hub',label:'申請中心',icon:'fa-solid fa-file-pen'},
   {id:'schedule',label:'日程表',icon:'fa-solid fa-calendar-days'},
   {id:'activities',label:'場地與活動總覽',icon:'fa-solid fa-map-location-dot'},
@@ -585,7 +579,7 @@ const PERM_CARDS=[
   {id:'group_leadership',label:'主席及執行副主席',icon:'fa-solid fa-crown'}
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
-const PUBLIC_CARD_ORDER=['announcements','staff','activities','ceremony','apply_hub','crisis','documents','donations'];
+const PUBLIC_CARD_ORDER=['announcements','exec_manual','apply_hub','donations'];
 const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secretariat','group_ceremony','group_theme','group_brand','group_reception','coordinator_group','group_service','admin_group']);
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
@@ -643,17 +637,19 @@ const EVENT_CATEGORIES=[
 const DASH_CARD_DEFS=[
   // ── 公開資料 (所有人可見，無需登入) ──
   {id:'announcements',title:'公告及溝通',desc:'公告、日程表、旅團須知、主題章（集中一卡）',icon:'fa-solid fa-bullhorn',cardClass:'bg-gradient-to-br from-sky-500 to-blue-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:30,editLabel:'主任以上可發佈'},
+  // 執行手冊：組織架構・場地與活動總覽・典禮儀式・危機處理・通告及文件 收埋一卡，內部分頁（如同申請中心）
+  {id:'exec_manual',title:'執行手冊',desc:'組織架構、場地與活動總覽、典禮儀式、危機處理、通告及文件（集中一卡）',icon:'fa-solid fa-book',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,editLabel:'執行手冊：公開可看，內部分頁'},
   {id:'apply_hub',title:'申請中心',desc:'集中所有申請表：物資、車輛、泊車證、膳食、口頭報價、開支申報',icon:'fa-solid fa-file-pen',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:0,readOnly:true,editLabel:'公開可看，各表按權限進入'},
   {id:'schedule',title:'日程表',desc:'已併入公告及溝通卡片（日程表分頁）',icon:'fa-solid fa-calendar-days',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-600',minLevel:0,editLevel:60,editLabel:'副主席以上可上傳',hideOnDashboard:true},
-  {id:'activities',title:'場地與活動總覽',desc:'地圖、攤位總表、遊戲卡',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'主任/副主席以上可上傳'},
-  {id:'staff',title:'組織架構與聯絡',desc:'架構公開可看；電話/Email 需登入',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0,editLevel:40,editGroups:['行政組'],editLabel:'本組成員/主任以上可管理'},
+  {id:'activities',title:'場地與活動總覽',desc:'地圖、攤位總表、遊戲卡',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'主任/副主席以上可上傳',hideOnDashboard:true},
+  {id:'staff',title:'組織架構與聯絡',desc:'架構公開可看；電話/Email 需登入',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0,editLevel:40,editGroups:['行政組'],editLabel:'本組成員/主任以上可管理',hideOnDashboard:true},
   {id:'theme_badges',title:'活動主題章',desc:'已併入公告及溝通卡片（主題章分頁）',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'副主席以上可更新',hideOnDashboard:true},
   // 膳食：申請入口在「申請中心」，管理在「協調組 → 膳食」，故不另設儀表板卡片
   {id:'meals',title:'膳食管理',desc:'菜單、截止、我的訂餐',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:0,editLevel:60,editGroups:['膳食','協調','行政'],editLabel:'指定膳食執行組主任以上可管理',hideOnDashboard:true},
-  {id:'crisis',title:'危機處理',desc:'危機處理手冊、應變流程、急救及保險安排，公開可看',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
-  {id:'documents',title:'通告及文件',desc:'通告、指引、表格，公眾可看',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'管理員/行政總主任以上可上傳'},
+  {id:'crisis',title:'危機處理',desc:'危機處理手冊、應變流程、急救及保險安排，公開可看',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
+  {id:'documents',title:'通告及文件',desc:'通告、指引、表格，公眾可看',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'管理員/行政總主任以上可上傳',hideOnDashboard:true},
   {id:'unit_guide',title:'旅團須知',desc:'已併入公告及溝通卡片（旅團須知分頁）',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'管理員/行政總主任以上可上傳',hideOnDashboard:true},
-  {id:'ceremony',title:'典禮儀式',desc:'司儀稿、嘉賓名單、座位表、RUNDOWN、獲獎名單',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新'},
+  {id:'ceremony',title:'典禮儀式',desc:'司儀稿、嘉賓名單、座位表、RUNDOWN、獲獎名單',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
   {id:'awards',title:'獲獎名單',desc:'已併入典禮儀式卡片（獲獎名單分頁）',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-yellow-100 text-yellow-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
   // ── 管理資料 (登入後按角色/組別解鎖) ──
   {id:'meetings',title:'會議卡片',desc:'籌委會議專用：各次籌備會議議程、會議紀錄、附件及 Drive 資料夾',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:30,editLevel:80,editLabel:'管理員可新增會議'},
@@ -712,7 +708,7 @@ class ScoutEventApp{
       }
       localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser));
     }
-    this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart';
+    this.eventsList=JSON.parse(localStorage.getItem(LS.events)||'null')||[]; this.eventData={}; this.usersList=[]; this.currentModule=null; this.staffSubTab='org_chart'; this.execManualSubTab='staff';
     this.pendingChanges=JSON.parse(localStorage.getItem(LS.pending(this.currentEvent?.event_id||'isd_2026'))||'[]'); this.bulkPending=[]; this.meetingsCache=[]; this.currentMeetingId=null; this.tempFiles={}; this.meetingDetailTab='agenda'; this.meetingDriveViewMode=localStorage.getItem('meeting_drive_view_mode')||'list'; this.approvalPerms=[]; this.approvalRouting=this.getLocalApprovalRouting(); this.approvalViewMode='byPerson';
     this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM',meeting_folder_id:'13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM'};
     this.init();
@@ -1009,7 +1005,7 @@ class ScoutEventApp{
     const guestNeutral=(d)=>!COLORED_FOR_GUEST.includes(d.id);
     this.renderIdentityBar();
 
-    // 公開資料固定順序：公告、組織、場地、典禮、申請、危機、通告。
+    // 公開資料固定順序：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動。
     publicGrid.innerHTML=publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony,neutral:!user&&guestNeutral(d)});}).join('');
     if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
 
@@ -1275,9 +1271,9 @@ class ScoutEventApp{
           <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
           <button onclick="app.openModule('coordinator_group')" class="bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-people-roof mr-1"></i>協調組（物資／車輛／膳食批核）</button>
           <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
-          ${groupName==='服務及發展組'?`<button onclick="app.openModule('donations')" class="bg-rose-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動</button>`:''}
+          ${groupName==='服務及發展組'&&this.canViewDonationsStats()?`<button onclick="app.openModule('donations')" class="bg-rose-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動</button>`:''}
         </div>
-        ${groupName==='服務及發展組'?this.renderDonationSummaryForGroup():''}
+        ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
       </div>`;
   }
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
@@ -1329,7 +1325,7 @@ class ScoutEventApp{
   backToDashboard(){document.getElementById('view-module').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden');}
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (行政組卡片內 · 指引·預算·申報·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程 (公告及溝通分頁)',supplies:'物資申請（車輛通行證／泊車證分頁）',parking:'泊車證＝車輛通行證（已併入協調組）',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (公告及溝通分頁)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN·獲獎名單)',awards:'獲獎名單 (典禮儀式分頁)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章 (公告及溝通分頁)',announcements:'公告及溝通 (含日程·旅團須知·主題章)',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)',donations:'童心捐贈大行動 (物品·食品捐贈·QR Code·統計)'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片 (分次·上傳下載·權限)',staff:'工作人員卡片 (名單·樹形·職務)',finance:'財務 (行政組卡片內 · 指引·預算·申報·批核)',activities:'活動與攤位 (地圖·總表·遊戲卡)',meals:'膳食 (菜單·訂餐·列印·監察)',schedule:'日程 (公告及溝通分頁)',supplies:'物資申請（車輛通行證／泊車證分頁）',parking:'泊車證＝車輛通行證（已併入協調組）',oral_quotes:'口頭報價登記 (登記·查看)',documents:'文件檔案 (附件·通告·指引)',unit_guide:'旅團須知 (公告及溝通分頁)',ceremony:'典禮儀式 (司儀稿·嘉賓·座位·RUNDOWN·獲獎名單)',awards:'獲獎名單 (典禮儀式分頁)',crisis:'危機處理 (應變指引·急救·保險)',theme_badges:'活動主題章 (公告及溝通分頁)',announcements:'公告及溝通 (含日程·旅團須知·主題章)',exec_manual:'執行手冊 (組織架構·場地·典禮·危機·通告)',apply_hub:'申請中心 (集中所有申請表)',my_monitor:'我的監察 (自己＋下級所有申請批核)',admin_group:'行政組 (通告·報名·參加旅團)',coordinator_group:'協調組 (物資·車輛通行證·膳食·場地)',transport:'交通及泊車',account_setup:'開戶 (總主任以上·本組)',permissions:'權限管理 (看/管授權)',donations:'童心捐贈大行動 (物品·食品捐贈·QR Code·統計)'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
@@ -1349,10 +1345,12 @@ class ScoutEventApp{
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap">${this.canUploadThemeBadge()?`<button onclick="app.openThemeBadgeForm()" class="bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-award mr-1"></i>上傳主題章 (副主席以上)</button>`:''}<button onclick="app.exportThemeBadges()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
     } else if(key==='account_setup'){
       document.getElementById('module-actions').innerHTML=`<span class="text-[11px] bg-teal-50 text-teal-700 px-3 py-2 rounded-full border border-teal-200">開戶（預設密碼 1234）</span>`;
-    } else if(key==='my_monitor'||key==='apply_hub'||key==='coordinator_group'){
+    } else if(key==='my_monitor'||key==='apply_hub'||key==='exec_manual'||key==='coordinator_group'){
       document.getElementById('module-actions').innerHTML='';
     } else if(key==='donations'){
-      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.exportDonationsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出全部</button></div>`;
+      document.getElementById('module-actions').innerHTML=this.canViewDonationsStats()
+        ?`<div class="flex gap-2 flex-wrap"><button onclick="app.exportDonationsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出全部</button></div>`
+        :'';
     } else if(key==='permissions'){
       document.getElementById('module-actions').innerHTML=`<button onclick="app.renderPermissionsModule()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>`;
     } else {
@@ -1563,6 +1561,7 @@ class ScoutEventApp{
     if(mod==='crisis'){this.renderCrisisModule(); return;}
     if(mod==='theme_badges'){this.renderThemeBadgesModule(); return;}
     if(mod==='announcements'){this.renderAnnouncementsModule(); return;}
+    if(mod==='exec_manual'){this.renderExecManualModule(); return;}
     if(mod==='apply_hub'){this.renderApplyHubModule(); return;}
     if(mod==='my_monitor'){this.renderMyMonitorModule(); return;}
     if(mod==='admin_group'){this.renderAdminGroupModule(); return;}
@@ -2023,19 +2022,15 @@ class ScoutEventApp{
       });
     }
   }
-  renderActivitiesModule(){
-    const container=document.getElementById('module-content');
+  renderActivitiesModule(box){
+    const container=box||document.getElementById('module-content');
     if(!this.activitiesSubTab) this.activitiesSubTab='maps';
     const data=this.getActivitiesData();
     const canUpload=this.canUploadActivity();
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
-          <b>🎪 活動與攤位升級 (參考舊執行手冊)：</b><br>
-          • 地圖由相關主任、副主席或以上上傳 (舊手冊有場地分佈圖)<br>
-          • 攤位總表由相關主任、副主席或以上上傳 (舊版有 Copy of ISD2025 攤位資料 - 攤位總表.pdf)<br>
-          • 遊戲卡由相關主任、副主席或以上上傳 (舊版有 ISD2025_passport_v696_outline.pdf 遊戲記錄冊)<br>
-          • 參考：<a href="https://sites.google.com/view/isd2025om/home" target="_blank" class="underline text-sky-700">舊執行手冊首頁</a> 及 <a href="https://sites.google.com/view/isd2025om/%E4%B8%BB%E9%A1%8C%E7%AF%80%E7%9B%AE%E7%B5%84?authuser=0" target="_blank" class="underline text-sky-700">主題節目組 (含遊戲卡、攤位總表、積極公民文件)</a>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-900">
+          <b>場地與活動總覽：</b>地圖、攤位總表、遊戲卡、活動列表；上傳需主任／副主席以上。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchActivitiesTab('maps')" class="tab-btn ${this.activitiesSubTab==='maps'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 地圖 (${data.maps.length})</button>
@@ -3071,8 +3066,8 @@ class ScoutEventApp{
     localStorage.setItem(LS.documents(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(normalized));
     this.eventData['documents']=normalized.docs;
   }
-  renderDocumentsModule(){
-    const container=document.getElementById('module-content');
+  renderDocumentsModule(box){
+    const container=box||document.getElementById('module-content');
     if(!container) return;
     const data=this.getDocumentsData();
     const q=(document.getElementById('document-search')?.value||'').toLowerCase();
@@ -3086,8 +3081,8 @@ class ScoutEventApp{
     });
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700">
-          <b>📁 文件中心：</b>通告、指引、表格集中管理；全部公開可查閱，只有上傳/修改需要登入權限。
+        <div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-700">
+          <b>通告及文件：</b>通告、指引、表格，公開可查閱；上傳需權限。
         </div>
         <div class="flex gap-2 flex-wrap">
           ${canUpload?`<button onclick="app.openDocumentForm()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件</button>`:''}
@@ -5244,6 +5239,49 @@ class ScoutEventApp{
   /* ===================== 申請中心 (Apply Hub) =====================
      集中所有申請表，一頁睇晒；各表仍保留於原卡片（物資/財務等）
      公開/登入/權限 標示清楚，一鍵直達該申請表 */
+  /* ===================== 執行手冊 (集中一卡，內部分頁) =====================
+     組織架構與聯絡、場地與活動總覽、典禮儀式、危機處理、通告及文件
+     全部收埋入「執行手冊」卡，進入後分頁切換（同申請中心一樣）。 */
+  renderExecManualModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    if(!this.execManualSubTab) this.execManualSubTab='staff';
+    const tabs=[
+      {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
+      {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
+      {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
+      {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
+      {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'}
+    ];
+    const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
+        <div id="exec-manual-panel"></div>
+      </div>`;
+    this.renderExecManualTab();
+  }
+  switchExecManualTab(tab){
+    this.execManualSubTab=tab;
+    document.querySelectorAll('[onclick^="app.switchExecManualTab"]').forEach(btn=>{
+      const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+      btn.className=t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+    });
+    this.renderExecManualTab();
+  }
+  renderExecManualTab(){
+    const panel=document.getElementById('exec-manual-panel');
+    if(!panel) return;
+    const map={
+      staff:()=>this.renderStaffModule(panel),
+      activities:()=>this.renderActivitiesModule(panel),
+      ceremony:()=>this.renderCeremonyModule(panel),
+      crisis:()=>this.renderCrisisModule(panel),
+      documents:()=>this.renderDocumentsModule(panel)
+    };
+    (map[this.execManualSubTab]||map.staff)();
+  }
+
   renderApplyHubModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
@@ -6387,8 +6425,8 @@ class ScoutEventApp{
       fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Staff_Contacts',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data.contacts||[]),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
     }
   }
-  renderStaffModule(){
-    const container=document.getElementById('module-content');
+  renderStaffModule(box){
+    const container=box||document.getElementById('module-content');
     const isAdmin=this.isAdmin();
     const isViceChairOrAbove=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
     const isExecViceChairOrAbove=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=80 || ['vice_chairperson','chairperson','admin','super_admin','advisor'].includes(this.currentUser?.role);
@@ -6396,11 +6434,8 @@ class ScoutEventApp{
     if(!this.staffSubTab) this.staffSubTab='org_chart';
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
-          <b>工作人員卡片升級說明：</b><br>
-          • 工作人員名單及聯絡：可一欄欄新增、或上傳文件 (CSV/JSON) 讓 APP 讀取變 JSON 寫入、或下載範本批量輸入<br>
-          • 職務大綱：管理員可上傳 WORD 檔，自動解析成 JSON 寫入後端，所有人前端可觀看；行政副主席、執行副主席或主席以上可在前端修改，完成後儲存同步後端<br>
-          • 組織架構圖：樹形圖顯示，各副主席或以上可加入其下崗位及人名，行政副主席、執行副主席或主席可修改全部
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] text-indigo-900">
+          組織架構公開可看；電話／Email 需登入；名單及職務大綱由有權限者管理。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchStaffTab('org_chart')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='org_chart'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-sitemap mr-1"></i> 組織架構圖 (樹形)</button>
@@ -8554,8 +8589,8 @@ class ScoutEventApp{
     };
   }
   saveCeremonyData(data){ localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); }
-  renderCeremonyModule(){
-    const container=document.getElementById('module-content');
+  renderCeremonyModule(box){
+    const container=box||document.getElementById('module-content');
     if(!this.ceremonySubTab) this.ceremonySubTab='rundown';
     const data=this.getCeremonyData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
@@ -9176,17 +9211,16 @@ class ScoutEventApp{
       fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Crisis',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
     }
   }
-  renderCrisisModule(){
+  renderCrisisModule(box){
     this.migrateLegacySafety(); // 舊「安全及醫療」資料自動併入
-    const container=document.getElementById('module-content');
+    const container=box||document.getElementById('module-content');
     if(!this.crisisSubTab) this.crisisSubTab='docs';
     const data=this.getCrisisData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] leading-relaxed text-red-900 shadow-sm">
-          <b>⚠️ 危機處理計劃（應變指引·急救·保險·手冊）：</b>應變指引與危機手冊現已 <b>公開可看</b>（緊急時任何人可查閱），僅修改/更新需副主席以上登入。已更新：活動日期 <b>2026 年 10 月 4 日</b>、危機應變小組成員（按 2026 組織架構圖）、緊急聯絡。原「安全及醫療」卡片已冊除，<b>保險及急救等內容已併入本卡</b>（見「應變指引 → 保險／急救」），並<b>預留專用分頁用作上傳危機處理手冊</b>。<br>
-          <b>資料來源：</b>港島童軍繽紛日危機處理計劃（組織、職責及運作）2025 版 → 2026 版。
+        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] text-red-900 shadow-sm">
+          <b>危機處理：</b>應變指引、急救、保險、危機手冊、應變小組及緊急聯絡，公開可看；僅修改需副主席以上登入。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchCrisisTab('docs')" class="tab-btn ${this.crisisSubTab==='docs'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 應變指引 (急救·保險)</button>
@@ -10868,25 +10902,38 @@ class ScoutEventApp{
       +'<button onclick="app.openModule(&quot;donations&quot;)" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整捐贈管理頁</button>'
       +'</div>';
   }
+  /* 捐贈統計／紀錄只供：服務及發展組、副主席或以上、管理層；公眾只可填表及掃碼。 */
+  canViewDonationsStats(){
+    const u=this.currentUser;
+    if(!u) return false;
+    if(this.isAdmin()) return true;
+    if((ROLE_HIERARCHY[u.role]||0)>=60) return true;
+    return normalizeGroupName(u.group_name||'').includes('服務及發展');
+  }
   renderDonationsModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
-    if(!this.donSubTab) this.donSubTab='dashboard';
+    const canStats=this.canViewDonationsStats();
+    if(!this.donSubTab) this.donSubTab=canStats?'dashboard':'entry';
+    if(!canStats && this.donSubTab!=='entry') this.donSubTab='entry';
+    if(canStats && !['dashboard','goods','food','qrcode'].includes(this.donSubTab)) this.donSubTab='dashboard';
     const data=this.getDonationsData();
     const goods=data.goods||[];
     const food=data.food||[];
-    const canManage=this.isAdmin()||this.isExecViceOrChair()||(this.currentUser?.group_name||'').includes('服務及發展');
-    const tabs=[
-      {k:'dashboard',icon:'fa-solid fa-chart-pie',label:'統計總覽'},
-      {k:'goods',icon:'fa-solid fa-box-open',label:'物品捐贈'},
-      {k:'food',icon:'fa-solid fa-apple-whole',label:'食品捐贈'},
-      {k:'qrcode',icon:'fa-solid fa-qrcode',label:'QR Code'}
-    ];
+    const canManage=canStats&&(this.isAdmin()||this.isExecViceOrChair()||(this.currentUser?.group_name||'').includes('服務及發展'));
+    const tabs=canStats
+      ? [
+          {k:'dashboard',icon:'fa-solid fa-chart-pie',label:'統計總覽'},
+          {k:'goods',icon:'fa-solid fa-box-open',label:'物品捐贈'},
+          {k:'food',icon:'fa-solid fa-apple-whole',label:'食品捐贈'},
+          {k:'qrcode',icon:'fa-solid fa-qrcode',label:'QR Code'}
+        ]
+      : [{k:'entry',icon:'fa-solid fa-pen-to-square',label:'捐贈登記'}];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchDonTab('${t.k}')" class="tab-btn ${this.donSubTab===t.k?'active':''}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
-          <b><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動：</b>物品捐贈及食品捐贈表格內建於 APP，可填表、產生 QR Code 讓捐贈人士掃碼填表，紀錄自動存入系統。服務及發展組可檢查各捐贈表及統計。
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-900">
+          <b><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動：</b>掃碼或填表登記物品／食品捐贈；統計只供服務及發展組／管理層查看。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
         <div id="don-tab-body"></div>
@@ -10895,7 +10942,41 @@ class ScoutEventApp{
     if(this.donSubTab==='dashboard') this.renderDonDashboard(body,goods,food,canManage);
     else if(this.donSubTab==='goods') this.renderDonGoods(body,goods,canManage);
     else if(this.donSubTab==='food') this.renderDonFood(body,food,canManage);
+    else if(this.donSubTab==='entry') this.renderDonPublicEntry(body);
     else this.renderDonQRCode(body);
+  }
+  renderDonPublicEntry(body){
+    const baseUrl=window.location.origin+window.location.pathname;
+    const goodsUrl=baseUrl+'#donate-goods';
+    const foodUrl=baseUrl+'#donate-food';
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="app.openGoodsDonationForm()" class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-5 text-left card-hover cursor-pointer">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-box-open"></i></div>
+            <h4 class="font-bold">物品捐贈表</h4><p class="text-[11px] text-blue-100 mt-1">填寫旅團、領袖及捐贈者名單</p>
+          </button>
+          <button onclick="app.openFoodDonationForm()" class="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-2xl p-5 text-left card-hover cursor-pointer">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-apple-whole"></i></div>
+            <h4 class="font-bold">食品捐贈表</h4><p class="text-[11px] text-amber-100 mt-1">填寫旅團、領袖及捐贈者名單</p>
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white border rounded-xl p-5 text-center space-y-3">
+            <h4 class="font-bold text-sm text-blue-700"><i class="fa-solid fa-qrcode mr-1"></i>物品捐贈 QR Code</h4>
+            <div id="qr-goods" class="flex justify-center"></div>
+            <p class="text-[10px] text-slate-500 break-all">${escapeHtml(goodsUrl)}</p>
+            <button onclick="app.downloadQR('qr-goods','物品捐贈QRCode')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 QR Code</button>
+          </div>
+          <div class="bg-white border rounded-xl p-5 text-center space-y-3">
+            <h4 class="font-bold text-sm text-amber-700"><i class="fa-solid fa-qrcode mr-1"></i>食品捐贈 QR Code</h4>
+            <div id="qr-food" class="flex justify-center"></div>
+            <p class="text-[10px] text-slate-500 break-all">${escapeHtml(foodUrl)}</p>
+            <button onclick="app.downloadQR('qr-food','食品捐贈QRCode')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 QR Code</button>
+          </div>
+        </div>
+      </div>`;
+    setTimeout(()=>{ this.generateQR('qr-goods',goodsUrl); this.generateQR('qr-food',foodUrl); },100);
   }
   switchDonTab(tab){ this.donSubTab=tab; this.renderDonationsModule(); }
   renderDonDashboard(body,goods,food,canManage){
