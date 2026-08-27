@@ -299,6 +299,19 @@ Object.assign(ScoutEventApp.prototype,{
     const fin=this.getFinanceData();
     const budgets=fin.group_itemized_budgets||[];
     const income=fin.income||[];
+    // 排序：有 2026 預算（項目預算>0）的組別在前；只有 2025 紀錄（2026 全空）的組別排最後
+    const has2026=(g)=>(g.items||[]).some(it=>(parseFloat(it.budget)||0)>0);
+    const orderedBudgets=budgets.map((g,i)=>({g,i})).sort((a,b)=>{
+      const ha=has2026(a.g)?0:1, hb=has2026(b.g)?0:1;
+      if(ha!==hb) return ha-hb;
+      return a.i-b.i;
+    }).map(x=>x.g);
+    const groupCard=(g)=>{
+      const items=g.items||[];
+      const bTotal=items.reduce((s,it)=>s+(parseFloat(it.budget)||0),0);
+      const aTotal=items.reduce((s,it)=>s+(parseFloat(it.actual)||0),0);
+      return `<div class="border rounded-xl p-4 bg-white"><div class="flex justify-between items-center mb-2 flex-wrap gap-1"><h4 class="font-bold text-sm"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i>${escapeHtml(g.group_name)}</h4><span class="flex gap-1">${has2026(g)?'':'<span class="text-[10px] bg-slate-100 text-slate-500 border px-2 py-0.5 rounded-full">僅 2025 紀錄</span>'}<span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded-full">${items.length} 項</span></span></div><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">憑單</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">預算</th><th class="px-2 py-1 text-left">實際</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${items.map(it=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(it.voucher)}</td><td class="px-2 py-1">${escapeHtml(it.item_name)}</td><td class="px-2 py-1">$${(parseFloat(it.budget)||0).toLocaleString()}</td><td class="px-2 py-1 font-bold text-rose-600">$${(parseFloat(it.actual)||0).toLocaleString()}</td><td class="px-2 py-1">${escapeHtml(it.notes||'')}</td></tr>`).join('')}<tr class="bg-amber-50 font-bold"><td class="px-2 py-1"></td><td class="px-2 py-1">小計</td><td class="px-2 py-1">$${bTotal.toLocaleString()}</td><td class="px-2 py-1 text-rose-600">$${aTotal.toLocaleString()}</td><td class="px-2 py-1"></td></tr></tbody></table></div></div>`;
+    };
     container.innerHTML=`
       <div class="space-y-4">
         <div class="flex gap-2 flex-wrap">
@@ -308,8 +321,8 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         ${(this.getFinanceData().budget_source)?this.driveSyncNotice():''}
         ${(this.getFinanceData().budget_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">📊 預算來源：「${escapeHtml(this.getFinanceData().budget_source.name||'Budget')}」（由行政組/財務更新）。建議把 xlsx 另存為原生 Google 試算表後，點「同步最新」直接讀取。</div>`:''}
-        ${budgets.map(g=>`<div class="border rounded-xl p-4 bg-white"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-sm"><i class="fa-solid fa-folder-open text-amber-600 mr-2"></i>${escapeHtml(g.group_name)}</h4><span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded-full">${(g.items||[]).length} 項</span></div><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">憑單</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">預算</th><th class="px-2 py-1 text-left">實際</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${(g.items||[]).map(it=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(it.voucher)}</td><td class="px-2 py-1">${escapeHtml(it.item_name)}</td><td class="px-2 py-1">$${it.budget}</td><td class="px-2 py-1 font-bold text-rose-600">$${it.actual}</td><td class="px-2 py-1">${escapeHtml(it.notes||'')}</td></tr>`).join('')}</tbody></table></div></div>`).join('') || '<p class="text-xs text-slate-400">暫無預算明細</p>'}
-        <div class="border rounded-xl p-4 bg-white"><h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i>收入</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1">預算</th><th class="px-2 py-1">實際</th></tr></thead><tbody class="divide-y">${income.map(i=>`<tr><td class="px-2 py-1">${escapeHtml(i.item)}</td><td class="px-2 py-1">$${i.budget}</td><td class="px-2 py-1 font-bold text-emerald-700">$${i.actual}</td></tr>`).join('')}</tbody></table></div></div>
+        ${orderedBudgets.map(groupCard).join('') || '<p class="text-xs text-slate-400">暫無預算明細</p>'}
+        ${(income.length && !budgets.some(g=>normalizeGroupName(g.group_name)==='收入'))?`<div class="border rounded-xl p-4 bg-white"><h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-coins text-emerald-600 mr-2"></i>收入</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1">預算</th><th class="px-2 py-1">實際</th></tr></thead><tbody class="divide-y">${income.map(i=>`<tr><td class="px-2 py-1">${escapeHtml(i.item)}</td><td class="px-2 py-1">$${i.budget}</td><td class="px-2 py-1 font-bold text-emerald-700">$${i.actual}</td></tr>`).join('')}</tbody></table></div></div>`:''}
       </div>
     `;
   }

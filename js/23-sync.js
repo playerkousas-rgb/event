@@ -23,7 +23,30 @@ Object.assign(ScoutEventApp.prototype,{
       const map=new Map();
       orderRows.forEach(r=>{ if(!r.order_id||deleted.has(String(r.order_id))) return; map.set(String(r.order_id),{order_id:String(r.order_id),menu_id:String(r.menu_id||''),user_id:String(r.user_id||''),user_name:String(r.user_name||''),group_name:String(r.group_name||''),selection:String(r.selection||''),quantity:Number(r.quantity)||1,remarks:String(r.remarks||''),status:String(r.status||'pending'),confirmed_by:String(r.confirmed_by||''),approved_by:String(r.approved_by||''),requester_role:String(r.requester_role||''),group_confirmation_status:String(r.group_confirmation_status||''),group_confirmed_by:String(r.group_confirmed_by||r.confirmed_by||''),group_confirmed_at:String(r.group_confirmed_at||''),created_at:String(r.created_at||''),updated_at:String(r.updated_at||'')}); });
       meals.orders=[...map.values()];
-      this.saveMealsData(meals); touched=true;
+      this.saveMealsData(meals,true); touched=true;
+    }
+    // ── 膳食菜單（v8.5 修復：菜單同樣以後端 Meals 表為準合併——之前只拉 Meal_Orders，
+    //    令其他裝置／登出後看不到菜單、無法申請 A/B/C 餐。本機新建未同步的菜單保留。）──
+    if(Array.isArray(d.Meals)){
+      const meals=this.getMealsData();
+      const deletedMenus=this.getDeletedRecordIds('Meals');
+      const menuMap=new Map((meals.menus||[]).map(m=>[String(m.menu_id),m]));
+      let menuChanged=false;
+      d.Meals.forEach(r=>{
+        if(!r.meal_id||deletedMenus.has(String(r.meal_id))) return;
+        const optsRaw=r.options;
+        const options=Array.isArray(optsRaw)?optsRaw.map(x=>String(x)):String(optsRaw||'A餐,B餐,C餐,不吃').split(',').map(x=>x.trim()).filter(Boolean);
+        const locked=(r.locked===true)||/^(true|1|是|y)$/i.test(String(r.locked??'').trim());
+        const menu={menu_id:String(r.meal_id),date:String(r.date||todayISO()),meal_type:String(r.meal_type||'午餐'),menu_desc:String(r.menu_desc||''),options,price:Number(r.price)||0,deadline:String(r.deadline||''),status:String(r.status||'open'),locked,group_name:String(r.group_name||''),created_by:String(r.created_by||r.requested_by||''),created_at:String(r.created_at||'')};
+        const prev=menuMap.get(String(r.meal_id));
+        if(!prev||prev.date!==menu.date||prev.menu_desc!==menu.menu_desc||prev.deadline!==menu.deadline||prev.locked!==menu.locked||JSON.stringify(prev.options)!==JSON.stringify(options)||prev.group_name!==menu.group_name||prev.status!==menu.status){ menuChanged=true; }
+        menuMap.set(String(r.meal_id),menu);
+      });
+      const menus=[...menuMap.values()].filter(m=>!deletedMenus.has(String(m.menu_id)));
+      if(menuChanged||menus.length!==(meals.menus||[]).length){
+        meals.menus=menus;
+        this.saveMealsData(meals,true); touched=true;
+      }
     }
     // ── 物資申請 + 車輛通行證 ──
     const hasReqRows=Array.isArray(d.Supply_Requests),hasVehRows=Array.isArray(d.Vehicle_Passes);
@@ -201,7 +224,7 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="text-[11px] text-slate-500 mt-1">日期: ${escapeHtml(menu.date)} | 截止: ${escapeHtml(deadlineText)} ${deadlinePassed?'(已過)':''} | 組別: ${escapeHtml(menu.group_name||'全部')}</div>
           <div class="text-[11px] text-slate-600 mt-1">選項: ${(menu.options||[]).map(o=>`<span class="bg-slate-100 border px-1.5 py-0.5 rounded-full text-[10px] mr-1">${escapeHtml(o)}</span>`).join('')}</div></div>
           <div class="flex flex-col gap-1 flex-shrink-0">
-            ${!isLocked?`<button onclick="app.openMealOrderForm('${menu.menu_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">登入後填寫訂餐</button>`:''}
+            ${!isLocked?`<button onclick="app.openMealOrderForm('${menu.menu_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">填寫訂餐（無需登入）</button>`:''}
             ${canManage?`<button onclick="app.openMealMenuForm('${menu.menu_id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️ 編輯</button>`:''}
             ${canManage?`<button onclick="app.toggleMealLock('${menu.menu_id}')" class="bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-xl text-[10px]">${menu.locked?'🔓 解鎖':'🔒 鎖定'}</button>`:''}
             ${this.isAdmin()?`<button onclick="app.deleteMealMenu('${menu.menu_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}
@@ -439,6 +462,7 @@ Object.assign(ScoutEventApp.prototype,{
     data.menus=data.menus.filter(m=>m.menu_id!==menuId);
     data.orders=data.orders.filter(o=>o.menu_id!==menuId);
     this.saveMealsData(data);
+    this.deleteGasRecord('Meals',menuId);
     showToast('已刪除菜單','warning');
     this.refreshMealsViews();
   }
