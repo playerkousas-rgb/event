@@ -284,4 +284,45 @@ ok(!allItems.some(x => /^(總收入|總支出|剩餘|備用支出)/.test(x)), '�
 const game = budget.by['主題節目組'].find(i => i.item_name === '節目／攤位遊戲');
 ok(game && game.notes.includes('ISD2025實際: 13,872.53'), '⑥ 項目備註應帶 ISD2025 實際數');
 
+/* ---------- ④ 行政組／協調組專屬模組（臨時版保持）亦要有 前往申請中心＋我的監察 ---------- */
+const coordBtns = vm.runInContext(`
+  (function(){
+    const a = globalThis.__app;
+    delete a.renderModuleContent; // 還原真 dispatch，實測兩個專屬模組
+    a.getSuppliesData = () => ({ inventory: [], requests: [], booth_requests: [], vehicle_passes: [] });
+    a.getMealsData = () => ({ menus: [], orders: [] });
+    a.canApproveArea = () => false;
+    a.canExecuteArea = () => false;
+    a.getCoordinatorGroupData = () => ({ docs: [] });
+    a.currentUser = { role: 'chairperson', name: '朱家聰', user_id: '朱家聰', group_name: '主席及執行副主席' };
+    a.openModule('coordinator_group');
+    const h1 = document.getElementById('module-content').innerHTML;
+    const intro1 = h1.indexOf('協調組管理中心');
+    const apply1 = h1.indexOf('前往申請中心提交申請');
+    const mon1 = h1.indexOf('我的監察');
+    const tabs1 = h1.indexOf('border-b pb-3 overflow-x-auto');
+    const out1 = { hasApply: h1.includes("app.openModule('apply_hub')"), hasMonitor: h1.includes("app.openModule('my_monitor')"),
+      underIntro: intro1 < apply1 && apply1 < tabs1 && apply1 < mon1 && mon1 < tabs1 };
+    // 行政組
+    a.getAdminGroupData = () => ({ docs: [], tickets: [] });
+    a.canUploadDocument = () => false;
+    a.isAdmin = () => true;
+    a.getParticipantsData = () => [];
+    a.getFinanceData = () => ({ group_itemized_budgets: [], income: [], expenses: [], budget_source: null });
+    a.eventData['participants_source'] = null;
+    a.openModule('admin_group');
+    const h2 = document.getElementById('module-content').innerHTML;
+    const intro2 = h2.indexOf('行政組 (完全取代舊手冊行政組頁面)');
+    const apply2 = h2.indexOf('前往申請中心提交申請');
+    const mon2 = h2.indexOf('我的監察');
+    const fin2 = h2.indexOf('財務管理（行政組轄下）');
+    return { out1, out2: { hasApply: h2.includes("app.openModule('apply_hub')"), hasMonitor: h2.includes("app.openModule('my_monitor')"),
+      underIntro: intro2 < apply2 && apply2 < fin2 && apply2 < mon2 && mon2 < fin2 } };
+  })()
+`, context);
+ok(coordBtns.out1.hasApply && coordBtns.out1.hasMonitor, '④ 協調組模組應有 前往申請中心＋我的監察 掣');
+ok(coordBtns.out1.underIntro, '④ 協調組兩個掣應放喺組別介紹下（分頁之前）');
+ok(coordBtns.out2.hasApply && coordBtns.out2.hasMonitor, '④ 行政組模組應有 前往申請中心＋我的監察 掣');
+ok(coordBtns.out2.underIntro, '④ 行政組兩個掣應放喺組別介紹下（財務區之前）');
+
 console.log('V84_GROUP_CARDS_BACK_BUDGET_OK (' + n + ' checks)');

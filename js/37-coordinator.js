@@ -44,6 +44,10 @@ Object.assign(ScoutEventApp.prototype,{
           <b>🏗️ 協調組管理中心：</b>顯示目前路由交由協調組批核或執行的物資、車輛及膳食內容。實際批核組與執行／最後名單組以「批核權限表」的多選設定為準，可隨時改為一組或多組。<br>
           申請入口統一在「申請中心」（各組提交），提交後即時在此出現待批核。場地佈置圖、物資借用表格、箱頭紙及數據在「場地佈置及文件」頁。
         </div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
+          <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+        </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
         <div id="coord-tab-body"></div>
       </div>`;
