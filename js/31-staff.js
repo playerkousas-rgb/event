@@ -26,15 +26,22 @@ Object.assign(ScoutEventApp.prototype,{
         job_duties: [...(jsonStaff.job_duties||[])],
       };
       if(local){
-        const mergeUser=(baseArr,localArr,keyField)=>{
+        // v8.9：本機（含 Drive 同步結果）嘅行先按 id 對回；對唔到時改用「正規化崗位 key」再試一次，
+        // 令同一崗位係「覆蓋」種子行，而唔係當新行追加（追加＝以前 ×2 嘅根源）。
+        const mergeUser=(baseArr,localArr,keyField,keyOf)=>{
           if(!Array.isArray(localArr)) return baseArr;
           const edits=localArr.filter(x=>x&&x._userEdited);
           if(!edits.length) return baseArr;
           const out=[...baseArr];
-          edits.forEach(u=>{ const idx=out.findIndex(x=>x[keyField]===u[keyField]); if(idx>=0) out[idx]={...out[idx],...u}; else out.push(u); });
+          edits.forEach(u=>{
+            let idx=keyField?out.findIndex(x=>x[keyField]===u[keyField]):-1;
+            if(idx<0&&keyOf) idx=out.findIndex(x=>keyOf(x)===keyOf(u));
+            if(idx>=0){ const keepId=out[idx].id; out[idx]={...out[idx],...u,id:keepId||u.id}; }
+            else out.push(u);
+          });
           return out;
         };
-        raw.org_chart=mergeUser(raw.org_chart, local.org_chart, 'id');
+        raw.org_chart=mergeUser(raw.org_chart, local.org_chart, 'id', orgNodeKey);
         raw.contacts=mergeUser(raw.contacts, local.contacts, 'id');
         raw.job_duties=mergeUser(raw.job_duties, local.job_duties, 'id');
       }
@@ -47,30 +54,51 @@ Object.assign(ScoutEventApp.prototype,{
       // v8.2 層級編號更新：L1=顧問／主席／秘書處、L2=執行副主席、L3=副主席、L4=總主任、L5=主任、L6=工作人員。
       // 舊資料（顧問/主席/秘書處=L2、執行副主席=L3）自動遷移，即使本機舊快取亦會顯示新編號。
       this.migrateOrgNodeLevel(base);
-      if(/^顧問$/.test(base.title) && /[、,，/]/.test(base.names||'')){
-        String(base.names).split(/[、,，/]+/).map(s=>s.trim()).filter(Boolean).forEach((nm,k)=>orgNodes.push({...base,id:base.id+'_'+k,names:nm}));
+      if(normalizeOrgText(base.title)==='顧問' && orgNameList(base.names).length>1){   // v8.9：用正規化結果判「顧問」，Drive 版有換行／空格都照樣拆開
+        orgNameList(base.names).forEach((nm,k)=>orgNodes.push({...base,id:base.id+'_'+k,names:nm}));
       } else orgNodes.push(base);
     });
     // v8.6 去重：JSON 與本機快取是兩個來源，同一崗位可能各有一份（舊快取 id 對唔返被整份追加）。
-    // 依「組別|職位|人名」去重，只保留內容較齊的一份（有職務描述／經本機編輯者），
-    // 確保主頁部門卡片與部門管理中心的「崗位數」唔會被舊快取撐到一倍。
-    const uniqOrgNodes=[]; const orgNodeAt=new Map();
-    orgNodes.forEach(n=>{
-      const k=[n.group||'',String(n.title||'').trim(),String(n.names||'').trim()].join('|');
-      const at=orgNodeAt.get(k);
-      if(at===undefined){ orgNodeAt.set(k,uniqOrgNodes.length); uniqOrgNodes.push(n); return; }
-      const cur=uniqOrgNodes[at];
-      const better=(n._userEdited&&!cur._userEdited)||(!String(cur.desc||'').trim()&&String(n.desc||'').trim());
-      if(better) uniqOrgNodes[at]={...cur,...n,desc:n.desc||cur.desc,id:cur.id};
-    });
+    // v8.9 去重 key 改用「正規化後」的 組別|職位|人名（去換行／空格、統一半全形括號、人名拆分隔符後排序），
+    // 因為 Drive 架構圖解析出嘅同一崗位往往只係差一個換行／括號格式，舊 key 擋唔住 → 「N 崗位 · M 人」×2。
+    // 保留內容較齊嘅一份（有職務描述／經本機編輯者），id 用種子行 id 以保持穩定。
+    const uniqOrgNodes=dedupeOrgNodes(orgNodes,(n,cur)=>(n._userEdited&&!cur._userEdited)||(!String(cur.desc||'').trim()&&String(n.desc||'').trim()));
+    // v8.9 自我修正：舊版遺留嘅「重複行已寫入 localStorage」情況（例如每次 Drive 同步都整份追加），
+    // 去重後把乾淨嘅結果寫回本機快取（只刪重複行，唔改任何內容），下一次開啟就係正確數字。
+    this.healStaffOrgCache(local);
     return {
       staff_source: raw.staff_source||null,
       contact_source: raw.contact_source||this.eventData.staff?.contact_source||null,
       duties_source: raw.duties_source||this.eventData.staff?.duties_source||null,
       org_chart:uniqOrgNodes,
-      contacts:(raw.contacts||[]).map((c,i)=>{const roleTitle=c.role_title||c.role||''; const group=c.group_name||c.group||''; return {id:c.id||'contact_'+i,name:c.name||'',role_title:roleTitle,group_name:group,level:c.level||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'};}),
-      job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:normalizeGroupName(j.group||'未分組'),duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
+      // v8.9：名單／職務大綱都要去重（以前只有 org_chart 去重 → 上傳同一檔兩次就會「點入部門中心見內容 ×2」）
+      contacts:dedupeByKey((raw.contacts||[]).map((c,i)=>{const roleTitle=c.role_title||c.role||''; const group=c.group_name||c.group||''; return {id:c.id||'contact_'+i,name:c.name||'',role_title:roleTitle,group_name:group,level:c.level||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'};}),
+        contactKey,
+        (a,b)=>{ const filled=o=>['contact','email','job_desc','level','squad'].reduce((s,k)=>s+(String(o[k]||'').trim()?1:0),0); return filled(a)>filled(b); }),
+      job_duties:dropContainedDuties(dedupeByKey((raw.job_duties||[]).map((jj,i)=>({id:jj.id||'duty_'+i,group:normalizeGroupName(jj.group||'未分組'),duty:jj.duty||jj.description||'',file_name:jj.file_name||'',file_url:jj.file_url||'',updated_by:jj.updated_by||'',updated_at:jj.updated_at||''})),
+        dutyKey,
+        (a,b)=>String(a.duty||'').length>String(b.duty||'').length))
     };
+  }
+,
+  // v8.9 快取自愈：只做「刪重複行」，唔改任何內容。
+  // 舊版（v8.6 前）會將 Drive 同步結果整份追加落本機快取，令同一崗位喺 localStorage 出現兩次；
+  // 讀取時雖然已經去重（畫面正確），但快取本身仍然係脏嘅。呢度把「同一正規化 key 嘅第二份起」剔除後寫回，
+  // 冇重複時完全唔寫（避免每次 render 都改快取），下一次開 APP 就係乾淨資料。
+  healStaffOrgCache(local){
+    try{
+      if(this.isDemoEvent() || !local || !Array.isArray(local.org_chart) || !local.org_chart.length) return false;
+      const orgPruned=uniqOrgNodesBy(local.org_chart);
+      const dutyPruned=Array.isArray(local.job_duties)?dropContainedDuties(dedupeByKey(local.job_duties,dutyKey)):local.job_duties;
+      const cPruned=Array.isArray(local.contacts)?dedupeByKey(local.contacts,contactKey):local.contacts;
+      const removed=(local.org_chart.length-orgPruned.length)
+        +(Array.isArray(local.job_duties)?local.job_duties.length-(dutyPruned||[]).length:0)
+        +(Array.isArray(local.contacts)?local.contacts.length-(cPruned||[]).length:0);
+      if(!removed) return false;
+      localStorage.setItem(LS.staff(this.currentEvent?.event_id||'isd_2026'), JSON.stringify({...local, org_chart:orgPruned, job_duties:dutyPruned, contacts:cPruned}));
+      console.log('[ISD] staff 快取自愈：移除重複行 '+removed+' 行（崗位／職務大綱／名單）');
+      return true;
+    }catch(e){ return false; }
   }
 ,
   parseLevelNum(levelStr){
@@ -217,7 +245,7 @@ Object.assign(ScoutEventApp.prototype,{
             <div class="flex flex-wrap items-center gap-2">
               <b class="text-[13px]">${escapeHtml(node.title)}</b>
               <span class="text-[11px] text-slate-500">${escapeHtml(node.level||node.group||'')}</span>
-              ${(node.names||"").split(/[、,，\/]+/).map(nm=>nm.trim()).filter(Boolean).map(nm=>`<span class="bg-slate-900 text-white text-[11px] px-2 py-0.5 rounded-full font-medium">${escapeHtml(nm)}</span>`).join("")}
+              ${orgNameList(node.names).map(nm=>`<span class="bg-slate-900 text-white text-[11px] px-2 py-0.5 rounded-full font-medium">${escapeHtml(nm)}</span>`).join("")}
             </div>
             ${parentNode?`<div class="text-[10px] text-indigo-600 font-semibold mt-0.5"><i class="fa-solid fa-arrow-turn-up fa-rotate-90 mr-1"></i>上級崗位：${escapeHtml(parentNode.title)} (${escapeHtml(parentNode.names||'待定')})</div>`:''}
             <div class="text-[11px] text-slate-600 mt-1 leading-relaxed">${escapeHtml(node.desc||'暫無描述')}</div>
@@ -493,11 +521,19 @@ Object.assign(ScoutEventApp.prototype,{
         }
         if(!parsed.length){ showToast('文件無有效資料','error'); return; }
         const data=this.getStaffData();
-        if(type==='contacts'){ data.contacts=[...data.contacts,...parsed]; }
-        else if(type==='org_chart'){ data.org_chart=[...data.org_chart,...parsed]; }
-        else if(type==='job_duties'){ data.job_duties=[...data.job_duties,...parsed]; }
+        // v8.9：上傳改為「同 key 覆蓋、新 key 先追加」（upsert）。
+        // 以前係無條件 append，秘書處重送同一份檔案就會令名單／職務大綱／崗位各多一倍。
+        const keyOf=type==='contacts'?contactKey:(type==='job_duties'?dutyKey:orgNodeKey);
+        const base=type==='contacts'?data.contacts:(type==='job_duties'?data.job_duties:data.org_chart);
+        const before=(base||[]).length;
+        const merged=[...parsed,...(base||[])];
+        const uniq=type==='job_duties'?dropContainedDuties(dedupeByKey(merged,dutyKey)):(type==='org_chart'?dedupeOrgNodes(merged,null,true):dedupeByKey(merged,keyOf));
+        if(type==='contacts') data.contacts=uniq;
+        else if(type==='job_duties') data.job_duties=uniq;
+        else data.org_chart=uniq;
         this.saveStaffData(data);
-        showToast(`已從文件讀取 ${parsed.length} 筆，寫入 ${type}`,'success');
+        const added=uniq.length-before;
+        showToast(`已寫入 ${type}：更新 ${parsed.length-Math.max(0,added)} 筆、新增 ${Math.max(0,added)} 筆${added<parsed.length?'（同一崗位／同一組別內容已覆蓋舊行，唔會重複追加）':''}`,'success');
         if(type==='contacts') this.renderStaffContacts();
         else if(type==='org_chart') this.renderOrgChartTree();
         else if(type==='job_duties') this.renderStaffJobDuties();

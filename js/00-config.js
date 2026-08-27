@@ -25,6 +25,100 @@ function normalizeGroupName(value){
 
   return group;
 }
+/* ── v8.9 組織架構崗位正規化（修「部門中心 崗位／人數 ×2」復發）──────────────────
+   JSON 種子與「Drive 架構圖同步」係兩個來源，同一崗位嘅字串可以有：
+   • 換行／Tab／全形空格（Google Sheet 合併儲存格：「副主席\n（會操及典禮）」）
+   • 括號全形／半形混用（「總主任(會操)」vs「總主任（會操）」）
+   • 人名分隔符唔同（「甲 乙」／「甲、乙」／「甲/乙」）
+   v8.6 嘅去重 key 用「原文 trim()」，以上變體全部對唔返 → 同一崗位各計一次 →
+   主頁部門卡與部門管理中心嘅「N 崗位 · M 人」翻倍（人數亦因名字格式唔同而虛增）。
+   故去重／比對一律用下面嘅正規化 key（只影響比對，唔改儲存嘅原文，畫面仍顯示 Drive 版原字）。 */
+function normalizeOrgText(value){
+  return String(value||'')
+    .replace(/[\r\n\t\u3000]+/g,'')
+    .replace(/\s+/g,'')
+    .replace(/[（]/g,'(').replace(/[）]/g,')')
+    .replace(/[【]/g,'[').replace(/[】]/g,']')
+    .replace(/[：]/g,':').replace(/[；]/g,';')
+    .replace(/[，、,／]/g,'/')
+    .replace(/[\-–—_·・．.]/g,'')
+    .replace(/\(level\s*\d+\)/gi,'')
+    .toLowerCase();
+}
+// 人名欄：拆開任何分隔符（含空格／換行）、逐個正規化、排序後先做 key（順序唔同都算同一組人）
+function orgNamesKey(names){
+  return String(names||'').split(/[\r\n\t\u3000 ,，、/／;｜|]+/).map(s=>normalizeOrgText(s)).filter(Boolean).sort().join('|');
+}
+// 崗位唯一 key ＝ 組別 | 職位 | 人名（三者正規化後相同即視為同一崗位）
+function orgNodeKey(node){
+  if(!node) return '';
+  const g=normalizeOrgText(node.group||'')||(typeof node.level==='string'?normalizeOrgText(node.level.split('(')[0]):'');
+  return g+'|'+normalizeOrgText(node.title)+'|'+orgNamesKey(node.names);
+}
+// 拆人名：主頁部門卡、部門管理中心、組織架構樹形圖共用同一個口徑
+// （含換行 —— Google Sheet 儲存格常以換行分隔多人，以前只用「、/，」會把「甲\n乙」計成 1 人）
+function orgNameList(names){ return String(names||'').split(/[\r\n\t、，,/／]+/).map(x=>x.trim()).filter(Boolean); }
+// 去重（Drive 架構圖／JSON 種子／本機快取三邊共用）：
+// · key 用正規化結果，所以「換行、半全形括號、人名分隔符、多餘空格」都唔會再令同一崗位計兩次
+// · 屬空人名嘅行（懸空缺）各別計，唔會因為「未填人」而被誤刪
+// · preferFn(新行, 已存行) 決定保留邊份（預設保留先入嘅一份）
+function dedupeOrgNodes(nodes, preferFn, keepOriginal){
+  const at=new Map(), out=[], emptySeq={};
+  (nodes||[]).forEach(n=>{
+    if(!n) return;
+    let k=orgNodeKey(n);
+    if(!orgNamesKey(n.names)){ const c=emptySeq[k]||0; emptySeq[k]=c+1; k=k+'#vacancy'+c; }
+    const idx=at.get(k);
+    if(idx===undefined){ at.set(k,out.length); out.push(n); return; }
+    if(keepOriginal) return;                       // 只刪重複行，保留原物件
+    const cur=out[idx];
+    const better=!preferFn||preferFn(n,cur);
+    if(better) out[idx]={...cur,...n,desc:n.desc||cur.desc,id:cur.id};
+  });
+  return out;
+}
+// 同一次同步內嘅防呆：完全相同 key 只計一次（架構圖合併儲存格偶發重複解出）
+function uniqOrgNodesBy(nodes){ return dedupeOrgNodes(nodes, null, true); }
+// 職務大綱／聯絡名單嘅重複偵測（v8.9）：上傳同一檔兩次、或 Drive 重覆同步，
+// 都會令「點入部門管理中心後嘅內容」出現兩次（職務大綱、本組崗位清單）——舊版只喺 org_chart 去重。
+function dutyKey(d){ return normalizeOrgText(d&&d.group||'')+'|'+normalizeOrgText((d&&(d.duty||d.description))||''); }
+// 冇人名嘅聯絡列通常係「空缺」（isd_2026 有兩行「步操統籌主任」name 空白＝兩個缺），
+// 所以 name 空時回傳空字串，令去重跳過呢啲行（dedupeByKey 見 key 屬空即視為唯一）。
+function contactKey(c){
+  const nm=normalizeOrgText(c&&c.name||'');
+  if(!nm) return '';
+  return nm+'|'+normalizeOrgText((c&&(c.group_name||c.group))||'')+'|'+normalizeOrgText((c&&(c.role_title||c.role))||'');
+}
+// 通用去重：同 key 只留一份（betterFn 決定保留邊份，預設留先入嗰份）；id 一律保留舊行 id 俾快取對得返
+function dedupeByKey(list, keyOf, betterFn){
+  const at=new Map(), out=[];
+  (list||[]).forEach(x=>{
+    if(!x) return;
+    const k=keyOf(x);
+    if(!k){ out.push(x); return; }   // 無 key（例如空缺列）＝永遠視為獨立行
+    const i=at.get(k);
+    if(i===undefined){ at.set(k,out.length); out.push(x); return; }
+    const cur=out[i];
+    if(!betterFn||betterFn(x,cur)) out[i]={...cur,...x,id:cur.id};
+  });
+  return out;
+}
+// 職務大綱特例：同一組內若一份內容完全包含另一份（重送檔案最常見），只保留較齊嗰份
+function dropContainedDuties(duties){
+  const arr=(duties||[]).map(d=>d?{...d,__n:normalizeOrgText(d.duty||d.description||'')}:null).filter(Boolean);
+  return arr.filter((d,i)=>{
+    if(!d.__n) return arr.filter(x=>x!==d&&x.group===d.group).length===0;   // 冇內容嘅空行：同組有其他行就唔顯示
+    return !arr.some((x,j)=>j!==i&&x.group===d.group&&x.__n.length>d.__n.length&&x.__n.includes(d.__n));
+  }).map(({__n,...d})=>d);
+}
+// v8.9 穩定 id：由正規化 key 推出（同一崗位无论如何同步都係同一個 id），
+// 令「本機快取 ↔ JSON 種子」按 id 就對得返，唔再靠落後嘅 append（＝以前翻倍嘅根源）。
+function orgStableId(node){
+  const k=orgNodeKey(node)||('row'+Math.random());
+  let h1=0, h2=0;
+  for(let i=0;i<k.length;i++){ const c=k.charCodeAt(i); h1=(h1*31+c)>>>0; h2=(h2*17+c*7+13)>>>0; }
+  return 'org_'+h1.toString(36)+h2.toString(36);
+}
 // 2026 架構固定組別（用戶確認：不會有新組，可能有新主任）
 // 部門管理中心＝全部 10 組（含 顧問團、主席及執行副主席、秘書處，可查看/統計）
 // 開戶/登記下拉提供 8 個組別：顧問團、主席及執行副主席不設一般開戶，其職級由管理員直接處理
