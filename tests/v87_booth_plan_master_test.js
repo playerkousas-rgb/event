@@ -31,7 +31,7 @@ mock.supplies.booth_requests.forEach(r => {
 const a01 = mock.supplies.booth_requests.find(r => r.booth_code === 'A01');
 ok(a01 && a01.qty_tent === 1 && a01.qty_table === 3 && a01.qty_chair === 8 && a01.skirting_qty === 2 && a01.power_w === 500, '① A01 示範：1 帳篷 3 枱 8 椅 2 圍布 500W');
 ok(Array.isArray(isd.supplies.booth_requests) && isd.supplies.booth_requests.length === 0, '① 真實活動 isd_2026 唔放虛構計劃書（總表網格由程式內嵌）');
-ok(isd.data_version === '2026-08-28T00:00:00Z-v7', '① isd_2026 data_version 已上調 v7');
+ok(isd.data_version >= '2026-08-28T00:00:00Z-v8', '① isd_2026 data_version 已上調（v8.9）');
 
 /* ---------- vm 真渲染 harness（沿用 mock_demo_sync_test 模式） ---------- */
 const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]

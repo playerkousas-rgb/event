@@ -64,7 +64,7 @@ const rqaStart = coreSrc.indexOf('renderGroupQuickAccess(){');
 const rqaEnd = coreSrc.indexOf('openGroupManagement(groupName){');
 const rqa = coreSrc.slice(rqaStart, rqaEnd);
 ok(!rqa.includes('contacts.filter(c=>normalizeGroupName(c.group_name)===g)'), '⑤ 主頁卡片人數不應再併計舊聯絡表（顧問團 4 人 BUG）');
-ok(rqa.includes("uniqPosts.forEach(n=>{ (n.names||'')"), '⑤ 人數應只計架構圖崗位人名');
+ok(/uniqPosts\.forEach\(n=>\{\s*(orgNameList\(n\.names\)|\(n\.names\|\|''\))/.test(rqa), '⑤ 人數應只計架構圖崗位人名（v8.9 起經 orgNameList 統一拆人名）');
 
 /* ---------- ⑦ 防幽靈點擊 ---------- */
 ok(coreSrc.includes('deferredDashWrite(el,html){'), '⑦ 應有 deferredDashWrite 安全寫入');

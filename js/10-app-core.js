@@ -569,9 +569,10 @@ Object.assign(ScoutEventApp.prototype,{
       if(ra!==rb) return ra-rb;
       return String(a.title||'').localeCompare(String(b.title||''),'zh-Hant');
     });
-    const seen=new Set();
     // v8.6：去重 key 不再計 level 字串（舊快取的 level 編號格式與 JSON 可能不同，計入會令同一崗位計兩次）
-    return raw.filter(n=>{ const k=String(n.title||'').trim()+'|'+String(n.names||'').trim(); if(seen.has(k)) return false; seen.add(k); return true; });
+    // v8.9：改用正規化 key（去換行／空格、統一半全形括號、人名拆分隔符後排序）——
+    //        Drive 同步版與 JSON 種子往往只差格式，舊 key 擋唔住會令「N 崗位 · M 人」×2。
+    return dedupeOrgNodes(raw, null, true);
   }
 ,
   // 職務大綱「拆位」：一組的職務大綱常是一大段（副主席…／總主任…／主任… 連埋），
@@ -624,7 +625,7 @@ Object.assign(ScoutEventApp.prototype,{
       // （人數只計架構圖崗位上的人名；舊聯絡表「管理」分組含主席／執副主席，併入會令顧問團人數虛大，不再併計）
       const uniqPosts=this.getGroupOrgNodes(g);
       const members=new Set();
-      uniqPosts.forEach(n=>{ (n.names||'').split(/[\/、,，]/).map(s=>s.trim()).filter(Boolean).forEach(x=>members.add(x)); });
+      uniqPosts.forEach(n=>{ orgNameList(n.names).forEach(x=>members.add(x)); });
       const st=this.groupApplyStats(g);
       const cleanGroup=normalizeGroupName(g);
       const isOwn=currentGroup && cleanGroup===currentGroup;

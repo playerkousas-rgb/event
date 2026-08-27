@@ -1,0 +1,6 @@
+# 生成嘅簡報／產出物：唔入 Git（大檔會永久佔倉庫體積，deleted 亦留喺歷史）
+# 需要的話放喺 Drive／GitHub Release，唔好 commit。
+*.pptx
+*.ppt
+功能介紹_附件.zip
+ppt_build/

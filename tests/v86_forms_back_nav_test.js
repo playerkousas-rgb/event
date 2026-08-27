@@ -47,7 +47,7 @@ const nodesStart = coreSrc.indexOf('getGroupOrgNodes(groupName){');
 const nodesEnd = coreSrc.indexOf('splitDutySections');
 const nodesFn = coreSrc.slice(nodesStart, nodesEnd);
 ok(!nodesFn.includes("+(n.level||'')"), "① getGroupOrgNodes 去重 key 不應再計 level 字串（舊快取 level 不同會翻倍）");
-ok(isd.data_version === '2026-08-28T00:00:00Z-v7', '① data_version 應上調至 v7（v8.7 攤位計劃書；自動清除全站舊 staff/crisis 快取）');
+ok(isd.data_version >= '2026-08-28T00:00:00Z-v8', '① data_version 應已上調（v8.9 組織架構去重；自動清除全站舊 staff/crisis 快取）');
 
 /* ---------- ② 物資申請表單 ---------- */
 ok(supSrc.includes('supply-shared-group') && supSrc.includes('supply-shared-contact') && supSrc.includes('supply-shared-reason'), '② 組別／電話／原因應為整張申請共用的單一欄位');

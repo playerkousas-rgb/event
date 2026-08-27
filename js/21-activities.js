@@ -821,18 +821,23 @@ Object.assign(ScoutEventApp.prototype,{
       if(/^顧問$|^主席$/.test(t)) return 2;
       return 5;
     };
+    // v8.9：职位格常含換行／全形空格，而括號可能係半形「(」——先清洗一次先算組別，
+    // 否則會拆出「會操及典禮)組」呢類幽靈組別（該組喺部門管理中心會多出一張卡／數字唔啱）。
+    const cleanTitle=v=>String(v||'').replace(/[\r\n\t\u3000]+/g,'').replace(/\s+/g,'').trim();
+    const groupFromViceTitle=c=>{ const nm=cleanTitle(c).replace(/副主席[（(]?/,'').replace(/[）)]?組?$/,'').replace(/[）)]/g,''); return nm?(/組$/.test(nm)?nm:nm+'組'):'主席及執行副主席'; };
     const groupOfTitle=(t,row,rowIdx,colIdx,rows)=>{
+      t=cleanTitle(t);
       if(/執行副主席/.test(t)) return '主席及執行副主席';
-      if(/副主席/.test(t)) return t.replace(/副主席（|）/g,'').replace(/副主席/,'')+'組';
+      if(/副主席/.test(t)) return groupFromViceTitle(t);
       if(/^顧問$/.test(t)) return '顧問團';
       if(/^主席$/.test(t)) return '主席及執行副主席';
       // 1) 同一列向左找最近的 副主席（決定組別）
-      for(let k=colIdx-1;k>=0;k--){ const c=String(row[k]||'').trim(); if(/副主席/.test(c)) return c.replace(/副主席（|）/g,'').replace(/副主席/,'')+'組'; }
+      for(let k=colIdx-1;k>=0;k--){ const c=cleanTitle(row[k]); if(/副主席/.test(c)) return groupFromViceTitle(c); }
       // 2) 向上逐列找（該列或左側）最近的 副主席
-      for(let r=rowIdx-1;r>=0;r--){ const rr=rows[r]||[]; for(let k=Math.min(colIdx,rr.length-1);k>=0;k--){ const c=String(rr[k]||'').trim(); if(/副主席/.test(c)) return c.replace(/副主席（|）/g,'').replace(/副主席/,'')+'組'; } }
+      for(let r=rowIdx-1;r>=0;r--){ const rr=rows[r]||[]; for(let k=Math.min(colIdx,rr.length-1);k>=0;k--){ const c=cleanTitle(rr[k]); if(/副主席/.test(c)) return groupFromViceTitle(c); } }
       return '未分組';
     };
-    const normNames=v=>String(v||'').trim().split(/[\n\r,，、/]+/).map(s=>s.trim()).filter(Boolean).join('、');
+    const normNames=v=>orgNameList(v).join('、');
     const recs=[];
     for(let i=0;i<rows.length-1;i++){
       const row=rows[i]||[];
@@ -845,7 +850,7 @@ Object.assign(ScoutEventApp.prototype,{
       const claimed=new Set();
       for(let ti=titleCols.length-1;ti>=0;ti--){
         const j=titleCols[ti];
-        const title=String(row[j]||'').trim();
+        const title=cleanTitle(row[j]);
         const nameParts=[];
         for(let k=j;k<next.length;k++){
           if(claimed.has(k)) break;
@@ -863,17 +868,30 @@ Object.assign(ScoutEventApp.prototype,{
     // 顧問團兩人分開兩行（黃偉安、何家騏）
     const split=[];
     recs.forEach(r=>{
-      if(/^顧問$/.test(r.title||'') && /[、,，/]/.test(r.names||'')){
-        String(r.names).split(/[、,，/]+/).map(s=>s.trim()).filter(Boolean).forEach(nm=>split.push({...r, names:nm}));
+      if(/^顧問$/.test(cleanTitle(r.title)) && /[、,，/]/.test(r.names||'')){
+        orgNameList(r.names).forEach(nm=>split.push({...r, names:nm}));
       } else split.push(r);
     });
     return split;
   }
 ,
   mergeOrgChartPreserveDesc(existing, parsed){
-    const descMap={};
-    (existing||[]).forEach(n=>{ const k=(n.group||'')+'|'+(n.title||''); descMap[k]=n.desc||''; });
-    return parsed.map((p,i)=>({id:'org_'+i+'_'+Date.now(), ...p, desc:descMap[p.group+'|'+p.title]||'', parent_id:null, created_at:new Date().toISOString()}));
+    // v8.9：① id 改用「穩定 id」（由正規化 key 推出），令下一次載入按 id 直接覆蓋種子行，
+    //          唔再出現「種子 49 行 ＋ Drive 49 行」各計一次；
+    //        ② descMap 都用正規化 key（以前用原文 group|title，格式一唔同就攞唔返職務描述）；
+    //        ③ 同一次解析先自己去重（合併儲存格偶發會解出重複行）。
+    const descMap={}, idMap={};
+    (existing||[]).forEach(n=>{ const k=orgNodeKey(n); if(!descMap[k]&&n.desc) descMap[k]=n.desc; if(!idMap[k]&&n.id) idMap[k]=n.id; });
+    const rows=uniqOrgNodesBy(parsed||[]).map(p=>({
+      id:idMap[orgNodeKey(p)]||orgStableId(p), ...p, desc:descMap[orgNodeKey(p)]||'', parent_id:p.parent_id||null, created_at:p.created_at||new Date().toISOString()
+    }));
+    return rows;
+  }
+,
+  // v8.9 同步前比較：只比「正規化後嘅崗位集合」，內容冇變就唔寫快取
+  // （以前每次開 APP 都靜默同步＋整份重寫 localStorage，令 id 一直變、舊行一直留低 → 數字越滾越大）
+  orgChartSignature(rows){
+    return (rows||[]).map(n=>orgNodeKey(n)+'@'+(n.desc?'1':'0')).sort().join('#');
   }
 ,
   async syncOrgChartFromDrive(silent){
@@ -889,9 +907,11 @@ Object.assign(ScoutEventApp.prototype,{
         if(parsed.length){
           const data=this.getStaffData();
           // 保留原有職務描述，並同步更新名單（人名 → 職銜/組別）
-          data.org_chart=this.mergeOrgChartPreserveDesc(data.org_chart, parsed);
-          this.saveStaffData(data);
-          if(!silent) showToast(`已同步組織架構 ${parsed.length} 個崗位（via ${got.via}）。聯絡表獨立同步，不會被架構圖覆蓋。`,'success');
+          const merged=this.mergeOrgChartPreserveDesc(data.org_chart, parsed);
+          // 內容冇實際變化 → 唔寫後台／唔改快取（靜默同步時尤其重要），只用來重繪
+          const changed=this.orgChartSignature(merged)!==this.orgChartSignature(data.org_chart);
+          if(changed){ data.org_chart=merged; this.saveStaffData(data); }
+          if(!silent) showToast(changed?`已同步組織架構 ${merged.length} 個崗位（via ${got.via}）。聯絡表獨立同步，不會被架構圖覆蓋。`:`組織架構已係最新（${merged.length} 個崗位，冇變動）`,'success');
           this.renderOrgChartTree();
           this.renderStaffContacts();
           return;
