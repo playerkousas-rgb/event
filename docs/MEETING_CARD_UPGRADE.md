@@ -30,7 +30,7 @@
 
 ## 1. 管理員上傳議程及會議紀錄，所有籌委可觀看
 
-- **權限**：`isAdmin()` = super_admin / advisor / admin / chairperson 才可新增/編輯會議、上傳議程/紀錄
+- **權限**：`isAdmin()` = admin / chairperson / advisor 及以上 才可新增/編輯會議、上傳議程/紀錄
 - **上傳**：會議表單內
   - 議程文字 `agenda` + 議程檔案 `agenda_file` (PDF/Word/PPT/Excel/圖片) → 存為 base64 DataURL，全前端，支援下載
   - 會議紀錄文字 `minutes` + 紀錄檔案 `minutes_file`
@@ -48,7 +48,7 @@
 
 ## 3. 各組總主任上傳會員資料，管理員決定可見度
 
-- **上傳權限**：`canUploadGroup()` = general_director 及以上 (Level >=40) 包括 general_director, vice_chairperson, chairperson, admin, advisor, super_admin
+- **上傳權限**：`canUploadGroup()` = general_director 及以上 (Level >=40) 包括 general_director, vice_chairperson, chairperson, admin, advisor 及以上
 - **上傳表單** (會議詳情 → 各組會員資料 分頁)：
   - 組別 * (例如 主題節目組)
   - 標題 * (會員名單/分工表)

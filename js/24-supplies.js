@@ -572,7 +572,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async deleteSupplyRequest(requestId){
-    if(!this.isSuperAdmin()){ showToast('僅超管可永久刪除申請紀錄','error'); return; }
+    if(!this.isSuperAdmin()){ showToast('權限不足，無法永久刪除紀錄','error'); return; }
     if(!confirm('確定永久刪除此申請？APP、本機快取及後台紀錄都會刪除。')) return;
     this.markRecordDeleted('Supply_Requests',requestId);
     const data=this.getSuppliesData();

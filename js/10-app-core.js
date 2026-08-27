@@ -2,15 +2,19 @@
 class ScoutEventApp{
   // 本地資料模式 (無開關)：「模擬示範版」活動永遠是 100% 本地沙盒 (改動不會寫出後端，介紹/示範用)；未設定後端網址時整站亦以本地資料運行。正式活動在已設定 GAS 時自動連線同步，無需人手切換。
   get mockMode(){ return this.isDemoEvent() || !this.gasUrl; }
-}
-Object.assign(ScoutEventApp.prototype,{
+
+  // ⚠️ 注意：constructor 必須係 class 內部真正嘅 constructor。
+  // v-split（PR#30）曾經將佢搬去 Object.assign(ScoutEventApp.prototype,{constructor(){...}})，
+  // 咁做 prototype.constructor 只係普通屬性，new ScoutEventApp() 會行預設空 constructor：
+  // init() 永遠唔會跑 → 活動清單載入唔到（要手動按營帳圖示）、gasUrl 留空 →
+  // mockMode 永遠 true → 所有經後端驗證嘅帳戶都登入失敗、資料唔再同步後端。
   constructor(){
     this.gasUrl=localStorage.getItem(LS.gasUrl)||''; this.apiKey=localStorage.getItem(LS.apiKey)||'scout_e6451624b1f340078ec6a111';
     this.currentUser=JSON.parse(localStorage.getItem(LS.currentUser)||'null'); this.currentEvent=JSON.parse(localStorage.getItem(LS.currentEvent)||'null');
     if(this.currentUser){
       this.currentUser.group_name=normalizeGroupName(this.currentUser.group_name);
       if(this.currentUser.user_id==='exec_vp'||(this.currentUser.job_title||'').includes('執行副主席')) this.currentUser.role='executive_vice_chairperson';
-      if(this.currentUser.role!=='super_admin' && this.currentUser.user_id!=='sheep' && isLegacyLatinLogin(this.currentUser.user_id) && (this.currentUser.name||'').trim()){
+      if(this.currentUser.role!=='super_admin' && isLegacyLatinLogin(this.currentUser.user_id) && (this.currentUser.name||'').trim()){
         this.currentUser.user_id=this.currentUser.name.trim();
       }
       localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser));
@@ -20,11 +24,14 @@ Object.assign(ScoutEventApp.prototype,{
     this.systemConfig=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'global'))||'null')||{bannerText:'第4次籌備會議：2026-08-18 19:15 @ 1704室',nextMeeting:'2026-08-18 19:15',meetingLocation:'1704室',allowPublic:true,defaultPwd:'1234',meeting_folder_link:'https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM',meeting_folder_id:'13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM'};
     this.init();
   }
-,
+}
+Object.assign(ScoutEventApp.prototype,{
   async init(){
     try{const res=await fetch('/api/config').catch(()=>null); if(res&&res.ok){const j=await res.json(); if(j.success){this.apiKey=j.apiKey||this.apiKey; if(j.gasUrl) this.gasUrl=j.gasUrl;}}}catch(e){}
     if(this.currentUser) this.updateUserUI(); this.applyBannerConfig(); this.updateAdminNav();
-    if(this.currentEvent){this.showDashboard();} else this.loadEvents();
+    // 一入 APP 直接顯示「選擇活動」首頁（像 trip APP）：登入狀態保留，但每次都先見到活動可選，
+    // 唔使再按最頂營帳圖示先返到活動選擇頁。掃碼 hash（#donate-*）會喺 handleHashRoute 另行進入活動。
+    this.goHome();
     this.updateSaveBar();
     // QR Code hash routing：掃碼後自動開啟捐贈表
     this.handleHashRoute();
@@ -120,13 +127,13 @@ Object.assign(ScoutEventApp.prototype,{
   onCatSelect(catKey,val){ if(!this._catSel) this._catSel={}; this._catSel[catKey]=val; }
 ,
   addEventToCategory(catKey){
-    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可新增活動','error'); return; }
+    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可新增活動','error'); return; }
     document.getElementById('ev-category').value=catKey||'other';
     this.openEventFormModal();
   }
 ,
   deleteEvent(id){
-    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可刪除活動','error'); return; }
+    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可刪除活動','error'); return; }
     if(!confirm('確定刪除這個活動？')) return;
     this.eventsList=this.eventsList.filter(ev=>ev.event_id!==id);
     localStorage.removeItem(`event_pwd_${id}`);
@@ -136,7 +143,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openEventFormModal(isEdit=false){
-    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可管理活動','error'); return; }
+    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可管理活動','error'); return; }
     if(!isEdit){document.getElementById('event-modal-title').textContent='新增活動'; document.getElementById('ev-form-mode').value='create'; document.getElementById('ev-form-original-id').value=''; document.getElementById('ev-id').value='ev_'+Date.now().toString().slice(-6); document.getElementById('ev-category').value='isd'; document.getElementById('ev-name').value=''; document.getElementById('ev-desc').value=''; document.getElementById('ev-start').value=todayISO(); document.getElementById('ev-end').value=todayISO(); document.getElementById('ev-time').value=''; document.getElementById('ev-location').value=''; document.getElementById('ev-weather').value=''; document.getElementById('ev-news').value=''; document.getElementById('ev-status').value='upcoming';}
     else{if(!this.currentEvent) return; this.fillEventForm(this.currentEvent);}
     document.getElementById('modal-event').classList.remove('hidden');
@@ -144,9 +151,9 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   fillEventForm(ev){document.getElementById('event-modal-title').textContent='編輯活動'; document.getElementById('ev-form-mode').value='edit'; document.getElementById('ev-form-original-id').value=ev.event_id; document.getElementById('ev-id').value=ev.event_id; document.getElementById('ev-category').value=ev.category||'isd'; document.getElementById('ev-name').value=ev.event_name; document.getElementById('ev-desc').value=ev.description||''; document.getElementById('ev-start').value=ev.start_date||''; document.getElementById('ev-end').value=ev.end_date||''; document.getElementById('ev-time').value=ev.time||''; document.getElementById('ev-location').value=ev.location||''; document.getElementById('ev-weather').value=ev.weather||''; document.getElementById('ev-news').value=ev.news||''; document.getElementById('ev-status').value=ev.status||'upcoming';}
 ,
-  editEvent(id){if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可編輯活動','error'); return; } const ev=this.eventsList.find(e=>e.event_id===id); if(!ev) return; this.fillEventForm(ev); document.getElementById('modal-event').classList.remove('hidden');}
+  editEvent(id){if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可編輯活動','error'); return; } const ev=this.eventsList.find(e=>e.event_id===id); if(!ev) return; this.fillEventForm(ev); document.getElementById('modal-event').classList.remove('hidden');}
 ,
-  submitEventForm(e){e.preventDefault(); if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）或超管可管理活動','error'); return; } const mode=document.getElementById('ev-form-mode').value; const orig=document.getElementById('ev-form-original-id').value; const newEv={event_id:document.getElementById('ev-id').value.trim(),event_name:document.getElementById('ev-name').value.trim(),category:document.getElementById('ev-category').value,description:document.getElementById('ev-desc').value.trim(),start_date:document.getElementById('ev-start').value,end_date:document.getElementById('ev-end').value,time:document.getElementById('ev-time').value.trim(),location:document.getElementById('ev-location').value.trim(),weather:document.getElementById('ev-weather').value.trim(),news:document.getElementById('ev-news').value.trim(),status:document.getElementById('ev-status').value,has_password:false}; if(!newEv.event_id||!newEv.event_name) return; if(mode==='create'){if(this.eventsList.some(x=>x.event_id===newEv.event_id)){showToast('ID 已存在','error'); return;} this.eventsList.push(newEv);} else{const idx=this.eventsList.findIndex(x=>x.event_id===orig); if(idx>=0) this.eventsList[idx]=newEv; if(this.currentEvent&&this.currentEvent.event_id===orig) this.currentEvent=newEv;} localStorage.setItem(LS.events,JSON.stringify(this.eventsList)); localStorage.setItem(LS.currentEvent,JSON.stringify(newEv)); this.closeModal('modal-event'); showToast('已保存','success'); this.renderEventsGrid(); if(this.currentEvent&&this.currentEvent.event_id===newEv.event_id) this.showDashboard();}
+  submitEventForm(e){e.preventDefault(); if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可管理活動','error'); return; } const mode=document.getElementById('ev-form-mode').value; const orig=document.getElementById('ev-form-original-id').value; const newEv={event_id:document.getElementById('ev-id').value.trim(),event_name:document.getElementById('ev-name').value.trim(),category:document.getElementById('ev-category').value,description:document.getElementById('ev-desc').value.trim(),start_date:document.getElementById('ev-start').value,end_date:document.getElementById('ev-end').value,time:document.getElementById('ev-time').value.trim(),location:document.getElementById('ev-location').value.trim(),weather:document.getElementById('ev-weather').value.trim(),news:document.getElementById('ev-news').value.trim(),status:document.getElementById('ev-status').value,has_password:false}; if(!newEv.event_id||!newEv.event_name) return; if(mode==='create'){if(this.eventsList.some(x=>x.event_id===newEv.event_id)){showToast('ID 已存在','error'); return;} this.eventsList.push(newEv);} else{const idx=this.eventsList.findIndex(x=>x.event_id===orig); if(idx>=0) this.eventsList[idx]=newEv; if(this.currentEvent&&this.currentEvent.event_id===orig) this.currentEvent=newEv;} localStorage.setItem(LS.events,JSON.stringify(this.eventsList)); localStorage.setItem(LS.currentEvent,JSON.stringify(newEv)); this.closeModal('modal-event'); showToast('已保存','success'); this.renderEventsGrid(); if(this.currentEvent&&this.currentEvent.event_id===newEv.event_id) this.showDashboard();}
 ,
   accessEvent(id){this.pendingEventId=id; this.verifyAndEnterEvent(id);}
 ,
@@ -189,7 +196,7 @@ Object.assign(ScoutEventApp.prototype,{
   // 是否「模擬示範」活動：所有假資料僅在模擬示範活動顯示，真實活動(ISD等)則為預留版位(空白)
   isDemoEvent(){ return this.currentEvent && (this.currentEvent.event_id==='mock_demo' || this.currentEvent.category==='demo'); }
 ,
-  // 大型活動管理權限：僅管理員（地域秘書處）與超管可以新增/編輯/刪除活動
+  // 大型活動管理權限：僅管理員（地域秘書處）可以新增/編輯/刪除活動
   isEventManager(){ return ['admin','super_admin'].includes(this.currentUser?.role); }
 ,
   canSeeRoleCard(def){
@@ -325,7 +332,7 @@ Object.assign(ScoutEventApp.prototype,{
     const visibleCount=shownDefs.filter(d=>this.canSeeRoleCard(d)).length;
     if(nameEl) nameEl.textContent=user.name||'成員';
     if(roleBadge){roleBadge.textContent=ROLE_LABELS[user.role]||user.role; roleBadge.className='bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200 whitespace-nowrap';}
-    if(groupBadge){if(user.role==='super_admin'){groupBadge.textContent='系統（超管，不屬行政組）'; groupBadge.classList.remove('hidden');} else if(user.group_name){groupBadge.textContent=normalizeGroupName(user.group_name); groupBadge.classList.remove('hidden');} else groupBadge.classList.add('hidden');}
+    if(groupBadge){if(user.role==='super_admin'){groupBadge.textContent='系統管理（不屬任何組別）'; groupBadge.classList.remove('hidden');} else if(user.group_name){groupBadge.textContent=normalizeGroupName(user.group_name); groupBadge.classList.remove('hidden');} else groupBadge.classList.add('hidden');}
     if(desc) desc.textContent=`身份由管理員批核。你可看到 ${visibleCount} 張卡片，其中 ${editCount} 張可修改、其餘只讀；登出後恢復公開身份 (公開資料仍可看)。`;
     if(loginBtn) loginBtn.classList.add('hidden');
     if(logoutBtn) logoutBtn.classList.remove('hidden');

@@ -11,6 +11,8 @@
 // 確保 Google Sheet 內包含所有 30+ 份檔案的完整文本、全套詳細預算明細、完整組織名單與政策
 // ============================================================
 
+// v8.2：handleLogin 密碼 trim（手機鍵盤易加尾隨空格）。login／getEvents 回應帶 version，前端可用嚟判斷部署係咪舊版。
+const GS_VERSION = 'v8.2-2026-08-27';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -986,9 +988,9 @@ function doGet(e) {
     }
     
     if (action === 'getEvents') {
-      return jsonResponse({ success: true, data: getAllEvents() });
+      return jsonResponse({ success: true, version: GS_VERSION, data: getAllEvents() });
     } else if (action === 'getEventData') {
-      return jsonResponse({ success: true, data: getEventAllData(eventId) });
+      return jsonResponse({ success: true, version: GS_VERSION, data: getEventAllData(eventId) });
     } else {
       return jsonResponse({ success: false, error: 'Unknown action' });
     }
@@ -1007,7 +1009,7 @@ function doPost(e) {
       return jsonResponse({ success: false, error: 'Unauthorized: Invalid API Key' });
     }
     
-    if (action === 'login') return jsonResponse(handleLogin(data));
+    if (action === 'login') { const r = handleLogin(data); if (r && typeof r === 'object') r.version = GS_VERSION; return jsonResponse(r); }
     else if (action === 'verifyEventPassword') return jsonResponse(verifyEventPassword(data));
     else if (action === 'saveRecord') return jsonResponse(saveRecord(data));
     else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
@@ -1073,7 +1075,8 @@ function verifyEventPassword(data) {
 
 function handleLogin(data) {
   const loginId = String(data.user_id || '').trim();
-  const password = String(data.password == null ? '' : data.password);
+  // v8.2：密碼 trim —— 手機鍵盤／自動填寫成日加尾隨空格，個別用戶因此登入失敗
+  const password = String(data.password == null ? '' : data.password).trim();
   
   // 超管帳號：只存在本 SCRIPT，不在任何 Sheet/前端；帳號不區分大小寫，密碼區分
   if (loginId.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {

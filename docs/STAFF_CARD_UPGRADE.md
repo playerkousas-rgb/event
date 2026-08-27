@@ -56,7 +56,7 @@
 - **副主席或以上 (Level>=60)**：可在自己組別下「+ 新增崗位」或「+ 新增下屬」
   - 新增表單：組別*、職級 Level、職銜*、人名、描述、上級崗位 ID (可空，樹形關聯 parent_id)
 - **行政副主席、執行副主席、主席可修改全部**：
-  - `isExecViceOrChair()` = super_admin/admin/chairperson/advisor 或 vice_chair 在行政組
+  - `isExecViceOrChair()` = admin/chairperson/advisor 及以上，或 vice_chair 在行政組
   - 可編輯任意節點、刪除任意節點，刪除時下屬變頂級
 - **管理員**：可刪除全部
 

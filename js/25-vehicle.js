@@ -359,7 +359,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async deleteVehiclePass(passId){
-    if(!this.isSuperAdmin()){ showToast('僅超管可永久刪除車輛紀錄','error'); return; }
+    if(!this.isSuperAdmin()){ showToast('權限不足，無法永久刪除紀錄','error'); return; }
     if(!confirm('確定永久刪除此車輛通行證？APP、本機快取及後台紀錄都會刪除。')) return;
     this.markRecordDeleted('Vehicle_Passes',passId);
     const data=this.getSuppliesData();

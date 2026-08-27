@@ -41,6 +41,9 @@ Object.assign(ScoutEventApp.prototype,{
     (raw.org_chart||[]).forEach((n,i)=>{
       const group=((n.title||'').includes('執行副主席')||(n.title||'')==='主席')?'主席及執行副主席':(this.parseGroupFromLevel(n.level)||n.group||'未分組');
       const base={id:n.id||'org_'+i+'_'+Date.now(),level:n.level||'未知 (Level 3)',level_num:this.parseLevelNum(n.level),group:normalizeGroupName(group),title:n.title||'職位',names:n.names||'',desc:n.desc||'',parent_id:n.parent_id||null,created_at:n.created_at||''};
+      // v8.2 層級編號更新：L1=顧問／主席／秘書處、L2=執行副主席、L3=副主席、L4=總主任、L5=主任、L6=工作人員。
+      // 舊資料（顧問/主席/秘書處=L2、執行副主席=L3）自動遷移，即使本機舊快取亦會顯示新編號。
+      this.migrateOrgNodeLevel(base);
       if(/^顧問$/.test(base.title) && /[、,，/]/.test(base.names||'')){
         String(base.names).split(/[、,，/]+/).map(s=>s.trim()).filter(Boolean).forEach((nm,k)=>orgNodes.push({...base,id:base.id+'_'+k,names:nm}));
       } else orgNodes.push(base);
@@ -59,6 +62,22 @@ Object.assign(ScoutEventApp.prototype,{
     if(!levelStr) return 3;
     const m=String(levelStr).match(/Level\s*(\d+)/i);
     return m?parseInt(m[1]):3;
+  }
+,
+  // v8.2 層級遷移（新編號）：L1=顧問／主席／秘書處、L2=執行副主席、L3=副主席、L4=總主任、L5=主任、L6=工作人員。
+  // 只校正舊編號資料：顧問團／主席／秘書處 → L1；執行副主席 → L2；其餘照舊。
+  migrateOrgNodeLevel(node){
+    if(!node) return node;
+    const g=normalizeGroupName(node.group||'')||this.parseGroupFromLevel(node.level);
+    const t=String(node.title||'');
+    let target=null;
+    if(g==='顧問團'||t==='主席'||g==='秘書處') target=1;
+    else if(t.includes('執行副主席')) target=2;
+    if(target!==null && node.level_num!==target){
+      node.level_num=target;
+      node.level=`${g||'未分組'} (Level ${target})`;
+    }
+    return node;
   }
 ,
   parseGroupFromLevel(levelStr){
@@ -154,7 +173,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3.5 text-[11px] leading-relaxed text-indigo-950 shadow-sm">
         <div class="font-bold text-[13px] text-indigo-900 mb-1.5 flex items-center"><i class="fa-solid fa-sitemap mr-2 text-indigo-600"></i>組織架構樹形圖 (各副主席可新增下屬)</div>
         • <b>顧問團是兩人、兩行：黃偉安；何家騏</b>（審核活動目的、政策指導與主禮嘉賓確認）<br>
-        • <b>樹形圖層級：</b> L2=顧問/主席, L3=副主席層 (各副主席可新增下屬崗位及人名), L4=總主任, L5=主任, L6=工作人員<br>
+        • <b>樹形圖層級（已更新）：</b> L1=顧問／主席／秘書處, L2=執行副主席, L3=副主席層 (各副主席可新增下屬崗位及人名), L4=總主任, L5=主任, L6=工作人員<br>
         • <b>副主席權限：</b>各副主席可於自己組別下點擊「+ 新增下屬」或「+ 新增崗位」，為所屬組別新增下屬崗位及人名；行政副主席、執行副主席或主席可修改全部
       </div>
       <div class="bg-white border rounded-2xl p-4">
@@ -174,9 +193,9 @@ Object.assign(ScoutEventApp.prototype,{
         const canEdit=isAdmin||isExec||(canAddNode && isMyGroup);
         const canDelete=isAdmin||isExec||(canAddNode && isMyGroup);
         const canAddSub=isAdmin||isExec||(canAddNode && isMyGroup);
-        const levelColor={2:'bg-slate-900 text-white',3:'bg-indigo-600 text-white',4:'bg-sky-600 text-white',5:'bg-emerald-600 text-white',6:'bg-amber-600 text-white'}[node.level_num]||'bg-slate-200';
+        const levelColor={0:'bg-slate-950 text-white',1:'bg-slate-900 text-white',2:'bg-purple-700 text-white',3:'bg-indigo-600 text-white',4:'bg-sky-600 text-white',5:'bg-emerald-600 text-white',6:'bg-amber-600 text-white'}[node.level_num]||'bg-slate-200';
         const parentNode=node.parent_id?nodes.find(p=>p.id===node.parent_id):null;
-        const indentMargin=Math.max(0, (node.level_num-2)*16);
+        const indentMargin=Math.max(0, (node.level_num-1)*16);
         html+=`<div class="flex gap-2 items-start bg-white border rounded-xl p-3" style="margin-left:${indentMargin}px">
           <div class="w-10 h-10 rounded-xl ${levelColor} flex items-center justify-center text-[12px] font-bold flex-shrink-0">L${node.level_num}</div>
           <div class="flex-1 min-w-0">
@@ -198,7 +217,7 @@ Object.assign(ScoutEventApp.prototype,{
       html+=`</div></div>`;
     });
     html+=`</div></div>
-      <div class="bg-white border rounded-xl p-3 text-[11px] text-slate-500"><b>樹形圖說明：</b> L2=顧問（黃偉安／何家騏 各佔一行）/主席層, L3=副主席層 (可新增下屬), L4=總主任, L5=主任, L6=工作人員。行政副主席、執行副主席、主席可修改全部；各副主席可新增自己組別下的崗位及人名。點擊「新增下屬」可自動關聯上級崗位。</div>
+      <div class="bg-white border rounded-xl p-3 text-[11px] text-slate-500"><b>樹形圖說明（已更新編號）：</b> L1=顧問（黃偉安／何家騏 各佔一行）／主席／秘書處, L2=執行副主席, L3=副主席層 (可新增下屬), L4=總主任, L5=主任, L6=工作人員。行政副主席、執行副主席、主席可修改全部；各副主席可新增自己組別下的崗位及人名。點擊「新增下屬」可自動關聯上級崗位。</div>
     </div>`;
     container.innerHTML=html;
   }
@@ -217,7 +236,8 @@ Object.assign(ScoutEventApp.prototype,{
     const parentNode=parentId?data.org_chart.find(n=>n.id===parentId):null;
     const targetGroup=normalizeGroupName(existing?.group || (existing?this.parseGroupFromLevel(existing.level):'') || groupName || parentNode?.group || (parentNode?this.parseGroupFromLevel(parentNode.level):''));
     const groupNodes=data.org_chart.filter(n=>normalizeGroupName(n.group || this.parseGroupFromLevel(n.level))===(targetGroup||''));
-    const defaultLevel=existing?existing.level_num:(parentNode?Math.min(6, (parentNode.level_num||3)+1):4);
+    // 新編號：L1=顧問/主席/秘書處、L2=執行副主席、L3=副主席、L4=總主任、L5=主任、L6=工作人員；新增下屬預設比上級低一級
+    const defaultLevel=existing?existing.level_num:(parentNode?Math.min(6, (parentNode.level_num||2)+1):4);
     const title=existing?'編輯崗位':(parentNode?`新增下屬崗位（上級：${parentNode.title} ${parentNode.names?`— ${parentNode.names}`:''}）`:'新增崗位');
     const selParentId=existing?.parent_id||parentId||'';
 
@@ -227,7 +247,8 @@ Object.assign(ScoutEventApp.prototype,{
       <div><label class="text-[11px] font-bold">所屬組別 *</label><input id="org-group" value="${escapeHtml(targetGroup)}" placeholder="例如 主題節目組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="grid grid-cols-2 gap-3">
         <div><label class="text-[11px] font-bold">職級 Level *</label><select id="org-level-num" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">
-          <option value="2" ${defaultLevel===2?'selected':''}>Level 2 顧問/主席</option>
+          <option value="1" ${defaultLevel===1?'selected':''}>Level 1 顧問／主席／秘書處</option>
+          <option value="2" ${defaultLevel===2?'selected':''}>Level 2 執行副主席</option>
           <option value="3" ${defaultLevel===3?'selected':''}>Level 3 副主席</option>
           <option value="4" ${defaultLevel===4?'selected':''}>Level 4 總主任</option>
           <option value="5" ${defaultLevel===5?'selected':''}>Level 5 主任</option>

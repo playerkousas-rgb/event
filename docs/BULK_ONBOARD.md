@@ -1,6 +1,6 @@
 # 批量開戶 (Bulk Onboarding) - 童軍活動管理系統 v6.0
 
-> ⚠️ v7.1 起：批量開戶已由獨立「用戶·批量」卡片**併入「開戶」卡片**（開戶卡片底部的「批量開戶」區，**僅管理員/超管可見**），同頁支援下載範本 → 上傳 CSV → 預覽 → 一鍵開戶，亦可貼 JSON。「模擬示範版」活動為本地沙盒，批量開戶只寫入你的瀏覽器，不影響正式資料。
+> ⚠️ v7.1 起：批量開戶已由獨立「用戶·批量」卡片**併入「開戶」卡片**（開戶卡片底部的「批量開戶」區，**僅管理員可見**），同頁支援下載範本 → 上傳 CSV → 預覽 → 一鍵開戶，亦可貼 JSON。「模擬示範版」活動為本地沙盒，批量開戶只寫入你的瀏覽器，不影響正式資料。
 
 > 參考 scoutbadge 同一個 APP 管晒所有旅團 / 活動的批量開戶設計，實現全前端控制、手機友善、三軌並行的開戶流程。
 
@@ -42,10 +42,10 @@ user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, s
 | ymis / user_id | 必填，登入帳號＝中文姓名（例如 陳小明）；同名自動加 -2/-3 |
 | name | 必填，姓名 |
 | email | 選填，Email (登入用) |
-| role | 必填，super_admin / advisor / admin / chairperson / vice_chairperson / general_director / director / staff / public |
+| role | 必填，advisor / admin / chairperson / vice_chairperson / general_director / director / staff / public |
 | group_name | 必填，組別，例如 主題節目組（組別下拉已移除「顧問團」「主席及執行副主席」兩組） |
 
-> ⚠️ **v7.8 起**：批量 CSV／JSON 屬管理員／超管專用，可填全部職級（副主席及以上由管理員在此處理）；前端「快速批量開戶」逐行選單只提供 工作人員／主任／總主任。
+> ⚠️ **v7.8 起**：批量 CSV／JSON 屬管理員專用，可填全部職級（副主席及以上由管理員在此處理）；前端「快速批量開戶」逐行選單只提供 工作人員／主任／總主任。
 | contact | 選填，電話 |
 | password | 選填，有填則開立可登入帳號 |
 | can_tick | true/false，是否可批核/可勾選 |

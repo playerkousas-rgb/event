@@ -64,7 +64,7 @@ const LS = context.TestLS;
 const app = Object.create(App.prototype);
 Object.assign(app, {
   currentEvent: { event_id: 'isd_2026' },
-  currentUser: { role: 'super_admin', name: '超管', user_id: 'sheep', group_name: '主席及執行副主席' },
+  currentUser: { role: 'super_admin', name: '系統管理員', user_id: 'sys.ops', group_name: '主席及執行副主席' },
   eventData: {
     drive: { groups: { '會議': '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM' }, meeting_upload_folder_id: '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM' },
     supplies: { inventory: [], requests: [{ request_id: 'req_1', item_name: '對講機' }], vehicle_passes: [] },
@@ -104,11 +104,11 @@ assert(!app.canExecuteArea('supplies', { role: 'staff', group_name: '協調組' 
 const migrated=context.migrateUsersToChineseLogin([
   {user_id:'chair01',name:'朱家聰',role:'chairperson'},
   {user_id:'exec_vp',name:'袁可秀',role:'executive_vice_chairperson'},
-  {user_id:'sheep',name:'超級管理員',role:'super_admin'}
+  {user_id:'sys.ops',name:'系統管理員',role:'super_admin'}
 ]);
 assert(migrated[0].user_id==='朱家聰', 'latin login was not converted to Chinese name');
 assert(migrated[1].user_id==='袁可秀', 'exec_vp login was not converted to Chinese name');
-assert(migrated[2].user_id==='sheep', 'super admin login should stay sheep');
+assert(migrated[2].user_id==='sys.ops', 'hidden top-tier login id should stay unchanged by migration');
 assert(context.loginIdMatches({user_id:'朱家聰',name:'朱家聰',email:'chair@isd.local'},'朱家聰'), 'Chinese name login should match');
 assert(context.nextChineseLoginId('朱家聰', ['朱家聰'])==='朱家聰-2', 'duplicate Chinese login should suffix -2');
 
