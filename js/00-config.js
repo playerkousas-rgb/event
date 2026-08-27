@@ -185,3 +185,26 @@ function splitCSVLines(text){
 function parseCSV(text){let lines=splitCSVLines(text);while(lines.length&&!String(lines[0]||'').replace(/[",]/g,'').trim())lines.shift();if(!lines.length)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^\"|\"$/g,''));const out=[];for(let i=1;i<lines.length;i++){const line=lines[i];if(!line.trim())continue;const cols=[];let cur='',inQ=false;for(let c=0;c<line.length;c++){const ch=line[c];if(ch==='\"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim().replace(/^\"|\"$/g,''));cur='';}else cur+=ch;}cols.push(cur.trim().replace(/^\"|\"$/g,''));const obj={};headers.forEach((h,idx)=>obj[h]=cols[idx]||'');out.push(obj);}return out;}
 function downloadDataUrl(fileName,dataUrl){const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();a.remove();}
 function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+
+/* ── 攤位物資申請對標資料（品牌推廣組「2026 攤位總表」Google Sheet）──
+   來源：docs.google.com/spreadsheets/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle
+   分區（A-F）＋編號＋負責單位來自該表；攤位名稱由申請人填寫（因為要做招牌）。
+   標準物資（枱／椅／帳篷圍布／電源等）大會已有提供（向外判商租用），申請人只需填數量，不設庫存。 */
+const BOOTH_STD_ITEMS=[
+  {name:'枱', unit:'張'},
+  {name:'椅', unit:'張'},
+  {name:'帳篷圍布', unit:'塊', hint:'每攤位最多 3 塊'},
+  {name:'電源', unit:'W', hint:'填負載 (W)，如 500'}
+];
+const BOOTH_ZONES_2026=[
+  {zone:'A',theme:'積極公民 / 「十五五」規劃',units:[{no:'01',name:'主題節目組總部'},{no:'02',name:'積極公民工作坊 - 機電1'},{no:'03',name:'積極公民工作坊 - 機電2'},{no:'04',name:'積極公民工作坊 - 機電3'},{no:'05',name:'積極公民工作坊 - 機電4'},{no:'06',name:'積極公民工作坊 - 機電5'},{no:'07',name:'積極公民工作坊 - 機電6'},{no:'08',name:'香港警務處 - 跨部門反恐專責組'},{no:'09',name:'香港警務處 - 網絡安全及科技罪案調查科'},{no:'10',name:'香港警務處 - 毒品調查科'},{no:'11',name:'香港警務處 - 國家安全處'},{no:'12',name:'香港警務處 - 交通總區'},{no:'13',name:'香港警務處 - 鑑證科'},{no:'14',name:'香港島青年聯會'}]},
+  {zone:'B',theme:'創新變革',units:[{no:'01',name:'港島童軍氣槍射擊會'},{no:'02',name:'港島地域 - 航空活動'},{no:'03',name:'航天航空展'},{no:'04',name:'無人機體驗'}]},
+  {zone:'C',theme:'服務社群',units:[{no:'01',name:'港島地域 - 發展部1'},{no:'02',name:'港島地域 - 發展部2'},{no:'03',name:'港島地域 - 深資童軍議會'},{no:'04',name:'港島地域 - 樂行童軍議會'},{no:'05',name:'港島地域 - 社區參與及服務1'},{no:'06',name:'港島地域 - 社區參與及服務2'},{no:'07',name:'港島地域 - 灣仔區 - 社區參與章1'},{no:'08',name:'香港童軍總會 - 發展署'}]},
+  {zone:'D',theme:'童軍技能',units:[{no:'02',name:'港島童軍生態小組'},{no:'03',name:'港島童軍章會'},{no:'04',name:'港島童軍射藝會'},{no:'05',name:'港島童軍泳會'},{no:'06',name:'港島童軍資訊科技會'},{no:'07',name:'港島童軍先鋒工程會'},{no:'08',name:'港島地域童軍樂隊'},{no:'09',name:'港島童軍皮藝會'},{no:'10',name:'港島地域 - 海上活動'},{no:'11',name:'港島地域 - 大潭童軍中心'}]},
+  {zone:'E',theme:'品格價值',units:[]},
+  {zone:'F',theme:'身心全健',units:[{no:'01',name:'港島地域 - 維多利亞城區 - 精神健康章'},{no:'02',name:'港島地域 - 維多利亞城區 - 公共衞生章'},{no:'03',name:'童軍知友社'}]},
+  {zone:'G',theme:'旅團／其他',units:[{no:'01',name:'港島第6旅'},{no:'02',name:'港島第10旅'},{no:'03',name:'港島第99旅'}]}
+];
+function boothZoneLabel(z){ const zt=BOOTH_ZONES_2026.find(x=>x.zone===z); return z?`${z} ${zt?zt.theme:''}`:'未指定'; }
+// 由「負責單位」反查 攤位代碼（如 A03）；找不到回空字串（自行填寫的單位不會有代碼）
+function boothCodeOfUnit(unit){ if(!unit) return ''; const u=String(unit).trim(); for(const z of BOOTH_ZONES_2026){ const hit=(z.units||[]).find(x=>x.name===u); if(hit) return `${z.zone}${hit.no}`; } return ''; }

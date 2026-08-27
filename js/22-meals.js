@@ -9,6 +9,8 @@ Object.assign(ScoutEventApp.prototype,{
     if(!Array.isArray(data.orders)) data.orders=[];
     const deleted=this.getDeletedRecordIds('Meal_Orders');
     data.orders=data.orders.filter(o=>!deleted.has(String(o.order_id)));
+    const deletedMenus=this.getDeletedRecordIds('Meals');
+    if(Array.isArray(data.menus)) data.menus=data.menus.filter(m=>!deletedMenus.has(String(m.menu_id)));
     data.orders.forEach(o=>{ o.group_name=normalizeGroupName(o.group_name); if(!o.status) o.status='approved'; if(o.confirmed_by===undefined) o.confirmed_by=''; if(o.approved_by===undefined) o.approved_by=''; if(o.requester_role===undefined) o.requester_role=''; if(o.group_confirmation_status===undefined) o.group_confirmation_status=o.status==='group_ok'?'confirmed':''; if(o.group_confirmed_by===undefined) o.group_confirmed_by=o.confirmed_by||''; if(o.group_confirmed_at===undefined) o.group_confirmed_at=''; });
     return data;
   }
@@ -76,15 +78,15 @@ Object.assign(ScoutEventApp.prototype,{
     };
   }
 ,
-  saveMealsData(data){
+  saveMealsData(data,skipGasSync=false){
     const key=LS.meals(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
     this.eventData['meals']=data;
-    // GAS sync
-    if(!this.mockMode && this.gasUrl){
-      // Save menus to Meals sheet? For simplicity, save each menu as record
-      data.menus.forEach(m=>{
-        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Meals',record:{meal_id:m.menu_id,event_id:this.currentEvent?.event_id||'isd_2026',date:m.date,meal_type:m.meal_type,menu_desc:m.menu_desc,headcount:0,group_name:m.group_name,status:m.status,requested_by:m.created_by}})}).catch(()=>{});
+    // GAS sync（v8.5 修復：菜單以完整欄位寫入後端 Meals 表——之前漏了 options/price/deadline/locked，
+    // 令其他裝置／登出後讀不到菜單；正式活動由 getEventData 回傳 Meals 合併顯示）
+    if(!skipGasSync && !this.mockMode && this.gasUrl){
+      (data.menus||[]).forEach(m=>{
+        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Meals',record:{meal_id:m.menu_id,event_id:this.currentEvent?.event_id||'isd_2026',date:m.date,meal_type:m.meal_type,menu_desc:m.menu_desc,options:(m.options||[]).join(','),price:m.price||0,deadline:m.deadline||'',locked:!!m.locked,group_name:m.group_name||'',status:m.status||'open',created_by:m.created_by||'',requested_by:m.created_by||''}})}).catch(()=>{});
       });
     }
   }
@@ -176,7 +178,7 @@ Object.assign(ScoutEventApp.prototype,{
       const map=new Map();
       rows.forEach(r=>{ if(!r.order_id||deleted.has(String(r.order_id))) return; map.set(r.order_id,{order_id:String(r.order_id),menu_id:String(r.menu_id||''),user_id:String(r.user_id||''),user_name:String(r.user_name||''),group_name:String(r.group_name||''),selection:String(r.selection||''),quantity:Number(r.quantity)||1,remarks:String(r.remarks||''),status:String(r.status||'pending'),confirmed_by:String(r.confirmed_by||''),approved_by:String(r.approved_by||''),requester_role:String(r.requester_role||''),group_confirmation_status:String(r.group_confirmation_status||''),group_confirmed_by:String(r.group_confirmed_by||r.confirmed_by||''),group_confirmed_at:String(r.group_confirmed_at||''),created_at:String(r.created_at||''),updated_at:String(r.updated_at||'')}); });
       data.orders=[...map.values()];
-      this.saveMealsData(data);
+      this.saveMealsData(data,true);
       if(this.currentModule==='meals') this.refreshMealsViews();
     }catch(e){}
   }

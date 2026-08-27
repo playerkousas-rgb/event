@@ -218,7 +218,8 @@ Object.assign(ScoutEventApp.prototype,{
           <b>📦 物資管理升級：</b><br>
           • 所有登入成員可提交；低於總主任提交的申請先由本組總主任以上確認<br>
           • 目前由 ${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 批核／修改，批准後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行及查看最後名單<br>
-          • 表格可在 APP 內直接填寫，後台紀錄好
+          • 表格可在 APP 內直接填寫，後台紀錄好<br>
+          • <b>不設庫存表：</b>地域物資逾萬種、攤位物資向外判商租用，兩者均毋須對照庫存（原「庫存」分頁已移除）
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchSuppliesTab('my')" class="tab-btn ${this.suppliesSubTab==='my'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的申請 (${myRequests.length})</button>
@@ -226,7 +227,6 @@ Object.assign(ScoutEventApp.prototype,{
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin||isCoordinator)?`
           <button onclick="app.switchSuppliesTab('requests')" class="tab-btn ${this.suppliesSubTab==='requests'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 全部清單 (${data.requests.length})</button>
           <button onclick="app.switchSuppliesTab('pending')" class="tab-btn ${this.suppliesSubTab==='pending'?'active':''}"><i class="fa-solid fa-hourglass-half mr-1"></i> 待批核 (${pendingRequests.length})</button>
-          <button onclick="app.switchSuppliesTab('inventory')" class="tab-btn ${this.suppliesSubTab==='inventory'?'active':''}"><i class="fa-solid fa-warehouse mr-1"></i> 庫存</button>
           <button onclick="app.switchSuppliesTab('checklist')" class="tab-btn ${this.suppliesSubTab==='checklist'?'active':''}"><i class="fa-solid fa-clipboard-check mr-1"></i> 物資Check List</button>
           <button onclick="app.switchSuppliesTab('stats')" class="tab-btn ${this.suppliesSubTab==='stats'?'active':''}"><i class="fa-solid fa-chart-column mr-1"></i> 統計</button>
           <button onclick="app.switchSuppliesTab('notifications')" class="tab-btn ${this.suppliesSubTab==='notifications'?'active':''}"><i class="fa-solid fa-bell mr-1"></i> 通知</button>
@@ -235,7 +235,6 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="supplies-tab-requests" class="${this.suppliesSubTab==='requests'?'':'hidden'}"></div>
         <div id="supplies-tab-my" class="${this.suppliesSubTab==='my'?'':'hidden'}"></div>
         <div id="supplies-tab-pending" class="${this.suppliesSubTab==='pending'?'':'hidden'}"></div>
-        <div id="supplies-tab-inventory" class="${this.suppliesSubTab==='inventory'?'':'hidden'}"></div>
         <div id="supplies-tab-checklist" class="${this.suppliesSubTab==='checklist'?'':'hidden'}"></div>
         <div id="supplies-tab-notifications" class="${this.suppliesSubTab==='notifications'?'':'hidden'}"></div>
         <div id="supplies-tab-stats" class="${this.suppliesSubTab==='stats'?'':'hidden'}"></div>
@@ -247,7 +246,6 @@ Object.assign(ScoutEventApp.prototype,{
     this.renderSuppliesRequests();
     this.renderSuppliesMy();
     this.renderSuppliesPending();
-    this.renderSuppliesInventory();
     this.renderSuppliesChecklist();
     this.renderSuppliesNotifications();
     this.renderSuppliesStats();
@@ -258,8 +256,8 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.openModule('apply_hub')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">← 返回申請中心</button>
           ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button><button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位物資申請</button>`:''}
-          ${isCoordinator?`<button onclick="app.openInventoryForm()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-boxes-stacked mr-1"></i>新增總物資</button>`:''}
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isCoordinator||isAdmin)?`<button onclick="app.exportSuppliesData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}
+
           ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0])"></label>`:''}
         </div>
       `;
@@ -271,7 +269,6 @@ Object.assign(ScoutEventApp.prototype,{
     document.querySelectorAll('[id^="supplies-tab-"]').forEach(el=>el.classList.add('hidden'));
     document.getElementById('supplies-tab-'+tab)?.classList.remove('hidden');
     if(tab==='booth') this.renderSuppliesBooth();
-    if(tab==='inventory') this.renderSuppliesInventory();
     if(tab==='stats') this.renderSuppliesStats();
     document.querySelectorAll('[onclick^="app.switchSuppliesTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
@@ -354,25 +351,6 @@ Object.assign(ScoutEventApp.prototype,{
     `).join('')}</div>`;
   }
 ,
-  renderSuppliesInventory(){
-    const container=document.getElementById('supplies-tab-inventory');
-    if(!container) return;
-    const data=this.getSuppliesData();
-    // Calculate remaining
-    const inventory=data.inventory.map(it=>{
-      const allocated=data.requests.filter(r=> r.item_name===it.item_name && r.status==='approved').reduce((sum,r)=> sum + (r.qty_approved!==null?r.qty_approved:r.qty_requested),0);
-      return {...it, allocated, remaining: Math.max(0, it.total_qty - allocated)};
-    });
-    container.innerHTML=`
-      <div class="space-y-3">
-        <div class="flex gap-2 flex-wrap"><button onclick="app.openInventoryForm()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增總物資</button><button onclick="app.downloadSuppliesTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button><label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0])"></label></div>
-        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">物資名稱</th><th class="px-3 py-2 text-left">總數</th><th class="px-3 py-2 text-left">已分配</th><th class="px-3 py-2 text-left">剩餘</th><th class="px-3 py-2 text-left">單位/分類</th><th class="px-3 py-2 text-right">操作</th></tr></thead><tbody class="divide-y bg-white">${inventory.map(it=>`
-          <tr><td class="px-3 py-2 font-medium" data-label="物資">${escapeHtml(it.item_name)}</td><td class="px-3 py-2" data-label="總數">${it.total_qty}</td><td class="px-3 py-2 text-amber-700" data-label="已分配">${it.allocated}</td><td class="px-3 py-2 font-bold ${it.remaining===0?'text-rose-600':'text-emerald-700'}" data-label="剩餘">${it.remaining}</td><td class="px-3 py-2" data-label="單位">${escapeHtml(it.unit)}/${escapeHtml(it.category)}</td><td class="px-3 py-2 text-right" data-label="操作"><div class="flex gap-1 justify-end">${this.isCoordinatorViceChair()?`<button onclick="app.openInventoryForm('${it.supply_id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteInventory('${it.supply_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button>`:''}</div></td></tr>
-        `).join('') || '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-400">暫無總物資，請新增</td></tr>'}</tbody></table></div>
-      </div>
-    `;
-  }
-,
   renderSuppliesNotifications(){
     const container=document.getElementById('supplies-tab-notifications');
     if(!container) return;
@@ -414,7 +392,7 @@ Object.assign(ScoutEventApp.prototype,{
       if(r.status==='approved') byGroup[g].approvedQty += (r.qty_approved!==null?r.qty_approved:r.qty_requested)||0;
       if(r.status==='pending') byGroup[g].pendingQty += r.qty_requested||0;
     });
-    // 按物資統計 + 對照總庫存
+    // 按物資統計（物資逾萬種，不設庫存對照）
     const byItem={};
     requests.forEach(r=>{
       const it=r.item_name||'未命名';
@@ -439,14 +417,11 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請數量</th><th class="px-2 py-1 text-right">待批核</th><th class="px-2 py-1 text-right">已批核</th></tr></thead><tbody class="divide-y">${Object.keys(byGroup).sort().map(g=>{const s=byGroup[g]; return `<tr><td class="px-2 py-1 font-medium" data-label="組別">${escapeHtml(g)}</td><td class="px-2 py-1 text-right" data-label="申請筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請數量">${s.qty}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批核">${s.pendingQty}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批核">${s.approvedQty}</td></tr>`;}).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
         </div>
         <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>按物資統計（對照庫存）</h4>
-          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">物資</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請總數</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批核</th><th class="px-2 py-1 text-right">庫存總數</th><th class="px-2 py-1 text-right">剩餘</th></tr></thead><tbody class="divide-y">${Object.keys(byItem).sort().map(it=>{
+          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>按物資統計（不設庫存對照）</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">物資</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請總數</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批核</th></tr></thead><tbody class="divide-y">${Object.keys(byItem).sort().map(it=>{
             const s=byItem[it];
-            const inv=(data.inventory||[]).find(i=>i.item_name===it);
-            const total=inv?inv.total_qty:null;
-            const remain=total!=null?Math.max(0,total-(s.approved||0)):null;
-            return `<tr><td class="px-2 py-1 font-medium" data-label="物資">${escapeHtml(it)}</td><td class="px-2 py-1 text-right" data-label="筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批">${s.approved}</td><td class="px-2 py-1 text-right" data-label="庫存">${total!=null?total:'—'}</td><td class="px-2 py-1 text-right font-bold ${remain===0?'text-rose-600':(remain!=null?'text-emerald-700':'')}" data-label="剩餘">${remain!=null?remain:'—'}</td></tr>`;
-          }).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
+            return `<tr><td class="px-2 py-1 font-medium" data-label="物資">${escapeHtml(it)}</td><td class="px-2 py-1 text-right" data-label="筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批">${s.approved}</td></tr>`;
+          }).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
         </div>
         <div class="bg-white border rounded-xl p-4">
           <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-store text-orange-600 mr-2"></i>攤位物資統計</h4>
@@ -583,7 +558,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-3">
         <div class="bg-slate-50 border rounded-xl p-3 text-[11px]"><b>原申請：</b>${escapeHtml(req.item_name)} x ${req.qty_requested} ${escapeHtml(req.unit)} | 組別: ${escapeHtml(req.group_name)} | 申請人: ${escapeHtml(req.requested_by)}<br>原因: ${escapeHtml(req.reason)}</div>
         <div><label class="text-[11px] font-bold">批核數量 (可修改) *</label><input type="number" id="approve-qty" value="${req.qty_requested}" min="0" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">批核備註</label><textarea id="approve-notes" rows="2" placeholder="例如：庫存不足，只批5個，或已修改為..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea></div>
+        <div><label class="text-[11px] font-bold">批核備註</label><textarea id="approve-notes" rows="2" placeholder="例如：只批5個，或已修改為..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea></div>
         <div class="flex gap-2"><button type="button" onclick="app.approveSupplyRequest('${req.request_id}', true)" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">批准 (可含修改)</button><button type="button" onclick="app.rejectSupplyRequest('${req.request_id}')" class="flex-1 bg-rose-50 border border-rose-200 text-rose-600 py-2 rounded-xl text-xs font-bold">拒絕</button></div>
       </div>
     `;
@@ -673,65 +648,6 @@ Object.assign(ScoutEventApp.prototype,{
     if(document.getElementById('view-approvals')&&!document.getElementById('view-approvals').classList.contains('hidden')) this.renderApprovalCenter();
   }
 ,
-  openInventoryForm(supplyId=null){
-    if(!this.isCoordinatorViceChair()){ showToast(`僅物資指定批核／執行組的總主任以上可管理總物資`,'error'); return; }
-    const data=this.getSuppliesData();
-    const existing=supplyId?data.inventory.find(i=>i.supply_id===supplyId):null;
-    const title=existing?'編輯總物資':`新增總物資 (${this.approvalRouteLabel('supplies','executor_groups')})`;
-    let html=`
-      <input type="hidden" id="inv-form-mode" value="${existing?'edit':'create'}">
-      <input type="hidden" id="inv-form-id" value="${existing?.supply_id||''}">
-      <div class="grid grid-cols-2 gap-3">
-        <div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input id="inv-name" value="${escapeHtml(existing?.item_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">總數量 *</label><input type="number" id="inv-qty" value="${existing?.total_qty||''}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">單位</label><input id="inv-unit" value="${escapeHtml(existing?.unit||'個')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">分類</label><select id="inv-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="營具" ${existing?.category==='營具'?'selected':''}>營具</option><option value="通訊" ${existing?.category==='通訊'?'selected':''}>通訊</option><option value="交通" ${existing?.category==='交通'?'selected':''}>交通</option><option value="音響" ${existing?.category==='音響'?'selected':''}>音響</option><option value="文具" ${existing?.category==='文具'?'selected':''}>文具</option><option value="其他" ${existing?.category==='其他'?'selected':''}>其他</option></select></div>
-      </div>
-    `;
-    document.getElementById('record-modal-title').textContent=title;
-    document.getElementById('record-form-fields').innerHTML=html;
-    const form=document.getElementById('record-form');
-    form.onsubmit=(e)=>{ e.preventDefault(); this.submitInventoryForm(); };
-    document.getElementById('modal-record').classList.remove('hidden');
-  }
-,
-  submitInventoryForm(){
-    const mode=document.getElementById('inv-form-mode').value;
-    const id=document.getElementById('inv-form-id').value;
-    const name=document.getElementById('inv-name').value.trim();
-    const qty=parseInt(document.getElementById('inv-qty').value);
-    const unit=document.getElementById('inv-unit').value.trim()||'個';
-    const category=document.getElementById('inv-category').value;
-    if(!name||!qty){ showToast('請填寫名稱和數量','error'); return; }
-    const data=this.getSuppliesData();
-    if(mode==='edit'){
-      const idx=data.inventory.findIndex(i=>i.supply_id===id);
-      if(idx>=0) data.inventory[idx]={...data.inventory[idx], item_name:name, total_qty:qty, unit, category};
-    }else{
-      data.inventory.push({supply_id:'sup_'+Date.now(), item_name:name, total_qty:qty, unit, category, created_at:new Date().toISOString()});
-    }
-    this.saveSuppliesData(data);
-    this.closeModal('modal-record');
-    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast('總物資已保存','success');
-    this.refreshSuppliesViews();
-  }
-,
-  deleteInventory(supplyId){
-    if(!this.isCoordinatorViceChair()) return;
-    if(!confirm('確定刪除此總物資？')) return;
-    const data=this.getSuppliesData();
-    data.inventory=data.inventory.filter(i=>i.supply_id!==supplyId);
-    this.saveSuppliesData(data);
-    this.refreshSuppliesViews();
-    showToast('已刪除總物資','warning');
-  }
-,
-  downloadSuppliesTemplate(){
-    const csv='item_name,total_qty,unit,category\n對講機 Walkie-Talkie,25,部,通訊\n大型戶外帳篷 (3x3m),10,個,營具\n車輛通行證,35,張,交通\n';
-    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='supplies_inventory_template.csv'; a.click(); showToast('已下載總物資範本','success');
-  }
-,
   handleSuppliesFileUpload(file){
     if(!this.isCoordinatorViceChair()){ showToast('只供指定物資批核／執行組總主任以上批量匯入','error'); return; }
     if(!file) return;
@@ -794,52 +710,116 @@ Object.assign(ScoutEventApp.prototype,{
     const canSubmit=this.canSubmitSupply();
     const isAdmin=this.isAdmin();
     const isCoordinator=this.isCoordinatorViceChair();
-    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]"><b>攤位物資申請（與外判商租用）</b>：與「地域物資借用」分開，申請攤位所需物資（如枱、椅、布置等）。低於總主任先由本組總主任以上確認，再交批核組。</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">用途: ${escapeHtml(r.purpose||r.reason||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請</p>`}</div></div>`;
+    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]"><b>攤位物資申請（對標「2026 攤位總表」）</b>：分區／編號／負責單位按總表選擇，<b>攤位名稱由申請人填寫</b>（大會據此製作招牌）。枱、椅、帳篷圍布、電源等標準物資大會已有（向外判商租用），<b>只需填數量</b>；本項申請不設庫存。低於總主任先由本組總主任以上確認，再交批核組。</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">${r.zone||r.booth_code||r.unit_name?`攤位: <b>${escapeHtml([r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-')}</b> · 負責單位: ${escapeHtml(r.unit_name||'-')}${r.booth_name?` · 招牌名: <b>${escapeHtml(r.booth_name)}</b>`:''}`:''}</div><div class="text-[11px] text-slate-500 mt-0.5">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">需求: ${escapeHtml([r.delivery?'運送: '+r.delivery:'',r.other_need?'其他: '+r.other_need:'',r.purpose].filter(Boolean).join('；')||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請</p>`}</div></div>`;
   },
+  // 攤位物資申請表單（對標品牌推廣組「2026 攤位總表」Google Sheet）：
+  // 分區＋編號＋負責單位來自總表；攤位名稱由申請人填（做招牌）；枱／椅／帳篷圍布／電源等標準項目只需填數量；外判商租用，不設庫存。
   openBoothSupplyForm(editId=null){
     if(!this.canSubmitSupply()){ showToast('請先登入後提交','error'); this.openLoginModal(); return; }
     const data=this.getSuppliesData();
     const existing=editId?data.booth_requests.find(r=>r.request_id===editId):null;
-    const title=existing?'編輯攤位物資申請':'提交攤位物資申請';
-    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input id="booth-item-name" value="${escapeHtml(existing?.item_name||'')}" required placeholder="攤位所需物資（如枱、椅、布、燈等）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" id="booth-qty" value="${existing?.qty_requested||''}" required min="1" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">單位</label><input id="booth-unit" value="${escapeHtml(existing?.unit||'個')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div class="col-span-2"><label class="text-[11px] font-bold">用途 / 與外判商說明</label><textarea id="booth-purpose" rows="2" placeholder="說明租用用途、外判商要求等" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.purpose||existing?.reason||'')}</textarea></div><div><label class="text-[11px] font-bold">聯絡電話</label><input id="booth-contact" value="${escapeHtml(existing?.contact||'')}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">提交人</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div></div><div class="text-[10px] text-slate-500 mt-2">低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
+    const title=existing?'編輯攤位物資申請':'提交攤位物資申請（對標 2026 攤位總表）';
+    const zoneOpts=BOOTH_ZONES_2026.map(z=>`<option value="${z.zone}" ${existing?.zone===z.zone?'selected':''}>${z.zone} ${escapeHtml(z.theme)}</option>`).join('');
+    const stdRows=BOOTH_STD_ITEMS.map((it,i)=>{
+      const ex=(existing&&existing.item_name===it.name)?existing:null;
+      return `<tr><td class="border px-2 py-1.5 font-bold">${escapeHtml(it.name)}${it.hint?`<div class="text-[9.5px] text-slate-400 font-normal">${escapeHtml(it.hint)}</div>`:''}</td><td class="border px-2 py-1.5 w-28"><input type="number" id="booth-std-qty-${i}" min="0"${it.name==='帳篷圍布'?' max="3"':''} value="${ex?(ex.qty_requested||''):''}" placeholder="0" class="w-full px-2 py-1 border rounded-lg text-sm"></td><td class="border px-2 py-1.5 text-[11px] text-slate-500">${escapeHtml(it.unit)}</td></tr>`;
+    }).join('');
+    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10.5px] text-amber-900 mb-3 leading-relaxed"><b>對標「2026 攤位總表」：</b>選<b>分區＋編號＋負責單位</b>；<b>攤位名稱</b>由申請人填寫（大會據此製作招牌）。枱／椅／帳篷圍布／電源等大會已有（向外判商租用），<b>只需填數量</b>，不設庫存。</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分區 *</label><select id="booth-zone" onchange="app.renderBoothUnitOptions()" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="">請選分區</option>${zoneOpts}</select></div><div><label class="text-[11px] font-bold">攤位編號 *</label><select id="booth-no" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${Array.from({length:15},(_,i)=>String(i+1).padStart(2,'0')).map(no=>`<option value="${no}" ${existing?.booth_no===no?'selected':''}>${no}</option>`).join('')}</select></div><div class="col-span-2"><label class="text-[11px] font-bold">負責單位 *</label><div class="flex gap-2 mt-1"><select id="booth-unit-select" onchange="app.onBoothUnitChange()" class="flex-1 px-3 py-2 border rounded-xl text-sm bg-white"></select><input id="booth-unit-custom" value="${escapeHtml(existing?.unit_name||'')}" placeholder="自行輸入單位名稱" class="flex-1 px-3 py-2 border rounded-xl text-sm hidden"></div></div><div class="col-span-2"><label class="text-[11px] font-bold">攤位名稱（招牌用）*</label><input id="booth-name" value="${escapeHtml(existing?.booth_name||'')}" required placeholder="例：皮藝體驗站（做招牌用；沒有特別名稱可填跟負責單位同名）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">聯絡電話</label><input id="booth-contact" value="${escapeHtml(existing?.contact||'')}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">提交人</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div></div><div class="mt-3"><label class="text-[11px] font-bold">標準物資（大會現有·填數量即可；留空／0＝不需要）</label><div class="table-responsive mt-1"><table class="min-w-full text-xs border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1 text-left">標準項目</th><th class="border px-2 py-1 text-left">數量</th><th class="border px-2 py-1 text-left">單位</th></tr></thead><tbody>${stdRows}</tbody></table></div></div><div id="booth-extra-rows" class="space-y-2 mt-3">${(existing&&!BOOTH_STD_ITEMS.some(it=>it.name===existing.item_name))?this.boothItemRowHTML(existing):''}</div><div class="text-right mt-1"><button type="button" onclick="app.addBoothItemRow()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加其他物資（標準項以外）</button></div><div class="mt-3 space-y-2"><div><label class="text-[11px] font-bold">運送物資需求</label><textarea id="booth-delivery" rows="2" placeholder="例：需大會協助運送大型道具（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.delivery||'')}</textarea></div><div><label class="text-[11px] font-bold">其他需求</label><textarea id="booth-other" rows="2" placeholder="例：需要靠近插座位（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.other_need||'')}</textarea></div></div><div class="text-[10px] text-slate-500 mt-2">攤位物資由大會向外判商租用，<b>不設庫存</b>；低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
     document.getElementById('record-modal-title').textContent=title;
     document.getElementById('record-form-fields').innerHTML=html;
+    this.renderBoothUnitOptions(existing?.unit_name||'');
     document.getElementById('record-form').onsubmit=(e)=>{ e.preventDefault(); this.submitBoothSupplyForm(); };
     document.getElementById('modal-record').classList.remove('hidden');
+  },
+  // 依分區填入負責單位下拉（來自 BOOTH_ZONES_2026）；選「其他」改為自行輸入
+  renderBoothUnitOptions(selected=''){
+    const zoneSel=document.getElementById('booth-zone'); const wrap=document.getElementById('booth-unit-select'); const custom=document.getElementById('booth-unit-custom');
+    if(!zoneSel||!wrap) return;
+    const z=BOOTH_ZONES_2026.find(x=>x.zone===zoneSel.value);
+    const units=(z&&z.units)?z.units:[];
+    const isCustom=selected&&!units.some(x=>x.name===selected);
+    wrap.innerHTML='<option value="">請選負責單位</option>'+units.map(u=>`<option value="${escapeHtml(u.name)}" data-no="${u.no}" ${u.name===selected?'selected':''}>${escapeHtml(u.no)} ${escapeHtml(u.name)}</option>`).join('')+'<option value="__custom__" '+(isCustom?'selected':'')+'>其他（自行輸入）</option>';
+    // 選了單位後自動帶出總表上的攤位編號
+    const opt=wrap.options&&wrap.options[wrap.selectedIndex];
+    const noSel=document.getElementById('booth-no');
+    if(opt&&opt.getAttribute&&opt.getAttribute('data-no')&&noSel) noSel.value=opt.getAttribute('data-no');
+    if(custom) custom.classList.toggle('hidden',!isCustom);
+  },
+  onBoothUnitChange(){
+    const wrap=document.getElementById('booth-unit-select'); const custom=document.getElementById('booth-unit-custom');
+    if(!wrap||!custom) return;
+    custom.classList.toggle('hidden',wrap.value!=='__custom__');
+    // 選了單位後自動帶出總表上的攤位編號（選「其他」則不動）
+    const opt=wrap.options&&wrap.options[wrap.selectedIndex];
+    const noSel=document.getElementById('booth-no');
+    if(opt&&opt.getAttribute&&opt.getAttribute('data-no')&&noSel) noSel.value=opt.getAttribute('data-no');
+  },
+  boothItemRowHTML(existing=null){
+    return `<div class="booth-item-row border rounded-xl p-3 bg-slate-50 space-y-2 relative"><button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button><div class="grid grid-cols-3 gap-2"><div class="col-span-3 sm:col-span-2"><label class="text-[11px] font-bold">其他物資名稱 *</label><input class="booth-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="例：射燈、延長線、展示板" value="${escapeHtml(existing?.item_name||'')}"></div><div><label class="text-[11px] font-bold">數量 *</label><input type="number" class="booth-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1" value="${existing?.qty_requested||''}"></div><div><label class="text-[11px] font-bold">單位</label><input class="booth-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="${escapeHtml(existing?.unit||'個')}"></div></div></div>`;
+  },
+  addBoothItemRow(){
+    const container=document.getElementById('booth-extra-rows');
+    if(!container) return;
+    const tmp=document.createElement('div');
+    tmp.innerHTML=this.boothItemRowHTML();
+    container.appendChild(tmp.firstElementChild);
   },
   submitBoothSupplyForm(){
     const mode=document.getElementById('booth-form-mode').value;
     const id=document.getElementById('booth-form-id').value;
-    const item_name=document.getElementById('booth-item-name').value.trim();
-    const qty=parseInt(document.getElementById('booth-qty').value);
-    const unit=document.getElementById('booth-unit').value.trim()||'個';
+    const zone=document.getElementById('booth-zone').value;
+    const booth_no=(document.getElementById('booth-no')||{}).value||'';
+    let unit_name=document.getElementById('booth-unit-select').value;
+    if(unit_name==='__custom__') unit_name=document.getElementById('booth-unit-custom').value.trim();
+    const booth_name=document.getElementById('booth-name').value.trim();
     let group_name=document.getElementById('booth-group').value.trim();
     if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
-    const purpose=document.getElementById('booth-purpose').value.trim()||'';
     const contact=document.getElementById('booth-contact').value.trim()||'';
     const requested_by=document.getElementById('booth-requested-by').value.trim()||this.currentUser?.name||'';
-    if(!item_name||!qty||!group_name){ showToast('請填寫物資名稱、數量、組別','error'); return; }
-    if(isNaN(qty)||qty<1){ showToast('數量須大於0','error'); return; }
+    const delivery=document.getElementById('booth-delivery').value.trim()||'';
+    const other_need=document.getElementById('booth-other').value.trim()||'';
+    if(!zone||!unit_name||!booth_name||!group_name){ showToast('請填寫分區、負責單位、攤位名稱（招牌用）、組別','error'); return; }
+    // 收集項目：標準項目（枱／椅／帳篷圍布／電源）填了數量的 ＋「其他物資」列
+    const items=[];
+    BOOTH_STD_ITEMS.forEach((it,i)=>{
+      const el=document.getElementById('booth-std-qty-'+i);
+      if(!el) return;
+      const q=parseInt(el.value||'0');
+      if(!isNaN(q)&&q>0){
+        if(it.name==='帳篷圍布'&&q>3){ showToast('帳篷圍布每攤位最多 3 塊','error'); return; }
+        items.push({item_name:it.name, qty_requested:q, unit:it.unit});
+      }
+    });
+    document.querySelectorAll('#booth-extra-rows .booth-item-row').forEach(row=>{
+      const name=row.querySelector('.booth-item').value.trim();
+      const q=parseInt(row.querySelector('.booth-qty').value||'0');
+      const unit=row.querySelector('.booth-unit').value.trim()||'個';
+      if(name&&q>0) items.push({item_name:name, qty_requested:q, unit});
+    });
+    if(!items.length){ showToast('請填寫至少一項物資數量（標準項目或其他物資）','error'); return; }
     const data=this.getSuppliesData();
+    const booth_code=boothCodeOfUnit(unit_name)||(zone+booth_no);
+    const mkRec=(it)=>({request_id:'req_booth_'+Date.now()+'_'+Math.floor(Math.random()*10000),
+      event_id:this.currentEvent?.event_id||'isd_2026',
+      item_name:it.item_name, qty_requested:it.qty_requested, qty_approved:null, unit:it.unit,
+      group_name, zone, booth_no, booth_code, unit_name, booth_name, delivery, other_need, purpose:'',
+      contact, ...this.applicationConfirmationMeta(this.currentUser),
+      status:'pending', requested_by, requested_by_id:this.currentUser?.user_id||'', approved_by:'', approved_at:'', notes:'', created_at:new Date().toISOString()});
     if(mode==='edit'){
       const idx=data.booth_requests.findIndex(r=>r.request_id===id);
       if(idx>=0){
+        const it0=items[0];
         const confirmation=this.applicationConfirmationMeta(this.currentUser);
-        data.booth_requests[idx]={...data.booth_requests[idx],...confirmation,item_name,qty_requested:qty,unit,group_name,purpose,contact,requested_by,requested_by_id:this.currentUser?.user_id||'',status:'pending',approved_by:'',approved_at:''};
+        data.booth_requests[idx]={...data.booth_requests[idx],...confirmation,item_name:it0.item_name,qty_requested:it0.qty_requested,unit:it0.unit,group_name,zone,booth_no,booth_code,unit_name,booth_name,delivery,other_need,purpose:'',contact,requested_by,requested_by_id:this.currentUser?.user_id||'',status:'pending',approved_by:'',approved_at:''};
+        items.slice(1).forEach(it=>data.booth_requests.push(mkRec(it)));
       }
     }else{
-      data.booth_requests.push({
-        request_id:'req_booth_'+Date.now(),
-        event_id:this.currentEvent?.event_id||'isd_2026',
-        item_name,qty_requested:qty,qty_approved:null,unit,group_name,purpose,contact,
-        ...this.applicationConfirmationMeta(this.currentUser),
-        status:'pending',requested_by,requested_by_id:this.currentUser?.user_id||'',approved_by:'',approved_at:'',notes:'',created_at:new Date().toISOString()
-      });
+      items.forEach(it=>data.booth_requests.push(mkRec(it)));
     }
     this.saveSuppliesData(data);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast(mode==='edit'?'已更新攤位物資申請':'已提交攤位物資申請：待本組總主任確認','success');
+    showToast(mode==='edit'?'已更新攤位物資申請':`已提交攤位物資申請（${items.length} 項）：待本組總主任確認`,'success');
     this.refreshSuppliesViews();
   },
   exportBoothData(){
