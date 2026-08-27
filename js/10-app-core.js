@@ -607,9 +607,22 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('module-content');
     const staffData=this.getStaffData();
     const groupContacts=(staffData.contacts||[]).filter(c=> normalizeGroupName(c.group_name)===groupName || (c.group_name||'').includes(groupName) || groupName.includes(c.group_name||''));
-    const getLvl=(n)=>{ const m=String(n.level||'').match(/Level\s*(\d+)/i); const v=m ? parseInt(m[1]) : (n.level_num||99); return v; };
-    const rankMap={3:1,4:2,5:3}; const rankOf=(n)=>{ const v=getLvl(n); return rankMap[v]||99; };
-    const groupOrgRaw=(staffData.org_chart||[]).filter(n=> normalizeGroupName(n.group || this.parseGroupFromLevel(n.level))===groupName || (n.group||'')===groupName).sort((a,b)=>rankOf(a)-rankOf(b));
+    const getLvl=(n)=>{ const m=String(n.level||'').match(/Level\s*(\d+)/i); const v=m ? parseInt(m[1]) : (n.level_num!=null?n.level_num:99); return v; };
+    // 排序：副主席(L3) → 總主任(L4) → 主任(L5) → 其他；同級再按職銜
+    const rankOf=(n)=>{
+      const v=getLvl(n);
+      const title=String(n.title||'');
+      if(/執行副主席|主席/.test(title) && v<=2) return v;
+      if(v===3 || /副主席/.test(title)) return 3;
+      if(v===4 || /總主任/.test(title)) return 4;
+      if(v===5 || (/主任/.test(title) && !/總主任/.test(title))) return 5;
+      return v||99;
+    };
+    const groupOrgRaw=(staffData.org_chart||[]).filter(n=> normalizeGroupName(n.group || this.parseGroupFromLevel(n.level))===groupName || (n.group||'')===groupName).sort((a,b)=>{
+      const ra=rankOf(a), rb=rankOf(b);
+      if(ra!==rb) return ra-rb;
+      return String(a.title||'').localeCompare(String(b.title||''),'zh-Hant');
+    });
     const seenOrg=new Set();
     const groupOrg=groupOrgRaw.filter(n=>{ const k=(n.title||'')+'|'+(n.names||'')+'|'+(n.level||''); if(seenOrg.has(k)) return false; seenOrg.add(k); return true; });
     const duties=(staffData.job_duties||[]).filter(j=> normalizeGroupName(j.group)===groupName || (j.group||'').includes(groupName)||groupName.includes(j.group||''));
@@ -958,7 +971,8 @@ Object.assign(ScoutEventApp.prototype,{
     if(mod==='finance'){ this.renderFinanceModule(); return;}
     if(mod==='meetings'){this.renderMeetingsList(); return;}
     if(mod==='supplies'){this.renderSuppliesModule(); return;}
-    if(mod==='parking'){ this.openModule('supplies'); setTimeout(()=>this.switchSuppliesTab('vehicle'),60); return; } // 泊車證＝車輛通行證，統一在協調組
+    if(mod==='booth'){ this.renderSuppliesModule(); setTimeout(()=>{ this.switchSuppliesTab('booth'); this.openBoothSupplyForm(); },80); return; }
+    if(mod==='parking'){ this.renderParkingModule(); return; } // 獨立車輛／泊車證模組
     if(mod==='oral_quotes'){this.renderOralQuotesModule(); return;}
     if(mod==='meals'){this.renderMealsModule(); return;}
     if(mod==='activities'){this.renderActivitiesModule(); return;}

@@ -7,11 +7,13 @@ Object.assign(ScoutEventApp.prototype,{
     const local=JSON.parse(localStorage.getItem(key)||'null');
     if(local){
       if(!local.vehicle_passes) local.vehicle_passes=[];
+      if(!local.booth_requests) local.booth_requests=[];
       const deletedReq=this.getDeletedRecordIds('Supply_Requests'),deletedVeh=this.getDeletedRecordIds('Vehicle_Passes');
       local.requests=(local.requests||[]).filter(r=>!deletedReq.has(String(r.request_id)));
       local.vehicle_passes=(local.vehicle_passes||[]).filter(v=>!deletedVeh.has(String(v.pass_id)));
       local.requests.forEach(r=>{r.group_name=normalizeGroupName(r.group_name);});
       local.vehicle_passes.forEach(v=>{v.group_name=normalizeGroupName(v.group_name);});
+      local.booth_requests.forEach(r=>{r.group_name=normalizeGroupName(r.group_name);});
       return local;
     }
     const raw=this.eventData['supplies']||{inventory:[],requests:[],booth_requests:[]};
@@ -73,7 +75,29 @@ Object.assign(ScoutEventApp.prototype,{
       notes:v.notes||'',
       created_at:v.created_at||''
     })).filter(v=>!this.getDeletedRecordIds('Vehicle_Passes').has(String(v.pass_id)));
-    return {inventory, requests, vehicle_passes};
+    const booth_requests=(raw.booth_requests||[]).map((r,i)=>({
+      request_id:r.request_id||'req_booth_'+i,
+      event_id:r.event_id||this.currentEvent?.event_id||'isd_2026',
+      item_name:r.item_name||'',
+      qty_requested:parseInt(r.qty_requested||0),
+      qty_approved:r.qty_approved!==undefined&&r.qty_approved!==null?parseInt(r.qty_approved):null,
+      unit:r.unit||'個',
+      group_name:normalizeGroupName(r.group_name),
+      purpose:r.purpose||r.reason||'',
+      contact:r.contact||'',
+      status:r.status||'pending',
+      requested_by:r.requested_by||'',
+      requested_by_id:r.requested_by_id||'',
+      approved_by:r.approved_by||'',
+      approved_at:r.approved_at||'',
+      requester_role:r.requester_role||'',
+      group_confirmation_status:r.group_confirmation_status||'',
+      group_confirmed_by:r.group_confirmed_by||'',
+      group_confirmed_at:r.group_confirmed_at||'',
+      notes:r.notes||'',
+      created_at:r.created_at||''
+    }));
+    return {inventory, requests, booth_requests, vehicle_passes};
   }
 ,
   saveSuppliesData(data){
@@ -198,11 +222,12 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchSuppliesTab('my')" class="tab-btn ${this.suppliesSubTab==='my'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的申請 (${myRequests.length})</button>
+          <button onclick="app.switchSuppliesTab('booth')" class="tab-btn ${this.suppliesSubTab==='booth'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位物資 (${(data.booth_requests||[]).length})</button>
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin||isCoordinator)?`
           <button onclick="app.switchSuppliesTab('requests')" class="tab-btn ${this.suppliesSubTab==='requests'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 全部清單 (${data.requests.length})</button>
           <button onclick="app.switchSuppliesTab('pending')" class="tab-btn ${this.suppliesSubTab==='pending'?'active':''}"><i class="fa-solid fa-hourglass-half mr-1"></i> 待批核 (${pendingRequests.length})</button>
+          <button onclick="app.switchSuppliesTab('inventory')" class="tab-btn ${this.suppliesSubTab==='inventory'?'active':''}"><i class="fa-solid fa-warehouse mr-1"></i> 庫存</button>
           <button onclick="app.switchSuppliesTab('checklist')" class="tab-btn ${this.suppliesSubTab==='checklist'?'active':''}"><i class="fa-solid fa-clipboard-check mr-1"></i> 物資Check List</button>
-          <button onclick="app.switchSuppliesTab('booth')" class="tab-btn ${this.suppliesSubTab==='booth'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位物資申請 (${(data.booth_requests||[]).length})</button>
           <button onclick="app.switchSuppliesTab('stats')" class="tab-btn ${this.suppliesSubTab==='stats'?'active':''}"><i class="fa-solid fa-chart-column mr-1"></i> 統計</button>
           <button onclick="app.switchSuppliesTab('notifications')" class="tab-btn ${this.suppliesSubTab==='notifications'?'active':''}"><i class="fa-solid fa-bell mr-1"></i> 通知</button>
           `:''}
@@ -210,6 +235,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="supplies-tab-requests" class="${this.suppliesSubTab==='requests'?'':'hidden'}"></div>
         <div id="supplies-tab-my" class="${this.suppliesSubTab==='my'?'':'hidden'}"></div>
         <div id="supplies-tab-pending" class="${this.suppliesSubTab==='pending'?'':'hidden'}"></div>
+        <div id="supplies-tab-inventory" class="${this.suppliesSubTab==='inventory'?'':'hidden'}"></div>
         <div id="supplies-tab-checklist" class="${this.suppliesSubTab==='checklist'?'':'hidden'}"></div>
         <div id="supplies-tab-notifications" class="${this.suppliesSubTab==='notifications'?'':'hidden'}"></div>
         <div id="supplies-tab-stats" class="${this.suppliesSubTab==='stats'?'':'hidden'}"></div>
@@ -230,9 +256,10 @@ Object.assign(ScoutEventApp.prototype,{
     if(actionsEl){
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
-          ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button><button onclick="app.openBoothForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位物資申請</button>`:''}
+          <button onclick="app.openModule('apply_hub')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">← 返回申請中心</button>
+          ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button><button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位物資申請</button>`:''}
           ${isCoordinator?`<button onclick="app.openInventoryForm()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-boxes-stacked mr-1"></i>新增總物資</button>`:''}
-          ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies'))?`<button onclick="app.exportSuppliesData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}
+          ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isCoordinator||isAdmin)?`<button onclick="app.exportSuppliesData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}
           ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0])"></label>`:''}
         </div>
       `;
@@ -244,6 +271,8 @@ Object.assign(ScoutEventApp.prototype,{
     document.querySelectorAll('[id^="supplies-tab-"]').forEach(el=>el.classList.add('hidden'));
     document.getElementById('supplies-tab-'+tab)?.classList.remove('hidden');
     if(tab==='booth') this.renderSuppliesBooth();
+    if(tab==='inventory') this.renderSuppliesInventory();
+    if(tab==='stats') this.renderSuppliesStats();
     document.querySelectorAll('[onclick^="app.switchSuppliesTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className=t===tab?'tab-btn active':'tab-btn';
@@ -410,6 +439,31 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請數量</th><th class="px-2 py-1 text-right">待批核</th><th class="px-2 py-1 text-right">已批核</th></tr></thead><tbody class="divide-y">${Object.keys(byGroup).sort().map(g=>{const s=byGroup[g]; return `<tr><td class="px-2 py-1 font-medium" data-label="組別">${escapeHtml(g)}</td><td class="px-2 py-1 text-right" data-label="申請筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請數量">${s.qty}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批核">${s.pendingQty}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批核">${s.approvedQty}</td></tr>`;}).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
         </div>
         <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>按物資統計（對照庫存）</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">物資</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請總數</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批核</th><th class="px-2 py-1 text-right">庫存總數</th><th class="px-2 py-1 text-right">剩餘</th></tr></thead><tbody class="divide-y">${Object.keys(byItem).sort().map(it=>{
+            const s=byItem[it];
+            const inv=(data.inventory||[]).find(i=>i.item_name===it);
+            const total=inv?inv.total_qty:null;
+            const remain=total!=null?Math.max(0,total-(s.approved||0)):null;
+            return `<tr><td class="px-2 py-1 font-medium" data-label="物資">${escapeHtml(it)}</td><td class="px-2 py-1 text-right" data-label="筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批">${s.approved}</td><td class="px-2 py-1 text-right" data-label="庫存">${total!=null?total:'—'}</td><td class="px-2 py-1 text-right font-bold ${remain===0?'text-rose-600':(remain!=null?'text-emerald-700':'')}" data-label="剩餘">${remain!=null?remain:'—'}</td></tr>`;
+          }).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
+        </div>
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-store text-orange-600 mr-2"></i>攤位物資統計</h4>
+          ${(()=>{
+            const booths=data.booth_requests||[];
+            if(!booths.length) return '<p class="text-xs text-slate-400">暫無攤位物資申請</p>';
+            const byB={};
+            booths.forEach(r=>{
+              const it=r.item_name||'未命名';
+              if(!byB[it]) byB[it]={count:0,requested:0,approved:0,pending:0};
+              byB[it].count++; byB[it].requested+=r.qty_requested||0;
+              if(r.status==='approved'||r.status==='modified') byB[it].approved+=(r.qty_approved!=null?r.qty_approved:r.qty_requested)||0;
+              if(r.status==='pending') byB[it].pending+=r.qty_requested||0;
+            });
+            return `<div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位物資</th><th class="px-2 py-1 text-right">筆數</th><th class="px-2 py-1 text-right">申請</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批</th></tr></thead><tbody class="divide-y">${Object.keys(byB).sort().map(it=>{const s=byB[it]; return `<tr><td class="px-2 py-1 font-medium">${escapeHtml(it)}</td><td class="px-2 py-1 text-right">${s.count}</td><td class="px-2 py-1 text-right">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700">${s.approved}</td></tr>`;}).join('')}</tbody></table></div>`;
+          })()}
+        </div>
       </div>
     `;
   }
@@ -740,9 +794,9 @@ Object.assign(ScoutEventApp.prototype,{
     const canSubmit=this.canSubmitSupply();
     const isAdmin=this.isAdmin();
     const isCoordinator=this.isCoordinatorViceChair();
-    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]"><b>攤位物資申請（與外判商租用）</b>：與「地域物資借用」分開，申請攤位所需物資（如枱、椅、布置等）。低於總主任先由本組總主任以上確認，再交批核組。</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">用途: ${escapeHtml(r.purpose||r.reason||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請</p>`}</div></div>`;
+    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]"><b>攤位物資申請（與外判商租用）</b>：與「地域物資借用」分開，申請攤位所需物資（如枱、椅、布置等）。低於總主任先由本組總主任以上確認，再交批核組。</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">用途: ${escapeHtml(r.purpose||r.reason||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請</p>`}</div></div>`;
   },
-  openBoothForm(editId=null){
+  openBoothSupplyForm(editId=null){
     if(!this.canSubmitSupply()){ showToast('請先登入後提交','error'); this.openLoginModal(); return; }
     const data=this.getSuppliesData();
     const existing=editId?data.booth_requests.find(r=>r.request_id===editId):null;
@@ -750,10 +804,10 @@ Object.assign(ScoutEventApp.prototype,{
     let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input id="booth-item-name" value="${escapeHtml(existing?.item_name||'')}" required placeholder="攤位所需物資（如枱、椅、布、燈等）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" id="booth-qty" value="${existing?.qty_requested||''}" required min="1" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">單位</label><input id="booth-unit" value="${escapeHtml(existing?.unit||'個')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div class="col-span-2"><label class="text-[11px] font-bold">用途 / 與外判商說明</label><textarea id="booth-purpose" rows="2" placeholder="說明租用用途、外判商要求等" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.purpose||existing?.reason||'')}</textarea></div><div><label class="text-[11px] font-bold">聯絡電話</label><input id="booth-contact" value="${escapeHtml(existing?.contact||'')}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">提交人</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div></div><div class="text-[10px] text-slate-500 mt-2">低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
     document.getElementById('record-modal-title').textContent=title;
     document.getElementById('record-form-fields').innerHTML=html;
-    document.getElementById('record-form').onsubmit=(e)=>{ e.preventDefault(); this.submitBoothForm(); };
+    document.getElementById('record-form').onsubmit=(e)=>{ e.preventDefault(); this.submitBoothSupplyForm(); };
     document.getElementById('modal-record').classList.remove('hidden');
   },
-  submitBoothForm(){
+  submitBoothSupplyForm(){
     const mode=document.getElementById('booth-form-mode').value;
     const id=document.getElementById('booth-form-id').value;
     const item_name=document.getElementById('booth-item-name').value.trim();

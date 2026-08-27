@@ -262,7 +262,7 @@ Object.assign(ScoutEventApp.prototype,{
       data.vehicle_passes.push({
         pass_id:'veh_'+Date.now(),
         event_id:this.currentEvent?.event_id||'isd_2026',
-        plate,driver_name,driver_contact,vehicle_type,purpose,group_name,entry_date,exit_date,deadline,parking_location,notes,
+        plate,driver_name,driver_contact,vehicle_type,purpose,group_name,entry_date,exit_date,deadline:exit_date||entry_date,parking_location,notes,
         ...this.applicationConfirmationMeta(this.currentUser),
         status:'pending',requested_by:this.currentUser?.name||'',requested_by_id:this.currentUser?.user_id||'',approved_by:'',approved_at:'',created_at:new Date().toISOString()
       });
