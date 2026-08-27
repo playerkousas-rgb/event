@@ -11,8 +11,9 @@
 // 確保 Google Sheet 內包含所有 30+ 份檔案的完整文本、全套詳細預算明細、完整組織名單與政策
 // ============================================================
 
+// v8.3：seedInitialData／refreshApiKey 的 getUi() 包 try/catch——Apps Script 編輯器直接 Run initializeSheets 不再因無 UI 彈窗而報錯。
 // v8.2：handleLogin 密碼 trim（手機鍵盤易加尾隨空格）。login／getEvents 回應帶 version，前端可用嚟判斷部署係咪舊版。
-const GS_VERSION = 'v8.2-2026-08-27';
+const GS_VERSION = 'v8.3-2026-08-27';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -32,8 +33,13 @@ function refreshApiKey() {
   const props = PropertiesService.getScriptProperties();
   const newApiKey = 'scout_' + Utilities.getUuid().replace(/-/g, '').substring(0, 24);
   props.setProperty('API_KEY', newApiKey);
-  const ui = SpreadsheetApp.getUi();
-  if (ui) ui.alert('API Key 已刷新', '新的 API Key：\n\n' + newApiKey, ui.ButtonSet.OK);
+  // getUi() 只喺綁定 Spreadsheet 嘅 UI 環境可用；編輯器直接 Run 會 throw，必須 try/catch。
+  try {
+    const ui = SpreadsheetApp.getUi();
+    ui.alert('API Key 已刷新', '新的 API Key：\n\n' + newApiKey, ui.ButtonSet.OK);
+  } catch (uiErr) {
+    Logger.log('API Key 已刷新（standalone 無 UI）：' + newApiKey);
+  }
   return newApiKey;
 }
 
@@ -976,7 +982,15 @@ function seedInitialData() {
   // 11. Supply_Requests 是真實申請紀錄，不加入測試資料。
   // 即使超管清空工作表後再次執行 initializeSheets，也不會重新建立「周恒晉／對講機」示例。
   
-  SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 零精簡、完整文本政策、詳細預算與完整職員名單已寫入 Google Sheet。');
+  // getUi() 只喺綁定 Spreadsheet 嘅 UI 環境可用（例如由 Sheet 選單觸發）。
+  // 喺 Apps Script 編輯器直接 Run initializeSheets 時無 UI → 必須 try/catch，
+  // 否則成功寫數後會喺最後一行報「Cannot call SpreadsheetApp.getUi() from this context」，
+  // 連帶令 formatSheetsByPurpose() 被中斷（表頁顏色唔會套用）。
+  try {
+    SpreadsheetApp.getUi().alert('成功！所有 ISD 2026 零精簡、完整文本政策、詳細預算與完整職員名單已寫入 Google Sheet。');
+  } catch (uiErr) {
+    Logger.log('initializeSheets / seedInitialData 完成（standalone 編輯器執行無 UI 彈窗，屬正常）。');
+  }
 }
 
 function doGet(e) {
