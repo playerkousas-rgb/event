@@ -168,6 +168,38 @@ Object.assign(ScoutEventApp.prototype,{
     `;
   }
 ,
+  /* —— 主題節目組卡片「攤位資料（Drive）」頁籤：完整攤位資料（同場地與活動總覽「攤位總覽」，含 Drive 來源）—— */
+  renderGroupBoothDataHTML(){
+    const data=this.getActivitiesData();
+    const canUpload=this.canUploadActivity();
+    const src=data.booth_source||null;
+    const drive=this.eventData?.drive||{};
+    const groupFolder=(drive.groups||{})['節目組']||'';
+    const rows=(data.booths||[]).map(b=>`
+      <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number||'')}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name||'')}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location||'')}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name||'')}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td>${b.description?`<td class="px-2 py-1 text-[10px]" data-label="描述">${escapeHtml(b.description)}</td>`:''}${canUpload?`<td class="px-2 py-1 text-right"><div class="flex gap-1 justify-end"><button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div></td>`:''}</tr>`).join('');
+    return `<div class="space-y-3">
+      ${src?this.driveSyncNotice():''}
+      ${src?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
+        <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（DRIVE 內，內建式不用跳轉）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
+        <a href="https://drive.google.com/file/d/${escapeHtml(src.drive_file_id)}/view" target="_blank" class="text-sky-700 underline">📂 開啟 Drive 檔案</a>
+        ${groupFolder?` · <a href="https://drive.google.com/drive/folders/${escapeHtml(groupFolder)}" target="_blank" class="text-sky-700 underline">📁 節目組 Drive 資料夾</a>`:''}
+        <br>• 由<b>節目組副主席</b>負責更新；若為原生「Google 試算表」，點「同步最新」即 APP 內讀取最新內容。
+      </div>`:(groupFolder?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">攤位資料（DRIVE）：<a href="https://drive.google.com/drive/folders/${escapeHtml(groupFolder)}" target="_blank" class="text-sky-700 underline">📁 節目組 Drive 資料夾</a></div>`:'')}
+      <div class="flex flex-wrap gap-2">
+        <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
+        ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
+        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel → 寫入後端<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
+        <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
+        <button onclick="app.printCoordArea('group-booth-print','2026 攤位總表（DRIVE 攤位資料）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
+      </div>
+      <div id="group-booth-print" class="bg-white border rounded-xl p-4">
+        <h4 class="font-bold text-sm mb-3">攤位資料總表 (共 ${(data.booths||[]).length} 個攤位 · 由節目組負責更新)</h4>
+        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th>${(data.booths||[]).some(b=>b.description)?'<th class="px-2 py-1 text-left">描述</th>':''}${canUpload?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${rows||'<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請同步 Drive 或上傳總表</td></tr>'}</tbody></table></div>
+        <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。</div>
+      </div>
+    </div>`;
+  }
+,
   renderActivitiesGameCards(){
     const container=document.getElementById('activities-tab-gamecards');
     if(!container) return;

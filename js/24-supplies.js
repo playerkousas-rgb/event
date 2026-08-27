@@ -104,7 +104,23 @@ Object.assign(ScoutEventApp.prototype,{
       booth_name:r.booth_name||'',
       delivery:r.delivery||'',
       other_need:r.other_need||'',
-      created_at:r.created_at||''
+      created_at:r.created_at||'',
+      // v8.7：攤位計劃書欄位（對標主題節目組 Google Form）
+      activity_desc:r.activity_desc||'',
+      fif15_content:r.fif15_content||'',
+      qty_tent:parseInt(r.qty_tent||0),
+      qty_table:parseInt(r.qty_table||0),
+      qty_chair:parseInt(r.qty_chair||0),
+      skirting_qty:parseInt(r.skirting_qty||0),
+      power_w:parseInt(r.power_w||0),
+      other_req:r.other_req||r.other_need||'',
+      owner_name:r.owner_name||'',
+      owner_age_group:r.owner_age_group||'',
+      owner_unit:r.owner_unit||'',
+      owner_position:r.owner_position||'',
+      owner_phone:r.owner_phone||'',
+      owner_email:r.owner_email||'',
+      extra_items:Array.isArray(r.extra_items)?r.extra_items.map(it=>({item_name:it.item_name||'',qty_requested:parseInt(it.qty_requested||0),unit:it.unit||'個'})):[]
     }));
     return {inventory, requests, booth_requests, vehicle_passes};
   }
@@ -122,6 +138,10 @@ Object.assign(ScoutEventApp.prototype,{
       // Save requests
       data.requests.forEach(r=>{
         fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Supply_Requests',record:{request_id:r.request_id,event_id:r.event_id,supply_id:r.supply_id||'',item_name:r.item_name,qty_requested:r.qty_requested,qty_approved:r.qty_approved,unit:r.unit,group_name:r.group_name,reason:r.reason,date_needed:r.date_needed,contact:r.contact,status:r.status,requested_by:r.requested_by,requested_by_id:r.requested_by_id,approved_by:r.approved_by,approved_at:r.approved_at,requester_role:r.requester_role||'',group_confirmation_status:r.group_confirmation_status||'',group_confirmed_by:r.group_confirmed_by||'',group_confirmed_at:r.group_confirmed_at||'',notes:r.notes}})}).catch(()=>{});
+      });
+      // Save booth plans (v8.7 攤位計劃書)
+      (data.booth_requests||[]).forEach(r=>{
+        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Booth_Requests',record:{request_id:r.request_id,event_id:r.event_id,item_name:r.item_name,qty_requested:r.qty_requested,qty_approved:r.qty_approved,unit:r.unit,group_name:r.group_name,zone:r.zone||'',booth_no:r.booth_no||'',booth_code:r.booth_code||'',unit_name:r.unit_name||'',booth_name:r.booth_name||'',activity_desc:r.activity_desc||'',fif15_content:r.fif15_content||'',qty_tent:r.qty_tent||0,qty_table:r.qty_table||0,qty_chair:r.qty_chair||0,skirting_qty:r.skirting_qty||0,power_w:r.power_w||0,other_req:r.other_req||'',other_need:r.other_need||'',delivery:r.delivery||'',owner_name:r.owner_name||'',owner_age_group:r.owner_age_group||'',owner_unit:r.owner_unit||'',owner_position:r.owner_position||'',owner_phone:r.owner_phone||'',owner_email:r.owner_email||'',extra_items_json:JSON.stringify(r.extra_items||[]),contact:r.contact||'',status:r.status,requested_by:r.requested_by||'',requested_by_id:r.requested_by_id||'',approved_by:r.approved_by||'',approved_at:r.approved_at||'',requester_role:r.requester_role||'',group_confirmation_status:r.group_confirmation_status||'',group_confirmed_by:r.group_confirmed_by||'',group_confirmed_at:r.group_confirmed_at||'',notes:r.notes||'',created_at:r.created_at||''}})}).catch(()=>{});
       });
       // Save vehicle passes
       (data.vehicle_passes||[]).forEach(v=>{
@@ -228,7 +248,7 @@ Object.assign(ScoutEventApp.prototype,{
           • 所有登入成員可提交；低於總主任提交的申請先由本組總主任以上確認<br>
           • 目前由 ${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 批核／修改，批准後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行及查看最後名單<br>
           • 一次可申請多項物資：每項只填名稱及數量，組別／電話／原因整張申請只填一次<br>
-          • <b>與「攤位物資申請」完全獨立：</b>攤位物資（向外判商租用枱／椅／帳篷等）在另一張卡片處理，兩類申請互不混雜、互不影響<br>
+          • <b>與「攤位計劃書」完全獨立：</b>攤位嘅帳篷／摺枱／摺椅等（向外判商租用）喺獨立卡片處理（對標 2026 攤位總表＋總表匯總），兩類申請互不混雜、互不影響<br>
           • <b>不設庫存表：</b>地域物資逾萬種，毋須對照庫存（原「庫存」分頁已移除）
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
@@ -711,38 +731,337 @@ Object.assign(ScoutEventApp.prototype,{
     row.innerHTML=`<button type="button" onclick="if(document.querySelectorAll('.supply-row').length>1)this.parentElement.remove();else showToast('至少保留一項物資','warning')" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1"></div><div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="個"></div></div>`;
     container.appendChild(row);
   },
-  // ═══ 攤位物資申請：獨立模組卡片（與地域「物資申請」完全分開；v8.6 起公開——任何人無需登入可填）═══
+  // ═══ 攤位計劃書：獨立模組卡片（與地域「物資申請」完全分開；v8.6 起公開——任何人無需登入可填）═══
+  // v8.7：由「攤位物資申請」升級為「攤位計劃書」——表單對標主題節目組「港島童軍繽紛日2026 - 主題節目攤位計劃書」
+  // Google Form（攤位活動內容／「十五五」主題／帳篷／摺枱／摺椅／負責人資料），並新增「總表」頁籤：
+  // 按「2026 攤位總表」分區＋編號匯總所有計劃書——上面 TOTAL 總數（例：TOTAL 50 BOOTH 100 CHAIR），
+  // 下面每個攤位一行明細（例：其中 A01 2 BOOTH 4 CHAIR）；未提交嘅攤位總表顯示「未提交」。
+  // ═══ 攤位計劃書：獨立模組卡片（與地域「物資申請」完全分開；v8.6 起公開——任何人無需登入可填）═══
+  // v8.8：填完計劃書後資料分兩部分——
+  //   ① 本卡＝「借用統計」（像物資卡）：要借什麼（TOTAL＋每攤位＋每項）＋招牌統計＋計劃書明細（確認／批核）
+  //   ② 「執行手冊 → 攤位總表」（公開）：完整 2026 攤位總表（已聯絡/已回覆/確認出席＋負責單位＋招牌＋內容＋十五五＋物資）
+  // 主題節目組卡片另有「攤位資料(Drive)／攤位總表／借用統計」三個頁籤。
+  // ═══ 攤位計劃書：獨立模組卡片（與地域「物資申請」完全分開；v8.6 起公開——任何人無需登入可填）═══
+  // v8.8：填完計劃書後資料分兩部分——
+  //   ① 本卡＝「借用統計」（像物資卡）：要借什麼（TOTAL＋每攤位＋每項）＋招牌統計＋計劃書明細（確認／批核）
+  //   ② 「執行手冊 → 攤位總表」（公開）：完整 2026 攤位總表（已聯絡/已回覆/確認出席＋負責單位＋招牌＋內容＋十五五＋物資）
+  // 主題節目組卡片另有「攤位資料(Drive)／攤位總表／借用統計」三個頁籤。
   renderBoothModule(){
     const container=document.getElementById('module-content'); if(!container) return;
     const data=this.getSuppliesData();
-    const list=(data.booth_requests||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
-    const canSubmit=this.canSubmitBooth(); // 公開申請，唔再要求登入
+    const plans=data.booth_requests||[];
+    if(!this.boothSubTab||!['borrow','sign','list'].includes(this.boothSubTab)) this.boothSubTab='borrow';
+    const agg=this.boothPlanAggregates(plans);
     const isPublic=!this.currentUser;
     const isAdmin=this.isAdmin();
     const isCoordinator=this.isCoordinatorViceChair();
-    const pending=list.filter(r=>r.status==='pending').length;
-    const approved=list.filter(r=>r.status==='approved'||r.status==='modified').length;
+    const canExport=(isAdmin||isCoordinator);
     const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
-    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>攤位物資申請（對標「2026 攤位總表」）</b>：分區／編號／負責單位按總表選擇，<b>攤位名稱由申請人填寫</b>（大會據此製作招牌）。枱、椅、帳篷圍布、電源等標準物資大會已有（向外判商租用），<b>只需填數量</b>；本項申請不設庫存。低於總主任先由本組總主任以上確認，再交批核組。<b>與「物資申請」（地域物資借用）是兩項完全獨立的紀錄</b>，互不混雜。<b class="text-emerald-700">全公開：任何人無需登入都可填寫</b>（未登入請留姓名＋聯絡電話，方便大會回覆）。${isPublic?'申請紀錄嘅聯絡資料需登入先見到。':''}</div><div class="grid grid-cols-3 gap-2 max-w-md">${chip(list.length,'攤位申請','bg-slate-100 text-slate-700 border')}${chip(pending,'待批核','bg-amber-50 text-amber-700 border border-amber-200')}${chip(approved,'已批核','bg-emerald-50 text-emerald-700 border border-emerald-200')}</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請${isPublic?'（無需登入）':''}</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">${r.zone||r.booth_code||r.unit_name?`攤位: <b>${escapeHtml([r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-')}</b> · 負責單位: ${escapeHtml(r.unit_name||'-')}${r.booth_name?` · 招牌名: <b>${escapeHtml(r.booth_name)}</b>`:''}`:''}</div><div class="text-[11px] text-slate-500 mt-0.5">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')}${isPublic?'':` | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}`}</div><div class="text-[11px] text-slate-500">需求: ${escapeHtml([r.delivery?'運送: '+r.delivery:'',r.other_need?'其他: '+r.other_need:'',r.purpose].filter(Boolean).join('；')||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請 — 這是各攤位向大會租用枱／椅／帳篷等的獨立紀錄（與地域物資申請無關）</p>`}</div>${isPublic?'<p class="text-[10px] text-slate-400">🔒 為保障私隱，申請人姓名及聯絡電話只供登入後嘅本組／批核／執行組查看。</p>':''}</div>`;
+    const t=agg.totals;
+    const tabBtn=(id,label)=>`<button onclick="app.switchBoothTab('${id}')" class="px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap ${this.boothSubTab===id?'bg-white shadow text-slate-900':'text-slate-500'}">${label}</button>`;
+    container.innerHTML=`<div class="space-y-4">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>攤位計劃書（取代 Google Form——未登入嘅負責人直接喺呢度填寫）</b>：提交後籌辦方即得<b>兩種資料</b>——① 本卡＝<b>借用統計</b>（要借什麼：帳篷／摺枱／摺椅等＋招牌統計，像物資卡）；② <b>「執行手冊 → 攤位總表」</b>（自動填入嘅完整總表，含已聯絡／已回覆／確認出席及計劃內容；主題節目組卡片亦有）。分區／編號／負責單位按總表選擇；攤位名稱、活動內容、「十五五」主題及負責人資料由申請人填寫；帳篷（3mW x 3mD）、摺枱、摺椅只需填數量，不設庫存。<b class="text-emerald-700">全公開：任何人無需登入都可填寫</b>。${isPublic?'負責人電話／電郵需登入先見到。':''}</div>
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 max-w-2xl">${chip(t.booths,'有計劃書攤位','bg-slate-100 text-slate-700 border')}${chip(t.tent,'TOTAL 帳篷(頂)','bg-orange-50 text-orange-700 border border-orange-200')}${chip(t.table,'TOTAL 摺枱(張)','bg-sky-50 text-sky-700 border border-sky-200')}${chip(t.chair,'TOTAL 摺椅(張)','bg-emerald-50 text-emerald-700 border border-emerald-200')}${chip(t.skirting,'TOTAL 帳篷圍布(塊)','bg-violet-50 text-violet-700 border border-violet-200')}${chip(t.power_w,'TOTAL 電源(W)','bg-rose-50 text-rose-700 border border-rose-200')}</div>
+      <div class="flex gap-2 flex-wrap items-center">
+        <div class="inline-flex bg-slate-100 rounded-xl p-1 overflow-x-auto max-w-full">${tabBtn('borrow','📊 借用統計（要借什麼）')}${tabBtn('sign','🪧 招牌統計')}${tabBtn('list',`📄 計劃書明細（${plans.length}）`)}</div>
+        <button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位計劃書${isPublic?'（無需登入）':''}</button>
+        ${canExport?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
+        <button onclick="app.openModule('exec_manual'); setTimeout(()=>app.switchExecManualTab('booth_master'),200)" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-table-cells mr-1"></i>執行手冊 → 攤位總表</button>
+      </div>
+      <div id="booth-tab-content">${this.boothSubTab==='list'?this.renderBoothPlanListHTML(isPublic):(this.boothSubTab==='sign'?this.renderBoothSignboardHTML(isPublic):this.renderBoothBorrowStatsHTML(agg,isPublic))}</div>
+    </div>`;
     const actionsEl=document.getElementById('module-actions');
     if(actionsEl){
-      actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>提交攤位物資申請</button>`:''}</div>`;
+      actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>提交攤位計劃書</button>${canExport?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出總表 CSV</button>`:''}<button onclick="app.openModule('exec_manual'); setTimeout(()=>app.switchExecManualTab('booth_master'),200)" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">執行手冊 → 攤位總表</button></div>`;
     }
   },
-  // 攤位物資申請：v8.6 起公開——任何人（無需登入）都可填寫；地域物資借用則需登入
+  switchBoothTab(tab){ this.boothSubTab=tab; this.renderBoothModule(); },
+  // 攤位計劃書：v8.6 起公開——任何人（無需登入）都可填寫；地域物資借用則需登入
   canSubmitBooth(){ return true; },
-  // 攤位物資申請表單（對標品牌推廣組「2026 攤位總表」Google Sheet）：
-  // 分區＋編號＋負責單位來自總表；攤位名稱由申請人填（做招牌）；枱／椅／帳篷圍布／電源等標準項目只需填數量；外判商租用，不設庫存。
+  /* —— 總表統計：把所有「攤位計劃書」紀錄按「2026 攤位總表」分區＋編號合併 ——
+     兼容舊版「一項一紀錄」（item_name＝枱／椅／帳篷圍布／電源）：同一攤位多筆紀錄合併為同一行。 */
+  boothEquipOf(r){
+    const e={tent:0,table:0,chair:0,skirting:0,power_w:0,other:[]};
+    if(!r) return e;
+    const KEY2EQ={'qty_tent':'tent','qty_table':'table','qty_chair':'chair','skirting_qty':'skirting','power_w':'power_w'};
+    const addFromName=(name,qty)=>{
+      const k=BOOTH_ITEM_KEY_MAP[String(name||'').trim()];
+      if(k){ const p=KEY2EQ[k]; if(p) e[p]+=qty; }
+      else if(String(name||'').trim()&&String(name||'').trim()!=='攤位計劃書'){ e.other.push(`${name} × ${qty}${r.unit||''}`); }
+    };
+    e.tent+=parseInt(r.qty_tent||0)||0;
+    e.table+=parseInt(r.qty_table||0)||0;
+    e.chair+=parseInt(r.qty_chair||0)||0;
+    e.skirting+=parseInt(r.skirting_qty||0)||0;
+    e.power_w+=parseInt(r.power_w||0)||0;
+    addFromName(r.item_name,parseInt(r.qty_requested||0)||0);
+    (r.extra_items||[]).forEach(it=>{
+      const k=BOOTH_ITEM_KEY_MAP[String(it.item_name||'').trim()];
+      const qty=parseInt(it.qty_requested||0)||0;
+      if(k){ const p=KEY2EQ[k]; if(p) e[p]+=qty; }
+      else if(it.item_name){ e.other.push(`${it.item_name} × ${qty}${it.unit||''}`); }
+    });
+    return e;
+  },
+  boothPlanAggregates(plans){
+    const rows={}; const totals={booths:0,tent:0,table:0,chair:0,skirting:0,power_w:0};
+    (plans||[]).forEach(r=>{
+      const key=(r.zone&&r.booth_no)?`${r.zone}${r.booth_no}`:(r.unit_name||'__custom__'+String(r.booth_code||Math.random()));
+      let row=rows[key];
+      if(!row){
+        row={key, zone:r.zone||'', booth_no:r.booth_no||'', booth_code:r.booth_code||'',
+          unit_name:r.unit_name||'', booth_name:r.booth_name||'', activity_desc:r.activity_desc||'', fif15_content:r.fif15_content||'',
+          other_req:r.other_req||'', delivery:r.delivery||'', group_name:r.group_name||'', contact:r.contact||'',
+          owner_name:r.owner_name||'', owner_age_group:r.owner_age_group||'', owner_unit:r.owner_unit||'', owner_position:r.owner_position||'',
+          owner_phone:r.owner_phone||'', owner_email:r.owner_email||'',
+          requested_by:r.requested_by||'', status:'', notes:r.notes||'',
+          equip:{tent:0,table:0,chair:0,skirting:0,power_w:0,other:[]}};
+        rows[key]=row;
+      }
+      ['unit_name','booth_name','activity_desc','fif15_content','other_req','delivery','group_name','contact','owner_name','owner_age_group','owner_unit','owner_position','owner_phone','owner_email','requested_by','notes'].forEach(f=>{ if(!row[f]&&r[f]) row[f]=r[f]; });
+      if(r.booth_code&&!row.booth_code) row.booth_code=r.booth_code;
+      if(!row.status) row.status=r.status;
+      if(r.status==='pending') row.status='pending';
+      const e=this.boothEquipOf(r);
+      totals.tent+=e.tent; totals.table+=e.table; totals.chair+=e.chair; totals.skirting+=e.skirting; totals.power_w+=e.power_w;
+      row.equip.tent+=e.tent; row.equip.table+=e.table; row.equip.chair+=e.chair; row.equip.skirting+=e.skirting; row.equip.power_w+=e.power_w;
+      row.equip.other.push(...e.other);
+    });
+    totals.booths=Object.keys(rows).length;
+    return {rows,totals};
+  },
+  boothStatusBadge(st){
+    const cls=st==='pending'?'bg-amber-100 text-amber-700 border-amber-200':(st==='rejected'?'bg-rose-100 text-rose-700 border-rose-200':(st==='modified'?'bg-sky-100 text-sky-700 border-sky-200':'bg-emerald-100 text-emerald-700 border-emerald-200'));
+    const label={pending:'待批核',approved:'已批核',rejected:'已拒絕',modified:'已批核(修改)',group_ok:'待批核'}[st]||st;
+    return `<span class="text-[9.5px] px-1.5 py-0.5 rounded-full border font-bold whitespace-nowrap ${cls}">${label}</span>`;
+  },
+  /* —— 總表：按 2026 攤位總表 分區＋編號逐攤位一行；頂部 TOTAL 總數、每行即該攤位明細 —— */
+  /* —— 借用統計（像物資卡）：要借什麼——每項統計＋每攤位明細＋TOTAL —— */
+  renderBoothBorrowStatsHTML(agg,isPublic){
+    const rows=Object.values(agg.rows).sort((a,b)=>String(a.key).localeCompare(String(b.key)));
+    const codeOf=r=>[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||r.unit_name||r.key;
+    const itemStat=(key,label,unit,total)=>{
+      const codes=rows.filter(r=>r.equip[key]>0).map(codeOf).sort();
+      return `<tr><td class="border px-2 py-1 font-bold">${label}</td><td class="border px-2 py-1 text-center font-extrabold text-[13px]">${total}</td><td class="border px-2 py-1">${unit}</td><td class="border px-2 py-1 text-[10px] text-slate-500">${codes.length?codes.join('、'):'—'}</td></tr>`;
+    };
+    const q=v=>v?`<b>${v}</b>`:'<span class="text-slate-300">—</span>';
+    const boothRows=rows.map(r=>{
+      const other=[];
+      (r.equip.other||[]).forEach(x=>other.push(x));
+      return `<tr><td class="border px-2 py-1 font-mono font-extrabold whitespace-nowrap">${escapeHtml(codeOf(r))}</td><td class="border px-2 py-1">${escapeHtml(r.unit_name||'-')}</td><td class="border px-2 py-1 font-bold">${escapeHtml(r.booth_name||'-')}</td><td class="border px-2 py-1 text-center">${q(r.equip.tent)}</td><td class="border px-2 py-1 text-center">${q(r.equip.table)}</td><td class="border px-2 py-1 text-center">${q(r.equip.chair)}</td><td class="border px-2 py-1 text-center">${q(r.equip.skirting)}</td><td class="border px-2 py-1 text-center">${r.equip.power_w?`<b>${r.equip.power_w}</b>`:'<span class="text-slate-300">—</span>'}</td><td class="border px-2 py-1 text-[10px]">${other.length?escapeHtml(other.join('；')):'—'}</td><td class="border px-2 py-1 text-center">${this.boothStatusBadge(r.status||'pending')}</td></tr>`;
+    }).join('');
+    const t=agg.totals;
+    return `<div class="space-y-3">
+      <div class="bg-white border rounded-xl p-3">
+        <b class="text-[12px]"><i class="fa-solid fa-chart-column text-blue-600 mr-1"></i>每項物資統計（要借什麼 → 總數及邊個攤位要）</b>
+        <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">項目</th><th class="border px-2 py-1">總數</th><th class="border px-2 py-1">單位</th><th class="border px-2 py-1">攤位（代號）</th></tr></thead><tbody>
+          ${itemStat('tent','帳篷（3mW x 3mD）','頂',t.tent)}
+          ${itemStat('table','摺枱','張',t.table)}
+          ${itemStat('chair','摺椅','張',t.chair)}
+          ${itemStat('skirting','帳篷圍布','塊',t.skirting)}
+          ${itemStat('power_w','電源','W',t.power_w)}
+        </tbody></table></div>
+      </div>
+      <div class="bg-white border rounded-xl p-3">
+        <b class="text-[12px]"><i class="fa-solid fa-store text-orange-600 mr-1"></i>每攤位借用明細（${rows.length} 攤位有計劃書）</b>
+        <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位</th><th class="border px-2 py-1">負責單位</th><th class="border px-2 py-1">攤位名稱（招牌）</th><th class="border px-2 py-1">帳篷</th><th class="border px-2 py-1">摺枱</th><th class="border px-2 py-1">摺椅</th><th class="border px-2 py-1">圍布</th><th class="border px-2 py-1">電源(W)</th><th class="border px-2 py-1">其他</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>
+          ${boothRows||'<tr><td colspan="10" class="border px-2 py-4 text-center text-slate-400">暫無計劃書 — 提交後即時出現</td></tr>'}
+          ${rows.length?`<tr class="bg-slate-900 text-white font-extrabold"><td colspan="3" class="border px-2 py-1">TOTAL（全部分區總數）</td><td class="border px-2 py-1 text-center">${t.tent}</td><td class="border px-2 py-1 text-center">${t.table}</td><td class="border px-2 py-1 text-center">${t.chair}</td><td class="border px-2 py-1 text-center">${t.skirting}</td><td class="border px-2 py-1 text-center">${t.power_w}</td><td colspan="2" class="border px-2 py-1 text-[10px]">${t.booths} 攤位有計劃書</td></tr>`:''}
+        </tbody></table></div>
+      </div>
+      <p class="text-[10px] text-slate-400">借用統計由「攤位計劃書」提交自動匯總（兼容舊版一項一紀錄）。完整攤位總表（含已聯絡／已回覆／確認出席）見<b>執行手冊 → 攤位總表</b>或<b>主題節目組卡片</b>。</p>
+    </div>`;
+  },
+  /* —— 招牌統計：大會據此製作招牌嘅清單 —— */
+  renderBoothSignboardHTML(isPublic){
+    const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
+    const rows=Object.values(agg.rows).filter(r=>r.booth_name).sort((a,b)=>String(a.key).localeCompare(String(b.key)));
+    if(!rows.length){ return '<p class="text-xs text-slate-400 py-8 text-center">暫無招牌 — 計劃書填咗「攤位名稱（招牌用）」後自動列入</p>'; }
+    const codeOf=r=>[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||r.unit_name||r.key;
+    const rowsHTML=rows.map(r=>`<tr><td class="border px-2 py-1 font-mono font-extrabold whitespace-nowrap">${escapeHtml(codeOf(r))}</td><td class="border px-2 py-1 font-bold text-[13px]">${escapeHtml(r.booth_name)}</td><td class="border px-2 py-1">${escapeHtml(r.unit_name||'-')}</td><td class="border px-2 py-1">${r.owner_name?`<b>${escapeHtml(r.owner_name)}</b>${r.owner_position?' <span class="text-[10px] text-slate-400">'+escapeHtml(r.owner_position)+'</span>':''}`:'<span class="text-slate-300">—</span>'}</td><td class="border px-2 py-1 text-[10px] text-slate-500">${isPublic?'🔒 聯絡資料登入後可見':escapeHtml([r.owner_phone,r.owner_email].filter(Boolean).join(' / ')||r.contact||'-')}</td><td class="border px-2 py-1 text-center">${this.boothStatusBadge(r.status||'pending')}</td></tr>`).join('');
+    return `<div class="bg-white border rounded-xl p-3">
+      <b class="text-[12px]"><i class="fa-solid fa-sign-hanging text-amber-600 mr-1"></i>招牌製作清單（${rows.length} 個招牌）</b>
+      <div class="text-[10px] text-slate-500 mt-1">大會據計劃書「攤位名稱（招牌用）」製作招牌；計劃書提交／更新後此清單即時反映。</div>
+      <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位</th><th class="border px-2 py-1">招牌名稱</th><th class="border px-2 py-1">負責單位</th><th class="border px-2 py-1">負責人</th><th class="border px-2 py-1">聯絡</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${rowsHTML}</tbody></table></div>
+    </div>`;
+  },
+  /* —— 2026 攤位總表（完整版：含已聯絡/已回覆/確認出席；供「執行手冊」及主題節目組卡片）——
+     由程式內嵌 BOOTH_ZONES_2026（品牌推廣組 2026 攤位總表）＋「攤位計劃書」提交自動填入。 */
+  renderBoothMasterTableHTML(agg,isPublic){
+    const t=agg.totals;
+    const usedKeys=new Set();
+    const contactCell=v=>`<td class="border px-2 py-1 text-center font-bold ${v==='Y'?'text-emerald-700':(v==='N'?'text-rose-600':(v==='?'?'text-amber-600':'text-slate-300'))}">${boothContactMark(v)}</td>`;
+    let html=`<div class="table-responsive"><table class="min-w-full text-xs border bg-white"><thead class="bg-slate-800 text-white"><tr>
+      <th class="border px-2 py-1.5 text-left whitespace-nowrap">分區</th><th class="border px-2 py-1.5 text-left">編號</th><th class="border px-2 py-1.5 text-left">主題範疇</th>
+      <th class="border px-2 py-1.5 text-center">已聯絡</th><th class="border px-2 py-1.5 text-center">已回覆</th><th class="border px-2 py-1.5 text-center">確認出席</th>
+      <th class="border px-2 py-1.5 text-left">負責單位</th><th class="border px-2 py-1.5 text-left">聯絡人</th><th class="border px-2 py-1.5 text-left">攤位名稱（招牌）</th><th class="border px-2 py-1.5 text-left">預計攤位內容</th><th class="border px-2 py-1.5 text-left">「十五五」元素</th>
+      <th class="border px-2 py-1.5 text-center">帳篷(頂)</th><th class="border px-2 py-1.5 text-center">摺枱(張)</th><th class="border px-2 py-1.5 text-center">摺椅(張)</th><th class="border px-2 py-1.5 text-center">圍布(塊)</th><th class="border px-2 py-1.5 text-center">電源(W)</th>
+      <th class="border px-2 py-1.5 text-left">其他場地及物資需求</th><th class="border px-2 py-1.5 text-left">運送物資需求</th><th class="border px-2 py-1.5 text-center">狀態</th>
+    </tr></thead><tbody>`;
+    BOOTH_ZONES_2026.forEach(z=>{
+      html+=`<tr class="bg-amber-50"><td colspan="19" class="border px-2 py-1 text-[11px] font-extrabold text-amber-900">分區 ${z.zone} · ${escapeHtml(z.theme)}${(z.units||[]).length?`（${z.units.length} 攤位）`:'（編號待定）'}</td></tr>`;
+      if(!(z.units||[]).length){
+        html+=`<tr><td colspan="19" class="border px-2 py-1 text-slate-400 text-center">總表暫未設單位</td></tr>`;
+        return;
+      }
+      z.units.forEach(u=>{
+        const key=z.zone+u.no;
+        if(agg.rows[key]) usedKeys.add(key);
+        const row=agg.rows[key];
+        let contactHTML='<span class="text-slate-300">—</span>';
+        if(row){
+          if(row.owner_name){
+            contactHTML=`<b>${escapeHtml(row.owner_name)}</b>`;
+            if(!isPublic&&(row.owner_phone||row.owner_email)) contactHTML+=`<div class="text-slate-500">${escapeHtml([row.owner_phone,row.owner_email].filter(Boolean).join(' / '))}</div>`;
+            else if(isPublic&&(row.owner_phone||row.owner_email)) contactHTML+=` <span class="text-slate-300">🔒</span>`;
+          } else if(row.contact&&!isPublic){
+            contactHTML=escapeHtml(row.contact);
+          }
+        }
+        html+=`<tr class="${row?'bg-amber-50/40':''}">
+          <td class="border px-2 py-1.5 font-mono font-extrabold">${z.zone}</td><td class="border px-2 py-1.5 font-mono font-bold">${u.no}</td><td class="border px-2 py-1.5 text-[10px] text-slate-500">${escapeHtml(z.theme)}</td>
+          ${contactCell(u.c)}${contactCell(u.r)}${contactCell(u.cf)}
+          <td class="border px-2 py-1.5">${escapeHtml(u.name)}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${contactHTML}</td>
+          <td class="border px-2 py-1.5 font-bold">${row?escapeHtml(row.booth_name||'-'):'<span class="text-slate-400">未提交</span>'}</td>
+          <td class="border px-2 py-1.5" title="${row?escapeHtml(row.activity_desc||''):''}">${row&&row.activity_desc?escapeHtml(String(row.activity_desc).replace(/\s+/g,' ').slice(0,40)):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5" title="${row?escapeHtml(row.fif15_content||''):''}">${row&&row.fif15_content?escapeHtml(String(row.fif15_content).replace(/\s+/g,' ').slice(0,30)):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row&&row.equip.tent?`<b>${row.equip.tent}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row&&row.equip.table?`<b>${row.equip.table}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row&&row.equip.chair?`<b>${row.equip.chair}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row&&row.equip.skirting?`<b>${row.equip.skirting}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row&&row.equip.power_w?`<b>${row.equip.power_w}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${row&&row.other_req?escapeHtml(row.other_req):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${row&&row.delivery?escapeHtml(row.delivery):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row?this.boothStatusBadge(row.status||'pending'):'<span class="text-[10px] text-slate-300">未提交</span>'}</td>
+        </tr>`;
+      });
+    });
+    Object.values(agg.rows).forEach(row=>{
+      if(row.key.startsWith('__custom__')||!usedKeys.has(row.key)){
+        const other=[];
+        (row.equip.other||[]).forEach(x=>other.push(x));
+        let contactHTML2='<span class="text-slate-300">—</span>';
+        if(row.owner_name){
+          contactHTML2=`<b>${escapeHtml(row.owner_name)}</b>`;
+          if(!isPublic&&(row.owner_phone||row.owner_email)) contactHTML2+=`<div class="text-slate-500">${escapeHtml([row.owner_phone,row.owner_email].filter(Boolean).join(' / '))}</div>`;
+          else if(isPublic&&(row.owner_phone||row.owner_email)) contactHTML2+=` <span class="text-slate-300">🔒</span>`;
+        }
+        html+=`<tr class="bg-sky-50/50">
+          <td class="border px-2 py-1.5 font-mono font-extrabold">${row.zone||'?'}</td><td class="border px-2 py-1.5 font-mono font-bold">${row.booth_no||'-'}</td><td class="border px-2 py-1.5 text-[10px] text-slate-500">${escapeHtml(row.zone?boothZoneLabel(row.zone):'（總表以外）')}</td>
+          <td class="border px-2 py-1.5 text-center text-slate-300">—</td><td class="border px-2 py-1.5 text-center text-slate-300">—</td><td class="border px-2 py-1.5 text-center text-slate-300">—</td>
+          <td class="border px-2 py-1.5">${escapeHtml(row.unit_name||'（自行填寫）')}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${contactHTML2}</td>
+          <td class="border px-2 py-1.5 font-bold">${escapeHtml(row.booth_name||'-')}</td>
+          <td class="border px-2 py-1.5">${row.activity_desc?escapeHtml(String(row.activity_desc).replace(/\s+/g,' ').slice(0,40)):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5">${row.fif15_content?escapeHtml(String(row.fif15_content).replace(/\s+/g,' ').slice(0,30)):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row.equip.tent?`<b>${row.equip.tent}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row.equip.table?`<b>${row.equip.table}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row.equip.chair?`<b>${row.equip.chair}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row.equip.skirting?`<b>${row.equip.skirting}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${row.equip.power_w?`<b>${row.equip.power_w}</b>`:'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${row.other_req?escapeHtml(row.other_req):(other.length?escapeHtml(other.join('；')):'<span class="text-slate-300">—</span>')}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${row.delivery?escapeHtml(row.delivery):'<span class="text-slate-300">—</span>'}</td>
+          <td class="border px-2 py-1.5 text-center">${this.boothStatusBadge(row.status||'pending')}</td>
+        </tr>`;
+      }
+    });
+    html+=`<tr class="bg-slate-900 text-white font-extrabold"><td colspan="11" class="border px-2 py-1.5">TOTAL（全部分區總數）· ${t.booths} 攤位有計劃書</td><td class="border px-2 py-1.5 text-center">${t.tent}</td><td class="border px-2 py-1.5 text-center">${t.table}</td><td class="border px-2 py-1.5 text-center">${t.chair}</td><td class="border px-2 py-1.5 text-center">${t.skirting}</td><td class="border px-2 py-1.5 text-center">${t.power_w}</td><td colspan="3" class="border px-2 py-1.5 text-[10px]">已批核 ${Object.values(agg.rows).filter(r=>['approved','modified'].includes(r.status)).length} · 待批核 ${Object.values(agg.rows).filter(r=>r.status==='pending').length}</td></tr></tbody></table></div>`;
+    html+=`<p class="text-[10px] text-slate-400">攤位總表按「2026 攤位總表」（品牌推廣組）分區＋編號，<b>已聯絡／已回覆／確認出席</b>為品牌推廣組聯絡進度（🤷＝待確認）；攤位名稱／內容／「十五五」元素／物資需求由「攤位計劃書」提交自動填入，<b>TOTAL</b> 行為所有攤位總數。${isPublic?' 為保障私隱，聯絡人電話／電郵需登入先可見。':''}</p>`;
+    return html;
+  },
+  /* —— 計劃書明細：全部提交紀錄（完整負責人資料）＋本組確認／批核動作 —— */
+  renderBoothPlanListHTML(isPublic){
+    const plans=(this.getSuppliesData().booth_requests||[]).slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    if(!plans.length){ return '<p class="text-xs text-slate-400 py-8 text-center">暫無攤位計劃書 — 按「提交攤位計劃書」填寫（無需登入）</p>'; }
+    const isAdmin=this.isAdmin();
+    const canApprove=this.canApproveArea('supplies');
+    return `<div class="space-y-3">${plans.map(r=>{
+      const e=this.boothEquipOf(r);
+      const eq=[e.tent?`帳篷 <b>${e.tent}</b> 頂`:null,e.table?`摺枱 <b>${e.table}</b> 張`:null,e.chair?`摺椅 <b>${e.chair}</b> 張`:null,e.skirting?`帳篷圍布 <b>${e.skirting}</b> 塊`:null,e.power_w?`電源 <b>${e.power_w}</b> W`:null,...(e.other||[])].filter(Boolean).join(' · ')||'—';
+      const code=[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-';
+      const isMine=this.currentUser&&(r.requested_by_id===this.currentUser.user_id||r.requested_by===this.currentUser.name);
+      const canEdit=isAdmin||this.isCoordinatorViceChair()||isMine;
+      const ownerLine=r.owner_name
+        ?`<b>${escapeHtml(r.owner_name)}</b>（${escapeHtml(r.owner_age_group||'年齡組別未填')}${r.owner_unit?' · '+escapeHtml(r.owner_unit):''}${r.owner_position?' · '+escapeHtml(r.owner_position):''}）${isPublic?'':((r.owner_phone||r.owner_email)?` · ${escapeHtml([r.owner_phone,r.owner_email].filter(Boolean).join(' / '))}`:'')}`
+        :(isPublic?'<span class="text-slate-300">—</span>':escapeHtml(r.contact||'-'));
+      return `<div class="border rounded-xl p-3 bg-white space-y-1.5">
+        <div class="flex justify-between items-start gap-2">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap"><b class="text-[13px] font-mono">${code}</b><b class="text-[13px]">${escapeHtml(r.booth_name||'')}</b>${this.boothStatusBadge(r.status)}<span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span>${r.status==='pending'?this.applicationStageHTML(r):''}</div>
+            <div class="text-[11px] text-slate-500 mt-1">負責單位：${escapeHtml(r.unit_name||'-')}</div>
+            ${r.activity_desc?`<div class="text-[11px] text-slate-600 bg-slate-50 border rounded-xl p-2 mt-1">活動內容：${escapeHtml(r.activity_desc)}</div>`:''}
+            ${r.fif15_content?`<div class="text-[11px] text-slate-600 mt-1">「十五五」主題：${escapeHtml(r.fif15_content)}</div>`:''}
+            <div class="text-[11px] text-slate-700 mt-1">物資：${eq}</div>
+            ${(r.other_req||r.delivery)?`<div class="text-[11px] text-slate-500 mt-0.5">${r.other_req?'其他要求：'+escapeHtml(r.other_req):''}${r.other_req&&r.delivery?' · ':''}${r.delivery?'運送：'+escapeHtml(r.delivery):''}</div>`:''}
+            <div class="text-[11px] text-slate-500 mt-0.5">負責人：${ownerLine}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">提交人：${escapeHtml(r.requested_by||'-')}${isPublic?'':` | 聯絡：${escapeHtml(r.contact||'-')}`}${r.created_at?' | '+new Date(r.created_at).toLocaleDateString():''}${r.approved_by?' | 批核：'+escapeHtml(r.approved_by)+(r.approved_at?'（'+new Date(r.approved_at).toLocaleDateString()+'）':''):''}</div>
+            ${r.notes?`<div class="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2 mt-1">備註：${escapeHtml(r.notes)}</div>`:''}
+          </div>
+          <div class="flex flex-col gap-1 flex-shrink-0 items-end">
+            ${this.canConfirmApplication(r)?`<button onclick="app.confirmBoothApplication('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">本組確認</button>`:''}
+            ${canApprove&&r.status==='pending'&&this.applicationReadyForApproval(r)?`<div class="flex gap-1"><button onclick="app.boothSetStatus('${r.request_id}','approved')" class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">批准</button><button onclick="app.boothSetStatus('${r.request_id}','rejected')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-xl text-[11px] font-bold">拒絕</button></div>`:''}
+            ${canEdit?`<button onclick="app.openBoothSupplyForm('${r.request_id}')" class="bg-white border px-3 py-1 rounded-xl text-[10px]">✏️ 編輯</button>`:''}
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  },
+  confirmBoothApplication(id){
+    const data=this.getSuppliesData(); const r=(data.booth_requests||[]).find(x=>x.request_id===id); if(!r) return;
+    if(!this.canConfirmApplication(r)){ showToast('只可由申請所屬組別的總主任以上確認','error'); return; }
+    r.group_confirmation_status='confirmed'; r.group_confirmed_by=this.currentUser?.name||''; r.group_confirmed_at=new Date().toISOString();
+    this.saveSuppliesData(data); this.refreshSuppliesViews();
+    showToast('已本組確認，待指定批核組批核','success');
+  },
+  boothSetStatus(id,status){
+    if(!(this.canApproveArea('supplies')||this.isAdmin())){ showToast('只供指定物資批核組批核','error'); return; }
+    const data=this.getSuppliesData(); const r=(data.booth_requests||[]).find(x=>x.request_id===id); if(!r) return;
+    if(!this.applicationReadyForApproval(r)){ showToast('須先由申請人所屬組別總主任以上確認','warning'); return; }
+    if(status==='approved') r.qty_approved=r.qty_requested;
+    r.status=status; r.approved_by=(this.currentUser?.name||'')+`（${this.approvalRouteLabel('supplies','approver_groups')}）`; r.approved_at=new Date().toISOString();
+    if(status==='rejected') r.notes='已拒絕';
+    const targetId=r.requested_by_id||r.requested_by;
+    const label=`${[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||''} ${r.booth_name||r.unit_name||''}`;
+    this.addSupplyNotification(targetId,{type:'booth_approved',item_name:'攤位計劃書 '+label,qty_requested:0,qty_approved:0,status,approved_by:r.approved_by,approved_at:r.approved_at,message:`你嘅攤位計劃書「${label}」已由 ${r.approved_by} ${status==='approved'?'批准':'拒絕'}。`});
+    this.saveSuppliesData(data); this.refreshSuppliesViews();
+    showToast(status==='approved'?'已批准攤位計劃書，已通知提交人':'已拒絕攤位計劃書，已通知提交人',status==='approved'?'success':'warning');
+  },
+  // 攤位計劃書表單（對標主題節目組「港島童軍繽紛日2026 - 主題節目攤位計劃書」Google Form）：
+  // 分區＋編號＋負責單位來自 2026 攤位總表；攤位名稱／活動內容／「十五五」主題／負責人資料由申請人填；帳篷／摺枱／摺椅只需填數量，不設庫存。
   openBoothSupplyForm(editId=null){
     const data=this.getSuppliesData();
     const existing=editId?data.booth_requests.find(r=>r.request_id===editId):null;
-    const title=existing?'編輯攤位物資申請':'提交攤位物資申請（對標 2026 攤位總表）';
+    const title=existing?'編輯攤位計劃書':'提交攤位計劃書（取代 Google Form，無需登入）';
     const zoneOpts=BOOTH_ZONES_2026.map(z=>`<option value="${z.zone}" ${existing?.zone===z.zone?'selected':''}>${z.zone} ${escapeHtml(z.theme)}</option>`).join('');
-    const stdRows=BOOTH_STD_ITEMS.map((it,i)=>{
-      const ex=(existing&&existing.item_name===it.name)?existing:null;
-      return `<tr><td class="border px-2 py-1.5 font-bold">${escapeHtml(it.name)}${it.hint?`<div class="text-[9.5px] text-slate-400 font-normal">${escapeHtml(it.hint)}</div>`:''}</td><td class="border px-2 py-1.5 w-28"><input type="number" id="booth-std-qty-${i}" min="0"${it.name==='帳篷圍布'?' max="3"':''} value="${ex?(ex.qty_requested||''):''}" placeholder="0" class="w-full px-2 py-1 border rounded-lg text-sm"></td><td class="border px-2 py-1.5 text-[11px] text-slate-500">${escapeHtml(it.unit)}</td></tr>`;
+    const stdRows=BOOTH_STD_ITEMS.map(it=>{
+      const legacyVal=existing&&BOOTH_ITEM_KEY_MAP[existing.item_name]===it.key?(existing.qty_requested||''):'';
+      return `<div><label class="text-[11px] font-bold">${escapeHtml(it.name)}數量${it.hint?` <span class="font-normal text-slate-400">（${escapeHtml(it.hint)}）</span>`:''}</label><input type="number" id="booth-qty-${it.key}" min="0" value="${existing?(existing[it.key]||''):legacyVal}" placeholder="0" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>`;
     }).join('');
-    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10.5px] text-amber-900 mb-3 leading-relaxed"><b>對標「2026 攤位總表」：</b>選<b>分區＋編號＋負責單位</b>；<b>攤位名稱</b>由申請人填寫（大會據此製作招牌）。枱／椅／帳篷圍布／電源等大會已有（向外判商租用），<b>只需填數量</b>，不設庫存。</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分區 *</label><select id="booth-zone" onchange="app.renderBoothUnitOptions()" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="">請選分區</option>${zoneOpts}</select></div><div><label class="text-[11px] font-bold">攤位編號 *</label><select id="booth-no" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${Array.from({length:15},(_,i)=>String(i+1).padStart(2,'0')).map(no=>`<option value="${no}" ${existing?.booth_no===no?'selected':''}>${no}</option>`).join('')}</select></div><div class="col-span-2"><label class="text-[11px] font-bold">負責單位 *</label><div class="flex gap-2 mt-1"><select id="booth-unit-select" onchange="app.onBoothUnitChange()" class="flex-1 px-3 py-2 border rounded-xl text-sm bg-white"></select><input id="booth-unit-custom" value="${escapeHtml(existing?.unit_name||'')}" placeholder="自行輸入單位名稱" class="flex-1 px-3 py-2 border rounded-xl text-sm hidden"></div></div><div class="col-span-2"><label class="text-[11px] font-bold">攤位名稱（招牌用）*</label><input id="booth-name" value="${escapeHtml(existing?.booth_name||'')}" required placeholder="例：皮藝體驗站（做招牌用；沒有特別名稱可填跟負責單位同名）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 / 單位 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required placeholder="${this.currentUser?'':'例：主題節目組 或 港島第99旅'}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">聯絡電話 ${this.currentUser?'':'*'}</label><input id="booth-contact" value="${escapeHtml(existing?.contact||this.myDefaultContact())}" placeholder="方便協調（大會回覆用）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">${this.currentUser?'提交人':'提交人姓名 *'}</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 ${this.currentUser?'bg-slate-50':''}" placeholder="${this.currentUser?'':'填寫你嘅姓名'}" ${this.currentUser?'readonly':''}></div></div><div class="mt-3"><label class="text-[11px] font-bold">標準物資（大會現有·填數量即可；留空／0＝不需要）</label><div class="table-responsive mt-1"><table class="min-w-full text-xs border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1 text-left">標準項目</th><th class="border px-2 py-1 text-left">數量</th><th class="border px-2 py-1 text-left">單位</th></tr></thead><tbody>${stdRows}</tbody></table></div></div><div id="booth-extra-rows" class="space-y-2 mt-3">${(existing&&!BOOTH_STD_ITEMS.some(it=>it.name===existing.item_name))?this.boothItemRowHTML(existing):''}</div><div class="text-right mt-1"><button type="button" onclick="app.addBoothItemRow()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加其他物資（標準項以外）</button></div><div class="mt-3 space-y-2"><div><label class="text-[11px] font-bold">運送物資需求</label><textarea id="booth-delivery" rows="2" placeholder="例：需大會協助運送大型道具（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.delivery||'')}</textarea></div><div><label class="text-[11px] font-bold">其他需求</label><textarea id="booth-other" rows="2" placeholder="例：需要靠近插座位（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.other_need||'')}</textarea></div></div><div class="text-[10px] text-slate-500 mt-2">攤位物資由大會向外判商租用，<b>不設庫存</b>；低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
+    const ageOpts=BOOTH_OWNER_AGE_GROUPS.map(g=>`<option value="${escapeHtml(g)}" ${existing?.owner_age_group===g?'selected':''}>${escapeHtml(g)}</option>`).join('');
+    const legacyExtra=(()=>{
+      if(!existing) return '';
+      const n=String(existing.item_name||'').trim();
+      if(n&&n!=='攤位計劃書'&&!BOOTH_ITEM_KEY_MAP[n]) return this.boothItemRowHTML({item_name:n,qty_requested:existing.qty_requested||'',unit:existing.unit||''});
+      const xs=(existing.extra_items||[]);
+      return xs.length?xs.map(x=>this.boothItemRowHTML(x)).join(''):'';
+    })();
+    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10.5px] text-amber-900 mb-3 leading-relaxed"><b>呢張表取代 Google Form，未登入都可以填寫。</b>喺「2026 攤位總表」<b>分區＋編號＋負責單位</b>；<b>攤位名稱</b>由申請人填寫（大會據此製作招牌）；帳篷／摺枱／摺椅大會已有（向外判商租用），<b>只需填數量</b>，不設庫存。「十五五」主題內容及負責人資料用於活動統計及 WhatsApp 群組協調。<b>提交後籌辦方即得兩種資料：① 借用統計（要借什麼＋招牌）② 執行手冊→攤位總表（自動填入）。</b></div>
+    <div class="text-[11px] font-extrabold text-amber-700 mb-1"><i class="fa-solid fa-location-dot mr-1"></i>① 攤位位置（對標「2026 攤位總表」）</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分區 *</label><select id="booth-zone" onchange="app.renderBoothUnitOptions()" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="">請選分區</option>${zoneOpts}</select></div><div><label class="text-[11px] font-bold">攤位編號 *</label><select id="booth-no" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${Array.from({length:15},(_,i)=>String(i+1).padStart(2,'0')).map(no=>`<option value="${no}" ${existing?.booth_no===no?'selected':''}>${no}</option>`).join('')}</select></div><div class="col-span-2"><label class="text-[11px] font-bold">負責單位 *</label><div class="flex gap-2 mt-1"><select id="booth-unit-select" onchange="app.onBoothUnitChange()" class="flex-1 px-3 py-2 border rounded-xl text-sm bg-white"></select><input id="booth-unit-custom" value="${escapeHtml(existing?.unit_name||'')}" placeholder="自行輸入單位名稱" class="flex-1 px-3 py-2 border rounded-xl text-sm hidden"></div></div></div>
+    <div class="text-[11px] font-extrabold text-amber-700 mb-1 mt-3"><i class="fa-solid fa-clipboard-list mr-1"></i>② 攤位計劃內容</div>
+    <div class="space-y-3"><div><label class="text-[11px] font-bold">攤位名稱（招牌用）*</label><input id="booth-name" value="${escapeHtml(existing?.booth_name||'')}" required placeholder="例：皮藝體驗站（做招牌用；沒有特別名稱可填跟負責單位同名）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">攤位活動內容 *</label><textarea id="booth-activity" rows="2" required placeholder="描述攤位嘅遊戲／體驗／內容" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.activity_desc||'')}</textarea></div><div><label class="text-[11px] font-bold">攤位對應主題「十五五」各範疇的具體內容 *</label><textarea id="booth-fif15" rows="2" required placeholder="例如：創新科技、AI等（或未通配合）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.fif15_content||'')}</textarea></div></div>
+    <div class="text-[11px] font-extrabold text-amber-700 mb-1 mt-3"><i class="fa-solid fa-tent mr-1"></i>③ 場地及物資需求（只需填數量）</div>
+    <div class="grid grid-cols-3 gap-3">${stdRows}</div>
+    <div class="mt-3"><label class="text-[11px] font-bold">其他要求，如圍布、電力要求等，請詳細說明</label><textarea id="booth-other" rows="2" placeholder="例：需兩側圍布（防西斜）、需獨立斷電開關（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.other_req||existing?.other_need||'')}</textarea></div>
+    <div id="booth-extra-rows" class="space-y-2 mt-3">${legacyExtra}</div>
+    <div class="text-right mt-1"><button type="button" onclick="app.addBoothItemRow()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加其他物資（帳篷／枱／椅以外）</button></div>
+    <div class="mt-3"><label class="text-[11px] font-bold">運送物資需求（可選）</label><textarea id="booth-delivery" rows="2" placeholder="例：需大會協助運送大型道具" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.delivery||'')}</textarea></div>
+    <div class="text-[11px] font-extrabold text-amber-700 mb-1 mt-3"><i class="fa-solid fa-user-tie mr-1"></i>④ 攤位負責人資料</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">攤位負責人姓名 *</label><input id="booth-owner-name" value="${escapeHtml(existing?.owner_name||this.currentUser?.name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">攤位負責人年齡組別 *</label><select id="booth-owner-age" required class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="">請選年齡組別</option>${ageOpts}</select><div class="text-[9.5px] text-slate-400 mt-0.5">相關資料只會用作是次活動統計之用，並不會作其他用途</div></div><div><label class="text-[11px] font-bold">所屬單位 *</label><input id="booth-owner-unit" value="${escapeHtml(existing?.owner_unit||this.currentUser?.group_name||'')}" required placeholder="例：港島第99旅" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">職位 *</label><input id="booth-owner-position" value="${escapeHtml(existing?.owner_position||this.currentUser?.job_title||'')}" required placeholder="例：主任／總監／隊長" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">攤位負責人電話（可供whatsapp聯絡）*</label><input id="booth-owner-phone" value="${escapeHtml(existing?.owner_phone||this.myDefaultContact())}" required placeholder="主題節目組將會開設攤位負責人WhatsApp群組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">攤位負責人電郵地址 *</label><input id="booth-owner-email" type="email" value="${escapeHtml(existing?.owner_email||'')}" required placeholder="活動完結後，所有主題攤位之工作人員感謝狀將會電郵至此地址" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div></div>
+    <div class="text-[11px] font-extrabold text-amber-700 mb-1 mt-3"><i class="fa-solid fa-building mr-1"></i>⑤ 組別及提交資料</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">所屬組別 / 單位 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required placeholder="${this.currentUser?'':'例：主題節目組 或 港島第99旅'}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">聯絡電話 ${this.currentUser?'':'*'}</label><input id="booth-contact" value="${escapeHtml(existing?.contact||this.myDefaultContact())}" placeholder="方便協調（大會跟進用）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div class="col-span-2"><label class="text-[11px] font-bold">${this.currentUser?'提交人':'提交人姓名 *'}</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 ${this.currentUser?'bg-slate-50':''}" placeholder="${this.currentUser?'':'填寫你嘅姓名'}" ${this.currentUser?'readonly':''}></div></div>
+    <div class="text-[10px] text-slate-500 mt-2">攤位物資由大會向外判商租用，<b>不設庫存</b>；低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
     document.getElementById('record-modal-title').textContent=title;
     document.getElementById('record-form-fields').innerHTML=html;
     this.renderBoothUnitOptions(existing?.unit_name||'');
@@ -790,62 +1109,96 @@ Object.assign(ScoutEventApp.prototype,{
     let unit_name=document.getElementById('booth-unit-select').value;
     if(unit_name==='__custom__') unit_name=document.getElementById('booth-unit-custom').value.trim();
     const booth_name=document.getElementById('booth-name').value.trim();
+    const activity_desc=document.getElementById('booth-activity').value.trim();
+    const fif15_content=document.getElementById('booth-fif15').value.trim();
     let group_name=document.getElementById('booth-group').value.trim();
     // 總主任以下登入成員自動用本組；未登入（公眾）自行填寫組別／單位
     if(this.currentUser&&this.roleLevel(this.currentUser.role)<40) group_name=normalizeGroupName(this.currentUser.group_name);
     const contact=document.getElementById('booth-contact').value.trim()||'';
     const requested_by=document.getElementById('booth-requested-by').value.trim()||this.currentUser?.name||'';
+    const other_req=document.getElementById('booth-other').value.trim()||'';
     const delivery=document.getElementById('booth-delivery').value.trim()||'';
-    const other_need=document.getElementById('booth-other').value.trim()||'';
-    if(!zone||!unit_name||!booth_name||!group_name){ showToast('請填寫分區、負責單位、攤位名稱（招牌用）、組別','error'); return; }
-    // v8.6 公開申請：未登入必須留姓名＋電話，方便大會回覆
+    const owner_name=document.getElementById('booth-owner-name').value.trim();
+    const owner_age_group=document.getElementById('booth-owner-age').value;
+    const owner_unit=document.getElementById('booth-owner-unit').value.trim();
+    const owner_position=document.getElementById('booth-owner-position').value.trim();
+    const owner_phone=document.getElementById('booth-owner-phone').value.trim();
+    const owner_email=document.getElementById('booth-owner-email').value.trim();
+    if(!zone||!unit_name||!booth_name||!activity_desc||!fif15_content||!group_name){ showToast('請填寫分區、負責單位、攤位名稱、活動內容、「十五五」主題及組別','error'); return; }
+    if(!owner_name||!owner_age_group||!owner_unit||!owner_position||!owner_phone||!owner_email){ showToast('請填寫完整攤位負責人資料（姓名／年齡組別／所屬單位／職位／電話／電郵）','error'); return; }
+    // 公開申請：未登入必須留姓名＋電話，方便大會跟進
     if(!this.currentUser&&(!requested_by||!contact)){ showToast('請填寫提交人姓名及聯絡電話（未登入申請需以電話跟進）','error'); return; }
-    // 收集項目：標準項目（枱／椅／帳篷圍布／電源）填了數量的 ＋「其他物資」列
-    const items=[];
-    BOOTH_STD_ITEMS.forEach((it,i)=>{
-      const el=document.getElementById('booth-std-qty-'+i);
-      if(!el) return;
-      const q=parseInt(el.value||'0');
-      if(!isNaN(q)&&q>0){
-        if(it.name==='帳篷圍布'&&q>3){ showToast('帳篷圍布每攤位最多 3 塊','error'); return; }
-        items.push({item_name:it.name, qty_requested:q, unit:it.unit});
-      }
-    });
+    // 標準數量：帳篷／摺枱／摺椅（留空／0＝不需要）
+    const qty={};
+    BOOTH_STD_ITEMS.forEach(it=>{ const el=document.getElementById('booth-qty-'+it.key); qty[it.key]=el?(parseInt(el.value||'0')||0):0; });
+    // 其他物資（額外行）
+    const extra_items=[];
     document.querySelectorAll('#booth-extra-rows .booth-item-row').forEach(row=>{
       const name=row.querySelector('.booth-item').value.trim();
       const q=parseInt(row.querySelector('.booth-qty').value||'0');
       const unit=row.querySelector('.booth-unit').value.trim()||'個';
-      if(name&&q>0) items.push({item_name:name, qty_requested:q, unit});
+      if(name&&q>0) extra_items.push({item_name:name, qty_requested:q, unit});
     });
-    if(!items.length){ showToast('請填寫至少一項物資數量（標準項目或其他物資）','error'); return; }
+    if(!qty.qty_tent&&!qty.qty_table&&!qty.qty_chair&&!other_req&&!extra_items.length&&!delivery){ showToast('請填寫至少一項場地及物資需求（帳篷／枱／椅數量或其他要求）','error'); return; }
     const data=this.getSuppliesData();
     const booth_code=boothCodeOfUnit(unit_name)||(zone+booth_no);
-    const mkRec=(it)=>({request_id:'req_booth_'+Date.now()+'_'+Math.floor(Math.random()*10000),
-      event_id:this.currentEvent?.event_id||'isd_2026',
-      item_name:it.item_name, qty_requested:it.qty_requested, qty_approved:null, unit:it.unit,
-      group_name, zone, booth_no, booth_code, unit_name, booth_name, delivery, other_need, purpose:'',
-      contact, ...this.applicationConfirmationMeta(this.currentUser),
-      status:'pending', requested_by, requested_by_id:this.currentUser?.user_id||'', approved_by:'', approved_at:'', notes:'', created_at:new Date().toISOString()});
+    const rec={
+      item_name:'攤位計劃書', qty_requested:1, qty_approved:null, unit:'份',
+      group_name, zone, booth_no, booth_code, unit_name, booth_name,
+      activity_desc, fif15_content,
+      qty_tent:qty.qty_tent, qty_table:qty.qty_table, qty_chair:qty.qty_chair,
+      skirting_qty:0, power_w:0,
+      other_req, other_need:other_req, delivery,
+      owner_name, owner_age_group, owner_unit, owner_position, owner_phone, owner_email,
+      extra_items,
+      purpose:'',
+      contact, requested_by, requested_by_id:this.currentUser?.user_id||''
+    };
+    const confirmation=this.applicationConfirmationMeta(this.currentUser);
     if(mode==='edit'){
       const idx=data.booth_requests.findIndex(r=>r.request_id===id);
-      if(idx>=0){
-        const it0=items[0];
-        const confirmation=this.applicationConfirmationMeta(this.currentUser);
-        data.booth_requests[idx]={...data.booth_requests[idx],...confirmation,item_name:it0.item_name,qty_requested:it0.qty_requested,unit:it0.unit,group_name,zone,booth_no,booth_code,unit_name,booth_name,delivery,other_need,purpose:'',contact,requested_by,requested_by_id:this.currentUser?.user_id||'',status:'pending',approved_by:'',approved_at:''};
-        items.slice(1).forEach(it=>data.booth_requests.push(mkRec(it)));
-      }
+      if(idx>=0) data.booth_requests[idx]={...data.booth_requests[idx],...rec,...confirmation,status:'pending',approved_by:'',approved_at:'',notes:''};
     }else{
-      items.forEach(it=>data.booth_requests.push(mkRec(it)));
+      data.booth_requests.push({request_id:'req_booth_'+Date.now()+'_'+Math.floor(Math.random()*10000),event_id:this.currentEvent?.event_id||'isd_2026',...rec,...confirmation,status:'pending',approved_by:'',approved_at:'',notes:'',created_at:new Date().toISOString()});
     }
     this.saveSuppliesData(data);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast(mode==='edit'?'已更新攤位物資申請':`已提交攤位物資申請（${items.length} 項）：待本組總主任確認`,'success');
+    showToast(mode==='edit'?'已更新攤位計劃書，重新進入流程':(this.applicationNeedsGroupConfirmation(rec)?'已提交攤位計劃書：待本組總主任確認（資料已入借用統計＋執行手冊攤位總表）':'已提交攤位計劃書：已交批核組（資料已入借用統計＋執行手冊攤位總表）'),'success');
     this.refreshSuppliesViews();
+  },
+  /* —— 匯出：總表 CSV（對標 2026 攤位總表，供大會／外判商下單）＋完整 JSON —— */
+  exportBoothCSV(){
+    if(!(this.isAdmin()||this.isCoordinatorViceChair())){ showToast('匯出只供指定物資批核／執行組總主任以上','error'); return; }
+    const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
+    const t=agg.totals;
+    const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+    const lines=[];
+    lines.push(['分區','編號','攤位','主題範疇','負責單位','攤位名稱（招牌）','攤位活動內容','「十五五」主題內容','帳篷(頂)','摺枱(張)','摺椅(張)','帳篷圍布(塊)','電源(W)','其他要求','其他物資','運送需求','攤位負責人','負責人電話(WhatsApp)','負責人電郵','所屬組別','提交人','狀態'].map(esc).join(','));
+    lines.push(['TOTAL','','TOTAL','','','','','',t.tent,t.table,t.chair,t.skirting,t.power_w,'','','',`${t.booths} 攤位有計劃書`,'','',''].map(esc).join(','));
+    const rowLine=(z,no,code,theme,unit,row)=>{
+      const st=row?(row.status==='pending'?'待批核':row.status==='rejected'?'已拒絕':row.status==='modified'?'已批核(修改)':'已批核'):'未提交';
+      return [z,no,code,theme,unit,row?(row.booth_name||''):'未提交',row?(row.activity_desc||''):'',row?(row.fif15_content||''):'',
+        row?row.equip.tent:0,row?row.equip.table:0,row?row.equip.chair:0,row?row.equip.skirting:0,row?row.equip.power_w:0,
+        row?(row.other_req||''):'',row?(row.equip.other||[]).join('; '):'',row?(row.delivery||''):'',
+        row?(row.owner_name||''):'',row?(row.owner_phone||''):'',row?(row.owner_email||''):'',row?(row.group_name||''):'',row?(row.requested_by||''):'',st].map(esc).join(',');
+    };
+    const known=new Set();
+    BOOTH_ZONES_2026.forEach(z=>{
+      (z.units||[]).forEach(u=>{ known.add(z.zone+u.no); lines.push(rowLine(z.zone,u.no,z.zone+u.no,z.theme,u.name,agg.rows[z.zone+u.no])); });
+      if(!(z.units||[]).length) lines.push([z.zone,'',z.zone+'-',z.theme,'','','未提交','','','','','','','','','','','','','未提交'].map(esc).join(','));
+    });
+    Object.values(agg.rows).forEach(row=>{
+      const k=(row.zone&&row.booth_no)?row.zone+row.booth_no:null;
+      if(!k||!known.has(k)) lines.push(rowLine(row.zone||'',row.booth_no||'',k||'（自行填寫）',row.zone?boothZoneLabel(row.zone):'',row.unit_name||'',row));
+    });
+    const blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`booth_master_${todayISO()}.csv`; a.click();
+    showToast('已匯出總表 CSV（含 BOM，Excel 直接開啟）','success');
   },
   exportBoothData(){
     const data=this.getSuppliesData();
-    const blob=new Blob([JSON.stringify(data.booth_requests||[],null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='booth_requests.json'; a.click(); showToast('已匯出攤位申請','success');
+    const blob=new Blob([JSON.stringify(data.booth_requests||[],null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='booth_plans.json'; a.click(); showToast('已匯出攤位計劃書 JSON','success');
   }
 ,
 });

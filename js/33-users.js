@@ -37,9 +37,9 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   canManageUsersPage(){ return this.roleLevel(this.currentUser?.role)>=30 || this.isSuperAdmin(); }
 ,
-  canSeeAllUsers(){ const r=this.currentUser?.role; return ['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(r); }
+  canSeeAllUsers(){ if(this.currentUser?.mock_admin) return true; const r=this.currentUser?.role; return ['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(r); }
 ,
-  canSeeUserPasswords(){ return this.isSuperAdmin() || ['executive_vice_chairperson','chairperson','admin','advisor'].includes(this.currentUser?.role); }
+  canSeeUserPasswords(){ if(this.currentUser?.mock_admin) return true; return this.isSuperAdmin() || ['executive_vice_chairperson','chairperson','admin','advisor'].includes(this.currentUser?.role); }
 ,
   isSuperAdminUser(u){ return (u?.role)==='super_admin'; }
   /* 用戶管理可視範圍（v8.3 定案）
@@ -123,6 +123,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   canManageApprovalRouting(user){
     user=user||this.currentUser;
+    if(user?.mock_admin) return true; // v8.7：MOCK 全部管理權限
     return !!user&&['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(user.role);
   }
 ,
@@ -193,8 +194,8 @@ Object.assign(ScoutEventApp.prototype,{
   canApproveArea(area, user){
     user=user||this.currentUser;
     if(!user) return false;
-    const role=user.role||'', lvl=ROLE_HIERARCHY[role]||0, group=normalizeGroupName(user.group_name);
-    if(lvl<40) return false;
+    const role=user.role||'', lvl=user.mock_admin?100:(ROLE_HIERARCHY[role]||0), group=normalizeGroupName(user.group_name);
+    if(lvl<40) return false; // v8.7：MOCK mock_admin 標記＝全部管理權限（跳過職級把關，仍按路由判斷）
     if(this.canManageApprovalRouting(user)) return true;
     const required=this.getApprovalRoute(area).approver_groups||[];
     if(!required.some(g=>normalizeGroupName(g)===group)) return false;
@@ -312,7 +313,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   // 上級可改下級權限：最多可設定到與自己相同的權限；最高層職級係後端專管，前端不提供開設
   // 副主席及以上（主席/副主席/執行副主席/顧問/管理員）已確定由管理員處理，其餘人只可開設以下層級
-  assignableRoles(){ if(!this.currentUser) return []; const myLv=this.roleLevel(this.currentUser.role); const pool=Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public'&&r!=='super_admin'); const isTopAdmin=['super_admin','admin'].includes(this.currentUser.role); if(isTopAdmin) return pool.filter(r=>ROLE_HIERARCHY[r]<=myLv); return pool.filter(r=>ROLE_HIERARCHY[r]<=myLv && ROLE_HIERARCHY[r]<60); }
+  assignableRoles(){ if(!this.currentUser) return []; const myLv=this.roleLevel(this.currentUser.role); const pool=Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public'&&r!=='super_admin'); const isTopAdmin=this.currentUser.mock_admin||['super_admin','admin'].includes(this.currentUser.role); if(isTopAdmin) return pool.filter(r=>ROLE_HIERARCHY[r]<=myLv); return pool.filter(r=>ROLE_HIERARCHY[r]<=myLv && ROLE_HIERARCHY[r]<60); }
 ,
   populateUserRoleSelect(curVal){
     const sel=document.getElementById('u-role'); if(!sel) return;
@@ -323,7 +324,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('u-form-mode').value='edit'; document.getElementById('u-form-original-id').value=u.user_id; document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name; document.getElementById('u-group').value=u.group_name||''; document.getElementById('u-contact').value=u.contact||''; document.getElementById('u-email').value=u.email||''; const pwd=document.getElementById('u-password'); if(pwd){ pwd.value=this.canSeeUserPasswords()?(u.password||''):''; pwd.parentElement?.classList.toggle('hidden', !this.canSeeUserPasswords()); } this.populateUserRoleSelect(u.role||'staff'); document.getElementById('modal-user').classList.remove('hidden');}
 ,
-  submitUserForm(e){e.preventDefault(); let uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!name) return; if(!uid) uid=name; if(document.getElementById('u-form-mode').value==='create' && isLegacyLatinLogin(uid) && hasCjk(name)) uid=name; if(!uid) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||this.getLocalUsers())); let list=this.pendingUsers; const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.pendingUsers=list; this.closeModal('modal-user'); showToast('已暫存，請按「確定更新用戶」才套用',''); this.renderUsers();}
+  submitUserForm(e){e.preventDefault(); let uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!name) return; if(!uid) uid=name; if(document.getElementById('u-form-mode').value==='create' && isLegacyLatinLogin(uid) && hasCjk(name)) uid=name; if(!uid) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!this.currentUser?.mock_admin&&!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||this.getLocalUsers())); let list=this.pendingUsers; const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.pendingUsers=list; this.closeModal('modal-user'); showToast('已暫存，請按「確定更新用戶」才套用',''); this.renderUsers();}
 ,
   downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n朱家聰,朱家聰,chair@isd.local,chairperson,主席及執行副主席,,1234,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
 ,
@@ -361,11 +362,13 @@ Object.assign(ScoutEventApp.prototype,{
     }
     // Mock 模式回退：本地示範帳戶（正式帳戶只經後端 SCRIPT）
     const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd);
-    if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
+    if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; if(this.isDemoEvent()) this.currentUser.mock_admin=true; // v8.7：MOCK 全部管理權限
+    localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name+(this.isDemoEvent()?'（MOCK 全部管理權限已開）':''),'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
   }
 ,
-  demoLogin(uid){if(!this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>loginIdMatches(u,uid))||{user_id:uid,name:uid,role:'staff',group_name:'主席及執行副主席'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name,'success'); if(this.currentEvent) this.showDashboard();}
+  demoLogin(uid){if(!this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>loginIdMatches(u,uid))||{user_id:uid,name:uid,role:'super_admin',group_name:'主席及執行副主席'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name,mock_admin:true}; // v8.7：MOCK 示範登入＝所有管理權限全開（本地沙盒）
+    localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('示範登入：'+(ROLE_LABELS[found.role]||found.role)+' '+found.name+'（MOCK 全部管理權限已開）','success'); if(this.currentEvent) this.showDashboard();}
 ,
   openChangePwdModal(){if(!this.currentUser){ showToast('請先登入','warning'); return; } ['cp-old','cp-new','cp-new2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); document.getElementById('modal-changepwd').classList.remove('hidden');}
 ,

@@ -121,7 +121,7 @@ Object.assign(ScoutEventApp.prototype,{
     const container=box||document.getElementById('module-content');
     const isAdmin=this.isAdmin();
     const isViceChairOrAbove=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
-    const isExecViceChairOrAbove=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=80 || ['vice_chairperson','chairperson','admin','super_admin','advisor'].includes(this.currentUser?.role);
+    const isExecViceChairOrAbove=!!this.currentUser?.mock_admin||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=80 || ['vice_chairperson','chairperson','admin','super_admin','advisor'].includes(this.currentUser?.role);
     // Sub tab handling
     if(!this.staffSubTab) this.staffSubTab='org_chart';
     container.innerHTML=`

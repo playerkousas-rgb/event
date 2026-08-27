@@ -47,6 +47,15 @@ Object.assign(ScoutEventApp.prototype,{
         sub:`進出：${v.entry_date||''}→${v.exit_date||''} · 停泊：${v.parking_location||'待定'}`,
         status:st.t, color_name:st.c, who:v.approved_by||'', date:v.created_at||''});
     });
+    (sup.booth_requests||[]).forEach(r=>{
+      const st=genSt[r.status]||genSt.pending;
+      const e=this.boothEquipOf(r);
+      const eq=[e.tent?`帳篷${e.tent}`:'',e.table?`枱${e.table}`:'',e.chair?`椅${e.chair}`:'',e.skirting?`圍布${e.skirting}`:'',e.power_w?`電${e.power_w}W`:'',...e.other].filter(Boolean).join(' · ');
+      out.push({type:'booth',typeLabel:'攤位計劃書',icon:'fa-solid fa-store',color:'text-orange-600',
+        person:r.owner_name||r.requested_by||'', person_id:r.requested_by_id||'', group:r.group_name||'未分組',
+        title:`${[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-'} ${r.booth_name||r.unit_name||''}`, sub:`${r.unit_name||''}${eq?' · '+eq:''}${r.activity_desc?' · '+String(r.activity_desc).slice(0,30):''}`,
+        status:st.t, color_name:st.c, who:r.approved_by||'', date:r.created_at||''});
+    });
     (park.applications||[]).forEach(a=>{
       const st=genSt[a.status]||genSt.pending;
       out.push({type:'vehicle',typeLabel:'泊車證',icon:'fa-solid fa-square-parking',color:'text-sky-600',
@@ -204,6 +213,7 @@ Object.assign(ScoutEventApp.prototype,{
     const tabs=[
       {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
       {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
+      {k:'booth_master',icon:'fa-solid fa-store',              label:'攤位總表'},
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
       {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
       {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
@@ -233,6 +243,18 @@ Object.assign(ScoutEventApp.prototype,{
     const map={
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
+      booth_master:()=>{
+        const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
+        const isPublic=!this.currentUser;
+        panel.innerHTML=`<div class="space-y-3">
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>2026 攤位總表</b>（品牌推廣組分區＋編號；攤位名稱／預計內容／「十五五」元素／場地物資需求由「攤位計劃書」提交自動填入；已聯絡／已回覆／確認出席為聯絡進度）。${isPublic?'<b class="text-emerald-700">全公開可看</b>（聯絡人電話／電郵需登入先見）。':''}</div>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="app.openModule('booth')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交／查看攤位計劃書（借用統計）</button>
+            ${this.isAdmin()||this.isCoordinatorViceChair()?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.printCoordArea('booth-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}
+          </div>
+          <div id="booth-master-print">${this.renderBoothMasterTableHTML(agg,isPublic)}</div>
+        </div>`;
+      },
       ceremony:()=>this.renderCeremonyModule(panel),
       crisis:()=>this.renderCrisisModule(panel),
       finance_guide:()=>{
@@ -280,7 +302,7 @@ Object.assign(ScoutEventApp.prototype,{
     const items=[
       {key:'meals', icon:'fa-utensils', color:'bg-purple-100 text-purple-700', title:'膳食申請 (訂餐)', desc:`揀餐／改餐；${routeText('meals')}`, badge:'公開可申請', badgeCls:'bg-emerald-100 text-emerald-700 border-emerald-200', action:`app.openModule('meals'); setTimeout(()=>app.switchMealsTab('menus'),300)`, enabled:true},
       {key:'supplies', icon:'fa-boxes-stacked', color:'bg-blue-100 text-blue-600', title:'物資申請', desc:routeText('supplies'), badge:canSubmitSupply?'登入可申請':'請先登入', badgeCls:canSubmitSupply?'bg-blue-100 text-blue-700 border-blue-200':'bg-slate-100 text-slate-600 border-slate-200', action:`app.openModule('supplies'); setTimeout(()=>app.openSupplyRequestForm(),350)`, enabled:canSubmitSupply},
-      {key:'booth', icon:'fa-store', color:'bg-orange-100 text-orange-700', title:'攤位物資申請', desc:'與外判商租用枱／椅／布置等；與地域物資借用完全分開。公開填寫，無需登入', badge:'公開可申請（無需登入）', badgeCls:'bg-emerald-100 text-emerald-700 border-emerald-200', action:`app.openModule('booth')`, enabled:true},
+      {key:'booth', icon:'fa-store', color:'bg-orange-100 text-orange-700', title:'攤位計劃書', desc:'取代 Google Form：未登入嘅負責人直接喺呢度填寫（招牌名／活動內容／「十五五」／帳篷／摺枱／摺椅／負責人）。提交後籌辦方即得兩種資料——① 借用統計（要借什麼＋招牌）② 執行手冊→攤位總表（自動填入）。公開填寫，無需登入', badge:'公開可填寫（無需登入）', badgeCls:'bg-emerald-100 text-emerald-700 border-emerald-200', action:`app.openModule('booth'); setTimeout(()=>app.openBoothSupplyForm(),350)`, enabled:true},
       {key:'vehicle', icon:'fa-car', color:'bg-amber-100 text-amber-700', title:'車輛通行證申請 (含泊車證)', desc:`車牌／司機／用途；${routeText('vehicle')}`, badge:canSubmitSupply?'登入可申請':'請先登入', badgeCls:canSubmitSupply?'bg-amber-100 text-amber-700 border-amber-200':'bg-slate-100 text-slate-600 border-slate-200', action:`app.openModule('parking')`, enabled:canSubmitSupply},
       {key:'oral_quotes', icon:'fa-file-signature', color:'bg-indigo-100 text-indigo-700', title:'口頭報價登記', desc:'商戶/項目/金額，財務查核用', badge:canRecordQuote?'可登記':'總主任以上', badgeCls:canRecordQuote?'bg-indigo-100 text-indigo-700 border-indigo-200':'bg-slate-100 text-slate-600 border-slate-200', action:`app.openModule('oral_quotes')`, enabled:canRecordQuote},
       {key:'expense', icon:'fa-receipt', color:'bg-emerald-100 text-emerald-700', title:'開支申報', desc:`填表＋上傳單據；${routeText('finance')}`, badge:canSubmitExpense?'可申報':'請先登入', badgeCls:canSubmitExpense?'bg-emerald-100 text-emerald-700 border-emerald-200':'bg-slate-100 text-slate-600 border-slate-200', action:`app.openModule('finance'); setTimeout(()=>app.switchFinanceTab('expense'),300)`, enabled:canSubmitExpense},
@@ -297,7 +319,7 @@ Object.assign(ScoutEventApp.prototype,{
     }).join('');
     const loginBar=u
       ?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-user-check mr-1"></i>已登入：<b>${escapeHtml(u.name)}</b>（${ROLE_LABELS[u.role]||u.role}${u.group_name?' · '+escapeHtml(u.group_name):''}）</span><button onclick="app.logout()" class="bg-white border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-xl text-[11px] font-bold">登出</button></div>`
-      :`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-info mr-1"></i>膳食及攤位物資可公開申請（無需登入）；物資（地域借用）、車輛及開支需登入。低於總主任提交的申請會先交本組總主任以上確認。</span><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">登入</button></div>`;
+      :`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-info mr-1"></i>膳食及攤位計劃書可公開申請（無需登入）；物資（地域借用）、車輛及開支需登入。低於總主任提交的申請會先交本組總主任以上確認。</span><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">登入</button></div>`;
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-4">

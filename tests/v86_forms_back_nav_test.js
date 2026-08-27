@@ -47,7 +47,7 @@ const nodesStart = coreSrc.indexOf('getGroupOrgNodes(groupName){');
 const nodesEnd = coreSrc.indexOf('splitDutySections');
 const nodesFn = coreSrc.slice(nodesStart, nodesEnd);
 ok(!nodesFn.includes("+(n.level||'')"), "① getGroupOrgNodes 去重 key 不應再計 level 字串（舊快取 level 不同會翻倍）");
-ok(isd.data_version === '2026-08-28T00:00:00Z-v6', '① data_version 應上調至 v6（自動清除全站舊 staff/crisis 快取）');
+ok(isd.data_version === '2026-08-28T00:00:00Z-v7', '① data_version 應上調至 v7（v8.7 攤位計劃書；自動清除全站舊 staff/crisis 快取）');
 
 /* ---------- ② 物資申請表單 ---------- */
 ok(supSrc.includes('supply-shared-group') && supSrc.includes('supply-shared-contact') && supSrc.includes('supply-shared-reason'), '② 組別／電話／原因應為整張申請共用的單一欄位');
@@ -70,7 +70,7 @@ ok(!supSrc.includes("switchSuppliesTab('booth')") && !supSrc.includes('supplies-
 ok(!supSrc.includes("openBoothSupplyForm()\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold\"><i class=\"fa-solid fa-store mr-1\"></i>攤位物資申請</button>`:''}\n          ${(this.canApproveArea") , '③ 物資卡顶欄不應再有「攤位物資申請」按鈕');
 ok(!supSrc.includes('攤位物資統計'), '③ 物資統計不應再混入攤位統計');
 ok(crisisSrc.includes("this.currentModule==='booth'){ this.renderBoothModule(); return; }"), '③ refreshSuppliesViews 應支援攤位模組原地刷新');
-ok(supSrc.includes('與「物資申請」（地域物資借用）是兩項完全獨立'), '③ 攤位模組應註明與物資申請完全獨立');
+ok(supSrc.includes('與地域「物資申請」完全分開'), '③ 攤位模組應註明與物資申請完全獨立');
 
 /* ---------- ④ 菜單「組別」欄 ---------- */
 ok(!syncSrc.includes('meal-menu-group'), '④ 加入菜單表單不應再有「組別」欄（舊欄不影響篩選／統計）');
@@ -206,10 +206,10 @@ ok(supSrc.includes('canSubmitBooth(){ return true; }') || supSrc.includes('canSu
 ok(!supSrc.slice(supSrc.indexOf('openBoothSupplyForm(editId=null){'), supSrc.indexOf('openBoothSupplyForm(editId=null){')+240).includes("canSubmitSupply()"), '⑥ 開攤位表單不應再要求登入');
 ok(supSrc.includes("if(!this.currentUser&&(!requested_by||!contact))"), '⑥ 未登入提交攤位申請必須填姓名＋電話');
 ok(supSrc.includes("if(this.currentUser&&this.roleLevel(this.currentUser.role)<40)"), '⑥ 公眾提交唔應該被強制覆蓋組別（登入者才鎖本組）');
-ok(supSrc.includes('${isPublic?\'\':` | 申請人:'), '⑥ 公眾睇攤位清單應隱藏申請人／聯絡（私隱）');
+ok(supSrc.includes('🔒 聯絡資料登入後可見'), '⑥ 公眾睇攤位總表應隱藏負責人聯絡（私隱：電話／電郵登入後先見）');
 const hubSrc = fs.readFileSync(path.join(root, 'js/26-monitor-apply.js'), 'utf8');
-ok(hubSrc.includes("{key:'booth'") && hubSrc.includes("badge:'公開可申請（無需登入）', badgeCls:'bg-emerald-100 text-emerald-700 border-emerald-200', action:`app.openModule('booth')`, enabled:true}"), '⑥ 申請中心攤位卡應啟用比所有人');
-ok(hubSrc.includes('膳食及攤位物資可公開申請（無需登入）'), '⑥ 申請中心提示應列明攤位物資公開');
+ok(hubSrc.includes("{key:'booth'") && hubSrc.includes("badge:'公開可填寫（無需登入）', badgeCls:'bg-emerald-100 text-emerald-700 border-emerald-200', action:`app.openModule('booth'); setTimeout(()=>app.openBoothSupplyForm(),350)`, enabled:true}"), '⑥ 申請中心攤位卡＝攤位計劃書（取代 Google Form，直接開表單，啟用比所有人）');
+ok(hubSrc.includes('膳食及攤位計劃書可公開申請（無需登入）'), '⑥ 申請中心提示應列明攤位計劃書公開');
 
 /* ⑥ 行為：未登入渲染膳食／捐贈／攤位卡 */
 vm.runInContext(`globalThis.__app.currentUser = null;
@@ -236,7 +236,7 @@ vm.runInContext(`globalThis.__app.openModule('booth')`, context);
 const pubBooth = elements['module-content'].innerHTML;
 ok(pubBooth.includes('無需登入'), '⑥ 行為：攤位模組列明公開可申請');
 ok(pubBooth.includes('帳篷') && !pubBooth.includes('申請人:'), '⑥ 行為：公眾可睇攤位申請清單但睇唔到申請人聯絡');
-ok(elements['module-actions'].innerHTML.includes('提交攤位物資申請'), '⑥ 行為：公眾頂欄有提交按鈕');
+ok(elements['module-actions'].innerHTML.includes('提交攤位計劃書'), '⑥ 行為：公眾頂欄有提交按鈕');
 
 /* ⑥ 行為：未登入提交攤位申請（公開流程可用） */
 vm.runInContext(`
@@ -249,22 +249,31 @@ vm.runInContext(`
 el('booth-form-mode').value='create'; el('booth-form-id').value='';
 el('booth-zone').value='A'; el('booth-no').value='01';
 el('booth-unit-select').value='主題節目組總部'; el('booth-unit-custom').value='';
-el('booth-name').value='測試示範攤位'; el('booth-group').value='港島第99旅';
+el('booth-name').value='測試示範攤位';
+el('booth-activity').value='示範遊戲體驗';
+el('booth-fif15').value='未通配合';
+el('booth-owner-name').value='陳大文';
+el('booth-owner-age').value='25-39歲';
+el('booth-owner-unit').value='港島第99旅';
+el('booth-owner-position').value='隊長';
+el('booth-owner-phone').value='91110000';
+el('booth-owner-email').value='test99@isd.local';
+el('booth-group').value='港島第99旅';
 el('booth-contact').value=''; el('booth-requested-by').value='';
 el('booth-delivery').value=''; el('booth-other').value='';
-for(let i=0;i<4;i++) el('booth-std-qty-'+i).value='';
-el('booth-std-qty-0').value='2';
+el('booth-qty-qty_tent').value='1'; el('booth-qty-qty_table').value='2'; el('booth-qty-qty_chair').value='';
 vm.runInContext(`globalThis.__app.submitBoothSupplyForm()`, context);
 let toast=elements['toast'].textContent;
 ok(vm.runInContext(`('data'in globalThis.__captured)===false`, context), '⑥ 未登入冇名冇電話應被拒（唔寫入紀錄）');
 ok(toast.includes('請填寫提交人姓名及聯絡電話'), '⑥ 拒絕時提示補名＋電話');
 el('booth-requested-by').value='陳大文'; el('booth-contact').value='91110000';
 vm.runInContext(`globalThis.__app.submitBoothSupplyForm()`, context);
-const boothRec=vm.runInContext(`(()=>{const d=globalThis.__captured.data||{booth_requests:[]};const r=d.booth_requests[d.booth_requests.length-1]||{};return JSON.stringify({item:r.item_name,qty:r.qty_requested,group:r.group_name,contact:r.contact,by:r.requested_by,status:r.status,stage:r.group_confirmation_status,role:r.requester_role,code:r.booth_code})})()`, context);
+const boothRec=vm.runInContext(`(()=>{const d=globalThis.__captured.data||{booth_requests:[]};const r=d.booth_requests[d.booth_requests.length-1]||{};return JSON.stringify({item:r.item_name,qty:r.qty_requested,tent:r.qty_tent,table:r.qty_table,group:r.group_name,contact:r.contact,by:r.requested_by,owner:r.owner_name,age:r.owner_age_group,phone:r.owner_phone,email:r.owner_email,status:r.status,stage:r.group_confirmation_status,role:r.requester_role,code:r.booth_code})})()`, context);
 const b=JSON.parse(boothRec);
-ok(b.item==='枱'&&b.qty===2, '⑥ 未登入提交：標準項目只填數量都得（枱 ×2）');
+ok(b.item==='攤位計劃書'&&b.tent===1&&b.table===2, '⑥ 未登入提交：計劃書一筆入帳（帳篷×1 摺枱×2）');
 ok(b.group==='港島第99旅', '⑥ 公眾自填組別／單位唔會被強制覆蓋');
 ok(b.contact==='91110000'&&b.by==='陳大文', '⑥ 姓名＋電話記入紀錄（登入者先見到）');
+ok(b.owner==='陳大文'&&b.age==='25-39歲'&&b.phone==='91110000'&&b.email==='test99@isd.local', '⑥ 攤位負責人資料完整記入');
 ok(b.status==='pending'&&b.stage==='pending'&&b.role==='public', '⑥ 未登入申請入「待本組總主任確認」流程');
 ok(b.code==='A01', '⑥ 攤位代碼按總表反查（A01）');
 console.log(`V86_FORMS_BACK_NAV_OK (${n} checks)`);

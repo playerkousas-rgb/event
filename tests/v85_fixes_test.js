@@ -77,15 +77,18 @@ const supSrc = fs.readFileSync(path.join(root, 'js/24-supplies.js'), 'utf8');
 ok(cfgSrc.includes('const BOOTH_ZONES_2026='), '⑧ 應內建 2026 攤位總表分區/負責單位');
 ok(cfgSrc.includes("theme:'積極公民 / 「十五五」規劃'"), '⑧ 分區 A 應為 積極公民／「十五五」規劃');
 ok(cfgSrc.includes('const BOOTH_STD_ITEMS='), '⑧ 應有標準物資清單');
-ok(cfgSrc.includes("{name:'枱', unit:'張'}") && cfgSrc.includes("{name:'椅', unit:'張'}"), '⑧ 標準物資應含 枱／椅（只填數量）');
-ok(cfgSrc.includes('帳篷圍布') && cfgSrc.includes('每攤位最多 3 塊'), '⑧ 帳篷圍布應標明每攤位最多 3 塊');
+ok(cfgSrc.includes("{key:'qty_tent', name:'帳篷', unit:'頂'") && cfgSrc.includes("{key:'qty_table', name:'摺枱', unit:'張'}") && cfgSrc.includes("{key:'qty_chair', name:'摺椅', unit:'張'}"), '⑧ 標準物資應為 v8.7 帳篷／摺枱／摺椅（只填數量，對標主題節目組表單）');
+ok(cfgSrc.includes('3mW x 3mD'), '⑧ 帳篷應標明 3mW x 3mD');
+ok(cfgSrc.includes('BOOTH_OWNER_AGE_GROUPS'), '⑧ 應有攤位負責人年齡組別選項（Google Form 原樣）');
+ok(cfgSrc.includes('BOOTH_ITEM_KEY_MAP'), '⑧ 應有舊版 item_name 映射（兼容舊紀錄總表統計）');
 ok(supSrc.includes("id=\"booth-zone\""), '⑧ 表單應有分區選擇');
 ok(supSrc.includes("id=\"booth-no\""), '⑧ 表單應有攤位編號');
 ok(supSrc.includes("id=\"booth-unit-select\""), '⑧ 表單應有負責單位下拉');
 ok(supSrc.includes("id=\"booth-name\""), '⑧ 表單應有攤位名稱（招牌用）');
-ok(supSrc.includes('booth-std-qty-'), '⑧ 標準項目只填數量');
+ok(supSrc.includes('booth-qty-'), '⑧ 標準項目只填數量');
 ok(supSrc.includes('id="booth-delivery"') && supSrc.includes('id="booth-other"'), '⑧ 表單應有運送物資需求／其他需求');
-ok(supSrc.includes('每攤位最多 3 塊','error'), '⑧ 提交應校驗帳篷圍布上限');
+ok(supSrc.includes('id="booth-activity"') && supSrc.includes('id="booth-fif15"'), '⑧ 表單應有攤位活動內容／「十五五」主題（v8.7 計劃書欄位）');
+ok(supSrc.includes('id="booth-owner-age"') && supSrc.includes('id="booth-owner-email"'), '⑧ 表單應有負責人年齡組別／電郵（v8.7 計劃書欄位）');
 ok(cfgSrc.includes('function boothCodeOfUnit'), '⑧ 應可由負責單位反查攤位代碼');
 
 /* ---------- ⑨⑩ 不設庫存 ---------- */
