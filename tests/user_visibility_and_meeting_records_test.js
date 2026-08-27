@@ -3,7 +3,7 @@
 /**
  * v8.3 驗證：
  *  (A) 用戶管理可見範圍
- *      超管＝全部人（包括自己）｜執副／主席／顧問／管理員＝除超管以外全部人
+ *      最高層帳號＝全部人（包括自己）｜執副／主席／顧問／管理員＝全部人
  *      副主席＝只睇自己組｜總主任＝自己組（不包括副主席）｜主任＝自己組普通工作人員
  *  (B) 會議議程／紀錄內建 JSON（data/meeting_records.json）＋ 頁內渲染，不彈出 Drive APP
  */
@@ -54,7 +54,7 @@ const Stub = vm.runInNewContext(code, { console });
 /* ---------- (A) 可見範圍 ---------- */
 console.log('A. 用戶管理可見範圍...');
 const users = [
-  { user_id: 'root', name: '超管', role: 'super_admin', group_name: '秘書處' },
+  { user_id: 'root', name: '系統管理員', role: 'super_admin', group_name: '秘書處' },
   { user_id: 'chair', name: '主席', role: 'chairperson', group_name: '主席及執行副主席' },
   { user_id: 'exec', name: '執副', role: 'executive_vice_chairperson', group_name: '主席及執行副主席' },
   { user_id: 'admin1', name: '管理員', role: 'admin', group_name: '秘書處' },
@@ -68,13 +68,13 @@ const users = [
 const ids = list => list.map(u => u.user_id).sort();
 const as = uid => new Stub(users.find(u => u.user_id === uid), users, null);
 
-// 超管：全部人（包括自己）
-assert.deepStrictEqual(ids(as('root').visibleUsersForManager()), ids(users), '超管應睇到全部人（包括自己）');
+// 最高層帳號：全部人（包括自己）
+assert.deepStrictEqual(ids(as('root').visibleUsersForManager()), ids(users), '最高層帳號應睇到全部人（包括自己）');
 
-// 執副／主席／顧問／管理員：除超管以外全部人
+// 執副／主席／顧問／管理員：全部人
 const expectNoSuper = ids(users.filter(u => u.role !== 'super_admin'));
 ['exec', 'chair', 'admin1'].forEach(uid => {
-  assert.deepStrictEqual(ids(as(uid).visibleUsersForManager()), expectNoSuper, uid + ' 應睇到除超管以外全部人');
+  assert.deepStrictEqual(ids(as(uid).visibleUsersForManager()), expectNoSuper, uid + ' 應睇到全部人');
 });
 
 // 副主席：只睇自己組（本組全部職級）
@@ -92,9 +92,9 @@ assert.deepStrictEqual(ids(as('dir_a').visibleUsersForManager()), ['staff_a'], '
 // 工作人員：無權
 assert.strictEqual(as('staff_a').visibleUsersForManager().length, 0, '工作人員不應睇到用戶名單');
 
-// 超管帳戶對其他人完全隱藏
+// 最高層帳戶對其他人完全隱藏
 ['exec', 'chair', 'admin1', 'vc_a', 'gd_a', 'dir_a'].forEach(uid => {
-  assert(!ids(as(uid).visibleUsersForManager()).includes('root'), uid + ' 不應睇到超管帳戶');
+  assert(!ids(as(uid).visibleUsersForManager()).includes('root'), uid + ' 不應睇到最高層帳戶');
 });
 
 /* ---------- (B) 內建議程／紀錄 JSON ---------- */

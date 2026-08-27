@@ -237,7 +237,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async deleteParkingRequest(id){
-    if(!this.isSuperAdmin()){ showToast('僅超管可永久刪除泊車證紀錄','error'); return; }
+    if(!this.isSuperAdmin()){ showToast('權限不足，無法永久刪除紀錄','error'); return; }
     if(!confirm('確定永久刪除此泊車證申請？APP、本機快取及後台紀錄都會刪除。')) return;
     this.markRecordDeleted('Parking_Requests',id);
     const data=this.getParkingData();

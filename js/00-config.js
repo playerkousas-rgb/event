@@ -1,6 +1,6 @@
 /* 00-config.js — 由 index.html 內嵌腳本原樣拆出（v-split 2026-08-27）；方法內容未經任何改寫 */
 
-const ROLE_LABELS={'super_admin':'超級管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
+const ROLE_LABELS={'super_admin':'系統管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
 // 統一清理組別名稱：移除「(Level X)」及多餘括號，並遷移舊稱「籌委會」。
 function normalizeGroupName(value){
@@ -73,7 +73,7 @@ const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secreta
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
 function hasCjk(s){ return /[\u4e00-\u9fff]/.test(String(s||'')); }
-function isLegacyLatinLogin(id){ const s=String(id||'').trim(); return !!s && s.toLowerCase()!=='sheep' && !hasCjk(s); }
+function isLegacyLatinLogin(id){ const s=String(id||'').trim(); return !!s && !hasCjk(s); }
 function nextChineseLoginId(name, used){
   const base=String(name||'').trim() || '未命名';
   const set=used instanceof Set ? used : new Set(used||[]);
@@ -85,7 +85,7 @@ function migrateUsersToChineseLogin(list){
   const used=new Set();
   return (list||[]).map(u=>{
     const copy={...u};
-    if(copy.role==='super_admin' || String(copy.user_id||'')==='sheep'){ used.add(copy.user_id); return copy; }
+    if(copy.role==='super_admin'){ used.add(copy.user_id); return copy; }
     if(isLegacyLatinLogin(copy.user_id)){
       copy.user_id=nextChineseLoginId(copy.name||copy.user_id, used);
     }

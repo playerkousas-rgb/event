@@ -81,13 +81,13 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed">
-          <b>💰 財務卡片升級：</b>已整合 Drive 指引 <a href="${folderLink}" target="_blank" class="text-sky-700 underline">📂 ${folderLink}</a><br>
-          • 所有工作人員可查閱指引 (嵌入預覽 + 下載)<br>
+          <b>💰 財務卡片升級：</b><b>財務指引全文已內建（官方定稿，不會再改）</b>——「指引文件」分頁直接閱讀，毋須開彈窗；原版檔案保留喺 Drive 作下載 <a href="${folderLink}" target="_blank" class="text-sky-700 underline">📂 資料夾</a><br>
+          • 所有工作人員可查閱指引（內建全文，毋須登入／毋須開 Drive APP）<br>
           • 表格可在 APP 內填寫 + 上傳單據副本 (支援指定資料夾)<br>
           • 可列印結算總表 (含四格印簽名) + 批核功能 + 後台紀錄
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
-          <button onclick="app.switchFinanceTab('guidance')" class="tab-btn ${this.financeSubTab==='guidance'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 指引文件 (Drive)</button>
+          <button onclick="app.switchFinanceTab('guidance')" class="tab-btn ${this.financeSubTab==='guidance'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 財務指引（內建全文）</button>
           <button onclick="app.switchFinanceTab('budgets')" class="tab-btn ${this.financeSubTab==='budgets'?'active':''}"><i class="fa-solid fa-wallet mr-1"></i> 預算明細</button>
           <button onclick="app.switchFinanceTab('expense')" class="tab-btn ${this.financeSubTab==='expense'?'active':''}"><i class="fa-solid fa-receipt mr-1"></i> 開支申報 (填表+上傳單據)</button>
           <button onclick="app.switchFinanceTab('oral_quotes')" class="tab-btn ${this.financeSubTab==='oral_quotes'?'active':''}"><i class="fa-solid fa-file-signature mr-1"></i> 口頭報價登記</button>
@@ -147,19 +147,86 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   }
 ,
+  // v8.2：財務指引全文內建（官方定稿，不會再改）——直接喺頁面內閱讀，唔使開彈窗／Drive APP。
+  financeGuideSections(){
+    return [
+      {id:'purpose',title:'一、適用範圍與基本原則',open:true,blocks:[
+        {h:'適用範圍',items:['本指引適用於 2026 港島童軍繽紛日籌備委員會各組別之所有開支、報銷、預算控制及會計程序。','財政由行政組財政主任統籌、秘書處支援；所有報價、單據及結算文件副本交行政組存檔。']},
+        {h:'基本原則',items:['先預算、後開支：開支須在已批核預算之內；超出預算須先獲批核。','先報價、後購買：未按規定取得報價及批核之開支，可能不獲發還。','單據必須保留：所有開支須附單據正本（豁免名單內商戶亦同）。','所有金額以港幣計算；同一項目不得拆單以規避報價門檻。']}
+      ]},
+      {id:'quote',title:'二、報價要求一覽（附件1 報價要求及批核人士）',open:true,blocks:[
+        {h:'按銀碼之報價及批核',table:[['支出金額','報價要求','批核人士 (申請→批→再確認)'],['豁免名單 ≤$2,000 或其他 ≤$500','無須報價','各副主席批核'],['豁免 >$2,000 或其他 >$500–$5,000','1 個口頭報價（附件3）','各副主席推薦 → 主席批核'],['$5,001–$30,000','2 個口頭報價','主席推薦 → 助理地域總監(活動) 認可 → 副地域總監(活動與訓練) 批核'],['$10,001–$300,000','3 個書面報價（附件4）','主席推薦 → 助理地域總監認可 → 副地域總監批核'],['$30,001–$100,000','2 個書面報價（附件4）','主席推薦 → 助理地域總監認可 → 副地域總監批核'],['$300,001–$1,000,000','5 個書面報價（附件4）','主席推薦 → 助理地域總監(活動) 及 副地域總監認可 → 地域總監批核'],['超過 $1,000,000','投標，至少 5 個報價','投標小組委員會推薦 → 地域總監批核']],items:['批核鏈按「總銀碼」計算，唔係逐張單據；結算總表會按總額顯示對應批核鏈。','口頭報價用附件3 登記、書面報價用附件4 比較表，兩者副本都要交行政組。']}
+      ]},
+      {id:'exempt',title:'三、豁免報價商戶（附件2，Rev Dec 2025）',open:false,blocks:[
+        {h:'重點',items:['附件2 清單內商戶可豁免報價程序，但必須保留單據正本並交行政組。','豁免上限：每項 $\u200B2,000 或以內免報價；超過 $2,000 仍須按附件1 程序處理。','豁免清單版本：Rev Dec 2025；僅以最新版本有效。','豁免商戶全名單以附件2 文件為準（下方原版檔案可下載）。']}
+      ]},
+      {id:'oral',title:'四、口頭報價程序（附件3 口頭報價資料記錄）',open:false,blocks:[
+        {h:'記錄欄位（每項必填）',items:['報價日期','項目／服務內容','商戶名稱、聯絡人及聯絡電話','報價金額（港幣）','記錄人（總主任或以上）及所屬組別']},
+        {h:'程序',items:['適用於超過 $500（豁免名單 $2,000）至 $5,000 之開支：1 個口頭報價，各副主席推薦後由主席批核。','記錄後副本交行政組存檔；APP「口頭報價登記」分頁可直接登記（等同填寫附件3）。','報價金額達 $5,000 以上須改用書面報價並按附件1 批核鏈處理。']}
+      ]},
+      {id:'written',title:'五、書面報價比較表（附件4）',open:false,blocks:[
+        {h:'要求',items:['適用於 $5,001 或以上之開支（按銀碼需 2–5 個書面報價，見附件1 表）。','最少比較 3 間供應商；比較表須列明：供應商名稱、規格／內容、單價、總價、選取理由。']},
+        {h:'批核鏈',items:['主席推薦 → 助理地域總監（活動）認可 → 副地域總監（活動與訓練）批核。','$300,001 以上：助理地域總監及副地域總監共同認可後，由地域總監批核。','超過 $1,000,000：須投標（至少 5 個報價），投標小組委員會推薦，地域總監批核。']}
+      ]},
+      {id:'settle',title:'六、結算總表（附件5／5A／5B）',open:false,blocks:[
+        {h:'版本',items:['附件5：Word 手動版；附件5A：Word 自動計算版；附件5B：Excel 版（推薦，自動計算）。']},
+        {h:'填寫重點',items:['逐項列出：憑單編號、支出項目、組別、預算金額、實際金額、日期、批核鏈。','APP「結算總表」分頁已內建同一格式，可直接列印（含四格印簽署位置及按銀碼批核鏈）。','活動結束後按行政組通知之截數日期前交回，連同全部單據正本。']}
+      ]},
+      {id:'stamp',title:'七、四格印簽署位置（附件6）',open:false,blocks:[
+        {h:'四格位置',items:['第一格（經辦人／申請人）：填寫人姓名及貼上單據；經辦人無須簽署。','第二格 Checked by：各組副主席簽名，核實支出屬實。','第三格 Certified by：財政主任 或 總主任（行政）或 副主席（行政）簽名，審核單據真確性及金額是否在預算之內（不超出預算方簽署）。','第四格 Approved：按銀碼由主席／助理地域總監／副地域總監／地域總監批核（見附件1）。']},
+        {h:'蓋印要求',items:['所有單據需蓋上四格印，印章至少 1/3 蓋在單據之上（防止重用）。','熱感式單據（如超級市場收據）須先影印，並在副本加蓋「COPY」章後使用。','支票／付款安排由秘書處辦理。']}
+      ]},
+      {id:'receipt',title:'八、單據要求與報銷程序',open:false,blocks:[
+        {h:'單據必須載有',items:['商戶全名','交易日期','購買項目及數量','總金額','簽收／蓋章（如有）']},
+        {h:'報銷程序',items:['填妥結算總表（附件5），貼妥單據並蓋四格印。','副本經 APP 開支申報上傳至財務資料夾；單據正本交行政組。','行政組對數 → 四格印逐格簽署 → 按銀碼由相應人士批核 → 秘書處安排付款。','未獲批核或單據不齊之開支，或須由經辦人自行承擔。']}
+      ]}
+    ];
+  }
+,
+  renderBuiltinFinanceGuide(){
+    const chip=(t)=>`<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200">${t}</span>`;
+    return `
+      <div class="bg-white border rounded-2xl overflow-hidden">
+        <div class="bg-amber-50 border-b border-amber-200 px-4 py-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <h4 class="font-bold text-[13px] text-amber-900"><i class="fa-solid fa-book-bookmark mr-2"></i>財務指引及會計程序（全文內建）</h4>
+            ${chip('官方定稿 · 不會再改')}${chip('附件1–6 已包含')}${chip('直接閱讀 · 毋須開彈窗')}
+          </div>
+          <p class="text-[11px] text-amber-800 mt-1.5 leading-relaxed">以下內容已按照「ISD2026 財務指引及會計程序 ver 1」及附件1–6 整理並直接內建喺呢一頁（附件2 豁免名單版本：Rev Dec 2025）。撳每節標題即可展開全文；原版 Word/PDF/Excel 檔案喺下方下載區。</p>
+        </div>
+        <div class="divide-y">
+          ${this.financeGuideSections().map(s=>`
+            <details ${s.open?'open':''} class="group">
+              <summary class="px-4 py-3 cursor-pointer select-none font-bold text-[12.5px] flex items-center justify-between hover:bg-slate-50">
+                <span>${escapeHtml(s.title)}</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition group-open:rotate-180"></i>
+              </summary>
+              <div class="px-4 pb-4 space-y-3">
+                ${s.blocks.map(b=>`
+                  <div class="bg-slate-50 border rounded-xl p-3 space-y-1.5">
+                    <div class="text-[11px] font-extrabold text-slate-700">${escapeHtml(b.h)}</div>
+                    ${b.table?`<div class="table-responsive mt-1"><table class="min-w-full text-[11px]"><thead class="bg-amber-100"><tr>${b.table[0].map(h=>`<th class="border border-amber-200 px-2 py-1 text-left">${escapeHtml(h)}</th>`).join('')}</tr></thead><tbody>${b.table.slice(1).map(r=>`<tr>${r.map(c=>`<td class="border border-slate-200 px-2 py-1 bg-white">${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
+                    ${(b.items||[]).length?`<ul class="list-disc pl-4 text-[11.5px] text-slate-600 leading-relaxed space-y-0.5">${b.items.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>`:''}
+                  </div>`).join('')}
+              </div>
+            </details>`).join('')}
+        </div>
+      </div>`;
+  }
+,
   renderFinanceGuidance(driveFiles, folderLink){
     const container=document.getElementById('finance-tab-guidance');
     if(!container) return;
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="flex flex-wrap gap-2">
-          <a href="${folderLink}" target="_blank" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-folder-open mr-1"></i> 開啟 Drive 指引資料夾</a>
+        ${this.renderBuiltinFinanceGuide()}
+        <div class="flex flex-wrap gap-2 items-center">
+          <a href="${folderLink}" target="_blank" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-folder-open mr-1"></i> 開啟 Drive 指引資料夾（備用）</a>
           <button onclick="app.saveFinanceFolderLink()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">設定財務資料夾</button>
           <input id="finance-folder-link-input" value="${escapeHtml(folderLink)}" placeholder="貼上 Drive 資料夾連結" class="flex-1 min-w-[240px] px-3 py-2 border rounded-xl text-xs font-mono">
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="bg-white border rounded-xl p-4 space-y-3">
-            <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open text-amber-600 mr-2"></i>財務指引文件 (來自 Drive，已整合至 APP，所有人可查閱)</h4>
+            <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open text-amber-600 mr-2"></i>原版檔案下載（指引全文已喺上方內建，唔使開檔案都睇到）</h4>
             <div class="space-y-2">${driveFiles.map(f=>{
               const previewUrl=`https://drive.google.com/file/d/${f.id}/preview`;
               const viewUrl=`https://drive.google.com/file/d/${f.id}/view`;
@@ -173,7 +240,7 @@ Object.assign(ScoutEventApp.prototype,{
                     <div class="flex gap-1 mt-2 flex-wrap">
                       <a href="${viewUrl}" target="_blank" class="bg-sky-600 text-white px-2.5 py-1 rounded-xl text-[10px] font-bold">👁️ 查看</a>
                       <a href="https://drive.google.com/uc?export=download&id=${f.id}" target="_blank" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">⬇️ 下載</a>
-                      <button onclick="app.previewDriveFile('${f.id}','${escapeHtml(f.name)}')" class="bg-amber-50 border border-amber-200 text-amber-800 px-2.5 py-1 rounded-xl text-[10px] font-bold">嵌入預覽</button>
+                      <button onclick="app.previewDriveFile('${f.id}','${escapeHtml(f.name)}')" class="bg-amber-50 border border-amber-200 text-amber-800 px-2.5 py-1 rounded-xl text-[10px] font-bold">頁內預覽</button>
                     </div>
                   </div>
                 </div>
@@ -182,17 +249,17 @@ Object.assign(ScoutEventApp.prototype,{
           </div>
           <div class="space-y-3">
             <div class="bg-white border rounded-xl p-4">
-              <h5 class="font-bold text-xs mb-2">指引摘要 (已摘錄至 APP，方便手機查閱)</h5>
+              <h5 class="font-bold text-xs mb-2">一頁睇晒：報價門檻速查（詳細全文見上方內建指引）</h5>
               <div class="text-[11px] leading-relaxed space-y-2 max-h-[320px] overflow-y-auto pr-1">
-                <div class="bg-slate-50 border rounded-xl p-2.5"><b>報價門檻：</b><br>• ≤$500 (豁免名單 $2,000)：免報價，副主席批核<br>• $500-$5,000：1個口頭報價 (附件3)，副主席推薦主席批核<br>• $5,001-$30,000：書面報價比較表 (附件4，需最少3間)<br>• >$30,000：需招標程序</div>
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>豁免商戶：</b>附件2 清單內商戶可豁免報價，但需保留單據 (Rev Dec 2025 版本)</div>
-                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5"><b>單據要求：</b>必須有商戶名稱、日期、金額、項目、簽收；電子單據可截圖上傳；所有單據副本需上傳至指定資料夾</div>
-                <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5"><b>結算總表：</b>附件5/5A/5B 三版本，APP 內可填寫，自動計算，支援列印 (含四格印簽名位置附件6)</div>
+                <div class="bg-slate-50 border rounded-xl p-2.5"><b>報價門檻（附件1）：</b><br>• ≤$500（豁免名單 ≤$2,000）：免報價 → 副主席批核<br>• ≤$5,000：1 個口頭報價（附件3）→ 副主席推薦 → 主席批核<br>• $5,001–$30,000：2 個口頭報價 → 主席推薦 → 助理地域總監認可 → 副地域總監批核<br>• $10,001–$300,000：3 個書面報價（附件4）→ 同上批核鏈<br>• >$1,000,000：投標（≥5 報價）→ 地域總監批核</div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>豁免商戶（附件2）：</b>清單內商戶可豁免報價，但需保留單據（Rev Dec 2025 版本）</div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5"><b>單據要求：</b>必須有商戶名稱、日期、金額、項目、簽收；四格印至少 1/3 蓋喺單據上；熱感紙須影印加 COPY 章；副本上傳至指定資料夾</div>
+                <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5"><b>結算總表（附件5/5A/5B）：</b>APP 內「結算總表」分頁可填寫及列印，含四格印簽名位置（附件6）</div>
               </div>
             </div>
             <div class="bg-white border rounded-xl p-3">
-              <h5 class="font-bold text-xs mb-2">嵌入預覽</h5>
-              <div id="finance-preview-area" class="bg-slate-100 border rounded-xl h-[320px] flex items-center justify-center text-xs text-slate-500">點擊左側「嵌入預覽」按鈕，此處顯示文件預覽 (Google Drive preview)</div>
+              <h5 class="font-bold text-xs mb-2">頁內預覽（可選，只在需要原版格式時使用）</h5>
+              <div id="finance-preview-area" class="bg-slate-100 border rounded-xl h-[320px] flex items-center justify-center text-xs text-slate-500 px-3 text-center">一般查閱唔使開：指引全文已喺上方內建。如要睇原版檔案排版，先按左側檔案嘅「頁內預覽」。</div>
             </div>
             <div class="bg-slate-900 text-white rounded-xl p-3 text-[11px] leading-relaxed">
               <b>財務資料夾：</b><br>
@@ -443,7 +510,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async deleteExpense(expId){
-    if(!this.isSuperAdmin()){ showToast('僅超管可永久刪除開支紀錄','error'); return; }
+    if(!this.isSuperAdmin()){ showToast('權限不足，無法永久刪除紀錄','error'); return; }
     if(!confirm('確定永久刪除此開支申報？APP、本機快取及後台紀錄都會刪除。')) return;
     this.markRecordDeleted('Finance_Expenses',expId);
     const fin=this.getFinanceData();

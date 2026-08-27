@@ -2,7 +2,7 @@
 Object.assign(ScoutEventApp.prototype,{
 
   /* ===================== 開戶 + 權限管理 (總主任以上) ===================== */
-  // 我可授權的下級（同組 + 層級比我低；管理員/超管看全部）
+  // 我可授權的下級（同組 + 層級比我低；管理員看全部）
   getMySubordinates(){
     const u=this.currentUser; if(!u) return [];
     const myLvl=this.roleLevel(u.role);
@@ -10,7 +10,7 @@ Object.assign(ScoutEventApp.prototype,{
     const isAdmin=this.isAdmin()||myLvl>=100;
     return (this.usersList||[]).filter(x=>{
       if(!x || x.user_id===u.user_id) return false;
-      if(!iAmSuper && this.isSuperAdminUser(x)) return false; // 超管帳戶只有超管自己睇到
+      if(!iAmSuper && this.isSuperAdminUser(x)) return false; // 系統帳戶不會出現喺其他人嘅下級名單
       const lvl=this.roleLevel(x.role);
       if(isAdmin) return true;
       if(lvl>=myLvl) return false;         // 只能授權給層級比自己低的下級
@@ -80,7 +80,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-4">
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900">
           <b><i class="fa-solid fa-user-plus mr-1"></i>開戶（預設密碼 1234，登入後自行修改）：</b><br>
-          • 總主任或以上可為<b>本組</b>開戶（管理員/超管可跨組）<br>
+          • 總主任或以上可為<b>本組</b>開戶（管理員可跨組）<br>
           • 職級僅提供 <b>工作人員／主任／總主任</b>；管理員（如秘書處受薪職員）可另開「管理員」級帳戶（副主席及以上已確定，由管理員直接處理）<br>
           • <b>登入帳號留空＝自動用中文姓名</b>（例：朱家聰），同名自動加 -2/-3；預設密碼 1234
         </div>
@@ -102,7 +102,7 @@ Object.assign(ScoutEventApp.prototype,{
         ${this.canBulkOnboard()?`
         <div class="bg-white border rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between flex-wrap gap-2">
-            <h4 class="font-bold text-sm"><i class="fa-solid fa-users-gear text-teal-600 mr-1"></i>快速批量開戶（逐行新增，一次過開） <span class="text-[10px] bg-teal-100 text-teal-700 border border-teal-200 px-2 py-0.5 rounded-full">管理員 / 超管</span></h4>
+            <h4 class="font-bold text-sm"><i class="fa-solid fa-users-gear text-teal-600 mr-1"></i>快速批量開戶（逐行新增，一次過開） <span class="text-[10px] bg-teal-100 text-teal-700 border border-teal-200 px-2 py-0.5 rounded-full">管理員專用</span></h4>
             <div class="flex gap-2"><button onclick="app.addQuickBulkRow()" class="bg-slate-100 border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>加一行</button><button onclick="app.submitQuickBulk()" class="bg-teal-600 text-white px-4 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-user-plus mr-1"></i>全部開戶</button></div>
           </div>
           <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900">
@@ -114,7 +114,7 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="bg-white border rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between flex-wrap gap-2">
-            <h4 class="font-bold text-sm"><i class="fa-solid fa-file-csv text-amber-600 mr-1"></i>批量開戶（CSV/JSON 上傳） <span class="text-[10px] bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">管理員 / 超管專用</span></h4>
+            <h4 class="font-bold text-sm"><i class="fa-solid fa-file-csv text-amber-600 mr-1"></i>批量開戶（CSV/JSON 上傳） <span class="text-[10px] bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">管理員專用</span></h4>
             <button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載範本 CSV</button>
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
@@ -138,7 +138,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(this.canBulkOnboard()) this.renderQuickBulkTable();
   }
 ,
-  /* ── 快速批量開戶（管理員/超管）：逐行中文名，一次過開 ── */
+  /* ── 快速批量開戶（管理員）：逐行中文名，一次過開 ── */
   renderQuickBulkTable(){
     const tb=document.getElementById('quick-bulk-tbody'); if(!tb) return;
     if(!this._quickBulkRows || !this._quickBulkRows.length) this._quickBulkRows=[{name:'',job:'',role:'staff',group:''}];
@@ -183,7 +183,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async submitQuickBulk(){
-    if(!this.canBulkOnboard()){ showToast('僅管理員/超管可用','error'); return; }
+    if(!this.canBulkOnboard()){ showToast('僅管理員可用','error'); return; }
     const rows=this.collectQuickBulkRows().filter(r=>r.name);
     if(!rows.length){ showToast('請至少填寫一行中文姓名','error'); return; }
     if(!confirm(`確認一次過開 ${rows.length} 個帳戶？預設密碼 1234`)) return;
@@ -218,7 +218,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.renderAccountSetupModule();
   }
 ,
-  // 批量開戶：僅管理員/超管（從獨立「用戶·批量」卡片併入此處）
+  // 批量開戶：僅管理員（從獨立「用戶·批量」卡片併入此處）
   canBulkOnboard(){ return ['super_admin','admin'].includes(this.currentUser?.role); }
 ,
   normalizeBulkRows(rows){
@@ -233,7 +233,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   handleAccBulkCSV(file){
-    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員/超管可用','error'); return; }
+    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員可用','error'); return; }
     if(!file){ showToast('請選擇檔案','warning'); return; }
     const reader=new FileReader();
     reader.onload=(e)=>{
@@ -251,7 +251,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   previewAccBulkJSON(){
-    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員/超管可用','error'); return; }
+    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員可用','error'); return; }
     const text=(document.getElementById('acc-bulk-json')?.value||'').trim();
     if(!text){ showToast('請先貼上 JSON 陣列','warning'); return; }
     try{ let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; this.bulkPending=this.normalizeBulkRows(arr); if(!this.bulkPending.length){ showToast('無有效資料（需要 user_id + name）','error'); return; } this.renderAccBulkPreview(); showToast(`已解析 ${this.bulkPending.length} 筆`,'success'); }
@@ -259,7 +259,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async confirmAccBulkCreate(){
-    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員/超管可用','error'); return; }
+    if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員可用','error'); return; }
     if(!this.bulkPending.length){ showToast('無資料','warning'); return; }
     // 1) 本地名單（所有事件的小組資料庫；示範沙盒只留此步）
     let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); const newRows=[];

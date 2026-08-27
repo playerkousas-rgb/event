@@ -40,18 +40,18 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   isSuperAdminUser(u){ return (u?.role)==='super_admin'; }
   /* 用戶管理可視範圍（v8.3 定案）
-     ├ 超管（你）              ：全部人（包括自己）
-     ├ 執行副主席或以上         ：除超管以外全部人（執副／主席／顧問／管理員）
-     ├ 副主席                  ：只睇自己組（本組全部職級）
-     ├ 總主任                  ：自己組，唔包括副主席（及以上）
-     └ 主任                    ：自己組普通工作人員（staff）                       */
+     ├ 最高層帳號（唔顯示喺名單）  ：全部人（包括自己）
+     ├ 執行副主席或以上           ：全部人（執副／主席／顧問／管理員）
+     ├ 副主席                    ：只睇自己組（本組全部職級）
+     ├ 總主任                    ：自己組，唔包括副主席（及以上）
+     └ 主任                      ：自己組普通工作人員（staff）                       */
 ,
   visibleUsersForManager(){
     const list=this.pendingUsers||this.usersList||[];
     const me=this.currentUser; if(!me) return [];
-    if(this.isSuperAdmin()) return list;                                        // 超管：全部人（包括自己）
-    const noSuper=list.filter(u=>!this.isSuperAdminUser(u));                    // 其他人一律看唔到超管
-    if(this.canSeeAllUsers()) return noSuper;                                   // 執副／主席／顧問／管理員：除超管以外全部人
+    if(this.isSuperAdmin()) return list;                                        // 最高層：全部人（包括自己）
+    const noSuper=list.filter(u=>!this.isSuperAdminUser(u));                    // 其他人一律看唔到最高層帳戶
+    if(this.canSeeAllUsers()) return noSuper;                                   // 執副／主席／顧問／管理員：全部人
     const myG=normalizeGroupName(me.group_name);
     const myLv=this.roleLevel(me.role);
     const sameGroup=noSuper.filter(u=>normalizeGroupName(u.group_name)===myG);
@@ -62,8 +62,9 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   visibleUsersScopeLabel(){
-    if(this.isSuperAdmin()) return 'L0 超管（不顯示）：可見全部人（包括自己）';
-    if(this.canSeeAllUsers()) return 'L1 執行副主席／主席／顧問／管理員：可見全部人';
+    if(this.isSuperAdmin()) return '系統管理帳號：可見全部人（包括自己）';
+    if(this.currentUser?.role==='executive_vice_chairperson') return 'L2 執行副主席：可見全部人';
+    if(this.canSeeAllUsers()) return 'L1 主席／顧問／管理員：可見全部人';
     const lv=this.roleLevel(this.currentUser?.role);
     const g=normalizeGroupName(this.currentUser?.group_name)||'本組';
     if(lv>=60) return `L3 副主席：只可見自己組（${g}）全部成員`;
@@ -306,15 +307,15 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   openUserFormModal(){document.getElementById('u-form-mode').value='create'; document.getElementById('u-form-original-id').value=''; document.getElementById('u-ymis').value=''; document.getElementById('u-name').value=''; this.populateUserRoleSelect('staff'); document.getElementById('modal-user').classList.remove('hidden');}
 ,
-  // 上級可改下級權限：最多可設定到與自己相同的權限 (super_admin 例外可設全部)
-  // 副主席及以上（主席/副主席/執行副主席/顧問/管理員）已確定由管理員/超管處理，其餘人只可開設以下層級
-  assignableRoles(){ if(!this.currentUser) return []; const myLv=this.roleLevel(this.currentUser.role); const isTopAdmin=['super_admin','admin'].includes(this.currentUser.role); if(isTopAdmin) return Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public' && ROLE_HIERARCHY[r]<=myLv); return Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public' && ROLE_HIERARCHY[r]<=myLv && ROLE_HIERARCHY[r]<60); }
+  // 上級可改下級權限：最多可設定到與自己相同的權限；最高層職級係後端專管，前端不提供開設
+  // 副主席及以上（主席/副主席/執行副主席/顧問/管理員）已確定由管理員處理，其餘人只可開設以下層級
+  assignableRoles(){ if(!this.currentUser) return []; const myLv=this.roleLevel(this.currentUser.role); const pool=Object.keys(ROLE_HIERARCHY).filter(r=>r!=='public'&&r!=='super_admin'); const isTopAdmin=['super_admin','admin'].includes(this.currentUser.role); if(isTopAdmin) return pool.filter(r=>ROLE_HIERARCHY[r]<=myLv); return pool.filter(r=>ROLE_HIERARCHY[r]<=myLv && ROLE_HIERARCHY[r]<60); }
 ,
   populateUserRoleSelect(curVal){
     const sel=document.getElementById('u-role'); if(!sel) return;
     const allowed=this.assignableRoles();
     if(!allowed.includes(curVal) && curVal) allowed.unshift(curVal);
-    sel.innerHTML=allowed.map(r=>`<option value="${r}" ${r===curVal?'selected':''}>${ROLE_LABELS[r]||r}${ROLE_HIERARCHY[r]>=100?'（超管）':''}</option>`).join('')||'<option value="staff">工作人員</option>';
+    sel.innerHTML=allowed.map(r=>`<option value="${r}" ${r===curVal?'selected':''}>${ROLE_LABELS[r]||r}</option>`).join('')||'<option value="staff">工作人員</option>';
   }
 ,
   editUser(id){const u=this.usersList.find(x=>x.user_id===id); if(!u) return; document.getElementById('u-form-mode').value='edit'; document.getElementById('u-form-original-id').value=u.user_id; document.getElementById('u-ymis').value=u.user_id; document.getElementById('u-name').value=u.name; document.getElementById('u-group').value=u.group_name||''; document.getElementById('u-contact').value=u.contact||''; document.getElementById('u-email').value=u.email||''; const pwd=document.getElementById('u-password'); if(pwd){ pwd.value=this.canSeeUserPasswords()?(u.password||''):''; pwd.parentElement?.classList.toggle('hidden', !this.canSeeUserPasswords()); } this.populateUserRoleSelect(u.role||'staff'); document.getElementById('modal-user').classList.remove('hidden');}
@@ -335,19 +336,27 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async saveChanges(){if(!this.pendingChanges.length){showToast('無變更','warning'); return;} const overlay=document.getElementById('savingOverlay'); overlay.classList.add('active'); await new Promise(r=>setTimeout(r,800)); this.pendingChanges=[]; localStorage.removeItem(LS.pending(this.currentEvent?.event_id||'global')); overlay.classList.remove('active'); this.updateSaveBar(); showToast('已保存','success');}
 ,
-  async submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value;
+  async submitLogin(e){e.preventDefault(); const id=document.getElementById('login-email-input').value.trim(); const pwd=document.getElementById('login-password-input').value.trim();
     // 只要已設定後端網址，無論 Mock/雲端模式都先交由後端驗證
-    // （超管 sheep 及正式帳戶只存在後端 SCRIPT/Sheet，前端及 Mock 本地均不留存；之前 Mock 模式下超管永遠登入失敗）
+    // （正式帳戶只存在後端 SCRIPT/Sheet，前端及 Mock 本地均不留存；之前 Mock 模式下後端帳戶永遠登入失敗）
     if(this.gasUrl){
       try{
         const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'login',user_id:id,password:pwd})});
-        const j=await res.json();
-        if(j && j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:(j.user.user_id==='exec_vp'||(j.user.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':j.user.role,group_name:normalizeGroupName(j.user.group_name),job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||''),'success'); if(this.currentEvent) this.showDashboard(); return; }
-        if(!this.mockMode){ showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤'),'error'); return; }
+        let j=null;
+        try{ j=await res.json(); }catch(parseErr){ throw new Error('後端回應唔係 JSON（GAS 部署存取權限可能唔係「任何人」，或 GAS 網址錯誤）'); }
+        if(j && j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:(j.user.user_id==='exec_vp'||(j.user.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':j.user.role,group_name:normalizeGroupName(j.user.group_name),job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||'')+(j.version?`（後端 ${j.version}）`:''),'success'); if(this.currentEvent) this.showDashboard(); return; }
+        if(j && j.success && !j.user){
+          // 後端將 POST 重新導向成 GET（常見於 /exec 部署係舊版本）：回應會變成 getEvents
+          if(!this.mockMode){ showToast('登入失敗：後端回應異常（疑似部署係舊版本）。請喺 Apps Script 用「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試。','error'); return; }
+        } else if(!this.mockMode){
+          // v8.2 診斷提示：帳戶冇錯都入唔到，最大可能係你連住嘅 /exec 係舊版部署（未重新部署新版 Code.gs）。
+          const hint=j&&j.version?'':'（後端冇回報版本 → 好大機會係舊版部署；請喺 Apps Script「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試）';
+          showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤')+hint,'error'); return;
+        }
         // Mock 模式下後端找不到 → 繼續嘗試本地示範帳戶
-      }catch(err){ if(!this.mockMode){ showToast('無法連線後端：'+err.message,'error'); return; } /* Mock 模式下後端連不上 → 繼續嘗試本地示範帳戶 */ }
+      }catch(err){ if(!this.mockMode){ showToast('無法連線後端：'+err.message+'（請確認 GAS 網址正確、部署存取權限係「任何人」）','error'); return; } /* Mock 模式下後端連不上 → 繼續嘗試本地示範帳戶 */ }
     }
-    // Mock 模式回退：本地示範帳戶（不含超管，超管只走後端 SCRIPT）
+    // Mock 模式回退：本地示範帳戶（正式帳戶只經後端 SCRIPT）
     const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd);
     if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name,'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
@@ -386,7 +395,7 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('密碼已更新（示範）','success');
   }
 ,
-  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=this.currentUser.role.toUpperCase(); if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); this.updateAdminNav(); setTimeout(()=>this.checkAndShowNotifications(), 500);}
+  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); this.updateAdminNav(); setTimeout(()=>this.checkAndShowNotifications(), 500);}
 ,
   logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
 ,
