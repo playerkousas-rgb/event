@@ -504,26 +504,34 @@ Object.assign(ScoutEventApp.prototype,{
           支出區以「XX組」行為組別標題，項目同收入格式；備用支出/總支出/剩餘為合計行略過 */
   parseBudgetGrid(rows){
     const skipRe=/^(總收入|總支出|剩餘|備用支出)/;
+    // 組別標題行：標準組別名（含模糊配對，如「協調」→「協調組」），或任何以「組」結尾的名稱。
+    // 未知組別標題（如「可持續發展組」，或「姐/姊」之「組」字誤打）也獨立成一個預算分組，
+    // 不會把該組項目錯混入上一組；若行政組日後把標題改為 2026 正式組別名，即自動對回該組預算格。
+    const groupOfRow=(c0)=>{
+      const n=normalizeGroupName(c0);
+      if(!n) return null;
+      if(ORG_GROUPS.includes(n)) return n;
+      const hit=ORG_GROUPS.find(g=>g===n||g.includes(n)||n.includes(g));
+      if(hit) return hit;
+      if(/[組姊姐]$/.test(n)) return n;
+      return null;
+    };
     const groups={};
-    let section='收入';
     let curGroup='收入';
     for(let i=0;i<rows.length;i++){
       const row=rows[i]||[];
       const c0=String(row[0]||'').trim();
       const c1=String(row[1]||'').trim();
-      if(c0==='支出'){ section='支出'; curGroup='支出'; continue; }
-      
-      const normC0 = normalizeGroupName(c0);
-      if(ORG_GROUPS.includes(normC0) || ['收入','支出'].includes(normC0)){ curGroup=normC0; continue; }
-      
+      const grp=groupOfRow(c0);
+      if(grp){ curGroup=grp; continue; }
       if(!c1 || skipRe.test(c1)) continue;
-      if(c1==='' || /^(預算|實際|總計|小計)/.test(c1)) continue;
+      if(/^(預算|實際|總計|小計)/.test(c1)) continue;
       const budget=parseFloat(String(row[3]||'').replace(/[$,]/g,''))||0;
       const actual2025=String(row[5]||'').trim();
       const budget2025=String(row[6]||'').trim();
       const notes=[];
-      if(actual2025) notes.push('ISD2025實際: '+actual2025);
-      if(budget2025) notes.push('ISD2025預算: '+budget2025);
+      if(actual2025 && actual2025!=='-') notes.push('ISD2025實際: '+actual2025);
+      if(budget2025 && budget2025!=='-') notes.push('ISD2025預算: '+budget2025);
       if(!groups[curGroup]) groups[curGroup]=[];
       groups[curGroup].push({ group_name:curGroup, item_name:c1, budget, actual:0, notes:notes.join(' ／ ') });
     }
@@ -648,22 +656,27 @@ Object.assign(ScoutEventApp.prototype,{
     const src=(this.getFinanceData().budget_source)||{};
     const sheetId=src.sheet_id||src.drive_file_id;
     if(!sheetId){ if(!silent) showToast('尚未設定預算資料來源 (budget_source)','warning'); return; }
-    if(!silent) showToast('正在從 Drive 讀取最新預算…','');
+    if(!silent) showToast('正在讀取最新預算（Google 試算表）…','');
     const overlay=document.getElementById('savingOverlay'); if(overlay && !silent) overlay.classList.add('active');
     try{
-      const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
-      if(got.ok && got.rows.length){
-        const gb=(src.kind==='budget_grid'&&Array.isArray(got.rows[0]))?this.parseBudgetGrid(got.rows):this.rowsToBudgets((Array.isArray(got.rows[0]))?this.gridToObjects(got.rows):got.rows);
-        if(gb.length){
-          const fin=this.getFinanceData();
-          fin.group_itemized_budgets=gb;
-          this.saveFinanceData(fin);
-          if(!silent) showToast(`已同步 ${gb.length} 組預算（共 ${gb.reduce((s,g)=>s+g.items.length,0)} 項，via ${got.via}）`,'success');
-          this.renderFinanceBudgets();
-          return;
-        }
+      let gb=[], via='none';
+      if(src.kind==='budget_grid'){
+        // 合併儲存格格式（「XX組」組別標題行＋項目行）：要原樣讀「格線」（保留空白欄）先交 parseBudgetGrid 拆組
+        const raw=await this.fetchDriveSheetGridRaw(sheetId, src.gid||0);
+        if(raw.ok && raw.rows.length){ gb=this.parseBudgetGrid(raw.rows); via=raw.via; }
+      } else {
+        const got=await this.fetchDriveSheetRows(sheetId, src.gid||0);
+        if(got.ok && got.rows.length){ gb=this.rowsToBudgets((Array.isArray(got.rows[0]))?this.gridToObjects(got.rows):got.rows); via=got.via; }
       }
-      if(!silent) showToast('未能從 Drive 讀取預算。建議把 xlsx 另存為原生「Google 試算表」再同步','error');
+      if(gb.length){
+        const fin=this.getFinanceData();
+        fin.group_itemized_budgets=gb;
+        this.saveFinanceData(fin);
+        if(!silent) showToast(`已同步 ${gb.length} 組預算（共 ${gb.reduce((s,g)=>s+g.items.length,0)} 項，via ${via}）`,'success');
+        this.renderFinanceBudgets();
+        return;
+      }
+      if(!silent) showToast('未能讀取預算。試算表須設「任何有連結者均可檢視」，合併儲存格格式需保留「XX組」組別標題行','error');
     }catch(e){ if(!silent) showToast('同步失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }

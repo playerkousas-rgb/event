@@ -1272,6 +1272,10 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>🏢 行政組 (完全取代舊手冊行政組頁面)：</b><br>舊版有活動通告、報名表、急救申請、膳食安排、參加旅團名單，現全部整合至此卡片，公開可看，僅修改需登入，部門間溝通更完善</div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
+          <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+        </div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
             <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務管理（行政組轄下）</h4>

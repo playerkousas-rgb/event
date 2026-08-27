@@ -13,7 +13,7 @@ const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .map(match => {
     const attrs = match[1] || '';
     if (/src=/i.test(attrs)) {
-      const src = (attrs.match(/src="([^"]+)"/) || [])[1] || '';
+      const src = ((attrs.match(/src="([^"]+)"/) || [])[1] || '').split('?')[0];
       return src.startsWith('js/') ? fs.readFileSync(path.join(root, src), 'utf8') : '';
     }
     return match[2];
@@ -149,7 +149,9 @@ assert(monPage.includes("app.switchTopTab('approvals')"), '我的監察頁數字
 assert(htmlOf('module-actions').includes('前往批核中心處理'), '我的監察頁應有前往批核中心按鈕');
 
 /* ---------- 4. 排序：公開資料 section 在 其他組別及工作卡片 section 之前（靜態 HTML 順序） ---------- */
-const dashHtml = html.slice(html.indexOf('id="simple-card-panel"'), html.indexOf('id="full-dashboard-sections"'));
+// 舊版 #full-dashboard-sections（認識活動/參與活動/協作與管理 彩色分組）已刪除，改以 部門管理中心 為切片終點
+assert(!html.includes('id="full-dashboard-sections"'), '舊版 full-dashboard-sections（認識活動/參與活動彩色分組）應已刪除');
+const dashHtml = html.slice(html.indexOf('id="simple-card-panel"'), html.indexOf('id="group-management-section"'));
 const pubIdx = dashHtml.indexOf('id="public-section"');
 const idIdx = dashHtml.indexOf('id="identity-section"');
 const mgmtIdx = dashHtml.indexOf('id="management-tools-section"');

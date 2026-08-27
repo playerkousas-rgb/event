@@ -12,7 +12,7 @@ const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .map(match => {
     const attrs = match[1] || '';
     if (/src=/i.test(attrs)) {
-      const src = (attrs.match(/src="([^"]+)"/) || [])[1] || '';
+      const src = ((attrs.match(/src="([^"]+)"/) || [])[1] || '').split('?')[0];
       return src.startsWith('js/') ? fs.readFileSync(path.join(root, src), 'utf8') : '';
     }
     return match[2];
