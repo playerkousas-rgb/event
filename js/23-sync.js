@@ -156,7 +156,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.renderMealsOrders();
     this.renderMealsMy();
     this.renderMealsPrint();
-    this.renderMealsMonitor();
+    // 監察已集中至「我的監察」；meals-tab-monitor 已移除
     // Update module-actions
     const actionsEl=document.getElementById('module-actions');
     if(actionsEl){

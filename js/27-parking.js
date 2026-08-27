@@ -257,4 +257,32 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('已匯出 JSON','success');
   }
 ,
+
+  printVehiclePassTable(){
+    // 列印已批核車輛最後名單（合併 APP 申請 + 外部 Excel 清單）
+    const data=this.getSuppliesData();
+    const parking=this.getParkingData();
+    const approved=(data.vehicle_passes||[]).filter(v=>v.status==='approved');
+    const external=(parking.checklist&&parking.checklist.vehicles)||[];
+    if(!approved.length && !external.length){ showToast('尚未有已批核車輛名單','warning'); return; }
+    const rows=[
+      ...approved.map(v=>`<tr><td>${escapeHtml(v.plate||'')}</td><td>${escapeHtml(v.driver_name||'')}</td><td>${escapeHtml(v.driver_contact||'')}</td><td>${escapeHtml(v.group_name||'')}</td><td>${escapeHtml(v.vehicle_type||'')}</td><td>${escapeHtml(v.entry_date||'')} → ${escapeHtml(v.exit_date||'')}</td><td>${escapeHtml(v.parking_location||'-')}</td><td>${escapeHtml(v.purpose||'')}</td></tr>`),
+      ...external.map(v=>`<tr><td>${escapeHtml(v.plate||'')} (外部)</td><td>${escapeHtml(v.driver_name||'')}</td><td>${escapeHtml(v.contact||'')}</td><td>${escapeHtml(v.group_name||'')}</td><td>${escapeHtml(v.unit||'')}</td><td>${escapeHtml(v.park_date||'')}</td><td>-</td><td>${escapeHtml(v.position||'')}</td></tr>`)
+    ].join('');
+    const win=window.open('','_blank');
+    if(!win){ showToast('請允許彈出視窗以列印','error'); return; }
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>車輛通行證最後名單</title>
+      <style>body{font-family:"Noto Sans TC",sans-serif;padding:24px;color:#111}
+      h1{font-size:18px;margin:0 0 4px} .meta{font-size:12px;color:#555;margin-bottom:12px}
+      table{width:100%;border-collapse:collapse;font-size:12px} th,td{border:1px solid #999;padding:6px 8px;text-align:left}
+      th{background:#f1f5f9} @media print{button{display:none}}</style></head><body>
+      <h1>🚗 車輛通行證最後名單（已批核）</h1>
+      <div class="meta">列印日期：${new Date().toLocaleString()} · 共 ${approved.length+external.length} 架 · 執行組：${escapeHtml(this.approvalRouteLabel('vehicle','executor_groups'))}</div>
+      <table><thead><tr><th>車牌</th><th>司機</th><th>電話</th><th>組別</th><th>車型</th><th>停泊日期</th><th>位置</th><th>用途</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);
+    win.document.close();
+  }
+,
+
 });
