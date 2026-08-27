@@ -283,6 +283,8 @@ function initializeSheets() {
   ensureSheet(ss, 'Schedule', ['schedule_id', 'event_id', 'time_slot', 'title', 'description', 'location', 'group_name', 'created_at']);
   ensureSheet(ss, 'Supplies', ['supply_id', 'event_id', 'item_name', 'total_qty', 'unit', 'category', 'created_at']);
   ensureSheet(ss, 'Supply_Requests', ['request_id', 'event_id', 'supply_id', 'item_name', 'qty_requested', 'group_name', 'status', 'requested_by', 'approved_by', 'created_at']);
+  // 攤位節目計劃書（v8.7：對標 2026 攤位總表＋主題節目組計劃書表單；總表匯總帳篷／摺枱／摺椅等）
+  ensureSheet(ss, 'Booth_Requests', ['request_id', 'event_id', 'item_name', 'qty_requested', 'qty_approved', 'unit', 'group_name', 'zone', 'booth_no', 'booth_code', 'unit_name', 'booth_name', 'activity_desc', 'fif15_content', 'qty_tent', 'qty_table', 'qty_chair', 'skirting_qty', 'power_w', 'other_req', 'other_need', 'delivery', 'owner_name', 'owner_age_group', 'owner_unit', 'owner_position', 'owner_phone', 'owner_email', 'extra_items_json', 'contact', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at', 'notes', 'created_at']);
   // 泊車證申請：登入用戶申請，沿用車輛動態路由完成本組確認、最終批核及入口清單執行。
   ensureSheet(ss, 'Parking_Requests', ['parking_id', 'event_id', 'seq', 'group_name', 'unit', 'plate', 'driver_name', 'position', 'contact', 'park_date', 'entry_time', 'exit_time', 'full_day', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
   // 口頭報價登記（v7.5 新增）：總主任以上登記，行政組及執行副主席以上可查看
@@ -307,7 +309,7 @@ function initializeSheets() {
 function formatSheetsByPurpose() {
   const ss = getSheet();
   const frequentlyEdited = ['Events','Account_Setup','Approval_Permissions','Approval_Routing','Supplies','Finance','Schedule','Meals'];
-  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Vehicle_Passes','Parking_Requests','Finance_Expenses','Oral_Quotes'];
+  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Booth_Requests','Vehicle_Passes','Parking_Requests','Finance_Expenses','Oral_Quotes'];
   const systemSheets = ['Users'];
   ss.getSheets().forEach(function(sheet) {
     const name = sheet.getName();

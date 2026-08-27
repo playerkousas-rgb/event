@@ -186,25 +186,41 @@ function parseCSV(text){let lines=splitCSVLines(text);while(lines.length&&!Strin
 function downloadDataUrl(fileName,dataUrl){const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();a.remove();}
 function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
 
-/* ── 攤位物資申請對標資料（品牌推廣組「2026 攤位總表」Google Sheet）──
-   來源：docs.google.com/spreadsheets/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle
-   分區（A-F）＋編號＋負責單位來自該表；攤位名稱由申請人填寫（因為要做招牌）。
-   標準物資（枱／椅／帳篷圍布／電源等）大會已有提供（向外判商租用），申請人只需填數量，不設庫存。 */
+/* ── 攤位計劃書對標資料 ──
+   ① 品牌推廣組「2026 攤位總表」Google Sheet（分區 A-G＋編號＋負責單位）：
+      docs.google.com/spreadsheets/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle
+   ② 主題節目組「港島童軍繽紛日2026 - 主題節目攤位計劃書」Google Form：
+      docs.google.com/forms/d/e/1FAIpQLSfo-rLX88DI7teSF0_19VFkdzmoWAxxfCVt92S0_ZsJApFikg
+   分區＋編號＋負責單位按總表選擇；攤位名稱／活動內容／「十五五」主題／負責人資料由申請人填寫。
+   帳篷（3mW x 3mD）／摺枱／摺椅由大會向外判商租用，申請人只需填數量，不設庫存。
+   v8.7：攤位卡由「攤位物資申請」升級為「攤位計劃書」，並新增「總表」頁籤
+   （TOTAL 總數＋各攤位明細：TOTAL 50 BOOTH 100 CHAIR，其中 A01 2 BOOTH 4 CHAIR 睇法）。 */
 const BOOTH_STD_ITEMS=[
-  {name:'枱', unit:'張'},
-  {name:'椅', unit:'張'},
-  {name:'帳篷圍布', unit:'塊', hint:'每攤位最多 3 塊'},
-  {name:'電源', unit:'W', hint:'填負載 (W)，如 500'}
+  {key:'qty_tent', name:'帳篷', unit:'頂', hint:'每個帳篷為 3mW x 3mD'},
+  {key:'qty_table', name:'摺枱', unit:'張'},
+  {key:'qty_chair', name:'摺椅', unit:'張'}
+];
+// 舊版「一項一紀錄」嘅 item_name 對應新欄位（兼容 mock／後端舊紀錄嘅總表統計）
+const BOOTH_ITEM_KEY_MAP={'帳篷':'qty_tent','帳篷（3mW x 3mD）':'qty_tent','枱':'qty_table','摺枱':'qty_table','椅':'qty_chair','摺椅':'qty_chair','帳篷圍布':'skirting_qty','電源':'power_w'};
+// 攤位負責人年齡組別（Google Form 原樣選項）
+const BOOTH_OWNER_AGE_GROUPS=[
+  '15-20歲，並為深資童軍支部成員',
+  '18-25歲，並為樂行童軍支部成員',
+  '18-25歲，為持有有效領袖委任書/委任證的各級領袖/總監，而並非青少年成員',
+  '25-39歲','40-49歲','50-59歲','60歲及以上'
 ];
 const BOOTH_ZONES_2026=[
-  {zone:'A',theme:'積極公民 / 「十五五」規劃',units:[{no:'01',name:'主題節目組總部'},{no:'02',name:'積極公民工作坊 - 機電1'},{no:'03',name:'積極公民工作坊 - 機電2'},{no:'04',name:'積極公民工作坊 - 機電3'},{no:'05',name:'積極公民工作坊 - 機電4'},{no:'06',name:'積極公民工作坊 - 機電5'},{no:'07',name:'積極公民工作坊 - 機電6'},{no:'08',name:'香港警務處 - 跨部門反恐專責組'},{no:'09',name:'香港警務處 - 網絡安全及科技罪案調查科'},{no:'10',name:'香港警務處 - 毒品調查科'},{no:'11',name:'香港警務處 - 國家安全處'},{no:'12',name:'香港警務處 - 交通總區'},{no:'13',name:'香港警務處 - 鑑證科'},{no:'14',name:'香港島青年聯會'}]},
-  {zone:'B',theme:'創新變革',units:[{no:'01',name:'港島童軍氣槍射擊會'},{no:'02',name:'港島地域 - 航空活動'},{no:'03',name:'航天航空展'},{no:'04',name:'無人機體驗'}]},
-  {zone:'C',theme:'服務社群',units:[{no:'01',name:'港島地域 - 發展部1'},{no:'02',name:'港島地域 - 發展部2'},{no:'03',name:'港島地域 - 深資童軍議會'},{no:'04',name:'港島地域 - 樂行童軍議會'},{no:'05',name:'港島地域 - 社區參與及服務1'},{no:'06',name:'港島地域 - 社區參與及服務2'},{no:'07',name:'港島地域 - 灣仔區 - 社區參與章1'},{no:'08',name:'香港童軍總會 - 發展署'}]},
-  {zone:'D',theme:'童軍技能',units:[{no:'02',name:'港島童軍生態小組'},{no:'03',name:'港島童軍章會'},{no:'04',name:'港島童軍射藝會'},{no:'05',name:'港島童軍泳會'},{no:'06',name:'港島童軍資訊科技會'},{no:'07',name:'港島童軍先鋒工程會'},{no:'08',name:'港島地域童軍樂隊'},{no:'09',name:'港島童軍皮藝會'},{no:'10',name:'港島地域 - 海上活動'},{no:'11',name:'港島地域 - 大潭童軍中心'}]},
+  {zone:'A',theme:'積極公民 / 「十五五」規劃',units:[{no:'01',name:'主題節目組總部',c:'Y',r:'',cf:''},{no:'02',name:'積極公民工作坊 - 機電1',c:'Y'},{no:'03',name:'積極公民工作坊 - 機電2',c:'Y'},{no:'04',name:'積極公民工作坊 - 機電3',c:'Y'},{no:'05',name:'積極公民工作坊 - 機電4',c:'Y'},{no:'06',name:'積極公民工作坊 - 機電5',c:'Y'},{no:'07',name:'積極公民工作坊 - 機電6',c:'Y'},{no:'08',name:'香港警務處 - 跨部門反恐專責組',c:'N'},{no:'09',name:'香港警務處 - 網絡安全及科技罪案調查科',c:'N'},{no:'10',name:'香港警務處 - 毒品調查科',c:'N'},{no:'11',name:'香港警務處 - 國家安全處',c:'N'},{no:'12',name:'香港警務處 - 交通總區',c:'N'},{no:'13',name:'香港警務處 - 鑑證科',c:'N'},{no:'14',name:'香港島青年聯會',c:'Y',r:'Y',cf:'Y'}]},
+  {zone:'B',theme:'創新變革',units:[{no:'01',name:'港島童軍氣槍射擊會',c:'Y',r:'Y',cf:'Y'},{no:'02',name:'港島地域 - 航空活動',c:'Y',r:'Y',cf:'Y'},{no:'03',name:'航天航空展',c:'Y',r:'Y',cf:'Y'},{no:'04',name:'無人機體驗',c:'Y',r:'Y',cf:'Y'}]},
+  {zone:'C',theme:'服務社群',units:[{no:'01',name:'港島地域 - 發展部1',c:'Y',r:'?'},{no:'02',name:'港島地域 - 發展部2',c:'Y',r:'?'},{no:'03',name:'港島地域 - 深資童軍議會',c:'Y',r:'?'},{no:'04',name:'港島地域 - 樂行童軍議會',c:'Y',r:'?'},{no:'05',name:'港島地域 - 社區參與及服務1',c:'Y',r:'Y',cf:'Y'},{no:'06',name:'港島地域 - 社區參與及服務2',c:'Y',r:'Y',cf:'Y'},{no:'07',name:'港島地域 - 灣仔區 - 社區參與章1',c:'Y',r:'Y',cf:'Y'},{no:'08',name:'香港童軍總會 - 發展署',c:'Y',r:'Y',cf:'Y'}]},
+  {zone:'D',theme:'童軍技能',units:[{no:'02',name:'港島童軍生態小組'},{no:'03',name:'港島童軍章會'},{no:'04',name:'港島童軍射藝會'},{no:'05',name:'港島童軍泳會',c:'Y',r:'Y',cf:'N'},{no:'06',name:'港島童軍資訊科技會',c:'Y',r:'?'},{no:'07',name:'港島童軍先鋒工程會',c:'Y',r:'Y',cf:'Y'},{no:'08',name:'港島地域童軍樂隊'},{no:'09',name:'港島童軍皮藝會',c:'Y'},{no:'10',name:'港島地域 - 海上活動'},{no:'11',name:'港島地域 - 大潭童軍中心',c:'Y',r:'?'}]},
   {zone:'E',theme:'品格價值',units:[]},
-  {zone:'F',theme:'身心全健',units:[{no:'01',name:'港島地域 - 維多利亞城區 - 精神健康章'},{no:'02',name:'港島地域 - 維多利亞城區 - 公共衞生章'},{no:'03',name:'童軍知友社'}]},
+  {zone:'F',theme:'身心全健',units:[{no:'01',name:'港島地域 - 維多利亞城區 - 精神健康章',c:'Y',r:'Y',cf:'Y'},{no:'02',name:'港島地域 - 維多利亞城區 - 公共衞生章',c:'Y',r:'Y',cf:'Y'},{no:'03',name:'童軍知友社',c:'Y',r:'Y',cf:'N'}]},
   {zone:'G',theme:'旅團／其他',units:[{no:'01',name:'港島第6旅'},{no:'02',name:'港島第10旅'},{no:'03',name:'港島第99旅'}]}
 ];
+// 2026 攤位總表聯絡狀態顯示：Y / N / 🤷（原表「待確認」）／ —（未有紀錄）
+function boothContactMark(v){ return v==='Y'?'Y':(v==='N'?'N':(v==='?'?'🤷':'—')); }
+function boothUnitOf(zone,no){ const z=BOOTH_ZONES_2026.find(x=>x.zone===zone); const u=(z&&z.units||[]).find(x=>x.no===String(no).padStart(2,'0')); return u||null; }
 function boothZoneLabel(z){ const zt=BOOTH_ZONES_2026.find(x=>x.zone===z); return z?`${z} ${zt?zt.theme:''}`:'未指定'; }
 // 由「負責單位」反查 攤位代碼（如 A03）；找不到回空字串（自行填寫的單位不會有代碼）
 function boothCodeOfUnit(unit){ if(!unit) return ''; const u=String(unit).trim(); for(const z of BOOTH_ZONES_2026){ const hit=(z.units||[]).find(x=>x.name===u); if(hit) return `${z.zone}${hit.no}`; } return ''; }

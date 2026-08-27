@@ -2,9 +2,9 @@
 Object.assign(ScoutEventApp.prototype,{
 
   /* ===================== Meeting Enhanced Functions ===================== */
-  isAdmin(){return ['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser?.role);}
+  isAdmin(){return !!this.currentUser&&(this.currentUser.mock_admin||['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser?.role));} // v8.7：MOCK mock_admin 標記＝全部管理權限
 ,
-  isSuperAdmin(){ return this.currentUser?.role==='super_admin'; }
+  isSuperAdmin(){ return !!this.currentUser&&(this.currentUser.mock_admin||this.currentUser?.role==='super_admin'); } // v8.7：MOCK mock_admin 標記＝全部管理權限
 ,
   getDeletedRecordIds(module){
     const all=JSON.parse(localStorage.getItem(LS.deletedRecords(this.currentEvent?.event_id||'isd_2026'))||'{}');

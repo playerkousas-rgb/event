@@ -203,13 +203,13 @@ Object.assign(ScoutEventApp.prototype,{
     if(el2) el2.textContent=fallback||'天氣待公佈';
   }
 ,
-  roleLevel(role){return ROLE_HIERARCHY[role]||0;}
+  roleLevel(role){ if(this.currentUser&&this.currentUser.mock_admin&&role&&role===this.currentUser.role) return 100; return ROLE_HIERARCHY[role]||0; } // v8.7：MOCK（模擬示範版）登入身份帶 mock_admin 標記＝所有管理權限全開（僅本地沙盒）
 ,
   // 是否「模擬示範」活動：所有假資料僅在模擬示範活動顯示，真實活動(ISD等)則為預留版位(空白)
   isDemoEvent(){ return this.currentEvent && (this.currentEvent.event_id==='mock_demo' || this.currentEvent.category==='demo'); }
 ,
   // 大型活動管理權限：僅管理員（地域秘書處）可以新增/編輯/刪除活動
-  isEventManager(){ return ['admin','super_admin'].includes(this.currentUser?.role); }
+  isEventManager(){ return this.currentUser?.mock_admin||['admin','super_admin'].includes(this.currentUser?.role); }
 ,
   canSeeRoleCard(def){
     if(!this.currentUser) return def.minLevel<=0;
@@ -702,6 +702,9 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('module-title').textContent=`${groupName} - 部門管理中心`;
     const isOwn=normalizeGroupName(this.currentUser?.group_name)===groupName;
     const canManage=this.isAdmin() || isOwn;
+    // v8.8：主題節目組卡片加「攤位資料(Drive)／攤位總表／借用統計」頁籤（填完計劃書後的兩部分＋DRIVE 攤位資料）
+    const isThemeGroup=groupName==='主題節目組';
+    if(isThemeGroup&&!this.groupBoothTab) this.groupBoothTab='apps';
     document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('group-print-${escapeHtml(groupName)}','${escapeHtml(groupName)} - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
     const container=document.getElementById('module-content');
     const staffData=this.getStaffData();
@@ -729,6 +732,13 @@ Object.assign(ScoutEventApp.prototype,{
           ${groupName==='主題節目組'?`<button onclick="app.openModule('activities'); setTimeout(()=>app.switchActivitiesTab('booth'),300)" class="bg-fuchsia-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位總覽</button>`:''}
           ${groupName==='服務及發展組'&&this.canViewDonationsStats()?`<button onclick="app.openModule('donations')" class="bg-rose-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動</button>`:''}
         </div>
+        ${isThemeGroup?(()=>{ const tabCls=t=>this.groupBoothTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200'; return `<div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
+          <button onclick="app.switchGroupTab('apps')" class="group-tab-btn ${tabCls('apps')}">📋 本組申請</button>
+          <button onclick="app.switchGroupTab('drive')" class="group-tab-btn ${tabCls('drive')}">📁 攤位資料 (Drive)</button>
+          <button onclick="app.switchGroupTab('master')" class="group-tab-btn ${tabCls('master')}">🗒️ 攤位總表</button>
+          <button onclick="app.switchGroupTab('borrow')" class="group-tab-btn ${tabCls('borrow')}">📊 借用統計＋招牌</button>
+        </div>`; })():''}
+        <div id="group-tab-apps" class="space-y-4">
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
           ${chip(groupOrg.length,'崗位','bg-slate-100 text-slate-700 border')}
           ${chip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200')}
@@ -757,7 +767,33 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <!-- 快捷按鈕已移至組別介紹下方（正常組別：前往申請中心＋我的監察；個別組別另有專屬按鈕） -->
         ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
+        </div>
+        ${isThemeGroup?`<div id="group-tab-drive" class="hidden"></div><div id="group-tab-master" class="hidden"></div><div id="group-tab-borrow" class="hidden"></div>`:''}
       </div>`;
+    if(isThemeGroup){
+      const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
+      const isPublic=!this.currentUser;
+      const canBoothExport=this.isAdmin()||this.isCoordinatorViceChair();
+      const driveEl=document.getElementById('group-tab-drive');
+      const masterEl=document.getElementById('group-tab-master');
+      const borrowEl=document.getElementById('group-tab-borrow');
+      if(driveEl) driveEl.innerHTML=this.renderGroupBoothDataHTML();
+      if(masterEl) masterEl.innerHTML=`<div class="space-y-3">
+        <div class="flex gap-2 flex-wrap"><button onclick="app.openModule('booth')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交／查看攤位計劃書（借用統計）</button>${canBoothExport?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.printCoordArea('group-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}</div>
+        <div id="group-master-print">${this.renderBoothMasterTableHTML(agg,isPublic)}</div>
+      </div>`;
+      if(borrowEl) borrowEl.innerHTML=`<div class="space-y-3">${this.renderBoothBorrowStatsHTML(agg,isPublic)}${this.renderBoothSignboardHTML(isPublic)}</div>`;
+      ['apps','drive','master','borrow'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==this.groupBoothTab); });
+    }
+  }
+,
+  switchGroupTab(tab){
+    this.groupBoothTab=tab;
+    ['apps','drive','master','borrow'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
+    document.querySelectorAll('.group-tab-btn').forEach(btn=>{
+      const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+      btn.className='group-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
+    });
   }
 ,
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
@@ -861,7 +897,7 @@ Object.assign(ScoutEventApp.prototype,{
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位物資申請',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';

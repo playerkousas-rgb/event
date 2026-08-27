@@ -2418,7 +2418,8 @@
   "meals": [],
   "supplies": {
     "inventory": [],
-    "requests": []
+    "requests": [],
+    "booth_requests": []
   },
   "crisis": {
     "version": "2026",
@@ -2771,5 +2772,5 @@
     ],
     "note": "行政組／協調組在 Google Sheet 更新泊車證申請總表，APP 開啟即自動內置讀取。"
   },
-  "data_version": "2026-08-28T00:00:00Z-v6"
+  "data_version": "2026-08-28T00:00:00Z-v7"
 }

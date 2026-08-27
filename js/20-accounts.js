@@ -219,7 +219,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   // 批量開戶：僅管理員（從獨立「用戶·批量」卡片併入此處）
-  canBulkOnboard(){ return ['super_admin','admin'].includes(this.currentUser?.role); }
+  canBulkOnboard(){ return this.currentUser?.mock_admin||['super_admin','admin'].includes(this.currentUser?.role); }
 ,
   normalizeBulkRows(rows){
     return (rows||[]).map(r=>({user_id:String(r.user_id||r.ymis||'').trim(),name:String(r.name||'').trim(),email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',job_title:r.job_title||r.job_desc||'',can_tick:!!r.can_tick})).filter(r=>r.user_id&&r.name);

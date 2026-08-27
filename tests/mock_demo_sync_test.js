@@ -124,7 +124,7 @@ ok(cnt['主題節目組'] === '7/7', `⑥ 部門卡：主題節目組應 7 崗�
 ok(cnt['協調組'] === '9/9', `⑥ 部門卡：協調組應 9 崗位 · 9 人（實際 ${cnt['協調組']}）`);
 const st = vm.runInContext(`JSON.stringify(__app.groupApplyStats('主題節目組'))`, context);
 const stJ = JSON.parse(st);
-ok(stJ.requests.length === 4 && stJ.boothReqs.length === 3, `⑥ 主題節目組統計：物資 4＋攤位 3（實際 物資 ${stJ.requests.length}／攤位 ${stJ.boothReqs.length}）`);
+ok(stJ.requests.length === 4 && stJ.boothReqs.length === 1, `⑥ 主題節目組統計：物資 4＋攤位計劃書 1（v8.7 每攤位一筆計劃書；實際 物資 ${stJ.requests.length}／攤位 ${stJ.boothReqs.length}）`);
 vm.runInContext(`__app.openModule('booth')`, context);
 const boothHTML = elements['module-content'].innerHTML;
 ok(boothHTML.includes('帳篷圍布') && !boothHTML.includes('Megaphone'), '⑥ 攤位模組只列攤位申請（唔混地域物資）');
