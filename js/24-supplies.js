@@ -14,7 +14,7 @@ Object.assign(ScoutEventApp.prototype,{
       local.vehicle_passes.forEach(v=>{v.group_name=normalizeGroupName(v.group_name);});
       return local;
     }
-    const raw=this.eventData['supplies']||{inventory:[],requests:[]};
+    const raw=this.eventData['supplies']||{inventory:[],requests:[],booth_requests:[]};
     const inventory=(raw.inventory||[]).map((it,i)=>({
       supply_id:it.supply_id||'sup_'+i,
       item_name:it.item_name||'',
@@ -79,7 +79,7 @@ Object.assign(ScoutEventApp.prototype,{
   saveSuppliesData(data){
     const key=LS.supplies(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
-    this.eventData['supplies']={inventory:data.inventory, requests:data.requests, vehicle_passes:data.vehicle_passes||[]};
+    this.eventData['supplies']={inventory:data.inventory, requests:data.requests, booth_requests:data.booth_requests||[], vehicle_passes:data.vehicle_passes||[]};
     // 後台紀錄：嘗試同步到 GAS
     if(!this.mockMode && this.gasUrl){
       // Save inventory
@@ -198,11 +198,11 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchSuppliesTab('my')" class="tab-btn ${this.suppliesSubTab==='my'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的申請 (${myRequests.length})</button>
-          ${this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin?`
+          ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin||isCoordinator)?`
           <button onclick="app.switchSuppliesTab('requests')" class="tab-btn ${this.suppliesSubTab==='requests'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 全部清單 (${data.requests.length})</button>
           <button onclick="app.switchSuppliesTab('pending')" class="tab-btn ${this.suppliesSubTab==='pending'?'active':''}"><i class="fa-solid fa-hourglass-half mr-1"></i> 待批核 (${pendingRequests.length})</button>
-          <button onclick="app.switchSuppliesTab('inventory')" class="tab-btn ${this.suppliesSubTab==='inventory'?'active':''}"><i class="fa-solid fa-boxes-stacked mr-1"></i> 總物資 (${data.inventory.length})</button>
           <button onclick="app.switchSuppliesTab('checklist')" class="tab-btn ${this.suppliesSubTab==='checklist'?'active':''}"><i class="fa-solid fa-clipboard-check mr-1"></i> 物資Check List</button>
+          <button onclick="app.switchSuppliesTab('booth')" class="tab-btn ${this.suppliesSubTab==='booth'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位物資申請 (${(data.booth_requests||[]).length})</button>
           <button onclick="app.switchSuppliesTab('stats')" class="tab-btn ${this.suppliesSubTab==='stats'?'active':''}"><i class="fa-solid fa-chart-column mr-1"></i> 統計</button>
           <button onclick="app.switchSuppliesTab('notifications')" class="tab-btn ${this.suppliesSubTab==='notifications'?'active':''}"><i class="fa-solid fa-bell mr-1"></i> 通知</button>
           `:''}
@@ -210,10 +210,10 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="supplies-tab-requests" class="${this.suppliesSubTab==='requests'?'':'hidden'}"></div>
         <div id="supplies-tab-my" class="${this.suppliesSubTab==='my'?'':'hidden'}"></div>
         <div id="supplies-tab-pending" class="${this.suppliesSubTab==='pending'?'':'hidden'}"></div>
-        <div id="supplies-tab-inventory" class="${this.suppliesSubTab==='inventory'?'':'hidden'}"></div>
         <div id="supplies-tab-checklist" class="${this.suppliesSubTab==='checklist'?'':'hidden'}"></div>
         <div id="supplies-tab-notifications" class="${this.suppliesSubTab==='notifications'?'':'hidden'}"></div>
         <div id="supplies-tab-stats" class="${this.suppliesSubTab==='stats'?'':'hidden'}"></div>
+        <div id="supplies-tab-booth" class="${this.suppliesSubTab==='booth'?'':'hidden'}"></div>
       </div>
     `;
     if(this.suppliesSubTab==='requests' && !(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin)) this.suppliesSubTab='my';
@@ -230,7 +230,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(actionsEl){
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
-          ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button>`:''}
+          ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button><button onclick="app.openBoothForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位物資申請</button>`:''}
           ${isCoordinator?`<button onclick="app.openInventoryForm()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-boxes-stacked mr-1"></i>新增總物資</button>`:''}
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies'))?`<button onclick="app.exportSuppliesData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}
           ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0])"></label>`:''}
@@ -243,6 +243,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.suppliesSubTab=tab;
     document.querySelectorAll('[id^="supplies-tab-"]').forEach(el=>el.classList.add('hidden'));
     document.getElementById('supplies-tab-'+tab)?.classList.remove('hidden');
+    if(tab==='booth') this.renderSuppliesBooth();
     document.querySelectorAll('[onclick^="app.switchSuppliesTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className=t===tab?'tab-btn active':'tab-btn';
@@ -409,34 +410,35 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-right">申請筆數</th><th class="px-2 py-1 text-right">申請數量</th><th class="px-2 py-1 text-right">待批核</th><th class="px-2 py-1 text-right">已批核</th></tr></thead><tbody class="divide-y">${Object.keys(byGroup).sort().map(g=>{const s=byGroup[g]; return `<tr><td class="px-2 py-1 font-medium" data-label="組別">${escapeHtml(g)}</td><td class="px-2 py-1 text-right" data-label="申請筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請數量">${s.qty}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批核">${s.pendingQty}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批核">${s.approvedQty}</td></tr>`;}).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
         </div>
         <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>按物資統計 (對照總庫存)</h4>
-          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">物資</th><th class="px-2 py-1 text-right">總庫存</th><th class="px-2 py-1 text-right">申請</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批核</th><th class="px-2 py-1 text-right">剩餘</th></tr></thead><tbody class="divide-y">${Object.keys(byItem).sort().map(it=>{const s=byItem[it]; const inv=data.inventory.find(i=>i.item_name===it); const total=inv?inv.total_qty:null; const approved=s.approved; const remaining=total!==null?Math.max(0,total-approved):'—'; return `<tr><td class="px-2 py-1 font-medium" data-label="物資">${escapeHtml(it)}</td><td class="px-2 py-1 text-right" data-label="總庫存">${total!==null?total:'—'}</td><td class="px-2 py-1 text-right" data-label="申請">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批核">${approved}</td><td class="px-2 py-1 text-right ${total!==null&&approved>total?'text-rose-600 font-bold':''}" data-label="剩餘">${remaining}</td></tr>`;}).join('') || '<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
-          <div class="mt-2 text-[10px] text-slate-400">已批核數量 = 批核通過的數量 (若批核時修改過數量則用批核數量)；剩餘 = 總庫存 − 已批核。</div>
-        </div>
       </div>
     `;
   }
 ,
   openSupplyRequestForm(editId=null){
     if(!this.canSubmitSupply()){ showToast('請先登入後提交申請','error'); this.openLoginModal(); return; }
+    const isCoordinator=this.isCoordinatorViceChair();
     const data=this.getSuppliesData();
     const existing=editId?data.requests.find(r=>r.request_id===editId):null;
     const title=existing?'編輯物資申請':'提交物資申請 (總主任/副主席可提交，APP內直接填寫)';
     let html=`
       <input type="hidden" id="supply-form-mode" value="${existing?'edit':'create'}">
       <input type="hidden" id="supply-form-id" value="${existing?.request_id||''}">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><div class="flex gap-2"><input list="supply-item-list" id="supply-item-name" value="${escapeHtml(existing?.item_name||'')}" required placeholder="選擇或輸入物資名稱" class="flex-1 px-3 py-2 border rounded-xl text-sm mt-1"><datalist id="supply-item-list">${data.inventory.map(it=>`<option value="${escapeHtml(it.item_name)}">`).join('')}</datalist><button type="button" onclick="app.openInventoryForm()" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs mt-1">新增總物資</button></div></div>
-        <div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" id="supply-qty" value="${existing?.qty_requested||''}" required min="1" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">單位</label><input id="supply-unit" value="${escapeHtml(existing?.unit||'個')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">所屬組別 *</label><input id="supply-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">需用日期</label><input type="date" id="supply-date-needed" value="${existing?.date_needed||''}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">截止日期 (列明) *</label><input type="datetime-local" id="supply-deadline" value="${existing?.deadline||''}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div class="col-span-2"><label class="text-[11px] font-bold">申請原因/用途 *</label><textarea id="supply-reason" rows="3" required placeholder="請說明用途、數量計算等" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.reason||'')}</textarea></div>
-        <div><label class="text-[11px] font-bold">聯絡電話</label><input id="supply-contact" value="${escapeHtml(existing?.contact||'')}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">提交人</label><input id="supply-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div>
+      
+      <div id="supply-rows" class="space-y-3">
+        <div class="supply-row border rounded-xl p-3 bg-slate-50 space-y-2 relative">
+          <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱" value="${escapeHtml(existing?.item_name||'')}"></div>
+            <div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1" value="${existing?.qty_requested||''}"></div>
+            <div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="${escapeHtml(existing?.unit||'個')}"></div>
+            <div><label class="text-[11px] font-bold">所屬組別 *</label><input class="supply-group w-full px-3 py-2 border rounded-xl text-sm mt-1" required value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}"></div>
+            <div class="col-span-2"><label class="text-[11px] font-bold">申請原因/用途</label><textarea class="supply-reason w-full px-3 py-2 border rounded-xl text-sm mt-1" rows="2" placeholder="特別要求才填寫（可選）">${escapeHtml(existing?.reason||'')}</textarea></div>
+            <div><label class="text-[11px] font-bold">聯絡電話</label><input class="supply-contact w-full px-3 py-2 border rounded-xl text-sm mt-1" placeholder="方便協調" value="${escapeHtml(existing?.contact||'')}"></div>
+          </div>
+        </div>
       </div>
-      <div class="text-[10px] text-slate-500 mt-2">低於總主任提交會先交本組總主任以上確認，再由 ${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 批核，最後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行；需列明截止日期。</div>
+      <div class="text-right"><button type="button" onclick="app.addSupplyRow()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加一項物資</button></div>
+      <div class="text-[10px] text-slate-500 mt-2">低於總主任提交會先交本組總主任以上確認，再由 ${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 批核，最後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行。</div>
     `;
     document.getElementById('record-modal-title').textContent=title;
     document.getElementById('record-form-fields').innerHTML=html;
@@ -448,41 +450,74 @@ Object.assign(ScoutEventApp.prototype,{
   submitSupplyRequestForm(){
     const mode=document.getElementById('supply-form-mode').value;
     const id=document.getElementById('supply-form-id').value;
-    const item_name=document.getElementById('supply-item-name').value.trim();
-    const qty=parseInt(document.getElementById('supply-qty').value);
-    const unit=document.getElementById('supply-unit').value.trim()||'個';
-    let group_name=document.getElementById('supply-group').value.trim();
-    if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
-    const date_needed=document.getElementById('supply-date-needed').value;
-    const deadline=document.getElementById('supply-deadline')?.value||'';
-    const reason=document.getElementById('supply-reason').value.trim();
-    const contact=document.getElementById('supply-contact').value.trim();
-    const requested_by=document.getElementById('supply-requested-by').value.trim()||this.currentUser?.name||'';
-    if(!item_name||!qty||!group_name||!reason||!deadline){ showToast('請填寫物資名稱、數量、組別、原因、截止日期','error'); return; }
     const data=this.getSuppliesData();
+    const requested_by=(document.getElementById('supply-requested-by')?.value.trim()||this.currentUser?.name||'');
     if(mode==='edit'){
+      const row=document.querySelector('.supply-row');
+      if(!row){ showToast('表單無效','error'); return; }
+      const item_name=row.querySelector('.supply-item').value.trim();
+      const qty_str=row.querySelector('.supply-qty').value;
+      const qty=parseInt(qty_str||'0');
+      const unit=row.querySelector('.supply-unit').value.trim()||'個';
+      let group_name=row.querySelector('.supply-group').value.trim();
+      const reason=row.querySelector('.supply-reason').value.trim()||'';
+      const contact=row.querySelector('.supply-contact').value.trim()||'';
+      if(!item_name||!qty_str||!group_name){ showToast('請填寫物資名稱、數量、組別','error'); return; }
+      if(isNaN(qty)||qty<1){ showToast('數量須為大於0的整數','error'); return; }
+      if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
       const idx=data.requests.findIndex(r=>r.request_id===id);
       if(idx>=0){
         const confirmation=this.applicationConfirmationMeta(this.currentUser);
-        data.requests[idx]={...data.requests[idx],...confirmation,item_name,qty_requested:qty,unit,group_name,date_needed,deadline,reason,contact,requested_by,requested_by_id:this.currentUser?.user_id||'',status:'pending',approved_by:'',approved_at:''};
+        data.requests[idx]={...data.requests[idx],...confirmation,item_name,qty_requested:qty,unit,group_name,reason,contact,requested_by,requested_by_id:this.currentUser?.user_id||'',status:'pending',approved_by:'',approved_at:''};
       }
     }else{
-      data.requests.push({
-        request_id:'req_'+Date.now(),
-        event_id:this.currentEvent?.event_id||'isd_2026',
-        item_name,qty_requested:qty,qty_approved:null,unit,group_name,reason,date_needed,deadline,contact,
-        ...this.applicationConfirmationMeta(this.currentUser),
-        status:'pending',requested_by,requested_by_id:this.currentUser?.user_id||'',approved_by:'',approved_at:'',notes:'',created_at:new Date().toISOString()
-      });
+      const rows=document.querySelectorAll('.supply-row');
+      if(!rows.length){ showToast('請至少填寫一項物資','error'); return; }
+      const items=[];
+      for(let i=0;i<rows.length;i++){
+        const row=rows[i];
+        const item_name=row.querySelector('.supply-item').value.trim();
+        const qty_str=row.querySelector('.supply-qty').value;
+        const qty=parseInt(qty_str||'0');
+        const unit=row.querySelector('.supply-unit').value.trim()||'個';
+        let group_name=row.querySelector('.supply-group').value.trim();
+        const reason=row.querySelector('.supply-reason').value.trim()||'';
+        const contact=row.querySelector('.supply-contact').value.trim()||'';
+        if(!item_name||!qty_str||!group_name){ showToast('第'+(i+1)+'項：請填寫物資名稱、數量、組別','error'); return; }
+        if(isNaN(qty)||qty<1){ showToast('第'+(i+1)+'項：數量須為大於0的整數','error'); return; }
+        if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
+        items.push({item_name,qty_requested:qty,unit,group_name,reason,contact,requested_by,requested_by_id:this.currentUser?.user_id||''});
+      }
+      for(const it of items){
+        data.requests.push({
+          request_id:'req_'+Date.now()+'_'+Math.floor(Math.random()*10000),
+          event_id:this.currentEvent?.event_id||'isd_2026',
+          item_name:it.item_name,
+          qty_requested:it.qty_requested,
+          qty_approved:null,
+          unit:it.unit,
+          group_name:it.group_name,
+          reason:it.reason,
+          contact:it.contact,
+          ...this.applicationConfirmationMeta(this.currentUser),
+          status:'pending',
+          requested_by:it.requested_by,
+          requested_by_id:it.requested_by_id,
+          approved_by:'',
+          approved_at:'',
+          notes:'',
+          created_at:new Date().toISOString()
+        });
+      }
     }
     this.saveSuppliesData(data);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    const saved=data.requests.find(r=>r.request_id===(id||data.requests[data.requests.length-1]?.request_id));
+    const lastId = mode==='edit'?id:(data.requests[data.requests.length-1]?.request_id);
+    const saved=data.requests.find(r=>r.request_id===lastId);
     showToast(mode==='edit'?'已更新物資申請並重新進入流程':(this.applicationNeedsGroupConfirmation(saved)?'已提交物資申請：待本組總主任確認':'已提交物資申請：已交指定批核組'),'success');
     this.refreshSuppliesViews();
-  }
-,
+  },
   openSupplyApproveModifyModal(requestId){
     if(!this.canApproveArea('supplies')){ showToast('你不屬於目前指定的物資批核組別','error'); return; }
     const data=this.getSuppliesData();
@@ -689,6 +724,73 @@ Object.assign(ScoutEventApp.prototype,{
     const source=this.getSuppliesData();
     const data={inventory:canSup?(source.inventory||[]):[],requests:canSup?(source.requests||[]):[],vehicle_passes:canVeh?(source.vehicle_passes||[]):[]};
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`supplies_${todayISO()}.json`; a.click(); showToast('已匯出物資／車輛 JSON','success');
+  },
+  addSupplyRow(){
+    const container=document.getElementById('supply-rows');
+    if(!container) return;
+    const row=document.createElement('div');
+    row.className='supply-row border rounded-xl p-3 bg-slate-50 space-y-2 relative';
+    row.innerHTML=`<button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1"></div><div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="個"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input class="supply-group w-full px-3 py-2 border rounded-xl text-sm mt-1" required value="${escapeHtml(this.currentUser?.group_name||'')}"></div><div class="col-span-2"><label class="text-[11px] font-bold">申請原因/用途</label><textarea class="supply-reason w-full px-3 py-2 border rounded-xl text-sm mt-1" rows="2" placeholder="特別要求才填寫（可選）"></textarea></div><div><label class="text-[11px] font-bold">聯絡電話</label><input class="supply-contact w-full px-3 py-2 border rounded-xl text-sm mt-1" placeholder="方便協調"></div></div>`;
+    container.appendChild(row);
+  },
+  renderSuppliesBooth(){
+    const container=document.getElementById('supplies-tab-booth'); if(!container) return;
+    const data=this.getSuppliesData();
+    const list=(data.booth_requests||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    const canSubmit=this.canSubmitSupply();
+    const isAdmin=this.isAdmin();
+    const isCoordinator=this.isCoordinatorViceChair();
+    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]"><b>攤位物資申請（與外判商租用）</b>：與「地域物資借用」分開，申請攤位所需物資（如枱、椅、布置等）。低於總主任先由本組總主任以上確認，再交批核組。</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">用途: ${escapeHtml(r.purpose||r.reason||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請</p>`}</div></div>`;
+  },
+  openBoothForm(editId=null){
+    if(!this.canSubmitSupply()){ showToast('請先登入後提交','error'); this.openLoginModal(); return; }
+    const data=this.getSuppliesData();
+    const existing=editId?data.booth_requests.find(r=>r.request_id===editId):null;
+    const title=existing?'編輯攤位物資申請':'提交攤位物資申請';
+    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input id="booth-item-name" value="${escapeHtml(existing?.item_name||'')}" required placeholder="攤位所需物資（如枱、椅、布、燈等）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" id="booth-qty" value="${existing?.qty_requested||''}" required min="1" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">單位</label><input id="booth-unit" value="${escapeHtml(existing?.unit||'個')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div class="col-span-2"><label class="text-[11px] font-bold">用途 / 與外判商說明</label><textarea id="booth-purpose" rows="2" placeholder="說明租用用途、外判商要求等" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.purpose||existing?.reason||'')}</textarea></div><div><label class="text-[11px] font-bold">聯絡電話</label><input id="booth-contact" value="${escapeHtml(existing?.contact||'')}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">提交人</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div></div><div class="text-[10px] text-slate-500 mt-2">低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
+    document.getElementById('record-modal-title').textContent=title;
+    document.getElementById('record-form-fields').innerHTML=html;
+    document.getElementById('record-form').onsubmit=(e)=>{ e.preventDefault(); this.submitBoothForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  },
+  submitBoothForm(){
+    const mode=document.getElementById('booth-form-mode').value;
+    const id=document.getElementById('booth-form-id').value;
+    const item_name=document.getElementById('booth-item-name').value.trim();
+    const qty=parseInt(document.getElementById('booth-qty').value);
+    const unit=document.getElementById('booth-unit').value.trim()||'個';
+    let group_name=document.getElementById('booth-group').value.trim();
+    if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
+    const purpose=document.getElementById('booth-purpose').value.trim()||'';
+    const contact=document.getElementById('booth-contact').value.trim()||'';
+    const requested_by=document.getElementById('booth-requested-by').value.trim()||this.currentUser?.name||'';
+    if(!item_name||!qty||!group_name){ showToast('請填寫物資名稱、數量、組別','error'); return; }
+    if(isNaN(qty)||qty<1){ showToast('數量須大於0','error'); return; }
+    const data=this.getSuppliesData();
+    if(mode==='edit'){
+      const idx=data.booth_requests.findIndex(r=>r.request_id===id);
+      if(idx>=0){
+        const confirmation=this.applicationConfirmationMeta(this.currentUser);
+        data.booth_requests[idx]={...data.booth_requests[idx],...confirmation,item_name,qty_requested:qty,unit,group_name,purpose,contact,requested_by,requested_by_id:this.currentUser?.user_id||'',status:'pending',approved_by:'',approved_at:''};
+      }
+    }else{
+      data.booth_requests.push({
+        request_id:'req_booth_'+Date.now(),
+        event_id:this.currentEvent?.event_id||'isd_2026',
+        item_name,qty_requested:qty,qty_approved:null,unit,group_name,purpose,contact,
+        ...this.applicationConfirmationMeta(this.currentUser),
+        status:'pending',requested_by,requested_by_id:this.currentUser?.user_id||'',approved_by:'',approved_at:'',notes:'',created_at:new Date().toISOString()
+      });
+    }
+    this.saveSuppliesData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast(mode==='edit'?'已更新攤位物資申請':'已提交攤位物資申請：待本組總主任確認','success');
+    this.refreshSuppliesViews();
+  },
+  exportBoothData(){
+    const data=this.getSuppliesData();
+    const blob=new Blob([JSON.stringify(data.booth_requests||[],null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='booth_requests.json'; a.click(); showToast('已匯出攤位申請','success');
   }
 ,
 });

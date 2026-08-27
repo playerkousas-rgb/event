@@ -145,14 +145,12 @@ Object.assign(ScoutEventApp.prototype,{
           <button onclick="app.switchMealsTab('orders')" class="tab-btn ${this.mealsSubTab==='orders'?'active':''}"><i class="fa-solid fa-list-check mr-1"></i> 訂餐紀錄/統計</button>
           <button onclick="app.switchMealsTab('my')" class="tab-btn ${this.mealsSubTab==='my'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的訂餐</button>
           <button onclick="app.switchMealsTab('print')" class="tab-btn ${this.mealsSubTab==='print'?'active':''}"><i class="fa-solid fa-print mr-1"></i> 列印派發</button>
-          <button onclick="app.switchMealsTab('monitor')" class="tab-btn ${this.mealsSubTab==='monitor'?'active':''}"><i class="fa-solid fa-eye mr-1"></i> 監察卡片 (我的物資/車輛/膳食)</button>
-        </div>
+                  </div>
         <div id="meals-tab-menus" class="${this.mealsSubTab==='menus'?'':'hidden'}"></div>
         <div id="meals-tab-orders" class="${this.mealsSubTab==='orders'?'':'hidden'}"></div>
         <div id="meals-tab-my" class="${this.mealsSubTab==='my'?'':'hidden'}"></div>
         <div id="meals-tab-print" class="${this.mealsSubTab==='print'?'':'hidden'}"></div>
-        <div id="meals-tab-monitor" class="${this.mealsSubTab==='monitor'?'':'hidden'}"></div>
-      </div>
+              </div>
     `;
     this.renderMealsMenus();
     this.renderMealsOrders();
@@ -164,6 +162,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(actionsEl){
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openModule('apply_hub')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">← 返回申請中心</button>
           ${canManage?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單 (${escapeHtml(this.approvalRouteLabel('meals','executor_groups'))})</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0])"></label>`:''}
           ${this.canExecuteArea('meals')?`<button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出最後名單</button>`:'<span class="text-[11px] bg-purple-50 text-purple-700 px-3 py-2 rounded-full border border-purple-200"><i class="fa-solid fa-lock mr-1"></i>登入後提交；最後名單只供指定執行組</span>'}

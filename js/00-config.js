@@ -9,6 +9,7 @@ function normalizeGroupName(value){
   group=group.replace(/^[（(]+\s*/,'').replace(/\s*[）)]+$/,'').trim();
   if(group==='籌委會') return '主席及執行副主席';
   if(group==='管理') return '顧問團'; // Based on mock_demo.json mapping for 黃偉安 & 何家騏
+  if(group==='行政') return '行政組'; // prevent duplicate fake admin
 
   // Mapping abbreviations to standard names (especially from isd_2026.json)
   const map = {

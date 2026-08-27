@@ -558,8 +558,10 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=groupList.map(g=>{
       const meta=this.groupMeta(g);
       const posts=org.filter(n=>normalizeGroupName(n.group || this.parseGroupFromLevel(n.level))===g);
+      const seenPosts=new Set();
+      const uniqPosts=posts.filter(n=>{ const k=(n.title||'')+'|'+(n.names||''); if(seenPosts.has(k)) return false; seenPosts.add(k); return true; });
       const members=new Set();
-      posts.forEach(n=>{ (n.names||'').split(/[\/、,，]/).map(s=>s.trim()).filter(Boolean).forEach(x=>members.add(x)); });
+      uniqPosts.forEach(n=>{ (n.names||'').split(/[\/、,，]/).map(s=>s.trim()).filter(Boolean).forEach(x=>members.add(x)); });
       contacts.filter(c=>normalizeGroupName(c.group_name)===g).forEach(c=>{ if(c.name) members.add(c.name); });
       const st=this.groupApplyStats(g);
       const cleanGroup=normalizeGroupName(g);
@@ -574,7 +576,7 @@ Object.assign(ScoutEventApp.prototype,{
             <div class="w-10 h-10 ${meta.cls} rounded-xl flex items-center justify-center text-base flex-shrink-0"><i class="${meta.icon}"></i></div>
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap"><b class="text-[13px]">${escapeHtml(g)}</b>${isOwn?'<span class="bg-indigo-600 text-white text-[9.5px] px-2 py-0.5 rounded-full">我的組別</span>':''}</div>
-              <div class="text-[11px] text-slate-500 mt-0.5">${posts.length} 崗位 · ${members.size} 人</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${uniqPosts.length} 崗位 · ${members.size} 人</div>
             </div>
           </div>
           ${pending?`<span class="text-[9.5px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">${pending} 待批</span>`:''}
@@ -605,8 +607,11 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('module-content');
     const staffData=this.getStaffData();
     const groupContacts=(staffData.contacts||[]).filter(c=> normalizeGroupName(c.group_name)===groupName || (c.group_name||'').includes(groupName) || groupName.includes(c.group_name||''));
-    const getLvl=(n)=>{ const m=String(n.level||'').match(/Level\s*(\d+)/i); return m ? parseInt(m[1]) : (n.level_num||99); };
-    const groupOrg=(staffData.org_chart||[]).filter(n=> normalizeGroupName(n.group || this.parseGroupFromLevel(n.level))===groupName || (n.group||'')===groupName).sort((a,b)=>getLvl(a)-getLvl(b));
+    const getLvl=(n)=>{ const m=String(n.level||'').match(/Level\s*(\d+)/i); const v=m ? parseInt(m[1]) : (n.level_num||99); return v; };
+    const rankMap={3:1,4:2,5:3}; const rankOf=(n)=>{ const v=getLvl(n); return rankMap[v]||99; };
+    const groupOrgRaw=(staffData.org_chart||[]).filter(n=> normalizeGroupName(n.group || this.parseGroupFromLevel(n.level))===groupName || (n.group||'')===groupName).sort((a,b)=>rankOf(a)-rankOf(b));
+    const seenOrg=new Set();
+    const groupOrg=groupOrgRaw.filter(n=>{ const k=(n.title||'')+'|'+(n.names||'')+'|'+(n.level||''); if(seenOrg.has(k)) return false; seenOrg.add(k); return true; });
     const duties=(staffData.job_duties||[]).filter(j=> normalizeGroupName(j.group)===groupName || (j.group||'').includes(groupName)||groupName.includes(j.group||''));
     const docsData=this.getDocumentsData();
     const groupDocs=(docsData.docs||[]).filter(d=> (d.category||'').includes(groupName) || (d.title||'').includes(groupName));
@@ -723,7 +728,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位物資申請',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
