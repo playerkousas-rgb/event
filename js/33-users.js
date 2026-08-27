@@ -8,11 +8,14 @@ Object.assign(ScoutEventApp.prototype,{
     if(!list || !list.length){
       if(this.isDemoEvent()){
         list=[
-          {user_id:'黃偉安',name:'黃偉安',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91111111',password:'1234',status:'active',can_tick:true},
-          {user_id:'何家騏',name:'何家騏',email:'advisor2@isd.local',role:'advisor',group_name:'顧問團',contact:'91111112',password:'1234',status:'active',can_tick:true},
-          {user_id:'朱家聰',name:'朱家聰',email:'chair@isd.local',role:'chairperson',group_name:'主席及執行副主席',contact:'92222222',password:'1234',status:'active',can_tick:true},
-          {user_id:'羅雅雯',name:'羅雅雯',email:'execvp@isd.local',role:'executive_vice_chairperson',group_name:'主席及執行副主席',contact:'93333333',password:'1234',status:'active',can_tick:true},
-          {user_id:'蘇國樑',name:'蘇國樑',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'94222222',password:'1234',status:'active',can_tick:true},
+          {user_id:'黃偉安',name:'黃偉安',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91000001',password:'1234',status:'active',can_tick:true},
+          {user_id:'何家騏',name:'何家騏',email:'advisor2@isd.local',role:'advisor',group_name:'顧問團',contact:'91000002',password:'1234',status:'active',can_tick:true},
+          {user_id:'區子君',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'主席及執行副主席',contact:'92000001',password:'1234',status:'active',can_tick:true},
+          {user_id:'羅雅雯',name:'羅雅雯',email:'execvp@isd.local',role:'executive_vice_chairperson',group_name:'主席及執行副主席',job_title:'執行副主席',contact:'92000002',password:'1234',status:'active',can_tick:true},
+          {user_id:'畢美儀',name:'畢美儀',email:'coordgd@isd.local',role:'general_director',group_name:'協調組',contact:'97000002',password:'1234',status:'active',can_tick:true},
+          {user_id:'潘志強',name:'潘志強',email:'leung@isd.local',role:'general_director',group_name:'會操及典禮組',contact:'93000002',password:'1234',status:'active',can_tick:true},
+          {user_id:'龍正謙',name:'龍正謙',email:'themegd@isd.local',role:'general_director',group_name:'主題節目組',contact:'94000002',password:'1234',status:'active',can_tick:true},
+          {user_id:'曾令勤',name:'曾令勤',email:'director01@isd.local',role:'director',group_name:'主題節目組',contact:'94000003',password:'1234',status:'active',can_tick:true},
           {user_id:'陳子明',name:'陳子明',email:'staff001@isd.local',role:'staff',group_name:'主題節目組',contact:'95211111',password:'1234',status:'active',can_tick:false}
         ];
       } else {

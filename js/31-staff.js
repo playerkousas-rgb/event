@@ -14,11 +14,14 @@ Object.assign(ScoutEventApp.prototype,{
       raw=local||jsonStaff;
     } else {
       // 正式活動：JSON 為底，若 local 有 _userEdited 項則覆蓋 / 追加對應 id
+      // v8.6：種子節點改派「穩定 id」（org_seed_i，不再帶 Date.now），令本機改動能按 id 對回
+      // JSON 原節點直接覆蓋；以前 id 每次載入都不同，merge 永不命中，local 全份被追加 →
+      // 各組岗位節點翻倍（主頁「N 崗位」×2，人數因按姓名去重所以冇事）。
       raw={
         staff_source: jsonStaff.staff_source||local?.staff_source||null,
         contact_source: jsonStaff.contact_source||local?.contact_source||null,
         duties_source: jsonStaff.duties_source||local?.duties_source||null,
-        org_chart: [...(jsonStaff.org_chart||[])],
+        org_chart: (jsonStaff.org_chart||[]).map((n,i)=>({...n,id:n.id||('org_seed_'+i)})),
         contacts: [...(jsonStaff.contacts||[])],
         job_duties: [...(jsonStaff.job_duties||[])],
       };
@@ -48,11 +51,23 @@ Object.assign(ScoutEventApp.prototype,{
         String(base.names).split(/[、,，/]+/).map(s=>s.trim()).filter(Boolean).forEach((nm,k)=>orgNodes.push({...base,id:base.id+'_'+k,names:nm}));
       } else orgNodes.push(base);
     });
+    // v8.6 去重：JSON 與本機快取是兩個來源，同一崗位可能各有一份（舊快取 id 對唔返被整份追加）。
+    // 依「組別|職位|人名」去重，只保留內容較齊的一份（有職務描述／經本機編輯者），
+    // 確保主頁部門卡片與部門管理中心的「崗位數」唔會被舊快取撐到一倍。
+    const uniqOrgNodes=[]; const orgNodeAt=new Map();
+    orgNodes.forEach(n=>{
+      const k=[n.group||'',String(n.title||'').trim(),String(n.names||'').trim()].join('|');
+      const at=orgNodeAt.get(k);
+      if(at===undefined){ orgNodeAt.set(k,uniqOrgNodes.length); uniqOrgNodes.push(n); return; }
+      const cur=uniqOrgNodes[at];
+      const better=(n._userEdited&&!cur._userEdited)||(!String(cur.desc||'').trim()&&String(n.desc||'').trim());
+      if(better) uniqOrgNodes[at]={...cur,...n,desc:n.desc||cur.desc,id:cur.id};
+    });
     return {
       staff_source: raw.staff_source||null,
       contact_source: raw.contact_source||this.eventData.staff?.contact_source||null,
       duties_source: raw.duties_source||this.eventData.staff?.duties_source||null,
-      org_chart:orgNodes,
+      org_chart:uniqOrgNodes,
       contacts:(raw.contacts||[]).map((c,i)=>{const roleTitle=c.role_title||c.role||''; const group=c.group_name||c.group||''; return {id:c.id||'contact_'+i,name:c.name||'',role_title:roleTitle,group_name:group,level:c.level||'',contact:c.contact||c.phone||'',job_desc:c.job_desc||c.duty||'',email:c.email||'',squad:c.squad||'',status:c.status||'active'};}),
       job_duties:(raw.job_duties||[]).map((j,i)=>({id:j.id||'duty_'+i,group:normalizeGroupName(j.group||'未分組'),duty:j.duty||j.description||'',file_name:j.file_name||'',file_url:j.file_url||'',updated_by:j.updated_by||'',updated_at:j.updated_at||''}))
     };

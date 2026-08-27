@@ -570,7 +570,8 @@ Object.assign(ScoutEventApp.prototype,{
       return String(a.title||'').localeCompare(String(b.title||''),'zh-Hant');
     });
     const seen=new Set();
-    return raw.filter(n=>{ const k=(n.title||'')+'|'+(n.names||'')+'|'+(n.level||''); if(seen.has(k)) return false; seen.add(k); return true; });
+    // v8.6：去重 key 不再計 level 字串（舊快取的 level 編號格式與 JSON 可能不同，計入會令同一崗位計兩次）
+    return raw.filter(n=>{ const k=String(n.title||'').trim()+'|'+String(n.names||'').trim(); if(seen.has(k)) return false; seen.add(k); return true; });
   }
 ,
   // 職務大綱「拆位」：一組的職務大綱常是一大段（副主席…／總主任…／主任… 連埋），
@@ -850,7 +851,10 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   backToDashboard(){
+    // 「返回」＝返回上一層級：有歷史即回上一頁（申請中心子頁→申請中心；部門卡片→儀表板）；
+    // 無歷史時若已選活動則回儀表板，未選活動回「選擇活動」頁（避免 showDashboard 冇 currentEvent 出錯）。
     const prev=(Array.isArray(this.navHistory)&&this.navHistory.length)?this.navHistory.pop():null;
+    if(!prev&&!this.currentEvent){ this.goHome(); return; }
     this.restoreNavState(prev);
   }
 ,
@@ -1087,7 +1091,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(mod==='finance'){ this.renderFinanceModule(); return;}
     if(mod==='meetings'){this.renderMeetingsList(); return;}
     if(mod==='supplies'){this.renderSuppliesModule(); return;}
-    if(mod==='booth'){ this.renderSuppliesModule(); setTimeout(()=>{ this.switchSuppliesTab('booth'); this.openBoothSupplyForm(); },80); return; }
+    if(mod==='booth'){ this.renderBoothModule(); return; } // v8.6：攤位物資＝獨立模組，不再借道「物資申請」卡片（兩項申請完全分開）
     if(mod==='parking'){ this.renderParkingModule(); return; } // 獨立車輛／泊車證模組
     if(mod==='oral_quotes'){this.renderOralQuotesModule(); return;}
     if(mod==='meals'){this.renderMealsModule(); return;}

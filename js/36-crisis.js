@@ -1423,11 +1423,12 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   saveCoordinatorGroupData(data){ localStorage.setItem(LS.config(this.currentEvent?.event_id||'isd_2026')+'_coord_group', JSON.stringify(data)); }
 ,
-  // 動作後重新整理：留在目前所在的頁面（協調組 / 物資 / 膳食）
+  // 動作後重新整理：留在目前所在的頁面（協調組 / 物資 / 攤位物資 / 膳食）
   refreshSuppliesViews(){
     if(this.currentModule==='coordinator_group'){ this.renderCoordinatorGroupModule(); return; }
     if(this.currentModule==='group_management' && this.currentGroupManaged){ this.openGroupManagement(this.currentGroupManaged); return; }
     if(this.currentModule==='my_monitor'){ this.renderMyMonitorModule(); return; }
+    if(this.currentModule==='booth'){ this.renderBoothModule(); return; } // v8.6：攤位物資＝獨立模組，提交後留在本頁刷新
     if(document.getElementById('supplies-tab-requests')) this.renderSuppliesModule();
   }
 ,
