@@ -95,6 +95,15 @@ Object.assign(ScoutEventApp.prototype,{
       group_confirmed_by:r.group_confirmed_by||'',
       group_confirmed_at:r.group_confirmed_at||'',
       notes:r.notes||'',
+      // v8.6：保留「2026 攤位總表」欄位（分區／編號／負責單位／招牌名／運送及其他需求）——
+      // 舊映射漏了這批欄位，令 JSON／後端載入的攤位申請顯示唔到攤位資料
+      zone:r.zone||'',
+      booth_no:r.booth_no||'',
+      booth_code:r.booth_code||'',
+      unit_name:r.unit_name||'',
+      booth_name:r.booth_name||'',
+      delivery:r.delivery||'',
+      other_need:r.other_need||'',
       created_at:r.created_at||''
     }));
     return {inventory, requests, booth_requests, vehicle_passes};
