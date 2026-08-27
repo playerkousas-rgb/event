@@ -181,8 +181,6 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
           <div class="flex gap-2 flex-shrink-0 flex-wrap">
             <button onclick="app.openGuideModal()" class="bg-white border border-purple-200 text-purple-700 px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-book-open mr-1"></i>功能介紹</button>
             <button id="identity-login-btn" onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button>
-            <button id="identity-logout-btn" onclick="app.logout()" class="hidden bg-white border border-rose-200 text-rose-600 px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-right-from-bracket mr-1"></i>登出</button>
-            <button onclick="app.toggleDashboardMode()" id="dashboard-mode-toggle" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap btn-mobile"><i class="fa-solid fa-table-cells-large mr-1"></i> 完整模式</button>
           </div>
         </div>
         <!-- 我的監察：寫入身份卡片內，如功能介紹所述（由 renderIdentityBar 填充） -->
@@ -219,47 +217,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
       <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。我的監察已寫入身份卡片內。</div>
     </div>
 
-    <div id="full-dashboard-sections" class="space-y-6">
-    <!-- 公開查閱說明 -->
-    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-4 flex justify-between items-center">
-      <div><h3 class="font-bold text-sm">🌍 公開查閱模式</h3><p class="text-[11px] text-emerald-100 mt-1">所有人均可查看 (=公開)，只有要修改資料才需登入，可儲存在瀏覽器，一次登入永久通行，目的是一個什麼都不知道的人用此APP就可了解整個活動和找到需要的資料</p></div>
-      <div class="hidden sm:block text-2xl opacity-30"><i class="fa-solid fa-eye"></i></div>
-    </div>
-
-    <!-- 認識活動 - 給完全不了解的人 -->
-    <div class="space-y-3">
-      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-sky-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">1</span>認識活動 <span class="text-[11px] text-slate-500 font-normal ml-2">什麼都不知道的人從這裡開始，一目了然了解整個活動</span></h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div onclick="app.openModule('apply_hub')" class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-pen"></i></div><h4 class="font-bold">申請中心</h4><p class="text-[11px] text-teal-100 mt-1">集中所有申請表：物資、車輛、泊車證、膳食、報價、開支</p></div>
-        <div onclick="app.openModule('announcements')" class="bg-gradient-to-br from-sky-500 to-blue-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-bullhorn"></i></div><h4 class="font-bold">公告及溝通</h4><p class="text-[11px] text-sky-100 mt-1">公告、日程表、旅團須知、活動主題章（集中一卡）</p></div>
-        <div onclick="app.openModule('activities')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-map-location-dot"></i></div><h4 class="font-bold">場地與活動總覽</h4><p class="text-[11px] text-slate-500 mt-1">地圖、攤位總表、遊戲卡，快速了解場地與活動內容</p></div>
-        <div onclick="app.openModule('staff')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-sitemap"></i></div><h4 class="font-bold">組織架構與聯絡</h4><p class="text-[11px] text-slate-500 mt-1">誰負責什麼，找人更方便，公開電話</p></div>
-      </div>
-    </div>
-
-    <!-- 參與活動 -->
-    <div class="space-y-3">
-      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xs mr-2">2</span>參與活動 <span class="text-[11px] text-slate-500 font-normal ml-2">工作人員參與活動所需</span></h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div onclick="app.openModule('ceremony')" class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 rounded-2xl shadow-md card-hover cursor-pointer"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-crown"></i></div><h4 class="font-bold">典禮儀式</h4><p class="text-[11px] text-amber-100 mt-1">RUNDOWN、司儀稿、嘉賓、座位表、獲獎名單</p></div>
-        <div onclick="app.openModule('meals')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-utensils"></i></div><h4 class="font-bold">膳食管理</h4><p class="text-[11px] text-slate-500 mt-1">菜單、截止、可選不吃、列印派發，我的訂餐</p></div>
-        <div onclick="app.openModule('crisis')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-red-100 text-red-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div><h4 class="font-bold">危機處理</h4><p class="text-[11px] text-slate-500 mt-1">應變指引、急救、保險、緊急聯絡，公開可看</p></div>
-        <div onclick="app.openModule('documents')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-shield"></i></div><h4 class="font-bold">文件中心</h4><p class="text-[11px] text-slate-500 mt-1">通告、指引、表格，全部公開可看</p></div>
-      </div>
-    </div>
-
-    <!-- 協作與管理 -->
-    <div class="space-y-3">
-      <h3 class="font-bold text-[15px] flex items-center"><span class="w-7 h-7 bg-slate-900 text-white rounded-xl flex items-center justify-center text-xs mr-2">3</span>協作與管理 <span class="text-[11px] text-slate-500 font-normal ml-2">會議、批核、開戶、權限、監察</span></h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div onclick="app.openModule('meetings')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-handshake"></i></div><h4 class="font-bold">會議卡片</h4><p class="text-[11px] text-slate-500 mt-1">會議 Drive 即時同步、分次查看議程及會議紀錄</p></div>
-        <div onclick="app.switchTopTab('approvals')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-user-check"></i></div><h4 class="font-bold">批核中心</h4><p class="text-[11px] text-slate-500 mt-1">膳食、物資、車輛、財務待批項目</p></div>
-        <div onclick="app.openModule('account_setup')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-teal-100 text-teal-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-user-plus"></i></div><h4 class="font-bold">開戶</h4><p class="text-[11px] text-slate-500 mt-1">總主任以上為本組開戶；批量開戶管理員專用</p></div>
-        <div onclick="app.openModule('permissions')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-key"></i></div><h4 class="font-bold">權限管理</h4><p class="text-[11px] text-slate-500 mt-1">把「看到/編輯」權限授權給下級</p></div>
-        <div onclick="app.openModule('my_monitor')" class="bg-white p-5 rounded-2xl border shadow-sm card-hover cursor-pointer"><div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-eye"></i></div><h4 class="font-bold">我的監察</h4><p class="text-[11px] text-slate-500 mt-1">自己＋下級所有申請批核（膳食·物資·車輛·開支·報價）</p></div>
-      </div>
-    </div>
-    </div>
+    <!-- 舊版「認識活動／參與活動／協作與管理」彩色卡面分組已刪除（2026-08-27）：
+    一進來只顯示新卡片排版（公開資料 → 工作卡片 → 管理工具 → 部門管理中心），不再出現超舊版分組。 -->
 
     <!-- 按組別一目了然 - 部門管理中心：每組一張卡片（依組織架構圖，不會多出部門） -->
     <div id="group-management-section" class="hidden bg-white rounded-2xl p-5 border shadow-sm space-y-4">
@@ -541,26 +500,26 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v6.1 · COPYRIGHT 2026</p></footer>
 
-<script src="js/00-config.js?v=20260827b"></script>
-<script src="js/10-app-core.js?v=20260827b"></script>
-<script src="js/20-accounts.js?v=20260827b"></script>
-<script src="js/21-activities.js?v=20260827b"></script>
-<script src="js/22-meals.js?v=20260827b"></script>
-<script src="js/23-sync.js?v=20260827b"></script>
-<script src="js/24-supplies.js?v=20260827b"></script>
-<script src="js/25-vehicle.js?v=20260827b"></script>
-<script src="js/26-monitor-apply.js?v=20260827b"></script>
-<script src="js/27-parking.js?v=20260827b"></script>
-<script src="js/28-oral-quotes.js?v=20260827b"></script>
-<script src="js/30-finance.js?v=20260827b"></script>
-<script src="js/31-staff.js?v=20260827b"></script>
-<script src="js/32-meetings.js?v=20260827b"></script>
-<script src="js/33-users.js?v=20260827b"></script>
-<script src="js/34-announcements.js?v=20260827b"></script>
-<script src="js/35-ceremony.js?v=20260827b"></script>
-<script src="js/36-crisis.js?v=20260827b"></script>
-<script src="js/37-coordinator.js?v=20260827b"></script>
-<script src="js/38-donations.js?v=20260827b"></script>
-<script src="js/90-bootstrap.js?v=20260827b"></script>
+<script src="js/00-config.js?v=20260827c"></script>
+<script src="js/10-app-core.js?v=20260827c"></script>
+<script src="js/20-accounts.js?v=20260827c"></script>
+<script src="js/21-activities.js?v=20260827c"></script>
+<script src="js/22-meals.js?v=20260827c"></script>
+<script src="js/23-sync.js?v=20260827c"></script>
+<script src="js/24-supplies.js?v=20260827c"></script>
+<script src="js/25-vehicle.js?v=20260827c"></script>
+<script src="js/26-monitor-apply.js?v=20260827c"></script>
+<script src="js/27-parking.js?v=20260827c"></script>
+<script src="js/28-oral-quotes.js?v=20260827c"></script>
+<script src="js/30-finance.js?v=20260827c"></script>
+<script src="js/31-staff.js?v=20260827c"></script>
+<script src="js/32-meetings.js?v=20260827c"></script>
+<script src="js/33-users.js?v=20260827c"></script>
+<script src="js/34-announcements.js?v=20260827c"></script>
+<script src="js/35-ceremony.js?v=20260827c"></script>
+<script src="js/36-crisis.js?v=20260827c"></script>
+<script src="js/37-coordinator.js?v=20260827c"></script>
+<script src="js/38-donations.js?v=20260827c"></script>
+<script src="js/90-bootstrap.js?v=20260827c"></script>
 </body>
 </html>

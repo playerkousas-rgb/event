@@ -18,7 +18,7 @@ const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .map(m => {
     const attrs = m[1] || '';
     if (/src=/i.test(attrs)) {
-      const src = (attrs.match(/src="([^"]+)"/) || [])[1] || '';
+      const src = ((attrs.match(/src="([^"]+)"/) || [])[1] || '').split('?')[0];
       return src.startsWith('js/') ? fs.readFileSync(path.join(root, src), 'utf8') : '';
     }
     return m[2];
@@ -154,7 +154,7 @@ function makeHarness(fetchImpl) {
   {
     // 4a. 內建 JSON 已用新編號
     const isd = JSON.parse(fs.readFileSync(path.join(root, 'data/isd_2026.json'), 'utf8'));
-    assert(/v4/.test(isd.data_version || ''), '(4) data_version 應已升級以清舊快取');
+    assert(/v[4-9]|v\d{2,}/.test(isd.data_version || ''), '(4) data_version 應已升級以清舊快取');
     const levelOf = (title, group) => {
       const n = isd.staff.org_chart.find(x => x.title === title && (x.level || '').startsWith(group));
       return n && parseInt((n.level.match(/Level (\d+)/) || [])[1]);

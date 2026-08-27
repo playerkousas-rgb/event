@@ -2349,21 +2349,21 @@
   ],
   "finance": {
     "budget_source": {
-      "mode": "drive_sheet",
-      "name": "ISD2026 Budget（Google Sheet）",
-      "drive_file_id": "1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE",
-      "sheet_id": "1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE",
+      "mode": "google_sheet",
+      "name": "ISD2026 財務預算（原生 Google 試算表）",
+      "drive_file_id": "1cvLzydr4SUWXxUa-QJ_nMqZiqhTd7myZoleITd7zWBE",
+      "sheet_id": "1cvLzydr4SUWXxUa-QJ_nMqZiqhTd7myZoleITd7zWBE",
       "gid": 0,
       "kind": "budget_grid",
       "folder": "行政組/財務",
       "columns": [
-        "group_name",
-        "item_name",
-        "budget",
-        "actual",
-        "notes"
+        "組別",
+        "項目",
+        "2026預算",
+        "ISD2025實際支出",
+        "ISD2025預算"
       ],
-      "note": "ISD2026 Budget（Google Sheet 合併儲存格格式），APP 開啟即自動內置讀取最新預算。行政組/財務負責更新。"
+      "note": "原生 Google 試算表（任何有連結者均可檢視）。APP 開啟即自動讀取最新版，並分配進各組預算格（部門管理中心卡片「預算」及財務卡片「預算明細」）。行政組/財務負責更新；組別標題行以第一欄組別名為準。"
     },
     "group_itemized_budgets": [],
     "income": [],
@@ -2771,5 +2771,5 @@
     ],
     "note": "行政組／協調組在 Google Sheet 更新泊車證申請總表，APP 開啟即自動內置讀取。"
   },
-  "data_version": "2026-08-27T12:00:00Z-v4"
+  "data_version": "2026-08-27T18:00:00Z-v5"
 }
