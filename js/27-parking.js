@@ -101,7 +101,6 @@ Object.assign(ScoutEventApp.prototype,{
     const actionsEl=document.getElementById('module-actions');
     if(actionsEl){
       actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap">
-        <button onclick="app.openModule('apply_hub')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">← 返回申請中心</button>
         ${loggedIn?`<button onclick="app.openVehiclePassForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-car mr-1"></i>申請車輛通行證</button>`:''}
         ${canCheck?`<button onclick="app.syncParkingChecklistFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步已批核清單 (Excel)</button>`:''}
         ${(canCheck||canApprove)?`<button onclick="app.exportParkingData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}<button onclick="app.printVehiclePassTable()" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印最後名單</button>

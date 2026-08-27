@@ -203,7 +203,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderSuppliesModule(){
     const container=document.getElementById('module-content');
-    if(!this.suppliesSubTab) this.suppliesSubTab='requests';
+    if(!this.suppliesSubTab||this.suppliesSubTab==='booth') this.suppliesSubTab='requests'; // v8.6：攤位已獨立成卡，舊「booth」頁籤值回退
     const data=this.getSuppliesData();
     const isAdmin=this.isAdmin();
     const canSubmit=this.canSubmitSupply();
@@ -215,15 +215,15 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-[11px] leading-relaxed text-blue-900">
-          <b>📦 物資管理升級：</b><br>
+          <b>📦 物資申請（地域物資借用）：</b><br>
           • 所有登入成員可提交；低於總主任提交的申請先由本組總主任以上確認<br>
           • 目前由 ${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 批核／修改，批准後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行及查看最後名單<br>
-          • 表格可在 APP 內直接填寫，後台紀錄好<br>
-          • <b>不設庫存表：</b>地域物資逾萬種、攤位物資向外判商租用，兩者均毋須對照庫存（原「庫存」分頁已移除）
+          • 一次可申請多項物資：每項只填名稱及數量，組別／電話／原因整張申請只填一次<br>
+          • <b>與「攤位物資申請」完全獨立：</b>攤位物資（向外判商租用枱／椅／帳篷等）在另一張卡片處理，兩類申請互不混雜、互不影響<br>
+          • <b>不設庫存表：</b>地域物資逾萬種，毋須對照庫存（原「庫存」分頁已移除）
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchSuppliesTab('my')" class="tab-btn ${this.suppliesSubTab==='my'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的申請 (${myRequests.length})</button>
-          <button onclick="app.switchSuppliesTab('booth')" class="tab-btn ${this.suppliesSubTab==='booth'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位物資 (${(data.booth_requests||[]).length})</button>
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin||isCoordinator)?`
           <button onclick="app.switchSuppliesTab('requests')" class="tab-btn ${this.suppliesSubTab==='requests'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 全部清單 (${data.requests.length})</button>
           <button onclick="app.switchSuppliesTab('pending')" class="tab-btn ${this.suppliesSubTab==='pending'?'active':''}"><i class="fa-solid fa-hourglass-half mr-1"></i> 待批核 (${pendingRequests.length})</button>
@@ -238,7 +238,6 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="supplies-tab-checklist" class="${this.suppliesSubTab==='checklist'?'':'hidden'}"></div>
         <div id="supplies-tab-notifications" class="${this.suppliesSubTab==='notifications'?'':'hidden'}"></div>
         <div id="supplies-tab-stats" class="${this.suppliesSubTab==='stats'?'':'hidden'}"></div>
-        <div id="supplies-tab-booth" class="${this.suppliesSubTab==='booth'?'':'hidden'}"></div>
       </div>
     `;
     if(this.suppliesSubTab==='requests' && !(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isAdmin)) this.suppliesSubTab='my';
@@ -254,8 +253,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(actionsEl){
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
-          <button onclick="app.openModule('apply_hub')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">← 返回申請中心</button>
-          ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button><button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位物資申請</button>`:''}
+          ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button>`:''}
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isCoordinator||isAdmin)?`<button onclick="app.exportSuppliesData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}
 
           ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0])"></label>`:''}
@@ -268,7 +266,6 @@ Object.assign(ScoutEventApp.prototype,{
     this.suppliesSubTab=tab;
     document.querySelectorAll('[id^="supplies-tab-"]').forEach(el=>el.classList.add('hidden'));
     document.getElementById('supplies-tab-'+tab)?.classList.remove('hidden');
-    if(tab==='booth') this.renderSuppliesBooth();
     if(tab==='stats') this.renderSuppliesStats();
     document.querySelectorAll('[onclick^="app.switchSuppliesTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
@@ -423,22 +420,6 @@ Object.assign(ScoutEventApp.prototype,{
             return `<tr><td class="px-2 py-1 font-medium" data-label="物資">${escapeHtml(it)}</td><td class="px-2 py-1 text-right" data-label="筆數">${s.count}</td><td class="px-2 py-1 text-right" data-label="申請">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700" data-label="待批">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700" data-label="已批">${s.approved}</td></tr>`;
           }).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無物資申請</td></tr>'}</tbody></table></div>
         </div>
-        <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-[13px] mb-2"><i class="fa-solid fa-store text-orange-600 mr-2"></i>攤位物資統計</h4>
-          ${(()=>{
-            const booths=data.booth_requests||[];
-            if(!booths.length) return '<p class="text-xs text-slate-400">暫無攤位物資申請</p>';
-            const byB={};
-            booths.forEach(r=>{
-              const it=r.item_name||'未命名';
-              if(!byB[it]) byB[it]={count:0,requested:0,approved:0,pending:0};
-              byB[it].count++; byB[it].requested+=r.qty_requested||0;
-              if(r.status==='approved'||r.status==='modified') byB[it].approved+=(r.qty_approved!=null?r.qty_approved:r.qty_requested)||0;
-              if(r.status==='pending') byB[it].pending+=r.qty_requested||0;
-            });
-            return `<div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位物資</th><th class="px-2 py-1 text-right">筆數</th><th class="px-2 py-1 text-right">申請</th><th class="px-2 py-1 text-right">待批</th><th class="px-2 py-1 text-right">已批</th></tr></thead><tbody class="divide-y">${Object.keys(byB).sort().map(it=>{const s=byB[it]; return `<tr><td class="px-2 py-1 font-medium">${escapeHtml(it)}</td><td class="px-2 py-1 text-right">${s.count}</td><td class="px-2 py-1 text-right">${s.requested}</td><td class="px-2 py-1 text-right text-amber-700">${s.pending}</td><td class="px-2 py-1 text-right text-emerald-700">${s.approved}</td></tr>`;}).join('')}</tbody></table></div>`;
-          })()}
-        </div>
       </div>
     `;
   }
@@ -449,24 +430,32 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getSuppliesData();
     const existing=editId?data.requests.find(r=>r.request_id===editId):null;
     const title=existing?'編輯物資申請':'提交物資申請 (總主任/副主席可提交，APP內直接填寫)';
+    // v8.6：每項物資只填「名稱＋數量（＋單位）」；組別／聯絡電話／申請原因是整張申請共用的，只填一次。
+    // （電話自動載入登記資料／上次填寫，唔使借十樣嘢填十次。）
+    const canEditGroup=this.roleLevel(this.currentUser?.role)>=40||this.isAdmin();
+    const rowHTML=(r)=>`<div class="supply-row border rounded-xl p-3 bg-slate-50 space-y-2 relative">
+          <button type="button" onclick="if(document.querySelectorAll('.supply-row').length>1)this.parentElement.remove();else showToast('至少保留一項物資','warning')" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱" value="${escapeHtml(r?.item_name||'')}"></div>
+            <div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1" value="${r?.qty_requested||''}"></div>
+            <div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="${escapeHtml(r?.unit||'個')}"></div>
+          </div>
+        </div>`;
     let html=`
       <input type="hidden" id="supply-form-mode" value="${existing?'edit':'create'}">
       <input type="hidden" id="supply-form-id" value="${existing?.request_id||''}">
-      
+      <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[10.5px] text-sky-900 mb-3 leading-relaxed"><b>一次過申請多項物資：</b>每項只需填「物資名稱＋數量」，按「增加一項物資」繼續加；<b>組別／電話／原因屬整張申請，只填一次</b>。</div>
       <div id="supply-rows" class="space-y-3">
-        <div class="supply-row border rounded-xl p-3 bg-slate-50 space-y-2 relative">
-          <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱" value="${escapeHtml(existing?.item_name||'')}"></div>
-            <div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1" value="${existing?.qty_requested||''}"></div>
-            <div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="${escapeHtml(existing?.unit||'個')}"></div>
-            <div><label class="text-[11px] font-bold">所屬組別 *</label><input class="supply-group w-full px-3 py-2 border rounded-xl text-sm mt-1" required value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}"></div>
-            <div class="col-span-2"><label class="text-[11px] font-bold">申請原因/用途</label><textarea class="supply-reason w-full px-3 py-2 border rounded-xl text-sm mt-1" rows="2" placeholder="特別要求才填寫（可選）">${escapeHtml(existing?.reason||'')}</textarea></div>
-            <div><label class="text-[11px] font-bold">聯絡電話</label><input class="supply-contact w-full px-3 py-2 border rounded-xl text-sm mt-1" placeholder="方便協調" value="${escapeHtml(existing?.contact||'')}"></div>
-          </div>
+        ${rowHTML(existing)}
+      </div>
+      <div class="text-right mt-1"><button type="button" onclick="app.addSupplyRow()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加一項物資（只填名稱及數量）</button></div>
+      <div class="border rounded-xl p-3 bg-white mt-3"><b class="text-[11px]">是次申請共通資料（只填一次，套用以上每一項）</b>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+          <div><label class="text-[11px] font-bold">所屬組別 *</label><input id="supply-shared-group" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 ${canEditGroup?'':'bg-slate-100'}" ${canEditGroup?'':'readonly'} required value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}"><div class="text-[9.5px] text-slate-400 mt-0.5">${canEditGroup?'管理層／總主任以上可代其他組別填寫':'已自動填入你的組別，無需更改'}</div></div>
+          <div><label class="text-[11px] font-bold">聯絡電話</label><input id="supply-shared-contact" class="w-full px-3 py-2 border rounded-xl text-sm mt-1" placeholder="方便協調" value="${escapeHtml(existing?.contact||this.myDefaultContact())}"></div>
+          <div class="col-span-2"><label class="text-[11px] font-bold">申請原因/用途（整張申請適用）</label><textarea id="supply-shared-reason" class="w-full px-3 py-2 border rounded-xl text-sm mt-1" rows="2" placeholder="特別要求才填寫（可選）">${escapeHtml(existing?.reason||'')}</textarea></div>
         </div>
       </div>
-      <div class="text-right"><button type="button" onclick="app.addSupplyRow()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加一項物資</button></div>
       <div class="text-[10px] text-slate-500 mt-2">低於總主任提交會先交本組總主任以上確認，再由 ${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 批核，最後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行。</div>
     `;
     document.getElementById('record-modal-title').textContent=title;
@@ -476,11 +465,28 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('modal-record').classList.remove('hidden');
   }
 ,
+  // v8.6：申請表「聯絡電話」預設值＝登入資料／聯絡表登記電話（避免每項重複填）
+  myDefaultContact(){
+    try{
+      const u=this.currentUser||{};
+      if(u.contact||u.phone) return String(u.contact||u.phone);
+      const name=String(u.name||'').trim();
+      if(name){ const hit=(this.getStaffData().contacts||[]).find(c=>String(c.name||'').trim()===name&&c.contact); if(hit) return String(hit.contact); }
+    }catch(e){}
+    return '';
+  }
+,
   submitSupplyRequestForm(){
     const mode=document.getElementById('supply-form-mode').value;
     const id=document.getElementById('supply-form-id').value;
     const data=this.getSuppliesData();
     const requested_by=(document.getElementById('supply-requested-by')?.value.trim()||this.currentUser?.name||'');
+    // v8.6：組別／電話／原因屬整張申請（只填一次），套用於每項物資
+    let group_name=(document.getElementById('supply-shared-group')?.value||'').trim();
+    if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
+    const contact=(document.getElementById('supply-shared-contact')?.value||'').trim();
+    const reason=(document.getElementById('supply-shared-reason')?.value||'').trim();
+    if(!group_name){ showToast('請填寫所屬組別','error'); return; }
     if(mode==='edit'){
       const row=document.querySelector('.supply-row');
       if(!row){ showToast('表單無效','error'); return; }
@@ -488,12 +494,8 @@ Object.assign(ScoutEventApp.prototype,{
       const qty_str=row.querySelector('.supply-qty').value;
       const qty=parseInt(qty_str||'0');
       const unit=row.querySelector('.supply-unit').value.trim()||'個';
-      let group_name=row.querySelector('.supply-group').value.trim();
-      const reason=row.querySelector('.supply-reason').value.trim()||'';
-      const contact=row.querySelector('.supply-contact').value.trim()||'';
-      if(!item_name||!qty_str||!group_name){ showToast('請填寫物資名稱、數量、組別','error'); return; }
+      if(!item_name||!qty_str){ showToast('請填寫物資名稱及數量','error'); return; }
       if(isNaN(qty)||qty<1){ showToast('數量須為大於0的整數','error'); return; }
-      if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
       const idx=data.requests.findIndex(r=>r.request_id===id);
       if(idx>=0){
         const confirmation=this.applicationConfirmationMeta(this.currentUser);
@@ -509,12 +511,8 @@ Object.assign(ScoutEventApp.prototype,{
         const qty_str=row.querySelector('.supply-qty').value;
         const qty=parseInt(qty_str||'0');
         const unit=row.querySelector('.supply-unit').value.trim()||'個';
-        let group_name=row.querySelector('.supply-group').value.trim();
-        const reason=row.querySelector('.supply-reason').value.trim()||'';
-        const contact=row.querySelector('.supply-contact').value.trim()||'';
-        if(!item_name||!qty_str||!group_name){ showToast('第'+(i+1)+'項：請填寫物資名稱、數量、組別','error'); return; }
+        if(!item_name||!qty_str){ showToast('第'+(i+1)+'項：請填寫物資名稱及數量','error'); return; }
         if(isNaN(qty)||qty<1){ showToast('第'+(i+1)+'項：數量須為大於0的整數','error'); return; }
-        if(this.roleLevel(this.currentUser?.role)<40) group_name=normalizeGroupName(this.currentUser?.group_name);
         items.push({item_name,qty_requested:qty,unit,group_name,reason,contact,requested_by,requested_by_id:this.currentUser?.user_id||''});
       }
       for(const it of items){
@@ -696,21 +694,30 @@ Object.assign(ScoutEventApp.prototype,{
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`supplies_${todayISO()}.json`; a.click(); showToast('已匯出物資／車輛 JSON','success');
   },
   addSupplyRow(){
+    // v8.6：新增一項只填「物資名稱＋數量（＋單位）」；組別／電話／原因是整張申請共用的，不需要重複填
     const container=document.getElementById('supply-rows');
     if(!container) return;
     const row=document.createElement('div');
     row.className='supply-row border rounded-xl p-3 bg-slate-50 space-y-2 relative';
-    row.innerHTML=`<button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1"></div><div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="個"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input class="supply-group w-full px-3 py-2 border rounded-xl text-sm mt-1" required value="${escapeHtml(this.currentUser?.group_name||'')}"></div><div class="col-span-2"><label class="text-[11px] font-bold">申請原因/用途</label><textarea class="supply-reason w-full px-3 py-2 border rounded-xl text-sm mt-1" rows="2" placeholder="特別要求才填寫（可選）"></textarea></div><div><label class="text-[11px] font-bold">聯絡電話</label><input class="supply-contact w-full px-3 py-2 border rounded-xl text-sm mt-1" placeholder="方便協調"></div></div>`;
+    row.innerHTML=`<button type="button" onclick="if(document.querySelectorAll('.supply-row').length>1)this.parentElement.remove();else showToast('至少保留一項物資','warning')" class="absolute top-2 right-2 text-rose-600 text-[10px] font-bold">刪除這項</button><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="col-span-2"><label class="text-[11px] font-bold">物資名稱 *</label><input class="supply-item w-full px-3 py-2 border rounded-xl text-sm mt-1" required placeholder="輸入物資名稱"></div><div><label class="text-[11px] font-bold">申請數量 *</label><input type="number" class="supply-qty w-full px-3 py-2 border rounded-xl text-sm mt-1" required min="1"></div><div><label class="text-[11px] font-bold">單位</label><input class="supply-unit w-full px-3 py-2 border rounded-xl text-sm mt-1" value="個"></div></div>`;
     container.appendChild(row);
   },
-  renderSuppliesBooth(){
-    const container=document.getElementById('supplies-tab-booth'); if(!container) return;
+  // ═══ 攤位物資申請：獨立模組卡片（與地域「物資申請」完全分開；兩類申請互不混雜、互不影響）═══
+  renderBoothModule(){
+    const container=document.getElementById('module-content'); if(!container) return;
     const data=this.getSuppliesData();
     const list=(data.booth_requests||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     const canSubmit=this.canSubmitSupply();
     const isAdmin=this.isAdmin();
     const isCoordinator=this.isCoordinatorViceChair();
-    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]"><b>攤位物資申請（對標「2026 攤位總表」）</b>：分區／編號／負責單位按總表選擇，<b>攤位名稱由申請人填寫</b>（大會據此製作招牌）。枱、椅、帳篷圍布、電源等標準物資大會已有（向外判商租用），<b>只需填數量</b>；本項申請不設庫存。低於總主任先由本組總主任以上確認，再交批核組。</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">${r.zone||r.booth_code||r.unit_name?`攤位: <b>${escapeHtml([r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-')}</b> · 負責單位: ${escapeHtml(r.unit_name||'-')}${r.booth_name?` · 招牌名: <b>${escapeHtml(r.booth_name)}</b>`:''}`:''}</div><div class="text-[11px] text-slate-500 mt-0.5">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">需求: ${escapeHtml([r.delivery?'運送: '+r.delivery:'',r.other_need?'其他: '+r.other_need:'',r.purpose].filter(Boolean).join('；')||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請</p>`}</div></div>`;
+    const pending=list.filter(r=>r.status==='pending').length;
+    const approved=list.filter(r=>r.status==='approved'||r.status==='modified').length;
+    const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
+    container.innerHTML=`<div class="space-y-4"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>攤位物資申請（對標「2026 攤位總表」）</b>：分區／編號／負責單位按總表選擇，<b>攤位名稱由申請人填寫</b>（大會據此製作招牌）。枱、椅、帳篷圍布、電源等標準物資大會已有（向外判商租用），<b>只需填數量</b>；本項申請不設庫存。低於總主任先由本組總主任以上確認，再交批核組。<b>與「物資申請」（地域物資借用）是兩項完全獨立的紀錄</b>，互不混雜。</div><div class="grid grid-cols-3 gap-2 max-w-md">${chip(list.length,'攤位申請','bg-slate-100 text-slate-700 border')}${chip(pending,'待批核','bg-amber-50 text-amber-700 border border-amber-200')}${chip(approved,'已批核','bg-emerald-50 text-emerald-700 border border-emerald-200')}</div><div class="flex gap-2">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位物資申請</button>`:''}${(isCoordinator||isAdmin)?`<button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div><div class="space-y-3">${list.length?list.map(r=>`<div class="border rounded-xl p-3 bg-white"><div class="flex justify-between"><b class="text-[13px]">${escapeHtml(r.item_name||'')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${r.status==='pending'?'bg-amber-100 text-amber-700':r.status==='approved'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${r.status==='pending'?'待批核':r.status==='approved'?'已批核':'已拒絕'}</span><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name||'')}</span></div><div class="text-[11px] text-slate-500 mt-1">${r.zone||r.booth_code||r.unit_name?`攤位: <b>${escapeHtml([r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-')}</b> · 負責單位: ${escapeHtml(r.unit_name||'-')}${r.booth_name?` · 招牌名: <b>${escapeHtml(r.booth_name)}</b>`:''}`:''}</div><div class="text-[11px] text-slate-500 mt-0.5">數量: ${r.qty_requested||0} ${escapeHtml(r.unit||'個')} | 申請人: ${escapeHtml(r.requested_by||'')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] text-slate-500">需求: ${escapeHtml([r.delivery?'運送: '+r.delivery:'',r.other_need?'其他: '+r.other_need:'',r.purpose].filter(Boolean).join('；')||'-')}</div></div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無攤位物資申請 — 這是本組攤位向大會租用枱／椅／帳篷等的獨立紀錄（與地域物資申請無關）</p>`}</div></div>`;
+    const actionsEl=document.getElementById('module-actions');
+    if(actionsEl){
+      actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap">${canSubmit?`<button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>提交攤位物資申請</button>`:''}</div>`;
+    }
   },
   // 攤位物資申請表單（對標品牌推廣組「2026 攤位總表」Google Sheet）：
   // 分區＋編號＋負責單位來自總表；攤位名稱由申請人填（做招牌）；枱／椅／帳篷圍布／電源等標準項目只需填數量；外判商租用，不設庫存。
@@ -724,7 +731,7 @@ Object.assign(ScoutEventApp.prototype,{
       const ex=(existing&&existing.item_name===it.name)?existing:null;
       return `<tr><td class="border px-2 py-1.5 font-bold">${escapeHtml(it.name)}${it.hint?`<div class="text-[9.5px] text-slate-400 font-normal">${escapeHtml(it.hint)}</div>`:''}</td><td class="border px-2 py-1.5 w-28"><input type="number" id="booth-std-qty-${i}" min="0"${it.name==='帳篷圍布'?' max="3"':''} value="${ex?(ex.qty_requested||''):''}" placeholder="0" class="w-full px-2 py-1 border rounded-lg text-sm"></td><td class="border px-2 py-1.5 text-[11px] text-slate-500">${escapeHtml(it.unit)}</td></tr>`;
     }).join('');
-    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10.5px] text-amber-900 mb-3 leading-relaxed"><b>對標「2026 攤位總表」：</b>選<b>分區＋編號＋負責單位</b>；<b>攤位名稱</b>由申請人填寫（大會據此製作招牌）。枱／椅／帳篷圍布／電源等大會已有（向外判商租用），<b>只需填數量</b>，不設庫存。</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分區 *</label><select id="booth-zone" onchange="app.renderBoothUnitOptions()" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="">請選分區</option>${zoneOpts}</select></div><div><label class="text-[11px] font-bold">攤位編號 *</label><select id="booth-no" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${Array.from({length:15},(_,i)=>String(i+1).padStart(2,'0')).map(no=>`<option value="${no}" ${existing?.booth_no===no?'selected':''}>${no}</option>`).join('')}</select></div><div class="col-span-2"><label class="text-[11px] font-bold">負責單位 *</label><div class="flex gap-2 mt-1"><select id="booth-unit-select" onchange="app.onBoothUnitChange()" class="flex-1 px-3 py-2 border rounded-xl text-sm bg-white"></select><input id="booth-unit-custom" value="${escapeHtml(existing?.unit_name||'')}" placeholder="自行輸入單位名稱" class="flex-1 px-3 py-2 border rounded-xl text-sm hidden"></div></div><div class="col-span-2"><label class="text-[11px] font-bold">攤位名稱（招牌用）*</label><input id="booth-name" value="${escapeHtml(existing?.booth_name||'')}" required placeholder="例：皮藝體驗站（做招牌用；沒有特別名稱可填跟負責單位同名）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">聯絡電話</label><input id="booth-contact" value="${escapeHtml(existing?.contact||'')}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">提交人</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div></div><div class="mt-3"><label class="text-[11px] font-bold">標準物資（大會現有·填數量即可；留空／0＝不需要）</label><div class="table-responsive mt-1"><table class="min-w-full text-xs border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1 text-left">標準項目</th><th class="border px-2 py-1 text-left">數量</th><th class="border px-2 py-1 text-left">單位</th></tr></thead><tbody>${stdRows}</tbody></table></div></div><div id="booth-extra-rows" class="space-y-2 mt-3">${(existing&&!BOOTH_STD_ITEMS.some(it=>it.name===existing.item_name))?this.boothItemRowHTML(existing):''}</div><div class="text-right mt-1"><button type="button" onclick="app.addBoothItemRow()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加其他物資（標準項以外）</button></div><div class="mt-3 space-y-2"><div><label class="text-[11px] font-bold">運送物資需求</label><textarea id="booth-delivery" rows="2" placeholder="例：需大會協助運送大型道具（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.delivery||'')}</textarea></div><div><label class="text-[11px] font-bold">其他需求</label><textarea id="booth-other" rows="2" placeholder="例：需要靠近插座位（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.other_need||'')}</textarea></div></div><div class="text-[10px] text-slate-500 mt-2">攤位物資由大會向外判商租用，<b>不設庫存</b>；低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
+    let html=`<input type="hidden" id="booth-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="booth-form-id" value="${existing?.request_id||''}"><div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10.5px] text-amber-900 mb-3 leading-relaxed"><b>對標「2026 攤位總表」：</b>選<b>分區＋編號＋負責單位</b>；<b>攤位名稱</b>由申請人填寫（大會據此製作招牌）。枱／椅／帳篷圍布／電源等大會已有（向外判商租用），<b>只需填數量</b>，不設庫存。</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[11px] font-bold">分區 *</label><select id="booth-zone" onchange="app.renderBoothUnitOptions()" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="">請選分區</option>${zoneOpts}</select></div><div><label class="text-[11px] font-bold">攤位編號 *</label><select id="booth-no" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${Array.from({length:15},(_,i)=>String(i+1).padStart(2,'0')).map(no=>`<option value="${no}" ${existing?.booth_no===no?'selected':''}>${no}</option>`).join('')}</select></div><div class="col-span-2"><label class="text-[11px] font-bold">負責單位 *</label><div class="flex gap-2 mt-1"><select id="booth-unit-select" onchange="app.onBoothUnitChange()" class="flex-1 px-3 py-2 border rounded-xl text-sm bg-white"></select><input id="booth-unit-custom" value="${escapeHtml(existing?.unit_name||'')}" placeholder="自行輸入單位名稱" class="flex-1 px-3 py-2 border rounded-xl text-sm hidden"></div></div><div class="col-span-2"><label class="text-[11px] font-bold">攤位名稱（招牌用）*</label><input id="booth-name" value="${escapeHtml(existing?.booth_name||'')}" required placeholder="例：皮藝體驗站（做招牌用；沒有特別名稱可填跟負責單位同名）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">所屬組別 *</label><input id="booth-group" value="${escapeHtml(existing?.group_name||this.currentUser?.group_name||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">聯絡電話</label><input id="booth-contact" value="${escapeHtml(existing?.contact||this.myDefaultContact())}" placeholder="方便協調" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-[11px] font-bold">提交人</label><input id="booth-requested-by" value="${escapeHtml(existing?.requested_by||this.currentUser?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-slate-50" readonly></div></div><div class="mt-3"><label class="text-[11px] font-bold">標準物資（大會現有·填數量即可；留空／0＝不需要）</label><div class="table-responsive mt-1"><table class="min-w-full text-xs border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1 text-left">標準項目</th><th class="border px-2 py-1 text-left">數量</th><th class="border px-2 py-1 text-left">單位</th></tr></thead><tbody>${stdRows}</tbody></table></div></div><div id="booth-extra-rows" class="space-y-2 mt-3">${(existing&&!BOOTH_STD_ITEMS.some(it=>it.name===existing.item_name))?this.boothItemRowHTML(existing):''}</div><div class="text-right mt-1"><button type="button" onclick="app.addBoothItemRow()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>增加其他物資（標準項以外）</button></div><div class="mt-3 space-y-2"><div><label class="text-[11px] font-bold">運送物資需求</label><textarea id="booth-delivery" rows="2" placeholder="例：需大會協助運送大型道具（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.delivery||'')}</textarea></div><div><label class="text-[11px] font-bold">其他需求</label><textarea id="booth-other" rows="2" placeholder="例：需要靠近插座位（可選）" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.other_need||'')}</textarea></div></div><div class="text-[10px] text-slate-500 mt-2">攤位物資由大會向外判商租用，<b>不設庫存</b>；低於總主任提交會先交本組總主任以上確認，再交指定批核組。</div>`;
     document.getElementById('record-modal-title').textContent=title;
     document.getElementById('record-form-fields').innerHTML=html;
     this.renderBoothUnitOptions(existing?.unit_name||'');

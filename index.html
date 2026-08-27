@@ -232,11 +232,11 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
     <div class="bg-white rounded-2xl shadow-sm border p-4 sm:p-6"><div id="module-content"></div></div>
   </div>
 
-  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>執行副主席／主席／顧問／管理員</b>＝可見全部人；<b>副主席</b>只睇自己組；<b>總主任</b>睇自己組但不包括副主席；<b>主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
-  <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批量開戶中心</h3><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
-  <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm space-y-3"><h3 class="font-bold">控制台</h3><p class="text-xs text-slate-500 leading-relaxed">此頁只供系統技術人員調整後端連線（GAS URL／API Key）。一般籌委不需要進入。會議預告、開戶、批核等都在儀表板卡片處理，不是在這裡。</p><button onclick="app.openSettingsModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟系統設定</button></div></div>
-  <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核中心</h3><div id="approval-content" class="mt-4"></div></div></div>
-  <div id="view-approvalmatrix" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><h3 class="font-bold">批核權限表</h3><div id="approval-matrix-content" class="mt-4"></div></div></div>
+  <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3></div><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>執行副主席／主席／顧問／管理員</b>＝可見全部人；<b>副主席</b>只睇自己組；<b>總主任</b>睇自己組但不包括副主席；<b>主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
+  <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批量開戶中心</h3></div><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
+  <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm space-y-3"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">控制台</h3></div><p class="text-xs text-slate-500 leading-relaxed">此頁只供系統技術人員調整後端連線（GAS URL／API Key）。一般籌委不需要進入。會議預告、開戶、批核等都在儀表板卡片處理，不是在這裡。</p><button onclick="app.openSettingsModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟系統設定</button></div></div>
+  <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批核中心</h3></div><div id="approval-content" class="mt-4"></div></div></div>
+  <div id="view-approvalmatrix" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批核權限表</h3></div><div id="approval-matrix-content" class="mt-4"></div></div></div>
 
 </main>
 
@@ -418,12 +418,12 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
             <tbody class="divide-y">
               <tr><td class="px-2 py-1 font-medium">公告及溝通</td><td>公告、日程表、旅團須知、主題章；跨部門溝通、搜尋</td><td>主任以上可發佈</td></tr>
               <tr><td class="px-2 py-1 font-medium">執行手冊</td><td>內部分頁：組織架構與聯絡・場地與活動總覽・典禮儀式・危機處理・通告及文件</td><td>各頁按權限；公開可看</td></tr>
-              <tr><td class="px-2 py-1 font-medium">申請中心</td><td>物資、車輛／泊車證、膳食、口頭報價、開支申報統一入口</td><td>各表按權限進入</td></tr>
+              <tr><td class="px-2 py-1 font-medium">申請中心</td><td>物資（地域借用）與攤位物資（向外判商租用）為<b>兩項完全獨立</b>的申請，另設車輛／泊車證、膳食、口頭報價、開支申報統一入口</td><td>各表按權限進入</td></tr>
               <tr><td class="px-2 py-1 font-medium">童心捐贈大行動</td><td>物品／食品捐贈、QR Code 登記；<b>統計只供服務及發展組／管理層</b></td><td>服務及發展組可管理</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="text-[12px]"><b>工作／組別類（登入後按權限）：</b>會議卡片・物資申請・車輛通行證（含泊車證）・口頭報價登記・財務管理・行政組・協調組・顧問團・主席及執行副主席・會操及典禮組・主題節目組・品牌推廣組・嘉賓接待組・服務及發展組・秘書處。</p>
+        <p class="text-[12px]"><b>工作／組別類（登入後按權限）：</b>會議卡片・物資申請（地域借用）・攤位物資申請（向外判商租用，與物資申請完全獨立）・車輛通行證（含泊車證）・口頭報價登記・財務管理・行政組・協調組・顧問團・主席及執行副主席・會操及典禮組・主題節目組・品牌推廣組・嘉賓接待組・服務及發展組・秘書處。各頁「返回」＝回上一層（由申請中心入去就返申請中心）。</p>
         <p class="text-[12px]"><b>管理／監察類：</b>我的監察（自己＋下級申請進度）・批核中心（膳食／物資／車輛／財務）・批核權限表（設定批核組／執行組）・開戶（總主任以上）・權限管理（上級授權下級）。</p>
       </div>
 

@@ -185,7 +185,6 @@ Object.assign(ScoutEventApp.prototype,{
     if(actionsEl){
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
-          <button onclick="app.openModule('apply_hub')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">← 返回申請中心</button>
           ${canManage?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單 (${escapeHtml(this.approvalRouteLabel('meals','executor_groups'))})</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0])"></label>`:''}
           ${this.canExecuteArea('meals')?`<button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出最後名單</button>`:'<span class="text-[11px] bg-purple-50 text-purple-700 px-3 py-2 rounded-full border border-purple-200"><i class="fa-solid fa-lock mr-1"></i>登入後提交；最後名單只供指定執行組</span>'}
@@ -221,7 +220,7 @@ Object.assign(ScoutEventApp.prototype,{
       return `<div class="border rounded-xl p-4 bg-white space-y-2 ${isLocked?'bg-slate-50 border-slate-300':''}">
         <div class="flex justify-between items-start gap-2">
           <div><div class="flex items-center gap-2 flex-wrap"><b class="text-[14px]">${escapeHtml(menu.meal_type)} - ${escapeHtml(menu.menu_desc||'未命名菜單')}</b><span class="text-[10px] px-2 py-0.5 rounded-full border ${isLocked?'bg-rose-100 text-rose-700 border-rose-200':deadlinePassed?'bg-amber-100 text-amber-700 border-amber-200':'bg-emerald-100 text-emerald-700 border-emerald-200'}">${isLocked?'已鎖定':deadlinePassed?'已截止':'開放中'}</span></div>
-          <div class="text-[11px] text-slate-500 mt-1">日期: ${escapeHtml(menu.date)} | 截止: ${escapeHtml(deadlineText)} ${deadlinePassed?'(已過)':''} | 組別: ${escapeHtml(menu.group_name||'全部')}</div>
+          <div class="text-[11px] text-slate-500 mt-1">日期: ${escapeHtml(menu.date)} | 截止: ${escapeHtml(deadlineText)} ${deadlinePassed?'(已過)':''}</div>
           <div class="text-[11px] text-slate-600 mt-1">選項: ${(menu.options||[]).map(o=>`<span class="bg-slate-100 border px-1.5 py-0.5 rounded-full text-[10px] mr-1">${escapeHtml(o)}</span>`).join('')}</div></div>
           <div class="flex flex-col gap-1 flex-shrink-0">
             ${!isLocked?`<button onclick="app.openMealOrderForm('${menu.menu_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">填寫訂餐（無需登入）</button>`:''}
@@ -417,9 +416,9 @@ Object.assign(ScoutEventApp.prototype,{
         <div><label class="text-[11px] font-bold">餐別 *</label><select id="meal-menu-type" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="早餐" ${existing?.meal_type==='早餐'?'selected':''}>早餐</option><option value="午餐" ${!existing||existing?.meal_type==='午餐'?'selected':''}>午餐</option><option value="晚餐" ${existing?.meal_type==='晚餐'?'selected':''}>晚餐</option><option value="宵夜" ${existing?.meal_type==='宵夜'?'selected':''}>宵夜</option></select></div>
         <div class="col-span-2"><label class="text-[11px] font-bold">菜單描述 *</label><input id="meal-menu-desc" value="${escapeHtml(existing?.menu_desc||'')}" required placeholder="例如 精美便當連飲品 A餐: 叉燒飯 B餐: 雞扒飯" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div class="col-span-2"><label class="text-[11px] font-bold">選項 (逗號分隔，可含 不吃)</label><input id="meal-menu-options" value="${escapeHtml((existing?.options||['A餐','B餐','C餐','不吃']).join(','))}" placeholder="A餐,B餐,C餐,不吃" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">截止日期 (列明) *</label><input type="datetime-local" id="meal-menu-deadline" value="${existing?.deadline||''}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">組別 (空=全部)</label><input id="meal-menu-group" value="${escapeHtml(existing?.group_name||'')}" placeholder="例如 主題節目組 或空=全部" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">截止日期 (列明) *</label><input type="datetime-local" id="meal-menu-deadline" value="${existing?.deadline||''}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       </div>
+      <div class="text-[10px] text-slate-400 mt-1">菜單開放給<b>所有組別</b>填寫訂餐；舊版「組別」欄不影響任何篩選／統計，屬無效欄位，已刪</div>
       <div class="text-[10px] text-slate-500 mt-2">截止日期後膳食組可鎖定，鎖定後不可更改，各人可查自己訂了什麼</div>
     `;
     document.getElementById('record-modal-title').textContent=title;
@@ -438,7 +437,7 @@ Object.assign(ScoutEventApp.prototype,{
     const menu_desc=document.getElementById('meal-menu-desc').value.trim();
     const optionsStr=document.getElementById('meal-menu-options').value.trim();
     const deadline=document.getElementById('meal-menu-deadline').value;
-    const group_name=document.getElementById('meal-menu-group').value.trim();
+    const group_name=''; // v8.6：菜單不再設「組別」欄（舊欄不影響任何篩選/統計，屬無效欄位）
     if(!date||!meal_type||!menu_desc||!deadline){ showToast('請填寫日期、餐別、描述、截止日期','error'); return; }
     const options=optionsStr?optionsStr.split(',').map(o=>o.trim()).filter(o=>o):['A餐','B餐','不吃'];
     const data=this.getMealsData();
