@@ -60,13 +60,13 @@ Object.assign(ScoutEventApp.prototype,{
           {k:'qrcode',icon:'fa-solid fa-qrcode',label:'QR Code'}
         ]
       : [{k:'entry',icon:'fa-solid fa-pen-to-square',label:'捐贈登記'}];
-    const tabBtns=tabs.map(t=>`<button onclick="app.switchDonTab('${t.k}')" class="tab-btn ${this.donSubTab===t.k?'active':''}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
+    const tabBtns=canStats?tabs.map(t=>`<button onclick="app.switchDonTab('${t.k}')" class="tab-btn ${this.donSubTab===t.k?'active':''}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join(''):'';
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-900">
-          <b><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動：</b>掃碼或填表登記物品／食品捐贈；統計只供服務及發展組／管理層查看。
+          <b><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動：</b>${canStats?'掃碼或填表登記物品／食品捐贈；統計只供服務及發展組／管理層查看。':'多謝你嘅心意！直接以下兩個表登記物品／食品捐贈，或影 QR Code 表格填寫（無須登入）。統計及紀錄只供服務及發展組／管理層查閱。'}
         </div>
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
+        ${tabBtns?`<div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>`:''}
         <div id="don-tab-body"></div>
       </div>`;
     const body=document.getElementById('don-tab-body');
@@ -81,18 +81,8 @@ Object.assign(ScoutEventApp.prototype,{
     const baseUrl=window.location.origin+window.location.pathname;
     const goodsUrl=baseUrl+'#donate-goods';
     const foodUrl=baseUrl+'#donate-food';
-    body.innerHTML=`
-      <div class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button onclick="app.openGoodsDonationForm()" class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-5 text-left card-hover cursor-pointer">
-            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-box-open"></i></div>
-            <h4 class="font-bold">物品捐贈表</h4><p class="text-[11px] text-blue-100 mt-1">填寫旅團、領袖及捐贈者名單</p>
-          </button>
-          <button onclick="app.openFoodDonationForm()" class="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-2xl p-5 text-left card-hover cursor-pointer">
-            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-apple-whole"></i></div>
-            <h4 class="font-bold">食品捐贈表</h4><p class="text-[11px] text-amber-100 mt-1">填寫旅團、領袖及捐贈者名單</p>
-          </button>
-        </div>
+    // QR Code／下載屬籌辦方派發用途；公眾直接填表即可，唔顯示呢舊欄
+    const qrBlock=this.canViewDonationsStats()?`
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-white border rounded-xl p-5 text-center space-y-3">
             <h4 class="font-bold text-sm text-blue-700"><i class="fa-solid fa-qrcode mr-1"></i>物品捐贈 QR Code</h4>
@@ -106,9 +96,22 @@ Object.assign(ScoutEventApp.prototype,{
             <p class="text-[10px] text-slate-500 break-all">${escapeHtml(foodUrl)}</p>
             <button onclick="app.downloadQR('qr-food','食品捐贈QRCode')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 QR Code</button>
           </div>
+        </div>`:'';
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="app.openGoodsDonationForm()" class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-5 text-left card-hover cursor-pointer">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-box-open"></i></div>
+            <h4 class="font-bold">物品捐贈表</h4><p class="text-[11px] text-blue-100 mt-1">填寫旅團、領袖及捐贈者名單</p>
+          </button>
+          <button onclick="app.openFoodDonationForm()" class="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-2xl p-5 text-left card-hover cursor-pointer">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-apple-whole"></i></div>
+            <h4 class="font-bold">食品捐贈表</h4><p class="text-[11px] text-amber-100 mt-1">填寫旅團、領袖及捐贈者名單</p>
+          </button>
         </div>
+        ${qrBlock}
       </div>`;
-    setTimeout(()=>{ this.generateQR('qr-goods',goodsUrl); this.generateQR('qr-food',foodUrl); },100);
+    if(qrBlock) setTimeout(()=>{ this.generateQR('qr-goods',goodsUrl); this.generateQR('qr-food',foodUrl); },100);
   }
 ,
   switchDonTab(tab){ this.donSubTab=tab; this.renderDonationsModule(); }

@@ -193,4 +193,78 @@ const navR = JSON.parse(vm.runInContext(`(()=>{
 })()`, context));
 ok(navR.onBooth, '⑤ 申請中心→「前往申請」應進入獨立攤位模組');
 ok(navR.backToHub, '⑤ 攤位頁按「返回」應回到上一層（申請中心）');
+
+/* ---------- ⑥ 公眾（未登入）視角 ---------- */
+ok(syncSrc.includes("${canViewRecords?`<button onclick=\"app.switchMealsTab('orders')\""), '⑥ 膳食「訂餐紀錄/統計」頁籤應按 canViewRecords 才顯示');
+ok(syncSrc.includes("${canViewRecords?`<button onclick=\"app.switchMealsTab('print')\""), '⑥ 膳食「列印派發」頁籤應按 canViewRecords 才顯示');
+ok(syncSrc.includes('if(!canViewRecords&&(this.mealsSubTab===\'orders\'||this.mealsSubTab===\'print\')) this.mealsSubTab=\'menus\';'), '⑥ 無權限者 mealsSubTab 應被夾返菜單');
+const donSrc = fs.readFileSync(path.join(root, 'js/38-donations.js'), 'utf8');
+ok(donSrc.includes("const tabBtns=canStats?tabs.map") , '⑥ 捐贈：公眾不應見到「捐贈登記」單頁籤（內容已是登記頁）');
+ok(donSrc.includes('${tabBtns?`<div class="flex gap-2 border-b'), '⑥ 捐贈：冇頁籤時整條頁籤欄唔渲染');
+ok(donSrc.includes('const qrBlock=this.canViewDonationsStats()?'), '⑥ 捐贈：QR Code／下載欄只供籌辦方（canViewDonationsStats）');
+ok(supSrc.includes('canSubmitBooth(){ return true; }') || supSrc.includes('canSubmitBooth(){return true;}'), '⑥ 攤位物資申請應公開（canSubmitBooth=true）');
+ok(!supSrc.slice(supSrc.indexOf('openBoothSupplyForm(editId=null){'), supSrc.indexOf('openBoothSupplyForm(editId=null){')+240).includes("canSubmitSupply()"), '⑥ 開攤位表單不應再要求登入');
+ok(supSrc.includes("if(!this.currentUser&&(!requested_by||!contact))"), '⑥ 未登入提交攤位申請必須填姓名＋電話');
+ok(supSrc.includes("if(this.currentUser&&this.roleLevel(this.currentUser.role)<40)"), '⑥ 公眾提交唔應該被強制覆蓋組別（登入者才鎖本組）');
+ok(supSrc.includes('${isPublic?\'\':` | 申請人:'), '⑥ 公眾睇攤位清單應隱藏申請人／聯絡（私隱）');
+const hubSrc = fs.readFileSync(path.join(root, 'js/26-monitor-apply.js'), 'utf8');
+ok(hubSrc.includes("{key:'booth'") && hubSrc.includes("badge:'公開可申請（無需登入）', badgeCls:'bg-emerald-100 text-emerald-700 border-emerald-200', action:`app.openModule('booth')`, enabled:true}"), '⑥ 申請中心攤位卡應啟用比所有人');
+ok(hubSrc.includes('膳食及攤位物資可公開申請（無需登入）'), '⑥ 申請中心提示應列明攤位物資公開');
+
+/* ⑥ 行為：未登入渲染膳食／捐贈／攤位卡 */
+vm.runInContext(`globalThis.__app.currentUser = null;
+globalThis.__app.roleLevel = r => ({super_admin:100}[r]||0);
+globalThis.__app.canApproveArea = () => false;
+globalThis.__app.canExecuteArea = () => false;
+globalThis.__app.canManageApprovalRouting = () => false;
+globalThis.__app.canManageMealMenu = () => false;
+globalThis.__app.canSubmitSupply = () => false;
+globalThis.__app.canViewDonationsStats = () => false;
+globalThis.__app.getMealsData = () => ({ menus:[{menu_id:'m1',date:'2026-10-04',meal_type:'午餐',menu_desc:'便噉',options:['A餐','不吃'],price:55,deadline:'2099-01-01T00:00',status:'open',locked:false}], orders:[] });
+globalThis.__app.getDonationsData = () => ({ goods:[], food:[] });
+`, context);
+vm.runInContext(`globalThis.__app.mealsSubTab='orders'; globalThis.__app.renderMealsModule()`, context);
+const pubMeals = elements['module-content'].innerHTML;
+ok(!pubMeals.includes("switchMealsTab('orders')") && !pubMeals.includes("switchMealsTab('print')"), '⑥ 行為：未登入睇膳食唔會有「訂餐紀錄/統計」同「列印派發」頁籤');
+ok(pubMeals.includes("switchMealsTab('menus')") && pubMeals.includes("switchMealsTab('my')"), '⑥ 行為：未登入仍可睇菜單＋我的訂餐');
+ok(!pubMeals.includes('返回申請中心'), '⑥ 行為：膳食卡冇多餘返回');
+vm.runInContext(`globalThis.__app.renderDonationsModule()`, context);
+const pubDon = elements['module-content'].innerHTML + (elements['don-tab-body'].innerHTML||'');
+ok(!pubDon.includes('>捐贈登記<') && !pubDon.includes('下載 QR Code') && !pubDon.includes('qr-goods'), '⑥ 行為：未登入睇捐贈冇多餘「捐贈登記」頁籤／QR 下載欄');
+ok(pubDon.includes('物品捐贈表') && pubDon.includes('食品捐贈表'), '⑥ 行為：未登入仍見到兩張捐贈表入口');
+vm.runInContext(`globalThis.__app.openModule('booth')`, context);
+const pubBooth = elements['module-content'].innerHTML;
+ok(pubBooth.includes('無需登入'), '⑥ 行為：攤位模組列明公開可申請');
+ok(pubBooth.includes('帳篷') && !pubBooth.includes('申請人:'), '⑥ 行為：公眾可睇攤位申請清單但睇唔到申請人聯絡');
+ok(elements['module-actions'].innerHTML.includes('提交攤位物資申請'), '⑥ 行為：公眾頂欄有提交按鈕');
+
+/* ⑥ 行為：未登入提交攤位申請（公開流程可用） */
+vm.runInContext(`
+  globalThis.__app.currentModule='booth';
+  globalThis.__captured={};
+  globalThis.__app.saveSuppliesData=function(d){globalThis.__captured.data=JSON.parse(JSON.stringify(d));};
+  globalThis.__app.refreshSuppliesViews=()=>{};
+  globalThis.__app.closeModal=()=>{};
+`, context);
+el('booth-form-mode').value='create'; el('booth-form-id').value='';
+el('booth-zone').value='A'; el('booth-no').value='01';
+el('booth-unit-select').value='主題節目組總部'; el('booth-unit-custom').value='';
+el('booth-name').value='測試示範攤位'; el('booth-group').value='港島第99旅';
+el('booth-contact').value=''; el('booth-requested-by').value='';
+el('booth-delivery').value=''; el('booth-other').value='';
+for(let i=0;i<4;i++) el('booth-std-qty-'+i).value='';
+el('booth-std-qty-0').value='2';
+vm.runInContext(`globalThis.__app.submitBoothSupplyForm()`, context);
+let toast=elements['toast'].textContent;
+ok(vm.runInContext(`('data'in globalThis.__captured)===false`, context), '⑥ 未登入冇名冇電話應被拒（唔寫入紀錄）');
+ok(toast.includes('請填寫提交人姓名及聯絡電話'), '⑥ 拒絕時提示補名＋電話');
+el('booth-requested-by').value='陳大文'; el('booth-contact').value='91110000';
+vm.runInContext(`globalThis.__app.submitBoothSupplyForm()`, context);
+const boothRec=vm.runInContext(`(()=>{const d=globalThis.__captured.data||{booth_requests:[]};const r=d.booth_requests[d.booth_requests.length-1]||{};return JSON.stringify({item:r.item_name,qty:r.qty_requested,group:r.group_name,contact:r.contact,by:r.requested_by,status:r.status,stage:r.group_confirmation_status,role:r.requester_role,code:r.booth_code})})()`, context);
+const b=JSON.parse(boothRec);
+ok(b.item==='枱'&&b.qty===2, '⑥ 未登入提交：標準項目只填數量都得（枱 ×2）');
+ok(b.group==='港島第99旅', '⑥ 公眾自填組別／單位唔會被強制覆蓋');
+ok(b.contact==='91110000'&&b.by==='陳大文', '⑥ 姓名＋電話記入紀錄（登入者先見到）');
+ok(b.status==='pending'&&b.stage==='pending'&&b.role==='public', '⑥ 未登入申請入「待本組總主任確認」流程');
+ok(b.code==='A01', '⑥ 攤位代碼按總表反查（A01）');
 console.log(`V86_FORMS_BACK_NAV_OK (${n} checks)`);

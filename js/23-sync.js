@@ -154,6 +154,11 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getMealsData();
     const isManager=this.canManageMealMenu();
     const canManage=isManager||this.isAdmin();
+    // v8.6：公眾（未登入）/一般成員只見到「菜單＋我的訂餐」；
+    // 訂餐紀錄/統計 與 列印派發 屬管理視角（本組總主任以上／批核組／執行組／路由管理員）
+    const myLvl=this.roleLevel(this.currentUser?.role||'');
+    const canViewRecords=!!this.currentUser&&(myLvl>=40||this.canApproveArea('meals')||this.canExecuteArea('meals')||this.canManageApprovalRouting());
+    if(!canViewRecords&&(this.mealsSubTab==='orders'||this.mealsSubTab==='print')) this.mealsSubTab='menus';
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-[11px] leading-relaxed text-purple-900">
@@ -165,9 +170,9 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchMealsTab('menus')" class="tab-btn ${this.mealsSubTab==='menus'?'active':''}"><i class="fa-solid fa-utensils mr-1"></i> 菜單 (${data.menus.length})</button>
-          <button onclick="app.switchMealsTab('orders')" class="tab-btn ${this.mealsSubTab==='orders'?'active':''}"><i class="fa-solid fa-list-check mr-1"></i> 訂餐紀錄/統計</button>
+          ${canViewRecords?`<button onclick="app.switchMealsTab('orders')" class="tab-btn ${this.mealsSubTab==='orders'?'active':''}"><i class="fa-solid fa-list-check mr-1"></i> 訂餐紀錄/統計</button>`:''}
           <button onclick="app.switchMealsTab('my')" class="tab-btn ${this.mealsSubTab==='my'?'active':''}"><i class="fa-solid fa-user mr-1"></i> 我的訂餐</button>
-          <button onclick="app.switchMealsTab('print')" class="tab-btn ${this.mealsSubTab==='print'?'active':''}"><i class="fa-solid fa-print mr-1"></i> 列印派發</button>
+          ${canViewRecords?`<button onclick="app.switchMealsTab('print')" class="tab-btn ${this.mealsSubTab==='print'?'active':''}"><i class="fa-solid fa-print mr-1"></i> 列印派發</button>`:''}
                   </div>
         <div id="meals-tab-menus" class="${this.mealsSubTab==='menus'?'':'hidden'}"></div>
         <div id="meals-tab-orders" class="${this.mealsSubTab==='orders'?'':'hidden'}"></div>
