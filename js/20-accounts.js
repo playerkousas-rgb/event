@@ -297,7 +297,9 @@ Object.assign(ScoutEventApp.prototype,{
     const used=new Set((this.usersList||[]).map(u=>u.user_id));
     if(used.has(uid)){ let base=uid, n=2; while(used.has(base+'-'+n)) n++; uid=base+'-'+n; }
     const myLvl=this.roleLevel(this.currentUser.role);
-    if(ROLE_HIERARCHY[role]>myLvl){ showToast('不可開設層級比自己高的帳戶','error'); return; }
+    // v8.9 收緊：>= 防止總主任再開同級總主任（原 > 只擋「比自己高」）。
+    // 目的＝總主任／副主席只可開「主任／普通工作人員」等比自己低一級或以上的帳戶。
+    if(ROLE_HIERARCHY[role]>=myLvl){ showToast('不可開設層級等同或比自己高的帳戶','error'); return; }
     if(!group){ showToast('請填寫組別','error'); return; }
     const payload={action:'createAccount',api_key:this.apiKey,name,role,job_title:job,group_name:group,user_id:uid,email,contact:'',by_role:this.currentUser.role,by_group:this.currentUser.group_name};
     if(!this.mockMode && this.gasUrl){

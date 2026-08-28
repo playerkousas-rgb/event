@@ -86,6 +86,45 @@ Object.assign(ScoutEventApp.prototype,{
     return false;
   }
 ,
+  /* ── 匯整：把一組（或本人）的「已批核物資申請」合成「借了A×2、B×3…」一眼可見 ──
+     目的：同一個人／同一個組今日借AB、後日加CD，喺「我的監察」一睇就知累積借咗咩。
+     filterFn 用嚟收窄（組別／本人）；approved/modified 先計入（= 已經批咗、確定會借）。 */
+  approvedSupplyChips(filterFn, heading){
+    const sup=this.getSuppliesData();
+    const rows=(sup.requests||[]).filter(r=>filterFn(r)&&['approved','modified'].includes(r.status));
+    if(!rows.length) return '';
+    const byItem={};
+    rows.forEach(r=>{
+      const k=String(r.item_name||'未命名').trim();
+      const q=r.qty_approved!=null&&r.qty_approved!==undefined?Number(r.qty_approved):(Number(r.qty_requested)||0);
+      const cur=byItem[k]||{q:0,unit:r.unit||'個'};
+      cur.q+=q; byItem[k]=cur;
+    });
+    const chips=Object.entries(byItem).map(([name,c])=>`<span class="bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">${escapeHtml(name)}×${c.q}${escapeHtml(c.unit||'')}</span>`).join('');
+    return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-[11px] text-emerald-900 leading-relaxed"><i class="fa-solid fa-boxes-stacked mr-1"></i><b>${escapeHtml(heading)}</b><div class="flex flex-wrap gap-1 mt-1">${chips}</div></div>`;
+  }
+,
+  /* ── 攤位計劃書匯整：把一組（或本人）的「已批核攤位計劃書」合成「XX攤位（帳篷×N、枱×N…）」── */
+  approvedBoothChips(filterFn, heading){
+    const sup=this.getSuppliesData();
+    const rows=(sup.booth_requests||[]).filter(r=>filterFn(r)&&['approved','modified'].includes(r.status));
+    if(!rows.length) return '';
+    const t={tent:0,table:0,chair:0,skirt:0,pow:0}; const stalls=[];
+    rows.forEach(r=>{
+      const code=[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||r.booth_name||'攤位';
+      if(!stalls.includes(code)) stalls.push(code);
+      t.tent+=Number(r.qty_tent)||0; t.table+=Number(r.qty_table)||0; t.chair+=Number(r.qty_chair)||0;
+      t.skirt+=Number(r.skirting_qty)||0; t.pow+=Number(r.power_w)||0;
+    });
+    const parts=[];
+    if(t.tent) parts.push(`帳篷×${t.tent}`);
+    if(t.table) parts.push(`摺枱×${t.table}`);
+    if(t.chair) parts.push(`摺椅×${t.chair}`);
+    if(t.skirt) parts.push(`圍布×${t.skirt}`);
+    if(t.pow) parts.push(`電源${t.pow}W`);
+    return `<div class="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2 text-[11px] text-orange-900 leading-relaxed"><i class="fa-solid fa-store mr-1"></i><b>${escapeHtml(heading)}</b><div class="mt-0.5"><b>${escapeHtml(stalls.join('、'))}</b>${parts.length?'（'+parts.join('、')+'）':''}</div></div>`;
+  }
+,
   monitorRowHTML(rec){
     const cls={amber:'bg-amber-100 text-amber-700 border-amber-300',emerald:'bg-emerald-100 text-emerald-700 border-emerald-300',sky:'bg-sky-100 text-sky-700 border-sky-300',rose:'bg-rose-100 text-rose-700 border-rose-300',slate:'bg-slate-100 text-slate-600 border-slate-300'}[rec.color_name]||'bg-slate-100 text-slate-600 border-slate-300';
     return `<div class="flex items-start justify-between gap-2 border rounded-xl p-2.5 bg-slate-50">
@@ -133,6 +172,8 @@ Object.assign(ScoutEventApp.prototype,{
               <p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">我的監察：只顯示你自己的申請批核進度（膳食·物資·車輛·開支·報價）。</p>
             </div>
           </div>
+          ${this.approvedSupplyChips(r=>this.monitorIsMine({person:r.requested_by,person_id:r.requested_by_id}),'我（已批核）借用一覽')}
+          ${this.approvedBoothChips(r=>this.monitorIsMine({person:r.requested_by,person_id:r.requested_by_id}),'我（已批核）攤位計劃書')}
           ${mine.length?`<div class="space-y-1.5">${mine.map(r=>this.monitorRowHTML(r)).join('')}</div>`:''}
           ${mine.length?'':`
           <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
@@ -155,6 +196,8 @@ Object.assign(ScoutEventApp.prototype,{
     const filterBtns=types.map(t=>`<button onclick="app.setMonitorFilter('${t.k}')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold ${this.monitorFilter===t.k?'bg-slate-900 text-white':'bg-white border text-slate-600'}">${t.l}</button>`).join('');
     const scopeText=scope.level==='all'?'你可看到<b>全部組別</b>的申請（已按組別分開）'
       :(scope.level==='group'?`你可看到<b>${escapeHtml(scope.groups.join('、')||'本組')}</b>下級的申請`:'你可看到<b>自己</b>的申請');
+    const showSupAgg=this.monitorFilter==='all'||this.monitorFilter==='supplies';
+    const showBoothAgg=this.monitorFilter==='all';
     const groupSections=groupNames.map((g,idx)=>{
       const recs=visibleOthers.filter(r=>(r.group||'未分組')===g);
       const pend=pendingCount(recs);
@@ -164,7 +207,11 @@ Object.assign(ScoutEventApp.prototype,{
           <span class="flex items-center gap-2"><span class="w-8 h-8 ${meta.cls} rounded-lg flex items-center justify-center text-[12px]"><i class="${meta.icon}"></i></span><b class="text-[13px]">${escapeHtml(g)}</b><span class="text-[10px] bg-slate-100 border px-2 py-0.5 rounded-full">${recs.length} 項</span>${pend?`<span class="text-[10px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold">${pend} 待處理</span>`:''}</span>
           <i class="fa-solid fa-chevron-down text-slate-400 text-[11px]"></i>
         </summary>
-        <div class="px-3 pb-3 space-y-1.5">${recs.map(r=>this.monitorRowHTML(r)).join('')}</div>
+        <div class="px-3 pb-3 space-y-1.5">
+          ${showSupAgg?this.approvedSupplyChips(r=>normalizeGroupName(r.group_name)===normalizeGroupName(g),`${g} 已批核借用一覽`):''}
+          ${showBoothAgg?this.approvedBoothChips(r=>normalizeGroupName(r.group_name)===normalizeGroupName(g),`${g} 已批核攤位計劃書`):''}
+          ${recs.map(r=>this.monitorRowHTML(r)).join('')}
+        </div>
       </details>`;
     }).join('');
     const canGoApprovals=sum.canApproveAny||this.roleLevel(this.currentUser.role)>=40;
@@ -191,7 +238,10 @@ Object.assign(ScoutEventApp.prototype,{
               <span class="flex items-center gap-2"><span class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[12px]"><i class="fa-solid fa-user"></i></span><b class="text-[13px]">我自己 · ${escapeHtml(this.currentUser.name||'')}</b><span class="text-[10px] bg-white border px-2 py-0.5 rounded-full">${mine.length} 項</span></span>
               ${pendingCount(mine)?`<span class="text-[10px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold">${pendingCount(mine)} 待處理</span>`:'<span class="text-[10px] text-emerald-600 font-bold">全部已處理</span>'}
             </div>
-            <div class="p-3 space-y-1.5">${mine.map(r=>this.monitorRowHTML(r)).join('')||`<div class="py-3 text-center"><p class="text-[11px] text-slate-400">你暫時未有申請紀錄，可到「申請中心」提交</p><button onclick="app.openModule('apply_hub')" class="mt-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`}</div>
+            <div class="p-3 space-y-1.5">
+              ${showSupAgg?this.approvedSupplyChips(r=>this.monitorIsMine({person:r.requested_by,person_id:r.requested_by_id}),'我（已批核）借用一覽'):''}
+              ${showBoothAgg?this.approvedBoothChips(r=>this.monitorIsMine({person:r.requested_by,person_id:r.requested_by_id}),'我（已批核）攤位計劃書'):''}
+              ${mine.map(r=>this.monitorRowHTML(r)).join('')||`<div class="py-3 text-center"><p class="text-[11px] text-slate-400">你暫時未有申請紀錄，可到「申請中心」提交</p><button onclick="app.openModule('apply_hub')" class="mt-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`}</div>
           </div>
           ${scope.level!=='self'?(groupSections||'<p class="text-[11px] text-slate-400 py-3 text-center bg-white border rounded-2xl">下級暫未有申請紀錄</p>'):''}
         </div>

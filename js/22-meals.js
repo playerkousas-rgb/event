@@ -150,6 +150,7 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getMealsData();
     const targets=data.orders.filter(o=>o.status==='pending'&&this.canConfirmGroupOrder(o)&&(groupName==='*'||o.group_name===groupName));
     if(!targets.length){ showToast('本組無待確認訂餐','warning'); return; }
+    if(!confirm(`確定一次過確認 ${targets.length} 張待確認訂餐？確認後會交指定批核組審批，修改訂餐會重新進入流程。`)) return;
     targets.forEach(o=>{ o.status='group_ok'; o.confirmed_by=this.currentUser.name; o.group_confirmation_status='confirmed'; o.group_confirmed_by=this.currentUser.name; o.group_confirmed_at=new Date().toISOString(); o.updated_at=new Date().toISOString(); this.syncMealOrderToGas(o); });
     this.saveMealsData(data); showToast(`已確認 ${targets.length} 張訂餐，待 ${this.approvalRouteLabel('meals','approver_groups')} 審批`,'success'); this.refreshMealsViews();
   }
@@ -160,6 +161,7 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getMealsData();
     const targets=data.orders.filter(o=>(o.status==='group_ok'||o.status==='pending')&&this.applicationReadyForApproval(o));
     if(!targets.length){ showToast('無待審批訂餐','warning'); return; }
+    if(!confirm(`確定一鍵審批 ${targets.length} 張已確認訂餐？批准後即計入最後訂購總數，交由執行組落單。`)) return;
     targets.forEach(o=>{ o.status='approved'; o.approved_by=this.currentUser.name; o.updated_at=new Date().toISOString(); this.syncMealOrderToGas(o); });
     this.saveMealsData(data); showToast(`已審批 ${targets.length} 張訂餐`,'success'); this.refreshMealsViews();
   }
