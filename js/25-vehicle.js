@@ -338,6 +338,7 @@ Object.assign(ScoutEventApp.prototype,{
     const idx=(data.vehicle_passes||[]).findIndex(v=>v.pass_id===passId);
     if(idx<0) return;
     if(!this.applicationReadyForApproval(data.vehicle_passes[idx])){ showToast('須先完成本組確認','warning'); return; }
+    if(!confirm('確定拒絕此車輛通行證申請？')) return;
     data.vehicle_passes[idx].status='rejected';
     data.vehicle_passes[idx].approved_by=this.currentUser?.name||'';
     data.vehicle_passes[idx].approved_at=new Date().toISOString();

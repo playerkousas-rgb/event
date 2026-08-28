@@ -492,6 +492,11 @@ function createAccount(data) {
   if (byRole && !CROSS_GROUP_ROLES.includes(byRole) && byGroup && group !== byGroup) {
     return { success: false, error: '只能為自己組別開戶' };
   }
+  // v8.9 收緊：總主任／副主席只可開「主任／普通工作人員」等比自己低一級或以上的帳戶（同級或更高由管理層處理）。
+  // 與前端 submitAccountSetup 一致，防止直接經 API 開設同級或更高職級帳戶。
+  if (byRole && !CROSS_GROUP_ROLES.includes(byRole) && ROLE_HIERARCHY[role] >= byLvl) {
+    return { success: false, error: '不可開設層級等同或比自己高的帳戶（副主席及以上由管理員處理）' };
+  }
 
   const rows = users.getDataRange().getValues();
   const headers = rows[0].map(String);
@@ -1164,7 +1169,9 @@ function sendMeetingEmailNotification(data) {
 
 function getEventAllData(eventId) {
   const ss = getSheet();
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Users'];
+  // v8.9 補漏：加入 Booth_Requests——前端 saveSuppliesData 一直有把「攤位計劃書」寫出後端，但 getEventAllData 冇回傳，
+  // 令其他裝置／重開後讀唔返攤位計劃書（攤位卡／總表／借用統計只睇到本機）。現正式回傳，前端 syncApplicationsFromGas 亦已合併。
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Users'];
   const result = {};
   
   modules.forEach(mod => {

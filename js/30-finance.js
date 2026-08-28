@@ -514,6 +514,7 @@ Object.assign(ScoutEventApp.prototype,{
     const idx=fin.expenses.findIndex(e=>e.id===expId);
     if(idx<0) return;
     if(!this.applicationReadyForApproval(fin.expenses[idx])){ showToast('須先完成本組確認','warning'); return; }
+    if(!confirm('確定拒絕此開支申報？')) return;
     fin.expenses[idx].status='rejected';
     fin.expenses[idx].approved_by=this.currentUser?.name||'';
     fin.expenses[idx].approved_at=new Date().toISOString();

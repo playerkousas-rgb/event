@@ -94,6 +94,45 @@ Object.assign(ScoutEventApp.prototype,{
       this.eventData['supplies']=sup;
       touched=true;
     }
+    // ── 攤位計劃書（v8.9 補漏：後端 Booth_Requests 合併——之前只寫出唔讀返，
+    //    令其他裝置／重開後睇唔到攤位卡／總表／借用統計；現後端 getEventData 已回傳，此處合併。）──
+    if(Array.isArray(d.Booth_Requests)){
+      const sup=this.getSuppliesData();
+      const deleted=this.getDeletedRecordIds('Booth_Requests');
+      const map=new Map((sup.booth_requests||[]).map(r=>[String(r.request_id),r]));
+      d.Booth_Requests.forEach(r=>{
+        if(!r.request_id||deleted.has(String(r.request_id))) return;
+        const prev=map.get(String(r.request_id))||{};
+        let extra=[];
+        try{ const a=JSON.parse(r.extra_items_json||'[]'); if(Array.isArray(a)) extra=a.map(it=>({item_name:it.item_name||'',qty_requested:parseInt(it.qty_requested||0)||0,unit:it.unit||'個'})); }catch(e){ extra=prev.extra_items||[]; }
+        map.set(String(r.request_id),{
+          request_id:String(r.request_id),event_id:String(r.event_id||eid),item_name:String(r.item_name||prev.item_name||''),
+          qty_requested:Number(r.qty_requested)||0,
+          qty_approved:(r.qty_approved===''||r.qty_approved===undefined||r.qty_approved===null)?null:Number(r.qty_approved),
+          unit:String(r.unit||prev.unit||'份'),group_name:normalizeGroupName(r.group_name||''),
+          purpose:String(r.purpose||prev.purpose||''),contact:String(r.contact||prev.contact||''),
+          zone:String(r.zone||''),booth_no:String(r.booth_no||''),booth_code:String(r.booth_code||''),
+          unit_name:String(r.unit_name||''),booth_name:String(r.booth_name||''),
+          activity_desc:String(r.activity_desc||''),fif15_content:String(r.fif15_content||''),
+          qty_tent:Number(r.qty_tent)||0,qty_table:Number(r.qty_table)||0,qty_chair:Number(r.qty_chair)||0,
+          skirting_qty:Number(r.skirting_qty)||0,power_w:Number(r.power_w)||0,
+          other_req:String(r.other_req||''),other_need:String(r.other_need||''),delivery:String(r.delivery||''),
+          owner_name:String(r.owner_name||''),owner_age_group:String(r.owner_age_group||''),
+          owner_unit:String(r.owner_unit||''),owner_position:String(r.owner_position||''),
+          owner_phone:String(r.owner_phone||''),owner_email:String(r.owner_email||''),
+          extra_items:extra,
+          status:String(r.status||'pending'),requested_by:String(r.requested_by||''),requested_by_id:String(r.requested_by_id||''),
+          requester_role:String(r.requester_role||''),group_confirmation_status:String(r.group_confirmation_status||''),
+          group_confirmed_by:String(r.group_confirmed_by||''),group_confirmed_at:String(r.group_confirmed_at||''),
+          approved_by:String(r.approved_by||''),approved_at:String(r.approved_at||''),
+          notes:String(r.notes||''),created_at:String(r.created_at||'')
+        });
+      });
+      sup.booth_requests=[...map.values()];
+      localStorage.setItem(LS.supplies(eid), JSON.stringify(sup));
+      this.eventData['supplies']=sup;
+      touched=true;
+    }
     // ── 泊車證申請 ──
     const hasParkRows=Array.isArray(d.Parking_Requests);
     const parkRows=hasParkRows?d.Parking_Requests:[];
@@ -126,6 +165,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(this.currentModule==='coordinator_group') this.renderCoordinatorGroupModule();
     else if(this.currentModule==='my_monitor') this.renderMyMonitorModule();
     else if(this.currentModule==='supplies' && document.getElementById('supplies-tab-requests')) this.renderSuppliesModule();
+    else if(this.currentModule==='booth' && document.getElementById('booth-tab-content')) this.renderBoothModule();
     else if(this.currentModule==='meals' && document.getElementById('meals-tab-menus')) this.renderMealsModule();
     else if(this.currentModule==='finance' && document.getElementById('finance-tab-expense')) this.renderFinanceModule();
     else if(this.currentModule==='parking' && document.getElementById('parking-tab-apply')) this.renderParkingModule();

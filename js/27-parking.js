@@ -231,6 +231,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!p){ showToast('找不到泊車證申請','error'); return; }
     if(!this.applicationReadyForApproval(p)){ showToast('此申請尚待本組總主任確認','warning'); return; }
     if(!this.canApproveArea('vehicle')){ showToast(`只供 ${this.approvalRouteLabel('vehicle','approver_groups')} 批核`,'error'); return; }
+    if(!confirm('確定拒絕此泊車證申請？')) return;
     p.status='rejected'; p.approved_by=this.currentUser?.name||''; p.approved_at=new Date().toISOString();
     this.saveParkingData(data); showToast('泊車證申請已拒絕','warning');
     if(this.currentModule==='parking') this.renderParkingModule();

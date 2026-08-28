@@ -640,6 +640,7 @@ Object.assign(ScoutEventApp.prototype,{
     const idx=data.requests.findIndex(r=>r.request_id===requestId);
     if(idx<0) return;
     if(!this.applicationReadyForApproval(data.requests[idx])){ showToast('須先完成本組確認','warning'); return; }
+    if(!confirm('確定拒絕此物資申請？拒絕後會通知申請人，不計入借用作廢。')) return;
     data.requests[idx].status='rejected';
     data.requests[idx].approved_by=this.currentUser?.name||'';
     data.requests[idx].approved_at=new Date().toISOString();
@@ -1018,6 +1019,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!(this.canApproveArea('supplies')||this.isAdmin())){ showToast('只供指定物資批核組批核','error'); return; }
     const data=this.getSuppliesData(); const r=(data.booth_requests||[]).find(x=>x.request_id===id); if(!r) return;
     if(!this.applicationReadyForApproval(r)){ showToast('須先由申請人所屬組別總主任以上確認','warning'); return; }
+    if(status==='rejected' && !confirm('確定拒絕此攤位計劃書？拒絕後會通知提交人。')) return;
     if(status==='approved') r.qty_approved=r.qty_requested;
     r.status=status; r.approved_by=(this.currentUser?.name||'')+`（${this.approvalRouteLabel('supplies','approver_groups')}）`; r.approved_at=new Date().toISOString();
     if(status==='rejected') r.notes='已拒絕';
