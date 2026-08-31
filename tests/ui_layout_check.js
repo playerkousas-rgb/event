@@ -29,8 +29,15 @@ const core = scripts.replace(
 const store = new Map();
 function makeEl(id) {
   if (!store.has(id)) {
+    const clsSet = new Set();
     store.set(id, {
-      id, classList: { _set: new Set(), add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      id, classList: {
+        _set: clsSet,
+        add(...c) { c.forEach(x => clsSet.add(x)); },
+        remove(...c) { c.forEach(x => clsSet.delete(x)); },
+        toggle(c, on) { if (on === undefined) on = !clsSet.has(c); on ? clsSet.add(c) : clsSet.delete(c); },
+        contains(c) { return clsSet.has(c); }
+      },
       style: {}, textContent: '', innerHTML: '', value: '',
       addEventListener() {}, querySelectorAll() { return []; }
     });
@@ -103,12 +110,16 @@ let pub = htmlOf('public-cards-grid');
 assert(pub.includes('公告及溝通') && pub.includes('執行手冊') && pub.includes('申請中心') && pub.includes('童心捐贈大行動'),
   'guest 公開資料應含 4 張公開卡');
 assert(htmlOf('identity-cards-grid') === '', 'guest 其他卡片應為空（登入後解鎖）');
+// 未登入：身份卡片應顯示（訪客只見到公開資料，位置多）
+assert(!makeEl('identity-card').classList.contains('hidden'), '未登入身份卡片應顯示');
 let mon = htmlOf('dash-hero-monitor');
 assert(mon.includes('我的監察') && mon.includes('登入後顯示'), 'guest 活動橫幅應顯示我的監察登入提示');
 
 /* ---------- 2. 普通工作人員（無批核權限） ---------- */
 app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組', job_title: '工作人員' };
 app.renderRoleCards();
+// 登入後：身份卡片隱藏（身份已喺最頂 BAR 右上角，登入後卡片變多）
+assert(makeEl('identity-card').classList.contains('hidden'), '登入後身份卡片應隱藏');
 pub = htmlOf('public-cards-grid');
 assert(pub.includes('公告及溝通'), '登入後公開資料仍最先顯示');
 assert(!pub.includes('dash-desc') && !pub.includes('<p class="dash-desc'), '卡片不應再顯示詳細介紹（只留名稱）');
@@ -148,6 +159,9 @@ assert(monPage.includes('總申請') && monPage.includes('待處理') && monPage
   '有權限人士我的監察頁應見 總申請/待處理/已批核/已拒絕');
 assert(monPage.includes("app.switchTopTab('approvals')"), '我的監察頁數字應跳轉批核中心');
 assert(htmlOf('module-actions').includes('前往批核中心處理'), '我的監察頁應有前往批核中心按鈕');
+// 我的監察橫幅不再寫身份（身份已喺最頂 BAR 右上角），只保留「範圍」標籤
+assert(!mon.includes('朱家聰') && !mon.includes('主席'), '活動橫幅我的監察不應再寫身份（身份已喺最頂 BAR 右上角）');
+assert(mon.includes('範圍：'), '活動橫幅我的監察應保留範圍標籤');
 
 /* ---------- 4. 排序：公開資料 section 在 其他組別及工作卡片 section 之前（靜態 HTML 順序） ---------- */
 // 舊版 #full-dashboard-sections（認識活動/參與活動/協作與管理 彩色分組）已刪除，改以 部門管理中心 為切片終點
@@ -164,6 +178,10 @@ assert(!html.includes('id="dash-event-title"') && !html.includes('id="dash-statu
 assert(html.includes('id="dash-event-dates"') && html.includes('id="dash-event-time"') && html.includes('id="dash-event-location"') && html.includes('id="dash-event-weather"'), '活動橫幅應保留 日期/時間/地點/天氣');
 assert(html.includes('id="dash-event-desc"') && html.includes('id="dash-news-box"') && html.includes('id="dash-event-news"'), '活動橫幅應保留 活動簡介＋最新消息');
 assert(html.includes('id="dash-hero-monitor"'), '活動橫幅應有我的監察併入位 (dash-hero-monitor)');
+// 功能介紹按鈕已移入紫色活動資訊橫幅右上角；身份卡片只喺未登入（訪客）時顯示，登入後隱藏
+const dashHero = html.slice(html.indexOf('id="view-dashboard"'), html.indexOf('id="simple-card-panel"'));
+assert(dashHero.includes('功能介紹') && dashHero.includes("app.openGuideModal()"), '活動資訊橫幅應有 功能介紹 按鈕（右上角）');
+assert(html.includes('id="identity-card"') && html.includes('id="identity-name"') && html.includes('id="identity-login-btn"'), '身份卡片應存在（未登入訪客顯示）');
 assert(html.includes('選擇活動後即可查看該活動全部資料') && !html.includes('選擇其他活動'), '橫幅「選擇其他活動」掣已刪（按最頂 BAR 標題回選擇活動頁）');
 
 /* ---------- 5. 最頂 BAR（標題列）及底部導覽列 ---------- */

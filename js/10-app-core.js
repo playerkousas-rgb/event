@@ -295,7 +295,7 @@ Object.assign(ScoutEventApp.prototype,{
     return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative dash-card p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="dash-icon w-11 h-11 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="dash-title font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4>${def.desc?`<p class="dash-desc text-[11px] text-slate-500 mt-0.5">${escapeHtml(def.desc)}</p>`:''}${footer}${overlay}</div>`;
   }
 ,
-  // 我的監察摘要：供身份卡片及「我的監察」頁共用
+  // 我的監察摘要：供活動橫幅監察區塊及「我的監察」頁共用
   monitorSummary(){
     const all=this.collectApplications();
     const scope=this.monitorScope();
@@ -315,16 +315,18 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderIdentityBar(){
     const user=this.currentUser;
-    const nameEl=document.getElementById('identity-name');
-    const roleBadge=document.getElementById('identity-role-badge');
-    const groupBadge=document.getElementById('identity-group-badge');
-    const desc=document.getElementById('identity-desc');
-    const loginBtn=document.getElementById('identity-login-btn');
-    const avatar=document.getElementById('identity-avatar');
-    const mockBadge=document.getElementById('identity-mock-badge');
-    const heroMon=document.getElementById('dash-hero-monitor'); // 我的監察已併入頂部活動資訊橫幅（不再佔身份卡片）
-    if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
+    const card=document.getElementById('identity-card'); // 身份卡片：只喺未登入（訪客）時顯示；登入後隱藏
+    const heroMon=document.getElementById('dash-hero-monitor');
     if(!user){
+      if(card) card.classList.remove('hidden');
+      const nameEl=document.getElementById('identity-name');
+      const roleBadge=document.getElementById('identity-role-badge');
+      const groupBadge=document.getElementById('identity-group-badge');
+      const desc=document.getElementById('identity-desc');
+      const loginBtn=document.getElementById('identity-login-btn');
+      const avatar=document.getElementById('identity-avatar');
+      const mockBadge=document.getElementById('identity-mock-badge');
+      if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
       if(nameEl) nameEl.textContent='訪客';
       if(roleBadge){roleBadge.textContent='公開'; roleBadge.className='bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap';}
       if(groupBadge) groupBadge.classList.add('hidden');
@@ -337,44 +339,37 @@ Object.assign(ScoutEventApp.prototype,{
       }
       return;
     }
-    const shownDefs=DASH_CARD_DEFS.filter(d=>!d.hideOnDashboard);
-    const editCount=shownDefs.filter(d=>this.canSeeRoleCard(d)&&this.canEditRoleCard(d)).length;
-    const visibleCount=shownDefs.filter(d=>this.canSeeRoleCard(d)).length;
-    if(nameEl) nameEl.textContent=user.name||'成員';
-    if(roleBadge){roleBadge.textContent=ROLE_LABELS[user.role]||user.role; roleBadge.className='bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200 whitespace-nowrap';}
-    if(groupBadge){if(user.role==='super_admin'){groupBadge.textContent='系統管理（不屬任何組別）'; groupBadge.classList.remove('hidden');} else if(user.group_name){groupBadge.textContent=normalizeGroupName(user.group_name); groupBadge.classList.remove('hidden');} else groupBadge.classList.add('hidden');}
-    if(desc) desc.textContent=`身份由管理員批核。你可看到 ${visibleCount} 張卡片，其中 ${editCount} 張可修改、其餘只讀；登出後恢復公開身份 (公開資料仍可看)。`;
-    if(loginBtn) loginBtn.classList.add('hidden');
-    if(avatar) avatar.innerHTML='<i class="fa-solid fa-user-shield"></i>';
+    // 登入後：身份卡片隱藏（身份已喺最頂 BAR 右上角），只保留活動橫幅監察區塊
+    if(card) card.classList.add('hidden');
     if(heroMon){
       const sum=this.monitorSummary();
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
       // 有權限人士：數字跳轉批核中心處理；無權限人士：數字帶自己到「我的監察」看自己進度
       const clickAttr=canGoApprovals?'onclick="app.switchTopTab(\'approvals\')" ':'onclick="app.openModule(\'my_monitor\')" ';
-      const chipBase='rounded-lg px-2 py-1 text-center border border-white/20';
-      const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase} cursor-pointer hover:brightness-110"><span class="block text-[14px] font-extrabold leading-none">${v}</span><span class="block text-[9px] mt-0.5 opacity-80">${l}</span></button>`;
+      const chipBase='rounded-lg px-2 py-1 text-center cursor-pointer hover:brightness-110 shadow-sm';
+      const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase}"><span class="block text-[15px] font-extrabold leading-none">${v}</span><span class="block text-[9.5px] mt-0.5 font-semibold">${l}</span></button>`;
       const minePending=sum.mine.filter(r=>r.color_name==='amber'||r.color_name==='sky').length;
       const mineApproved=sum.mine.filter(r=>r.color_name==='emerald').length;
       const mineRejected=sum.mine.filter(r=>r.color_name==='rose').length;
       const chips=sum.privileged
-        ?chip(sum.total,'總申請','bg-white/15 text-white')
-        +chip(sum.pending,'待處理',sum.pending?'bg-amber-400/40 text-amber-50 border-amber-300/50':'bg-white/10 text-white/60')
-        +chip(sum.approved,'已批核','bg-emerald-400/30 text-emerald-50 border-emerald-300/40')
-        +chip(sum.rejected,'已拒絕','bg-rose-400/30 text-rose-50 border-rose-300/40')
+        ?chip(sum.total,'總申請','bg-white text-purple-900')
+        +chip(sum.pending,'待處理',sum.pending?'bg-amber-400 text-amber-950':'bg-white/30 text-white')
+        +chip(sum.approved,'已批核',sum.approved?'bg-emerald-600 text-white':'bg-white/30 text-white')
+        +chip(sum.rejected,'已拒絕',sum.rejected?'bg-rose-500 text-white':'bg-white/30 text-white')
         :(sum.mine.length
-          ?chip(sum.mine.length,'總申請','bg-white/15 text-white')
-          +chip(minePending,'待處理',minePending?'bg-amber-400/40 text-amber-50 border-amber-300/50':'bg-white/10 text-white/60')
-          +chip(mineApproved,'已批核','bg-emerald-400/30 text-emerald-50 border-emerald-300/40')
-          +chip(mineRejected,'已拒絕','bg-rose-400/30 text-rose-50 border-rose-300/40')
+          ?chip(sum.mine.length,'總申請','bg-white text-purple-900')
+          +chip(minePending,'待處理',minePending?'bg-amber-400 text-amber-950':'bg-white/30 text-white')
+          +chip(mineApproved,'已批核',mineApproved?'bg-emerald-600 text-white':'bg-white/30 text-white')
+          +chip(mineRejected,'已拒絕',mineRejected?'bg-rose-500 text-white':'bg-white/30 text-white')
           :`<span class="text-[10.5px] text-white/80">你暫時未有申請紀錄</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-400 text-emerald-950 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button>`);
       heroMon.classList.remove('hidden');
-      heroMon.innerHTML=`<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2">
+      heroMon.innerHTML=`<div class="bg-white/15 backdrop-blur border border-white/25 rounded-xl px-3 py-2.5">
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-          <div class="flex items-center gap-1.5 text-[11px] font-bold flex-wrap flex-shrink-0"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">${escapeHtml(user.name||'')}（${escapeHtml(ROLE_LABELS[user.role]||user.role)}）· ${escapeHtml(sum.scopeText)}</span></div>
+          <div class="flex items-center gap-1.5 text-[11px] font-bold flex-wrap flex-shrink-0"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/25 text-white text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/30 font-normal">範圍：${escapeHtml(sum.scopeText)}</span></div>
           <div class="flex items-center gap-1.5 flex-wrap flex-1 min-w-0">${chips}</div>
-          <button onclick="app.openModule('my_monitor')" class="bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
+          <button onclick="app.openModule('my_monitor')" class="bg-white text-purple-700 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
         </div>
-        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-1.5 w-full sm:w-auto sm:min-w-[340px] flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 border border-white/25 rounded-lg px-2.5 py-1 text-[10.5px] text-white/90"><span class="truncate text-left"><i class="fa-solid fa-user mr-1"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
+        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-2 w-full sm:w-auto sm:min-w-[340px] flex items-center justify-between gap-2 bg-white text-purple-800 border border-white/60 rounded-lg px-2.5 py-1.5 text-[10.5px] font-semibold"><span class="truncate text-left"><i class="fa-solid fa-user mr-1"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
       </div>`;
     }
   }
@@ -415,7 +410,7 @@ Object.assign(ScoutEventApp.prototype,{
     const userGroup=normalizeGroupName(user.group_name);
     const isSuper=user.role==='super_admin';
     const matchesUserGroup=(d)=>!isSuper&&(d.groups||[]).some(g=>normalizeGroupName(g)===userGroup);
-    // 功能／工作卡片：會議卡片最前，其餘按定義順序；我的監察已併入身份卡片，不再重複顯示
+    // 功能／工作卡片：會議卡片最前，其餘按定義順序；我的監察已併入頂部活動橫幅，不再重複顯示
     const workDefs=identityDefs.filter(d=>!GROUP_CARD_IDS.has(d.id)&&!MANAGEMENT_TOOL_ORDER.includes(d.id)&&d.id!=='my_monitor'&&this.canSeeRoleCard(d));
     const meetingsDef=workDefs.find(d=>d.id==='meetings');
     const restWork=workDefs.filter(d=>d.id!=='meetings');
