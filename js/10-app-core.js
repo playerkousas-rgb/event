@@ -295,7 +295,7 @@ Object.assign(ScoutEventApp.prototype,{
     return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative dash-card p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="dash-icon w-11 h-11 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="dash-title font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4>${def.desc?`<p class="dash-desc text-[11px] text-slate-500 mt-0.5">${escapeHtml(def.desc)}</p>`:''}${footer}${overlay}</div>`;
   }
 ,
-  // 我的監察摘要：供身份卡片及「我的監察」頁共用
+  // 我的監察摘要：供活動橫幅監察區塊及「我的監察」頁共用
   monitorSummary(){
     const all=this.collectApplications();
     const scope=this.monitorScope();
@@ -315,37 +315,14 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderIdentityBar(){
     const user=this.currentUser;
-    const nameEl=document.getElementById('identity-name');
-    const roleBadge=document.getElementById('identity-role-badge');
-    const groupBadge=document.getElementById('identity-group-badge');
-    const desc=document.getElementById('identity-desc');
-    const loginBtn=document.getElementById('identity-login-btn');
-    const avatar=document.getElementById('identity-avatar');
-    const mockBadge=document.getElementById('identity-mock-badge');
-    const heroMon=document.getElementById('dash-hero-monitor'); // 我的監察已併入頂部活動資訊橫幅（不再佔身份卡片）
-    if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
+    const heroMon=document.getElementById('dash-hero-monitor'); // 我的監察已併入活動資訊橫幅；身份卡片已刪（身份喺最頂 BAR 右上角顯示）
     if(!user){
-      if(nameEl) nameEl.textContent='訪客';
-      if(roleBadge){roleBadge.textContent='公開'; roleBadge.className='bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap';}
-      if(groupBadge) groupBadge.classList.add('hidden');
-      if(desc) desc.innerHTML='<span class="inline-flex items-center gap-1 font-semibold text-slate-700"><i class="fa-solid fa-key text-amber-600"></i>初始帳戶：<b>中文姓名</b>（例如「朱家聰」）｜初始密碼：<b>1234</b></span><span class="mx-1.5 text-slate-300">｜</span><span class="text-indigo-700 font-semibold">如需要開戶請找所屬組別的總主任</span><br><span class="text-slate-500">（所有公開資料無需登入即可查閱；登入後可依職級與組別管理相應卡片）</span>';
-      if(loginBtn) loginBtn.classList.remove('hidden');
-      if(avatar) avatar.innerHTML='<i class="fa-solid fa-user"></i>';
       if(heroMon){
         heroMon.classList.remove('hidden');
         heroMon.innerHTML='<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2 flex items-center gap-2 flex-wrap"><span class="text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">登入後顯示</span></span><span class="text-[10.5px] text-white/75">登入後在此顯示你的申請批核進度</span><button onclick="app.openLoginModal()" class="ml-auto bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button></div>';
       }
       return;
     }
-    const shownDefs=DASH_CARD_DEFS.filter(d=>!d.hideOnDashboard);
-    const editCount=shownDefs.filter(d=>this.canSeeRoleCard(d)&&this.canEditRoleCard(d)).length;
-    const visibleCount=shownDefs.filter(d=>this.canSeeRoleCard(d)).length;
-    if(nameEl) nameEl.textContent=user.name||'成員';
-    if(roleBadge){roleBadge.textContent=ROLE_LABELS[user.role]||user.role; roleBadge.className='bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200 whitespace-nowrap';}
-    if(groupBadge){if(user.role==='super_admin'){groupBadge.textContent='系統管理（不屬任何組別）'; groupBadge.classList.remove('hidden');} else if(user.group_name){groupBadge.textContent=normalizeGroupName(user.group_name); groupBadge.classList.remove('hidden');} else groupBadge.classList.add('hidden');}
-    if(desc) desc.textContent=`身份由管理員批核。你可看到 ${visibleCount} 張卡片，其中 ${editCount} 張可修改、其餘只讀；登出後恢復公開身份 (公開資料仍可看)。`;
-    if(loginBtn) loginBtn.classList.add('hidden');
-    if(avatar) avatar.innerHTML='<i class="fa-solid fa-user-shield"></i>';
     if(heroMon){
       const sum=this.monitorSummary();
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
@@ -415,7 +392,7 @@ Object.assign(ScoutEventApp.prototype,{
     const userGroup=normalizeGroupName(user.group_name);
     const isSuper=user.role==='super_admin';
     const matchesUserGroup=(d)=>!isSuper&&(d.groups||[]).some(g=>normalizeGroupName(g)===userGroup);
-    // 功能／工作卡片：會議卡片最前，其餘按定義順序；我的監察已併入身份卡片，不再重複顯示
+    // 功能／工作卡片：會議卡片最前，其餘按定義順序；我的監察已併入頂部活動橫幅，不再重複顯示
     const workDefs=identityDefs.filter(d=>!GROUP_CARD_IDS.has(d.id)&&!MANAGEMENT_TOOL_ORDER.includes(d.id)&&d.id!=='my_monitor'&&this.canSeeRoleCard(d));
     const meetingsDef=workDefs.find(d=>d.id==='meetings');
     const restWork=workDefs.filter(d=>d.id!=='meetings');

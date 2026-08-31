@@ -167,11 +167,10 @@ assert(!html.includes('id="dash-event-title"') && !html.includes('id="dash-statu
 assert(html.includes('id="dash-event-dates"') && html.includes('id="dash-event-time"') && html.includes('id="dash-event-location"') && html.includes('id="dash-event-weather"'), '活動橫幅應保留 日期/時間/地點/天氣');
 assert(html.includes('id="dash-event-desc"') && html.includes('id="dash-news-box"') && html.includes('id="dash-event-news"'), '活動橫幅應保留 活動簡介＋最新消息');
 assert(html.includes('id="dash-hero-monitor"'), '活動橫幅應有我的監察併入位 (dash-hero-monitor)');
-// 功能介紹按鈕已移入紫色活動資訊橫幅右上角（原身份卡片內按鈕已刪）
+// 功能介紹按鈕已移入紫色活動資訊橫幅右上角；身份卡片（身份列）已整張刪走，身份顯示喺最頂 BAR 右上角
 const dashHero = html.slice(html.indexOf('id="view-dashboard"'), html.indexOf('id="simple-card-panel"'));
 assert(dashHero.includes('功能介紹') && dashHero.includes("app.openGuideModal()"), '活動資訊橫幅應有 功能介紹 按鈕（右上角）');
-const identityCard = html.slice(html.indexOf('id="identity-name"'), html.indexOf('id="public-section"'));
-assert(!identityCard.includes('功能介紹'), '身份卡片不應再有 功能介紹 按鈕（已移入活動橫幅)');
+assert(!html.includes('id="identity-name"') && !html.includes('id="identity-login-btn"') && !html.includes('id="identity-avatar"'), '身份卡片（身份列）應已整張刪走');
 assert(html.includes('選擇活動後即可查看該活動全部資料') && !html.includes('選擇其他活動'), '橫幅「選擇其他活動」掣已刪（按最頂 BAR 標題回選擇活動頁）');
 
 /* ---------- 5. 最頂 BAR（標題列）及底部導覽列 ---------- */
