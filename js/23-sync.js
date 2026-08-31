@@ -169,11 +169,13 @@ Object.assign(ScoutEventApp.prototype,{
         if(!r.lost_id) return;
         const id=String(r.lost_id);
         const rec={
-          id, item_name:String(r.item_name||''), description:String(r.description||''),
+          id, type:String(r.type||'found'), item_name:String(r.item_name||''), description:String(r.description||''),
           found_date:String(r.found_date||''), found_time:String(r.found_time||''),
           found_location:String(r.found_location||''), found_by:String(r.found_by||''),
+          contact:String(r.contact||''),
           status:String(r.status||'待認領'), claimed_by:String(r.claimed_by||''),
           claimed_contact:String(r.claimed_contact||''), claimed_at:String(r.claimed_at||''),
+          closed_by:String(r.closed_by||''),
           notes:String(r.notes||''), recorded_by:String(r.recorded_by||''), recorded_by_id:String(r.recorded_by_id||''),
           created_at:String(r.created_at||''), updated_at:String(r.updated_at||'')
         };
