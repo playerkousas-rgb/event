@@ -266,7 +266,11 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
       {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
       {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
-      {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'}
+      {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
+      {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
+      {k:'venue_setup', icon:'fa-solid fa-map',                label:'場地佈置總覽'},
+      {k:'box_label', icon:'fa-solid fa-box-open',             label:'箱頭紙'},
+      {k:'permit', icon:'fa-solid fa-file-contract',           label:'許可證式樣'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`
@@ -306,6 +310,10 @@ Object.assign(ScoutEventApp.prototype,{
       },
       ceremony:()=>this.renderCeremonyModule(panel),
       crisis:()=>this.renderCrisisModule(panel),
+      participants:()=>this.renderExecManualParticipants(panel),
+      venue_setup:()=>this.renderExecManualUploadTab('venue_setup',{title:'場地佈置總覽',accent:'sky',empty:'暫無場地佈置檔案 — 協調組／行政組可用「上傳檔案」加入 2026 版場地佈置圖、數據或連結（同遊戲卡方式）'}),
+      box_label:()=>this.renderExecManualBoxLabel(panel),
+      permit:()=>this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣 — 由協調組／行政組上載（同遊戲卡方式：PDF／Word／圖片／Drive 連結）'}),
       finance_guide:()=>{
         const fin=this.getFinanceData();
         const driveFiles=[
@@ -385,6 +393,263 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
     const actionsEl=document.getElementById('module-actions');
     if(actionsEl) actionsEl.innerHTML='';
+  }
+,
+
+  /* ===================== 執行手冊新分頁：上傳式（同遊戲卡）＋ 箱頭紙 ＝====================
+     v10：依 2025 執行手冊對標，加入「參加旅團名單／場地佈置總覽／許可證式樣」三個上傳式分頁
+     （PDF／Word／圖片／Drive 連結，Word→文字內嵌、PDF→整份內嵌、JSON→美化顯示），
+     「箱頭紙」則係互動填寫＋一頁列印兩張。 */
+  execManualAccentCls(accent){
+    const M={indigo:{box:'bg-indigo-50 border-indigo-200',btn:'bg-indigo-600',btnText:'text-indigo-700'},sky:{box:'bg-sky-50 border-sky-200',btn:'bg-sky-600',btnText:'text-sky-700'},rose:{box:'bg-rose-50 border-rose-200',btn:'bg-rose-600',btnText:'text-rose-700'},emerald:{box:'bg-emerald-50 border-emerald-200',btn:'bg-emerald-600',btnText:'text-emerald-700'},amber:{box:'bg-amber-50 border-amber-200',btn:'bg-amber-600',btnText:'text-amber-700'}};
+    return M[accent]||M.indigo;
+  }
+,
+
+  getExecManualFiles(section){
+    const key=LS.execManual(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null');
+    const all=(local&&local.files)||{};
+    return all[section]||[];
+  }
+,
+  saveExecManualFiles(section, files){
+    const key=LS.execManual(this.currentEvent?.event_id||'isd_2026');
+    const local=JSON.parse(localStorage.getItem(key)||'null')||{};
+    const all=local.files||{};
+    all[section]=files||[];
+    local.files=all;
+    localStorage.setItem(key,JSON.stringify(local));
+  }
+,
+  canManageExecManualUpload(section){
+    if(!this.currentUser) return false;
+    if(this.currentUser.mock_admin||this.isAdmin()) return true;
+    const g=normalizeGroupName(this.currentUser.group_name||'');
+    if(section==='participants') return g.includes('行政')||this.canUploadDocument();
+    if(section==='permit') return g.includes('協調')||g.includes('行政')||this.canUploadActivity();
+    if(section==='venue_setup') return g.includes('協調')||g.includes('行政')||this.canUploadActivity();
+    return false;
+  }
+,
+  execManualFileCardHTML(f, key, canUp){
+    let prev=this.activityFilePreviewHTML(f,key);
+    return `<div class="border rounded-xl p-3 bg-white space-y-2">
+      <div class="flex justify-between items-start gap-2">
+        <div class="min-w-0"><b class="text-[13px]">${escapeHtml(f.title||'未命名檔案')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(f.description||'')}</div><div class="text-[10px] text-slate-400 mt-0.5">上傳: ${escapeHtml(f.created_by||'')} | ${f.created_at?new Date(f.created_at).toLocaleString():''} | 版本: ${escapeHtml(f.version||'v1')}</div></div>
+        <div class="flex flex-col gap-1">${canUp?`<button onclick="app.openExecManualFileForm('${key}','${f.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteExecManualFile('${key}','${f.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
+      </div>
+      ${prev}
+      <div class="flex gap-2 flex-wrap">${f.file_url?`<a href="${escapeHtml(f.file_url)}" target="_blank" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟</a>`:''}${(f.file_data||f.file_name)?`<button onclick="app.downloadExecManualFile('${key}','${f.id}')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
+    </div>`;
+  }
+,
+  renderExecManualUploadTab(key, opts){
+    const panel=document.getElementById('exec-manual-panel'); if(!panel) return;
+    const files=this.getExecManualFiles(key);
+    const canUp=this.canManageExecManualUpload(key);
+    const a=this.execManualAccentCls(opts.accent||'indigo');
+    panel.innerHTML=`
+      <div class="space-y-3">
+        <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>${escapeHtml(opts.title)}：</b>${escapeHtml(opts.intro||'')} 上傳方式同「遊戲卡」— 可上傳 <b>PDF／Word／圖片</b> 或貼 <b>Drive 連結</b>；Word 自動解析成文字內嵌、PDF 整份內嵌、JSON 檔會美化顯示。${canUp?'<b class="text-emerald-700">你可上傳／編輯。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="flex flex-wrap gap-2">
+          ${canUp?`<button onclick="app.openExecManualFileForm('${key}')" class="${a.btn} text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案 (${escapeHtml(opts.title)})</button>`:''}
+          <button onclick="app.exportExecManualFiles('${key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 ${escapeHtml(opts.title)} JSON</button>
+        </div>
+        ${files.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,key,canUp)).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">${escapeHtml(opts.empty||'暫無檔案')}</p>`}
+      </div>`;
+  }
+,
+  openExecManualFileForm(key,id=null){
+    if(!this.canManageExecManualUpload(key)){ showToast('無權限','error'); return; }
+    const files=this.getExecManualFiles(key);
+    const existing=id?files.find(f=>f.id===id):null;
+    let html=`
+      <input type="hidden" id="emf-mode" value="${existing?'edit':'create'}">
+      <input type="hidden" id="emf-id" value="${existing?.id||''}">
+      <input type="hidden" id="emf-section" value="${key}">
+      <div class="space-y-3">
+        <div><label class="text-[11px] font-bold">標題 *</label><input id="emf-title" value="${escapeHtml(existing?.title||'')}" required placeholder="檔案名稱" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">描述</label><textarea id="emf-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+        <div><label class="text-[11px] font-bold">版本</label><input id="emf-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">上傳檔案 (PDF/Word/JSON/圖片)</label><input type="file" id="emf-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.json,.txt" class="w-full text-xs mt-1"></div>
+        <div><label class="text-[11px] font-bold">或貼上 Drive 連結</label><input id="emf-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        ${existing?.file_name?`<div class="text-[11px]">已上傳: ${escapeHtml(existing.file_name)}</div>`:''}
+      </div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯檔案':'上傳檔案';
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=async (e)=>{ e.preventDefault(); await this.submitExecManualFileForm(key); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+,
+  async submitExecManualFileForm(key){
+    const mode=document.getElementById('emf-mode').value, id=document.getElementById('emf-id').value;
+    const title=document.getElementById('emf-title').value.trim();
+    const desc=document.getElementById('emf-desc').value.trim();
+    const version=document.getElementById('emf-version').value.trim()||'v1';
+    const url=document.getElementById('emf-url').value.trim();
+    const fileInput=document.getElementById('emf-file');
+    let file_name='', file_data='', file_url=url, file_text='';
+    if(fileInput.files[0]){
+      const f=fileInput.files[0];
+      file_name=f.name; file_data=await fileToDataUrl(f);
+      if(/\.docx?$/i.test(f.name) && typeof mammoth!=='undefined'){
+        try{ const ab=await f.arrayBuffer(); const r=await mammoth.extractRawText({arrayBuffer:ab}); file_text=(r.value||'').trim(); }catch(e){ file_text=''; }
+      }
+      if(/\.json$/i.test(f.name)){ try{ const text=await f.text(); file_text=JSON.stringify(JSON.parse(text),null,2); }catch(e){} }
+    }
+    if(!title){ showToast('請填寫標題','error'); return; }
+    let files=this.getExecManualFiles(key);
+    if(mode==='edit'){
+      const i=files.findIndex(x=>x.id===id);
+      if(i>=0) files[i]={...files[i], title, description:desc, version, file_name:file_name||files[i].file_name, file_data:file_data||files[i].file_data, file_url:file_url||files[i].file_url, file_text:file_text||files[i].file_text||'', updated_at:new Date().toISOString()};
+    } else {
+      files.push({id:'emf_'+Date.now(), section:key, title, description:desc, version, file_name, file_data, file_url, file_text, created_by:this.currentUser?.name||'', created_at:new Date().toISOString()});
+    }
+    this.saveExecManualFiles(key, files);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast(mode==='edit'?'已更新檔案':'已上傳檔案','success');
+    this.renderExecManualTab();
+  }
+,
+  deleteExecManualFile(key,id){
+    if(!this.canManageExecManualUpload(key)){ showToast('無權限','error'); return; }
+    if(!confirm('確定刪除此檔案？')) return;
+    this.saveExecManualFiles(key, this.getExecManualFiles(key).filter(f=>f.id!==id));
+    this.renderExecManualTab();
+    showToast('已刪除','warning');
+  }
+,
+  downloadExecManualFile(key,id){
+    const f=this.getExecManualFiles(key).find(x=>x.id===id);
+    if(!f){ showToast('找不到檔案','error'); return; }
+    if(f.file_url){ window.open(f.file_url,'_blank'); return; }
+    if(f.file_data) downloadDataUrl(f.file_name||'download', f.file_data);
+    else showToast('無檔案','warning');
+  }
+,
+  exportExecManualFiles(key){
+    const files=this.getExecManualFiles(key);
+    const blob=new Blob([JSON.stringify(files,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`exec_manual_${key}_${todayISO()}.json`; a.click();
+    showToast('已匯出 JSON','success');
+  }
+,
+  // ── 參加旅團名單分頁：結構表（同步／上傳 CSV）＋ 上傳檔案（遊戲卡方式）──
+  renderExecManualParticipants(panel){
+    const participants=this.getParticipantsData();
+    const pSrc=this.eventData['participants_source']||{};
+    const canUpload=this.canUploadDocument()||this.isAdmin();
+    const files=this.getExecManualFiles('participants');
+    const canUp=this.canManageExecManualUpload('participants');
+    panel.innerHTML=`
+      <div class="space-y-3">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案（同遊戲卡方式）</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>
+          ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳 Excel<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleParticipantsExcelUpload(this.files[0])"></label>`:''}
+          <button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載欄位範本 CSV</button>
+          ${canUp?`<button onclick="app.openExecManualFileForm('participants')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案</button>`:''}
+          <button onclick="app.exportExecManualFiles('participants')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 JSON</button>
+        </div>
+        ${(pSrc.sheet_id||pSrc.drive_file_id)?`<div class="text-[10px] text-slate-500">來源：「${escapeHtml(pSrc.name||'參加旅團名單')}」由行政組更新，可一鍵／自動同步。${this.driveSyncNotice()}</div>`:'<div class="text-[10px] text-slate-400">尚未設定名單來源（participants_source）。行政組提供 Google Sheet 後即可同步，或用「上傳檔案」直接上載。</div>'}
+        <div class="bg-white border rounded-xl p-4">
+          <h4 class="font-bold text-[13px] mb-2 flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>名單 (${participants.length})</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
+        </div>
+        ${files.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,'participants',canUp)).join('')}</div>`:''}
+      </div>`;
+  }
+,
+
+  /* ===================== 箱頭紙 (Box Label)：填寫＋一頁 A4 印兩張 ＝====================
+     只需要改年份；默認填登入組別，其他可自選填。加入部門中心，登入後可填寫及列印。 */
+  boxLabelYear(){ return (this.currentEvent&&this.currentEvent.start_date||'').slice(0,4)||'2026'; }
+,
+  boxLabelFormHTML(prefix, defaults){
+    const d=defaults||{};
+    const year=d.year||this.boxLabelYear();
+    const group=d.group||(this.currentUser?normalizeGroupName(this.currentUser.group_name||''):'');
+    return `
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-[11px] font-bold">年份 *</label><input id="${prefix}year" value="${escapeHtml(year)}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">組別 *</label><input id="${prefix}group" value="${escapeHtml(group)}" placeholder="例如 行政組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">活動名稱</label><input id="${prefix}event" value="${escapeHtml(d.event||(this.currentEvent?this.currentEvent.event_name:''))}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">負責人</label><input id="${prefix}person" value="${escapeHtml(d.person||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">聯絡電話</label><input id="${prefix}contact" value="${escapeHtml(d.contact||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">內容物／物品</label><input id="${prefix}items" value="${escapeHtml(d.items||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">數量</label><input id="${prefix}qty" value="${escapeHtml(d.qty||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">備註</label><textarea id="${prefix}notes" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(d.notes||'')}</textarea></div>
+      </div>`;
+  }
+,
+  readBoxLabelFields(prefix){
+    const v=id=>{ const el=document.getElementById(prefix+id); return el?el.value.trim():''; };
+    return { year:v('year')||this.boxLabelYear(), group:v('group'), event:v('event'), person:v('person'), contact:v('contact'), items:v('items'), qty:v('qty'), notes:v('notes') };
+  }
+,
+  renderExecManualBoxLabel(panel){
+    const d={};
+    panel.innerHTML=`
+      <div class="space-y-3">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>箱頭紙（Box Label）：</b>對應 2025 協調組「箱頭紙」。只需改年份，預設為你的登入組別，其餘可自選填；列印時<b>一張 A4 印兩張</b>，方便貼上各箱。任何登入成員（尤其部門中心）都可填寫及列印。</div>
+        <div class="flex gap-2 flex-wrap items-center">
+          <button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張)</button>
+          ${this.currentUser?`<button onclick="app.openBoxLabelModal()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">放大填寫／預覽</button>`:''}
+        </div>
+        <div class="bg-white border rounded-xl p-4 space-y-3">
+          ${this.boxLabelFormHTML('boxl_', d)}
+          <div class="text-[11px] text-slate-500">💡 可先係上方填好，再按「列印」；部門中心入口亦可用同一個表單，組別自動帶入你嘅登入組別。</div>
+        </div>
+      </div>`;
+  }
+,
+  printBoxLabels(){
+    const f=this.readBoxLabelFields('boxl_');
+    const label=(idx)=>`
+      <div class="boxlabel">
+        <div class="boxlabel-head"><span class="big">箱頭紙</span><span class="big-en">BOX LABEL ${idx}</span></div>
+        <div class="row"><span class="k">年份</span><span class="v">${escapeHtml(f.year)}</span></div>
+        <div class="row"><span class="k">活動</span><span class="v">${escapeHtml(f.event||'—')}</span></div>
+        <div class="row"><span class="k">組別</span><span class="v">${escapeHtml(f.group||'—')}</span></div>
+        <div class="row"><span class="k">負責人</span><span class="v">${escapeHtml(f.person||'—')}</span></div>
+        <div class="row"><span class="k">聯絡電話</span><span class="v">${escapeHtml(f.contact||'—')}</span></div>
+        <div class="row"><span class="k">內容物</span><span class="v">${escapeHtml(f.items||'—')}</span></div>
+        <div class="row"><span class="k">數量</span><span class="v">${escapeHtml(f.qty||'—')}</span></div>
+        <div class="row"><span class="k">備註</span><span class="v">${escapeHtml(f.notes||'—')}</span></div>
+      </div>`;
+    const win=window.open('','_blank');
+    if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
+    win.document.write(`<!DOCTYPE html><html lang="zh-HK"><head><meta charset="utf-8"><title>箱頭紙</title><style>
+      @page{size:A4 portrait; margin:10mm;}
+      body{font-family:'Noto Sans TC',sans-serif; margin:0; color:#111;}
+      .boxlabel{border:2px solid #111; border-radius:8px; padding:14px 16px; height:118mm; page-break-after:always; box-sizing:border-box; display:flex; flex-direction:column; gap:5px;}
+      .boxlabel:last-child{page-break-after:auto;}
+      .boxlabel-head{border-bottom:2px solid #111; padding-bottom:4px; margin-bottom:2px; display:flex; justify-content:space-between; align-items:baseline;}
+      .boxlabel-head .big{font-size:20pt; font-weight:800;}
+      .boxlabel-head .big-en{font-size:9pt; letter-spacing:1px; color:#555;}
+      .row{display:flex; gap:6px; align-items:baseline;}
+      .row .k{flex:0 0 60px; font-weight:700; color:#333;}
+      .row .v{flex:1; border-bottom:1px solid #bbb; min-height:1em; font-weight:500;}
+      .row .v:empty:before{content:' '; padding:6px 0;}
+      button{display:none !important;}
+    </style></head><body>
+      <div style="margin-bottom:12px; text-align:center;"><button onclick="window.print()" style="display:inline-block!important;background:#111;color:#fff;padding:8px 20px;border:none;border-radius:8px;font-weight:bold;">列印（1張A4 | 印兩張）</button></div>
+      ${label(1)}
+      ${label(2)}
+    </body></html>`);
+    win.document.close();
+  }
+,
+  openBoxLabelModal(groupName){
+    const defaults={ group: groupName||(this.currentUser?normalizeGroupName(this.currentUser.group_name||''):'') };
+    document.getElementById('record-modal-title').textContent='箱頭紙（填寫／列印）';
+    document.getElementById('record-form-fields').innerHTML=this.boxLabelFormHTML('boxl_', defaults)+`
+      <div class="flex justify-end gap-2 pt-3 border-t mt-3"><button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張)</button></div>`;
+    document.getElementById('record-form').onsubmit=(e)=>e.preventDefault();
+    document.getElementById('modal-record').classList.remove('hidden');
   }
 ,
 });

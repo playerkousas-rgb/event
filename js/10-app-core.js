@@ -112,10 +112,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderEventsGrid(){
     const grid=document.getElementById('events-grid'); if(!grid) return;
-    const manageBtn=document.getElementById('landing-admin-manage');
-    if(manageBtn) manageBtn.classList.add('hidden');
     if(!this.eventsList.length){grid.innerHTML='<div class="col-span-3 text-center py-8 text-slate-400">暫無活動</div>'; return;}
-    const isAdminEdit=this.isEventManager();
     grid.innerHTML=EVENT_CATEGORIES.map(cat=>{
       const list=this.categoryEvents(cat.key);
       const sel=this.catSelection(cat.key);
@@ -139,45 +136,12 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="p-4 flex flex-col flex-1">
           <label class="text-[11px] font-bold text-slate-500 mb-1.5 flex items-center gap-1"><i class="fa-solid fa-calendar-plus"></i>選擇年份／屆別</label>
           ${body}
-          ${isAdminEdit?`<div class="mt-3 pt-3 border-t flex gap-1.5 justify-end">
-            <button onclick="app.addEventToCategory('${cat.key}')" class="bg-brand-600 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增</button>
-            ${current?`<button onclick="app.editEvent('${current.event_id}')" class="bg-white border px-2.5 py-1.5 rounded-xl text-[11px]"><i class="fa-solid fa-pen"></i></button><button onclick="app.deleteEvent('${current.event_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-[11px]"><i class="fa-solid fa-trash"></i></button>`:''}
-          </div>`:''}
         </div>
       </div>`;
     }).join('');
   }
 ,
   onCatSelect(catKey,val){ if(!this._catSel) this._catSel={}; this._catSel[catKey]=val; }
-,
-  addEventToCategory(catKey){
-    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可新增活動','error'); return; }
-    document.getElementById('ev-category').value=catKey||'other';
-    this.openEventFormModal();
-  }
-,
-  deleteEvent(id){
-    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可刪除活動','error'); return; }
-    if(!confirm('確定刪除這個活動？')) return;
-    this.eventsList=this.eventsList.filter(ev=>ev.event_id!==id);
-    localStorage.removeItem(`event_pwd_${id}`);
-    localStorage.setItem(LS.events,JSON.stringify(this.eventsList));
-    showToast('已刪除活動','warning');
-    this.renderEventsGrid();
-  }
-,
-  openEventFormModal(isEdit=false){
-    if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可管理活動','error'); return; }
-    if(!isEdit){document.getElementById('event-modal-title').textContent='新增活動'; document.getElementById('ev-form-mode').value='create'; document.getElementById('ev-form-original-id').value=''; document.getElementById('ev-id').value='ev_'+Date.now().toString().slice(-6); document.getElementById('ev-category').value='isd'; document.getElementById('ev-name').value=''; document.getElementById('ev-desc').value=''; document.getElementById('ev-start').value=todayISO(); document.getElementById('ev-end').value=todayISO(); document.getElementById('ev-time').value=''; document.getElementById('ev-location').value=''; document.getElementById('ev-weather').value=''; document.getElementById('ev-news').value=''; document.getElementById('ev-status').value='upcoming';}
-    else{if(!this.currentEvent) return; this.fillEventForm(this.currentEvent);}
-    document.getElementById('modal-event').classList.remove('hidden');
-  }
-,
-  fillEventForm(ev){document.getElementById('event-modal-title').textContent='編輯活動'; document.getElementById('ev-form-mode').value='edit'; document.getElementById('ev-form-original-id').value=ev.event_id; document.getElementById('ev-id').value=ev.event_id; document.getElementById('ev-category').value=ev.category||'isd'; document.getElementById('ev-name').value=ev.event_name; document.getElementById('ev-desc').value=ev.description||''; document.getElementById('ev-start').value=ev.start_date||''; document.getElementById('ev-end').value=ev.end_date||''; document.getElementById('ev-time').value=ev.time||''; document.getElementById('ev-location').value=ev.location||''; document.getElementById('ev-weather').value=ev.weather||''; document.getElementById('ev-news').value=ev.news||''; document.getElementById('ev-status').value=ev.status||'upcoming';}
-,
-  editEvent(id){if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可編輯活動','error'); return; } const ev=this.eventsList.find(e=>e.event_id===id); if(!ev) return; this.fillEventForm(ev); document.getElementById('modal-event').classList.remove('hidden');}
-,
-  submitEventForm(e){e.preventDefault(); if(!this.isEventManager()){ showToast('僅管理員（地域秘書處）可管理活動','error'); return; } const mode=document.getElementById('ev-form-mode').value; const orig=document.getElementById('ev-form-original-id').value; const newEv={event_id:document.getElementById('ev-id').value.trim(),event_name:document.getElementById('ev-name').value.trim(),category:document.getElementById('ev-category').value,description:document.getElementById('ev-desc').value.trim(),start_date:document.getElementById('ev-start').value,end_date:document.getElementById('ev-end').value,time:document.getElementById('ev-time').value.trim(),location:document.getElementById('ev-location').value.trim(),weather:document.getElementById('ev-weather').value.trim(),news:document.getElementById('ev-news').value.trim(),status:document.getElementById('ev-status').value,has_password:false}; if(!newEv.event_id||!newEv.event_name) return; if(mode==='create'){if(this.eventsList.some(x=>x.event_id===newEv.event_id)){showToast('ID 已存在','error'); return;} this.eventsList.push(newEv);} else{const idx=this.eventsList.findIndex(x=>x.event_id===orig); if(idx>=0) this.eventsList[idx]=newEv; if(this.currentEvent&&this.currentEvent.event_id===orig) this.currentEvent=newEv;} localStorage.setItem(LS.events,JSON.stringify(this.eventsList)); localStorage.setItem(LS.currentEvent,JSON.stringify(newEv)); this.closeModal('modal-event'); showToast('已保存','success'); this.renderEventsGrid(); if(this.currentEvent&&this.currentEvent.event_id===newEv.event_id) this.showDashboard();}
 ,
   accessEvent(id){this.pendingEventId=id; this.verifyAndEnterEvent(id);}
 ,
@@ -189,7 +153,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
 ,
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; const dashTitleEl=document.getElementById('dash-event-title'); if(dashTitleEl) dashTitleEl.textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){const roleDisplayEl=document.getElementById('dash-role-display'); if(roleDisplayEl) roleDisplayEl.textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; const dashTitleEl=document.getElementById('dash-event-title'); if(dashTitleEl) dashTitleEl.textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){const roleDisplayEl=document.getElementById('dash-role-display'); if(roleDisplayEl) roleDisplayEl.textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; document.getElementById('banner-admin-actions')?.classList.toggle('hidden', !this.canSendMeetingReminder());} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 ,
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
@@ -220,8 +184,16 @@ Object.assign(ScoutEventApp.prototype,{
   // 是否「模擬示範」活動：所有假資料僅在模擬示範活動顯示，真實活動(ISD等)則為預留版位(空白)
   isDemoEvent(){ return this.currentEvent && (this.currentEvent.event_id==='mock_demo' || this.currentEvent.category==='demo'); }
 ,
-  // 大型活動管理權限：僅管理員（地域秘書處）可以新增/編輯/刪除活動
-  isEventManager(){ return this.currentUser?.mock_admin||['admin','super_admin'].includes(this.currentUser?.role); }
+  // 會議預告「發送提醒」權限：執行副主席以上 ＋ 秘書處
+  // 執行副主席以上＝主席／顧問／執行副主席／管理員／系統管理員（等同 L1–L2）；秘書處＝「秘書處」組別
+  canSendMeetingReminder(){
+    if(!this.currentUser) return false;
+    if(this.currentUser.mock_admin) return true;
+    const role=this.currentUser.role||'';
+    if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(role)) return true;
+    const g=normalizeGroupName(this.currentUser.group_name||'');
+    return g==='秘書處'||g.includes('秘書');
+  }
 ,
   /* ===== v8.13 後端連線：統一 POST + 連線診斷 =====================================
      以前所有後端 POST 都係 try/catch + res.json()。一旦 Google 回 HTTP 400／401／404／5xx
@@ -992,6 +964,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
           <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+          <button onclick="app.openBoxLabelModal('${escapeHtml(groupName)}')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-box-open mr-1"></i>箱頭紙</button>
           ${groupName==='主題節目組'?`<button onclick="app.openModule('activities'); setTimeout(()=>app.switchActivitiesTab('booth'),300)" class="bg-fuchsia-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位總覽</button>`:''}
           ${groupName==='服務及發展組'&&this.canViewDonationsStats()?`<button onclick="app.openModule('donations')" class="bg-rose-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動</button>`:''}
         </div>
