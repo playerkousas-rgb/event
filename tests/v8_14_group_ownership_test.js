@@ -139,6 +139,12 @@ as(U('director', '主題節目組', '節目主任'));
 ['exec_manual', 'documents', 'ceremony', 'crisis'].forEach(id =>
   ok(editOf(id) === false, `②b2 主任級（30）：${id} 只可看（未開畀主任）`));
 ok(editOf('activities') === true, '②b2 場地與活動總覽：原本就開畀主任以上（維持不變）');
+// v8.14e：副主席（任何組）都可以改執行手冊系列
+as(U('vice_chairperson', '主題節目組', '副主席'));
+['exec_manual', 'activities', 'documents', 'ceremony', 'crisis', 'meetings'].forEach(id =>
+  ok(editOf(id) === true, `②b2 副主席（任何組）：${id} 應可修改`));
+ok(editOf('donations') === false, '②b2 副主席：童心捐贈仍然只可看（歸服務及發展組）');
+ok(editOf('apply_hub') === false, '②b2 副主席：申請中心仍然只可看（歸行政組統管）');
 
 /* ---------- ②b 會議卡片內部權限（32-meetings.js 一律跟 canManageMeetings） ---------- */
 const mtgs = fs.readFileSync(path.join(root, 'js/32-meetings.js'), 'utf8');

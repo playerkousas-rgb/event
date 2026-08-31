@@ -246,12 +246,12 @@ const CARD_OWNER_MIN_LEVEL=30;   // 負責組內要主任（30）以上先可以
 //   執行手冊 → 總主任（自己部門相關項目自己改，唔使吓吓經行政組）
 //   會議卡片 → 副主席・總主任（要將部門報告／會議文件上傳）
 const CARD_OWNER_EXTRA_ROLES={
-  // 執行手冊系列：總主任可以自己改部門相關項目（唔使吓吓經行政組）
-  exec_manual:['general_director'],
-  activities:['general_director'],
-  documents:['general_director'],
-  ceremony:['general_director'],
-  crisis:['general_director'],
+  // 執行手冊系列：副主席・總主任都可以自己改部門相關項目（唔使吓吓經行政組）
+  exec_manual:['general_director','vice_chairperson'],
+  activities:['general_director','vice_chairperson'],
+  documents:['general_director','vice_chairperson'],
+  ceremony:['general_director','vice_chairperson'],
+  crisis:['general_director','vice_chairperson'],
   // 會議卡片：副主席・總主任要將部門報告／會議文件上傳
   meetings:['general_director','vice_chairperson']
 };
