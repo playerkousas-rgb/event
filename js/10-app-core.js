@@ -315,14 +315,32 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderIdentityBar(){
     const user=this.currentUser;
-    const heroMon=document.getElementById('dash-hero-monitor'); // 我的監察已併入活動資訊橫幅；身份卡片已刪（身份喺最頂 BAR 右上角顯示）
+    const card=document.getElementById('identity-card'); // 身份卡片：只喺未登入（訪客）時顯示；登入後隱藏
+    const heroMon=document.getElementById('dash-hero-monitor');
     if(!user){
+      if(card) card.classList.remove('hidden');
+      const nameEl=document.getElementById('identity-name');
+      const roleBadge=document.getElementById('identity-role-badge');
+      const groupBadge=document.getElementById('identity-group-badge');
+      const desc=document.getElementById('identity-desc');
+      const loginBtn=document.getElementById('identity-login-btn');
+      const avatar=document.getElementById('identity-avatar');
+      const mockBadge=document.getElementById('identity-mock-badge');
+      if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
+      if(nameEl) nameEl.textContent='訪客';
+      if(roleBadge){roleBadge.textContent='公開'; roleBadge.className='bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap';}
+      if(groupBadge) groupBadge.classList.add('hidden');
+      if(desc) desc.innerHTML='<span class="inline-flex items-center gap-1 font-semibold text-slate-700"><i class="fa-solid fa-key text-amber-600"></i>初始帳戶：<b>中文姓名</b>（例如「朱家聰」）｜初始密碼：<b>1234</b></span><span class="mx-1.5 text-slate-300">｜</span><span class="text-indigo-700 font-semibold">如需要開戶請找所屬組別的總主任</span><br><span class="text-slate-500">（所有公開資料無需登入即可查閱；登入後可依職級與組別管理相應卡片）</span>';
+      if(loginBtn) loginBtn.classList.remove('hidden');
+      if(avatar) avatar.innerHTML='<i class="fa-solid fa-user"></i>';
       if(heroMon){
         heroMon.classList.remove('hidden');
         heroMon.innerHTML='<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2 flex items-center gap-2 flex-wrap"><span class="text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">登入後顯示</span></span><span class="text-[10.5px] text-white/75">登入後在此顯示你的申請批核進度</span><button onclick="app.openLoginModal()" class="ml-auto bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button></div>';
       }
       return;
     }
+    // 登入後：身份卡片隱藏（身份已喺最頂 BAR 右上角），只保留活動橫幅監察區塊
+    if(card) card.classList.add('hidden');
     if(heroMon){
       const sum=this.monitorSummary();
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
