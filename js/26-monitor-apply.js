@@ -162,14 +162,13 @@ Object.assign(ScoutEventApp.prototype,{
     // ── 沒有權限人士（如普通工作人員）：只看到自己的身份＋申請紀錄（如有）＋「未有紀錄」提示＋前往申請中心按鈕 ──
     if(!sum.privileged){
       if(actionsEl) actionsEl.innerHTML='';
-      const u=this.currentUser;
       container.innerHTML=`
         <div class="space-y-4">
-          <div class="bg-white border rounded-2xl p-4 flex items-center gap-3">
-            <div class="w-11 h-11 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-center gap-3">
+            <div class="w-11 h-11 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-eye"></i></div>
             <div class="min-w-0">
-              <div class="font-bold text-sm flex items-center flex-wrap gap-2">${escapeHtml(u.name||'')} <span class="bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200 whitespace-nowrap">${escapeHtml(ROLE_LABELS[u.role]||u.role)}</span>${u.group_name?`<span class="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200 whitespace-nowrap">${escapeHtml(normalizeGroupName(u.group_name))}</span>`:''}</div>
-              <p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">我的監察：只顯示你自己的申請批核進度（膳食·物資·車輛·開支·報價）。</p>
+              <div class="font-bold text-sm">我的監察</div>
+              <p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">只顯示你自己的申請批核進度（膳食·物資·車輛·開支·報價）。你的姓名及角色顯示於最頂 BAR 右上角。</p>
             </div>
           </div>
           ${this.approvedSupplyChips(r=>this.monitorIsMine({person:r.requested_by,person_id:r.requested_by_id}),'我（已批核）借用一覽')}
@@ -368,7 +367,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
     }).join('');
     const loginBar=u
-      ?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-user-check mr-1"></i>已登入：<b>${escapeHtml(u.name)}</b>（${ROLE_LABELS[u.role]||u.role}${u.group_name?' · '+escapeHtml(u.group_name):''}）</span><button onclick="app.logout()" class="bg-white border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-xl text-[11px] font-bold">登出</button></div>`
+      ?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900"><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i>已登入：膳食及攤位計劃書可公開申請；物資（地域借用）、車輛及開支可提交。你的身份及登出按鈕位於<b>最頂 BAR 右上角</b>。</div>`
       :`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-info mr-1"></i>膳食及攤位計劃書可公開申請（無需登入）；物資（地域借用）、車輛及開支需登入（請按右上角「登入」）。低於總主任提交的申請會先交本組總主任以上確認。</span></div>`;
     container.innerHTML=`
       <div class="space-y-4">
