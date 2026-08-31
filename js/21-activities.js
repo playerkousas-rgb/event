@@ -120,16 +120,14 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-3">
         <div class="flex flex-wrap gap-2">
           ${canUpload?`<button onclick="app.openActivityMapForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-map mr-1"></i>上傳地圖 (主任/副主席以上)</button>`:''}
-          <button onclick="app.downloadActivityTemplate('map')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳文件<input type="file" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="app.handleActivityFileUpload(this.files[0],'map')"></label>
+          <button onclick="app.downloadActivityTemplate('map')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載地圖範本</button>
         </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900 leading-relaxed">上傳方式同「遊戲卡」：可上傳 <b>PDF／Word／圖片</b>，或貼上 <b>Drive 連結</b>；Word 會自動解析成文字內嵌，PDF 會整份內嵌預覽。</div>
         ${data.maps.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.maps.map(m=>`
           <div class="border rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between items-start"><div><b class="text-[13px]">${escapeHtml(m.title||'場地地圖')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(m.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(m.created_by||'')} | ${m.created_at?new Date(m.created_at).toLocaleString():''}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.deleteActivityMap('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
-            ${m.file_url&&m.file_url.includes('sites.google')?`<div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-600"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>場地指示圖為網頁，請按下方「開啟地圖」查看</div>`:''}
-            ${m.file_url&&!m.file_url.includes('sites.google')?`<iframe src="${m.file_url.includes('/preview')?m.file_url:m.file_url.replace('/view','/preview')}" class="w-full h-[320px] border rounded-xl"></iframe>`:''}
-            ${m.file_data?`<img src="${m.file_data}" class="w-full max-h-[400px] object-contain border rounded-xl">`:''}
-            <div class="flex gap-2">${m.file_url?`<a href="${m.file_url}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟地圖</a>`:''}${m.file_data?`<button onclick="app.downloadActivityFile('${m.id}','map')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
+            <div class="flex justify-between items-start"><div><b class="text-[13px]">${escapeHtml(m.title||'場地地圖')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(m.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(m.created_by||'')} | ${m.created_at?new Date(m.created_at).toLocaleString():''} | 版本: ${escapeHtml(m.version||'v1')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openActivityMapForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteActivityMap('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
+            ${this.activityFilePreviewHTML(m,'map')}
+            <div class="flex gap-2">${m.file_url?`<a href="${m.file_url}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟地圖</a>`:''}${m.file_data||m.file_name?`<button onclick="app.downloadActivityFile('${m.id}','map')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
           </div>
         `).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">暫無地圖，相關主任、副主席或以上可上傳場地分佈圖 (參考舊手冊有地圖)</p>`}
       </div>
@@ -235,13 +233,12 @@ Object.assign(ScoutEventApp.prototype,{
           ${canUpload?`<button onclick="app.openGameCardForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-id-card mr-1"></i>上傳遊戲卡 (主任/副主席以上)</button>`:''}
           <button onclick="app.downloadActivityTemplate('gamecard')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載遊戲卡範本</button>
         </div>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">舊手冊有 <b>ISD2025_passport_v696_outline.pdf</b> 遊戲記錄冊 (集印章換禮物)。攤位按六大範疇分 A–F 區，各區攤位可參閱「攤位總表」，完成每個範疇最少兩個活動即可到換領處換取紀念章。新版可在 APP 內上傳遊戲卡設計，支援圖片/PDF，全部工作人員可查閱下載，手機友善</div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">舊手冊有 <b>ISD2025_passport_v696_outline.pdf</b> 遊戲記錄冊 (集印章換禮物)。攤位按六大範疇分 A–F 區，各區攤位可參閱「攤位總表」，完成每個範疇最少兩個活動即可到換領處換取紀念章。新版可在 APP 內上傳遊戲卡設計，支援 <b>PDF／Word／圖片／Drive 連結</b>，Word 自動解析文字內嵌、PDF 整份內嵌，全部工作人員可查閱下載，手機友善</div>
         ${data.gameCards.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.gameCards.map(g=>`
           <div class="border rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(g.title||'遊戲卡')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(g.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(g.created_by||'')} | ${g.created_at?new Date(g.created_at).toLocaleString():''} | 版本: ${escapeHtml(g.version||'v1')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.deleteGameCard('${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
-            ${g.file_url?`<iframe src="${g.file_url.includes('/preview')?g.file_url:g.file_url.replace('/view','/preview')}" class="w-full h-[280px] border rounded-xl"></iframe>`:''}
-            ${g.file_data?`<img src="${g.file_data}" class="w-full max-h-[360px] object-contain border rounded-xl">`:''}
-            <div class="flex gap-2">${g.file_url?`<a href="${g.file_url}" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟遊戲卡</a>`:''}${g.file_data?`<button onclick="app.downloadActivityFile('${g.id}','gamecard')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
+            <div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(g.title||'遊戲卡')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(g.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(g.created_by||'')} | ${g.created_at?new Date(g.created_at).toLocaleString():''} | 版本: ${escapeHtml(g.version||'v1')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openGameCardForm('${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteGameCard('${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
+            ${this.activityFilePreviewHTML(g,'gamecard')}
+            <div class="flex gap-2">${g.file_url?`<a href="${g.file_url}" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟遊戲卡</a>`:''}${g.file_data||g.file_name?`<button onclick="app.downloadActivityFile('${g.id}','gamecard')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
           </div>
         `).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">暫無遊戲卡，相關主任、副主席或以上可上傳 (參考舊版 ISD2025_passport_v696_outline.pdf)</p>`}
       </div>
@@ -255,6 +252,21 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.activities.map(a=>`<div class="border rounded-xl p-3 bg-white"><b class="text-[13px]">${escapeHtml(a.title)}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(a.type||'')} | ${escapeHtml(a.location||'')} | ${escapeHtml(a.description||'')}</div></div>`).join('') || '<p class="text-xs text-slate-400">暫無活動項目</p>'}</div></div>`;
   }
 ,
+  /* ── 檔案預覽（地圖／遊戲卡共用，上傳方式完全一致）：Drive 連結→iframe 預覽；圖片→img；PDF→整份內嵌；Word/JSON→解析文字內嵌 ── */
+  activityFilePreviewHTML(f,type){
+    if(!f) return '';
+    const isSiteUrl=!!f.file_url&&String(f.file_url).includes('sites.google');
+    const isImage=/^data:image\//.test(f.file_data||'');
+    const isPdf=/^data:application\/pdf/.test(f.file_data||'');
+    let out='';
+    if(isSiteUrl){ out+=`<div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-600"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>${escapeHtml(type==='map'?'場地指示圖為網頁，請按下方「開啟地圖」查看':'此項為網頁，請按下方「開啟」查看')}</div>`; }
+    if(f.file_url&&!isSiteUrl){ const src=String(f.file_url).includes('/preview')?f.file_url:String(f.file_url).replace('/view','/preview'); out+=`<iframe src="${escapeHtml(src)}" class="w-full h-[320px] border rounded-xl"></iframe>`; }
+    if(isImage){ out+=`<img src="${f.file_data}" class="w-full max-h-[400px] object-contain border rounded-xl">`; }
+    if(isPdf){ out+=`<iframe src="${f.file_data}" class="w-full h-[520px] border rounded-xl" title="完整PDF內嵌預覽"></iframe>`; }
+    if(f.file_text){ out+=`<details class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-900"><summary class="cursor-pointer font-bold"><i class="fa-solid fa-file-lines mr-1"></i>解析文字（JSON/Word 內嵌）</summary><div class="mt-2 whitespace-pre-line max-h-[240px] overflow-y-auto">${escapeHtml(f.file_text)}</div></details>`; }
+    return out;
+  }
+,
   openActivityMapForm(editId=null){
     if(!this.canUploadActivity()){ showToast('僅相關主任、副主席或以上可上傳','error'); return; }
     const data=this.getActivitiesData();
@@ -265,7 +277,8 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-3">
         <div><label class="text-[11px] font-bold">地圖標題 *</label><input id="activity-map-title" value="${escapeHtml(existing?.title||'場地分佈圖')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">描述</label><textarea id="activity-map-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
-        <div><label class="text-[11px] font-bold">上傳地圖文件 (圖片/PDF)</label><input type="file" id="activity-map-file" accept=".jpg,.jpeg,.png,.pdf" class="w-full text-xs mt-1"></div>
+        <div><label class="text-[11px] font-bold">版本</label><input id="activity-map-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">上傳地圖文件 (PDF/Word/圖片)</label><input type="file" id="activity-map-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc" class="w-full text-xs mt-1"></div>
         <div><label class="text-[11px] font-bold">或貼上 Drive 連結</label><input id="activity-map-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         ${existing?.file_name?`<div class="text-[11px]">已上傳: ${escapeHtml(existing.file_name)}</div>`:''}
       </div>
@@ -282,13 +295,18 @@ Object.assign(ScoutEventApp.prototype,{
     const id=document.getElementById('activity-map-id').value;
     const title=document.getElementById('activity-map-title').value.trim();
     const desc=document.getElementById('activity-map-desc').value.trim();
+    const version=document.getElementById('activity-map-version').value.trim()||'v1';
     const url=document.getElementById('activity-map-url').value.trim();
     const fileInput=document.getElementById('activity-map-file');
-    let file_name='', file_data='', file_url=url;
+    let file_name='', file_data='', file_url=url, file_text='';
     if(fileInput.files[0]){
       const f=fileInput.files[0];
       file_name=f.name;
       file_data=await fileToDataUrl(f);
+      // Word 檔案：用 mammoth 解析文字作 JSON 內嵌摘要；PDF：整份 base64 內嵌
+      if(/\.docx?$/i.test(f.name) && typeof mammoth!=='undefined'){
+        try{ const ab=await f.arrayBuffer(); const r=await mammoth.extractRawText({arrayBuffer:ab}); file_text=(r.value||'').trim(); }catch(e){ file_text=''; }
+      }
       // Try Drive upload if folder set
       const folderCfg=this.getMeetingFolderConfig();
       if(folderCfg.id && !this.mockMode && this.gasUrl){
@@ -300,9 +318,9 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getActivitiesData();
     if(mode==='edit'){
       const idx=data.maps.findIndex(m=>m.id===id);
-      if(idx>=0) data.maps[idx]={...data.maps[idx], title, description:desc, file_name:file_name||data.maps[idx].file_name, file_data:file_data||data.maps[idx].file_data, file_url:file_url||data.maps[idx].file_url, updated_at:new Date().toISOString()};
+      if(idx>=0) data.maps[idx]={...data.maps[idx], title, description:desc, version, file_name:file_name||data.maps[idx].file_name, file_data:file_data||data.maps[idx].file_data, file_url:file_url||data.maps[idx].file_url, file_text:file_text||data.maps[idx].file_text||'', updated_at:new Date().toISOString()};
     }else{
-      data.maps.push({id:'map_'+Date.now(), title, description:desc, file_name, file_data, file_url, created_by:this.currentUser?.name||'', created_at:new Date().toISOString()});
+      data.maps.push({id:'map_'+Date.now(), title, description:desc, version, file_name, file_data, file_url, file_text, created_by:this.currentUser?.name||'', created_at:new Date().toISOString()});
     }
     this.saveActivitiesData(data);
     this.closeModal('modal-record');
@@ -1076,7 +1094,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div><label class="text-[11px] font-bold">遊戲卡標題 *</label><input id="gamecard-title" value="${escapeHtml(existing?.title||'')}" required placeholder="例如 遊戲記錄冊 / 集印卡" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">描述</label><textarea id="gamecard-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">版本</label><input id="gamecard-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">上傳遊戲卡文件 (圖片/PDF)</label><input type="file" id="gamecard-file" accept=".jpg,.jpeg,.png,.pdf" class="w-full text-xs mt-1"></div>
+        <div><label class="text-[11px] font-bold">上傳遊戲卡文件 (PDF/Word/圖片)</label><input type="file" id="gamecard-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc" class="w-full text-xs mt-1"></div>
         <div><label class="text-[11px] font-bold">或貼上 Drive 連結</label><input id="gamecard-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       </div>
     `;
@@ -1095,11 +1113,15 @@ Object.assign(ScoutEventApp.prototype,{
     const version=document.getElementById('gamecard-version').value.trim()||'v1';
     const url=document.getElementById('gamecard-url').value.trim();
     const fileInput=document.getElementById('gamecard-file');
-    let file_name='', file_data='', file_url=url;
+    let file_name='', file_data='', file_url=url, file_text='';
     if(fileInput.files[0]){
       const f=fileInput.files[0];
       file_name=f.name;
       file_data=await fileToDataUrl(f);
+      // Word 檔案：用 mammoth 解析文字作 JSON 內嵌摘要；PDF：整份 base64 內嵌
+      if(/\.docx?$/i.test(f.name) && typeof mammoth!=='undefined'){
+        try{ const ab=await f.arrayBuffer(); const r=await mammoth.extractRawText({arrayBuffer:ab}); file_text=(r.value||'').trim(); }catch(e){ file_text=''; }
+      }
       const folderCfg=this.getMeetingFolderConfig();
       if(folderCfg.id && !this.mockMode && this.gasUrl){
         const res=await this.uploadFileToDriveFolder(f.name, file_data, f.type);
@@ -1110,9 +1132,9 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getActivitiesData();
     if(mode==='edit'){
       const idx=data.gameCards.findIndex(g=>g.id===id);
-      if(idx>=0) data.gameCards[idx]={...data.gameCards[idx], title, description:desc, version, file_name:file_name||data.gameCards[idx].file_name, file_data:file_data||data.gameCards[idx].file_data, file_url:file_url||data.gameCards[idx].file_url, updated_at:new Date().toISOString()};
+      if(idx>=0) data.gameCards[idx]={...data.gameCards[idx], title, description:desc, version, file_name:file_name||data.gameCards[idx].file_name, file_data:file_data||data.gameCards[idx].file_data, file_url:file_url||data.gameCards[idx].file_url, file_text:file_text||data.gameCards[idx].file_text||'', updated_at:new Date().toISOString()};
     }else{
-      data.gameCards.push({id:'gamecard_'+Date.now(), title, description:desc, version, file_name, file_data, file_url, created_by:this.currentUser?.name||'', created_at:new Date().toISOString()});
+      data.gameCards.push({id:'gamecard_'+Date.now(), title, description:desc, version, file_name, file_data, file_url, file_text, created_by:this.currentUser?.name||'', created_at:new Date().toISOString()});
     }
     this.saveActivitiesData(data);
     this.closeModal('modal-record');

@@ -15,9 +15,10 @@ Object.assign(ScoutEventApp.prototype,{
       {id:'rd_o4',time:'13:00',program:'頒獎典禮完畢；嘉賓茶聚（儀式完結後隨即開始）',location:'莫榮大樓地下'},
       {id:'rd_o5',time:'14:00',program:'參觀主題活動區',location:'全場'}
     ];
-    if(!this.isDemoEvent()) return {rundown:officialRundown,mc_script:[],speech:null,guests:[],seating:[]}; // 真實活動：內建官方典禮程序
+    if(!this.isDemoEvent()) return {rundown:officialRundown,mc_script:[],speech:null,guests:[],seating:[],files:[]}; // 真實活動：內建官方典禮程序 + 附件版位
     return {
       rundown:officialRundown,
+      files:[],
       mc_script:[
         {id:'mc0_1',seq:1,text:'【優異旅團頒獎典禮（15:00）】司儀（蔡小晴）：我係柴灣區副區總監蔡小晴。司儀（曾令勤）：我係港島地域深資童軍議會主席曾令勤。歡迎各位參加「港島童軍繽紛日2025」，典禮即將開始，請各位保持安靜。'},
         {id:'mc0_2',seq:2,text:'司儀（蔡小晴）：「港島童軍繽紛日」係港島地域一年一度的盛事，嘉許優異旅團、表揚有出色表現的青少年成員、領袖及會務委員。司儀（曾令勤）：今年活動以「童心傳承、明日領袖」為主軸。'},
@@ -82,10 +83,18 @@ Object.assign(ScoutEventApp.prototype,{
     if(!this.ceremonySubTab) this.ceremonySubTab='rundown';
     const data=this.getCeremonyData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
+    const canEditFiles=canEdit||this.isCardOwnerGroup('ceremony');
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
-          <b>👑 典禮儀式：</b>供公眾查閱的典禮流程（RUNDOWN）、司儀稿、嘉賓名單、座位表及獲獎名單。管理員／副主席以上可編輯。
+          <b>👑 典禮儀式：</b>供公眾查閱的典禮流程（RUNDOWN）、司儀稿、嘉賓名單、座位表及獲獎名單。管理員／副主席以上可編輯。內容以「內建 JSON」即時顯示；另可為<b>所有項目</b>上傳 <b>PDF／Word／連結</b>（同遊戲卡方式）：Word 自動解析成文字內嵌，PDF 整份內嵌預覽。
+        </div>
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="text-[11px] leading-relaxed text-indigo-900"><b><i class="fa-solid fa-paperclip mr-1"></i>附件（PDF／Word／連結）</b> — 適用於 RUNDOWN・司儀稿・嘉賓名單・座位表・致辭稿・獲獎名單・嘉賓地圖；上傳方式同「遊戲卡」。</div>
+            ${canEditFiles?`<button onclick="app.openCeremonyFileForm()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳附件</button>`:''}
+          </div>
+          <div id="ceremony-files-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchCeremonyTab('rundown')" class="tab-btn ${this.ceremonySubTab==='rundown'?'active':''}"><i class="fa-solid fa-list mr-1"></i> RUNDOWN</button>
@@ -111,6 +120,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.renderCeremonySeating();
     this.renderCeremonySpeech();
     this.renderCeremonyMap();
+    this.renderCeremonyFiles();
   }
 ,
   switchCeremonyTab(tab){
@@ -316,6 +326,123 @@ Object.assign(ScoutEventApp.prototype,{
     if(!confirm('確定刪除？')) return;
     const data=this.getCeremonyData(); data[type]=data[type].filter(x=>x.id!==id);
     this.saveCeremonyData(data); this.renderCeremonyModule();
+  }
+,
+
+  /* ===================== 典禮附件（同遊戲卡上傳方式） =====================
+     所有項目（RUNDOWN／司儀稿／嘉賓名單／座位表／致辭稿／獲獎名單／嘉賓地圖）均可上傳：
+     PDF（整份內嵌）／Word（mammoth 解析成文字 JSON 內嵌＋原檔下載）／圖片／Drive 連結。 */
+  ceremonyFileSections(){
+    return [
+      {k:'rundown',l:'RUNDOWN'},
+      {k:'mc',l:'司儀稿'},
+      {k:'guests',l:'嘉賓名單'},
+      {k:'seating',l:'座位表'},
+      {k:'speech',l:'致辭稿'},
+      {k:'awards',l:'獲獎名單'},
+      {k:'map',l:'嘉賓地圖'}
+    ];
+  }
+,
+  renderCeremonyFiles(){
+    const list=document.getElementById('ceremony-files-list'); if(!list) return;
+    const data=this.getCeremonyData();
+    const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60 || this.isCardOwnerGroup('ceremony');
+    const secMap=Object.fromEntries(this.ceremonyFileSections().map(s=>[s.k,s.l]));
+    const files=[...(data.files||[])].sort((a,b)=>(a.created_at||'').localeCompare(b.created_at||''));
+    if(!files.length){ list.innerHTML='<p class="text-[11px] text-slate-400 col-span-full text-center py-2">暫無附件 — 可按「上傳附件」加入 PDF／Word／連結。</p>'; return; }
+    list.innerHTML=files.map(f=>this.ceremonyFileCardHTML(f,canEdit,secMap)).join('');
+  }
+,
+  ceremonyFileCardHTML(f,canEdit,secMap){
+    const isSiteUrl=!!f.file_url&&String(f.file_url).includes('sites.google');
+    const isImage=/^data:image\//.test(f.file_data||'');
+    const isPdf=/^data:application\/pdf/.test(f.file_data||'');
+    let prev='';
+    if(f.file_url&&!isSiteUrl){ const src=String(f.file_url).includes('/preview')?f.file_url:String(f.file_url).replace('/view','/preview'); prev=`<iframe src="${escapeHtml(src)}" class="w-full h-[280px] border rounded-xl"></iframe>`; }
+    if(isImage) prev+=`<img src="${f.file_data}" class="w-full max-h-[320px] object-contain border rounded-xl">`;
+    if(isPdf) prev+=`<iframe src="${f.file_data}" class="w-full h-[420px] border rounded-xl" title="完整PDF內嵌預覽"></iframe>`;
+    if(f.file_text) prev+=`<details class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-900"><summary class="cursor-pointer font-bold"><i class="fa-solid fa-file-lines mr-1"></i>解析文字（JSON/Word 內嵌）</summary><div class="mt-2 whitespace-pre-line max-h-[220px] overflow-y-auto">${escapeHtml(f.file_text)}</div></details>`;
+    return `<div class="border rounded-xl p-3 bg-white space-y-2">
+      <div class="flex justify-between items-start gap-2">
+        <div class="min-w-0"><span class="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200 font-bold">${escapeHtml(secMap[f.section]||f.section||'附件')}</span><b class="text-[12.5px] block mt-1">${escapeHtml(f.title||'未命名附件')}</b><div class="text-[10.5px] text-slate-500 mt-0.5">${escapeHtml(f.description||'')}</div><div class="text-[10px] text-slate-400 mt-0.5">上傳: ${escapeHtml(f.created_by||'')} | ${f.created_at?new Date(f.created_at).toLocaleString():''} | 版本: ${escapeHtml(f.version||'v1')}</div></div>
+        <div class="flex flex-col gap-1 flex-shrink-0">${canEdit?`<button onclick="app.openCeremonyFileForm('${f.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteCeremonyFile('${f.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
+      </div>
+      ${isSiteUrl?`<div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-600"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>此項為網頁，請按下方「開啟」查看</div>`:''}
+      ${prev}
+      <div class="flex gap-2 flex-wrap">${f.file_url?`<a href="${escapeHtml(f.file_url)}" target="_blank" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟</a>`:''}${f.file_data||f.file_name?`<button onclick="app.downloadCeremonyFile('${f.id}')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
+    </div>`;
+  }
+,
+  openCeremonyFileForm(id=null){
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可上傳','error'); return; }
+    const data=this.getCeremonyData();
+    const existing=id?(data.files||[]).find(f=>f.id===id):null;
+    const secOpts=this.ceremonyFileSections().map(s=>`<option value="${s.k}" ${existing?.section===s.k?'selected':''}>${s.l}</option>`).join('');
+    let html=`
+      <input type="hidden" id="crf-mode" value="${existing?'edit':'create'}">
+      <input type="hidden" id="crf-id" value="${existing?.id||''}">
+      <div class="space-y-3">
+        <div><label class="text-[11px] font-bold">所屬項目</label><select id="crf-section" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${secOpts}</select></div>
+        <div><label class="text-[11px] font-bold">附件標題 *</label><input id="crf-title" value="${escapeHtml(existing?.title||'')}" required placeholder="例如 RUNDOWN 官方版 / 司儀稿 Word 版" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">描述</label><textarea id="crf-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+        <div><label class="text-[11px] font-bold">版本</label><input id="crf-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">上傳文件 (PDF/Word/圖片)</label><input type="file" id="crf-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc" class="w-full text-xs mt-1"></div>
+        <div><label class="text-[11px] font-bold">或貼上 Drive 連結</label><input id="crf-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        ${existing?.file_name?`<div class="text-[11px]">已上傳: ${escapeHtml(existing.file_name)}</div>`:''}
+      </div>
+    `;
+    document.getElementById('record-modal-title').textContent=existing?'編輯附件':'上傳典禮附件 (同遊戲卡方式)';
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=async (e)=>{ e.preventDefault(); await this.submitCeremonyFileForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+,
+  async submitCeremonyFileForm(){
+    const mode=document.getElementById('crf-mode').value, id=document.getElementById('crf-id').value;
+    const section=document.getElementById('crf-section').value;
+    const title=document.getElementById('crf-title').value.trim();
+    const desc=document.getElementById('crf-desc').value.trim();
+    const version=document.getElementById('crf-version').value.trim()||'v1';
+    const url=document.getElementById('crf-url').value.trim();
+    const fileInput=document.getElementById('crf-file');
+    let file_name='', file_data='', file_url=url, file_text='';
+    if(fileInput.files[0]){
+      const f=fileInput.files[0];
+      file_name=f.name; file_data=await fileToDataUrl(f);
+      if(/\.docx?$/i.test(f.name) && typeof mammoth!=='undefined'){
+        try{ const ab=await f.arrayBuffer(); const r=await mammoth.extractRawText({arrayBuffer:ab}); file_text=(r.value||'').trim(); }catch(e){ file_text=''; }
+      }
+      if(/\.json$/i.test(f.name)){ try{ const text=await f.text(); file_text=JSON.stringify(JSON.parse(text),null,2); }catch(e){} }
+    }
+    if(!title){ showToast('請填寫附件標題','error'); return; }
+    const data=this.getCeremonyData();
+    if(!data.files) data.files=[];
+    if(mode==='edit'){
+      const i=data.files.findIndex(x=>x.id===id);
+      if(i>=0) data.files[i]={...data.files[i], section, title, description:desc, version, file_name:file_name||data.files[i].file_name, file_data:file_data||data.files[i].file_data, file_url:file_url||data.files[i].file_url, file_text:file_text||data.files[i].file_text||'', updated_at:new Date().toISOString()};
+    }else{
+      data.files.push({id:'crf_'+Date.now(), section, title, description:desc, version, file_name, file_data, file_url, file_text, created_by:this.currentUser?.name||'', created_at:new Date().toISOString()});
+    }
+    this.saveCeremonyData(data); this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast(mode==='edit'?'已更新附件':'已上傳附件','success'); this.renderCeremonyModule();
+  }
+,
+  deleteCeremonyFile(id){
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可刪除','error'); return; }
+    if(!confirm('確定刪除此附件？')) return;
+    const data=this.getCeremonyData(); data.files=(data.files||[]).filter(f=>f.id!==id);
+    this.saveCeremonyData(data); this.renderCeremonyModule();
+  }
+,
+  downloadCeremonyFile(id){
+    const data=this.getCeremonyData(); const f=(data.files||[]).find(x=>x.id===id);
+    if(!f){ showToast('找不到檔案','error'); return; }
+    if(f.file_url){ window.open(f.file_url,'_blank'); return; }
+    if(f.file_data) downloadDataUrl(f.file_name||'download', f.file_data);
+    else showToast('無檔案','warning');
   }
 ,
 

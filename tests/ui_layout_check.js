@@ -151,10 +151,11 @@ mon = htmlOf('dash-hero-monitor');
 assert(mon.includes('總申請') || mon.includes('你暫時未有申請紀錄'), '活動橫幅我的監察區塊應有內容');
 assert(mon.includes('申請中心'), '無權限人士活動橫幅應提供前往申請中心');
 
-// 我的監察頁：無權限人士只看到身份 + 未有紀錄 + 前往申請中心按鈕
+// 我的監察頁：無權限人士只看到未有紀錄 + 前往申請中心按鈕（身份只可以喺最頂 BAR，其他地方唔顯示）
 app.renderMyMonitorModule();
 let monPage = htmlOf('module-content');
-assert(monPage.includes('陳子明'), '我的監察頁應顯示自己身份');
+assert(!monPage.includes('陳子明'), '我的監察頁唔應該再顯示身份（姓名只可喺最頂 BAR 右上角）');
+assert(!monPage.includes('app.logout'), '我的監察頁唔應該有登出按鈕（登出只可喺最頂 BAR 右上角）');
 assert(monPage.includes('你暫時未有申請紀錄，可到「申請中心」提交'), '我的監察頁應有未有紀錄提示');
 assert(monPage.includes("app.openModule('apply_hub')"), '我的監察頁應有前往申請中心按鈕');
 assert(!monPage.includes('總申請'), '無權限人士不應看到總申請統計');
