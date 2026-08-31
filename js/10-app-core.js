@@ -351,30 +351,30 @@ Object.assign(ScoutEventApp.prototype,{
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
       // 有權限人士：數字跳轉批核中心處理；無權限人士：數字帶自己到「我的監察」看自己進度
       const clickAttr=canGoApprovals?'onclick="app.switchTopTab(\'approvals\')" ':'onclick="app.openModule(\'my_monitor\')" ';
-      const chipBase='rounded-lg px-2 py-1 text-center border border-white/20';
-      const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase} cursor-pointer hover:brightness-110"><span class="block text-[14px] font-extrabold leading-none">${v}</span><span class="block text-[9px] mt-0.5 opacity-80">${l}</span></button>`;
+      const chipBase='rounded-lg px-2 py-1 text-center cursor-pointer hover:brightness-110 shadow-sm';
+      const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase}"><span class="block text-[15px] font-extrabold leading-none">${v}</span><span class="block text-[9.5px] mt-0.5 font-semibold">${l}</span></button>`;
       const minePending=sum.mine.filter(r=>r.color_name==='amber'||r.color_name==='sky').length;
       const mineApproved=sum.mine.filter(r=>r.color_name==='emerald').length;
       const mineRejected=sum.mine.filter(r=>r.color_name==='rose').length;
       const chips=sum.privileged
-        ?chip(sum.total,'總申請','bg-white/15 text-white')
-        +chip(sum.pending,'待處理',sum.pending?'bg-amber-400/40 text-amber-50 border-amber-300/50':'bg-white/10 text-white/60')
-        +chip(sum.approved,'已批核','bg-emerald-400/30 text-emerald-50 border-emerald-300/40')
-        +chip(sum.rejected,'已拒絕','bg-rose-400/30 text-rose-50 border-rose-300/40')
+        ?chip(sum.total,'總申請','bg-white text-purple-900')
+        +chip(sum.pending,'待處理',sum.pending?'bg-amber-400 text-amber-950':'bg-white/30 text-white')
+        +chip(sum.approved,'已批核',sum.approved?'bg-emerald-600 text-white':'bg-white/30 text-white')
+        +chip(sum.rejected,'已拒絕',sum.rejected?'bg-rose-500 text-white':'bg-white/30 text-white')
         :(sum.mine.length
-          ?chip(sum.mine.length,'總申請','bg-white/15 text-white')
-          +chip(minePending,'待處理',minePending?'bg-amber-400/40 text-amber-50 border-amber-300/50':'bg-white/10 text-white/60')
-          +chip(mineApproved,'已批核','bg-emerald-400/30 text-emerald-50 border-emerald-300/40')
-          +chip(mineRejected,'已拒絕','bg-rose-400/30 text-rose-50 border-rose-300/40')
+          ?chip(sum.mine.length,'總申請','bg-white text-purple-900')
+          +chip(minePending,'待處理',minePending?'bg-amber-400 text-amber-950':'bg-white/30 text-white')
+          +chip(mineApproved,'已批核',mineApproved?'bg-emerald-600 text-white':'bg-white/30 text-white')
+          +chip(mineRejected,'已拒絕',mineRejected?'bg-rose-500 text-white':'bg-white/30 text-white')
           :`<span class="text-[10.5px] text-white/80">你暫時未有申請紀錄</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-400 text-emerald-950 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button>`);
       heroMon.classList.remove('hidden');
-      heroMon.innerHTML=`<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2">
+      heroMon.innerHTML=`<div class="bg-white/15 backdrop-blur border border-white/25 rounded-xl px-3 py-2.5">
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-          <div class="flex items-center gap-1.5 text-[11px] font-bold flex-wrap flex-shrink-0"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">${escapeHtml(user.name||'')}（${escapeHtml(ROLE_LABELS[user.role]||user.role)}）· ${escapeHtml(sum.scopeText)}</span></div>
+          <div class="flex items-center gap-1.5 text-[11px] font-bold flex-wrap flex-shrink-0"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/25 text-white text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/30 font-normal">範圍：${escapeHtml(sum.scopeText)}</span></div>
           <div class="flex items-center gap-1.5 flex-wrap flex-1 min-w-0">${chips}</div>
-          <button onclick="app.openModule('my_monitor')" class="bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
+          <button onclick="app.openModule('my_monitor')" class="bg-white text-purple-700 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
         </div>
-        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-1.5 w-full sm:w-auto sm:min-w-[340px] flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 border border-white/25 rounded-lg px-2.5 py-1 text-[10.5px] text-white/90"><span class="truncate text-left"><i class="fa-solid fa-user mr-1"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
+        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-2 w-full sm:w-auto sm:min-w-[340px] flex items-center justify-between gap-2 bg-white text-purple-800 border border-white/60 rounded-lg px-2.5 py-1.5 text-[10.5px] font-semibold"><span class="truncate text-left"><i class="fa-solid fa-user mr-1"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
       </div>`;
     }
   }
