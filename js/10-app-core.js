@@ -361,6 +361,8 @@ Object.assign(ScoutEventApp.prototype,{
     const lvl=this.roleLevel(this.currentUser.role);
     if(lvl>=100) return true;
     if(lvl<CARD_OWNER_MIN_LEVEL) return false;                        // 負責組內都要主任以上
+    // v8.14d：呢張卡有「唔理邊組都改到」嘅角色（執行手冊／會議卡片開畀總主任・副主席）
+    if((CARD_OWNER_EXTRA_ROLES[cardId]||[]).includes(this.currentUser.role)) return true;
     const g=normalizeGroupName(this.currentUser.group_name||'');
     if(!g) return false;
     if(g==='行政組'||g.includes('行政')) return true;                 // 行政組統管全站
@@ -373,11 +375,18 @@ Object.assign(ScoutEventApp.prototype,{
   canManageMeetings(){ return this.isAdmin()||this.isExecViceOrChair()||this.isCardOwnerGroup('meetings'); }
 ,
   // 可以睇晒全部部門嘅人：執副以上 ＋ 行政組（統管全站）
+  // v8.14d：可以睇晒全部部門嘅人＝ 執副以上 ＋ 副主席 ＋ 行政組總主任 ＋ 參事主任 ＋ 行政組（統管全站）
+  // 其餘（包括各組總主任）一律淨係睇自己部門
   isAllGroupViewer(){
     if(!this.currentUser) return false;
-    if(this.isExecViceOrChair()||this.isAdmin()||this.currentUser.mock_admin) return true;
+    if(this.isExecViceOrChair()||this.isAdmin()||this.currentUser.mock_admin) return true;   // 執副以上（主席／顧問／執副主席／管理員）
+    const role=this.currentUser.role||'';
+    const lvl=this.roleLevel(role);
+    if(role==='vice_chairperson') return true;                                              // 副主席
     const g=normalizeGroupName(this.currentUser.group_name||'');
-    return !!g&&(g==='行政組'||g.includes('行政'))&&this.roleLevel(this.currentUser.role)>=CARD_OWNER_MIN_LEVEL;
+    if(role==='general_director'&&(g==='行政組'||g.includes('行政'))) return true;            // 行政組總主任
+    if(lvl>=CARD_OWNER_MIN_LEVEL&&(this.currentUser.job_title||'').includes('參事')) return true; // 參事主任
+    return !!g&&(g==='行政組'||g.includes('行政'))&&lvl>=CARD_OWNER_MIN_LEVEL;                // 行政組統管全站
   }
 ,
   // 我可唔可以睇／入呢個部門？（執副以上／行政組＝全部；其餘淨係自己組）

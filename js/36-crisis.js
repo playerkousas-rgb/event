@@ -889,7 +889,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openCrisisManualForm(id=null){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis') && !this.isAdmin() && !this.isExecViceOrChair()){ showToast('僅管理員／副主席以上／行政組（負責組）可上傳/編輯手冊','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis') && !this.isAdmin() && !this.isExecViceOrChair()){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可上傳/編輯手冊','error'); return; }
     const data=this.getCrisisData();
     const existing=id?(data.manuals||[]).find(m=>m.id===id):null;
     let html=`
@@ -989,7 +989,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteCrisisManual(id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis') && !this.isAdmin() && !this.isExecViceOrChair()){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis') && !this.isAdmin() && !this.isExecViceOrChair()){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除此危機處理手冊？')) return;
     const data=this.getCrisisData();
     data.manuals=(data.manuals||[]).filter(m=>m.id!==id);
@@ -1128,7 +1128,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openCrisisDocForm(id=null,cat='天氣'){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可編輯','error'); return; }
     const data=this.getCrisisData();
     const existing=id?data.docs.find(d=>d.id===id):null;
     let html=`<input type="hidden" id="cr-mode" value="${existing?'edit':'create'}"><input type="hidden" id="cr-id" value="${existing?.id||''}">
@@ -1156,14 +1156,14 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteCrisisDoc(id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getCrisisData(); data.docs=data.docs.filter(d=>d.id!==id);
     this.saveCrisisData(data); this.renderCrisisModule();
   }
 ,
   openCrisisTeamForm(id=null){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可編輯','error'); return; }
     const data=this.getCrisisData();
     const existing=id?data.team.find(m=>m.id===id):null;
     let html=`<input type="hidden" id="ct-mode" value="${existing?'edit':'create'}"><input type="hidden" id="ct-id" value="${existing?.id||''}">
@@ -1190,14 +1190,14 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteCrisisTeam(id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getCrisisData(); data.team=data.team.filter(m=>m.id!==id);
     this.saveCrisisData(data); this.renderCrisisModule();
   }
 ,
   openCrisisContactForm(id=null){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可編輯','error'); return; }
     const data=this.getCrisisData();
     const existing=id?data.contacts.find(c=>c.id===id):null;
     let html=`<input type="hidden" id="cc-mode" value="${existing?'edit':'create'}"><input type="hidden" id="cc-id" value="${existing?.id||''}">
@@ -1224,7 +1224,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteCrisisContact(id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('crisis')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getCrisisData(); data.contacts=data.contacts.filter(c=>c.id!==id);
     this.saveCrisisData(data); this.renderCrisisModule();

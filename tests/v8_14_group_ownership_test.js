@@ -4,6 +4,8 @@
    ① 部門可見度：總主任淨係睇自己部門；執副以上／行政組（統管）睇晒
    ② 卡片管理權：執行手冊・申請中心＝行政組；膳食・物資・車＝協調組；
       攤位＝主題節目組；童心捐贈＝服務及發展組；會議卡片＝秘書處（行政組亦可管）
+   v8.14d：執行手冊系列開畀總主任；會議卡片開畀副主席・總主任；
+      「睇晒全部部門」＝執副以上 ＋ 副主席 ＋ 行政組總主任 ＋ 參事主任 ＋ 行政組
    ③ 批核路由：膳食／物資／車→協調組（＋行政組）；攤位→主題節目組（獨立路由，唔再跟物資）
    ④ 後端 v8.6：accountCheck 存在＋密碼探針／遮罩 id；handleLogin 對最高層管理帳號畀專屬錯誤；
       最高層管理帳號唔會再被 skip（改過密碼都用 Sheet hash 登入） */
@@ -78,7 +80,10 @@ ok(app.isAllGroupViewer() === false, '① 總主任：唔係「睇全部部門�
 
 as(U('vice_chairperson', '會操及典禮組', '張佳良'));            // 副主席（60）
 ok(app.canSeeRoleCard(def('group_ceremony')) === true, '① 副主席：睇到自己組（會操及典禮組）');
-ok(app.canSeeRoleCard(def('group_theme')) === false, '① 副主席：都唔應該睇到其他部門（主題節目組）');
+// v8.14d：副主席列入「睇晒全部部門」名單
+ok(app.isAllGroupViewer() === true, '① 副主席：睇晒全部部門');
+ok(app.visibleGroups().length === 10, '① 副主席：部門清單 10 組（實際 ' + app.visibleGroups().length + '）');
+ok(app.canSeeRoleCard(def('group_theme')) === true, '① 副主席：可以睇到其他部門（主題節目組）');
 
 as(U('executive_vice_chairperson', '主席及執行副主席', '羅雅雯')); // 執行副主席（70）
 ok(app.isAllGroupViewer() === true, '① 執副以上：可以睇晒全部部門');
@@ -87,6 +92,17 @@ ok(app.canSeeRoleCard(def('group_ceremony')) && app.canSeeRoleCard(def('group_se
 
 as(U('director', '行政組', '行政主任'));                          // 行政組 主任（30）
 ok(app.isAllGroupViewer() === true, '① 行政組（統管全站）：可以睇晒全部部門');
+
+// v8.14d：行政組總主任・參事主任都列入「睇晒全部部門」
+as(U('general_director', '行政組', '行政總主任'));
+ok(app.isAllGroupViewer() === true, '① 行政組總主任：睇晒全部部門');
+ok(app.visibleGroups().length === 10, '① 行政組總主任：部門清單 10 組（實際 ' + app.visibleGroups().length + '）');
+as(Object.assign(U('director', '行政組', '參事主任'), { job_title: '參事主任' }));
+ok(app.isAllGroupViewer() === true, '① 參事主任：睇晒全部部門');
+as(U('general_director', '主題節目組', '節目總主任'));
+ok(app.isAllGroupViewer() === false, '① 其他組總主任（主題節目組）：仍然淨係睇自己部門');
+as(U('director', '秘書處', '秘書主任'));
+ok(app.isAllGroupViewer() === false, '① 秘書處主任：唔係行政組，淨係睇自己部門');
 
 /* ---------- ② 卡片管理權 ---------- */
 const CARDS = ['exec_manual', 'apply_hub', 'documents', 'activities', 'ceremony', 'crisis', 'meals', 'donations', 'meetings'];
@@ -113,6 +129,17 @@ ok(editOf('donations') === false && editOf('meetings') === false, '② 協調組
 as(U('staff', '主題節目組', '節目組員'));                          // 一般工作人員（20）
 ok(editOf('exec_manual') === false && editOf('meetings') === false && editOf('donations') === false, '② 一般工作人員：全部只可看');
 
+/* ---------- ②b2 總主任：執行手冊系列＋會議卡片（v8.14d CARD_OWNER_EXTRA_ROLES） ---------- */
+as(U('general_director', '主題節目組', '節目總主任'));
+['exec_manual', 'activities', 'documents', 'ceremony', 'crisis'].forEach(id =>
+  ok(editOf(id) === true, `②b2 總主任（任何組）：${id} 應可修改`));
+ok(editOf('donations') === false, '②b2 總主任：童心捐贈仍然只可看（歸服務及發展組）');
+ok(editOf('apply_hub') === false, '②b2 總主任：申請中心仍然只可看（歸行政組統管）');
+as(U('director', '主題節目組', '節目主任'));
+['exec_manual', 'documents', 'ceremony', 'crisis'].forEach(id =>
+  ok(editOf(id) === false, `②b2 主任級（30）：${id} 只可看（未開畀主任）`));
+ok(editOf('activities') === true, '②b2 場地與活動總覽：原本就開畀主任以上（維持不變）');
+
 /* ---------- ②b 會議卡片內部權限（32-meetings.js 一律跟 canManageMeetings） ---------- */
 const mtgs = fs.readFileSync(path.join(root, 'js/32-meetings.js'), 'utf8');
 ok(!/this\.isAdmin\(\)/.test(mtgs.replace(/isAdmin\(\)\{return[\s\S]*?\n/, '')), '②b 32-meetings.js：管理判斷應改用 canManageMeetings（定義行除外）');
@@ -130,7 +157,9 @@ ok(app.canManageMeetings() === false, '②b 秘書處組員（20 級）：未到
   ok(app.canManageMeetings() === true, `②b 執副以上（${role}／${g}）：可以管理會議`);
 });
 as(U('vice_chairperson','主題節目組','副主席'));                      // 副主席（60）未到執副
-ok(app.canManageMeetings() === false, '②b 副主席（60）：唔屬於執副以上，唔可以管理會議（除非係秘書處／行政組）');
+ok(app.canManageMeetings() === true, '②b 副主席（60）：v8.14d 起可以管理會議（要上傳部門報告）');
+as(U('general_director','主題節目組','節目總主任'));
+ok(app.canManageMeetings() === true, '②b 總主任（40）：v8.14d 起可以管理會議（要上傳部門報告）');
 
 /* ---------- ③ 批核路由 ---------- */
 as(null); app.currentUser = null;

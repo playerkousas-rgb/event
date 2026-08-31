@@ -242,6 +242,19 @@ const CARD_OWNER_GROUPS={
   meetings:['秘書處']
 };
 const CARD_OWNER_MIN_LEVEL=30;   // 負責組內要主任（30）以上先可以改
+// v8.14d：呢啲角色「唔理邊一組」都可以改呢張卡（一樣要主任級以上）
+//   執行手冊 → 總主任（自己部門相關項目自己改，唔使吓吓經行政組）
+//   會議卡片 → 副主席・總主任（要將部門報告／會議文件上傳）
+const CARD_OWNER_EXTRA_ROLES={
+  // 執行手冊系列：總主任可以自己改部門相關項目（唔使吓吓經行政組）
+  exec_manual:['general_director'],
+  activities:['general_director'],
+  documents:['general_director'],
+  ceremony:['general_director'],
+  crisis:['general_director'],
+  // 會議卡片：副主席・總主任要將部門報告／會議文件上傳
+  meetings:['general_director','vice_chairperson']
+};
 const APPROVAL_IDS=new Set(APPROVAL_AREAS.map(a=>a.id));
 // 首頁 3 大類別活動卡
 const EVENT_CATEGORIES=[
@@ -258,21 +271,21 @@ const DASH_CARD_DEFS=[
   // ── 公開資料 (所有人可見，無需登入) ──
   {id:'announcements',title:'公告及溝通',desc:'',icon:'fa-solid fa-bullhorn',cardClass:'bg-gradient-to-br from-sky-500 to-blue-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:30,editLabel:'主任以上可發佈'},
   // 執行手冊：組織架構・場地與活動總覽・典禮儀式・危機處理・通告及文件 收埋一卡，內部分頁（如同申請中心）
-  {id:'exec_manual',title:'執行手冊',desc:'',icon:'fa-solid fa-book',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,editLabel:'行政組可修改'},
+  {id:'exec_manual',title:'執行手冊',desc:'',icon:'fa-solid fa-book',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,editLabel:'行政組・總主任可修改'},
   {id:'apply_hub',title:'申請中心',desc:'',icon:'fa-solid fa-file-pen',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:0,readOnly:true,editLabel:'行政組統管（膳食・物資・車＝協調組；攤位＝主題節目組）'},
   {id:'schedule',title:'日程表',desc:'',icon:'fa-solid fa-calendar-days',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-600',minLevel:0,editLevel:60,editLabel:'副主席以上可上傳',hideOnDashboard:true},
-  {id:'activities',title:'場地與活動總覽',desc:'',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'主任/副主席以上可上傳',hideOnDashboard:true},
+  {id:'activities',title:'場地與活動總覽',desc:'',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'行政組・副主席以上・總主任可上傳',hideOnDashboard:true},
   {id:'staff',title:'組織架構與聯絡',desc:'',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0,editLevel:40,editGroups:['行政組'],editLabel:'行政組可管理',hideOnDashboard:true},
   {id:'theme_badges',title:'活動主題章',desc:'',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'副主席以上可更新',hideOnDashboard:true},
   // 膳食：申請入口在「申請中心」，管理在「協調組 → 膳食」，故不另設儀表板卡片
   {id:'meals',title:'膳食管理',desc:'',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:0,editLevel:60,editGroups:['膳食','協調','行政'],editLabel:'指定膳食執行組主任以上可管理',hideOnDashboard:true},
-  {id:'crisis',title:'危機處理',desc:'',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
-  {id:'documents',title:'通告及文件',desc:'',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'管理員/行政總主任以上可上傳',hideOnDashboard:true},
-  {id:'unit_guide',title:'旅團須知',desc:'',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'管理員/行政總主任以上可上傳',hideOnDashboard:true},
-  {id:'ceremony',title:'典禮儀式',desc:'',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
-  {id:'awards',title:'獲獎名單',desc:'',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-yellow-100 text-yellow-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
+  {id:'crisis',title:'危機處理',desc:'',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'行政組・副主席以上・總主任可更新',hideOnDashboard:true},
+  {id:'documents',title:'通告及文件',desc:'',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'行政組・副主席以上・總主任可上傳',hideOnDashboard:true},
+  {id:'unit_guide',title:'旅團須知',desc:'',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'行政組・副主席以上可上傳',hideOnDashboard:true},
+  {id:'ceremony',title:'典禮儀式',desc:'',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'行政組・副主席以上・總主任可更新',hideOnDashboard:true},
+  {id:'awards',title:'獲獎名單',desc:'',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-yellow-100 text-yellow-700',minLevel:0,editLevel:60,editLabel:'管理員／副主席以上可更新',hideOnDashboard:true},
   // ── 管理資料 (登入後按角色/組別解鎖) ──
-  {id:'meetings',title:'會議卡片',desc:'',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:20,editLevel:80,editLabel:'秘書處・行政組・執副以上可管理'},
+  {id:'meetings',title:'會議卡片',desc:'',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:20,editLevel:80,editLabel:'秘書處・行政組・副主席以上・總主任可管理'},
   // 物資+車輛：申請入口在「申請中心」，管理/批核在「協調組 → 物資 / 車輛通行證」，故不另設儀表板卡片
   {id:'supplies',title:'物資申請',desc:'',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40,editLevel:40,editLabel:'總主任/副主席以上可申請·批核',hideOnDashboard:true},
   {id:'vehicle',title:'車輛通行證（含泊車證）',desc:'',icon:'fa-solid fa-car',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理',hideOnDashboard:true,action:"app.openModule('parking')"},
