@@ -305,6 +305,11 @@ function initializeSheets() {
   ensureSheet(ss, 'Parking_Requests', ['parking_id', 'event_id', 'seq', 'group_name', 'unit', 'plate', 'driver_name', 'position', 'contact', 'park_date', 'entry_time', 'exit_time', 'full_day', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
   // 口頭報價登記（v7.5 新增）：總主任以上登記，行政組及執行副主席以上可查看
   ensureSheet(ss, 'Oral_Quotes', ['oral_id', 'event_id', 'quote_date', 'group_name', 'vendor', 'contact_person', 'contact_phone', 'item_desc', 'amount', 'notes', 'quoted_by', 'quoted_by_id', 'created_at']);
+  // ═══ v11 (2026-08-31) 新增兩張紀錄表（用戶定案）═══
+  // 失物認領：執行手冊「各類附加資料」＋行政組部門中心，由行政組紀錄
+  ensureSheet(ss, 'Lost_Found', ['lost_id', 'event_id', 'item_name', 'description', 'found_date', 'found_time', 'found_location', 'found_by', 'status', 'claimed_by', 'claimed_contact', 'claimed_at', 'notes', 'recorded_by', 'recorded_by_id', 'created_at', 'updated_at']);
+  // 紀念章派發：行政組（工作人員，可填備註紀錄改名／替假）＋嘉賓接待組（嘉賓，不可改名）
+  ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
   // 車輛通行證（含泊車）：前端一直有寫出，但舊版 GS 未建立此表 → 之前寫出會被丟棄，現正式建立
   ensureSheet(ss, 'Vehicle_Passes', ['pass_id', 'event_id', 'plate', 'driver_name', 'driver_contact', 'vehicle_type', 'purpose', 'group_name', 'entry_date', 'exit_date', 'parking_location', 'deadline', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
@@ -325,7 +330,7 @@ function initializeSheets() {
 function formatSheetsByPurpose() {
   const ss = getSheet();
   const frequentlyEdited = ['Events','Account_Setup','Approval_Permissions','Approval_Routing','Supplies','Finance','Schedule','Meals'];
-  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Booth_Requests','Vehicle_Passes','Parking_Requests','Finance_Expenses','Oral_Quotes'];
+  const records = ['Meetings','Staff','Documents','Activities','Meal_Orders','Supply_Requests','Booth_Requests','Vehicle_Passes','Parking_Requests','Finance_Expenses','Oral_Quotes','Lost_Found','Souvenir_Stamps'];
   const systemSheets = ['Users'];
   ss.getSheets().forEach(function(sheet) {
     const name = sheet.getName();
@@ -1244,7 +1249,8 @@ function getEventAllData(eventId) {
   const ss = getSheet();
   // v8.9 補漏：加入 Booth_Requests——前端 saveSuppliesData 一直有把「攤位計劃書」寫出後端，但 getEventAllData 冇回傳，
   // 令其他裝置／重開後讀唔返攤位計劃書（攤位卡／總表／借用統計只睇到本機）。現正式回傳，前端 syncApplicationsFromGas 亦已合併。
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Users'];
+  // v11：加入 Lost_Found（失物認領）及 Souvenir_Stamps（紀念章派發）——前端 23-sync.js 會合併
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Users'];
   const result = {};
   
   modules.forEach(mod => {

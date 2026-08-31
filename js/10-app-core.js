@@ -939,7 +939,18 @@ Object.assign(ScoutEventApp.prototype,{
     const canManage=this.isAdmin() || isOwn;
     // v8.8：主題節目組卡片加「攤位資料(Drive)／攤位總表／借用統計」頁籤（填完計劃書後的兩部分＋DRIVE 攤位資料）
     const isThemeGroup=groupName==='主題節目組';
-    if(isThemeGroup&&!this.groupBoothTab) this.groupBoothTab='apps';
+    // v11：行政組加「紀念章派發（工作人員）」＋「失物認領」；嘉賓接待組加「紀念章派發（嘉賓）」
+    const groupExtraTabs=[
+      ...(groupName==='行政組'?[{k:'stamp_staff',label:'🏅 紀念章派發（工作人員）'},{k:'lost_found',label:'🧳 失物認領'}]:[]),
+      ...(groupName==='嘉賓接待組'?[{k:'stamp_guest',label:'🏅 紀念章派發（嘉賓）'}]:[])
+    ];
+    const groupTabList=[
+      {k:'apps',label:'📋 本組申請'},
+      ...(isThemeGroup?[{k:'drive',label:'📁 攤位資料 (Drive)'},{k:'master',label:'🗒️ 攤位總表'},{k:'borrow',label:'📊 借用統計＋招牌'}]:[]),
+      ...groupExtraTabs
+    ];
+    const hasGroupTabs=groupTabList.length>1;
+    if(!this.groupBoothTab||!groupTabList.some(t=>t.k===this.groupBoothTab)) this.groupBoothTab='apps';
     document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('group-print-${escapeHtml(groupName)}','${escapeHtml(groupName)} - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
     const container=document.getElementById('module-content');
     const staffData=this.getStaffData();
@@ -968,13 +979,10 @@ Object.assign(ScoutEventApp.prototype,{
           ${groupName==='主題節目組'?`<button onclick="app.openModule('activities'); setTimeout(()=>app.switchActivitiesTab('booth'),300)" class="bg-fuchsia-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>攤位總覽</button>`:''}
           ${groupName==='服務及發展組'&&this.canViewDonationsStats()?`<button onclick="app.openModule('donations')" class="bg-rose-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-hand-holding-heart mr-1"></i>童心捐贈大行動</button>`:''}
         </div>
-        ${isThemeGroup?(()=>{ const tabCls=t=>this.groupBoothTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200'; return `<div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
-          <button onclick="app.switchGroupTab('apps')" class="group-tab-btn ${tabCls('apps')}">📋 本組申請</button>
-          <button onclick="app.switchGroupTab('drive')" class="group-tab-btn ${tabCls('drive')}">📁 攤位資料 (Drive)</button>
-          <button onclick="app.switchGroupTab('master')" class="group-tab-btn ${tabCls('master')}">🗒️ 攤位總表</button>
-          <button onclick="app.switchGroupTab('borrow')" class="group-tab-btn ${tabCls('borrow')}">📊 借用統計＋招牌</button>
+        ${hasGroupTabs?(()=>{ const tabCls=t=>this.groupBoothTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200'; return `<div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
+          ${groupTabList.map(t=>`<button onclick="app.switchGroupTab('${t.k}')" class="group-tab-btn ${tabCls(t.k)}">${t.label}</button>`).join('')}
         </div>`; })():''}
-        <div id="group-tab-apps" class="space-y-4">
+        <div id="group-tab-apps" class="space-y-4 ${this.groupBoothTab==='apps'?'':'hidden'}">
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
           ${chip(groupOrg.length,'崗位','bg-slate-100 text-slate-700 border')}
           ${chip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200')}
@@ -1005,7 +1013,16 @@ Object.assign(ScoutEventApp.prototype,{
         ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
         </div>
         ${isThemeGroup?`<div id="group-tab-drive" class="hidden"></div><div id="group-tab-master" class="hidden"></div><div id="group-tab-borrow" class="hidden"></div>`:''}
+        ${groupExtraTabs.map(t=>`<div id="group-tab-${t.k}" class="${this.groupBoothTab===t.k?'':'hidden'}"></div>`).join('')}
       </div>`;
+    // v11：行政組／嘉賓接待組專屬頁籤內容（紀念章派發 TICK 人名；失物認領由行政組紀錄）
+    groupExtraTabs.forEach(t=>{
+      const el=document.getElementById('group-tab-'+t.k);
+      if(!el) return;
+      if(t.k==='stamp_staff') el.innerHTML=this.renderSouvenirStampsHTML('staff');
+      else if(t.k==='stamp_guest') el.innerHTML=this.renderSouvenirStampsHTML('guests');
+      else if(t.k==='lost_found') el.innerHTML=this.renderLostFoundHTML({compact:true});
+    });
     if(isThemeGroup){
       const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
       const isPublic=!this.currentUser;
@@ -1025,7 +1042,8 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   switchGroupTab(tab){
     this.groupBoothTab=tab;
-    ['apps','drive','master','borrow'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
+    // v11：加入行政組／嘉賓接待組專屬頁籤（紀念章派發＋失物認領）
+    ['apps','drive','master','borrow','stamp_staff','stamp_guest','lost_found'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
     document.querySelectorAll('.group-tab-btn').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className='group-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
