@@ -307,7 +307,9 @@ function initializeSheets() {
   ensureSheet(ss, 'Oral_Quotes', ['oral_id', 'event_id', 'quote_date', 'group_name', 'vendor', 'contact_person', 'contact_phone', 'item_desc', 'amount', 'notes', 'quoted_by', 'quoted_by_id', 'created_at']);
   // ═══ v11 (2026-08-31) 新增兩張紀錄表（用戶定案）═══
   // 失物認領：執行手冊「各類附加資料」＋行政組部門中心，由行政組紀錄
-  ensureSheet(ss, 'Lost_Found', ['lost_id', 'event_id', 'item_name', 'description', 'found_date', 'found_time', 'found_location', 'found_by', 'status', 'claimed_by', 'claimed_contact', 'claimed_at', 'notes', 'recorded_by', 'recorded_by_id', 'created_at', 'updated_at']);
+  ensureSheet(ss, 'Lost_Found', ['lost_id', 'event_id', 'type', 'item_name', 'description', 'found_date', 'found_time', 'found_location', 'found_by', 'contact', 'status', 'claimed_by', 'claimed_contact', 'claimed_at', 'closed_by', 'notes', 'recorded_by', 'recorded_by_id', 'created_at', 'updated_at']);
+  // v11.1：兩種登記情況（type：found＝有失物登記／seeking＝有人要尋找物品）＋聯絡／處理人欄（非破壞性補欄）
+  ensureColumns(ss.getSheetByName('Lost_Found'), ['type', 'contact', 'closed_by']);
   // 紀念章派發：行政組（工作人員，可填備註紀錄改名／替假）＋嘉賓接待組（嘉賓，不可改名）
   ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══

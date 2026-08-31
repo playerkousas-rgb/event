@@ -111,7 +111,7 @@ for t in tests/*.js; do node "$t"; done   # 測試全綠
 | `js/36-crisis.js` | 危機處理（含意外事件報告表） |
 | `js/37-coordinator.js` | 協調組（物資·車輛·膳食·場地） |
 | `js/38-donations.js` | 童心捐贈大行動（物品·食品捐贈） |
-| `js/39-lost-found.js` | 失物認領（v11：執行手冊「各類附加資料」＋行政組部門中心，由行政組紀錄） |
+| `js/39-lost-found.js` | 失物認領（v11：執行手冊「各類附加資料」＋行政組部門中心，由行政組紀錄；**v11.1：兩種登記情況 ①有失物登記 ②有人要尋找物品，兩者各自出現列表，點入去處理認領＝失物找到物主／尋物者尋回失物，登記及認領時間全部系統自動紀錄**） |
 | `js/40-souvenir-stamps.js` | 紀念章派發（v11：行政組＝工作人員 TICK＋備註改名／替假；嘉賓接待組＝嘉賓 TICK，不可改名） |
 | `js/90-bootstrap.js` | 啟動（`const app=new ScoutEventApp()`＋Escape 鍵處理） |
 

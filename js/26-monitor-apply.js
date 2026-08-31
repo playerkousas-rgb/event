@@ -626,44 +626,79 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
 
-  /* ===================== 箱頭紙 (Box Label)：填寫＋一頁 A4 印兩張 ＝====================
-     只需要改年份；默認填登入組別，其他可自選填。加入部門中心，登入後可填寫及列印。 */
+  /* ===================== 箱頭紙 (Box Label)：指定式樣（2026）＝====================
+     v11.1 用戶定案：改用地域指定式樣（Drive：港島童軍繽紛日 物資箱頭紙），年份由 2025 改為 2026。
+     式樣內容：香港童軍總會 港島地域／港島童軍繽紛日 2026 物資／組別・負責人或攤位名稱／
+     數量（序號 / 需運送物資總數）／去程 (4/10/2026) 百週年紀念大樓 → 香港警察學院／
+     活動完結：香港警察學院 → 百週年紀念大樓・自行運走・棄置・交地域處理。
+     只需改年份即可沿用；預設帶入登入組別；一張 A4 印兩張。 */
   boxLabelYear(){ return (this.currentEvent&&this.currentEvent.start_date||'').slice(0,4)||'2026'; }
+,
+  // 去程日期＝活動首日，按指定式樣以 d/m/yyyy 顯示（例：4/10/2026）
+  boxLabelTripDate(year){
+    const sd=(this.currentEvent&&this.currentEvent.start_date)||'';
+    const y=String(year||this.boxLabelYear());
+    if(/^\d{4}-\d{2}-\d{2}$/.test(sd)){
+      const [sy,m,d]=sd.split('-');
+      return `${Number(d)}/${Number(m)}/${y||sy}`;
+    }
+    return `4/10/${y}`;
+  }
 ,
   boxLabelFormHTML(prefix, defaults){
     const d=defaults||{};
     const year=d.year||this.boxLabelYear();
     const group=d.group||(this.currentUser?normalizeGroupName(this.currentUser.group_name||''):'');
+    const sel=(v,val)=>String(v||'')===val?'selected':'';
     return `
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="text-[11px] font-bold">年份 *</label><input id="${prefix}year" value="${escapeHtml(year)}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">組別 *</label><input id="${prefix}group" value="${escapeHtml(group)}" placeholder="例如 行政組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div class="col-span-2"><label class="text-[11px] font-bold">活動名稱</label><input id="${prefix}event" value="${escapeHtml(d.event||(this.currentEvent?this.currentEvent.event_name:''))}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">負責人</label><input id="${prefix}person" value="${escapeHtml(d.person||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">聯絡電話</label><input id="${prefix}contact" value="${escapeHtml(d.contact||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">內容物／物品</label><input id="${prefix}items" value="${escapeHtml(d.items||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">數量</label><input id="${prefix}qty" value="${escapeHtml(d.qty||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div class="col-span-2"><label class="text-[11px] font-bold">備註</label><textarea id="${prefix}notes" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(d.notes||'')}</textarea></div>
+        <div><label class="text-[11px] font-bold">年份 *（只需改年份）</label><input id="${prefix}year" value="${escapeHtml(year)}" oninput="app.syncBoxLabelYearHint('${prefix}')" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">組別 *</label><input id="${prefix}group" value="${escapeHtml(group)}" placeholder="例如 行政" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2"><label class="text-[11px] font-bold">負責人／攤位名稱</label><input id="${prefix}person" value="${escapeHtml(d.person||'')}" placeholder="式樣：負責人／攤位名稱" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">序號</label><input id="${prefix}seq" value="${escapeHtml(d.seq||'')}" placeholder="第幾箱" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">需運送物資總數</label><input id="${prefix}total" value="${escapeHtml(d.total||'')}" placeholder="共幾箱" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div class="col-span-2 bg-amber-50/60 border border-amber-200 rounded-xl p-3 space-y-2">
+          <label class="flex items-center gap-2 text-[12px] font-bold"><input type="checkbox" id="${prefix}outbound" ${d.outbound===false?'':'checked'}> 去程 (<span id="${prefix}trip-date">${escapeHtml(this.boxLabelTripDate(year))}</span>)　百週年紀念大樓 → 香港警察學院</label>
+          <div>
+            <label class="text-[11px] font-bold">活動完結</label>
+            <select id="${prefix}return" class="w-full px-3 py-2 border rounded-xl text-sm mt-1 bg-white">
+              <option value="" ${sel(d.ret,'')}>（未選擇）</option>
+              <option value="香港警察學院 → 百週年紀念大樓" ${sel(d.ret,'香港警察學院 → 百週年紀念大樓')}>香港警察學院 → 百週年紀念大樓</option>
+              <option value="自行運走" ${sel(d.ret,'自行運走')}>自行運走</option>
+              <option value="棄置" ${sel(d.ret,'棄置')}>棄置</option>
+              <option value="交地域處理" ${sel(d.ret,'交地域處理')}>交地域處理</option>
+            </select>
+          </div>
+        </div>
       </div>`;
   }
 ,
+  syncBoxLabelYearHint(prefix){
+    const y=document.getElementById((prefix||'boxl_')+'year');
+    const t=document.getElementById((prefix||'boxl_')+'trip-date');
+    if(y&&t) t.textContent=this.boxLabelTripDate(y.value.trim());
+  }
+,
   readBoxLabelFields(prefix){
-    const v=id=>{ const el=document.getElementById(prefix+id); return el?el.value.trim():''; };
-    return { year:v('year')||this.boxLabelYear(), group:v('group'), event:v('event'), person:v('person'), contact:v('contact'), items:v('items'), qty:v('qty'), notes:v('notes') };
+    const v=id=>{ const el=document.getElementById(prefix+id); return el?String(el.value||'').trim():''; };
+    const chk=id=>{ const el=document.getElementById(prefix+id); return el?!!el.checked:true; };
+    const year=v('year')||this.boxLabelYear();
+    return { year, group:v('group'), person:v('person'), seq:v('seq'), total:v('total'),
+             outbound:chk('outbound'), ret:v('return'), trip_date:this.boxLabelTripDate(year) };
   }
 ,
   boxLabelPanelHTML(){
     const d={};
     return `
       <div class="space-y-3">
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>箱頭紙（Box Label）：</b>對應 2025 協調組「箱頭紙」。只需改年份，預設為你的登入組別，其餘可自選填；列印時<b>一張 A4 印兩張</b>，方便貼上各箱。任何登入成員（尤其部門中心）都可填寫及列印。</div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>箱頭紙（Box Label）：</b>採用地域<b>指定式樣</b>（香港童軍總會 港島地域 · 港島童軍繽紛日 物資），<b>只需改年份（現為 ${escapeHtml(this.boxLabelYear())}）</b>即可沿用；組別預設為你的登入組別，其餘可自選填。列印時<b>一張 A4 印兩張</b>，方便貼上各箱。任何登入成員（尤其部門中心）都可填寫及列印。</div>
         <div class="flex gap-2 flex-wrap items-center">
           <button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張)</button>
           ${this.currentUser?`<button onclick="app.openBoxLabelModal()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">放大填寫／預覽</button>`:''}
         </div>
         <div class="bg-white border rounded-xl p-4 space-y-3">
           ${this.boxLabelFormHTML('boxl_', d)}
-          <div class="text-[11px] text-slate-500">💡 可先係上方填好，再按「列印」；部門中心入口亦可用同一個表單，組別自動帶入你嘅登入組別。</div>
+          <div class="text-[11px] text-slate-500">💡 可先係上方填好，再按「列印」；部門中心入口亦可用同一個表單，組別自動帶入你嘅登入組別。式樣與地域指定版本一致，只係年份改為 ${escapeHtml(this.boxLabelYear())}。</div>
         </div>
       </div>`;
   }
@@ -673,46 +708,68 @@ Object.assign(ScoutEventApp.prototype,{
     if(box) box.innerHTML=this.boxLabelPanelHTML();
   }
 ,
+  // 指定式樣一張標籤（HTML）——與 Drive 版面一致，只改年份
+  boxLabelSheetHTML(f){
+    const box=(on,txt)=>`<span class="opt"><span class="tick">${on?'&#9635;':'&#9633;'}</span>${escapeHtml(txt)}</span>`;
+    const ret=f.ret||'';
+    return `
+      <div class="boxlabel">
+        <div class="hdr">香港童軍總會　港島地域</div>
+        <div class="title">港島童軍繽紛日 ${escapeHtml(f.year)} 物資</div>
+        <div class="line">
+          <span class="lbl">組別：</span><span class="fill grp">${escapeHtml(f.group||'')}</span><span class="unit">組</span>
+          <span class="lbl">負責人／攤位名稱</span><span class="fill">${escapeHtml(f.person||'')}</span>
+        </div>
+        <div class="line">
+          <span class="lbl">數量：</span><span class="fill num">${escapeHtml(f.seq||'')}</span><span class="slash">/</span><span class="fill num">${escapeHtml(f.total||'')}</span>
+          <span class="cap">（序號 / 需運送物資總數）</span>
+        </div>
+        <table class="trip">
+          <tr><td class="c1">${box(f.outbound!==false,`去程 (${f.trip_date})`)}</td><td class="c2">百週年紀念大樓 &rarr; 香港警察學院</td></tr>
+          <tr><td class="c1">${box(!!ret,'活動完結')}</td><td class="c2">
+            ${box(ret==='香港警察學院 → 百週年紀念大樓','香港警察學院 → 百週年紀念大樓')}
+            ${box(ret==='自行運走','自行運走')}
+            ${box(ret==='棄置','棄置')}
+            ${box(ret==='交地域處理','交地域處理')}
+          </td></tr>
+        </table>
+      </div>`;
+  }
+,
   printBoxLabels(){
     const f=this.readBoxLabelFields('boxl_');
-    const label=(idx)=>`
-      <div class="boxlabel">
-        <div class="boxlabel-head"><span class="big">箱頭紙</span><span class="big-en">BOX LABEL ${idx}</span></div>
-        <div class="row"><span class="k">年份</span><span class="v">${escapeHtml(f.year)}</span></div>
-        <div class="row"><span class="k">活動</span><span class="v">${escapeHtml(f.event||'—')}</span></div>
-        <div class="row"><span class="k">組別</span><span class="v">${escapeHtml(f.group||'—')}</span></div>
-        <div class="row"><span class="k">負責人</span><span class="v">${escapeHtml(f.person||'—')}</span></div>
-        <div class="row"><span class="k">聯絡電話</span><span class="v">${escapeHtml(f.contact||'—')}</span></div>
-        <div class="row"><span class="k">內容物</span><span class="v">${escapeHtml(f.items||'—')}</span></div>
-        <div class="row"><span class="k">數量</span><span class="v">${escapeHtml(f.qty||'—')}</span></div>
-        <div class="row"><span class="k">備註</span><span class="v">${escapeHtml(f.notes||'—')}</span></div>
-      </div>`;
     const win=window.open('','_blank');
     if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
-    win.document.write(`<!DOCTYPE html><html lang="zh-HK"><head><meta charset="utf-8"><title>箱頭紙</title><style>
+    win.document.write(`<!DOCTYPE html><html lang="zh-HK"><head><meta charset="utf-8"><title>箱頭紙 ${escapeHtml(f.year)}</title><style>
       @page{size:A4 portrait; margin:10mm;}
-      body{font-family:'Noto Sans TC',sans-serif; margin:0; color:#111;}
-      .boxlabel{border:2px solid #111; border-radius:8px; padding:14px 16px; height:118mm; page-break-after:always; box-sizing:border-box; display:flex; flex-direction:column; gap:5px;}
+      body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif; margin:0; color:#000;}
+      .boxlabel{border:2px solid #000; padding:10mm 8mm; height:130mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:flex-start; gap:6mm; page-break-after:always;}
       .boxlabel:last-child{page-break-after:auto;}
-      .boxlabel-head{border-bottom:2px solid #111; padding-bottom:4px; margin-bottom:2px; display:flex; justify-content:space-between; align-items:baseline;}
-      .boxlabel-head .big{font-size:20pt; font-weight:800;}
-      .boxlabel-head .big-en{font-size:9pt; letter-spacing:1px; color:#555;}
-      .row{display:flex; gap:6px; align-items:baseline;}
-      .row .k{flex:0 0 60px; font-weight:700; color:#333;}
-      .row .v{flex:1; border-bottom:1px solid #bbb; min-height:1em; font-weight:500;}
-      .row .v:empty:before{content:' '; padding:6px 0;}
+      .hdr{font-size:16pt; font-weight:700; text-align:center; letter-spacing:2px;}
+      .title{font-size:24pt; font-weight:800; text-align:center; border-bottom:2px solid #000; padding-bottom:3mm;}
+      .line{display:flex; align-items:flex-end; gap:4px; font-size:13pt; flex-wrap:wrap;}
+      .line .lbl{font-weight:700; white-space:nowrap;}
+      .line .fill{flex:1; min-width:28mm; border-bottom:1.5px solid #000; min-height:8mm; font-size:15pt; font-weight:700; text-align:center; padding:0 4px;}
+      .line .fill.grp{flex:0 0 40mm;} .line .fill.num{flex:0 0 22mm;}
+      .line .unit{font-weight:700;} .line .slash{font-size:15pt; font-weight:700;}
+      .line .cap{font-size:9pt; color:#333; white-space:nowrap;}
+      table.trip{width:100%; border-collapse:collapse; font-size:11pt;}
+      table.trip td{border:1.5px solid #000; padding:3mm 3mm; vertical-align:middle;}
+      table.trip td.c1{width:38%; font-weight:700;}
+      .opt{display:inline-block; margin-right:5mm; white-space:nowrap;}
+      .opt .tick{font-family:'DejaVu Sans',sans-serif; margin-right:3px; font-size:13pt;}
       button{display:none !important;}
     </style></head><body>
-      <div style="margin-bottom:12px; text-align:center;"><button onclick="window.print()" style="display:inline-block!important;background:#111;color:#fff;padding:8px 20px;border:none;border-radius:8px;font-weight:bold;">列印（1張A4 | 印兩張）</button></div>
-      ${label(1)}
-      ${label(2)}
+      <div style="margin-bottom:8px; text-align:center;"><button onclick="window.print()" style="display:inline-block!important;background:#111;color:#fff;padding:8px 20px;border:none;border-radius:8px;font-weight:bold;">列印（1張A4 | 印兩張）</button></div>
+      ${this.boxLabelSheetHTML(f)}
+      ${this.boxLabelSheetHTML(f)}
     </body></html>`);
     win.document.close();
   }
 ,
   openBoxLabelModal(groupName){
     const defaults={ group: groupName||(this.currentUser?normalizeGroupName(this.currentUser.group_name||''):'') };
-    document.getElementById('record-modal-title').textContent='箱頭紙（填寫／列印）';
+    document.getElementById('record-modal-title').textContent=`箱頭紙 ${this.boxLabelYear()}（指定式樣 · 填寫／列印）`;
     document.getElementById('record-form-fields').innerHTML=this.boxLabelFormHTML('boxl_', defaults)+`
       <div class="flex justify-end gap-2 pt-3 border-t mt-3"><button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張)</button></div>`;
     document.getElementById('record-form').onsubmit=(e)=>e.preventDefault();
