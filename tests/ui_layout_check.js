@@ -103,17 +103,24 @@ app.updateBottomNav = () => {};
 function assert(cond, msg) { if (!cond) throw new Error(msg); }
 function htmlOf(id) { return store.get(id) ? store.get(id).innerHTML : ''; }
 
-/* ---------- 1. 未登入：公開資料 + 登入後解鎖 ---------- */
+/* ---------- 1. 未登入（訪客）：超清爽 —— 只有活動資訊；4 個公開資料改為底部導覽列 4 個按鈕 ---------- */
 app.currentUser = null;
 app.renderRoleCards();
 let pub = htmlOf('public-cards-grid');
-assert(pub.includes('公告及溝通') && pub.includes('執行手冊') && pub.includes('申請中心') && pub.includes('童心捐贈大行動'),
-  'guest 公開資料應含 4 張公開卡');
-assert(htmlOf('identity-cards-grid') === '', 'guest 其他卡片應為空（登入後解鎖）');
-// 未登入：身份卡片應顯示（訪客只見到公開資料，位置多）
-assert(!makeEl('identity-card').classList.contains('hidden'), '未登入身份卡片應顯示');
+assert(pub === '', 'guest 唔應該再喺頁面顯示「公開資料」卡片格線（已移去底部導覽列 4 個按鈕）');
+assert(htmlOf('identity-cards-grid') === '', 'guest 唔應該有「登入後解鎖」卡片');
+assert(makeEl('public-section').classList.contains('hidden'), 'guest 公開資料區塊應隱藏');
+assert(makeEl('identity-section').classList.contains('hidden'), 'guest 登入後解鎖／工作卡片區塊應隱藏');
+assert(makeEl('management-tools-section').classList.contains('hidden'), 'guest 管理工具區塊應隱藏');
+assert(makeEl('simple-mode-note').classList.contains('hidden'), 'guest 底部說明文字應隱藏');
+// 未登入：顯示身份卡片（話俾訪客知點開戶／點登入），但唔顯示我的監察
+assert(!makeEl('identity-card').classList.contains('hidden'), '未登入應顯示身份卡片（訪客指引）');
+assert(store.get('identity-name').textContent === '訪客', '身份卡片應顯示「訪客」');
+assert(store.get('identity-desc').innerHTML.includes('陳子明') && store.get('identity-desc').innerHTML.includes('1234')
+  && store.get('identity-desc').innerHTML.includes('如需要開戶請找所屬組別的總主任'), '身份卡片應有初始帳戶／密碼／開戶指引（例子用 MOCK 名）');
+assert(!store.get('identity-desc').innerHTML.includes('朱家聰'), '身份卡片例子帳號應用 MOCK 名，唔用真人名');
 let mon = htmlOf('dash-hero-monitor');
-assert(mon.includes('我的監察') && mon.includes('登入後顯示'), 'guest 活動橫幅應顯示我的監察登入提示');
+assert(mon === '' && makeEl('dash-hero-monitor').classList.contains('hidden'), '未登入不應顯示「我的監察」');
 
 /* ---------- 2. 普通工作人員（無批核權限） ---------- */
 app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組', job_title: '工作人員' };
@@ -121,7 +128,11 @@ app.renderRoleCards();
 // 登入後：身份卡片隱藏（身份已喺最頂 BAR 右上角，登入後卡片變多）
 assert(makeEl('identity-card').classList.contains('hidden'), '登入後身份卡片應隱藏');
 pub = htmlOf('public-cards-grid');
-assert(pub.includes('公告及溝通'), '登入後公開資料仍最先顯示');
+// 登入後：還原原本設計（公開資料 → 工作卡片 → 管理工具 → 部門管理中心）
+assert(!makeEl('public-section').classList.contains('hidden'), '登入後公開資料區塊應還原顯示');
+assert(!makeEl('identity-section').classList.contains('hidden'), '登入後工作卡片區塊應還原顯示');
+assert(pub.includes('公告及溝通') && pub.includes('執行手冊') && pub.includes('申請中心') && pub.includes('童心捐贈大行動'),
+  '登入後公開資料 4 張卡仍最先顯示');
 assert(!pub.includes('dash-desc') && !pub.includes('<p class="dash-desc'), '卡片不應再顯示詳細介紹（只留名稱）');
 const ids = htmlOf('identity-cards-grid');
 // v8.4 起：工作卡片只餘功能卡（會議卡片最前）；組別卡片已移至「部門管理中心」(group-quick-access)
@@ -181,7 +192,11 @@ assert(html.includes('id="dash-hero-monitor"'), '活動橫幅應有我的監察�
 // 功能介紹按鈕已移入紫色活動資訊橫幅右上角；身份卡片只喺未登入（訪客）時顯示，登入後隱藏
 const dashHero = html.slice(html.indexOf('id="view-dashboard"'), html.indexOf('id="simple-card-panel"'));
 assert(dashHero.includes('功能介紹') && dashHero.includes("app.openGuideModal()"), '活動資訊橫幅應有 功能介紹 按鈕（右上角）');
-assert(html.includes('id="identity-card"') && html.includes('id="identity-name"') && html.includes('id="identity-login-btn"'), '身份卡片應存在（未登入訪客顯示）');
+assert(html.includes('id="identity-card"') && html.includes('id="identity-name"'), '身份卡片應存在（只喺未登入訪客顯示）');
+assert(!html.includes('id="identity-login-btn"'), '身份卡片內唔應該再有登入掣（登入掣只喺最頂 BAR 右上角）');
+assert(html.includes('例如「陳子明」') && !html.includes('例如「朱家聰」'), '登入例子帳號應用 MOCK 名（陳子明）');
+// 登入按鈕只喺最頂 BAR 右上角，全站唔再有第二粒
+assert((html.match(/app\.openLoginModal\(\)/g) || []).length === 1, 'index.html 只應喺最頂 BAR 有一粒登入按鈕');
 assert(html.includes('選擇活動後即可查看該活動全部資料') && !html.includes('選擇其他活動'), '橫幅「選擇其他活動」掣已刪（按最頂 BAR 標題回選擇活動頁）');
 
 /* ---------- 5. 最頂 BAR（標題列）及底部導覽列 ---------- */
@@ -205,6 +220,10 @@ assert(mq.includes('#group-quick-access{grid-template-columns:repeat(2,minmax(0,
 const navHtml = html.slice(html.indexOf('<nav id="bottom-nav"'), html.indexOf('</nav>'));
 assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && navHtml.includes('批核中心') && navHtml.includes('部門中心') && !navHtml.includes('開戶'),
   '底部導覽應有 執行手冊/申請中心/批核中心/部門中心（開戶已移去最頂 BAR）');
+// 未登入專用：公告及溝通／童心捐贈 兩粒（連 執行手冊・申請中心 合共 4 粒公開資料）
+assert(navHtml.includes('id="bn-pub-announcements"') && navHtml.includes('公告及溝通')
+  && navHtml.includes('id="bn-pub-donations"') && navHtml.includes('童心捐贈'),
+  '底部導覽應有未登入專用的 公告及溝通／童心捐贈 按鈕');
 assert(!navHtml.includes('md:hidden'), '底部導覽列應手機／電腦同步顯示（不再只限手機）');
 // 開戶掣移去最頂 BAR（身份 badge 旁，登入後總主任以上可見，一按跳入開戶頁）
 assert(html.includes('id="topbar-account-setup"'), '最頂 BAR 應有開戶掣 (topbar-account-setup)');
@@ -224,6 +243,7 @@ assert(styleOf('bn-approvals') === 'none', '工作人員不應見底部批核中
 assert(styleOf('bn-dept') === '', '工作人員（登入）應見底部部門中心（一按直接入自己部門）');
 assert(styleOf('topbar-account-setup') === 'none', '工作人員不應見最頂 BAR 開戶');
 assert(styleOf('bn-exec') !== 'none' && styleOf('bn-apply') !== 'none', '執行手冊／申請中心人人可用');
+assert(styleOf('bn-pub-announcements') === 'none' && styleOf('bn-pub-donations') === 'none', '登入後底部導覽應還原（唔顯示訪客專用的 公告及溝通／童心捐贈）');
 
 app.currentUser = { role: 'general_director', name: '蘇國樑', user_id: '蘇國樑', group_name: '主題節目組' };
 app.updateAdminNav();
@@ -239,6 +259,9 @@ assert(styleOf('topbar-changepwd') === 'none', '未登入不應顯示改密碼')
 assert(styleOf('bn-approvals') === 'none', '未登入不應見底部批核中心');
 assert(styleOf('bn-dept') === 'none', '未登入不應見底部部門中心');
 assert(styleOf('topbar-account-setup') === 'none', '未登入不應見最頂 BAR 開戶');
+// 未登入底部導覽＝4 個公開資料：公告及溝通・執行手冊・申請中心・童心捐贈
+assert(styleOf('bn-pub-announcements') === '' && styleOf('bn-pub-donations') === '', '未登入應見底部 公告及溝通／童心捐贈');
+assert(styleOf('bn-exec') === '' && styleOf('bn-apply') === '', '未登入應見底部 執行手冊／申請中心');
 
 /* ---------- 6b. openDeptHub：執副以上＝全部部門列表；普通人＝一按直接入自己部門 ---------- */
 const deptCalls=[];

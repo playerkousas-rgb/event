@@ -145,7 +145,7 @@ Object.assign(ScoutEventApp.prototype,{
     const actionsEl=document.getElementById('module-actions');
     if(!this.currentUser){
       if(actionsEl) actionsEl.innerHTML='';
-      container.innerHTML=`<div class="text-center py-10"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500 mb-3">「我的監察」顯示你（及你下級）的所有申請批核進度，登入後才顯示</p><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">登入查看</button></div>`;
+      container.innerHTML=`<div class="text-center py-10"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500">「我的監察」顯示你（及你下級）的所有申請批核進度，登入後才顯示</p><p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-arrow-up mr-1"></i>請按右上角「登入」</p></div>`;
       return;
     }
     if(!this.monitorFilter) this.monitorFilter='all';
@@ -360,7 +360,7 @@ Object.assign(ScoutEventApp.prototype,{
     const grid=items.map(it=>{
       const btn=it.enabled
         ?`<button onclick="${it.action}" class="mt-2 bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold w-full"><i class="fa-solid fa-arrow-right mr-1"></i>前往申請</button>`
-        :`<button onclick="app.openLoginModal()" class="mt-2 bg-slate-100 text-slate-500 px-3 py-1.5 rounded-xl text-[11px] font-bold w-full"><i class="fa-solid fa-lock mr-1"></i>登入後解鎖</button>`;
+        :`<div class="mt-2 bg-slate-100 text-slate-500 px-3 py-1.5 rounded-xl text-[11px] font-bold w-full text-center"><i class="fa-solid fa-lock mr-1"></i>請按右上角「登入」</div>`;
       return `<div class="border rounded-xl p-4 bg-white flex flex-col">
         <div class="flex items-center gap-2 mb-1"><div class="w-9 h-9 ${it.color} rounded-xl flex items-center justify-center text-base"><i class="fa-solid ${it.icon}"></i></div><b class="text-[13px]">${it.title}</b></div>
         <p class="text-[11px] text-slate-500 flex-1">${it.desc}</p>
@@ -369,7 +369,7 @@ Object.assign(ScoutEventApp.prototype,{
     }).join('');
     const loginBar=u
       ?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-user-check mr-1"></i>已登入：<b>${escapeHtml(u.name)}</b>（${ROLE_LABELS[u.role]||u.role}${u.group_name?' · '+escapeHtml(u.group_name):''}）</span><button onclick="app.logout()" class="bg-white border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-xl text-[11px] font-bold">登出</button></div>`
-      :`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-info mr-1"></i>膳食及攤位計劃書可公開申請（無需登入）；物資（地域借用）、車輛及開支需登入。低於總主任提交的申請會先交本組總主任以上確認。</span><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">登入</button></div>`;
+      :`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-info mr-1"></i>膳食及攤位計劃書可公開申請（無需登入）；物資（地域借用）、車輛及開支需登入（請按右上角「登入」）。低於總主任提交的申請會先交本組總主任以上確認。</span></div>`;
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-4">

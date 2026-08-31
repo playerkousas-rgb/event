@@ -398,7 +398,7 @@ Object.assign(ScoutEventApp.prototype,{
   renderMealsMonitor(){
     const container=document.getElementById('meals-tab-monitor');
     if(!container) return;
-    if(!this.currentUser){ container.innerHTML=`<div class="text-center py-8"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500 mb-3">監察卡片顯示你的個人申請 (訂餐/物資/車輛)，登入後才顯示</p><button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">登入查看</button></div>`; return; }
+    if(!this.currentUser){ container.innerHTML=`<div class="text-center py-8"><div class="text-3xl mb-2">🔒</div><p class="text-xs text-slate-500">監察卡片顯示你的個人申請 (訂餐/物資/車輛)，登入後才顯示</p><p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-arrow-up mr-1"></i>請按右上角「登入」</p></div>`; return; }
     // Combined monitoring for meal, supplies, vehicle
     const mealsData=this.getMealsData();
     const suppliesData=this.getSuppliesData();
