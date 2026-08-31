@@ -125,7 +125,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="text-3xl"><i class="fa-solid fa-lock text-amber-400"></i></div>
         <div class="text-[13px] font-bold text-amber-900">車輛通行證申請需登入</div>
         <p class="text-[11px] text-amber-800">登入後即可填寫車輛通行證申請（車牌、司機、停泊日期等）。</p>
-        <button onclick="app.openLoginModal()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button>
+        <p class="text-[11px] font-bold text-amber-900"><i class="fa-solid fa-arrow-up mr-1"></i>請按右上角「登入」</p>
       </div>`;
       return;
     }

@@ -53,7 +53,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 }
 /* 全站防左右滑動：clip 不會產生捲軸容器，sticky 頂 BAR 不受影響 */
 html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:hidden}}
-/* 底部導覽列：執行手冊・申請中心・批核中心・部門中心，手機／電腦同步顯示（原本上方 BAR 重覆，已刪） */
+/* 底部導覽列：未登入＝公告及溝通・執行手冊・申請中心・童心捐贈（4 項公開資料）；登入後還原＝執行手冊・申請中心・批核中心・部門中心，手機／電腦同步顯示 */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;max-width:180px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
 /* 內建財務指引：可摺疊章節 icon 旋轉（編譯版 tailwind 無 group-open 變體） */
@@ -95,7 +95,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
   <!-- 最頂 BAR（標題列）：童軍活動管理系統・v6.1・活動名稱｜身份(登入後)・改密碼・登出（登入後只顯示登出，不顯示登入；手機自動分行，不用左右滑動） -->
-  <!-- 已精簡：手機三畫功能鍵已刪；其餘功能集中在底部導覽列（手機／電腦同步）及頂部活動資訊橫幅（監察區塊）；身份顯示喺最頂 BAR 右上角；儀表板身份卡片只喺未登入（訪客）時顯示，登入後隱藏 -->
+  <!-- 已精簡：登入按鈕「只」喺呢度（最頂 BAR 右上角），全站其他地方唔再放登入按鈕；身份卡片已整張移除；未登入時儀表板只顯示活動資訊，4 個公開資料放喺底部導覽列 -->
   <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
     <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <div class="flex items-center space-x-2.5 cursor-pointer min-w-0 w-full sm:w-auto sm:flex-1" onclick="app.goHome()">
@@ -159,30 +159,16 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
           <span class="bg-amber-400 text-slate-900 text-[11px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0"><i class="fa-solid fa-bullhorn mr-1"></i>最新消息</span>
           <span id="dash-event-news" class="text-[13px] leading-snug"></span>
         </div>
-        <!-- 我的監察（已併入活動橫幅）：身份＋申請批核進度；數字可點擊跳轉批核中心／我的監察（由 renderIdentityBar 填充） -->
+        <!-- 我的監察（已併入活動橫幅）：只喺登入後顯示（未登入完全唔顯示）；由 renderIdentityBar 填充 -->
         <div id="dash-hero-monitor" class="hidden"></div>
       </div>
     </div>
 
     <!-- 簡單卡片模式：卡片顯示所有資料，身份 (角色+組別) 決定可見與可修改範圍 -->
     <div id="simple-card-panel" class="space-y-4">
-      <!-- 身份卡片：只喺未登入（訪客）時顯示，登入後隱藏（身份已喺最頂 BAR 右上角，登入後卡片變多） -->
-      <div id="identity-card" class="bg-white rounded-2xl p-4 shadow-sm border space-y-3">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <div class="flex items-center gap-3 min-w-0">
-            <div id="identity-avatar" class="w-11 h-11 bg-sky-600 text-white rounded-2xl flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-user"></i></div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm flex items-center flex-wrap gap-2">你好，<span id="identity-name">訪客</span>！ <span id="identity-role-badge" class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap">公開</span><span id="identity-group-badge" class="hidden bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200 whitespace-nowrap"></span><span id="identity-mock-badge" class="hidden bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap"><i class="fa-solid fa-flask mr-0.5"></i>示範沙盒</span></h3>
-              <p id="identity-desc" class="text-[11px] text-slate-500 mt-0.5 leading-relaxed"><span class="inline-flex items-center gap-1 font-semibold text-slate-700"><i class="fa-solid fa-key text-amber-600"></i>初始帳戶：<b>中文姓名</b>（例如「朱家聰」）｜初始密碼：<b>1234</b></span><span class="mx-1.5 text-slate-300">｜</span><span class="text-indigo-700 font-semibold">如需要開戶請找所屬組別的總主任</span><br><span class="text-slate-500">（所有公開資料無需登入即可查閱；登入後可依職級與組別管理相應卡片）</span></p>
-            </div>
-          </div>
-          <div class="flex gap-2 flex-shrink-0 flex-wrap">
-            <button id="identity-login-btn" onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button>
-          </div>
-        </div>
-      </div>
+      <!-- 身份卡片已整張移除（2026-08-31）：未登入唔顯示（頁面清爽）、登入後身份只喺最頂 BAR 右上角；登入按鈕亦只喺最頂 BAR 右上角 -->
 
-      <!-- 公開資料（最先顯示）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動 -->
+      <!-- 公開資料（登入後先顯示；未登入時整個區塊隱藏，4 張公開卡改為底部導覽列 4 個按鈕）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動 -->
       <div id="public-section" class="space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-globe"></i></span>公開資料 <span class="text-[10px] text-slate-400 font-normal">所有人可見，無需登入</span></h3>
@@ -191,8 +177,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <div id="public-cards-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <!-- 工作卡片（公開資料之後顯示；會議卡片在功能卡片最前；自己組標亮） -->
-      <div id="identity-section" class="space-y-2">
+      <!-- 工作卡片（登入後才顯示；未登入無「登入後解鎖」區塊）；會議卡片在功能卡片最前；自己組標亮 -->
+      <div id="identity-section" class="hidden space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-slate-700 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-people-group"></i></span><span id="identity-section-title">工作卡片</span> <span class="text-[10px] text-slate-400 font-normal">公開資料之後顯示・會議卡片最前・自己組標亮</span></h3>
           <span id="identity-count" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200"></span>
@@ -209,7 +195,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <div id="management-tools-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・開戶（總主任以上）・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上一按見全部部門列表，普通人一按直接入自己部門）</b>。我的監察已併入頂部活動資訊橫幅（活動簡介下方）。</div>
+      <div id="simple-mode-note" class="hidden text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 （登入後顯示）排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・開戶（總主任以上）・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上一按見全部部門列表，普通人一按直接入自己部門）</b>。我的監察已併入頂部活動資訊橫幅（活動簡介下方）。</div>
     </div>
 
     <!-- 舊版「認識活動／參與活動／協作與管理」彩色卡面分組已刪除（2026-08-27）：
@@ -235,8 +221,10 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 </main>
 
-<!-- 底部導覽列：執行手冊・申請中心（人人可用）；批核中心（登入後有權限人士才可見）；部門中心（登入後可見：執副以上一按見全部部門列表，普通人一按直接入自己部門）。開戶已移去最頂 BAR 右側（總主任以上） -->
-<nav id="bottom-nav" class="bottom-nav"><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-dept" onclick="app.openDeptHub()"><i class="fa-solid fa-sitemap"></i><span>部門中心</span></button></nav>
+<!-- 底部導覽列（兩套）：
+     ① 未登入（訪客）＝4 個公開資料按鈕：公告及溝通・執行手冊・申請中心・童心捐贈（頁面只留活動資訊，超清爽；登入按鈕只在最頂 BAR 右上角）
+     ② 登入後＝還原原本設計：執行手冊・申請中心・批核中心（有權限）・部門中心 -->
+<nav id="bottom-nav" class="bottom-nav"><button id="bn-pub-announcements" style="display:none" onclick="app.openModule('announcements')"><i class="fa-solid fa-bullhorn"></i><span>公告及溝通</span></button><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-pub-donations" style="display:none" onclick="app.openModule('donations')"><i class="fa-solid fa-hand-holding-heart"></i><span>童心捐贈</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-dept" onclick="app.openDeptHub()"><i class="fa-solid fa-sitemap"></i><span>部門中心</span></button></nav>
 
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
@@ -386,12 +374,12 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
       <!-- 1. 三類卡片 -->
       <div class="space-y-2">
         <h4 class="font-bold text-[15px] text-slate-900">1️⃣ 現有功能：三類卡片</h4>
-        <p>進入活動後，儀表板會根據身分顯示卡片。<b>全部卡片一律白底無顏色</b>（更整潔），只靠「可修改／只讀／公開可看」小標籤分辨，自己的組別會標亮。<br><b>排序：</b><b>公開資料 → 工作卡片（會議卡片最前）→ 管理工具（總主任以上）→ 部門管理中心</b>。<br><b>我的監察</b>已併入頂部<b>活動資訊橫幅</b>（日期／時間／地點／天氣＋活動簡介＋最新消息同一橫幅內，一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到未有申請紀錄提示（身份喺最頂 BAR 右上角），可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<b>有批核權同時自己亦有申請</b>的人士：四個數字＝自己＋下級合計，下方另有一行「<b>我的申請</b>」只計自己（含待處理數），點擊即到「我的監察」查看。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・開戶（總主任以上）・改密碼・登出</b>（登入後不顯示登入，只顯示登出；手機版無三畫功能鍵）；<b>底部導覽列</b>＝<b>執行手冊・申請中心・批核中心・部門中心</b>（批核中心登入後有權限人士才可見；部門中心登入後可見：<b>執副以上</b>一按即見全部部門列表、<b>普通人</b>一按直接跳自己部門），手機／電腦同步顯示。<b>開戶</b>已移去最頂 BAR 右側（登入後總主任以上可見，一按直接跳入開戶頁），儀表板管理工具區「開戶」卡保留作第二入口。</p>
+        <p><b>未登入（公開瀏覽）＝超清爽版：</b>儀表板只顯示活動資訊（日期／時間／地點／天氣＋簡介＋最新消息），<b>底部 4 個按鈕就是 4 項公開資料</b>——公告及溝通・執行手冊・申請中心・童心捐贈；不顯示身份卡片、不顯示「我的監察」、不顯示「登入後解鎖」那堆卡片。<b>登入按鈕只在右上角</b>（全站唯一一粒）。<b>登入後</b>即還原原本的卡片設計。<br>進入活動後，儀表板會根據身分顯示卡片。<b>全部卡片一律白底無顏色</b>（更整潔），只靠「可修改／只讀／公開可看」小標籤分辨，自己的組別會標亮。<br><b>排序：</b><b>公開資料 → 工作卡片（會議卡片最前）→ 管理工具（總主任以上）→ 部門管理中心</b>。<br><b>我的監察</b>已併入頂部<b>活動資訊橫幅</b>（<b>登入後</b>才顯示；日期／時間／地點／天氣＋活動簡介＋最新消息同一橫幅內，一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到未有申請紀錄提示（身份喺最頂 BAR 右上角），可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<b>有批核權同時自己亦有申請</b>的人士：四個數字＝自己＋下級合計，下方另有一行「<b>我的申請</b>」只計自己（含待處理數），點擊即到「我的監察」查看。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・開戶（總主任以上）・改密碼・登出</b>（登入後不顯示登入，只顯示登出；手機版無三畫功能鍵）；<b>底部導覽列</b>＝<b>未登入：公告及溝通・執行手冊・申請中心・童心捐贈</b>（4 項公開資料）；<b>登入後還原：執行手冊・申請中心・批核中心・部門中心</b>（批核中心登入後有權限人士才可見；部門中心登入後可見：<b>執副以上</b>一按即見全部部門列表、<b>普通人</b>一按直接跳自己部門），手機／電腦同步顯示。<b>開戶</b>已移去最頂 BAR 右側（登入後總主任以上可見，一按直接跳入開戶頁），儀表板管理工具區「開戶」卡保留作第二入口。</p>
         <div class="table-responsive">
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">類型</th><th class="px-2 py-1 text-left">需登入？</th><th class="px-2 py-1 text-left">內容</th><th class="px-2 py-1 text-left">修改權限</th></tr></thead>
             <tbody class="divide-y">
-              <tr><td class="px-2 py-1 font-medium">我的監察</td><td>需要</td><td>併入頂部活動資訊橫幅（跳轉框）：自己＋下級申請批核進度；有權限人士另見總申請／待處理／已批核／已拒絕（可跳轉批核中心）</td><td>只讀監察；批核在批核中心處理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">我的監察</td><td>需要</td><td>登入後才出現，併入頂部活動資訊橫幅（跳轉框）：自己＋下級申請批核進度；未登入完全不顯示；有權限人士另見總申請／待處理／已批核／已拒絕（可跳轉批核中心）</td><td>只讀監察；批核在批核中心處理</td></tr>
               <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>已併入「工作卡片」，自己的組別標亮</td><td>由組別權限決定</td></tr>
               <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告及溝通、執行手冊（組織架構・場地・典禮・危機・通告）、申請中心、童心捐贈</td><td>只讀；修改需對應職級／組別登入</td></tr>
               <tr><td class="px-2 py-1 font-medium">② 工作卡片</td><td>需要</td><td>會議、物資申請（地域借用）、攤位計劃書（獨立卡＋總表）、車輛通行證（含泊車證）、口頭報價、財務等</td><td>預設只讀；依「可看／可管」權限解鎖</td></tr>
@@ -479,7 +467,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <h4 class="font-bold text-[15px] text-slate-900">5️⃣ 其他你需要了解</h4>
         <ul class="list-disc pl-5 space-y-1 text-[12px]">
           <li><b>登入：</b>帳號＝中文姓名，初始密碼 1234；首次登入建議改密碼；登入狀態會保存於瀏覽器，一次登入永久有效。</li>
-          <li><b>儀表板：</b>全部卡片一律白底無顏色（更整潔）；排序（公開資料後）＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察併入頂部活動資訊橫幅（與日期／地點／最新消息同一橫幅）。最頂 BAR＝身份・開戶（總主任以上）・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上見列表／普通人入自己部門，手機／電腦同步）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
+          <li><b>儀表板：</b>未登入只見活動資訊＋底部 4 個公開資料按鈕（公告及溝通・執行手冊・申請中心・童心捐贈），登入按鈕只在右上角；登入後還原原本設計：全部卡片一律白底無顏色（更整潔）；排序＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察（登入後）併入頂部活動資訊橫幅（與日期／地點／最新消息同一橫幅）。最頂 BAR＝身份・開戶（總主任以上）・改密碼・登出；底部導覽列（登入後）＝執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上見列表／普通人入自己部門，手機／電腦同步）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
           <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
           <li><b>示範沙盒：</b>「模擬示範版」已內置與主系統同構嘅<b>完整示範資料</b>——10 組組織架構（43 個示範崗位，顧問團 2 人）、會議、地域物資申請（一次多項）、獨立嘅攤位計劃書（含總表）、車輛／泊車證、膳食（菜單＋兩級確認訂餐）、財務逐項預算、危機處理、參加旅團名單等，俾你喺會議上一邊講一邊試。改動只存喺你自己瀏覽器，絕對唔會影響正式活動。</li>
           <li><b>示範登入：</b>密碼一律 1234——<b>陳子明</b>（工作人員，試「填表只填名稱＋數量」）、<b>曾令勤</b>（主任，見「待本組確認」）、<b>龍正謙</b>（主題節目組總主任，確認本組申請＋代組申請）、<b>畢美儀</b>（協調組總主任，即物資批核組，試批准／修改數量）、<b>羅雅雯</b>（執行副主席）、<b>區子君</b>（主席）、<b>黃偉安／何家騏</b>（顧問團，L1 全套）。各組統計可撳主頁「部門管理中心」卡片逐組睇。</li>

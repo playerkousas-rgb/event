@@ -315,28 +315,12 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderIdentityBar(){
     const user=this.currentUser;
-    const card=document.getElementById('identity-card'); // 身份卡片：只喺未登入（訪客）時顯示；登入後隱藏
+    const card=document.getElementById('identity-card'); // 身份卡片已移除；保留 null 檢查以防舊 DOM
     const heroMon=document.getElementById('dash-hero-monitor');
     if(!user){
-      if(card) card.classList.remove('hidden');
-      const nameEl=document.getElementById('identity-name');
-      const roleBadge=document.getElementById('identity-role-badge');
-      const groupBadge=document.getElementById('identity-group-badge');
-      const desc=document.getElementById('identity-desc');
-      const loginBtn=document.getElementById('identity-login-btn');
-      const avatar=document.getElementById('identity-avatar');
-      const mockBadge=document.getElementById('identity-mock-badge');
-      if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
-      if(nameEl) nameEl.textContent='訪客';
-      if(roleBadge){roleBadge.textContent='公開'; roleBadge.className='bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap';}
-      if(groupBadge) groupBadge.classList.add('hidden');
-      if(desc) desc.innerHTML='<span class="inline-flex items-center gap-1 font-semibold text-slate-700"><i class="fa-solid fa-key text-amber-600"></i>初始帳戶：<b>中文姓名</b>（例如「朱家聰」）｜初始密碼：<b>1234</b></span><span class="mx-1.5 text-slate-300">｜</span><span class="text-indigo-700 font-semibold">如需要開戶請找所屬組別的總主任</span><br><span class="text-slate-500">（所有公開資料無需登入即可查閱；登入後可依職級與組別管理相應卡片）</span>';
-      if(loginBtn) loginBtn.classList.remove('hidden');
-      if(avatar) avatar.innerHTML='<i class="fa-solid fa-user"></i>';
-      if(heroMon){
-        heroMon.classList.remove('hidden');
-        heroMon.innerHTML='<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2 flex items-center gap-2 flex-wrap"><span class="text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">登入後顯示</span></span><span class="text-[10.5px] text-white/75">登入後在此顯示你的申請批核進度</span><button onclick="app.openLoginModal()" class="ml-auto bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button></div>';
-      }
+      // 未登入：唔顯示「我的監察」、唔顯示身份卡片；登入按鈕只喺最頂 BAR 右上角
+      if(card) card.classList.add('hidden');
+      if(heroMon){ heroMon.classList.add('hidden'); heroMon.innerHTML=''; }
       return;
     }
     // 登入後：身份卡片隱藏（身份已喺最頂 BAR 右上角），只保留活動橫幅監察區塊
@@ -378,6 +362,8 @@ Object.assign(ScoutEventApp.prototype,{
     const publicGrid=document.getElementById('public-cards-grid');
     const identityGrid=document.getElementById('identity-cards-grid');
     const toolsGrid=document.getElementById('management-tools-grid');
+    const publicSection=document.getElementById('public-section');
+    const identitySection=document.getElementById('identity-section');
     const toolsSection=document.getElementById('management-tools-section');
     const publicCount=document.getElementById('public-count');
     const identityCount=document.getElementById('identity-count');
@@ -394,18 +380,26 @@ Object.assign(ScoutEventApp.prototype,{
     // 全部卡片一律白底無顏色（更整潔）；未登入／已登入都是同一款白底卡，只靠「可修改／只讀／公開可看」小標籤分辨
     this.renderIdentityBar();
 
+    // ===== 未登入（訪客）：儀表板只留活動資訊，唔顯示「公開資料」、「登入後解鎖」、管理工具同說明；
+    //      4 張公開資料卡改為底部導覽列 4 個按鈕（公告及溝通・執行手冊・申請中心・童心捐贈）=====
+    if(!user){
+      if(publicSection) publicSection.classList.add('hidden');
+      if(identitySection) identitySection.classList.add('hidden');
+      if(toolsSection) toolsSection.classList.add('hidden');
+      if(note) note.classList.add('hidden');
+      publicGrid.innerHTML='';
+      identityGrid.innerHTML='';
+      toolsGrid.innerHTML='';
+      return;
+    }
+    // 登入後：還原原本設計（公開資料 → 工作卡片 → 管理工具 → 部門管理中心）
+    if(publicSection) publicSection.classList.remove('hidden');
+    if(identitySection) identitySection.classList.remove('hidden');
+    if(note) note.classList.remove('hidden');
+
     // 公開資料固定順序（最先顯示）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動。
     this.deferredDashWrite(publicGrid, publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony});}).join(''));
     if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
-
-    if(!user){
-      if(toolsSection) toolsSection.classList.add('hidden');
-      if(identityTitle) identityTitle.textContent='登入後解鎖';
-      identityGrid.innerHTML='';
-      if(identityCount) identityCount.textContent='登入後解鎖';
-      if(note) note.innerHTML='👀 全部卡片一律白底（更整潔）。未登入＝一般工作人員／公眾：可看<b>公開資料</b>；登入後（按職級）才顯示其他卡片。';
-      return;
-    }
 
     const userGroup=normalizeGroupName(user.group_name);
     const isSuper=user.role==='super_admin';
@@ -443,9 +437,16 @@ Object.assign(ScoutEventApp.prototype,{
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
     const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
     const taSetup=document.getElementById('topbar-account-setup'); if(taSetup) taSetup.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    // 底部導覽列：批核中心 僅登入後總主任以上（有權限人士）可見；部門中心 登入後可見；執行手冊・申請中心人人可用
-    const bnApprovals=document.getElementById('bn-approvals'); if(bnApprovals) bnApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    const bnDept=document.getElementById('bn-dept'); if(bnDept) bnDept.style.display=loggedIn?'':'none';
+    // 底部導覽列（兩套）：
+    // ① 未登入（訪客）＝4 個公開資料按鈕：公告及溝通・執行手冊・申請中心・童心捐贈
+    // ② 登入後＝還原原本設計：執行手冊・申請中心・批核中心（有權限）・部門中心
+    const setNav=(id,show)=>{const el=document.getElementById(id); if(el) el.style.display=show?'':'none';};
+    setNav('bn-pub-announcements',!loggedIn);
+    setNav('bn-pub-donations',!loggedIn);
+    setNav('bn-exec',true);
+    setNav('bn-apply',true);
+    setNav('bn-approvals',loggedIn&&chiefOrAbove);
+    setNav('bn-dept',loggedIn);
     const bn=document.getElementById('bottom-nav'); if(bn) bn.style.display='';
     this.updateBottomNav();
   }
@@ -463,8 +464,11 @@ Object.assign(ScoutEventApp.prototype,{
     document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
     let id=null;
     const mod=this.currentModule;
+    const loggedIn=!!this.currentUser;
     if(mod==='exec_manual'){ id='bn-exec'; }
     else if(mod==='apply_hub'){ id='bn-apply'; }
+    else if(!loggedIn && mod==='announcements'){ id='bn-pub-announcements'; }
+    else if(!loggedIn && mod==='donations'){ id='bn-pub-donations'; }
     else if(mod==='dept_hub'){ id='bn-dept'; }
     else if(mod==='group_management' && !this.isExecViceOrChair() && normalizeGroupName(this.currentGroupManaged||'')===normalizeGroupName(this.currentUser?.group_name||'')){ id='bn-dept'; }
     const apprEl=document.getElementById('view-approvals');
