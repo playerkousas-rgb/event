@@ -315,11 +315,23 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderIdentityBar(){
     const user=this.currentUser;
-    const card=document.getElementById('identity-card'); // 身份卡片已移除；保留 null 檢查以防舊 DOM
+    const card=document.getElementById('identity-card'); // 身份卡片：只喺未登入（訪客）時顯示，登入後隱藏
     const heroMon=document.getElementById('dash-hero-monitor');
     if(!user){
-      // 未登入：唔顯示「我的監察」、唔顯示身份卡片；登入按鈕只喺最頂 BAR 右上角
-      if(card) card.classList.add('hidden');
+      // 未登入：顯示身份卡片（話俾訪客知點開戶／點登入），但唔顯示「我的監察」；登入掣只喺最頂 BAR 右上角
+      if(card) card.classList.remove('hidden');
+      const nameEl=document.getElementById('identity-name');
+      const roleBadge=document.getElementById('identity-role-badge');
+      const groupBadge=document.getElementById('identity-group-badge');
+      const desc=document.getElementById('identity-desc');
+      const avatar=document.getElementById('identity-avatar');
+      const mockBadge=document.getElementById('identity-mock-badge');
+      if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
+      if(nameEl) nameEl.textContent='訪客';
+      if(roleBadge){roleBadge.textContent='公開'; roleBadge.className='bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap';}
+      if(groupBadge) groupBadge.classList.add('hidden');
+      if(desc) desc.innerHTML='<span class="inline-flex items-center gap-1 font-semibold text-slate-700"><i class="fa-solid fa-key text-amber-600"></i>初始帳戶：<b>中文姓名</b>（例如「陳子明」）｜初始密碼：<b>1234</b></span><span class="mx-1.5 text-slate-300">｜</span><span class="text-indigo-700 font-semibold">如需要開戶請找所屬組別的總主任</span><br><span class="text-slate-500">（所有公開資料無需登入即可查閱；登入後可依職級與組別管理相應卡片）</span><br><span class="text-slate-400">要登入請按右上角<b class="text-slate-500">「登入」</b>。</span>';
+      if(avatar) avatar.innerHTML='<i class="fa-solid fa-user"></i>';
       if(heroMon){ heroMon.classList.add('hidden'); heroMon.innerHTML=''; }
       return;
     }

@@ -113,8 +113,12 @@ assert(makeEl('public-section').classList.contains('hidden'), 'guest 公開資�
 assert(makeEl('identity-section').classList.contains('hidden'), 'guest 登入後解鎖／工作卡片區塊應隱藏');
 assert(makeEl('management-tools-section').classList.contains('hidden'), 'guest 管理工具區塊應隱藏');
 assert(makeEl('simple-mode-note').classList.contains('hidden'), 'guest 底部說明文字應隱藏');
-// 未登入：唔顯示身份卡片（整張已移除）、唔顯示我的監察
-assert(makeEl('identity-card').classList.contains('hidden'), '未登入不應顯示身份卡片');
+// 未登入：顯示身份卡片（話俾訪客知點開戶／點登入），但唔顯示我的監察
+assert(!makeEl('identity-card').classList.contains('hidden'), '未登入應顯示身份卡片（訪客指引）');
+assert(store.get('identity-name').textContent === '訪客', '身份卡片應顯示「訪客」');
+assert(store.get('identity-desc').innerHTML.includes('陳子明') && store.get('identity-desc').innerHTML.includes('1234')
+  && store.get('identity-desc').innerHTML.includes('如需要開戶請找所屬組別的總主任'), '身份卡片應有初始帳戶／密碼／開戶指引（例子用 MOCK 名）');
+assert(!store.get('identity-desc').innerHTML.includes('朱家聰'), '身份卡片例子帳號應用 MOCK 名，唔用真人名');
 let mon = htmlOf('dash-hero-monitor');
 assert(mon === '' && makeEl('dash-hero-monitor').classList.contains('hidden'), '未登入不應顯示「我的監察」');
 
@@ -188,7 +192,9 @@ assert(html.includes('id="dash-hero-monitor"'), '活動橫幅應有我的監察�
 // 功能介紹按鈕已移入紫色活動資訊橫幅右上角；身份卡片只喺未登入（訪客）時顯示，登入後隱藏
 const dashHero = html.slice(html.indexOf('id="view-dashboard"'), html.indexOf('id="simple-card-panel"'));
 assert(dashHero.includes('功能介紹') && dashHero.includes("app.openGuideModal()"), '活動資訊橫幅應有 功能介紹 按鈕（右上角）');
-assert(!html.includes('id="identity-card"') && !html.includes('id="identity-name"') && !html.includes('id="identity-login-btn"'), '身份卡片應整張移除（未登入唔顯示、登入後亦唔顯示）');
+assert(html.includes('id="identity-card"') && html.includes('id="identity-name"'), '身份卡片應存在（只喺未登入訪客顯示）');
+assert(!html.includes('id="identity-login-btn"'), '身份卡片內唔應該再有登入掣（登入掣只喺最頂 BAR 右上角）');
+assert(html.includes('例如「陳子明」') && !html.includes('例如「朱家聰」'), '登入例子帳號應用 MOCK 名（陳子明）');
 // 登入按鈕只喺最頂 BAR 右上角，全站唔再有第二粒
 assert((html.match(/app\.openLoginModal\(\)/g) || []).length === 1, 'index.html 只應喺最頂 BAR 有一粒登入按鈕');
 assert(html.includes('選擇活動後即可查看該活動全部資料') && !html.includes('選擇其他活動'), '橫幅「選擇其他活動」掣已刪（按最頂 BAR 標題回選擇活動頁）');
