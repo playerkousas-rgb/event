@@ -579,7 +579,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
 
-  sendMeetingEmails(){if(!confirm('發送會議提醒 Email？')) return; showToast('已發送 (Mock)','success');}
+  sendMeetingEmails(){if(!this.canSendMeetingReminder()){ showToast('僅執行副主席以上或秘書處可發送會議提醒','error'); return; } if(!confirm('發送會議提醒 Email？')) return; showToast('已發送 (Mock)','success');}
 ,
   handleHashRoute(){
     const hash=window.location.hash;
