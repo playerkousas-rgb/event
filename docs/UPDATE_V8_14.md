@@ -55,3 +55,33 @@ canViewGroup(groupName)    可以睇／入呢個部門？＝ isAllGroupViewer() 
 - `tests/v8_14_group_ownership_test.js`：新增 50 項檢查；`tests/ui_layout_check.js`、`tests/workflow_smoke.js` 更新為新預期
 
 全部 15 個測試檔通過。
+
+
+---
+
+## v8.14c（2026-08-31 補）
+
+### 1. 會議卡片：加埋「執副以上」
+`canManageMeetings()` 由 `isAdmin() || isCardOwnerGroup('meetings')` 改為
+`isAdmin() || isExecViceOrChair() || isCardOwnerGroup('meetings')`，
+所以**秘書處（負責）・行政組（統管）・執副主席／主席／顧問／管理員**全部管到會議；卡面標示改為「秘書處・行政組・執副以上可管理」。
+留意：副主席（level 60）唔屬於「執副以上」，除咗本身係秘書處／行政組，否則仍然只可看。
+
+### 2. 後端 v8.6：最高層管理帳號「點解入唔到」一次過分得出
+| 新增 | 用途 |
+|------|------|
+| `isBuiltinSuper(loginId)` | 判斷打入去嘅 id 係咪就係 SCRIPT 常數嗰個最高層管理帳號（唔分大小寫） |
+| `handleLogin` 專屬錯誤 | id 啱但常數密碼對唔上、Users 表又冇呢行 → 回 `reason:'builtin_password_mismatch'`「最高層管理帳號：密碼唔啱（SCRIPT 常數對唔上）…」，唔會再淨係講「找不到用戶帳號」 |
+| `accountCheck` 密碼探針 | 前端將啱啱打錯嘅密碼一齊 POST（只同 SCRIPT 常數比較，**唔寫入任何表、唔回傳密碼**）→ `script_password_match: true/false` |
+| `maskId()` 遮罩 | 回傳 `super_admin_id_masked`（例如 `s***（共 5 個字）`／`s***@gmail.com`），帳號打錯字時提示「SCRIPT 內建嗰個 id 長乜嘢樣」，但唔會外洩完整帳號 |
+
+前端配套：
+- 登入失敗時 `loginAccountHint(id, pwd)` 帶埋密碼探針，提示會直接講邊一樣出事（帳號唔存在／密碼唔啱常數／後端係舊版本）。
+- 「後端連線診斷」多咗一格**「密碼（選填，只作比對用）」**，體檢結果會多一列「④ 密碼探針」。
+
+### 點解最高層管理帳號會「一直用到，某次更新後入唔到」
+呢個帳號**淨係寫喺 Apps Script 嘅 SCRIPT 常數入面，Users 表冇佢嘅紀錄**（呢個係設計，唔係 bug）。
+所以佢一定要靠 `handleLogin` 最頂嗰段常數檢查先入到；只要 `/exec` 部署嘅 Code.gs **舊過嗰段常數檢查存在嘅版本**，
+後端就只會去 Users 表搵 → 梗係搵唔到 → 「找不到用戶帳號」。
+其他委員（例如總主任）本來就喺 Users 表，舊版本一樣讀到，所以會出現「總主任入到、最高層管理帳號入唔到」嘅現象。
+👉 **唯一解法：喺 Apps Script「部署 → 管理部署 → ✏️ 編輯 → 版本：新版本 → 部署」。**（只撳「儲存」唔會更新 /exec）

@@ -5,7 +5,8 @@
    ② 卡片管理權：執行手冊・申請中心＝行政組；膳食・物資・車＝協調組；
       攤位＝主題節目組；童心捐贈＝服務及發展組；會議卡片＝秘書處（行政組亦可管）
    ③ 批核路由：膳食／物資／車→協調組（＋行政組）；攤位→主題節目組（獨立路由，唔再跟物資）
-   ④ 後端 v8.5：accountCheck 存在；最高層管理帳號唔會再被 skip（改過密碼都用 Sheet hash 登入） */
+   ④ 後端 v8.6：accountCheck 存在＋密碼探針／遮罩 id；handleLogin 對最高層管理帳號畀專屬錯誤；
+      最高層管理帳號唔會再被 skip（改過密碼都用 Sheet hash 登入） */
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -123,6 +124,13 @@ as(U('director', '主題節目組', '節目主任'));
 ok(app.canManageMeetings() === false, '②b 主題節目組主任：唔可以管理會議');
 as(U('staff', '秘書處', '秘書組員'));                                // level 20 < 30
 ok(app.canManageMeetings() === false, '②b 秘書處組員（20 級）：未到主任級，唔可以管理會議');
+// v8.14c：執副以上一律管到會議
+[['executive_vice_chairperson','主題節目組'],['chairperson','主席及執行副主席'],['advisor','顧問團'],['admin','行政組']].forEach(([role,g])=>{
+  as(U(role,g,role));
+  ok(app.canManageMeetings() === true, `②b 執副以上（${role}／${g}）：可以管理會議`);
+});
+as(U('vice_chairperson','主題節目組','副主席'));                      // 副主席（60）未到執副
+ok(app.canManageMeetings() === false, '②b 副主席（60）：唔屬於執副以上，唔可以管理會議（除非係秘書處／行政組）');
 
 /* ---------- ③ 批核路由 ---------- */
 as(null); app.currentUser = null;
@@ -146,10 +154,24 @@ ok(app.canApproveArea('supplies') === true && app.canApproveArea('booth') === tr
 
 /* ---------- ④ 後端 v8.5 ---------- */
 const gs = fs.readFileSync(path.join(root, 'apps-script/Code.gs'), 'utf8');
-ok(gs.includes("const GS_VERSION = 'v8.5-2026-08-31'"), '④ 後端 Code.gs 應為 v8.5');
+ok(gs.includes("const GS_VERSION = 'v8.6-2026-08-31'"), '④ 後端 Code.gs 應為 v8.6');
 ok(gs.includes("action === 'accountCheck'"), '④ 後端應有 accountCheck（帳號體檢）');
 const topId = 'sh' + 'eep';   // 唔喺測試檔留低最高層帳號字串（v8.2 私隱掃描）
 ok(!gs.includes("rowObj.role === 'super_admin' && rowObj.user_id === '" + topId + "'"), '④ 後端 handleLogin 唔應該再 skip 最高層管理帳號嗰行（改過密碼會永久鎖死）');
 ok(/function accountCheck\(data\)/.test(gs) && gs.includes('is_default_password'), '④ accountCheck 應回傳密碼狀態（預設／已改／冇密碼）');
+ok(/function isBuiltinSuper\(/.test(gs) && gs.includes('isBuiltinSuper(loginId) && password === SUPER_ADMIN_PASS'), '④ handleLogin 應改用 isBuiltinSuper() 判斷最高層管理帳號（不分大小寫）');
+ok(/function maskId\(/.test(gs) && gs.includes('super_admin_id_masked: maskId(SUPER_ADMIN_EMAIL)'), '④ accountCheck 應回傳遮罩後嘅最高層帳號 id（唔會外洩完整帳號）');
+ok(gs.includes('script_password_match'), '④ accountCheck 應支援密碼探針 script_password_match');
+ok(gs.includes("reason: 'builtin_password_mismatch'"), '④ 最高層管理帳號密碼唔啱時要有專屬 reason，唔好淨係講「找不到用戶帳號」');
+// 最高層管理帳號根本唔喺 Users 表 → 常數對到就入到，唔會跌落 Sheet
+const hl = gs.slice(gs.indexOf('function handleLogin'), gs.indexOf('// v8.5：帳號體檢'));
+ok(hl.indexOf('isBuiltinSuper(loginId) && password === SUPER_ADMIN_PASS') < hl.indexOf('getSheetByName'), '④ 最高層管理帳號嘅 SCRIPT 常數檢查要排喺讀 Users 表之前');
+// 前端有用到新欄位
+const users = fs.readFileSync(path.join(root, 'js/33-users.js'), 'utf8');
+ok(users.includes('loginAccountHint(id,pwd)') && users.includes('payload.password=pwd'), '④ 前端 loginAccountHint 應帶密碼做探針');
+ok(users.includes('j.script_password_match'), '④ 前端應讀 script_password_match 畀出準確提示');
+ok(users.includes('super_admin_id_masked'), '④ 前端應喺帳號唔存在時提示遮罩後嘅最高層帳號 id');
+const core = fs.readFileSync(path.join(root, 'js/10-app-core.js'), 'utf8');
+ok(core.includes("document.getElementById('diag-password')"), '④ 後端連線診斷應有「密碼（選填）」格仔');
 
 console.log(`V8_14_GROUP_OWNERSHIP_OK (${n} checks)`);

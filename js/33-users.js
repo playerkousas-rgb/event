@@ -366,7 +366,7 @@ Object.assign(ScoutEventApp.prototype,{
           // v8.2 診斷提示：帳戶冇錯都入唔到，最大可能係你連住嘅 /exec 係舊版部署（未重新部署新版 Code.gs）。
           const hint=j.version?'':'（後端冇回報版本 → 好大機會係舊版部署；請喺 Apps Script「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試）';
           // v8.14：順手問後端「呢個帳號點解入唔到」（需要後端 v8.5；舊版會靜默略過）
-          const ah=await this.loginAccountHint(id);
+          const ah=await this.loginAccountHint(id,pwd);
           showToast('登入失敗：'+(j.error||'帳號或密碼錯誤')+hint+ah,'error'); return;
         }
         // Mock 模式下後端找不到 → 繼續嘗試本地示範帳戶
@@ -391,12 +391,25 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   // v8.14：登入失敗（帳號唔存在／密碼錯）時，問後端攞「點解」——需要後端 v8.5 嘅 accountCheck；
   // 舊版部署會回「Unknown POST action」，呢個 function 會靜默略過（唔會影響原本嘅錯誤提示）。
-  async loginAccountHint(id){
+  // v8.14c：pwd 一齊交俾後端做「密碼探針」——後端只係同比較 SCRIPT 常數（唔寫入任何表、唔外洩），
+  // 用嚟分得出「帳號根本唔存在」定係「帳號啱、密碼唔啱」。後端舊過 v8.6 會靜默略過呢幾項。
+  async loginAccountHint(id,pwd){
     try{
-      const r=await this.gasPost({action:'accountCheck',api_key:this.apiKey,user_id:id});
+      const payload={action:'accountCheck',api_key:this.apiKey,user_id:id};
+    if(pwd) payload.password=pwd;   // 密碼探針（後端只比較常數，唔會儲存／回傳）
+    const r=await this.gasPost(payload);
       if(!(r.ok&&r.json&&r.json.success)) return '';
       const j=r.json;
-      if(!j.found&&!j.builtin_account) return '（後端 Users 表冇「'+id+'」呢個帳號 → 要搵管理員開戶／加返入名單）';
+      if(j.builtin_account===true){
+        // 呢個 id 就係 SCRIPT 常數入面嘅最高層管理帳號
+        if(j.script_password_match===true) return '（後端 SCRIPT 有呢個最高層管理帳號，密碼亦啱 → 入唔到多數係 /exec 仲係舊版本，請「部署 → 管理部署 → 新版本」重新部署 Code.gs）';
+        if(j.script_password_match===false) return '（後端 SCRIPT 有呢個最高層管理帳號，但密碼對唔上常數 → 試吓用 Code.gs 入面 SUPER_ADMIN_PASS 嗰個密碼）';
+        return '（後端 SCRIPT 有呢個最高層管理帳號，Users 表'+(j.found?'有':'冇')+'對應資料 → 要用 SCRIPT 常數嗰個密碼登入）';
+      }
+      if(!j.found){
+        const masked=j.super_admin_id_masked?('（SCRIPT 內建最高層帳號係「'+j.super_admin_id_masked+'」，你打入去嘅係「'+id+'」→ 唔係同一個 id）'):'';
+        return '（後端 Users 表冇「'+id+'」呢個帳號'+masked+' → 要搵管理員開戶／加返入名單）';
+      }
       const row=(j.rows||[])[0];
       if(row&&!row.has_password) return '（呢個帳號喺後端冇密碼 → 要喺後端設返密碼先入到）';
       if(row&&row.is_default_password) return '（呢個帳號仲用緊預設密碼 1234）';

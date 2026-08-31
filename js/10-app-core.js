@@ -307,22 +307,33 @@ Object.assign(ScoutEventApp.prototype,{
 
     // ④ 指定帳號體檢（需要後端 v8.5：accountCheck）——查「點解呢個帳號登入唔到」
     const acc=(document.getElementById('diag-account')?.value||'').trim();
+    const accPwd=(document.getElementById('diag-password')?.value||'').trim();   // v8.14c：密碼探針（只同後端 SCRIPT 常數比較，唔外洩）
     let accVerdict='';
     if(acc){
-      const chk=await this.gasPost({action:'accountCheck',api_key:this.apiKey,user_id:acc});
+      const chkPayload={action:'accountCheck',api_key:this.apiKey,user_id:acc};
+      if(accPwd) chkPayload.password=accPwd;
+      const chk=await this.gasPost(chkPayload);
       if(chk.ok&&chk.json&&chk.json.success){
         const j=chk.json;
         if(!j.found&&!j.builtin_account){
-          rows.push(row('④ 帳號體檢：'+acc,'bad',`後端 Users 表搵唔到呢個帳號（builtin=${j.builtin_account}）→ 一定登入唔到。請喺後端 Users 表／開戶加返，或 check 有冇打錯字（要用中文全名）。`));
-          accVerdict='後端冇「'+acc+'」呢個帳號 → 要先開戶／加返入 Users 表。';
+          const masked=j.super_admin_id_masked?'（SCRIPT 內建最高層帳號係「'+j.super_admin_id_masked+'」）':'';
+          rows.push(row('④ 帳號體檢：'+acc,'bad',`後端 Users 表搵唔到呢個帳號（builtin=${j.builtin_account}）${masked} → 一定登入唔到。請喺後端 Users 表／開戶加返，或 check 有冇打錯字（要用中文全名）。`));
+          accVerdict='後端冇「'+acc+'」呢個帳號 → 要先開戶／加返入 Users 表'+(masked?'；'+masked:'')+'。';
         } else {
           const info=(j.rows||[]).map(r=>`${r.user_id}｜${r.role}｜${r.group_name||'（冇組別）'}｜${r.status||''}｜${r.has_password?(r.is_default_password?'密碼＝預設 1234':(r.is_script_password?'密碼＝SCRIPT 內建':'密碼已改過')):'⚠️ 冇密碼（登入唔到）'}`).join('\n');
           rows.push(row('④ 帳號體檢：'+acc,'ok',`後端搵到 ${j.found} 筆（SCRIPT 內建帳號：${j.builtin_account?'係':'唔係'}）\n${info||'（只靠 SCRIPT 常數密碼登入）'}`));
-          if(j.builtin_account&&!j.found) accVerdict='呢個係 SCRIPT 內建最高層管理帳號：要用「改密碼」改過嘅密碼（或 SCRIPT 內建嗰個）登入；Users 表入面冇佢嘅紀錄亦屬正常。';
+          const probeTxt=(j.script_password_match===true)?'\n✅ 密碼探針：呢個密碼同後端 SCRIPT 常數一致 → 應該入到；入唔到多數係 /exec 仲係舊版本，請「部署 → 管理部署 → 新版本」重新部署 Code.gs。'
+            :(j.script_password_match===false)?'\n❌ 密碼探針：呢個密碼同後端 SCRIPT 常數唔一致 → 要用 Code.gs 入面 SUPER_ADMIN_PASS 嗰個密碼。'
+            :'\n（想測密碼請喺「密碼（選填）」格仔填返你平時用嗰個）';
+          if(j.builtin_account&&!j.found){
+            accVerdict='呢個係 SCRIPT 內建最高層管理帳號：Users 表入面冇佢嘅紀錄屬正常，一定要用 SCRIPT 常數（或「改密碼」後寫入 Users 表）嗰個密碼。'+(accPwd?probeTxt:'');
+            rows.push(row('④ 密碼探針','ok',escapeHtml(probeTxt.trim())));
+          }
           else if((j.rows||[]).some(r=>!r.has_password)) accVerdict='⚠️ 呢個帳號喺 Users 表冇密碼（password_hash 空）→ 一定登入唔到，要喺後端設返密碼（或開戶）。';
+          else if(j.builtin_account&&accPwd){ accVerdict='呢個係 SCRIPT 內建最高層管理帳號，Users 表亦有紀錄。'+probeTxt; rows.push(row('④ 密碼探針','ok',escapeHtml(probeTxt.trim()))); }
         }
       } else {
-        rows.push(row('④ 帳號體檢：'+acc,'warn',`後端未支援 accountCheck（HTTP ${chk.status||'0'} ${chk.error||''}）→ 請先喺 Apps Script 重新部署最新 Code.gs（v8.5）再做呢項檢查。`));
+        rows.push(row('④ 帳號體檢：'+acc,'warn',`後端未支援 accountCheck（HTTP ${chk.status||'0'} ${chk.error||''}）→ 請先喺 Apps Script 重新部署最新 Code.gs（v8.6）再做呢項檢查。`));
       }
     }
 
@@ -358,7 +369,8 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   // v8.14：邊個可以管理「會議卡片」（原本只係管理員）→ 秘書處負責，行政組統管
-  canManageMeetings(){ return this.isAdmin()||this.isCardOwnerGroup('meetings'); }
+  // v8.14c：會議卡片＝秘書處負責，行政組統管，執副以上（主席／顧問／執副主席／管理員）一律管到
+  canManageMeetings(){ return this.isAdmin()||this.isExecViceOrChair()||this.isCardOwnerGroup('meetings'); }
 ,
   // 可以睇晒全部部門嘅人：執副以上 ＋ 行政組（統管全站）
   isAllGroupViewer(){
