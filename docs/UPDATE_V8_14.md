@@ -31,7 +31,7 @@ canViewGroup(groupName)    可以睇／入呢個部門？＝ isAllGroupViewer() 
 
 ## 後端 v8.5（要人手重新部署）
 
-1. **最高層管理帳號鎖死問題**：舊 `handleLogin` 有 `if (rowObj.role === 'super_admin' && rowObj.user_id === 'sheep') continue;`
+1. **最高層管理帳號鎖死問題**：舊 `handleLogin` 有 `if (rowObj.role === 'super_admin' && rowObj.user_id === <最高層帳號>) continue;`
    —— 即係最高層嗰行永遠唔會用 Users 表對密碼。只要用過前端「改密碼」（寫入 Sheet），SCRIPT 常數密碼就失效，
    而 Sheet 嗰行又被 skip → 變「找不到用戶帳號」，**帳號永久鎖死**（一般委員帳號唔受影響，所以總主任照入到）。
    v8.5 刪咗嗰行 skip：常數密碼對唔到就落 Sheet 用已存嘅 hash 對，改過密碼一樣入到。
