@@ -9,7 +9,8 @@ class ScoutEventApp{
   // init() 永遠唔會跑 → 活動清單載入唔到（要手動按營帳圖示）、gasUrl 留空 →
   // mockMode 永遠 true → 所有經後端驗證嘅帳戶都登入失敗、資料唔再同步後端。
   constructor(){
-    this.gasUrl=localStorage.getItem(LS.gasUrl)||''; this.apiKey=localStorage.getItem(LS.apiKey)||'scout_e6451624b1f340078ec6a111';
+    // v8.13：改用前端內建預設值做底（/api/config 只係可選覆寫），避免 /api/config 失敗時後端成個失聯
+    this.gasUrl=localStorage.getItem(LS.gasUrl)||DEFAULT_GAS_URL; this.apiKey=localStorage.getItem(LS.apiKey)||DEFAULT_API_KEY; this.backendConfigStatus='';
     this.currentUser=JSON.parse(localStorage.getItem(LS.currentUser)||'null'); this.currentEvent=JSON.parse(localStorage.getItem(LS.currentEvent)||'null');
     if(this.currentUser){
       this.currentUser.group_name=normalizeGroupName(this.currentUser.group_name);
@@ -38,7 +39,18 @@ class ScoutEventApp{
 }
 Object.assign(ScoutEventApp.prototype,{
   async init(){
-    try{const res=await fetch('/api/config').catch(()=>null); if(res&&res.ok){const j=await res.json(); if(j.success){this.apiKey=j.apiKey||this.apiKey; if(j.gasUrl) this.gasUrl=j.gasUrl;}}}catch(e){}
+    // v8.13：記低 /api/config 嘅結果俾「後端連線診斷」睇；失敗都用內建預設值繼續行（唔會再成個後端失聯）
+    try{
+      const res=await fetch('/api/config').catch(()=>null);
+      if(res&&res.ok){
+        const txt=await res.text().catch(()=>'');
+        try{ const j=JSON.parse(txt); if(j&&j.success){ this.apiKey=j.apiKey||this.apiKey; if(j.gasUrl) this.gasUrl=j.gasUrl; this.backendConfigStatus='OK（/api/config）'; } else this.backendConfigStatus='HTTP '+res.status+' 但 success=false'; }
+        catch(pe){ this.backendConfigStatus='HTTP '+res.status+' 回應唔係 JSON：'+String(txt||'').slice(0,60); }
+      } else {
+        this.backendConfigStatus=res?('HTTP '+res.status+' '+(res.statusText||'')):'無法連線（無回應）';
+        console.warn('[後端] /api/config '+this.backendConfigStatus+' → 改用前端內建預設 GAS 網址');
+      }
+    }catch(e){ this.backendConfigStatus='例外：'+(e&&e.message||e); }
     if(this.currentUser) this.updateUserUI(); this.applyBannerConfig(); this.updateAdminNav();
     // 一入 APP 直接顯示「選擇活動」首頁（像 trip APP）：登入狀態保留，但每次都先見到活動可選，
     // 唔使再按最頂營帳圖示先返到活動選擇頁。掃碼 hash（#donate-*）會喺 handleHashRoute 另行進入活動。
@@ -66,7 +78,7 @@ Object.assign(ScoutEventApp.prototype,{
     ['landing','dashboard','module','users','bulk','approvals','approvalmatrix','system'].forEach(v=>{const el=document.getElementById('view-'+v); if(el) el.classList.add('hidden');});
     const target=document.getElementById('view-'+view); if(target) target.classList.remove('hidden');
     document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active')); if(btn) btn.classList.add('active'); else document.querySelector(`.nav-tab[data-view="${view}"]`)?.classList.add('active');
-    this.updateBottomNav();
+    this.updateBottomNav(); this.updateAdminNav(); // v8.13：頂 BAR 登入掣要跟住「有冇選活動」同步
     if(view==='users') this.loadUsers(); else if(view==='approvals') this.renderApprovalCenter(); else if(view==='approvalmatrix') this.renderApprovalMatrixView(); else if(view==='landing') this.loadEvents();
   }
 ,
@@ -173,7 +185,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async verifyAndEnterEvent(id){const ev=this.eventsList.find(e=>e.event_id===id); if(!ev){showToast('找不到活動','error'); return;} this.currentEvent=ev; this.approvalRouting=this.getLocalApprovalRouting(); localStorage.setItem(LS.currentEvent,JSON.stringify(ev)); this.closeModal('modal-password'); this.showDashboard();}
 ,
-  goHome(){this.pushNavHistory({view:'landing'}); this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='選擇活動後即可查看該活動全部資料'; this.updateBottomNav(); this.loadEvents();}
+  goHome(){this.pushNavHistory({view:'landing'}); this.currentEvent=null; localStorage.removeItem(LS.currentEvent); document.getElementById('view-landing').classList.remove('hidden'); ['dashboard','module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('current-event-subtitle').textContent='選擇活動後即可查看該活動全部資料'; this.updateBottomNav(); this.updateAdminNav(); this.loadEvents();}
 ,
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
 ,
@@ -210,6 +222,104 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   // 大型活動管理權限：僅管理員（地域秘書處）可以新增/編輯/刪除活動
   isEventManager(){ return this.currentUser?.mock_admin||['admin','super_admin'].includes(this.currentUser?.role); }
+,
+  /* ===== v8.13 後端連線：統一 POST + 連線診斷 =====================================
+     以前所有後端 POST 都係 try/catch + res.json()。一旦 Google 回 HTTP 400／401／404／5xx
+     （回應係 HTML 或空），畫面只會彈「後端回應唔係 JSON」，完全睇唔到真正嘅 HTTP 狀態，
+     最高層管理帳號登入唔到嗰陣根本無從判斷係「密碼錯」定「後端死咗」。
+     而家 gasPost() 一律回傳 {ok,status,statusText,json,text,error}，登入等流程可以畀準確提示；
+     再加「後端連線診斷」一次過試 /api/config、GET、POST，直接睇到邊一層斷。 */
+  async gasPost(payload,opts){
+    opts=opts||{};
+    const out={ok:false,status:0,statusText:'',json:null,text:'',error:''};
+    if(!this.gasUrl){ out.error='尚未設定後端網址 (GAS URL)'; return out; }
+    try{
+      // text/plain（唔係 application/json）＝瀏覽器唔會發 CORS 預檢 OPTIONS，Google Apps Script 先收得到
+      const res=await fetch(this.gasUrl,{
+        method:'POST',
+        headers:{'Content-Type':opts.contentType||'text/plain;charset=UTF-8'},
+        body:typeof payload==='string'?payload:JSON.stringify(payload),
+        redirect:'follow',
+        credentials:'omit'
+      });
+      out.status=res.status; out.statusText=res.statusText||''; out.ok=!!(res.ok!==undefined?res.ok:(res.status>=200&&res.status<300));
+      // 優先 res.text()；遇到得 json() 嘅回應（舊測試 stub／部分 polyfill）都唔會炸
+      let raw='';
+      try{ raw = (typeof res.text==='function') ? await res.text() : (typeof res.json==='function' ? JSON.stringify(await res.json()) : ''); }
+      catch(te){ raw=''; }
+      if(raw==null) raw='';
+      out.text=String(raw||'').slice(0,300);           // 只係畀人睇／診斷用
+      try{ out.json=JSON.parse(raw); }
+      catch(pe){ out.error=(out.ok?'HTTP 200 但回應唔係 JSON':'HTTP '+res.status+' 回應唔係 JSON'); }
+      if(!out.json&&!out.error) out.error='回應唔係 JSON';
+      return out;
+    }catch(err){
+      out.error='網絡錯誤：'+((err&&err.message)||err)+'（可能被廣告攔截器／CORS／公司網絡擋咗）';
+      return out;
+    }
+  }
+,
+  // 由 HTTP 狀態碼推斷後端發生咩事（俾登入失敗提示用）
+  loginFailureHint(status){
+    if(status===400||status===401||status===403) return 'Google 拒絕咗呢個 POST 請求 → 絕大多數係 Apps Script 部署問題：請開 Code.gs「部署 → 管理部署 → 新版本」重新部署，並確認「誰可以存取」＝任何人。';
+    if(status===404) return 'GAS 網址失效（部署已刪除／網址錯）→ 請重新部署並更新 GAS 網址。';
+    if(status===405) return '後端唔接受 POST（部署唔係 Web App，或 doPost 已遺失）→ 請重新部署 Code.gs。';
+    if(status===429) return '短時間內太多請求（Google 配額）→ 等一陣再試。';
+    if(status>=500) return 'Google 伺服器端錯誤（HTTP '+status+'）→ 等一陣再試。';
+    return '請按「後端連線診斷」睇實際 HTTP 狀態同回應內容。';
+  }
+,
+  openBackendDiagModal(){
+    const m=document.getElementById('modal-diag'); if(!m) return;
+    m.classList.remove('hidden'); this.runBackendDiag();
+  }
+,
+  async runBackendDiag(){
+    const box=document.getElementById('diag-content'); if(!box) return;
+    const cls={ok:'bg-emerald-100 text-emerald-700 border-emerald-200',bad:'bg-rose-100 text-rose-700 border-rose-200',warn:'bg-amber-100 text-amber-700 border-amber-200'};
+    const row=(t,state,detail)=>`<div class="border rounded-xl p-2.5"><div class="flex items-start justify-between gap-2 flex-wrap"><b class="text-[12px]">${escapeHtml(t)}</b><span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${cls[state]||cls.warn}">${state==='ok'?'正常':(state==='bad'?'異常':'警告')}</span></div>${detail?`<div class="mt-1 text-[10.5px] text-slate-500 leading-relaxed whitespace-pre-line break-all">${escapeHtml(detail)}</div>`:''}</div>`;
+    box.innerHTML='<div class="text-[11px] text-slate-400 py-4 text-center"><i class="fa-solid fa-spinner fa-spin mr-1"></i>測試中…</div>';
+    const rows=[];
+    const gasShort=this.gasUrl?this.gasUrl.slice(0,52)+'…':'（空）';
+    const keyShort=this.apiKey?(this.apiKey.slice(0,10)+'…'+'('+this.apiKey.length+' 位)'):'（空）';
+    rows.push(row('前端設定',this.gasUrl&&this.apiKey?'ok':'bad',
+      `GAS：${gasShort}\nAPI Key：${keyShort}\n/api/config：${this.backendConfigStatus||'（未測試）'}\n模式：${this.mockMode?'本地／示範 (mockMode)':'正式（連後端）'}\n活動：${this.currentEvent?this.currentEvent.event_id:'（未選活動）'}`));
+
+    // ① GET：睇部署係咪仲活著、版本係幾多
+    let version='';
+    try{
+      const res=await fetch(`${this.gasUrl}?action=getEvents&api_key=${encodeURIComponent(this.apiKey)}`);
+      const txt=await res.text();
+      let j=null; try{ j=JSON.parse(txt); }catch(e){}
+      if(res.ok&&j&&j.success){ version=j.version||''; rows.push(row('① GET getEvents（部署存活）','ok',`HTTP ${res.status}｜版本 ${version||'（無回報）'}｜活動數 ${(j.data||[]).length}`)); }
+      else rows.push(row('① GET getEvents（部署存活）',res.ok?'bad':'bad',`HTTP ${res.status} ${res.statusText||''}｜${String(txt||'').slice(0,160)}`));
+    }catch(err){ rows.push(row('① GET getEvents（部署存活）','bad','連線失敗：'+(err&&err.message||err))); }
+
+    // ② POST doPost 係咪執行到（用一個必定唔存在嘅帳號，正常應該回 JSON 錯誤而唔係 HTTP 錯誤）
+    const probe=await this.gasPost({action:'login',user_id:'__diag_probe__',password:'__diag_probe__'});
+    if(probe.ok&&probe.json) rows.push(row('② POST doPost（後端有執行）','ok',`HTTP ${probe.status}｜後端版本 ${probe.json.version||'（冇回報）'}｜回應 ${probe.json.error||'（success='+probe.json.success+'）'}`));
+    else rows.push(row('② POST doPost（後端有執行）','bad',`HTTP ${probe.status||'0'} ${probe.statusText||''}｜${probe.error||''}\n${probe.text.slice(0,160)}\n→ ${this.loginFailureHint(probe.status)}`));
+
+    // ③ API Key 係咪有效（getAllUsers 需要正確 api_key）
+    const users=await this.gasPost({action:'getAllUsers',api_key:this.apiKey});
+    if(users.ok&&users.json&&users.json.success) rows.push(row('③ API Key 驗證 (getAllUsers)','ok',`HTTP ${users.status}｜後端帳戶 ${(users.json.users||[]).length} 個`));
+    else rows.push(row('③ API Key 驗證 (getAllUsers)',users.ok?'warn':'bad',`HTTP ${users.status||'0'}｜${(users.json&&users.json.error)||users.error||''}\n（API Key 唔啱唔影響登入，但會令所有寫入／名單同步失敗）`));
+
+    // 總結
+    const postDown=!(probe.ok&&probe.json);
+    const verdict=postDown
+      ? '結論：後端 POST 被拒／無回應（'+ (probe.status||'網絡錯誤') +'）。呢個唔係密碼問題——最高層管理帳號等只存喺後端嘅帳戶會全部登入唔到。請喺 Apps Script 開最新 Code.gs →「部署 → 管理部署 → 新版本」重新部署（存取權限＝任何人），部��完再按「重新測試」。'
+      : (version&&/v8\.[4-9]/.test(version)?'結論：後端正常（已係最新版 Code.gs '+version+'）。登入唔到就係帳號／密碼問題，或者帳戶唔喺後端 Users 表。'
+        :'結論：後端正常（版本 '+(version||'未知')+'）。注意：後端部署嘅 Code.gs 可能唔係最新版本，如有異常請重新部署「新版本」後再試。');
+    box.innerHTML=`<div class="space-y-2">${rows.join('')}<div class="border-2 ${postDown?'border-rose-300 bg-rose-50':'border-emerald-300 bg-emerald-50'} rounded-xl p-3 text-[11.5px] leading-relaxed">${escapeHtml(verdict)}</div></div>`;
+    this._diagReport=[...rows.map(r=>r.replace(/<[^>]+>/g,' ').trim()),verdict].join('\n');
+  }
+,
+  async copyDiagReport(){
+    const text=this._diagReport||'';
+    try{ await navigator.clipboard.writeText(text); showToast('診斷報告已複製，可貼俾技術人員','success'); }
+    catch(e){ showToast('複製失敗，請手動選取內容複製','error'); }
+  }
 ,
   canSeeRoleCard(def){
     if(!this.currentUser) return def.minLevel<=0;
@@ -392,16 +502,20 @@ Object.assign(ScoutEventApp.prototype,{
     // 全部卡片一律白底無顏色（更整潔）；未登入／已登入都是同一款白底卡，只靠「可修改／只讀／公開可看」小標籤分辨
     this.renderIdentityBar();
 
-    // ===== 未登入（訪客）：儀表板只留活動資訊，唔顯示「公開資料」、「登入後解鎖」、管理工具同說明；
-    //      4 張公開資料卡改為底部導覽列 4 個按鈕（公告及溝通・執行手冊・申請中心・童心捐贈）=====
+    // ===== 未登入（訪客）v8.13：登入後先至有嘅「工作卡片／管理工具」全部收起，
+    //      但 4 張公開資料卡（= 底部導覽列嗰 4 個按鈕：公告及溝通・執行手冊・申請中心・童心捐贈）
+    //      照樣放喺中間，填滿版面（以前只留身份卡，中間一大片吉位，尤其手機更明顯）=====
     if(!user){
-      if(publicSection) publicSection.classList.add('hidden');
       if(identitySection) identitySection.classList.add('hidden');
       if(toolsSection) toolsSection.classList.add('hidden');
       if(note) note.classList.add('hidden');
-      publicGrid.innerHTML='';
+      if(publicSection) publicSection.classList.remove('hidden');
       identityGrid.innerHTML='';
       toolsGrid.innerHTML='';
+      this.deferredDashWrite(publicGrid, publicDefs.map(d=>this.cardHTML(d,{locked:false,badge:'公開可看',canEdit:false})).join(''));
+      if(publicCount) publicCount.textContent=`${publicDefs.length} 張（公開可看）`;
+      if(identityCount) identityCount.textContent='';
+      if(toolsCount) toolsCount.textContent='';
       return;
     }
     // 登入後：還原原本設計（公開資料 → 工作卡片 → 管理工具 → 部門管理中心）
@@ -444,8 +558,11 @@ Object.assign(ScoutEventApp.prototype,{
     // 最頂 BAR：開戶（登入後總主任以上）＋改密碼＋登出；開戶已唔再佔底部導覽列位置
     const loggedIn=!!this.currentUser;
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
-    // 最頂 BAR 右側：登入後只顯示登出＋改密碼，不顯示登入
-    const hLogin=document.getElementById('login-toggle-btn'); if(hLogin) hLogin.style.display=loggedIn?'none':'';
+    // v8.13：未選活動（「選擇活動」首頁）時唔好顯示登入掣——
+    // 未入活動＝未連後端個活動資料，呢個位登入一定唔會成功（只會彈「登入失敗」），反而令人以為後端壞咗。
+    // 入咗活動先顯示；已登入就照舊淨係顯示登出。
+    const noEvent=!this.currentEvent;
+    const hLogin=document.getElementById('login-toggle-btn'); if(hLogin){ hLogin.style.display=(loggedIn||noEvent)?'none':''; if(noEvent&&!loggedIn) hLogin.title='請先選擇並進入活動，再按登入'; }
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
     const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
     const taSetup=document.getElementById('topbar-account-setup'); if(taSetup) taSetup.style.display=(loggedIn&&chiefOrAbove)?'':'none';
@@ -925,6 +1042,17 @@ Object.assign(ScoutEventApp.prototype,{
     this.restoreNavState(prev);
   }
 ,
+  // v8.13：模組右上角通用「新增」掣嘅顯示準則——同一個模組入面嗰啲新增／編輯掣用同一套權限。
+  // ・未登入（訪客）＝一律唔顯示（公開資料只可以睇，唔可以改）
+  // ・有卡片定義（DASH_CARD_DEFS）＝用 canEditRoleCard（例如公告／旅團須知／日程表各有自己門檻）
+  // ・冇卡片定義嘅舊模組＝主任（30）以上先顯示
+  canAddModuleRecord(key,def){
+    if(!this.currentUser) return false;
+    if(this.roleLevel(this.currentUser.role)>=100) return true;
+    if(def) return this.canEditRoleCard(def);
+    return this.roleLevel(this.currentUser.role)>=30;
+  }
+,
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});
@@ -959,7 +1087,14 @@ Object.assign(ScoutEventApp.prototype,{
     } else if(key==='permissions'){
       document.getElementById('module-actions').innerHTML=`<button onclick="app.renderPermissionsModule()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新整理</button>`;
     } else {
-      document.getElementById('module-actions').innerHTML=`<button onclick="app.openAddRecordModal('${key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold">新增</button>`;
+      // v8.13：呢個「新增」掣以前係無條件兜底顯示（任何模組、任何人都出），
+      // 結果未登入（訪客）入「公告及溝通」都會見到「新增」——但公告係主任以上先可以發佈。
+      // 而家改為跟返「呢張卡你有冇權改」同一套判斷（canEditRoleCard），
+      // 即係：顯示出嚟嘅「新增」掣，一定同卡入面嗰啲新增／編輯掣一致；無權限＝唔顯示。
+      const def=DASH_CARD_DEFS.find(d=>d.id===key);
+      document.getElementById('module-actions').innerHTML=this.canAddModuleRecord(key,def)
+        ?`<button onclick="app.openAddRecordModal('${key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold">新增</button>`
+        :'';
     }
     this.renderModuleContent(key);
     this.updateBottomNav();

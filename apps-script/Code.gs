@@ -1,4 +1,7 @@
 // ============================================================
+// ⚠️ v8.4 (2026-08-31)：改完 Code.gs 之後，必須喺 Apps Script 做
+//    「部署 → 管理部署 → ✏️ 編輯 → 版本：新版本 → 部署」，前端先會用到新程式碼
+//    （只撳「儲存」唔會更新 /exec 部署；前端「後端連線診斷」睇到嘅版本號就係部署緊嗰個版本）。
 // 童軍活動管理系統 - Google Apps Script 後端 v8.1
 //  v8.1 更新：超管不屬行政組；籌委全員種子寫入 Users；會議種子；updateUser（前端「確定更新用戶」才寫入）；批核路由僅超管由前端確定後呼叫 saveApprovalRouting。
 //  v8.0 更新：動態 Approval_Routing、跨裝置 Finance_Expenses、本組確認欄位及永久刪除同步。
@@ -13,7 +16,10 @@
 
 // v8.3：seedInitialData／refreshApiKey 的 getUi() 包 try/catch——Apps Script 編輯器直接 Run initializeSheets 不再因無 UI 彈窗而報錯。
 // v8.2：handleLogin 密碼 trim（手機鍵盤易加尾隨空格）。login／getEvents 回應帶 version，前端可用嚟判斷部署係咪舊版。
-const GS_VERSION = 'v8.3-2026-08-27';
+// v8.4：doPost 兼容 application/x-www-form-urlencoded（表單編碼）嘅 payload ——
+//       部分瀏覽器／代理會將 POST body 轉成 e.parameter，淨讀 e.postData.contents 會變 undefined 而報錯。
+//       前端一律用 text/plain（唔發 CORS 預檢），呢個係雙重保險。
+const GS_VERSION = 'v8.4-2026-08-31';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -1022,7 +1028,11 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    // v8.4：優先讀 POST body（text/plain／application/json），body 冇資料時
+    // 再試表單欄位 payload（application/x-www-form-urlencoded），兩邊都冇就當空物件。
+    const rawBody = (e.postData && e.postData.contents) ? e.postData.contents
+                  : ((e.parameter && e.parameter.payload) ? e.parameter.payload : '');
+    const data = JSON.parse(rawBody || '{}');
     const action = data.action;
     const apiKey = data.api_key || '';
     

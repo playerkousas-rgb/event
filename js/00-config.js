@@ -2,6 +2,14 @@
 
 const ROLE_LABELS={'super_admin':'系統管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+/* ── 後端（Google Apps Script）預設連線 v8.13 ─────────────────────────────────
+   以前 GAS 網址只由 /api/config（Vercel serverless function）提供，前端初值是空字串。
+   一旦 /api/config 失敗（Vercel 回 400／500、環境變數未設、函式未部署），gasUrl 就變 '' →
+   mockMode 變 true → 所有只存在後端嘅帳戶（最高層管理帳號等）永遠登入唔到，畫面只會出「登入失敗」，
+   好難對症。故改為：前端內建同一組預設值做底，/api/config 只做「可選覆寫」，
+   就算 /api/config 死咗，後端連線都唔會斷。（可在「系統設定」自行覆寫，存 localStorage） */
+const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
+const DEFAULT_API_KEY='scout_e6451624b1f340078ec6a111';
 // 統一清理組別名稱：移除「(Level X)」及多餘括號，並遷移舊稱「籌委會」。
 function normalizeGroupName(value){
   let group=String(value||'').trim();

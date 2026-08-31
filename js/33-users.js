@@ -344,27 +344,55 @@ Object.assign(ScoutEventApp.prototype,{
     // 只要已設定後端網址，無論 Mock/雲端模式都先交由後端驗證
     // （正式帳戶只存在後端 SCRIPT/Sheet，前端及 Mock 本地均不留存；之前 Mock 模式下後端帳戶永遠登入失敗）
     if(this.gasUrl){
-      try{
-        const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'login',user_id:id,password:pwd})});
-        let j=null;
-        try{ j=await res.json(); }catch(parseErr){ throw new Error('後端回應唔係 JSON（GAS 部署存取權限可能唔係「任何人」，或 GAS 網址錯誤）'); }
-        if(j && j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:(j.user.user_id==='exec_vp'||(j.user.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':j.user.role,group_name:normalizeGroupName(j.user.group_name),job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||'')+(j.version?`（後端 ${j.version}）`:''),'success'); if(this.currentEvent) this.showDashboard(); return; }
-        if(j && j.success && !j.user){
+      // v8.13：改用 gasPost()──睇得到真正嘅 HTTP 狀態（400／401／404／5xx），
+      // 唔會再將「Google 拒絕請求」一律當成「回應唔係 JSON／密碼錯」，最高層管理帳號入唔到嗰陣先對到症。
+      const r=await this.gasPost({action:'login',user_id:id,password:pwd});
+      if(r.ok && r.json){
+        const j=r.json;
+        if(j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:(j.user.user_id==='exec_vp'||(j.user.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':j.user.role,group_name:normalizeGroupName(j.user.group_name),job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||'')+(j.version?`（後端 ${j.version}）`:''),'success'); if(this.currentEvent) this.showDashboard(); return; }
+        if(j.success && !j.user){
           // 後端將 POST 重新導向成 GET（常見於 /exec 部署係舊版本）：回應會變成 getEvents
           if(!this.mockMode){ showToast('登入失敗：後端回應異常（疑似部署係舊版本）。請喺 Apps Script 用「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試。','error'); return; }
         } else if(!this.mockMode){
           // v8.2 診斷提示：帳戶冇錯都入唔到，最大可能係你連住嘅 /exec 係舊版部署（未重新部署新版 Code.gs）。
-          const hint=j&&j.version?'':'（後端冇回報版本 → 好大機會係舊版部署；請喺 Apps Script「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試）';
-          showToast('登入失敗：'+(j&&j.error||'帳號或密碼錯誤')+hint,'error'); return;
+          const hint=j.version?'':'（後端冇回報版本 → 好大機會係舊版部署；請喺 Apps Script「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試）';
+          showToast('登入失敗：'+(j.error||'帳號或密碼錯誤')+hint,'error'); return;
         }
         // Mock 模式下後端找不到 → 繼續嘗試本地示範帳戶
-      }catch(err){ if(!this.mockMode){ showToast('無法連線後端：'+err.message+'（請確認 GAS 網址正確、部署存取權限係「任何人」）','error'); return; } /* Mock 模式下後端連不上 → 繼續嘗試本地示範帳戶 */ }
+      } else {
+        // HTTP 層面失敗（400／401／404／5xx、或回應唔係 JSON）＝後端根本冇執行到 doPost，同密碼無關
+        const reason=r.status?('HTTP '+r.status+' '+(r.statusText||'')):(r.error||'無回應');
+        if(!r.ok) console.warn('[登入] 後端 POST 失敗：'+reason+'｜回應：'+String(r.text||'').slice(0,200));
+        if(!this.mockMode){
+          // 後端死咗：若本機名單有同一個帳號，照畀佢「離線登入」繼續睇資料（會講清楚改動唔會入後端）
+          if(this.offlineLogin(id,pwd,reason)) return;
+          showToast('登入失敗：'+reason+'。'+this.loginFailureHint(r.status)+'（可撳登入框入面嘅「後端連線診斷」睇實際回應）','error'); return;
+        }
+        /* Mock 模式下後端連不上 → 繼續嘗試本地示範帳戶 */
+      }
     }
     // Mock 模式回退：本地示範帳戶（正式帳戶只經後端 SCRIPT）
-    const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id)&&u.password===pwd);
-    if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit)}; if(this.isDemoEvent()) this.currentUser.mock_admin=true; // v8.7：MOCK 全部管理權限
-    localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name+(this.isDemoEvent()?'（MOCK 全部管理權限已開）':''),'success'); if(this.currentEvent) this.showDashboard(); return;}
+    const users=this.getLocalUsers(); const found=users.find(u=>(u.user_id===id||u.email===id||u.name===id)&&u.password===pwd);
+    if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit),offline:!this.isDemoEvent()}; if(this.isDemoEvent()) this.currentUser.mock_admin=true; // v8.7：MOCK 全部管理權限
+    localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name+(this.isDemoEvent()?'（MOCK 全部管理權限已開）':'（離線：本機資料）'),'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
+  }
+,
+  // v8.13 離線登入：後端 POST 失敗（HTTP 400／404／5xx／網絡錯誤）時先會用到。
+  // 本機名單（之前同步落嚟嘅 localStorage／內建 data/*.json／committee_accounts.csv）內
+  // 有同一個帳號＋密碼 → 照入，方便繼續睇資料；但標記 offline，改動只影響呢個瀏覽器，唔會寫入後端 Sheet。
+  offlineLogin(id,pwd,reason){
+    try{
+      const list=this.getLocalUsers()||[];
+      const found=list.find(u=>(u.user_id===id||u.email===id||u.name===id)&&String(u.password||'')===String(pwd||''));
+      if(!found||!String(pwd||'')) return false;
+      this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit),offline:true};
+      localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser));
+      this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login');
+      showToast('⚠️ 後端冇回應（'+reason+'）→ 已用本機名單登入「'+found.name+'」（離線：只睇到呢個瀏覽器嘅資料，改動唔會寫入後端）','warning');
+      if(this.currentEvent) this.showDashboard();
+      return true;
+    }catch(err){ return false; }
   }
 ,
   demoLogin(uid){if(!this.isDemoEvent()){showToast('示範登入僅限「模擬示範版」活動','error'); return;} const users=this.getLocalUsers(); const found=users.find(u=>loginIdMatches(u,uid))||{user_id:uid,name:uid,role:'super_admin',group_name:'主席及執行副主席'}; this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:found.group_name,mock_admin:true}; // v8.7：MOCK 示範登入＝所有管理權限全開（本地沙盒）
@@ -401,7 +429,7 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('密碼已更新（示範）','success');
   }
 ,
-  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); this.updateAdminNav(); setTimeout(()=>this.checkAndShowNotifications(), 500);}
+  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=(ROLE_LABELS[this.currentUser.role]||this.currentUser.role)+(this.currentUser.offline?' · 離線':''); if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden'); this.updateAdminNav(); setTimeout(()=>this.checkAndShowNotifications(), 500);}
 ,
   logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
 ,
