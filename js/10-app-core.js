@@ -177,7 +177,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
 ,
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; document.getElementById('dash-event-title').textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){document.getElementById('dash-role-display').textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; const dashTitleEl=document.getElementById('dash-event-title'); if(dashTitleEl) dashTitleEl.textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); const newsBox=document.getElementById('dash-news-box'); const newsEl=document.getElementById('dash-event-news'); if(newsBox&&newsEl){ if(ev.news){ newsBox.classList.remove('hidden'); newsEl.textContent=ev.news; } else newsBox.classList.add('hidden'); } if(this.currentUser){const roleDisplayEl=document.getElementById('dash-role-display'); if(roleDisplayEl) roleDisplayEl.textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; if(['super_admin','advisor','admin','chairperson','executive_vice_chairperson'].includes(this.currentUser.role)) document.getElementById('banner-admin-actions').classList.remove('hidden');} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 ,
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
@@ -322,7 +322,7 @@ Object.assign(ScoutEventApp.prototype,{
     const loginBtn=document.getElementById('identity-login-btn');
     const avatar=document.getElementById('identity-avatar');
     const mockBadge=document.getElementById('identity-mock-badge');
-    const monitorEl=document.getElementById('identity-monitor');
+    const heroMon=document.getElementById('dash-hero-monitor'); // 我的監察已併入頂部活動資訊橫幅（不再佔身份卡片）
     if(mockBadge) mockBadge.classList.toggle('hidden',!this.mockMode);
     if(!user){
       if(nameEl) nameEl.textContent='訪客';
@@ -331,9 +331,9 @@ Object.assign(ScoutEventApp.prototype,{
       if(desc) desc.innerHTML='<span class="inline-flex items-center gap-1 font-semibold text-slate-700"><i class="fa-solid fa-key text-amber-600"></i>初始帳戶：<b>中文姓名</b>（例如「朱家聰」）｜初始密碼：<b>1234</b></span><span class="mx-1.5 text-slate-300">｜</span><span class="text-indigo-700 font-semibold">如需要開戶請找所屬組別的總主任</span><br><span class="text-slate-500">（所有公開資料無需登入即可查閱；登入後可依職級與組別管理相應卡片）</span>';
       if(loginBtn) loginBtn.classList.remove('hidden');
       if(avatar) avatar.innerHTML='<i class="fa-solid fa-user"></i>';
-      if(monitorEl){
-        monitorEl.classList.remove('hidden');
-        monitorEl.innerHTML='<div class="border-t pt-3 flex flex-col sm:flex-row sm:items-center gap-2.5"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 text-[11px] font-bold text-indigo-700"><i class="fa-solid fa-eye"></i>我的監察 <span class="text-[9.5px] bg-slate-100 text-slate-500 border px-1.5 py-0.5 rounded-full font-normal">登入後顯示</span></div><p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">登入後在此顯示你的申請批核進度。</p></div><button onclick="app.openModule(\'my_monitor\')" class="bg-indigo-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-eye mr-1"></i>查看我的監察</button></div>';
+      if(heroMon){
+        heroMon.classList.remove('hidden');
+        heroMon.innerHTML='<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2 flex items-center gap-2 flex-wrap"><span class="text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">登入後顯示</span></span><span class="text-[10.5px] text-white/75">登入後在此顯示你的申請批核進度</span><button onclick="app.openLoginModal()" class="ml-auto bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button></div>';
       }
       return;
     }
@@ -346,43 +346,35 @@ Object.assign(ScoutEventApp.prototype,{
     if(desc) desc.textContent=`身份由管理員批核。你可看到 ${visibleCount} 張卡片，其中 ${editCount} 張可修改、其餘只讀；登出後恢復公開身份 (公開資料仍可看)。`;
     if(loginBtn) loginBtn.classList.add('hidden');
     if(avatar) avatar.innerHTML='<i class="fa-solid fa-user-shield"></i>';
-    if(monitorEl){
+    if(heroMon){
       const sum=this.monitorSummary();
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
       // 有權限人士：數字跳轉批核中心處理；無權限人士：數字帶自己到「我的監察」看自己進度
       const clickAttr=canGoApprovals?'onclick="app.switchTopTab(\'approvals\')" ':'onclick="app.openModule(\'my_monitor\')" ';
-      const hoverCls='cursor-pointer hover:shadow';
-      const chipBase='rounded-xl px-2 py-1.5 text-center border';
-      const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase} ${hoverCls}"><span class="block text-[15px] font-extrabold leading-none">${v}</span><span class="block text-[9.5px] mt-0.5">${l}</span></button>`;
+      const chipBase='rounded-lg px-2 py-1 text-center border border-white/20';
+      const chip=(v,l,cls)=>`<button ${clickAttr}class="${cls} ${chipBase} cursor-pointer hover:brightness-110"><span class="block text-[14px] font-extrabold leading-none">${v}</span><span class="block text-[9px] mt-0.5 opacity-80">${l}</span></button>`;
       const minePending=sum.mine.filter(r=>r.color_name==='amber'||r.color_name==='sky').length;
       const mineApproved=sum.mine.filter(r=>r.color_name==='emerald').length;
       const mineRejected=sum.mine.filter(r=>r.color_name==='rose').length;
-      const descText=sum.privileged
-        ?(sum.mine.length?'自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理；下方「我的申請」一行只計你自己（含待處理數）。':'自己＋下級所有申請批核進度；點擊數字可跳轉批核中心處理。')
-        :(sum.mine.length?'只顯示你自己的申請批核進度；點擊數字查看詳情。':'你暫時未有申請紀錄，可到「申請中心」提交。');
-      monitorEl.classList.remove('hidden');
-      monitorEl.innerHTML=`<div class="border-t pt-3">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 text-[11px] font-bold text-indigo-700"><i class="fa-solid fa-eye"></i>我的監察 <span class="text-[9.5px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-1.5 py-0.5 rounded-full font-normal">${escapeHtml(sum.scopeText)}</span></div>
-            <p class="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">${descText}</p>
-          </div>
-          <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
+      const chips=sum.privileged
+        ?chip(sum.total,'總申請','bg-white/15 text-white')
+        +chip(sum.pending,'待處理',sum.pending?'bg-amber-400/40 text-amber-50 border-amber-300/50':'bg-white/10 text-white/60')
+        +chip(sum.approved,'已批核','bg-emerald-400/30 text-emerald-50 border-emerald-300/40')
+        +chip(sum.rejected,'已拒絕','bg-rose-400/30 text-rose-50 border-rose-300/40')
+        :(sum.mine.length
+          ?chip(sum.mine.length,'總申請','bg-white/15 text-white')
+          +chip(minePending,'待處理',minePending?'bg-amber-400/40 text-amber-50 border-amber-300/50':'bg-white/10 text-white/60')
+          +chip(mineApproved,'已批核','bg-emerald-400/30 text-emerald-50 border-emerald-300/40')
+          +chip(mineRejected,'已拒絕','bg-rose-400/30 text-rose-50 border-rose-300/40')
+          :`<span class="text-[10.5px] text-white/80">你暫時未有申請紀錄</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-400 text-emerald-950 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button>`);
+      heroMon.classList.remove('hidden');
+      heroMon.innerHTML=`<div class="bg-white/10 backdrop-blur border border-white/25 rounded-xl px-3 py-2">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <div class="flex items-center gap-1.5 text-[11px] font-bold flex-wrap flex-shrink-0"><i class="fa-solid fa-eye"></i>我的監察 <span class="bg-white/15 text-[9.5px] px-1.5 py-0.5 rounded-full border border-white/20 font-normal">${escapeHtml(user.name||'')}（${escapeHtml(ROLE_LABELS[user.role]||user.role)}）· ${escapeHtml(sum.scopeText)}</span></div>
+          <div class="flex items-center gap-1.5 flex-wrap flex-1 min-w-0">${chips}</div>
+          <button onclick="app.openModule('my_monitor')" class="bg-white text-slate-800 px-2.5 py-1 rounded-lg text-[10.5px] font-bold btn-mobile whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-eye mr-1"></i>前往我的監察</button>
         </div>
-        <div class="mt-2.5 grid grid-cols-4 gap-1.5 max-w-md">
-          ${sum.privileged?
-            chip(sum.total,'總申請','bg-slate-100 text-slate-700 border-slate-200')+
-            chip(sum.pending,'待處理',(sum.pending?'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-500 border-slate-200'))+
-            chip(sum.approved,'已批核','bg-emerald-50 text-emerald-700 border-emerald-200')+
-            chip(sum.rejected,'已拒絕','bg-rose-50 text-rose-700 border-rose-200')
-          :(sum.mine.length?
-            chip(sum.mine.length,'總申請','bg-slate-100 text-slate-700 border-slate-200')+
-            chip(minePending,'待處理',(minePending?'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-500 border-slate-200'))+
-            chip(mineApproved,'已批核','bg-emerald-50 text-emerald-700 border-emerald-200')+
-            chip(mineRejected,'已拒絕','bg-rose-50 text-rose-700 border-rose-200')
-          :`<div class="col-span-4 flex flex-col sm:flex-row sm:items-center gap-2"><span class="text-[10.5px] text-slate-500">你暫時未有申請紀錄，可到「申請中心」提交</span><button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[10.5px] font-bold btn-mobile whitespace-nowrap"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心</button></div>`)}
-        </div>
-        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-1.5 w-full max-w-md flex items-center justify-between gap-2 bg-slate-50 border rounded-xl px-2.5 py-1.5 text-[10.5px] text-slate-600 hover:shadow"><span class="truncate text-left"><i class="fa-solid fa-user mr-1 text-indigo-600"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="text-indigo-600 font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
+        ${sum.privileged&&sum.mine.length?`<button onclick="app.openModule('my_monitor')" class="mt-1.5 w-full sm:w-auto sm:min-w-[340px] flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 border border-white/25 rounded-lg px-2.5 py-1 text-[10.5px] text-white/90"><span class="truncate text-left"><i class="fa-solid fa-user mr-1"></i>我的申請 <b>${sum.mine.length}</b> 項（待處理 <b>${minePending}</b>）</span><span class="font-bold whitespace-nowrap">查看詳情 <i class="fa-solid fa-chevron-right text-[9px]"></i></span></button>`:''}
       </div>`;
     }
   }
@@ -442,21 +434,23 @@ Object.assign(ScoutEventApp.prototype,{
     if(toolsSection) toolsSection.classList.toggle('hidden',!visibleTools.length);
     this.deferredDashWrite(toolsGrid, visibleTools.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join(''));
     if(toolsCount) toolsCount.textContent=`${visibleTools.length} 張`;
-    if(note) note.innerHTML=`排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色；自己的組別已標亮；我的監察寫入身份卡片內。最頂 BAR＝身份・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心・開戶（後兩者需權限）。`;
+    if(note) note.innerHTML=`排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色；自己的組別已標亮；我的監察併入頂部活動資訊橫幅。最頂 BAR＝身份・開戶（有權限）・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上見列表／普通人入自己部門）。`;
   }
 ,
   updateAdminNav(){
     // 最頂 BAR（標題列）：身份・改密碼・登出（登入後不顯示登入，只顯示登出）
-    // 底部導覽列（手機／電腦同步）：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）
+    // 底部導覽列（手機／電腦同步）：執行手冊・申請中心（人人可用）；批核中心（登入後有權限人士才可見）；部門中心（登入後可見）
+    // 最頂 BAR：開戶（登入後總主任以上）＋改密碼＋登出；開戶已唔再佔底部導覽列位置
     const loggedIn=!!this.currentUser;
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
     // 最頂 BAR 右側：登入後只顯示登出＋改密碼，不顯示登入
     const hLogin=document.getElementById('login-toggle-btn'); if(hLogin) hLogin.style.display=loggedIn?'none':'';
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
     const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
-    // 底部導覽列：批核中心／開戶 僅登入後總主任以上（有權限人士）可見；執行手冊・申請中心人人可用
+    const taSetup=document.getElementById('topbar-account-setup'); if(taSetup) taSetup.style.display=(loggedIn&&chiefOrAbove)?'':'none';
+    // 底部導覽列：批核中心 僅登入後總主任以上（有權限人士）可見；部門中心 登入後可見；執行手冊・申請中心人人可用
     const bnApprovals=document.getElementById('bn-approvals'); if(bnApprovals) bnApprovals.style.display=(loggedIn&&chiefOrAbove)?'':'none';
-    const bnAccounts=document.getElementById('bn-accounts'); if(bnAccounts) bnAccounts.style.display=(loggedIn&&chiefOrAbove)?'':'none';
+    const bnDept=document.getElementById('bn-dept'); if(bnDept) bnDept.style.display=loggedIn?'':'none';
     const bn=document.getElementById('bottom-nav'); if(bn) bn.style.display='';
     this.updateBottomNav();
   }
@@ -476,7 +470,8 @@ Object.assign(ScoutEventApp.prototype,{
     const mod=this.currentModule;
     if(mod==='exec_manual'){ id='bn-exec'; }
     else if(mod==='apply_hub'){ id='bn-apply'; }
-    else if(mod==='account_setup'){ id='bn-accounts'; }
+    else if(mod==='dept_hub'){ id='bn-dept'; }
+    else if(mod==='group_management' && !this.isExecViceOrChair() && normalizeGroupName(this.currentGroupManaged||'')===normalizeGroupName(this.currentUser?.group_name||'')){ id='bn-dept'; }
     const apprEl=document.getElementById('view-approvals');
     if(apprEl && !apprEl.classList.contains('hidden')){ id='bn-approvals'; }
     if(id){ const el=document.getElementById(id); if(el) el.classList.add('active'); }
@@ -612,6 +607,45 @@ Object.assign(ScoutEventApp.prototype,{
     return true;
   }
 ,
+  // 部門卡片（共用）：儀表板「部門管理中心」與底部導覽「部門中心」列表頁都用同一份，兩處內容必定一致
+  groupHubCardHTML(g,currentGroup,isAdmin){
+    const meta=this.groupMeta(g);
+    // 與「部門管理中心」同一份崗位計算（getGroupOrgNodes），主頁卡片與進入卡片後的崗位數／人數必定一致
+    // （人數只計架構圖崗位上的人名；舊聯絡表「管理」分組含主席／執副主席，併入會令顧問團人數虛大，不再併計）
+    const uniqPosts=this.getGroupOrgNodes(g);
+    const members=new Set();
+    uniqPosts.forEach(n=>{ orgNameList(n.names).forEach(x=>members.add(x)); });
+    const st=this.groupApplyStats(g);
+    const cleanGroup=normalizeGroupName(g);
+    const isOwn=currentGroup && cleanGroup===currentGroup;
+    const canManage=isAdmin || isOwn;
+    const pending=st.supPending+st.boothPending+st.vehPending+st.mealPending;
+    // 協調組／行政組有專屬管理頁；其餘進入部門管理中心
+    const action = g==='協調組' ? "app.openModule('coordinator_group')" : (g==='行政組' ? "app.openModule('admin_group')" : `app.openGroupManagement('${g.replace(/'/g,"")}')`);
+    return `<div class="border rounded-2xl p-3.5 ${isOwn?'bg-indigo-50 border-indigo-500 ring-4 ring-indigo-100':'bg-white'} hover:shadow-md transition cursor-pointer" onclick="${action}">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-10 h-10 ${meta.cls} rounded-xl flex items-center justify-center text-base flex-shrink-0"><i class="${meta.icon}"></i></div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap"><b class="text-[13px]">${escapeHtml(g)}</b>${isOwn?'<span class="bg-indigo-600 text-white text-[9.5px] px-2 py-0.5 rounded-full">我的組別</span>':''}</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">${uniqPosts.length} 崗位 · ${members.size} 人</div>
+          </div>
+        </div>
+        ${pending?`<span class="text-[9.5px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">${pending} 待批</span>`:''}
+      </div>
+      <div class="mt-2.5 grid grid-cols-4 gap-1.5 text-center">
+        <div class="bg-blue-50 border border-blue-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-blue-700">${st.requests.length}</div><div class="text-[9.5px] text-blue-600">物資</div></div>
+        <div class="bg-orange-50 border border-orange-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-orange-700">${st.boothReqs.length}</div><div class="text-[9.5px] text-orange-600">攤位</div></div>
+        <div class="bg-amber-50 border border-amber-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-amber-700">${st.vehicles.length}</div><div class="text-[9.5px] text-amber-600">車輛</div></div>
+        <div class="bg-purple-50 border border-purple-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-purple-700">${st.orders.length}</div><div class="text-[9.5px] text-purple-600">膳食</div></div>
+      </div>
+      <div class="mt-2.5 flex items-center justify-between gap-2">
+        <span class="text-[10px] text-slate-400">${canManage?'可修改／加入本組內容':'公開可看'}</span>
+        <button class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">${g==='協調組'?'物資・膳食・車輛統計':(g==='行政組'?'進入行政組':(canManage?'管理本組':'查看本組'))}</button>
+      </div>
+    </div>`;
+  }
+,
   renderGroupQuickAccess(){
     const container=document.getElementById('group-quick-access');
     if(!container) return;
@@ -619,44 +653,29 @@ Object.assign(ScoutEventApp.prototype,{
     const groupList=this.getEventGroups();
     const currentGroup=normalizeGroupName(this.currentUser?.group_name);
     const isAdmin=this.isAdmin();
-    const html=groupList.map(g=>{
-      const meta=this.groupMeta(g);
-      // 與「部門管理中心」同一份崗位計算（getGroupOrgNodes），主頁卡片與進入卡片後的崗位數／人數必定一致
-      // （人數只計架構圖崗位上的人名；舊聯絡表「管理」分組含主席／執副主席，併入會令顧問團人數虛大，不再併計）
-      const uniqPosts=this.getGroupOrgNodes(g);
-      const members=new Set();
-      uniqPosts.forEach(n=>{ orgNameList(n.names).forEach(x=>members.add(x)); });
-      const st=this.groupApplyStats(g);
-      const cleanGroup=normalizeGroupName(g);
-      const isOwn=currentGroup && cleanGroup===currentGroup;
-      const canManage=isAdmin || isOwn;
-      const pending=st.supPending+st.boothPending+st.vehPending+st.mealPending;
-      // 協調組／行政組有專屬管理頁；其餘進入部門管理中心
-      const action = g==='協調組' ? "app.openModule('coordinator_group')" : (g==='行政組' ? "app.openModule('admin_group')" : `app.openGroupManagement('${g.replace(/'/g,"")}')`);
-      return `<div class="border rounded-2xl p-3.5 ${isOwn?'bg-indigo-50 border-indigo-500 ring-4 ring-indigo-100':'bg-white'} hover:shadow-md transition cursor-pointer" onclick="${action}">
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-2 min-w-0">
-            <div class="w-10 h-10 ${meta.cls} rounded-xl flex items-center justify-center text-base flex-shrink-0"><i class="${meta.icon}"></i></div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap"><b class="text-[13px]">${escapeHtml(g)}</b>${isOwn?'<span class="bg-indigo-600 text-white text-[9.5px] px-2 py-0.5 rounded-full">我的組別</span>':''}</div>
-              <div class="text-[11px] text-slate-500 mt-0.5">${uniqPosts.length} 崗位 · ${members.size} 人</div>
-            </div>
-          </div>
-          ${pending?`<span class="text-[9.5px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">${pending} 待批</span>`:''}
-        </div>
-        <div class="mt-2.5 grid grid-cols-4 gap-1.5 text-center">
-          <div class="bg-blue-50 border border-blue-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-blue-700">${st.requests.length}</div><div class="text-[9.5px] text-blue-600">物資</div></div>
-          <div class="bg-orange-50 border border-orange-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-orange-700">${st.boothReqs.length}</div><div class="text-[9.5px] text-orange-600">攤位</div></div>
-          <div class="bg-amber-50 border border-amber-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-amber-700">${st.vehicles.length}</div><div class="text-[9.5px] text-amber-600">車輛</div></div>
-          <div class="bg-purple-50 border border-purple-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-purple-700">${st.orders.length}</div><div class="text-[9.5px] text-purple-600">膳食</div></div>
-        </div>
-        <div class="mt-2.5 flex items-center justify-between gap-2">
-          <span class="text-[10px] text-slate-400">${canManage?'可修改／加入本組內容':'公開可看'}</span>
-          <button class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">${g==='協調組'?'物資・膳食・車輛統計':(g==='行政組'?'進入行政組':(canManage?'管理本組':'查看本組'))}</button>
-        </div>
-      </div>`;
-    }).join('');
+    const html=groupList.map(g=>this.groupHubCardHTML(g,currentGroup,isAdmin)).join('');
     this.deferredDashWrite(container,html);
+  }
+,
+  // 底部導覽「部門中心」：執副以上（isExecViceOrChair）→ 全部部門列表；普通人（執副以下）→ 一按直接跳自己部門
+  openDeptHub(){
+    if(!this.currentUser){ this.openLoginModal(); return; }
+    if(this.isExecViceOrChair()){ this.openModule('dept_hub'); return; }
+    const g=normalizeGroupName(this.currentUser?.group_name||'');
+    if(g && this.getEventGroups().some(x=>normalizeGroupName(x)===g)){ this.openGroupManagement(g); return; }
+    showToast('你嘅組別未喺組織架構圖入面，如有問題請聯絡管理員','warning');
+    if(this.currentEvent) this.showDashboard();
+  }
+,
+  // 部門中心列表頁（執副以上）：全部部門一次過見到，唔使喺儀表板轆頁
+  renderDeptHubModule(){
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    if(!this.currentUser){ container.innerHTML='<p class="text-xs text-slate-500">請先登入以查看部門列表。</p>'; return; }
+    const groupList=this.getEventGroups();
+    const currentGroup=normalizeGroupName(this.currentUser.group_name);
+    const isAdmin=this.isAdmin();
+    container.innerHTML='<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">'+groupList.map(g=>this.groupHubCardHTML(g,currentGroup,isAdmin)).join('')+'</div>';
   }
 ,
   // 部門卡片共用的 4 格資訊：成員／職務大綱／文件／攤位·預算（逐項列明）。
@@ -898,7 +917,7 @@ Object.assign(ScoutEventApp.prototype,{
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動',dept_hub:'部門管理中心'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
@@ -918,6 +937,8 @@ Object.assign(ScoutEventApp.prototype,{
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap">${this.canUploadThemeBadge()?`<button onclick="app.openThemeBadgeForm()" class="bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-award mr-1"></i>上傳主題章 (副主席以上)</button>`:''}<button onclick="app.exportThemeBadges()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
     } else if(key==='account_setup'){
       document.getElementById('module-actions').innerHTML=`<span class="text-[11px] bg-teal-50 text-teal-700 px-3 py-2 rounded-full border border-teal-200">開戶（預設密碼 1234）</span>`;
+    } else if(key==='dept_hub'){
+      document.getElementById('module-actions').innerHTML='<span class="text-[11px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200"><i class="fa-solid fa-sitemap mr-1"></i>一按即見全部部門，點部門卡進入部門管理中心</span>';
     } else if(key==='my_monitor'||key==='apply_hub'||key==='exec_manual'||key==='coordinator_group'){
       document.getElementById('module-actions').innerHTML='';
     } else if(key==='donations'){
@@ -1149,6 +1170,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(mod==='schedule'){this.renderScheduleModule(); return;}
     if(mod==='donations'){this.renderDonationsModule(); return;}
     if(mod==='account_setup'){this.renderAccountSetupModule(); return;}
+    if(mod==='dept_hub'){this.renderDeptHubModule(); return;}
     if(mod==='permissions'){this.renderPermissionsModule(); return;}
     container.innerHTML='<p class="text-sm text-slate-400">此模組內容 (全前端演示) 尚未有資料，點擊右上新增</p>';
   }

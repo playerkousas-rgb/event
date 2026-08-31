@@ -53,7 +53,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 }
 /* 全站防左右滑動：clip 不會產生捲軸容器，sticky 頂 BAR 不受影響 */
 html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:hidden}}
-/* 底部導覽列：執行手冊・申請中心・批核中心・開戶，手機／電腦同步顯示（原本上方 BAR 重覆，已刪） */
+/* 底部導覽列：執行手冊・申請中心・批核中心・部門中心，手機／電腦同步顯示（原本上方 BAR 重覆，已刪） */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;max-width:180px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
 /* 內建財務指引：可摺疊章節 icon 旋轉（編譯版 tailwind 無 group-open 變體） */
@@ -95,7 +95,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
   <!-- 最頂 BAR（標題列）：童軍活動管理系統・v6.1・活動名稱｜身份(登入後)・改密碼・登出（登入後只顯示登出，不顯示登入；手機自動分行，不用左右滑動） -->
-  <!-- 已精簡：手機三畫功能鍵已刪；其餘功能集中在底部導覽列（手機／電腦同步）及儀表板身份卡片內，不再重覆 -->
+  <!-- 已精簡：手機三畫功能鍵已刪；其餘功能集中在底部導覽列（手機／電腦同步）、頂部活動資訊橫幅（監察區塊）及儀表板身份列，不再重覆 -->
   <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
     <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <div class="flex items-center space-x-2.5 cursor-pointer min-w-0 w-full sm:w-auto sm:flex-1" onclick="app.goHome()">
@@ -104,6 +104,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
       </div>
       <div class="flex items-center gap-1.5 flex-wrap justify-end sm:ml-auto w-full sm:w-auto">
         <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2" title="身份"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[72px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
+        <button id="topbar-account-setup" style="display:none" onclick="app.openModule('account_setup')" title="開戶（總主任以上）" class="header-chip bg-teal-600 hover:bg-teal-700 text-white"><i class="fa-solid fa-user-plus mr-1"></i>開戶</button>
         <button id="topbar-changepwd" style="display:none" onclick="app.openChangePwdModal()" class="header-chip bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"><i class="fa-solid fa-key mr-1"></i>改密碼</button>
         <button id="logout-btn" style="display:none" onclick="app.logout()" class="header-chip bg-rose-600 hover:bg-rose-700 text-white"><i class="fa-solid fa-right-from-bracket mr-1"></i>登出</button>
         <button id="login-toggle-btn" onclick="app.openLoginModal()" class="header-chip bg-sky-600 hover:bg-sky-700 text-white"><i class="fa-solid fa-right-to-bracket mr-1"></i><span id="login-btn-text">登入</span></button>
@@ -142,33 +143,29 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
   </div>
 
   <div id="view-dashboard" class="hidden space-y-5">
-    <!-- 活動基本資訊 (Trip 風置頂)：一進入活動就先看到活動資料 -->
-    <div class="hero-gradient text-white rounded-[24px] p-5 sm:p-7 shadow-2xl relative overflow-hidden">
+    <!-- 活動資訊（精簡版）：只留 日期/時間/地點/天氣 + 活動簡介 + 最新消息；「我的監察」已併入此橫幅。活動名稱已顯示喺最頂 BAR 標題列，唔再於此重覆；想換活動＝按最頂 BAR 標題/Logo 回選擇活動頁 -->
+    <div class="hero-gradient text-white rounded-[20px] p-4 sm:p-5 shadow-2xl relative overflow-hidden">
       <div class="absolute right-0 bottom-0 opacity-10 translate-x-6 translate-y-6 text-7xl pointer-events-none"><i class="fa-solid fa-calendar-star"></i></div>
-      <div class="relative z-10 space-y-3">
-        <div class="flex flex-wrap items-center gap-2">
-          <button onclick="app.goHome()" class="bg-white/15 hover:bg-white/25 backdrop-blur px-3 py-1.5 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-arrow-left mr-1"></i> 選擇其他活動</button>
-          <span id="dash-status-badge" class="bg-white/20 text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30">活動</span>
-          <span class="bg-white/90 text-purple-800 text-[11px] font-bold px-3 py-1 rounded-full">身份：<span id="dash-role-display">公開</span></span>
-        </div>
-        <h2 id="dash-event-title" class="text-2xl sm:text-3xl font-extrabold leading-tight">-</h2>
+      <div class="relative z-10 space-y-2">
         <div class="flex flex-wrap gap-x-5 gap-y-1.5 text-[12px] text-white/90">
           <span class="flex items-center gap-1.5"><i class="fa-solid fa-calendar-days"></i><span id="dash-event-dates">-</span></span>
           <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock"></i><span id="dash-event-time">時間待公佈</span></span>
           <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot"></i><span id="dash-event-location">地點待公佈</span></span>
           <span class="flex items-center gap-1.5"><i class="fa-solid fa-cloud-sun"></i><span id="dash-event-weather">天氣待公佈</span></span>
         </div>
-        <p id="dash-event-desc" class="text-[12px] text-white/80 leading-relaxed max-w-3xl">-</p>
-        <div id="dash-news-box" class="hidden bg-white/15 backdrop-blur border border-white/30 rounded-2xl p-3 flex items-start gap-2.5">
+        <p id="dash-event-desc" class="text-[12px] text-white/85 leading-relaxed max-w-3xl">-</p>
+        <div id="dash-news-box" class="hidden bg-white/15 backdrop-blur border border-white/30 rounded-xl p-2.5 flex items-start gap-2.5">
           <span class="bg-amber-400 text-slate-900 text-[11px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0"><i class="fa-solid fa-bullhorn mr-1"></i>最新消息</span>
           <span id="dash-event-news" class="text-[13px] leading-snug"></span>
         </div>
+        <!-- 我的監察（已併入活動橫幅）：身份＋申請批核進度；數字可點擊跳轉批核中心／我的監察（由 renderIdentityBar 填充） -->
+        <div id="dash-hero-monitor" class="hidden"></div>
       </div>
     </div>
 
     <!-- 簡單卡片模式：卡片顯示所有資料，身份 (角色+組別) 決定可見與可修改範圍 -->
     <div id="simple-card-panel" class="space-y-4">
-      <!-- 身份列：身份資料 + 我的監察（按功能介紹寫入身份卡片內） -->
+      <!-- 身份列：身份資料（我的監察已併入上方活動資訊橫幅） -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border space-y-3">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div class="flex items-center gap-3 min-w-0">
@@ -183,8 +180,6 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
             <button id="identity-login-btn" onclick="app.openLoginModal()" class="bg-sky-600 text-white px-3.5 py-2 rounded-xl text-[11px] font-bold btn-mobile"><i class="fa-solid fa-right-to-bracket mr-1"></i>登入</button>
           </div>
         </div>
-        <!-- 我的監察：寫入身份卡片內，如功能介紹所述（由 renderIdentityBar 填充） -->
-        <div id="identity-monitor" class="hidden"></div>
       </div>
 
       <!-- 公開資料（最先顯示）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動 -->
@@ -214,7 +209,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <div id="management-tools-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見）。我的監察已寫入身份卡片內。</div>
+      <div id="simple-mode-note" class="text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・開戶（總主任以上）・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上一按見全部部門列表，普通人一按直接入自己部門）</b>。我的監察已併入頂部活動資訊橫幅（活動簡介下方）。</div>
     </div>
 
     <!-- 舊版「認識活動／參與活動／協作與管理」彩色卡面分組已刪除（2026-08-27）：
@@ -240,8 +235,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 </main>
 
-<!-- 底部導覽列：執行手冊・申請中心（人人可用）；批核中心・開戶（登入後有權限人士才可見）。手機／電腦都顯示（同步），原本頂部重覆的 BAR 已刪 -->
-<nav id="bottom-nav" class="bottom-nav"><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-accounts" onclick="app.showDashboard();setTimeout(()=>app.openModule('account_setup'),200)"><i class="fa-solid fa-user-plus"></i><span>開戶</span></button></nav>
+<!-- 底部導覽列：執行手冊・申請中心（人人可用）；批核中心（登入後有權限人士才可見）；部門中心（登入後可見：執副以上一按見全部部門列表，普通人一按直接入自己部門）。開戶已移去最頂 BAR 右側（總主任以上） -->
+<nav id="bottom-nav" class="bottom-nav"><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-dept" onclick="app.openDeptHub()"><i class="fa-solid fa-sitemap"></i><span>部門中心</span></button></nav>
 
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
@@ -391,12 +386,12 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
       <!-- 1. 三類卡片 -->
       <div class="space-y-2">
         <h4 class="font-bold text-[15px] text-slate-900">1️⃣ 現有功能：三類卡片</h4>
-        <p>進入活動後，儀表板會根據身分顯示卡片。<b>全部卡片一律白底無顏色</b>（更整潔），只靠「可修改／只讀／公開可看」小標籤分辨，自己的組別會標亮。<br><b>排序：</b><b>公開資料 → 工作卡片（會議卡片最前）→ 管理工具（總主任以上）→ 部門管理中心</b>。<br><b>我的監察</b>像功能介紹一樣寫入<b>身份卡片</b>內（一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到自己身份＋未有申請紀錄提示，可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<b>有批核權同時自己亦有申請</b>的人士：四個數字＝自己＋下級合計，下方另有一行「<b>我的申請</b>」只計自己（含待處理數），點擊即到「我的監察」查看。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・改密碼・登出</b>（登入後不顯示登入，只顯示登出；手機版無三畫功能鍵）；<b>底部導覽列</b>＝<b>執行手冊・申請中心・批核中心・開戶</b>（後兩者登入後有權限人士才可見），手機／電腦同步顯示。</p>
+        <p>進入活動後，儀表板會根據身分顯示卡片。<b>全部卡片一律白底無顏色</b>（更整潔），只靠「可修改／只讀／公開可看」小標籤分辨，自己的組別會標亮。<br><b>排序：</b><b>公開資料 → 工作卡片（會議卡片最前）→ 管理工具（總主任以上）→ 部門管理中心</b>。<br><b>我的監察</b>已併入頂部<b>活動資訊橫幅</b>（日期／時間／地點／天氣＋活動簡介＋最新消息同一橫幅內，一個用來跳轉的框：自己＋下級申請批核進度）；沒有批核權限人士只看到自己身份＋未有申請紀錄提示，可按鈕直接跳到「申請中心」提交；有權限人士另見<b>總申請／待處理／已批核／已拒絕</b>，點擊即跳轉<b>批核中心</b>處理。<b>有批核權同時自己亦有申請</b>的人士：四個數字＝自己＋下級合計，下方另有一行「<b>我的申請</b>」只計自己（含待處理數），點擊即到「我的監察」查看。<br><b>最頂 BAR</b>（系統名稱那一行）＝<b>身份・開戶（總主任以上）・改密碼・登出</b>（登入後不顯示登入，只顯示登出；手機版無三畫功能鍵）；<b>底部導覽列</b>＝<b>執行手冊・申請中心・批核中心・部門中心</b>（批核中心登入後有權限人士才可見；部門中心登入後可見：<b>執副以上</b>一按即見全部部門列表、<b>普通人</b>一按直接跳自己部門），手機／電腦同步顯示。<b>開戶</b>已移去最頂 BAR 右側（登入後總主任以上可見，一按直接跳入開戶頁），儀表板管理工具區「開戶」卡保留作第二入口。</p>
         <div class="table-responsive">
           <table class="min-w-full text-xs">
             <thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">類型</th><th class="px-2 py-1 text-left">需登入？</th><th class="px-2 py-1 text-left">內容</th><th class="px-2 py-1 text-left">修改權限</th></tr></thead>
             <tbody class="divide-y">
-              <tr><td class="px-2 py-1 font-medium">我的監察</td><td>需要</td><td>寫入身份卡片內（跳轉框）：自己＋下級申請批核進度；有權限人士另見總申請／待處理／已批核／已拒絕（可跳轉批核中心）</td><td>只讀監察；批核在批核中心處理</td></tr>
+              <tr><td class="px-2 py-1 font-medium">我的監察</td><td>需要</td><td>併入頂部活動資訊橫幅（跳轉框）：自己＋下級申請批核進度；有權限人士另見總申請／待處理／已批核／已拒絕（可跳轉批核中心）</td><td>只讀監察；批核在批核中心處理</td></tr>
               <tr><td class="px-2 py-1 font-medium">我的組別</td><td>需要</td><td>已併入「工作卡片」，自己的組別標亮</td><td>由組別權限決定</td></tr>
               <tr><td class="px-2 py-1 font-medium">① 公開資料</td><td>不用</td><td>公告及溝通、執行手冊（組織架構・場地・典禮・危機・通告）、申請中心、童心捐贈</td><td>只讀；修改需對應職級／組別登入</td></tr>
               <tr><td class="px-2 py-1 font-medium">② 工作卡片</td><td>需要</td><td>會議、物資申請（地域借用）、攤位計劃書（獨立卡＋總表）、車輛通行證（含泊車證）、口頭報價、財務等</td><td>預設只讀；依「可看／可管」權限解鎖</td></tr>
@@ -484,7 +479,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <h4 class="font-bold text-[15px] text-slate-900">5️⃣ 其他你需要了解</h4>
         <ul class="list-disc pl-5 space-y-1 text-[12px]">
           <li><b>登入：</b>帳號＝中文姓名，初始密碼 1234；首次登入建議改密碼；登入狀態會保存於瀏覽器，一次登入永久有效。</li>
-          <li><b>儀表板：</b>全部卡片一律白底無顏色（更整潔）；排序（公開資料後）＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察寫入身份卡片內。最頂 BAR＝身份・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心・開戶（後兩者需權限，手機／電腦同步）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
+          <li><b>儀表板：</b>全部卡片一律白底無顏色（更整潔）；排序（公開資料後）＝公開資料 → 其他組別及工作卡片（會議卡片在功能卡片最前）→ 管理工具；我的監察併入頂部活動資訊橫幅（與日期／地點／最新消息同一橫幅）。最頂 BAR＝身份・開戶（總主任以上）・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上見列表／普通人入自己部門，手機／電腦同步）；手機卡片自動變兩欄正方形，不用左右滑動。</li>
           <li><b>開戶：</b>如需要帳戶請向所屬組別的總主任查詢；管理層帳戶由管理員處理。</li>
           <li><b>示範沙盒：</b>「模擬示範版」已內置與主系統同構嘅<b>完整示範資料</b>——10 組組織架構（43 個示範崗位，顧問團 2 人）、會議、地域物資申請（一次多項）、獨立嘅攤位計劃書（含總表）、車輛／泊車證、膳食（菜單＋兩級確認訂餐）、財務逐項預算、危機處理、參加旅團名單等，俾你喺會議上一邊講一邊試。改動只存喺你自己瀏覽器，絕對唔會影響正式活動。</li>
           <li><b>示範登入：</b>密碼一律 1234——<b>陳子明</b>（工作人員，試「填表只填名稱＋數量」）、<b>曾令勤</b>（主任，見「待本組確認」）、<b>龍正謙</b>（主題節目組總主任，確認本組申請＋代組申請）、<b>畢美儀</b>（協調組總主任，即物資批核組，試批准／修改數量）、<b>羅雅雯</b>（執行副主席）、<b>區子君</b>（主席）、<b>黃偉安／何家騏</b>（顧問團，L1 全套）。各組統計可撳主頁「部門管理中心」卡片逐組睇。</li>

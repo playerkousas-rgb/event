@@ -90,9 +90,12 @@ ok(ogm.includes("groupName==='主題節目組'") && ogm.includes('攤位總覽')
 ok(ogm.includes("groupName==='服務及發展組'") && ogm.includes('童心捐贈大行動'), '④ 服務及發展組應另見「童心捐贈大行動」');
 ok(ogm.includes('本組攤位申請及狀態'), '④ 部門卡片應有「本組攤位申請及狀態」');
 ok(ogm.includes('this.getGroupOrgNodes(groupName)'), '⑤ 部門管理中心應使用共用 getGroupOrgNodes');
-const rqa = coreJsSrc.slice(coreJsSrc.indexOf('renderGroupQuickAccess(){'), coreJsSrc.indexOf('openGroupManagement(groupName){'));
-ok(rqa.includes('this.getGroupOrgNodes(g)'), '⑤ 主頁部門卡片應使用共用 getGroupOrgNodes（與卡片內一致）');
+// 部門卡片已抽成共用 groupHubCardHTML（儀表板部門管理中心＋底部導覽部門中心列表頁共用一份）
+const rqa = coreJsSrc.slice(coreJsSrc.indexOf('groupHubCardHTML(g,currentGroup,isAdmin){'), coreJsSrc.indexOf('renderGroupQuickAccess(){'));
+ok(rqa.includes('this.getGroupOrgNodes(g)'), '⑤ 部門卡片應使用共用 getGroupOrgNodes（與卡片內一致）');
 ok(rqa.includes('物資・膳食・車輛統計'), '④ 協調組卡片按鈕應為「物資・膳食・車輛統計」');
+ok(coreJsSrc.slice(coreJsSrc.indexOf('renderGroupQuickAccess(){'), coreJsSrc.indexOf('openGroupManagement(groupName){')).includes('this.groupHubCardHTML(g,currentGroup,isAdmin)'),
+  '⑤ 主頁部門卡片應呼叫共用 groupHubCardHTML（與部門中心列表頁一致）');
 
 /* ---------- 實例（vm 內建立，方法用真 prototype） ---------- */
 vm.runInContext(`
