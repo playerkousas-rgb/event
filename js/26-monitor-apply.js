@@ -254,7 +254,11 @@ Object.assign(ScoutEventApp.prototype,{
      公開/登入/權限 標示清楚，一鍵直達該申請表 */
   /* ===================== 執行手冊 (集中一卡，內部分頁) =====================
      組織架構與聯絡、場地與活動總覽、典禮儀式、危機處理、通告及文件
-     全部收埋入「執行手冊」卡，進入後分頁切換（同申請中心一樣）。 */
+     全部收埋入「執行手冊」卡，進入後分頁切換（同申請中心一樣）。
+     v11（用戶定案 2026-08-31）：
+     · 「攤位總表」及「場地佈置總覽」已移入「場地與活動總覽」（內部分頁）
+     · 「箱頭紙」「許可證式樣」＋新增「失物認領」收埋入新分頁「各類附加資料」
+     · 舊連結（其他卡片嘅跳轉按鈕）一律自動轉到新位置，見 switchExecManualTab() 內嘅 moved 對照表 */
   renderExecManualModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
@@ -262,15 +266,12 @@ Object.assign(ScoutEventApp.prototype,{
     const tabs=[
       {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
       {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
-      {k:'booth_master',icon:'fa-solid fa-store',              label:'攤位總表'},
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
       {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
       {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
       {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
       {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
-      {k:'venue_setup', icon:'fa-solid fa-map',                label:'場地佈置總覽'},
-      {k:'box_label', icon:'fa-solid fa-box-open',             label:'箱頭紙'},
-      {k:'permit', icon:'fa-solid fa-file-contract',           label:'許可證式樣'}
+      {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`
@@ -282,6 +283,20 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   switchExecManualTab(tab){
+    // v11：舊分頁已搬家（攤位總表／場地佈置總覽 → 場地與活動總覽；箱頭紙／許可證式樣 → 各類附加資料）。
+    //      舊連結照樣行得：自動轉去新分頁並揀返對應嘅內部分頁。
+    const moved={
+      booth_master:{tab:'activities',activitiesSubTab:'booth_master'},
+      venue_setup:{tab:'activities',activitiesSubTab:'venue_setup'},
+      box_label:{tab:'misc',miscSubTab:'box_label'},
+      permit:{tab:'misc',miscSubTab:'permit'}
+    };
+    if(moved[tab]){
+      const m=moved[tab];
+      if(m.activitiesSubTab) this.activitiesSubTab=m.activitiesSubTab;
+      if(m.miscSubTab) this.execManualMiscTab=m.miscSubTab;
+      tab=m.tab;
+    }
     this.execManualSubTab=tab;
     document.querySelectorAll('[onclick^="app.switchExecManualTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
@@ -296,24 +311,10 @@ Object.assign(ScoutEventApp.prototype,{
     const map={
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
-      booth_master:()=>{
-        const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
-        const isPublic=!this.currentUser;
-        panel.innerHTML=`<div class="space-y-3">
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>2026 攤位總表</b>（品牌推廣組分區＋編號；攤位名稱／預計內容／「十五五」元素／場地物資需求由「攤位計劃書」提交自動填入；已聯絡／已回覆／確認出席為聯絡進度）。${isPublic?'<b class="text-emerald-700">全公開可看</b>（聯絡人電話／電郵需登入先見）。':''}</div>
-          <div class="flex gap-2 flex-wrap">
-            <button onclick="app.openModule('booth')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交／查看攤位計劃書（借用統計）</button>
-            ${this.isAdmin()||this.isCoordinatorViceChair()?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.printCoordArea('booth-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}
-          </div>
-          <div id="booth-master-print">${this.renderBoothMasterTableHTML(agg,isPublic)}</div>
-        </div>`;
-      },
       ceremony:()=>this.renderCeremonyModule(panel),
       crisis:()=>this.renderCrisisModule(panel),
       participants:()=>this.renderExecManualParticipants(panel),
-      venue_setup:()=>this.renderExecManualUploadTab('venue_setup',{title:'場地佈置總覽',accent:'sky',empty:'暫無場地佈置檔案 — 協調組／行政組可用「上傳檔案」加入 2026 版場地佈置圖、數據或連結（同遊戲卡方式）'}),
-      box_label:()=>this.renderExecManualBoxLabel(panel),
-      permit:()=>this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣 — 由協調組／行政組上載（同遊戲卡方式：PDF／Word／圖片／Drive 連結）'}),
+      misc:()=>this.renderExecManualMisc(panel),
       finance_guide:()=>{
         const fin=this.getFinanceData();
         const driveFiles=[
@@ -444,12 +445,12 @@ Object.assign(ScoutEventApp.prototype,{
     </div>`;
   }
 ,
-  renderExecManualUploadTab(key, opts){
-    const panel=document.getElementById('exec-manual-panel'); if(!panel) return;
+  /* 上傳式分頁內容（回傳 HTML 字串）——v11：可以由「執行手冊」或「場地與活動總覽」等任何容器內嵌 */
+  execManualUploadTabHTML(key, opts){
     const files=this.getExecManualFiles(key);
     const canUp=this.canManageExecManualUpload(key);
     const a=this.execManualAccentCls(opts.accent||'indigo');
-    panel.innerHTML=`
+    return `
       <div class="space-y-3">
         <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>${escapeHtml(opts.title)}：</b>${escapeHtml(opts.intro||'')} 上傳方式同「遊戲卡」— 可上傳 <b>PDF／Word／圖片</b> 或貼 <b>Drive 連結</b>；Word 自動解析成文字內嵌、PDF 整份內嵌、JSON 檔會美化顯示。${canUp?'<b class="text-emerald-700">你可上傳／編輯。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
         <div class="flex flex-wrap gap-2">
@@ -458,6 +459,67 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         ${files.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,key,canUp)).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">${escapeHtml(opts.empty||'暫無檔案')}</p>`}
       </div>`;
+  }
+,
+  renderExecManualUploadTab(key, opts, box){
+    const panel=box||document.getElementById('exec-manual-panel'); if(!panel) return;
+    panel.innerHTML=this.execManualUploadTabHTML(key,opts);
+  }
+,
+  /* ===================== v11 執行手冊分頁「各類附加資料」=====================
+     箱頭紙・許可證式樣・失物認領（失物認領同時設於「行政組 → 部門管理中心」，由行政組紀錄） */
+  renderExecManualMisc(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    if(!this.execManualMiscTab) this.execManualMiscTab='box_label';
+    const tabs=[
+      {k:'box_label',  icon:'fa-solid fa-box-open',      label:'箱頭紙'},
+      {k:'permit',     icon:'fa-solid fa-file-contract', label:'許可證式樣'},
+      {k:'lost_found', icon:'fa-solid fa-box-archive',   label:'失物認領'}
+    ];
+    const cls=t=>this.execManualMiscTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+    box.innerHTML=`
+      <div class="space-y-3">
+        <div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>📎 各類附加資料：</b>箱頭紙・許可證式樣・失物認領。<b>失物認領由行政組紀錄</b>，同一份紀錄亦設於「行政組 → 部門管理中心」。</div>
+        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
+          ${tabs.map(t=>`<button onclick="app.switchExecManualMiscTab('${t.k}')" class="exec-misc-tab-btn ${cls(t.k)}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('')}
+        </div>
+        <div id="exec-misc-tab-box_label" class="${this.execManualMiscTab==='box_label'?'':'hidden'}">${this.boxLabelPanelHTML()}</div>
+        <div id="exec-misc-tab-permit" class="${this.execManualMiscTab==='permit'?'':'hidden'}"></div>
+        <div id="exec-misc-tab-lost_found" class="${this.execManualMiscTab==='lost_found'?'':'hidden'}">${this.renderLostFoundHTML()}</div>
+      </div>`;
+    this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣 — 由協調組／行政組上載（同遊戲卡方式：PDF／Word／圖片／Drive 連結）'},document.getElementById('exec-misc-tab-permit'));
+  }
+,
+  switchExecManualMiscTab(tab){
+    this.execManualMiscTab=tab;
+    ['box_label','permit','lost_found'].forEach(t=>{
+      const el=document.getElementById('exec-misc-tab-'+t);
+      if(el) el.classList.toggle('hidden',t!==tab);
+    });
+    document.querySelectorAll('.exec-misc-tab-btn').forEach(btn=>{
+      const t=(btn.getAttribute('onclick').match(/'([^']+)'/)||[])[1];
+      btn.className='exec-misc-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
+    });
+  }
+,
+  /* —— 攤位總表（2026 總表）內容：v11 由「場地與活動總覽」內部分頁顯示 —— */
+  boothMasterPanelHTML(){
+    const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
+    const isPublic=!this.currentUser;
+    return `<div class="space-y-3">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>2026 攤位總表</b>（品牌推廣組分區＋編號；攤位名稱／預計內容／「十五五」元素／場地物資需求由「攤位計劃書」提交自動填入；已聯絡／已回覆／確認出席為聯絡進度）。${isPublic?'<b class="text-emerald-700">全公開可看</b>（聯絡人電話／電郵需登入先見）。':''}</div>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="app.openModule('booth')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交／查看攤位計劃書（借用統計）</button>
+        ${this.isAdmin()||this.isCoordinatorViceChair()?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.printCoordArea('booth-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}
+      </div>
+      <div id="booth-master-print">${this.renderBoothMasterTableHTML(agg,isPublic)}</div>
+    </div>`;
+  }
+,
+  /* —— 場地佈置總覽（上傳式，同遊戲卡）：v11 由「場地與活動總覽」內部分頁顯示 —— */
+  renderActivitiesVenueSetupPanel(box){
+    const panel=box||document.getElementById('activities-tab-venue_setup'); if(!panel) return;
+    this.renderExecManualUploadTab('venue_setup',{title:'場地佈置總覽',accent:'sky',empty:'暫無場地佈置檔案 — 協調組／行政組可用「上傳檔案」加入 2026 版場地佈置圖、數據或連結（同遊戲卡方式）'},panel);
   }
 ,
   openExecManualFileForm(key,id=null){
@@ -590,9 +652,9 @@ Object.assign(ScoutEventApp.prototype,{
     return { year:v('year')||this.boxLabelYear(), group:v('group'), event:v('event'), person:v('person'), contact:v('contact'), items:v('items'), qty:v('qty'), notes:v('notes') };
   }
 ,
-  renderExecManualBoxLabel(panel){
+  boxLabelPanelHTML(){
     const d={};
-    panel.innerHTML=`
+    return `
       <div class="space-y-3">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>箱頭紙（Box Label）：</b>對應 2025 協調組「箱頭紙」。只需改年份，預設為你的登入組別，其餘可自選填；列印時<b>一張 A4 印兩張</b>，方便貼上各箱。任何登入成員（尤其部門中心）都可填寫及列印。</div>
         <div class="flex gap-2 flex-wrap items-center">
@@ -604,6 +666,11 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="text-[11px] text-slate-500">💡 可先係上方填好，再按「列印」；部門中心入口亦可用同一個表單，組別自動帶入你嘅登入組別。</div>
         </div>
       </div>`;
+  }
+,
+  renderExecManualBoxLabel(panel){
+    const box=panel||document.getElementById('exec-manual-panel');
+    if(box) box.innerHTML=this.boxLabelPanelHTML();
   }
 ,
   printBoxLabels(){

@@ -160,6 +160,55 @@ Object.assign(ScoutEventApp.prototype,{
       this.eventData.finance=fin;
       touched=true;
     }
+    // ── v11 失物認領（Lost_Found）：行政組紀錄，跨裝置合併（同 id 以 updated_at 較新者為準）──
+    if(Array.isArray(d.Lost_Found)){
+      const lf=this.getLostFoundData();
+      const map=new Map((lf.records||[]).map(r=>[String(r.id),r]));
+      let lfChanged=false;
+      d.Lost_Found.forEach(r=>{
+        if(!r.lost_id) return;
+        const id=String(r.lost_id);
+        const rec={
+          id, item_name:String(r.item_name||''), description:String(r.description||''),
+          found_date:String(r.found_date||''), found_time:String(r.found_time||''),
+          found_location:String(r.found_location||''), found_by:String(r.found_by||''),
+          status:String(r.status||'待認領'), claimed_by:String(r.claimed_by||''),
+          claimed_contact:String(r.claimed_contact||''), claimed_at:String(r.claimed_at||''),
+          notes:String(r.notes||''), recorded_by:String(r.recorded_by||''), recorded_by_id:String(r.recorded_by_id||''),
+          created_at:String(r.created_at||''), updated_at:String(r.updated_at||'')
+        };
+        const prev=map.get(id);
+        if(!prev||String(prev.updated_at||'')<rec.updated_at){ map.set(id,prev?{...prev,...rec}:rec); lfChanged=true; }
+      });
+      if(lfChanged){
+        this.saveLostFoundData({records:[...map.values()]});
+        this.refreshLostFoundViews();
+        touched=true;
+      }
+    }
+    // ── v11 紀念章派發（Souvenir_Stamps）：TICK 紀錄跨裝置合併（staff＝工作人員／guests＝嘉賓）──
+    if(Array.isArray(d.Souvenir_Stamps)){
+      const st=this.getSouvenirStampData();
+      let stChanged=false;
+      d.Souvenir_Stamps.forEach(r=>{
+        const scope=String(r.scope||'')==='guests'?'guests':'staff';
+        const key=String(r.person_key||'');
+        if(!key) return;
+        const rec={
+          name:String(r.name||''), group_name:String(r.group_name||''), job_title:String(r.job_title||''),
+          ticked:String(r.ticked||'').toUpperCase()==='Y'||r.ticked===true,
+          ticked_at:String(r.ticked_at||''), ticked_by:String(r.ticked_by||''), ticked_by_id:String(r.ticked_by_id||''),
+          remark:String(r.remark||''), created_at:String(r.created_at||''), updated_at:String(r.updated_at||'')
+        };
+        const prev=(st[scope]||{})[key];
+        if(!prev||String(prev.updated_at||'')<rec.updated_at){
+          st[scope]=st[scope]||{};
+          st[scope][key]=prev?{...prev,...rec}:rec;
+          stChanged=true;
+        }
+      });
+      if(stChanged){ this.saveSouvenirStampData(st); touched=true; }
+    }
     if(!touched) return;
     // 留喺目前頁面重新整理
     if(this.currentModule==='coordinator_group') this.renderCoordinatorGroupModule();

@@ -310,7 +310,9 @@ const DASH_CARD_DEFS=[
   {id:'account_setup',title:'開戶',desc:'',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可開戶'},
   {id:'permissions',title:'權限管理',desc:'',icon:'fa-solid fa-key',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-700',minLevel:40,editLevel:40,editLabel:'上級可授權給下級',hideOnDashboard:true}
 ];
-const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,parking:(eid)=>`event_parking_v7_${eid}`,oral_quotes:(eid)=>`event_oral_quotes_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,myMealOrders:(eid)=>`event_my_meal_orders_v7_${eid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`,approvalRouting:(eid)=>`event_approval_routing_v8_${eid}`,deletedRecords:(eid)=>`event_deleted_records_v8_${eid}`,execManual:(eid)=>`event_exec_manual_v10_${eid}`};
+const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,parking:(eid)=>`event_parking_v7_${eid}`,oral_quotes:(eid)=>`event_oral_quotes_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,myMealOrders:(eid)=>`event_my_meal_orders_v7_${eid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`,approvalRouting:(eid)=>`event_approval_routing_v8_${eid}`,deletedRecords:(eid)=>`event_deleted_records_v8_${eid}`,execManual:(eid)=>`event_exec_manual_v10_${eid}`,
+  // v11：失物認領（行政組紀錄）＋紀念章派發（行政組＝工作人員／嘉賓接待組＝嘉賓）
+  lostFound:(eid)=>`event_lost_found_v11_${eid}`,souvenirStamps:(eid)=>`event_souvenir_stamps_v11_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
@@ -360,6 +362,19 @@ const BOOTH_ZONES_2026=[
   {zone:'E',theme:'品格價值',units:[]},
   {zone:'F',theme:'身心全健',units:[{no:'01',name:'港島地域 - 維多利亞城區 - 精神健康章',c:'Y',r:'Y',cf:'Y'},{no:'02',name:'港島地域 - 維多利亞城區 - 公共衞生章',c:'Y',r:'Y',cf:'Y'},{no:'03',name:'童軍知友社',c:'Y',r:'Y',cf:'N'}]},
   {zone:'G',theme:'旅團／其他',units:[{no:'01',name:'港島第6旅'},{no:'02',name:'港島第10旅'},{no:'03',name:'港島第99旅'}]}
+];
+/* ── v11 失物認領＋紀念章派發（用戶定案 2026-08-31）──────────────────────────
+   ① 失物認領：喺執行手冊「各類附加資料」公開查閱，同時設於「行政組」部門中心；
+      由行政組紀錄（行政組登入成員＋管理層可新增／修改／刪除），其他組別及公眾只可查閱。
+   ② 紀念章派發：紀念章只派發俾工作人員及典禮嘉賓，活動前已有全人名，派發時只需 TICK 人名。
+      · 工作人員名單（行政組部門中心）：可填「備註」紀錄改名／替假嘅工作人員
+      · 嘉賓名單（嘉賓接待組部門中心）：唔可以改名（冇代嘉賓），只 TICK 派咗俾邊位嘉賓
+      · 管理組別：行政組（工作人員＋嘉賓）＋嘉賓接待組（嘉賓） */
+const LOST_FOUND_MANAGERS=['行政組'];
+const SOUVENIR_STAMP_MANAGERS={staff:['行政組'],guests:['行政組','嘉賓接待組']};
+const SOUVENIR_STAMP_SCOPES=[
+  {scope:'staff',label:'工作人員',group:'行政組',icon:'fa-solid fa-users',canRename:true,hint:'紀念章只派發俾工作人員，活動前已有全人名；派發時 TICK 人名，如有改名／替假請喺「備註」紀錄。'},
+  {scope:'guests',label:'嘉賓',group:'嘉賓接待組',icon:'fa-solid fa-user-tie',canRename:false,hint:'派發紀念章俾典禮嘉賓：TICK 派咗俾邊位嘉賓。嘉賓名單唔可以改名（冇代嘉賓），名單跟「典禮儀式 → 嘉賓名單」。'}
 ];
 // 2026 攤位總表聯絡狀態顯示：Y / N / 🤷（原表「待確認」）／ —（未有紀錄）
 function boothContactMark(v){ return v==='Y'?'Y':(v==='N'?'N':(v==='?'?'🤷':'—')); }

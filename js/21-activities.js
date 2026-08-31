@@ -81,22 +81,27 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-900">
-          <b>場地與活動總覽：</b>地圖、攤位總表、遊戲卡、活動列表；上傳需主任／副主席以上。
+          <b>場地與活動總覽：</b>地圖、攤位列表（Drive 攤位資料）、攤位總表（2026 總表）、場地佈置總覽、遊戲卡、活動列表；上傳需主任／副主席以上。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchActivitiesTab('maps')" class="tab-btn ${this.activitiesSubTab==='maps'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 地圖 (${data.maps.length})</button>
-          <button onclick="app.switchActivitiesTab('booths')" class="tab-btn ${this.activitiesSubTab==='booths'?'active':''}"><i class="fa-solid fa-table mr-1"></i> 攤位總表 (${data.booths.length})</button>
+          <button onclick="app.switchActivitiesTab('booths')" class="tab-btn ${this.activitiesSubTab==='booths'?'active':''}"><i class="fa-solid fa-table mr-1"></i> 攤位列表 (${data.booths.length})</button>
+          <button onclick="app.switchActivitiesTab('booth_master')" class="tab-btn ${this.activitiesSubTab==='booth_master'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位總表</button>
+          <button onclick="app.switchActivitiesTab('venue_setup')" class="tab-btn ${this.activitiesSubTab==='venue_setup'?'active':''}"><i class="fa-solid fa-map-pin mr-1"></i> 場地佈置總覽</button>
           <button onclick="app.switchActivitiesTab('gamecards')" class="tab-btn ${this.activitiesSubTab==='gamecards'?'active':''}"><i class="fa-solid fa-id-card mr-1"></i> 遊戲卡 (${data.gameCards.length})</button>
           <button onclick="app.switchActivitiesTab('activities')" class="tab-btn ${this.activitiesSubTab==='activities'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 活動列表 (${data.activities.length})</button>
         </div>
         <div id="activities-tab-maps" class="${this.activitiesSubTab==='maps'?'':'hidden'}"></div>
         <div id="activities-tab-booths" class="${this.activitiesSubTab==='booths'?'':'hidden'}"></div>
+        <div id="activities-tab-booth_master" class="${this.activitiesSubTab==='booth_master'?'':'hidden'}">${this.boothMasterPanelHTML()}</div>
+        <div id="activities-tab-venue_setup" class="${this.activitiesSubTab==='venue_setup'?'':'hidden'}"></div>
         <div id="activities-tab-gamecards" class="${this.activitiesSubTab==='gamecards'?'':'hidden'}"></div>
         <div id="activities-tab-activities" class="${this.activitiesSubTab==='activities'?'':'hidden'}"></div>
       </div>
     `;
     this.renderActivitiesMaps();
     this.renderActivitiesBooths();
+    this.renderActivitiesVenueSetupPanel();   // v11：場地佈置總覽（上傳式，同遊戲卡）已移入本頁
     this.renderActivitiesGameCards();
     this.renderActivitiesList();
   }
@@ -142,6 +147,7 @@ Object.assign(ScoutEventApp.prototype,{
     const src=data.booth_source||null;
     container.innerHTML=`
       <div class="space-y-3">
+        <div class="bg-slate-50 border rounded-xl p-2.5 text-[10.5px] text-slate-600 leading-relaxed"><b>「攤位列表」＝攤位基本資料一覽</b>（編號／名稱／位置／負責單位／負責人，由 Drive「ISD2026 攤位資料」同步）。<br>要有<b>已聯絡／已回覆／確認出席</b>聯絡進度及「攤位計劃書」自動填入內容嘅 <b>「2026 攤位總表」</b>，請按上方「攤位總表」分頁。</div>
         ${src?this.driveSyncNotice():''}
         ${src?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
           <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（內建式，不用跳轉 Drive）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
@@ -154,13 +160,13 @@ Object.assign(ScoutEventApp.prototype,{
           ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel → 寫入後端<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
           <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-          <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印總表</button>
+          <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印列表</button>
         </div>
         <div id="booths-print-area" class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-sm mb-3">攤位總表 (共 ${data.booths.length} 個攤位 · 由節目組負責更新)</h4>
+          <h4 class="font-bold text-sm mb-3">攤位列表 (共 ${data.booths.length} 個攤位 · 由節目組負責更新)</h4>
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th><th class="px-2 py-1 text-right">操作</th></tr></thead><tbody class="divide-y">${data.booths.map(b=>`
             <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number)}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name)}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td><td class="px-2 py-1 text-right" data-label="操作"><div class="flex gap-1 justify-end">${canUpload?`<button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></td></tr>
-          `).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請上傳總表或新增</td></tr>'}</tbody></table></div>
+          `).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請上傳攤位列表或新增</td></tr>'}</tbody></table></div>
           <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。節目組副主席可在 Drive 更新 Google 試算表後點「同步最新」，或直接上傳 Excel 寫入後端。</div>
         </div>
       </div>
@@ -680,7 +686,7 @@ Object.assign(ScoutEventApp.prototype,{
     const area=document.getElementById('booths-print-area');
     if(!area){ showToast('找不到列印區域','error'); return; }
     const win=window.open('','_blank');
-    win.document.write(`<html><head><title>攤位總表</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px}</style></head><body>${area.innerHTML}<div class="mt-4 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
+    win.document.write(`<html><head><title>攤位列表</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:6px;font-size:11px}</style></head><body>${area.innerHTML}<div class="mt-4 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   }
 ,
