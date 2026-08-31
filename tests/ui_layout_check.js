@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
-/* 驗證新排版：公開資料先 → 其他組別及工作卡片（會議卡片最前）；我的監察寫入身份卡片；
+/* 驗證新排版：公開資料先 → 其他組別及工作卡片（會議卡片最前）；我的監察併入頂部活動資訊橫幅（dash-hero-monitor，身份卡片不再佔位）；
+   活動橫幅精簡：只留 日期/時間/地點/天氣 + 活動簡介 + 最新消息（大標題/進行中 badge/身份 badge/選擇其他活動掣已刪）；
    我的監察頁：無權限人士只看到身份＋未有紀錄＋前往申請中心；有權限人士看到可點擊的總申請/待處理/已批核/已拒絕 */
 const fs = require('fs');
 const path = require('path');
@@ -102,8 +103,8 @@ let pub = htmlOf('public-cards-grid');
 assert(pub.includes('公告及溝通') && pub.includes('執行手冊') && pub.includes('申請中心') && pub.includes('童心捐贈大行動'),
   'guest 公開資料應含 4 張公開卡');
 assert(htmlOf('identity-cards-grid') === '', 'guest 其他卡片應為空（登入後解鎖）');
-let mon = htmlOf('identity-monitor');
-assert(mon.includes('我的監察') && mon.includes('登入後顯示'), 'guest 身份卡片應顯示我的監察登入提示');
+let mon = htmlOf('dash-hero-monitor');
+assert(mon.includes('我的監察') && mon.includes('登入後顯示'), 'guest 活動橫幅應顯示我的監察登入提示');
 
 /* ---------- 2. 普通工作人員（無批核權限） ---------- */
 app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組', job_title: '工作人員' };
@@ -119,9 +120,9 @@ const idxOtherWork = ids.indexOf('物資申請');
 assert(idxMeeting !== -1 && (idxOtherWork === -1 || idxMeeting < idxOtherWork), '會議卡片應在其餘工作卡片之前');
 assert(!ids.includes('主題節目組'), '組別卡片應已移至部門管理中心，不在工作卡片格線');
 
-mon = htmlOf('identity-monitor');
-assert(mon.includes('總申請') || mon.includes('你暫時未有申請紀錄'), '身份卡片我的監察區塊應有內容');
-assert(mon.includes('申請中心'), '無權限人士身份卡應提供前往申請中心');
+mon = htmlOf('dash-hero-monitor');
+assert(mon.includes('總申請') || mon.includes('你暫時未有申請紀錄'), '活動橫幅我的監察區塊應有內容');
+assert(mon.includes('申請中心'), '無權限人士活動橫幅應提供前往申請中心');
 
 // 我的監察頁：無權限人士只看到身份 + 未有紀錄 + 前往申請中心按鈕
 app.renderMyMonitorModule();
@@ -136,10 +137,10 @@ app.currentUser = { role: 'chairperson', name: '朱家聰', user_id: '朱家聰'
 app.monitorScope = () => ({ level: 'all', groups: [] });
 app.canApproveArea = () => true;
 app.renderRoleCards();
-mon = htmlOf('identity-monitor');
+mon = htmlOf('dash-hero-monitor');
 assert(mon.includes('總申請') && mon.includes('待處理') && mon.includes('已批核') && mon.includes('已拒絕'),
-  '有權限人士身份卡片應見 總申請/待處理/已批核/已拒絕');
-assert(mon.includes("app.switchTopTab('approvals')"), '身份卡片數字應可點擊跳轉批核中心');
+  '有權限人士活動橫幅應見 總申請/待處理/已批核/已拒絕');
+assert(mon.includes("app.switchTopTab('approvals')"), '活動橫幅數字應可點擊跳轉批核中心');
 
 app.renderMyMonitorModule();
 monPage = htmlOf('module-content');
@@ -157,6 +158,13 @@ const idIdx = dashHtml.indexOf('id="identity-section"');
 const mgmtIdx = dashHtml.indexOf('id="management-tools-section"');
 assert(pubIdx !== -1 && idIdx !== -1 && pubIdx < idIdx && idIdx < mgmtIdx,
   '靜態 HTML：公開資料 → 其他組別及工作卡片 → 管理工具 順序錯誤');
+
+/* ---------- 4b. 活動資訊橫幅精簡：只留 日期/時間/地點/天氣 + 簡介 + 最新消息 + 我的監察 ---------- */
+assert(!html.includes('id="dash-event-title"') && !html.includes('id="dash-status-badge"') && !html.includes('id="dash-role-display"'), '活動橫幅精簡：大標題／進行中 badge／身份 badge 已刪（活動名稱喺最頂 BAR 標題列）');
+assert(html.includes('id="dash-event-dates"') && html.includes('id="dash-event-time"') && html.includes('id="dash-event-location"') && html.includes('id="dash-event-weather"'), '活動橫幅應保留 日期/時間/地點/天氣');
+assert(html.includes('id="dash-event-desc"') && html.includes('id="dash-news-box"') && html.includes('id="dash-event-news"'), '活動橫幅應保留 活動簡介＋最新消息');
+assert(html.includes('id="dash-hero-monitor"'), '活動橫幅應有我的監察併入位 (dash-hero-monitor)');
+assert(html.includes('選擇活動後即可查看該活動全部資料') && !html.includes('選擇其他活動'), '橫幅「選擇其他活動」掣已刪（按最頂 BAR 標題回選擇活動頁）');
 
 /* ---------- 5. 最頂 BAR（標題列）及底部導覽列 ---------- */
 const headerHtml = html.slice(html.indexOf('<header'), html.indexOf('</header>'));
@@ -177,9 +185,15 @@ const mq = html.slice(mqStart, html.indexOf('}\n</style>') > mqStart ? html.inde
 assert(mq.includes('.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important'), '手機儀表板卡片應兩欄正方形');
 assert(mq.includes('#group-quick-access{grid-template-columns:repeat(2,minmax(0,1fr))!important') && mq.includes('#events-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important'), '部門管理中心及首頁活動卡手機應兩欄正方形');
 const navHtml = html.slice(html.indexOf('<nav id="bottom-nav"'), html.indexOf('</nav>'));
-assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && navHtml.includes('批核中心') && navHtml.includes('開戶'),
-  '底部導覽應有 執行手冊/申請中心/批核中心/開戶');
+assert(navHtml.includes('執行手冊') && navHtml.includes('申請中心') && navHtml.includes('批核中心') && navHtml.includes('部門中心') && !navHtml.includes('開戶'),
+  '底部導覽應有 執行手冊/申請中心/批核中心/部門中心（開戶已移去最頂 BAR）');
 assert(!navHtml.includes('md:hidden'), '底部導覽列應手機／電腦同步顯示（不再只限手機）');
+// 開戶掣移去最頂 BAR（身份 badge 旁，登入後總主任以上可見，一按跳入開戶頁）
+assert(html.includes('id="topbar-account-setup"'), '最頂 BAR 應有開戶掣 (topbar-account-setup)');
+assert(headerHtml.includes("topbar-account-setup") && headerHtml.includes("app.openModule('account_setup')"), '最頂 BAR 開戶掣應跳入開戶頁 (account_setup)');
+// 部門中心：一按即見（執副以上＝全部部門列表；普通人＝直接入自己部門）
+assert(core.includes("dept_hub:'部門管理中心'") && core.includes('renderDeptHubModule') && core.includes('openDeptHub'),
+  '應有 dept_hub 模組（部門中心列表頁）及 openDeptHub 入口');
 
 /* ---------- 6. updateAdminNav：登入後只顯示登出，批核中心／開戶僅有權限人士可見 ---------- */
 function styleOf(id) { return store.get(id) ? store.get(id).style.display : 'MISSING'; }
@@ -189,13 +203,15 @@ assert(styleOf('login-toggle-btn') === 'none', '登入後最頂 BAR 不應顯示
 assert(styleOf('logout-btn') === '', '登入後最頂 BAR 應顯示登出');
 assert(styleOf('topbar-changepwd') === '', '登入後最頂 BAR 應顯示改密碼');
 assert(styleOf('bn-approvals') === 'none', '工作人員不應見底部批核中心');
-assert(styleOf('bn-accounts') === 'none', '工作人員不應見底部開戶');
+assert(styleOf('bn-dept') === '', '工作人員（登入）應見底部部門中心（一按直接入自己部門）');
+assert(styleOf('topbar-account-setup') === 'none', '工作人員不應見最頂 BAR 開戶');
 assert(styleOf('bn-exec') !== 'none' && styleOf('bn-apply') !== 'none', '執行手冊／申請中心人人可用');
 
 app.currentUser = { role: 'general_director', name: '蘇國樑', user_id: '蘇國樑', group_name: '主題節目組' };
 app.updateAdminNav();
 assert(styleOf('bn-approvals') === '', '總主任應見底部批核中心');
-assert(styleOf('bn-accounts') === '', '總主任應見底部開戶');
+assert(styleOf('bn-dept') === '', '總主任應見底部部門中心（一按見全部部門列表）');
+assert(styleOf('topbar-account-setup') === '', '總主任應見最頂 BAR 開戶');
 
 app.currentUser = null;
 app.updateAdminNav();
@@ -203,6 +219,38 @@ assert(styleOf('login-toggle-btn') === '', '未登入最頂 BAR 應顯示登入'
 assert(styleOf('logout-btn') === 'none', '未登入最頂 BAR 不應顯示登出');
 assert(styleOf('topbar-changepwd') === 'none', '未登入不應顯示改密碼');
 assert(styleOf('bn-approvals') === 'none', '未登入不應見底部批核中心');
+assert(styleOf('bn-dept') === 'none', '未登入不應見底部部門中心');
+assert(styleOf('topbar-account-setup') === 'none', '未登入不應見最頂 BAR 開戶');
+
+/* ---------- 6b. openDeptHub：執副以上＝全部部門列表；普通人＝一按直接入自己部門 ---------- */
+const deptCalls=[];
+app.openGroupManagement=(g)=>deptCalls.push(['group',g]);
+app.openModule=(k)=>deptCalls.push(['module',k]);
+app.openLoginModal=()=>deptCalls.push(['login']);
+app.isExecViceOrChair=()=>['super_admin','admin','chairperson','advisor','executive_vice_chairperson'].includes(app.currentUser?.role);
+app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組' };
+app.openDeptHub();
+assert(JSON.stringify(deptCalls).includes('["group","主題節目組"]'), '普通人一按部門中心應直接跳自己部門（唔見列表）');
+deptCalls.length=0;
+app.currentUser = { role: 'executive_vice_chairperson', name: '羅雅雯', user_id: '羅雅雯', group_name: '主席及執行副主席' };
+app.openDeptHub();
+assert(JSON.stringify(deptCalls).includes('["module","dept_hub"]'), '執副以上一按部門中心應見全部部門列表');
+deptCalls.length=0;
+app.currentUser = null;
+app.openDeptHub();
+assert(JSON.stringify(deptCalls).includes('["login"]'), '未登入按部門中心應彈登入');
+// dept_hub 列表頁實跑：應見到各部門卡（同儀表板部門管理中心同一份卡）
+delete app.openGroupManagement; delete app.openModule; delete app.openLoginModal;
+app.isExecViceOrChair=()=>false;
+app.currentUser = { role: 'chairperson', name: '朱家聰', user_id: '朱家聰', group_name: '主席及執行副主席' };
+app.getGroupOrgNodes=()=>[];
+app.groupApplyStats=()=>({requests:[],boothReqs:[],vehicles:[],orders:[],supPending:0,boothPending:0,vehPending:0,mealPending:0});
+app.openModule('dept_hub');
+const hub = htmlOf('module-content');
+assert(hub.includes('主題節目組') && hub.includes('行政組') && hub.includes('協調組') && hub.includes('服務及發展組'),
+  '部門中心列表頁應見到各部門卡');
+assert(hub.includes('app.openGroupManagement'), '部門中心列表卡應可點擊進入部門管理');
+delete app.getGroupOrgNodes; delete app.groupApplyStats;
 
 /* ---------- 7. 全部卡片白底無顏色；頁尾精簡；有批核權＋自己有申請的身份卡顯示 ---------- */
 app.currentUser = { role: 'staff', name: '陳子明', user_id: '陳子明', group_name: '主題節目組' };
@@ -225,9 +273,10 @@ app.collectApplications = () => [
   { type:'meals', typeLabel:'膳食', icon:'fa-solid fa-utensils', color:'text-purple-600', person:'陳大文', person_id:'陳大文', group:'主題節目組', title:'午宴 · 白飯', sub:'', status:'待批核', color_name:'amber', who:'', date:'' }
 ];
 app.renderRoleCards();
-mon = htmlOf('identity-monitor');
-assert(mon.includes('總申請') && mon.includes('待處理') && mon.includes("app.switchTopTab('approvals')"), '有權限人士身份卡片應見可跳轉批核中心的數字');
-assert(mon.includes('我的申請') && mon.includes("app.openModule('my_monitor')"), '有批核權同時自己有申請：身份卡應有「我的申請」一行（跳轉我的監察）');
+mon = htmlOf('dash-hero-monitor');
+assert(mon.includes('總申請') && mon.includes('待處理') && mon.includes("app.switchTopTab('approvals')"), '有權限人士活動橫幅應見可跳轉批核中心的數字');
+assert(mon.includes('我的申請') && mon.includes("app.openModule('my_monitor')"), '有批核權同時自己有申請：活動橫幅應有「我的申請」一行（跳轉我的監察）');
+assert(!html.includes('id="identity-monitor"'), '我的監察已併入活動橫幅，身份卡片不應再有 identity-monitor');
 
 // 我的監察頁：有權限人士「我自己」未有紀錄時，也應有「前往申請中心」跳轉按鈕
 app.collectApplications = () => [];

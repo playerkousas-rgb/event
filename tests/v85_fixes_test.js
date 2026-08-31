@@ -59,17 +59,18 @@ ok(finSrc.includes("orderedBudgets.map(groupCard)"), '③ 應以排序後清單�
 ok(!/<div class="border rounded-xl p-4 bg-white"><h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-coins text-emerald-600 mr-2"><\/i>收入<\/h4>/.test(finSrc.replace(/\s+/g, ' ').split('income.length && !budgets.some')[0].split('container.innerHTML')[1] || ''), '④ 預算明細主渲染不應再有無條件的底部分「收入」');
 ok(finSrc.includes("income.length && !budgets.some(g=>normalizeGroupName(g.group_name)==='收入')"), '④ 「收入」只應在冇「收入」組別卡時才渲染（不再重複）');
 
-/* ---------- ⑤ 主頁卡片人數 ---------- */
-const rqaStart = coreSrc.indexOf('renderGroupQuickAccess(){');
-const rqaEnd = coreSrc.indexOf('openGroupManagement(groupName){');
+/* ---------- ⑤ 部門卡片人數（卡片已抽成共用 groupHubCardHTML） ---------- */
+const rqaStart = coreSrc.indexOf('groupHubCardHTML(g,currentGroup,isAdmin){');
+const rqaEnd = coreSrc.indexOf('renderGroupQuickAccess(){');
 const rqa = coreSrc.slice(rqaStart, rqaEnd);
-ok(!rqa.includes('contacts.filter(c=>normalizeGroupName(c.group_name)===g)'), '⑤ 主頁卡片人數不應再併計舊聯絡表（顧問團 4 人 BUG）');
+ok(!rqa.includes('contacts.filter(c=>normalizeGroupName(c.group_name)===g)'), '⑤ 部門卡片人數不應再併計舊聯絡表（顧問團 4 人 BUG）');
 ok(/uniqPosts\.forEach\(n=>\{\s*(orgNameList\(n\.names\)|\(n\.names\|\|''\))/.test(rqa), '⑤ 人數應只計架構圖崗位人名（v8.9 起經 orgNameList 統一拆人名）');
 
 /* ---------- ⑦ 防幽靈點擊 ---------- */
 ok(coreSrc.includes('deferredDashWrite(el,html){'), '⑦ 應有 deferredDashWrite 安全寫入');
 ok(coreSrc.includes("addEventListener('touchstart'"), '⑦ 應追蹤 touchstart');
-ok(rqa.includes('this.deferredDashWrite(container,html)'), '⑦ 主頁部門卡片應經 deferredDashWrite 寫入');
+const rqaRender = coreSrc.slice(coreSrc.indexOf('renderGroupQuickAccess(){'), coreSrc.indexOf('openDeptHub(){'));
+ok(rqaRender.includes('this.deferredDashWrite(container,html)') && rqaRender.includes('this.groupHubCardHTML(g,currentGroup,isAdmin)'), '⑦ 主頁部門卡片應經 deferredDashWrite 寫入共用 groupHubCardHTML');
 
 /* ---------- ⑧ 攤位物資申請對標總表 ---------- */
 const cfgSrc = fs.readFileSync(path.join(root, 'js/00-config.js'), 'utf8');
