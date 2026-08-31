@@ -123,6 +123,11 @@ check(sheet.includes('港島童軍繽紛日 2026 物資'), '① 列印標題＝�
 check(sheet.includes('（序號 / 需運送物資總數）'), '① 列印有「序號 / 需運送物資總數」說明');
 check(sheet.includes('去程 (4/10/2026)'), '① 列印去程日期為 2026');
 check(monSrc.includes('1張A4·2張') && monSrc.includes('.boxlabel'), '① 保持一張 A4 印兩張');
+check(/@page\{size:A4[^}]*margin:0/.test(monSrc), '① 列印邊距歸零：兩張 A5 啱啱好排滿一張 A4');
+check(monSrc.includes('height:148.5mm') && monSrc.includes('width:210mm'), '① 每張箱頭紙為正 A5 尺寸（210×148.5mm），A4 對半剪開');
+check(!monSrc.includes('page-break-after:always'), '① 已移除 page-break-after:always（唔會再一張一頁，印兩張 A4 浪費紙）');
+check(monSrc.includes('cutline'), '① 兩張之間有虛線剪開線（✂）');
+check(monSrc.includes('noprint'), '① 列印時隱藏操作列，紙上只有兩張箱頭紙');
 check(monSrc.includes('normalizeGroupName(this.currentUser.group_name'), '① 組別預設為登入組別');
 const coreBtn = fs.readFileSync(path.join(root, 'js/10-app-core.js'), 'utf8');
 check(coreBtn.includes('openBoxLabelModal('), '① 部門中心卡仍有箱頭紙入口');

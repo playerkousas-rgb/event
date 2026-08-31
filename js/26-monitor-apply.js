@@ -631,7 +631,7 @@ Object.assign(ScoutEventApp.prototype,{
      式樣內容：香港童軍總會 港島地域／港島童軍繽紛日 2026 物資／組別・負責人或攤位名稱／
      數量（序號 / 需運送物資總數）／去程 (4/10/2026) 百週年紀念大樓 → 香港警察學院／
      活動完結：香港警察學院 → 百週年紀念大樓・自行運走・棄置・交地域處理。
-     只需改年份即可沿用；預設帶入登入組別；一張 A4 印兩張。 */
+     只需改年份即可沿用；預設帶入登入組別；一張 A4 上下印兩張 A5，沿中間虛線自行剪開（慳紙環保）。 */
   boxLabelYear(){ return (this.currentEvent&&this.currentEvent.start_date||'').slice(0,4)||'2026'; }
 ,
   // 去程日期＝活動首日，按指定式樣以 d/m/yyyy 顯示（例：4/10/2026）
@@ -691,14 +691,14 @@ Object.assign(ScoutEventApp.prototype,{
     const d={};
     return `
       <div class="space-y-3">
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>箱頭紙（Box Label）：</b>採用地域<b>指定式樣</b>（香港童軍總會 港島地域 · 港島童軍繽紛日 物資），<b>只需改年份（現為 ${escapeHtml(this.boxLabelYear())}）</b>即可沿用；組別預設為你的登入組別，其餘可自選填。列印時<b>一張 A4 印兩張</b>，方便貼上各箱。任何登入成員（尤其部門中心）都可填寫及列印。</div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>箱頭紙（Box Label）：</b>採用地域<b>指定式樣</b>（香港童軍總會 港島地域 · 港島童軍繽紛日 物資），<b>只需改年份（現為 ${escapeHtml(this.boxLabelYear())}）</b>即可沿用；組別預設為你的登入組別，其餘可自選填。列印時<b>一張 A4 上下印兩張 A5（每張 210×148.5mm）</b>，沿中間虛線自行剪開即可貼上各箱，慳紙環保。任何登入成員（尤其部門中心）都可填寫及列印。</div>
         <div class="flex gap-2 flex-wrap items-center">
-          <button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張)</button>
+          <button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張A5)</button>
           ${this.currentUser?`<button onclick="app.openBoxLabelModal()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">放大填寫／預覽</button>`:''}
         </div>
         <div class="bg-white border rounded-xl p-4 space-y-3">
           ${this.boxLabelFormHTML('boxl_', d)}
-          <div class="text-[11px] text-slate-500">💡 可先係上方填好，再按「列印」；部門中心入口亦可用同一個表單，組別自動帶入你嘅登入組別。式樣與地域指定版本一致，只係年份改為 ${escapeHtml(this.boxLabelYear())}。</div>
+          <div class="text-[11px] text-slate-500">💡 可先係上方填好，再按「列印」；部門中心入口亦可用同一個表單，組別自動帶入你嘅登入組別。式樣與地域指定版本一致，只係年份改為 ${escapeHtml(this.boxLabelYear())}。列印建議設定 <b>A4 · 邊距「無」· 縮放 100%</b>，出嚟沿中間虛線剪開就係兩張 A5。</div>
         </div>
       </div>`;
   }
@@ -741,10 +741,15 @@ Object.assign(ScoutEventApp.prototype,{
     const win=window.open('','_blank');
     if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
     win.document.write(`<!DOCTYPE html><html lang="zh-HK"><head><meta charset="utf-8"><title>箱頭紙 ${escapeHtml(f.year)}</title><style>
-      @page{size:A4 portrait; margin:10mm;}
-      body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif; margin:0; color:#000;}
-      .boxlabel{border:2px solid #000; padding:10mm 8mm; height:130mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:flex-start; gap:6mm; page-break-after:always;}
-      .boxlabel:last-child{page-break-after:auto;}
+      /* 一張 A4 上下印兩張 A5：A4=210×297mm，每張標籤=210×148.5mm（正 A5），
+         邊距歸零先可以兩張啱啱好排滿一頁；中間虛線＝剪開線。 */
+      @page{size:A4 portrait; margin:0;}
+      html,body{margin:0; padding:0; background:#fff;}
+      body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif; color:#000;}
+      .a4{position:relative; width:210mm;}
+      .boxlabel{width:210mm; height:148.5mm; border:2px solid #000; padding:9mm 8mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-evenly; gap:5mm; overflow:hidden; page-break-inside:avoid; break-inside:avoid;}
+      .cutline{position:absolute; left:5mm; right:5mm; top:148.5mm; border-top:2px dashed #888; z-index:5;}
+      .cutline .sc{position:absolute; left:0; top:-4.5mm; font-size:12pt; color:#888; background:#fff; padding:0 2px; line-height:1;}
       .hdr{font-size:16pt; font-weight:700; text-align:center; letter-spacing:2px;}
       .title{font-size:24pt; font-weight:800; text-align:center; border-bottom:2px solid #000; padding-bottom:3mm;}
       .line{display:flex; align-items:flex-end; gap:4px; font-size:13pt; flex-wrap:wrap;}
@@ -758,11 +763,17 @@ Object.assign(ScoutEventApp.prototype,{
       table.trip td.c1{width:38%; font-weight:700;}
       .opt{display:inline-block; margin-right:5mm; white-space:nowrap;}
       .opt .tick{font-family:'DejaVu Sans',sans-serif; margin-right:3px; font-size:13pt;}
-      button{display:none !important;}
+      @media print{ .noprint{display:none !important;} }
     </style></head><body>
-      <div style="margin-bottom:8px; text-align:center;"><button onclick="window.print()" style="display:inline-block!important;background:#111;color:#fff;padding:8px 20px;border:none;border-radius:8px;font-weight:bold;">列印（1張A4 | 印兩張）</button></div>
-      ${this.boxLabelSheetHTML(f)}
-      ${this.boxLabelSheetHTML(f)}
+      <div class="noprint" style="position:sticky; top:0; z-index:10; background:#f5f5f4; border-bottom:1px solid #ddd; padding:10px 14px; font-family:sans-serif; font-size:13px; color:#333;">
+        <button onclick="window.print()" style="background:#111;color:#fff;padding:8px 20px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">列印（1張A4｜上下2張A5）</button>
+        <span style="margin-left:10px;">✂ 列印後沿中間虛線剪開＝兩張 A5 箱頭紙。建議列印設定：<b>A4 · 邊距「無」· 縮放 100%</b>。</span>
+      </div>
+      <div class="a4">
+        <div class="cutline"><span class="sc">&#9986;</span></div>
+        ${this.boxLabelSheetHTML(f)}
+        ${this.boxLabelSheetHTML(f)}
+      </div>
     </body></html>`);
     win.document.close();
   }
@@ -771,7 +782,7 @@ Object.assign(ScoutEventApp.prototype,{
     const defaults={ group: groupName||(this.currentUser?normalizeGroupName(this.currentUser.group_name||''):'') };
     document.getElementById('record-modal-title').textContent=`箱頭紙 ${this.boxLabelYear()}（指定式樣 · 填寫／列印）`;
     document.getElementById('record-form-fields').innerHTML=this.boxLabelFormHTML('boxl_', defaults)+`
-      <div class="flex justify-end gap-2 pt-3 border-t mt-3"><button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張)</button></div>`;
+      <div class="flex justify-end gap-2 pt-3 border-t mt-3"><button onclick="app.printBoxLabels()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印箱頭紙 (1張A4·2張A5)</button></div>`;
     document.getElementById('record-form').onsubmit=(e)=>e.preventDefault();
     document.getElementById('modal-record').classList.remove('hidden');
   }
