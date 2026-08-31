@@ -112,6 +112,18 @@ ok(editOf('donations') === false && editOf('meetings') === false, '② 協調組
 as(U('staff', '主題節目組', '節目組員'));                          // 一般工作人員（20）
 ok(editOf('exec_manual') === false && editOf('meetings') === false && editOf('donations') === false, '② 一般工作人員：全部只可看');
 
+/* ---------- ②b 會議卡片內部權限（32-meetings.js 一律跟 canManageMeetings） ---------- */
+const mtgs = fs.readFileSync(path.join(root, 'js/32-meetings.js'), 'utf8');
+ok(!/this\.isAdmin\(\)/.test(mtgs.replace(/isAdmin\(\)\{return[\s\S]*?\n/, '')), '②b 32-meetings.js：管理判斷應改用 canManageMeetings（定義行除外）');
+as(U('director', '秘書處', '秘書主任'));
+ok(app.canManageMeetings() === true, '②b 秘書處主任：可管理會議（新增／改／刪）');
+as(U('director', '行政組', '行政主任'));
+ok(app.canManageMeetings() === true, '②b 行政組主任：統管，可管理會議');
+as(U('director', '主題節目組', '節目主任'));
+ok(app.canManageMeetings() === false, '②b 主題節目組主任：唔可以管理會議');
+as(U('staff', '秘書處', '秘書組員'));                                // level 20 < 30
+ok(app.canManageMeetings() === false, '②b 秘書處組員（20 級）：未到主任級，唔可以管理會議');
+
 /* ---------- ③ 批核路由 ---------- */
 as(null); app.currentUser = null;
 const route = id => { app.approvalRouting = app.getLocalApprovalRouting(); return app.getApprovalRoute(id); };

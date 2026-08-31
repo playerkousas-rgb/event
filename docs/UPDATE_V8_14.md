@@ -16,6 +16,7 @@
 | 4 | 申請中心歸行政組統管；膳食・物資・車＝協調組；攤位＝主題節目組 | `APPROVAL_ROUTING_DEFAULTS`：膳食／物資／車 approver+executor＝`協調組`＋`行政組`；新增 **攤位獨立路由** `booth`＝`主題節目組`＋`行政組`（唔再跟 `supplies`）；攤位嘅批准／拒絕改用 `canApproveArea('booth')`，申請中心顯示「批核：主題節目組」 |
 | 5 | 童心捐贈歸服務組（行政組亦可管） | `CARD_OWNER_GROUPS.donations=['服務及發展組']` ＋ 行政組統管；`canViewDonationsStats()` 同步 |
 | 6 | 會議卡片歸秘書處（行政組亦可管） | `CARD_OWNER_GROUPS.meetings=['秘書處']`（原本 `meetings:()=>this.isAdmin()`，即係只有管理員）＋ 行政組統管 |
+> 補充：會議**內頁**入面所有「管理員先用得」嘅掣（新增會議／改／刪／上載議程・紀錄・附件／睇整理用 private 會議／改內建議程 JSON），原本係 `isAdmin()`，v8.14 一律改為 `canManageMeetings() = isAdmin() || isCardOwnerGroup('meetings')`，所以秘書處・行政組主任以上真係改到（唔再係淨係「卡面寫可修改、入去冇掣撳」）。
 
 ## 核心機制
 

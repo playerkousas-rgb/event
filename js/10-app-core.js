@@ -357,6 +357,9 @@ Object.assign(ScoutEventApp.prototype,{
     return owners.some(x=>{const ox=normalizeGroupName(x); return ox===g||g.includes(ox)||ox.includes(g);});
   }
 ,
+  // v8.14：邊個可以管理「會議卡片」（原本只係管理員）→ 秘書處負責，行政組統管
+  canManageMeetings(){ return this.isAdmin()||this.isCardOwnerGroup('meetings'); }
+,
   // 可以睇晒全部部門嘅人：執副以上 ＋ 行政組（統管全站）
   isAllGroupViewer(){
     if(!this.currentUser) return false;
@@ -1151,7 +1154,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
-      const isAdmin=this.isAdmin();
+      const isAdmin=this.canManageMeetings();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>${isAdmin?'<button onclick="app.toggleMeetingRecordsEditor()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-code mr-1"></i>內建議程 JSON</button>':''}<button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
     } else if(key==='staff'){
       const canManageStaff=this.canManageStaffContacts();

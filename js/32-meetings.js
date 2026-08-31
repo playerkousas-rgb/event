@@ -283,7 +283,7 @@ Object.assign(ScoutEventApp.prototype,{
   toggleMeetingRecordsEditor(){
     const box=document.getElementById('meeting-records-editor'); if(!box) return;
     if(!box.classList.contains('hidden')){ box.classList.add('hidden'); box.innerHTML=''; return; }
-    if(!this.isAdmin()){ showToast('只有管理員可編輯內建議程／紀錄','error'); return; }
+    if(!this.canManageMeetings()){ showToast('僅管理員／秘書處／行政組可編輯內建議程／紀錄','error'); return; }
     const json=JSON.stringify(this.meetingRecords||{meetings:[]},null,2);
     box.innerHTML=`<div class="bg-white border rounded-xl p-3 space-y-2">
       <div class="text-[11px] text-slate-600 leading-relaxed"><b><i class="fa-solid fa-pen-to-square mr-1 text-indigo-600"></i>編輯內建議程／會議紀錄（JSON）：</b>喺下面直接改文字，按「儲存到本機」即時生效（只影響本裝置）；正式發佈請按「匯出 JSON」並覆蓋 <code class="font-mono">data/meeting_records.json</code>。結構：<code class="font-mono">meetings[].agenda_items / minutes_sections / decisions / action_items</code>。</div>
@@ -568,7 +568,7 @@ Object.assign(ScoutEventApp.prototype,{
     const visFilter=document.getElementById('meeting-visibility-filter')?.value||'';
     let list=this.getMeetings();
     // apply permission filter for non-admin
-    const isAdmin=this.isAdmin();
+    const isAdmin=this.canManageMeetings();
     if(!isAdmin){
       list=list.filter(m=>{
         if(m.visibility==='private') return false; // private admin only
@@ -659,12 +659,12 @@ Object.assign(ScoutEventApp.prototype,{
           </div>
         </div>`;
       }).join('')}</div>
-      <div class="text-[11px] text-slate-400 text-center pt-2">共 ${list.length} 場會議 · ${isAdmin?'管理員可見全部':'僅顯示公開及權限內會議'} · 手機點擊卡片進入詳情，下載全部文件</div>
+      <div class="text-[11px] text-slate-400 text-center pt-2">共 ${list.length} 場會議 · ${isAdmin?'管理員／秘書處／行政組可見全部':'僅顯示公開及權限內會議'} · 手機點擊卡片進入詳情，下載全部文件</div>
     </div>`;
   }
 ,
   openMeetingFormModal(meetingId=null){
-    if(!this.isAdmin()){ showToast('只有管理員可建立/編輯會議','error'); return; }
+    if(!this.canManageMeetings()){ showToast('僅管理員／秘書處／行政組可建立/編輯會議','error'); return; }
     document.getElementById('meeting-form-title').textContent=meetingId?'編輯會議 (分次·上傳下載)':'新增會議 (分次管理)';
     document.getElementById('mf-mode').value=meetingId?'edit':'create';
     document.getElementById('mf-original-id').value=meetingId||'';
@@ -791,8 +791,8 @@ Object.assign(ScoutEventApp.prototype,{
   openMeetingDetail(meetingId){
     const m=this.getMeetings().find(x=>x.meeting_id===meetingId);
     if(!m){ showToast('找不到會議','error'); return; }
-    if(!this.isAdmin() && m.visibility==='private'){ showToast('此會議僅管理員可看 (整理用)','error'); return; }
-    if(m.visibility==='attendees' && !this.isDirectorOrAbove() && !this.isAdmin()){ showToast('僅主任或以上可看','error'); return; }
+    if(!this.canManageMeetings() && m.visibility==='private'){ showToast('此會議僅管理員／秘書處／行政組可看 (整理用)','error'); return; }
+    if(m.visibility==='attendees' && !this.isDirectorOrAbove() && !this.canManageMeetings()){ showToast('僅主任或以上可看','error'); return; }
     this.currentMeetingId=meetingId;
     this.renderMeetingDetail(m);
     document.getElementById('modal-meeting-detail').classList.remove('hidden');
@@ -818,7 +818,7 @@ Object.assign(ScoutEventApp.prototype,{
       const isAgendaDrive=m.agenda_file_url&&String(m.agenda_file_url).includes('drive.google.com');
       document.getElementById('md-agenda-file-meta').textContent=isAgendaDrive?'Google Drive 資料夾':`${m.agenda_uploaded_by||''} · ${m.agenda_uploaded_at?new Date(m.agenda_uploaded_at).toLocaleString():''}`;
       document.getElementById('md-agenda-file-info').innerHTML=isAgendaDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有議程檔案</span>`:`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage':'Sheet + 快取'}</b>`;
-      document.getElementById('md-agenda-delete-btn').classList.toggle('hidden',!this.isAdmin());
+      document.getElementById('md-agenda-delete-btn').classList.toggle('hidden',!this.canManageMeetings());
     } else agendaArea.classList.add('hidden');
     // 插入 Drive 資料夾連結到議程分頁頂部
     const driveBannerEl=document.getElementById('md-drive-folder-banner');
@@ -830,14 +830,14 @@ Object.assign(ScoutEventApp.prototype,{
       const isMinutesDrive=m.minutes_file_url&&String(m.minutes_file_url).includes('drive.google.com');
       document.getElementById('md-minutes-file-meta').textContent=isMinutesDrive?'Google Drive 資料夾':`${m.minutes_uploaded_by||''} · ${m.minutes_uploaded_at?new Date(m.minutes_uploaded_at).toLocaleString():''}`;
       document.getElementById('md-minutes-file-info').innerHTML=isMinutesDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有會議紀錄檔案</span>`:`儲存位置：<b>${this.mockMode?'localStorage':'Sheet + 快取'}</b>`;
-      document.getElementById('md-minutes-delete-btn').classList.toggle('hidden',!this.isAdmin());
+      document.getElementById('md-minutes-delete-btn').classList.toggle('hidden',!this.canManageMeetings());
     } else minutesArea.classList.add('hidden');
     document.getElementById('md-attach-count').textContent=(m.attachments||[]).length;
     document.getElementById('md-group-count').textContent=(m.group_uploads||[]).length;
     const attachList=document.getElementById('md-attachments-list');
     if((m.attachments||[]).length===0) attachList.innerHTML='<p class="text-xs text-slate-400 py-4 text-center">暫無附加文件</p>';
-    else attachList.innerHTML=m.attachments.map(a=>`<div class="flex justify-between items-center bg-slate-50 border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file text-sky-600"></i><div class="min-w-0"><div class="text-[12px] font-bold truncate">${escapeHtml(a.file_name)}</div><div class="text-[10px] text-slate-500">${escapeHtml(a.uploaded_by||'')} · ${a.uploaded_at?new Date(a.uploaded_at).toLocaleString():''} · ${(a.file_size? (a.file_size/1024).toFixed(1)+'KB':'')}</div></div></div><div class="flex gap-1"><button onclick="app.downloadAttachment('${m.meeting_id}','${a.file_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</button>${this.isAdmin()?`<button onclick="app.deleteAttachment('${m.meeting_id}','${a.file_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1.5 rounded-xl text-[11px]"><i class="fa-solid fa-trash"></i></button>`:''}</div></div>`).join('');
-    const isAdmin=this.isAdmin();
+    else attachList.innerHTML=m.attachments.map(a=>`<div class="flex justify-between items-center bg-slate-50 border rounded-xl p-3"><div class="flex items-center gap-2 min-w-0 flex-1"><i class="fa-solid fa-file text-sky-600"></i><div class="min-w-0"><div class="text-[12px] font-bold truncate">${escapeHtml(a.file_name)}</div><div class="text-[10px] text-slate-500">${escapeHtml(a.uploaded_by||'')} · ${a.uploaded_at?new Date(a.uploaded_at).toLocaleString():''} · ${(a.file_size? (a.file_size/1024).toFixed(1)+'KB':'')}</div></div></div><div class="flex gap-1"><button onclick="app.downloadAttachment('${m.meeting_id}','${a.file_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</button>${this.canManageMeetings()?`<button onclick="app.deleteAttachment('${m.meeting_id}','${a.file_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1.5 rounded-xl text-[11px]"><i class="fa-solid fa-trash"></i></button>`:''}</div></div>`).join('');
+    const isAdmin=this.canManageMeetings();
     document.getElementById('md-agenda-admin-upload').classList.toggle('hidden',!isAdmin);
     document.getElementById('md-minutes-admin-upload').classList.toggle('hidden',!isAdmin);
     document.getElementById('md-attachments-admin').classList.toggle('hidden',!isAdmin);
@@ -944,7 +944,7 @@ Object.assign(ScoutEventApp.prototype,{
       if(a.file_url){ setTimeout(()=>this.downloadDriveFile(a.file_url,a.file_name),count*300); driveCount++; count++; }
       else if(a.file_data){ setTimeout(()=>downloadDataUrl(a.file_name,a.file_data),count*400); count++; } 
     });
-    (m.group_uploads||[]).forEach(u=>{ if(this.isAdmin()||u.visibility!=='private'){ 
+    (m.group_uploads||[]).forEach(u=>{ if(this.canManageMeetings()||u.visibility!=='private'){ 
       if(u.file_url){ setTimeout(()=>this.downloadDriveFile(u.file_url,u.file_name),count*300); driveCount++; count++; }
       else if(u.file_data){ setTimeout(()=>downloadDataUrl(u.file_name||'會員資料',u.file_data),count*400); count++; } 
     } });
@@ -1023,21 +1023,21 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteAttachment(meetingId,fileId){
-    if(!this.isAdmin()){ showToast('僅管理員可刪除','error'); return; }
+    if(!this.canManageMeetings()){ showToast('僅管理員可刪除','error'); return; }
     if(!confirm('確定刪除此附件？管理員操作，無法復原')) return; const list=this.getMeetings(); const idx=list.findIndex(x=>x.meeting_id===meetingId); if(idx<0) return; list[idx].attachments=(list[idx].attachments||[]).filter(a=>a.file_id!==fileId); this.saveMeetings(list); this.renderMeetingDetail(list[idx]); this.renderMeetingsList(); showToast('已刪除附件 (管理員)','warning');
   }
 ,
   deleteGroupUpload(meetingId,uploadId){
-    if(!this.isAdmin() && !this.canUploadGroup()){ showToast('無權限刪除','error'); return; }
+    if(!this.canManageMeetings() && !this.canUploadGroup()){ showToast('無權限刪除','error'); return; }
     if(!confirm('確定刪除此小組資料？')) return; const list=this.getMeetings(); const idx=list.findIndex(x=>x.meeting_id===meetingId); if(idx<0) return; 
     // 只有管理員或上傳者本人可刪
     const upload=(list[idx].group_uploads||[]).find(u=>u.upload_id===uploadId);
-    if(!this.isAdmin() && upload && upload.uploaded_by!==this.currentUser?.name){ showToast('只能刪除自己上傳的資料，管理員可刪全部','error'); return; }
+    if(!this.canManageMeetings() && upload && upload.uploaded_by!==this.currentUser?.name){ showToast('只能刪除自己上傳的資料，管理員可刪全部','error'); return; }
     list[idx].group_uploads=(list[idx].group_uploads||[]).filter(u=>u.upload_id!==uploadId); this.saveMeetings(list); this.renderMeetingDetail(list[idx]); this.renderMeetingsList(); showToast('已刪除資料','warning');
   }
 ,
   deleteMeetingFile(type){
-    if(!this.isAdmin()){ showToast('僅管理員可刪除會議檔案','error'); return; }
+    if(!this.canManageMeetings()){ showToast('僅管理員可刪除會議檔案','error'); return; }
     const typeName={agenda:'議程',minutes:'會議紀錄'}[type]||type;
     if(!confirm(`確定刪除此會議的${typeName}檔案？管理員操作`)) return;
     const list=this.getMeetings(); const idx=list.findIndex(x=>x.meeting_id===this.currentMeetingId); if(idx<0) return;
@@ -1047,7 +1047,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async deleteMeeting(meetingId){
-    if(!this.isAdmin()){ showToast('僅管理員可刪除會議','error'); return; }
+    if(!this.canManageMeetings()){ showToast('僅管理員可刪除會議','error'); return; }
     if(!confirm('確定刪除此會議？所有議程、紀錄、附件、各組會員資料將一併刪除，無法復原！')) return;
     this.markRecordDeleted('Meetings',meetingId);
     let list=this.getMeetings().filter(x=>x.meeting_id!==meetingId); this.saveMeetings(list);
