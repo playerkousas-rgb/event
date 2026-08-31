@@ -96,6 +96,14 @@ Object.assign(ScoutEventApp.prototype,{
   getLocalApprovalRouting(){
     const eid=this.currentEvent?.event_id||'isd_2026';
     let stored={};
+    // v8.14：路由預設改咗（膳食／物資／車→協調組、攤位→主題節目組、行政組統管）→ 舊快取清一次，只做一次
+    try{
+      const flag='event_approval_routing_version_'+eid;
+      if(localStorage.getItem(flag)!==APPROVAL_ROUTING_VERSION){
+        localStorage.removeItem(LS.approvalRouting(eid));
+        localStorage.setItem(flag,APPROVAL_ROUTING_VERSION);
+      }
+    }catch(e){}
     try{ stored=JSON.parse(localStorage.getItem(LS.approvalRouting(eid))||'{}')||{}; }catch(e){}
     const routing={};
     APPROVAL_AREAS.forEach(a=>{
@@ -200,8 +208,9 @@ Object.assign(ScoutEventApp.prototype,{
     const required=this.getApprovalRoute(area).approver_groups||[];
     if(!required.some(g=>normalizeGroupName(g)===group)) return false;
     // 人員權限表可在獲指派的批核組內再收窄；未列明則由該組所有總主任以上處理。
+    // v8.14：只有當權限表真係有呢一欄先收窄（新增 booth 等範疇時，舊紀錄冇嗰欄＝跟組別路由，唔會人人變冇權）
     const rec=this.approvalPerms.find(p=>p.user_id===user.user_id);
-    if(rec) return !!rec[area];
+    if(rec && rec[area]!==undefined) return !!rec[area];
     return true;
   }
 ,
@@ -356,7 +365,9 @@ Object.assign(ScoutEventApp.prototype,{
         } else if(!this.mockMode){
           // v8.2 診斷提示：帳戶冇錯都入唔到，最大可能係你連住嘅 /exec 係舊版部署（未重新部署新版 Code.gs）。
           const hint=j.version?'':'（後端冇回報版本 → 好大機會係舊版部署；請喺 Apps Script「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試）';
-          showToast('登入失敗：'+(j.error||'帳號或密碼錯誤')+hint,'error'); return;
+          // v8.14：順手問後端「呢個帳號點解入唔到」（需要後端 v8.5；舊版會靜默略過）
+          const ah=await this.loginAccountHint(id);
+          showToast('登入失敗：'+(j.error||'帳號或密碼錯誤')+hint+ah,'error'); return;
         }
         // Mock 模式下後端找不到 → 繼續嘗試本地示範帳戶
       } else {
@@ -376,6 +387,21 @@ Object.assign(ScoutEventApp.prototype,{
     if(found){this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit),offline:!this.isDemoEvent()}; if(this.isDemoEvent()) this.currentUser.mock_admin=true; // v8.7：MOCK 全部管理權限
     localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+found.name+(this.isDemoEvent()?'（MOCK 全部管理權限已開）':'（離線：本機資料）'),'success'); if(this.currentEvent) this.showDashboard(); return;}
     showToast('登入失敗：帳戶不存在或密碼錯誤。身份由管理員批核 (角色＋組別)，未有帳戶請聯絡管理員開戶','error');
+  }
+,
+  // v8.14：登入失敗（帳號唔存在／密碼錯）時，問後端攞「點解」——需要後端 v8.5 嘅 accountCheck；
+  // 舊版部署會回「Unknown POST action」，呢個 function 會靜默略過（唔會影響原本嘅錯誤提示）。
+  async loginAccountHint(id){
+    try{
+      const r=await this.gasPost({action:'accountCheck',api_key:this.apiKey,user_id:id});
+      if(!(r.ok&&r.json&&r.json.success)) return '';
+      const j=r.json;
+      if(!j.found&&!j.builtin_account) return '（後端 Users 表冇「'+id+'」呢個帳號 → 要搵管理員開戶／加返入名單）';
+      const row=(j.rows||[])[0];
+      if(row&&!row.has_password) return '（呢個帳號喺後端冇密碼 → 要喺後端設返密碼先入到）';
+      if(row&&row.is_default_password) return '（呢個帳號仲用緊預設密碼 1234）';
+      return row?('（後端有呢個帳號：'+row.name+'／'+row.role+'／'+(row.group_name||'冇組別')+'）'):'';
+    }catch(e){ return ''; }
   }
 ,
   // v8.13 離線登入：後端 POST 失敗（HTTP 400／404／5xx／網絡錯誤）時先會用到。

@@ -255,7 +255,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openCeremonySpeechForm(){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
     const data=this.getCeremonyData();
     const sp=data.speech||{title:'',content:''};
     let html=`<div><label class="text-[11px] font-bold">標題</label><input id="sp-title" value="${escapeHtml(sp.title||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div class="mt-3"><label class="text-[11px] font-bold">致辭內容</label><textarea id="sp-content" rows="12" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(sp.content||'')}</textarea></div>`;
@@ -275,7 +275,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openCeremonyItemForm(type,id=null){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
     const data=this.getCeremonyData();
     const arr=data[type];
     const existing=id?arr.find(x=>x.id===id):null;
@@ -312,7 +312,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteCeremonyItem(type,id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getCeremonyData(); data[type]=data[type].filter(x=>x.id!==id);
     this.saveCeremonyData(data); this.renderCeremonyModule();
@@ -377,7 +377,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openAwardCategoryForm(id=null){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
     const data=this.getAwardsData();
     const existing=id?data.categories.find(c=>c.id===id):null;
     let html=`<input type="hidden" id="aw-mode" value="${existing?'edit':'create'}"><input type="hidden" id="aw-id" value="${existing?.id||''}"><div><label class="text-[11px] font-bold">獎項類別名稱</label><input id="aw-name" value="${escapeHtml(existing?.name||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>`;
@@ -401,14 +401,14 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteAwardCategory(id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除整個獎項類別？')) return;
     const data=this.getAwardsData(); data.categories=data.categories.filter(c=>c.id!==id);
     this.saveAwardsData(data); this.renderAwardsModule();
   }
 ,
   openAwardItemForm(catId,id=null){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可編輯','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可編輯','error'); return; }
     const data=this.getAwardsData();
     const cat=data.categories.find(c=>c.id===catId); if(!cat) return;
     const existing=id?cat.items.find(it=>it.id===id):null;
@@ -434,7 +434,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteAwardItem(catId,id){
-    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60){ showToast('僅管理員或副主席以上可刪除','error'); return; }
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getAwardsData();
     const cat=data.categories.find(c=>c.id===catId); if(!cat) return;

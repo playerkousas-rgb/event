@@ -38,7 +38,8 @@ Object.assign(ScoutEventApp.prototype,{
     if(!u) return false;
     if(this.isAdmin()) return true;
     if((ROLE_HIERARCHY[u.role]||0)>=60) return true;
-    return normalizeGroupName(u.group_name||'').includes('服務及發展');
+    // v8.14：童心捐贈歸服務及發展組，行政組亦可管
+    return normalizeGroupName(u.group_name||'').includes('服務及發展') || this.isCardOwnerGroup('donations');
   }
 ,
   renderDonationsModule(){

@@ -1,4 +1,5 @@
 // ============================================================
+// ⚠️ v8.5 (2026-08-31)：帳號體檢 accountCheck ＋ 最高層管理帳號改過密碼後都可以用 Sheet hash 登入。
 // ⚠️ v8.4 (2026-08-31)：改完 Code.gs 之後，必須喺 Apps Script 做
 //    「部署 → 管理部署 → ✏️ 編輯 → 版本：新版本 → 部署」，前端先會用到新程式碼
 //    （只撳「儲存」唔會更新 /exec 部署；前端「後端連線診斷」睇到嘅版本號就係部署緊嗰個版本）。
@@ -19,7 +20,7 @@
 // v8.4：doPost 兼容 application/x-www-form-urlencoded（表單編碼）嘅 payload ——
 //       部分瀏覽器／代理會將 POST body 轉成 e.parameter，淨讀 e.postData.contents 會變 undefined 而報錯。
 //       前端一律用 text/plain（唔發 CORS 預檢），呢個係雙重保險。
-const GS_VERSION = 'v8.4-2026-08-31';
+const GS_VERSION = 'v8.5-2026-08-31';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -1048,6 +1049,7 @@ function doPost(e) {
     else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
     else if (action === 'createAccount') return jsonResponse(createAccount(data));
     else if (action === 'saveUserPermissions') return jsonResponse(saveUserPermissions(data));
+    else if (action === 'accountCheck') return jsonResponse(accountCheck(data));
     else if (action === 'getApprovalPermissions') return jsonResponse(getApprovalPermissions());
     else if (action === 'saveApprovalPermissions') return jsonResponse(saveApprovalPermissions(data));
     else if (action === 'getApprovalRouting') return jsonResponse(getApprovalRouting(data));
@@ -1110,6 +1112,9 @@ function handleLogin(data) {
   const password = String(data.password == null ? '' : data.password).trim();
   
   // 超管帳號：只存在本 SCRIPT，不在任何 Sheet/前端；帳號不區分大小寫，密碼區分
+  // v8.5：最高層管理帳號對唔到 SCRIPT 常數密碼時，唔好即刻死——
+  // 改過密碼（前端「改密碼」→ 寫入 Users 表）之後，常數密碼會失效，舊寫法會直接 skip 嗰行 →
+  // 變成「搵唔到用戶」，帳號等於永久鎖死。而家常數對唔到就落 Sheet 用已存嘅 hash 對。
   if (loginId.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {
     return { success: true, user: { user_id: 'sheep', name: '超級管理員', email: SUPER_ADMIN_EMAIL, role: 'super_admin', group_name: '行政組' } };
   }
@@ -1123,8 +1128,7 @@ function handleLogin(data) {
   for (let i = 1; i < rows.length; i++) {
     const rowObj = {};
     headers.forEach((h, idx) => { rowObj[h] = rows[i][idx]; });
-    if (rowObj.role === 'super_admin' && rowObj.user_id === 'sheep') continue;
-    
+
     if (rowObj.user_id === loginId || rowObj.email === loginId || String(rowObj.name || '') === loginId) {
       if (rowObj.password_hash === hashPassword(password)) {
         delete rowObj.password_hash;
@@ -1135,6 +1139,38 @@ function handleLogin(data) {
     }
   }
   return { success: false, error: '找不到用戶帳號或電郵' };
+}
+
+// v8.5：帳號體檢（需要正確 api_key）——前端「後端連線診斷」用嚟查「點解某個帳號登入唔到」。
+// 只回傳存在與否／角色／組別／密碼狀態，絕對唔會回傳密碼或 hash 本體。
+function accountCheck(data) {
+  const loginId = String(data.user_id || '').trim();
+  if (!loginId) return { success: false, error: '未提供 user_id' };
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet) return { success: false, error: 'Users sheet missing' };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const matches = [];
+  for (let i = 1; i < rows.length; i++) {
+    const o = {};
+    headers.forEach((h, idx) => { o[h] = rows[i][idx]; });
+    if (String(o.user_id || '') === loginId || String(o.email || '') === loginId || String(o.name || '') === loginId) {
+      const hash = String(o.password_hash || '');
+      matches.push({
+        user_id: o.user_id, name: o.name, role: o.role, group_name: o.group_name, status: o.status,
+        has_password: !!hash,
+        is_default_password: hash !== '' && hash === hashPassword('1234'),
+        is_script_password: hash !== '' && hash === hashPassword(SUPER_ADMIN_PASS)
+      });
+    }
+  }
+  return {
+    success: true, version: GS_VERSION,
+    builtin_account: loginId.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase(),
+    found: matches.length,
+    rows: matches
+  };
 }
 
 function sendMeetingEmailNotification(data) {

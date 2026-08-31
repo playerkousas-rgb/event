@@ -5,7 +5,8 @@ Object.assign(ScoutEventApp.prototype,{
   canUploadActivity(){
     const role=this.currentUser?.role||'';
     const lvl=ROLE_HIERARCHY[role]||0;
-    // 相關主任、副主席或以上上傳
+    // 相關主任、副主席或以上上傳；v8.14：行政組（負責組）亦可
+    if(this.isCardOwnerGroup&&this.isCardOwnerGroup('activities')) return true;
     return lvl>=30 || ['super_admin','admin','chairperson','advisor','vice_chairperson','general_director','director'].includes(role);
   }
 ,
@@ -1215,7 +1216,8 @@ Object.assign(ScoutEventApp.prototype,{
     const role=this.currentUser?.role||'';
     const group=this.currentUser?.group_name||'';
     const lvl=ROLE_HIERARCHY[role]||0;
-    return this.isAdmin() || lvl>=60 || (lvl>=40 && group.includes('行政'));
+    // v8.14：行政組（負責組）主任以上亦可上傳文件
+    return this.isAdmin() || lvl>=60 || (lvl>=40 && group.includes('行政')) || (this.isCardOwnerGroup&&this.isCardOwnerGroup('documents'));
   }
 ,
   canUploadThemeBadge(){

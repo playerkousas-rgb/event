@@ -288,6 +288,7 @@ assert(JSON.stringify(deptCalls).includes('["login"]'), '未登入按部門中�
 // dept_hub 列表頁實跑：應見到各部門卡（同儀表板部門管理中心同一份卡）
 delete app.openGroupManagement; delete app.openModule; delete app.openLoginModal;
 app.isExecViceOrChair=()=>false;
+app.isAdmin=()=>true;   // v8.14：主席屬管理層（行政組／執副以上）→ 可以睇晒全部部門
 app.currentUser = { role: 'chairperson', name: '朱家聰', user_id: '朱家聰', group_name: '主席及執行副主席' };
 app.getGroupOrgNodes=()=>[];
 app.groupApplyStats=()=>({requests:[],boothReqs:[],vehicles:[],orders:[],supPending:0,boothPending:0,vehPending:0,mealPending:0});
@@ -296,6 +297,17 @@ const hub = htmlOf('module-content');
 assert(hub.includes('主題節目組') && hub.includes('行政組') && hub.includes('協調組') && hub.includes('服務及發展組'),
   '部門中心列表頁應見到各部門卡');
 assert(hub.includes('app.openGroupManagement'), '部門中心列表卡應可點擊進入部門管理');
+// v8.14：總主任（非執副以上、非行政組）只可以睇到自己部門
+app.isAdmin=()=>false;
+app.currentUser = { role: 'general_director', name: '龍正謙', user_id: '龍正謙', group_name: '主題節目組' };
+app.currentGroupManaged=null;
+app.openModule('dept_hub');
+assert(app.currentGroupManaged==='主題節目組', 'v8.14：總主任按部門中心應直接入自己部門（主題節目組），而唔係列出全部部門');
+// 嘗試直接開啟第二個部門 → 應被擋返
+app.currentGroupManaged=null;
+app.openGroupManagement('協調組');
+assert(app.currentGroupManaged!=='協調組', 'v8.14：總主任唔可以入其他部門（協調組）');
+app.isAdmin=()=>true;
 delete app.getGroupOrgNodes; delete app.groupApplyStats;
 
 /* ---------- 7. 全部卡片白底無顏色；頁尾精簡；有批核權＋自己有申請的身份卡顯示 ---------- */
