@@ -976,7 +976,7 @@ Object.assign(ScoutEventApp.prototype,{
     const plans=(this.getSuppliesData().booth_requests||[]).slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     if(!plans.length){ return '<p class="text-xs text-slate-400 py-8 text-center">暫無攤位計劃書 — 按「提交攤位計劃書」填寫（無需登入）</p>'; }
     const isAdmin=this.isAdmin();
-    const canApprove=this.canApproveArea('supplies');
+    const canApprove=this.canApproveArea('booth');
     return `<div class="space-y-3">${plans.map(r=>{
       const e=this.boothEquipOf(r);
       const eq=[e.tent?`帳篷 <b>${e.tent}</b> 頂`:null,e.table?`摺枱 <b>${e.table}</b> 張`:null,e.chair?`摺椅 <b>${e.chair}</b> 張`:null,e.skirting?`帳篷圍布 <b>${e.skirting}</b> 塊`:null,e.power_w?`電源 <b>${e.power_w}</b> W`:null,...(e.other||[])].filter(Boolean).join(' · ')||'—';
@@ -1016,12 +1016,12 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('已本組確認，待指定批核組批核','success');
   },
   boothSetStatus(id,status){
-    if(!(this.canApproveArea('supplies')||this.isAdmin())){ showToast('只供指定物資批核組批核','error'); return; }
+    if(!(this.canApproveArea('booth')||this.isAdmin())){ showToast('只供指定攤位批核組（'+this.approvalRouteLabel('booth','approver_groups')+'）批核','error'); return; }
     const data=this.getSuppliesData(); const r=(data.booth_requests||[]).find(x=>x.request_id===id); if(!r) return;
     if(!this.applicationReadyForApproval(r)){ showToast('須先由申請人所屬組別總主任以上確認','warning'); return; }
     if(status==='rejected' && !confirm('確定拒絕此攤位計劃書？拒絕後會通知提交人。')) return;
     if(status==='approved') r.qty_approved=r.qty_requested;
-    r.status=status; r.approved_by=(this.currentUser?.name||'')+`（${this.approvalRouteLabel('supplies','approver_groups')}）`; r.approved_at=new Date().toISOString();
+    r.status=status; r.approved_by=(this.currentUser?.name||'')+`（${this.approvalRouteLabel('booth','approver_groups')}）`; r.approved_at=new Date().toISOString();
     if(status==='rejected') r.notes='已拒絕';
     const targetId=r.requested_by_id||r.requested_by;
     const label=`${[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||''} ${r.booth_name||r.unit_name||''}`;

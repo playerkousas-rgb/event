@@ -1,4 +1,11 @@
 // ============================================================
+// ⚠️ v8.6 (2026-08-31)：帳號體檢 accountCheck 支援「密碼探針」＋ 回傳遮罩後嘅最高層帳號 id，
+//   一次過分得出「帳號唔啱／密碼唔啱／Users 表冇呢個帳號／SCRIPT 常數對唔上」；
+//   handleLogin 對最高層管理帳號回傳專屬錯誤，唔會再淨係講「找不到用戶帳號」。
+// ⚠️ v8.5 (2026-08-31)：帳號體檢 accountCheck ＋ 最高層管理帳號改過密碼後都可以用 Sheet hash 登入。
+// ⚠️ v8.4 (2026-08-31)：改完 Code.gs 之後，必須喺 Apps Script 做
+//    「部署 → 管理部署 → ✏️ 編輯 → 版本：新版本 → 部署」，前端先會用到新程式碼
+//    （只撳「儲存」唔會更新 /exec 部署；前端「後端連線診斷」睇到嘅版本號就係部署緊嗰個版本）。
 // 童軍活動管理系統 - Google Apps Script 後端 v8.1
 //  v8.1 更新：超管不屬行政組；籌委全員種子寫入 Users；會議種子；updateUser（前端「確定更新用戶」才寫入）；批核路由僅超管由前端確定後呼叫 saveApprovalRouting。
 //  v8.0 更新：動態 Approval_Routing、跨裝置 Finance_Expenses、本組確認欄位及永久刪除同步。
@@ -13,7 +20,10 @@
 
 // v8.3：seedInitialData／refreshApiKey 的 getUi() 包 try/catch——Apps Script 編輯器直接 Run initializeSheets 不再因無 UI 彈窗而報錯。
 // v8.2：handleLogin 密碼 trim（手機鍵盤易加尾隨空格）。login／getEvents 回應帶 version，前端可用嚟判斷部署係咪舊版。
-const GS_VERSION = 'v8.3-2026-08-27';
+// v8.4：doPost 兼容 application/x-www-form-urlencoded（表單編碼）嘅 payload ——
+//       部分瀏覽器／代理會將 POST body 轉成 e.parameter，淨讀 e.postData.contents 會變 undefined 而報錯。
+//       前端一律用 text/plain（唔發 CORS 預檢），呢個係雙重保險。
+const GS_VERSION = 'v8.6-2026-08-31';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -1022,7 +1032,11 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    // v8.4：優先讀 POST body（text/plain／application/json），body 冇資料時
+    // 再試表單欄位 payload（application/x-www-form-urlencoded），兩邊都冇就當空物件。
+    const rawBody = (e.postData && e.postData.contents) ? e.postData.contents
+                  : ((e.parameter && e.parameter.payload) ? e.parameter.payload : '');
+    const data = JSON.parse(rawBody || '{}');
     const action = data.action;
     const apiKey = data.api_key || '';
     
@@ -1038,6 +1052,7 @@ function doPost(e) {
     else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
     else if (action === 'createAccount') return jsonResponse(createAccount(data));
     else if (action === 'saveUserPermissions') return jsonResponse(saveUserPermissions(data));
+    else if (action === 'accountCheck') return jsonResponse(accountCheck(data));
     else if (action === 'getApprovalPermissions') return jsonResponse(getApprovalPermissions());
     else if (action === 'saveApprovalPermissions') return jsonResponse(saveApprovalPermissions(data));
     else if (action === 'getApprovalRouting') return jsonResponse(getApprovalRouting(data));
@@ -1100,7 +1115,10 @@ function handleLogin(data) {
   const password = String(data.password == null ? '' : data.password).trim();
   
   // 超管帳號：只存在本 SCRIPT，不在任何 Sheet/前端；帳號不區分大小寫，密碼區分
-  if (loginId.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {
+  // v8.5：最高層管理帳號對唔到 SCRIPT 常數密碼時，唔好即刻死——
+  // 改過密碼（前端「改密碼」→ 寫入 Users 表）之後，常數密碼會失效，舊寫法會直接 skip 嗰行 →
+  // 變成「搵唔到用戶」，帳號等於永久鎖死。而家常數對唔到就落 Sheet 用已存嘅 hash 對。
+  if (isBuiltinSuper(loginId) && password === SUPER_ADMIN_PASS) {
     return { success: true, user: { user_id: 'sheep', name: '超級管理員', email: SUPER_ADMIN_EMAIL, role: 'super_admin', group_name: '行政組' } };
   }
 
@@ -1113,8 +1131,7 @@ function handleLogin(data) {
   for (let i = 1; i < rows.length; i++) {
     const rowObj = {};
     headers.forEach((h, idx) => { rowObj[h] = rows[i][idx]; });
-    if (rowObj.role === 'super_admin' && rowObj.user_id === 'sheep') continue;
-    
+
     if (rowObj.user_id === loginId || rowObj.email === loginId || String(rowObj.name || '') === loginId) {
       if (rowObj.password_hash === hashPassword(password)) {
         delete rowObj.password_hash;
@@ -1124,7 +1141,63 @@ function handleLogin(data) {
       }
     }
   }
+  // v8.6：內建最高層管理帳號 —— 常數密碼對唔上、Users 表又冇呢行（呢個帳號本來就淨係寫喺 SCRIPT 入面）
+  if (isBuiltinSuper(loginId)) {
+    return { success: false, error: '最高層管理帳號：密碼唔啱（SCRIPT 常數對唔上），而 Users 表亦冇呢個帳號', reason: 'builtin_password_mismatch' };
+  }
   return { success: false, error: '找不到用戶帳號或電郵' };
+}
+
+// v8.6：呢個登入 id 係咪就係 SCRIPT 常數入面嘅最高層管理帳號（唔分大小寫）
+function isBuiltinSuper(loginId) {
+  return String(loginId || '').trim().toLowerCase() === String(SUPER_ADMIN_EMAIL || '').toLowerCase();
+}
+
+// v8.6：遮罩 id —— 只露第一個字＋長度（電郵則保留 @domain），用嚟提示「SCRIPT 入面嗰個帳號長乜嘢樣」，
+// 絕對唔會經 API 洩漏完整帳號或密碼。
+function maskId(id) {
+  const s = String(id || '');
+  if (!s) return '';
+  const at = s.indexOf('@');
+  if (at > 0) return s.charAt(0) + '***' + s.slice(at);
+  return s.charAt(0) + '***（共 ' + s.length + ' 個字）';
+}
+
+// v8.5：帳號體檢（需要正確 api_key）——前端「後端連線診斷」用嚟查「點解某個帳號登入唔到」。
+// 只回傳存在與否／角色／組別／密碼狀態，絕對唔會回傳密碼或 hash 本體。
+function accountCheck(data) {
+  const loginId = String(data.user_id || '').trim();
+  if (!loginId) return { success: false, error: '未提供 user_id' };
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Users');
+  if (!sheet) return { success: false, error: 'Users sheet missing' };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const matches = [];
+  for (let i = 1; i < rows.length; i++) {
+    const o = {};
+    headers.forEach((h, idx) => { o[h] = rows[i][idx]; });
+    if (String(o.user_id || '') === loginId || String(o.email || '') === loginId || String(o.name || '') === loginId) {
+      const hash = String(o.password_hash || '');
+      matches.push({
+        user_id: o.user_id, name: o.name, role: o.role, group_name: o.group_name, status: o.status,
+        has_password: !!hash,
+        is_default_password: hash !== '' && hash === hashPassword('1234'),
+        is_script_password: hash !== '' && hash === hashPassword(SUPER_ADMIN_PASS)
+      });
+    }
+  }
+  // v8.6：可選「密碼探針」——前端將啱啱打錯嘅密碼一齊 POST 過嚟（只同 SCRIPT 常數比較，唔寫入任何表、唔外洩）
+  const probe = (data.password == null) ? null : String(data.password).trim();
+  return {
+    success: true, version: GS_VERSION,
+    builtin_account: isBuiltinSuper(loginId),          // 呢個 id 係咪就係 SCRIPT 常數入面嘅最高層管理帳號
+    script_password_match: (probe === null) ? null : (probe === SUPER_ADMIN_PASS),  // 打出嚟嘅密碼係咪等於常數密碼
+    super_admin_id_masked: maskId(SUPER_ADMIN_EMAIL),  // 例如 s***（共 5 個字）／s***@gmail.com
+    super_admin_id_is_email: String(SUPER_ADMIN_EMAIL || '').indexOf('@') > 0,
+    found: matches.length,
+    rows: matches
+  };
 }
 
 function sendMeetingEmailNotification(data) {

@@ -2,6 +2,14 @@
 
 const ROLE_LABELS={'super_admin':'系統管理員','advisor':'顧問','admin':'管理員','chairperson':'主席','executive_vice_chairperson':'執行副主席','vice_chairperson':'副主席','general_director':'總主任','director':'主任','staff':'工作人員','public':'公開'};
 const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80,'executive_vice_chairperson':70,'vice_chairperson':60,'general_director':40,'director':30,'staff':20,'public':0};
+/* ── 後端（Google Apps Script）預設連線 v8.13 ─────────────────────────────────
+   以前 GAS 網址只由 /api/config（Vercel serverless function）提供，前端初值是空字串。
+   一旦 /api/config 失敗（Vercel 回 400／500、環境變數未設、函式未部署），gasUrl 就變 '' →
+   mockMode 變 true → 所有只存在後端嘅帳戶（最高層管理帳號等）永遠登入唔到，畫面只會出「登入失敗」，
+   好難對症。故改為：前端內建同一組預設值做底，/api/config 只做「可選覆寫」，
+   就算 /api/config 死咗，後端連線都唔會斷。（可在「系統設定」自行覆寫，存 localStorage） */
+const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
+const DEFAULT_API_KEY='scout_e6451624b1f340078ec6a111';
 // 統一清理組別名稱：移除「(Level X)」及多餘括號，並遷移舊稱「籌委會」。
 function normalizeGroupName(value){
   let group=String(value||'').trim();
@@ -199,12 +207,53 @@ const APPROVAL_AREAS=[
   {id:'meals',label:'膳食申請',icon:'fa-solid fa-utensils',chip:'bg-purple-100 text-purple-700 border-purple-300',dot:'bg-purple-500'},
   {id:'finance',label:'財務申請',icon:'fa-solid fa-wallet',chip:'bg-emerald-100 text-emerald-700 border-emerald-300',dot:'bg-emerald-500'}
 ];
-// 多選路由預設：膳食由行政組批核、協調組執行及持有最後名單。
+/* 多選路由預設 v8.14（用戶定案 2026-08-31）：
+   膳食／物資／車 → 協調組；攤位 → 主題節目組；財務 → 行政組；
+   行政組「統管申請中心」，所以每類申請都加埋行政組做批核／執行組。 */
 const APPROVAL_ROUTING_DEFAULTS={
-  supplies:{approver_groups:['協調組'],executor_groups:['協調組']},
-  vehicle:{approver_groups:['協調組'],executor_groups:['協調組']},
-  meals:{approver_groups:['行政組'],executor_groups:['協調組']},
-  finance:{approver_groups:['行政組'],executor_groups:['行政組']}
+  supplies:{approver_groups:['協調組','行政組'],executor_groups:['協調組','行政組']},
+  vehicle:{approver_groups:['協調組','行政組'],executor_groups:['協調組','行政組']},
+  meals:{approver_groups:['協調組','行政組'],executor_groups:['協調組','行政組']},
+  finance:{approver_groups:['行政組'],executor_groups:['行政組']},
+  // 攤位計劃書獨立一條路由（唔再跟物資用 supplies）：歸主題節目組，行政組亦可管
+  booth:{approver_groups:['主題節目組','行政組'],executor_groups:['主題節目組','行政組']}
+};
+// v8.14：路由預設改咗，舊 localStorage 快取要清一次（用版本旗標，只做一次）
+const APPROVAL_ROUTING_VERSION='v8.14';
+/* ── v8.14 卡片「負責組別」──────────────────────────────────────────────────
+   用戶定案：執行手冊／申請中心 歸行政組；膳食・物資・車 歸協調組；攤位 歸主題節目組；
+   童心捐贈 歸服務及發展組；會議卡片 歸秘書處 —— 行政組「統管全站」，任何卡都可以管。
+   組內要「主任（30）」以上先可以改（CARD_OWNER_MIN_LEVEL）。 */
+const CARD_OWNER_GROUPS={
+  exec_manual:['行政組'],
+  apply_hub:['行政組'],
+  documents:['行政組'],
+  activities:['行政組'],
+  ceremony:['行政組'],
+  crisis:['行政組'],
+  schedule:['行政組'],
+  unit_guide:['行政組'],
+  meals:['協調組'],
+  supplies:['協調組'],
+  vehicle:['協調組'],
+  parking:['協調組'],
+  booth:['主題節目組'],
+  donations:['服務及發展組'],
+  meetings:['秘書處']
+};
+const CARD_OWNER_MIN_LEVEL=30;   // 負責組內要主任（30）以上先可以改
+// v8.14d：呢啲角色「唔理邊一組」都可以改呢張卡（一樣要主任級以上）
+//   執行手冊 → 總主任（自己部門相關項目自己改，唔使吓吓經行政組）
+//   會議卡片 → 副主席・總主任（要將部門報告／會議文件上傳）
+const CARD_OWNER_EXTRA_ROLES={
+  // 執行手冊系列：副主席・總主任都可以自己改部門相關項目（唔使吓吓經行政組）
+  exec_manual:['general_director','vice_chairperson'],
+  activities:['general_director','vice_chairperson'],
+  documents:['general_director','vice_chairperson'],
+  ceremony:['general_director','vice_chairperson'],
+  crisis:['general_director','vice_chairperson'],
+  // 會議卡片：副主席・總主任要將部門報告／會議文件上傳
+  meetings:['general_director','vice_chairperson']
 };
 const APPROVAL_IDS=new Set(APPROVAL_AREAS.map(a=>a.id));
 // 首頁 3 大類別活動卡
@@ -222,21 +271,21 @@ const DASH_CARD_DEFS=[
   // ── 公開資料 (所有人可見，無需登入) ──
   {id:'announcements',title:'公告及溝通',desc:'',icon:'fa-solid fa-bullhorn',cardClass:'bg-gradient-to-br from-sky-500 to-blue-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:30,editLabel:'主任以上可發佈'},
   // 執行手冊：組織架構・場地與活動總覽・典禮儀式・危機處理・通告及文件 收埋一卡，內部分頁（如同申請中心）
-  {id:'exec_manual',title:'執行手冊',desc:'',icon:'fa-solid fa-book',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,editLabel:'公開可看'},
-  {id:'apply_hub',title:'申請中心',desc:'',icon:'fa-solid fa-file-pen',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:0,readOnly:true,editLabel:'公開可看'},
+  {id:'exec_manual',title:'執行手冊',desc:'',icon:'fa-solid fa-book',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,editLabel:'行政組・總主任可修改'},
+  {id:'apply_hub',title:'申請中心',desc:'',icon:'fa-solid fa-file-pen',cardClass:'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:0,readOnly:true,editLabel:'行政組統管（膳食・物資・車＝協調組；攤位＝主題節目組）'},
   {id:'schedule',title:'日程表',desc:'',icon:'fa-solid fa-calendar-days',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-600',minLevel:0,editLevel:60,editLabel:'副主席以上可上傳',hideOnDashboard:true},
-  {id:'activities',title:'場地與活動總覽',desc:'',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'主任/副主席以上可上傳',hideOnDashboard:true},
+  {id:'activities',title:'場地與活動總覽',desc:'',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:0,editLevel:30,editLabel:'行政組・副主席以上・總主任可上傳',hideOnDashboard:true},
   {id:'staff',title:'組織架構與聯絡',desc:'',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-indigo-100 text-indigo-600',minLevel:0,editLevel:40,editGroups:['行政組'],editLabel:'行政組可管理',hideOnDashboard:true},
   {id:'theme_badges',title:'活動主題章',desc:'',icon:'fa-solid fa-award',cardClass:'bg-gradient-to-br from-purple-500 to-indigo-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'副主席以上可更新',hideOnDashboard:true},
   // 膳食：申請入口在「申請中心」，管理在「協調組 → 膳食」，故不另設儀表板卡片
   {id:'meals',title:'膳食管理',desc:'',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-purple-100 text-purple-600',minLevel:0,editLevel:60,editGroups:['膳食','協調','行政'],editLabel:'指定膳食執行組主任以上可管理',hideOnDashboard:true},
-  {id:'crisis',title:'危機處理',desc:'',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
-  {id:'documents',title:'通告及文件',desc:'',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'管理員/行政總主任以上可上傳',hideOnDashboard:true},
-  {id:'unit_guide',title:'旅團須知',desc:'',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'管理員/行政總主任以上可上傳',hideOnDashboard:true},
-  {id:'ceremony',title:'典禮儀式',desc:'',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
-  {id:'awards',title:'獲獎名單',desc:'',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-yellow-100 text-yellow-700',minLevel:0,editLevel:60,editLabel:'管理員/副主席以上可更新',hideOnDashboard:true},
+  {id:'crisis',title:'危機處理',desc:'',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-red-100 text-red-700',minLevel:0,editLevel:60,editLabel:'行政組・副主席以上・總主任可更新',hideOnDashboard:true},
+  {id:'documents',title:'通告及文件',desc:'',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],editLabel:'行政組・副主席以上・總主任可上傳',hideOnDashboard:true},
+  {id:'unit_guide',title:'旅團須知',desc:'',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:0,editLevel:60,editLabel:'行政組・副主席以上可上傳',hideOnDashboard:true},
+  {id:'ceremony',title:'典禮儀式',desc:'',icon:'fa-solid fa-crown',cardClass:'bg-gradient-to-br from-amber-500 to-orange-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:60,editLabel:'行政組・副主席以上・總主任可更新',hideOnDashboard:true},
+  {id:'awards',title:'獲獎名單',desc:'',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-yellow-100 text-yellow-700',minLevel:0,editLevel:60,editLabel:'管理員／副主席以上可更新',hideOnDashboard:true},
   // ── 管理資料 (登入後按角色/組別解鎖) ──
-  {id:'meetings',title:'會議卡片',desc:'',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:20,editLevel:80,editLabel:'管理員可管理'},
+  {id:'meetings',title:'會議卡片',desc:'',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-sky-100 text-sky-600',minLevel:20,editLevel:80,editLabel:'秘書處・行政組・副主席以上・總主任可管理'},
   // 物資+車輛：申請入口在「申請中心」，管理/批核在「協調組 → 物資 / 車輛通行證」，故不另設儀表板卡片
   {id:'supplies',title:'物資申請',desc:'',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-blue-100 text-blue-600',minLevel:40,editLevel:40,editLabel:'總主任/副主席以上可申請·批核',hideOnDashboard:true},
   {id:'vehicle',title:'車輛通行證（含泊車證）',desc:'',icon:'fa-solid fa-car',cardClass:'bg-white border shadow-sm',iconClass:'bg-amber-100 text-amber-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],editLabel:'協調組可管理',hideOnDashboard:true,action:"app.openModule('parking')"},
@@ -255,7 +304,7 @@ const DASH_CARD_DEFS=[
   {id:'group_reception',title:'嘉賓接待組',desc:'',icon:'fa-solid fa-handshake-angle',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:20,groups:['嘉賓接待組'],editLevel:40,editGroups:['嘉賓接待組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('嘉賓接待組')"},
   {id:'group_service',title:'服務及發展組',desc:'',icon:'fa-solid fa-hands-holding-child',cardClass:'bg-white border shadow-sm',iconClass:'bg-lime-100 text-lime-700',minLevel:20,groups:['服務及發展組'],editLevel:40,editGroups:['服務及發展組'],editLabel:'本組總主任以上可管理',action:"app.openGroupManagement('服務及發展組')"},
   {id:'group_secretariat',title:'秘書處',desc:'',icon:'fa-solid fa-landmark',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,groups:['秘書處'],editLevel:40,editGroups:['秘書處'],editLabel:'秘書處管理員可管理',action:"app.openGroupManagement('秘書處')"},
-  {id:'donations',title:'童心捐贈大行動',desc:'',icon:'fa-solid fa-hand-holding-heart',cardClass:'bg-gradient-to-br from-rose-500 to-pink-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:40,editGroups:['服務及發展組'],editLabel:'服務及發展組可管理',action:"app.openModule('donations')"},
+  {id:'donations',title:'童心捐贈大行動',desc:'',icon:'fa-solid fa-hand-holding-heart',cardClass:'bg-gradient-to-br from-rose-500 to-pink-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:40,editGroups:['服務及發展組','行政組'],editLabel:'服務及發展組・行政組可管理',action:"app.openModule('donations')"},
   {id:'my_monitor',title:'我的監察 (全部申請批核)',desc:'',icon:'fa-solid fa-eye',cardClass:'bg-gradient-to-br from-indigo-500 to-purple-600 text-white',iconClass:'bg-white/20 text-white',minLevel:20,readOnly:true,editLabel:'只讀監察',action:"app.openModule('my_monitor')"},
   {id:'approvals',title:'批核中心',desc:'',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-rose-100 text-rose-600',minLevel:40,editLevel:40,editLabel:'總主任以上可批核',action:"app.switchTopTab('approvals')"},
   {id:'account_setup',title:'開戶',desc:'',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-teal-100 text-teal-700',minLevel:40,editLevel:40,editLabel:'總主任以上可開戶'},

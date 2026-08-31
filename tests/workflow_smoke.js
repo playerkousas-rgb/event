@@ -120,7 +120,9 @@ const staffPerms=app.permSetsFor(staffUser);
 assert(app.currentUser===prevUser, 'permSetsFor leaked currentUser');
 assert(chairPerms.see.length===(context.TestPERM||[]).length, 'chairperson should see all cards by default, got '+chairPerms.see.length);
 assert(chairPerms.edit.includes('announcements') && chairPerms.edit.includes('meetings') && chairPerms.edit.includes('finance'), 'chairperson should have full edit by role default');
-assert(!chairPerms.edit.includes('apply_hub'), 'read-only apply hub should not be editable');
+// v8.14：申請中心歸行政組統管 → 管理層（主席／行政組主任以上）可改；一般組別工作人員只可看
+assert(chairPerms.edit.includes('apply_hub'), 'v8.14：管理層／行政組統管，apply_hub should be editable');
+assert(!staffPerms.edit.includes('apply_hub'), 'v8.14：主題節目組一般工作人員只可看 apply_hub');
 assert(staffPerms.see.length<chairPerms.see.length, 'staff should not inherit chair full see');
 assert(staffPerms.edit.length<chairPerms.edit.length, 'staff should not inherit chair full edit');
 assert(app.permSourceLabel(chair)==='主席預設', 'chair permission source should be role default');
