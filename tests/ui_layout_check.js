@@ -193,7 +193,21 @@ assert(pubIdx !== -1 && idIdx !== -1 && pubIdx < idIdx && idIdx < mgmtIdx,
 /* ---------- 4b. 活動資訊橫幅精簡：只留 日期/時間/地點/天氣 + 簡介 + 最新消息 + 我的監察 ---------- */
 assert(!html.includes('id="dash-event-title"') && !html.includes('id="dash-status-badge"') && !html.includes('id="dash-role-display"'), '活動橫幅精簡：大標題／進行中 badge／身份 badge 已刪（活動名稱喺最頂 BAR 標題列）');
 assert(html.includes('id="dash-event-dates"') && html.includes('id="dash-event-time"') && html.includes('id="dash-event-location"') && html.includes('id="dash-event-weather"'), '活動橫幅應保留 日期/時間/地點/天氣');
-assert(html.includes('id="dash-event-desc"') && html.includes('id="dash-news-box"') && html.includes('id="dash-event-news"'), '活動橫幅應保留 活動簡介＋最新消息');
+assert(html.includes('id="dash-event-desc"') && html.includes('id="dash-meeting-box"') && html.includes('id="banner-meeting-text"'), '活動橫幅應保留 活動簡介＋會議預告（v11.2：最新消息與會議預告已互換位置）');
+/* v11.2：最新消息升上全站最頂橫幅（原「會議預告」位），會議預告落入活動資訊橫幅 */
+assert(html.includes('id="top-news-banner"') && html.includes('id="dash-event-news"'), '最新消息應喺全站最頂橫幅（top-news-banner）');
+assert(!html.includes('id="next-meeting-banner"'), '舊「會議預告」頂部橫幅已被最新消息取代');
+const newsBannerIdx = html.indexOf('id="top-news-banner"');
+const heroIdx = html.indexOf('id="view-dashboard"');
+assert(newsBannerIdx !== -1 && heroIdx !== -1 && newsBannerIdx < heroIdx, '最新消息橫幅應喺活動資訊橫幅之上（頂部）');
+assert(html.indexOf('id="dash-meeting-box"') > heroIdx, '會議預告應喺活動資訊橫幅之內');
+/* 最新消息 APP 內編輯：執副以上＋秘書處 */
+assert(html.includes('id="modal-news"') && html.includes('app.openNewsEditor()') && html.includes('app.saveEventNews(event)'), '應有「修改最新消息」入口同編輯視窗');
+const newsJs = fs.readFileSync(path.join(root, 'js/11-news.js'), 'utf8');
+assert(/canEditEventNews\(\)\s*\{/.test(newsJs) && newsJs.includes('executive_vice_chairperson') && newsJs.includes('秘書處'), '最新消息權限＝執行副主席以上＋秘書處');
+assert(newsJs.includes("action:'saveEventNews'"), '最新消息應寫入後端（saveEventNews），毋須再改 GitHub JSON');
+assert(fs.readFileSync(path.join(root, 'apps-script/Code.gs'), 'utf8').includes('function saveEventNews'), '後端 Code.gs 應有 saveEventNews');
+assert(html.includes('js/11-news.js'), 'index.html 應載入 js/11-news.js');
 assert(html.includes('id="dash-hero-monitor"'), '活動橫幅應有我的監察併入位 (dash-hero-monitor)');
 // 功能介紹按鈕已移入紫色活動資訊橫幅右上角；身份卡片只喺未登入（訪客）時顯示，登入後隱藏
 const dashHero = html.slice(html.indexOf('id="view-dashboard"'), html.indexOf('id="simple-card-panel"'));

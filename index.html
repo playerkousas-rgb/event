@@ -114,7 +114,9 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 </header>
 
 
-<div id="next-meeting-banner" class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white px-3 sm:px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-sm gap-2"><div class="flex items-start sm:items-center gap-2 flex-1 min-w-0"><span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase flex-shrink-0"><i class="fa-regular fa-bell mr-1"></i> 會議預告</span><span id="banner-meeting-text" class="font-medium leading-snug flex-1">第4次籌備會議：2026-08-18 19:15 @ 1704室</span></div><div id="banner-admin-actions" class="hidden flex items-center gap-2 flex-shrink-0"><button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1.5 rounded-xl text-xs shadow btn-mobile"><i class="fa-solid fa-paper-plane mr-1"></i> 發送提醒</button></div></div>
+<!-- 頂部橫幅＝最新消息（v11.2：與「會議預告」互換位置；會議預告已移入活動資訊橫幅內）。
+     內容可由「執行副主席以上＋秘書處」喺 APP 內直接編輯（右邊鉛筆掣），毋須改 GitHub JSON。 -->
+<div id="top-news-banner" class="hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 sm:px-4 py-2.5 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-sm gap-2"><div class="flex items-start sm:items-center gap-2 flex-1 min-w-0"><span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold flex-shrink-0"><i class="fa-solid fa-bullhorn mr-1"></i> 最新消息</span><span id="dash-event-news" class="font-medium leading-snug flex-1 whitespace-pre-line"></span><span id="news-updated-meta" class="hidden text-[10px] text-white/70 whitespace-nowrap flex-shrink-0"></span></div><div id="news-admin-actions" class="hidden flex items-center gap-2 flex-shrink-0"><button onclick="app.openNewsEditor()" class="bg-white text-amber-700 hover:bg-slate-50 font-bold px-3 py-1.5 rounded-xl text-xs shadow btn-mobile"><i class="fa-solid fa-pen-to-square mr-1"></i> 修改最新消息</button></div></div>
 
 <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 pb-[90px]">
 
@@ -142,7 +144,9 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
   </div>
 
   <div id="view-dashboard" class="hidden space-y-5">
-    <!-- 活動資訊（精簡版）：只留 日期/時間/地點/天氣 + 活動簡介 + 最新消息；「我的監察」已併入此橫幅。活動名稱已顯示喺最頂 BAR 標題列，唔再於此重覆；想換活動＝按最頂 BAR 標題/Logo 回選擇活動頁 -->
+    <!-- 活動資訊（精簡版）：只留 日期/時間/地點/天氣 + 活動簡介 + 會議預告；「我的監察」已併入此橫幅。
+         v11.2：最新消息與會議預告互換位置——最新消息升上全站頂部橫幅（可由執副以上／秘書處喺 APP 內修改），會議預告落到此橫幅內。
+         活動名稱已顯示喺最頂 BAR 標題列，唔再於此重覆；想換活動＝按最頂 BAR 標題/Logo 回選擇活動頁 -->
     <div class="hero-gradient text-white rounded-[20px] p-4 sm:p-5 shadow-2xl relative overflow-hidden">
       <div class="absolute right-0 bottom-0 opacity-10 translate-x-6 translate-y-6 text-7xl pointer-events-none"><i class="fa-solid fa-calendar-star"></i></div>
       <div class="relative z-10 space-y-2">
@@ -154,9 +158,10 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
           <button onclick="app.openGuideModal()" class="ml-auto inline-flex items-center gap-1.5 bg-white text-purple-700 px-3 py-1.5 rounded-xl text-[11px] font-bold shadow btn-mobile whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-book-open"></i>功能介紹</button>
         </div>
         <p id="dash-event-desc" class="text-[12px] text-white/85 leading-relaxed max-w-3xl">-</p>
-        <div id="dash-news-box" class="hidden bg-white/15 backdrop-blur border border-white/30 rounded-xl p-2.5 flex items-start gap-2.5">
-          <span class="bg-amber-400 text-slate-900 text-[11px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0"><i class="fa-solid fa-bullhorn mr-1"></i>最新消息</span>
-          <span id="dash-event-news" class="text-[13px] leading-snug"></span>
+        <div id="dash-meeting-box" class="bg-white/15 backdrop-blur border border-white/30 rounded-xl p-2.5 flex items-start gap-2.5 flex-wrap">
+          <span class="bg-sky-400 text-slate-900 text-[11px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0"><i class="fa-regular fa-bell mr-1"></i>會議預告</span>
+          <span id="banner-meeting-text" class="text-[13px] leading-snug flex-1">第4次籌備會議：2026-08-18 19:15 @ 1704室</span>
+          <div id="banner-admin-actions" class="hidden flex items-center gap-2 flex-shrink-0"><button onclick="app.sendMeetingEmails()" class="bg-white text-sky-800 hover:bg-sky-50 font-bold px-3 py-1.5 rounded-xl text-xs shadow btn-mobile"><i class="fa-solid fa-paper-plane mr-1"></i> 發送提醒</button></div>
         </div>
         <!-- 我的監察（已併入活動橫幅）：只喺登入後顯示（未登入完全唔顯示）；由 renderIdentityBar 填充 -->
         <div id="dash-hero-monitor" class="hidden"></div>
@@ -364,6 +369,9 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <div id="modal-bulk" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-3xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">批量開戶</h3><button onclick="app.closeModal('modal-bulk')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button><div class="mt-3"><label class="text-xs font-bold">貼上 JSON</label><textarea id="bulk-json-modal" rows="4" placeholder='[{"ymis":"001","name":"test"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea><button onclick="app.handleBulkJSON(true)" class="mt-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">由 JSON 預覽</button></div><div id="bulk-modal-preview" class="hidden"><div class="flex justify-between mt-3"><h4 class="font-bold text-sm">預覽 <span id="bulk-modal-count">0</span></h4><button onclick="app.confirmBulkCreate(true)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">確認開戶</button></div><div id="bulk-modal-table" class="table-responsive mt-2"></div></div></div></div>
 
+<!-- 最新消息編輯（v11.2）：只供 執行副主席以上（主席／顧問／管理員／系統管理員）＋ 秘書處 使用；儲存即時寫入後端 Events 表，全部人即刻睇到，唔使再改 GitHub JSON -->
+<div id="modal-news" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-bullhorn text-amber-600 mr-2"></i>修改最新消息</h3><button onclick="app.closeModal('modal-news')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed space-y-1"><div><i class="fa-solid fa-user-shield mr-1"></i><b>可修改：</b>執行副主席以上（主席／顧問／管理員／系統管理員）及秘書處。</div><div><i class="fa-solid fa-bolt mr-1"></i>儲存後即時顯示喺全站最頂「最新消息」橫幅，其他人重新整理即見（毋須改 GitHub／重新部署）。</div></div><form onsubmit="app.saveEventNews(event)" class="space-y-3"><div><label class="text-[11px] font-bold">最新消息內容（留空 ＝ 收起橫幅）</label><textarea id="news-input" rows="4" maxlength="300" placeholder="例如：活動如期舉行，敬請留意最新消息。" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea><div class="text-[10px] text-slate-400 mt-1">最多 300 字；建議一至兩句，橫幅會顯示全文。</div></div><div id="news-editor-meta" class="text-[11px] text-slate-500"></div><div class="flex justify-between gap-2 pt-3 border-t"><button type="button" onclick="app.clearEventNews()" class="px-3 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm">清除消息</button><div class="flex gap-2"><button type="button" onclick="app.closeModal('modal-news')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-bold">發佈</button></div></div></form></div></div>
+
 <div id="modal-settings" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">系統設定</h3><button onclick="app.closeModal('modal-settings')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><button type="button" onclick="app.openBackendDiagModal()" class="w-full bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-stethoscope mr-1"></i>後端連線診斷（測 /api/config・GET・POST・API Key）</button><form onsubmit="app.saveSettings(event)" class="space-y-3"><input id="gas-url-input" placeholder="GAS URL" class="w-full px-3 py-2 border rounded-xl text-sm"><input id="api-key-input" placeholder="API Key" class="w-full px-3 py-2 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-settings')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
 
 <div id="modal-changepwd" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-key text-sky-600 mr-2"></i>修改密碼</h3><button onclick="app.closeModal('modal-changepwd')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitChangePassword(event)" class="space-y-3"><input type="password" id="cp-old" required placeholder="舊密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="cp-new" required placeholder="新密碼 (至少 4 字元)" class="w-full px-4 py-3 border rounded-xl text-sm"><input type="password" id="cp-new2" required placeholder="再次輸入新密碼" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-changepwd')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">儲存</button></div></form></div></div>
@@ -503,7 +511,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
 <script src="js/00-config.js?v=20260831b"></script>
-<script src="js/10-app-core.js?v=20260831b"></script>
+<script src="js/10-app-core.js?v=20260901a"></script>
+<script src="js/11-news.js?v=20260901a"></script>
 <script src="js/20-accounts.js?v=20260831a"></script>
 <script src="js/21-activities.js?v=20260831b"></script>
 <script src="js/22-meals.js?v=20260831a"></script>
