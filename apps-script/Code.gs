@@ -23,7 +23,10 @@
 // v8.4：doPost 兼容 application/x-www-form-urlencoded（表單編碼）嘅 payload ——
 //       部分瀏覽器／代理會將 POST body 轉成 e.parameter，淨讀 e.postData.contents 會變 undefined 而報錯。
 //       前端一律用 text/plain（唔發 CORS 預檢），呢個係雙重保險。
-const GS_VERSION = 'v8.6-2026-08-31';
+// v11.2：新增 saveEventNews —— 「最新消息」改為 APP 內可改（執行副主席以上＋秘書處），
+//        寫入 Events 表 news / news_updated_by / news_updated_at（欄位不存在會自動補建），
+//        getEvents 亦會一併回傳，前端 loadEvents 以後端值覆蓋 events.json 嘅預設消息。
+const GS_VERSION = 'v11.2-2026-09-01';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -1071,10 +1074,63 @@ function doPost(e) {
     else if (action === 'updateStatus') return jsonResponse(updateStatus(data));
     else if (action === 'sendMeetingEmail') return jsonResponse(sendMeetingEmailNotification(data));
     else if (action === 'listDriveFolder') return jsonResponse(listDriveFolder(data));
+    else if (action === 'saveEventNews') return jsonResponse(saveEventNews(data));
     else return jsonResponse({ success: false, error: 'Unknown POST action' });
   } catch (err) {
     return jsonResponse({ success: false, error: err.toString() });
   }
+}
+
+/* v11.2：更新活動「最新消息」（前端：執行副主席以上＋秘書處先見到修改掣）
+   Events 表原本冇 news 欄；呢度會自動補建 news / news_updated_by / news_updated_at 三欄，
+   毋須人手改試算表。傳入空字串 ＝ 清除消息（前端橫幅會收起）。 */
+function saveEventNews(data) {
+  const eventId = String(data.event_id || '');
+  const news = String(data.news === undefined || data.news === null ? '' : data.news).slice(0, 300);
+  const updatedBy = String(data.updated_by || '');
+  if (!eventId) return { success: false, error: 'event_id required' };
+
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Events');
+  if (!sheet) return { success: false, error: 'Events sheet not found' };
+
+  function headerRow() { return sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0]; }
+  function ensureColumn(name) {
+    let headers = headerRow();
+    let idx = headers.indexOf(name);
+    if (idx !== -1) return idx;
+    const col = sheet.getLastColumn() + 1;
+    sheet.getRange(1, col).setValue(name);
+    headers = headerRow();
+    return headers.indexOf(name);
+  }
+
+  const newsIdx = ensureColumn('news');
+  const byIdx = ensureColumn('news_updated_by');
+  const atIdx = ensureColumn('news_updated_at');
+  const headers = headerRow();
+  const idIdx = headers.indexOf('event_id');
+  if (idIdx === -1) return { success: false, error: 'event_id column missing in Events sheet' };
+
+  const rows = sheet.getDataRange().getValues();
+  let rowNum = -1;
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][idIdx]).trim() === eventId) { rowNum = i + 1; break; }
+  }
+  if (rowNum === -1) {
+    // Events 表未有呢個活動（例如活動只存在於前端 data/events.json）：補一行淨係帶 event_id ＋ 最新消息
+    const blank = headers.map(function () { return ''; });
+    blank[idIdx] = eventId;
+    sheet.appendRow(blank);
+    rowNum = sheet.getLastRow();
+  }
+
+  const at = new Date().toISOString();
+  sheet.getRange(rowNum, newsIdx + 1).setValue(news);
+  sheet.getRange(rowNum, byIdx + 1).setValue(updatedBy);
+  sheet.getRange(rowNum, atIdx + 1).setValue(at);
+
+  return { success: true, event_id: eventId, news: news, news_updated_by: updatedBy, news_updated_at: at };
 }
 
 function getAllEvents() {

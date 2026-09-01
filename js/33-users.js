@@ -341,7 +341,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   confirmBulkCreate(){if(!this.bulkPending.length){showToast('無資料','warning'); return;} let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ list.push({user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,password:r.password||'1234',status:'active',can_tick:r.can_tick}); added++; } }); this.setLocalUsers(list); this.closeModal('modal-bulk'); showToast(`批量完成 成功${added}筆`,'success'); this.loadUsers();}
 ,
-  applyBannerConfig(){const t=this.systemConfig.bannerText; document.getElementById('banner-meeting-text').textContent=t;}
+  applyBannerConfig(){const t=this.systemConfig.bannerText; const el=document.getElementById('banner-meeting-text'); if(el) el.textContent=t;} // v11.2：會議預告已由頂部橫幅搬入活動資訊橫幅（dash-meeting-box）
 ,
   updateSaveBar(){const bar=document.getElementById('saveBar'); const c=this.pendingChanges.length; if(c>0){bar.classList.add('visible'); document.getElementById('pendingText').textContent=`${c} 項未保存`;} else bar.classList.remove('visible');}
 ,
@@ -468,9 +468,9 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('密碼已更新（示範）','success');
   }
 ,
-  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=(ROLE_LABELS[this.currentUser.role]||this.currentUser.role)+(this.currentUser.offline?' · 離線':''); document.getElementById('banner-admin-actions')?.classList.toggle('hidden', !this.canSendMeetingReminder()); this.updateAdminNav(); setTimeout(()=>this.checkAndShowNotifications(), 500);}
+  updateUserUI(){if(!this.currentUser) return; document.getElementById('user-badge').classList.remove('hidden'); document.getElementById('user-badge').classList.add('flex'); document.getElementById('nav-username').textContent=this.currentUser.name; document.getElementById('nav-role').textContent=(ROLE_LABELS[this.currentUser.role]||this.currentUser.role)+(this.currentUser.offline?' · 離線':''); document.getElementById('banner-admin-actions')?.classList.toggle('hidden', !this.canSendMeetingReminder()); this.renderEventNews(); this.updateAdminNav(); setTimeout(()=>this.checkAndShowNotifications(), 500);}
 ,
-  logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; document.getElementById('banner-admin-actions')?.classList.add('hidden'); showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
+  logout(){this.currentUser=null; localStorage.removeItem(LS.currentUser); document.getElementById('user-badge').classList.add('hidden'); document.getElementById('login-btn-text').textContent='登入'; document.getElementById('banner-admin-actions')?.classList.add('hidden'); this.renderEventNews(); showToast('已登出','warning'); this.updateAdminNav(); if(this.currentEvent) this.showDashboard();}
 ,
   openAddRecordModal(type){document.getElementById('record-modal-title').textContent='新增紀錄'; document.getElementById('record-form-fields').innerHTML=`<input type="hidden" id="form-module-name" value="${type}"><div><label class="text-xs font-bold">標題</label><input id="f_title" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">組別</label><input id="f_group" value="主題節目組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div><label class="text-xs font-bold">說明</label><textarea id="f_desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea></div>`; document.getElementById('modal-record').classList.remove('hidden');}
 ,

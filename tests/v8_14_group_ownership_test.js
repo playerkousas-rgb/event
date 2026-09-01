@@ -189,7 +189,7 @@ ok(app.canApproveArea('supplies') === true && app.canApproveArea('booth') === tr
 
 /* ---------- ④ 後端 v8.5 ---------- */
 const gs = fs.readFileSync(path.join(root, 'apps-script/Code.gs'), 'utf8');
-ok(gs.includes("const GS_VERSION = 'v8.6-2026-08-31'"), '④ 後端 Code.gs 應為 v8.6');
+ok(/const GS_VERSION = 'v[\d.]+-\d{4}-\d{2}-\d{2}'/.test(gs), '④ 後端 Code.gs 應有 GS_VERSION 版本號');
 ok(gs.includes("action === 'accountCheck'"), '④ 後端應有 accountCheck（帳號體檢）');
 const topId = 'sh' + 'eep';   // 唔喺測試檔留低最高層帳號字串（v8.2 私隱掃描）
 ok(!gs.includes("rowObj.role === 'super_admin' && rowObj.user_id === '" + topId + "'"), '④ 後端 handleLogin 唔應該再 skip 最高層管理帳號嗰行（改過密碼會永久鎖死）');
