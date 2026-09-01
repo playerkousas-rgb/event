@@ -266,7 +266,9 @@ function yn(b) { return b ? 'Y' : ''; }
 
 function initializeSheets() {
   const ss = getSheet();
-  ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at']);
+  ensureSheet(ss, 'Events', ['event_id', 'event_name', 'password_hash', 'description', 'start_date', 'end_date', 'status', 'created_at', 'news', 'news_updated_by', 'news_updated_at']);
+  // v11.2：舊部署嘅 Events 表補上「最新消息」三欄（非破壞性，只加最右側；saveEventNews 亦會自動補建，所以呢步唔係必要）
+  ensureColumns(ss.getSheetByName('Events'), ['news', 'news_updated_by', 'news_updated_at']);
   ensureSheet(ss, 'Users', ['user_id', 'name', 'email', 'role', 'group_name', 'job_title', 'contact', 'password_hash', 'status', 'created_at']);
   // 訂餐紀錄：登入提交 → 低於總主任先由本組確認 → 指定組別最終批核；完整狀態存於此表。
   // ⚠️ 舊部署更新後，請在 Apps Script 手動執行一次 initializeSheets（只會新增此表，絕不影響舊資料）

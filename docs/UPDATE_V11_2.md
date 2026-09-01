@@ -45,6 +45,8 @@
 - `getEvents` 本身已回傳全部欄位，所以前端自動讀到
 - `GS_VERSION` → `v11.2-2026-09-01`
 
+**使唔使 run setup（initializeSheets）？** → **唔使**。`saveEventNews` 第一次執行時會自動補建三個欄位。（`initializeSheets` 亦已同步加咗 `news`／`news_updated_by`／`news_updated_at`，想手動 run 一次都得，係非破壞性，只會喺最右側補欄，唔會刪／改任何現有資料。）
+
 > ⚠️ **未重新部署 Code.gs 之前**：APP 內改動仍然即時顯示（本機 override），但唔會同步俾其他人，並會彈提示「寫入後端失敗…請重新部署」。部署方法見 `DEPLOY_GUIDE.md`（Apps Script → 部署 → 管理部署 → 新版本；存取權＝任何人）。
 
 **離線／示範**
