@@ -266,7 +266,7 @@ const EVENT_CATEGORIES=[
 // 簡單卡片模式：卡片顯示所有資料。身份 (角色+組別) 由管理員批核，決定：
 // - 看到什麼：minLevel / groups 達標才顯示該卡片 (minLevel 0 = 公開，所有人可見)
 // - 修改什麼：editLevel / editGroups 達標才顯示「可修改」徽章，否則為「只讀」
-// editLabel 顯示「誰可以修改」作提示
+// editLabel 顯示「誰可以修改」作提示（已隱藏，由 UI 統一顯示）
 const DASH_CARD_DEFS=[
   // ── 公開資料 (所有人可見，無需登入) ──
   {id:'announcements',title:'公告及溝通',desc:'',icon:'fa-solid fa-bullhorn',cardClass:'bg-gradient-to-br from-sky-500 to-blue-600 text-white',iconClass:'bg-white/20 text-white',minLevel:0,editLevel:30,editLabel:'主任以上可發佈'},
