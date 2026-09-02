@@ -132,6 +132,7 @@ Object.assign(ScoutEventApp.prototype,{
         <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="px-3 py-2 border rounded-xl text-xs bg-white">
           <option value="all">全部</option><option value="pending">只睇未派發</option><option value="ticked">只睇已派發</option>
         </select>
+        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
         <button onclick="app.exportSouvenirStampsCSV('${scope}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出派發紀錄 CSV</button>
         <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
       </div>
@@ -232,6 +233,144 @@ Object.assign(ScoutEventApp.prototype,{
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob); a.download=`紀念章派發紀錄_${def.label}.csv`; a.click();
     showToast('已匯出紀念章派發紀錄','success');
+  }
+,
+  /* —— EXCEL 匯入名單 —— */
+  async handleSouvenirStampsExcelUpload(scope, file){
+    if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); return; }
+    if(!file){ showToast('請選擇 EXCEL 檔案','warning'); return; }
+    
+    const overlay=document.getElementById('savingOverlay');
+    overlay.classList.add('active');
+    document.getElementById('savingText').textContent='正在解析 EXCEL 名單...';
+    
+    try{
+      const data=await this.readExcelFile(file);
+      const results=[];
+      
+      if(scope==='staff'){
+        // 工作人員名單：姓名、組別、攤位(如有)、身份、備註(改名)
+        const headerMap={};
+        const headers=data[0]||[];
+        headers.forEach((h,i)=>{ headerMap[String(h||'').trim().toLowerCase()]=i; });
+        
+        for(let i=1;i<data.length;i++){
+          const row=data[i]||[];
+          if(!row.length) continue;
+          
+          const name=String(row[headerMap['姓名']]||row[headerMap['name']]||row[0]||'').trim();
+          if(!name) continue;
+          
+          const group=String(row[headerMap['組別']]||row[headerMap['group']]||row[headerMap['group_name']]||'']).trim();
+          const booth=String(row[headerMap['攤位']]||row[headerMap['booth']]||'').trim();
+          const identity=String(row[headerMap['身份']]||row[headerMap['identity']]||row[headerMap['job_title']]||row[headerMap['role']]||'').trim();
+          const remark=String(row[headerMap['備註']]||row[headerMap['remark']]||row[headerMap['notes']]||'').trim();
+          
+          results.push({
+            key: normalizeOrgText(name),
+            name: name,
+            group_name: normalizeGroupName(group)||'未分組',
+            job_title: identity||'',
+            booth: booth||'',
+            remark: remark||''
+          });
+        }
+      } else if(scope==='guests'){
+        // 嘉賓名單：姓名、單位、職銜
+        const headerMap={};
+        const headers=data[0]||[];
+        headers.forEach((h,i)=>{ headerMap[String(h||'').trim().toLowerCase()]=i; });
+        
+        for(let i=1;i<data.length;i++){
+          const row=data[i]||[];
+          if(!row.length) continue;
+          
+          const name=String(row[headerMap['姓名']]||row[headerMap['name']]||row[0]||'').trim();
+          if(!name) continue;
+          
+          const unit=String(row[headerMap['單位']]||row[headerMap['unit']]||row[headerMap['organization']]||'').trim();
+          const title=String(row[headerMap['職銜']]||row[headerMap['title']]||row[headerMap['job_title']]||'').trim();
+          
+          results.push({
+            key: normalizeOrgText(name),
+            name: name,
+            group_name: '典禮嘉賓',
+            title: title||'',
+            job_title: title||'',
+            unit: unit||''
+          });
+        }
+      }
+      
+      if(!results.length){ showToast('EXCEL 中未找到有效名單','warning'); return; }
+      
+      // 合併到現有名單（舊名單保留，新名單追加）
+      const existingRoster=this.souvenirRoster(scope);
+      const existingKeys=new Set(existingRoster.map(p=>p.key));
+      
+      const newEntries=[];
+      results.forEach(r=>{
+        if(!existingKeys.has(r.key)){
+          newEntries.push(r);
+          existingKeys.add(r.key);
+        }
+      });
+      
+      if(!newEntries.length){ showToast('所有名單都已存在','warning'); return; }
+      
+      // 更新本地儲存
+      const data=this.getSouvenirStampData();
+      const map=data[scope]||{};
+      
+      newEntries.forEach(r=>{
+        const key=r.key;
+        map[key]={
+          name: r.name,
+          group_name: r.group_name,
+          job_title: r.job_title||r.title||'',
+          booth: r.booth||'',
+          unit: r.unit||'',
+          remark: r.remark||'',
+          ticked: false,
+          ticked_at: '',
+          ticked_by: '',
+          ticked_by_id: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+      });
+      
+      data[scope]=map;
+      this.saveSouvenirStampData(data);
+      
+      showToast(`成功匯入 ${newEntries.length} 個名單（${results.length} 總數，${results.length-newEntries.length} 已存在）`,'success');
+      this.renderSouvenirStampsHTML(scope);
+      
+    }catch(e){
+      showToast('匯入失敗：'+(e.message||e),'error');
+    }finally{
+      overlay.classList.remove('active');
+    }
+  }
+,
+  /* —— 讀取 EXCEL 文件通用函數 —— */
+  async readExcelFile(file){
+    return new Promise((resolve, reject)=>{
+      try{
+        const reader=new FileReader();
+        reader.onload=e=>{
+          try{
+            const data=new Uint8Array(e.target.result);
+            const workbook=XLSX.read(data, {type: 'array'});
+            const firstSheet=workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData=XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+            resolve(jsonData);
+          }catch(e){ reject(e); }
+        };
+        reader.onerror=reject;
+        reader.readAsArrayBuffer(file);
+      }catch(e){ reject(e); }
+    });
   }
 ,
 });

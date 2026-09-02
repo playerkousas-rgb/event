@@ -472,10 +472,8 @@ Object.assign(ScoutEventApp.prototype,{
     const cardClass='bg-white border shadow-sm';
     const badgeHTML=locked
       ?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-amber-700 border border-amber-200 whitespace-nowrap"><i class="fa-solid fa-lock mr-0.5"></i>登入解鎖</span>'
-      :(badge==='可修改'?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white whitespace-nowrap"><i class="fa-solid fa-pen mr-0.5"></i>可修改</span>'
-        :(badge==='只讀'?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-eye mr-0.5"></i>只讀</span>'
-          :'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-white/80 text-emerald-700 border border-emerald-200 whitespace-nowrap"><i class="fa-solid fa-globe mr-0.5"></i>公開可看</span>'));
-    const footer=(!locked&&(badge==='可修改'||badge==='只讀'))?`<div class="dash-footer mt-1.5 text-[9.5px] font-semibold ${canEdit?'text-emerald-600':'text-slate-400'}"><i class="fa-solid ${canEdit?'fa-pen':'fa-eye'} mr-1"></i>${canEdit?'可修改':'只讀'} · ${def.editLabel||''}</div>`:'';
+      :'';
+    const footer='';
     const overlay=locked?'<div class="absolute inset-0 bg-white/30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition"><span class="bg-slate-900 text-white text-[10px] px-3 py-1.5 rounded-full font-bold"><i class="fa-solid fa-lock mr-1"></i>登入解鎖</span></div>':'';
     const ownGroupBanner=isOwnGroup?'<div class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2.5 shadow-sm"><i class="fa-solid fa-star"></i>我的組別</div>':'';
     return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative dash-card p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-200 border-indigo-500':''}">${badgeHTML}${ownGroupBanner}<div class="dash-icon w-11 h-11 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="dash-title font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4>${def.desc?`<p class="dash-desc text-[11px] text-slate-500 mt-0.5">${escapeHtml(def.desc)}</p>`:''}${footer}${overlay}</div>`;
@@ -575,7 +573,7 @@ Object.assign(ScoutEventApp.prototype,{
     const identityDefs=DASH_CARD_DEFS.filter(d=>d.minLevel>0&&!d.hideOnDashboard);
     const groupDefs=identityDefs.filter(d=>GROUP_CARD_IDS.has(d.id)).sort((a,b)=>ORG_GROUPS.indexOf(normalizeGroupName(a.groups?.[0]))-ORG_GROUPS.indexOf(normalizeGroupName(b.groups?.[0])));
     const toolDefs=byOrder(identityDefs.filter(d=>MANAGEMENT_TOOL_ORDER.includes(d.id)),MANAGEMENT_TOOL_ORDER);
-    // 全部卡片一律白底無顏色（更整潔）；未登入／已登入都是同一款白底卡，只靠「可修改／只讀／公開可看」小標籤分辨
+    // 全部卡片一律白底無顏色（更整潔）；未登入／已登入都是同一款白底卡
     this.renderIdentityBar();
 
     // ===== 未登入（訪客）v8.13：登入後先至有嘅「工作卡片／管理工具」全部收起，
@@ -588,8 +586,8 @@ Object.assign(ScoutEventApp.prototype,{
       if(publicSection) publicSection.classList.remove('hidden');
       identityGrid.innerHTML='';
       toolsGrid.innerHTML='';
-      this.deferredDashWrite(publicGrid, publicDefs.map(d=>this.cardHTML(d,{locked:false,badge:'公開可看',canEdit:false})).join(''));
-      if(publicCount) publicCount.textContent=`${publicDefs.length} 張（公開可看）`;
+      this.deferredDashWrite(publicGrid, publicDefs.map(d=>this.cardHTML(d,{locked:false,badge:'',canEdit:false})).join(''));
+      if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
       if(identityCount) identityCount.textContent='';
       if(toolsCount) toolsCount.textContent='';
       return;
@@ -600,7 +598,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(note) note.classList.remove('hidden');
 
     // 公開資料固定順序（最先顯示）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動。
-    this.deferredDashWrite(publicGrid, publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:user?(canEdit?'可修改':'只讀'):'公開可看',canEdit,isOwnGroup:highlightCeremony});}).join(''));
+    this.deferredDashWrite(publicGrid, publicDefs.map(d=>{const canEdit=user&&this.canEditRoleCard(d); const highlightCeremony=!!user && d.id==='ceremony' && normalizeGroupName(user.group_name)==='會操及典禮組'; return this.cardHTML(d,{locked:false,badge:'',canEdit,isOwnGroup:highlightCeremony});}).join(''));
     if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
 
     const userGroup=normalizeGroupName(user.group_name);
@@ -619,11 +617,11 @@ Object.assign(ScoutEventApp.prototype,{
     const visibleTools=this.roleLevel(user.role)>=40?toolDefs.filter(d=>this.canSeeRoleCard(d)):[];
 
     if(identityTitle) identityTitle.textContent='工作卡片';
-    this.deferredDashWrite(identityGrid, allCards.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit,isOwnGroup:matchesUserGroup(d)});}).join('')||'<div class="col-span-full text-center text-[12px] text-slate-400 bg-white border rounded-2xl p-6">暫無其他卡片</div>');
+    this.deferredDashWrite(identityGrid, allCards.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:'',canEdit,isOwnGroup:matchesUserGroup(d)});}).join('')||'<div class="col-span-full text-center text-[12px] text-slate-400 bg-white border rounded-2xl p-6">暫無其他卡片</div>');
     if(identityCount) identityCount.textContent=`${allCards.length} 張`;
 
     if(toolsSection) toolsSection.classList.toggle('hidden',!visibleTools.length);
-    this.deferredDashWrite(toolsGrid, visibleTools.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:canEdit?'可修改':'只讀',canEdit});}).join(''));
+    this.deferredDashWrite(toolsGrid, visibleTools.map(d=>{const canEdit=this.canEditRoleCard(d); return this.cardHTML(d,{locked:false,badge:'',canEdit});}).join(''));
     if(toolsCount) toolsCount.textContent=`${visibleTools.length} 張`;
     if(note) note.innerHTML=`排序：<b>公開資料 → 工作卡片（會議卡片在功能卡片最前）→ 管理工具 → 部門管理中心</b>。全部卡片白底無顏色；自己的組別已標亮；我的監察併入頂部活動資訊橫幅。最頂 BAR＝身份・開戶（有權限）・改密碼・登出；底部導覽列＝執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上見列表／普通人入自己部門）。`;
   }
@@ -844,7 +842,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-purple-50 border border-purple-100 rounded-lg py-1"><div class="text-[13px] font-extrabold text-purple-700">${st.orders.length}</div><div class="text-[9.5px] text-purple-600">膳食</div></div>
       </div>
       <div class="mt-2.5 flex items-center justify-between gap-2">
-        <span class="text-[10px] text-slate-400">${canManage?'可修改／加入本組內容':'公開可看'}</span>
+        <span class="text-[10px] text-slate-400">${canManage?'可管理本組內容':'查看本組'}</span>
         <button class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">${g==='協調組'?'物資・膳食・車輛統計':(g==='行政組'?'進入行政組':(canManage?'管理本組':'查看本組'))}</button>
       </div>
     </div>`;

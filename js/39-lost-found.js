@@ -125,6 +125,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="flex gap-2 flex-wrap">
         ${canManage?`<button onclick="app.openLostFoundForm('found')" class="bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-box-archive mr-1"></i>① 登記失物（拾獲物品）</button>
         <button onclick="app.openLostFoundForm('seeking')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-magnifying-glass mr-1"></i>② 登記尋物（有人要尋找物品）</button>`:`<span class="text-[11px] text-slate-500 bg-white border px-3 py-2 rounded-xl"><i class="fa-solid fa-lock mr-1"></i>只讀 — 失物由行政組紀錄</span>`}
+        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 失物紀錄<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleLostFoundExcelUpload(this.files[0])"></label>`:''}
         <button onclick="app.exportLostFoundCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出 CSV</button>
         <button onclick="app.printCoordArea('lost-found-print','失物認領清單')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印清單</button>
         <span id="lost-found-count" class="text-[11px] bg-teal-100 text-teal-700 px-3 py-2 rounded-full border border-teal-200">${all.length} 筆</span>
@@ -324,6 +325,104 @@ Object.assign(ScoutEventApp.prototype,{
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob); a.download='失物認領清單.csv'; a.click();
     showToast('已匯出失物認領 CSV','success');
+  }
+,
+  /* —— EXCEL 匯入失物紀錄 —— */
+  async handleLostFoundExcelUpload(file){
+    if(!this.canManageLostFound()){ showToast('失物認領由行政組紀錄','error'); return; }
+    if(!file){ showToast('請選擇 EXCEL 檔案','warning'); return; }
+    
+    const overlay=document.getElementById('savingOverlay');
+    overlay.classList.add('active');
+    document.getElementById('savingText').textContent='正在解析 EXCEL 失物紀錄...';
+    
+    try{
+      const data=await this.readExcelFile(file);
+      const results=[];
+      
+      // 失物認領 EXCEL：類型、物品名稱、描述、日期、時間、地點、拾獲者/尋物者、聯絡、備註
+      const headerMap={};
+      const headers=data[0]||[];
+      headers.forEach((h,i)=>{ headerMap[String(h||'').trim().toLowerCase()]=i; });
+      
+      for(let i=1;i<data.length;i++){
+        const row=data[i]||[];
+        if(!row.length) continue;
+        
+        const type=String(row[headerMap['類型']]||row[headerMap['type']]||'found').trim();
+        const item_name=String(row[headerMap['物品名稱']]||row[headerMap['物品']]||row[headerMap['item_name']]||row[0]||'').trim();
+        if(!item_name) continue;
+        
+        const description=String(row[headerMap['描述']]||row[headerMap['description']]||'').trim();
+        const found_date=String(row[headerMap['日期']]||row[headerMap['date']]||'').trim();
+        const found_time=String(row[headerMap['時間']]||row[headerMap['time']]||'').trim();
+        const found_location=String(row[headerMap['地點']]||row[headerMap['location']]||row[headerMap['found_location']]||'').trim();
+        const found_by=String(row[headerMap['拾獲者']]||row[headerMap['尋物者']]||row[headerMap['found_by']]||'').trim();
+        const contact=String(row[headerMap['聯絡']]||row[headerMap['contact']]||row[headerMap['電話']]||'').trim();
+        const notes=String(row[headerMap['備註']]||row[headerMap['notes']]||'').trim();
+        
+        results.push({
+          type: type==='seeking'?'seeking':'found',
+          item_name: item_name,
+          description: description,
+          found_date: found_date,
+          found_time: found_time,
+          found_location: found_location,
+          found_by: found_by,
+          contact: contact,
+          notes: notes,
+          status: type==='seeking'?'尋找中':'待認領'
+        });
+      }
+      
+      if(!results.length){ showToast('EXCEL 中未找到有效失物紀錄','warning'); return; }
+      
+      // 合併到現有紀錄（舊紀錄保留，新紀錄追加）
+      const existingData=this.getLostFoundData();
+      const existingIds=new Set((existingData.records||[]).map(r=>r.id));
+      
+      results.forEach(r=>{
+        if(!existingIds.has(r.id)){
+          r.id='lost_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);
+          r.created_at=new Date().toISOString();
+          r.updated_at=r.created_at;
+          r.recorded_by=this.currentUser?.name||'';
+          r.recorded_by_id=this.currentUser?.user_id||'';
+          existingData.records.push(r);
+          existingIds.add(r.id);
+        }
+      });
+      
+      this.saveLostFoundData(existingData);
+      
+      showToast(`成功匯入 ${results.length} 筆失物紀錄`,'success');
+      this.refreshLostFoundViews();
+      
+    }catch(e){
+      showToast('匯入失敗：'+(e.message||e),'error');
+    }finally{
+      overlay.classList.remove('active');
+    }
+  }
+,
+  /* —— 讀取 EXCEL 文件通用函數 —— */
+  async readExcelFile(file){
+    return new Promise((resolve, reject)=>{
+      try{
+        const reader=new FileReader();
+        reader.onload=e=>{
+          try{
+            const data=new Uint8Array(e.target.result);
+            const workbook=XLSX.read(data, {type: 'array'});
+            const firstSheet=workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData=XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+            resolve(jsonData);
+          }catch(e){ reject(e); }
+        };
+        reader.onerror=reject;
+        reader.readAsArrayBuffer(file);
+      }catch(e){ reject(e); }
+    });
   }
 ,
 });
