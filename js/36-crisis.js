@@ -1121,6 +1121,7 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="border rounded-xl p-3 bg-slate-50">
             <div class="flex justify-between items-start gap-2"><b class="text-[12px]">${escapeHtml(d.title)}</b>${canEdit?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.openCrisisDocForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteCrisisDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}</div>
             <div class="text-[11px] text-slate-600 mt-1 whitespace-pre-line leading-relaxed">${escapeHtml(d.description)}</div>
+            ${(d.file_url||d.file_data)?`<div class="flex gap-1 flex-wrap mt-2">${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" rel="noopener" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">📄 開啟附件</a>`:''}${d.file_data?`<button onclick="app.downloadCrisisDocFile('${d.id}')" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">📥 下載附件</button>`:''}</div>`:''}
           </div>`).join('')}</div>
         ${canEdit?`<button onclick="app.openCrisisDocForm(null,'${cat}')" class="mt-2 bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增${escapeHtml(cat)}指引</button>`:''}
       </div>`;
@@ -1134,7 +1135,13 @@ Object.assign(ScoutEventApp.prototype,{
     let html=`<input type="hidden" id="cr-mode" value="${existing?'edit':'create'}"><input type="hidden" id="cr-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">標題 *</label><input id="cr-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="mt-3"><label class="text-[11px] font-bold">分類</label><select id="cr-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="定義">定義</option><option value="小組">小組</option><option value="天氣">天氣</option><option value="傳染病">傳染病</option><option value="意外">意外</option><option value="事故">事故</option><option value="取消">取消</option><option value="急救">急救</option><option value="保險">保險</option><option value="其他">其他</option></select></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="cr-desc" rows="6" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>`;
+      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="cr-desc" rows="6" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+      <div class="mt-3 border-t pt-3">
+        <label class="text-[11px] font-bold">附件（檔案或連結，可選）</label>
+        <input type="file" id="cr-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.xlsx,.xls,.txt" class="w-full text-xs mt-1">
+        <input id="cr-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="或貼上連結（例如 Drive／官方指引 PDF）" class="w-full px-3 py-2 border rounded-xl text-sm mt-2">
+        ${existing&&(existing.file_name||existing.file_url)?`<div class="text-[10px] text-slate-500 mt-1">已有附件：${escapeHtml(existing.file_name||existing.file_url)}（重新上傳檔案或填新連結會取代）</div>`:''}
+      </div>`;
     document.getElementById('record-modal-title').textContent=existing?'編輯危機指引':'新增危機指引';
     document.getElementById('record-form-fields').innerHTML=html;
     if(existing) document.getElementById('cr-category').value=existing.category; else document.getElementById('cr-category').value=cat;
@@ -1143,16 +1150,32 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('modal-record').classList.remove('hidden');
   }
 ,
-  submitCrisisDocForm(){
+  async submitCrisisDocForm(){
     const mode=document.getElementById('cr-mode').value, id=document.getElementById('cr-id').value;
     const title=document.getElementById('cr-title').value.trim(), category=document.getElementById('cr-category').value, description=document.getElementById('cr-desc').value.trim();
     if(!title){ showToast('請填寫標題','error'); return; }
     const data=this.getCrisisData();
-    if(mode==='edit'){ const i=data.docs.findIndex(d=>d.id===id); if(i>=0) data.docs[i]={...data.docs[i],title,category,description}; }
-    else data.docs.push({id:'cr_'+Date.now(),title,category,description,created_at:new Date().toISOString()});
+    const existing=mode==='edit'?(data.docs||[]).find(d=>d.id===id):null;
+    // v13.1：指引可附檔案或連結（可選——文字內容本身就係指引，附件係加強）
+    const file=document.getElementById('cr-file').files[0];
+    const url=document.getElementById('cr-url').value.trim();
+    let fileName=existing?.file_name||'', fileData=existing?.file_data||'', fileUrl=existing?.file_url||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; fileUrl=url; }
+    else if(url){ fileUrl=url; fileData=''; fileName=''; }
+    const stamp=new Date().toISOString();
+    // v13.1：_userEdited 標記令用戶新增／編輯嘅指引喺重新載入（活動 JSON 為準）後仍會保留
+    if(mode==='edit'){ const i=data.docs.findIndex(d=>d.id===id); if(i>=0) data.docs[i]={...data.docs[i],title,category,description,file_name:fileName,file_data:fileData,file_url:fileUrl,_userEdited:true,updated_by:this.currentUser?.name||'',updated_at:stamp}; }
+    else data.docs.push({id:'cr_'+Date.now(),title,category,description,file_name:fileName,file_data:fileData,file_url:fileUrl,_userEdited:true,updated_by:this.currentUser?.name||'',created_at:stamp});
     this.saveCrisisData(data); this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
     showToast('已保存','success'); this.renderCrisisModule();
+  }
+,
+  downloadCrisisDocFile(id){
+    const d=(this.getCrisisData().docs||[]).find(x=>x.id===id);
+    if(!d) return;
+    if(d.file_data) downloadDataUrl(d.file_name||`${d.title||'crisis_guide'}`, d.file_data);
+    else if(d.file_url) window.open(d.file_url,'_blank');
   }
 ,
   deleteCrisisDoc(id){

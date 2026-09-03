@@ -281,5 +281,30 @@ const finActions = vm.runInContext(`document.getElementById('module-actions').in
 ok(!finActions.includes('openAddRecordModal'), '⑦ 財務頁唔應有通用「新增」掣');
 ok(finActions.includes('全部在下方分頁內處理'), '⑦ 財務頁應顯示分頁操作提示');
 
+/* ⑦（重新解讀）審查上傳地方：紀錄／口頭性質保持純文字；文件／指引性質可附檔案或連結 */
+const annSrc=fs.readFileSync('js/34-announcements.js','utf8');
+const oqSrc=fs.readFileSync('js/28-oral-quotes.js','utf8');
+const lfSrc=fs.readFileSync('js/39-lost-found.js','utf8');
+ok(!oqSrc.includes('type="file"') && !oqSrc.includes('id="oq-url"'), '⑦ 口頭報價保持純文字（口頭性質，唔設附件）');
+ok((lfSrc.match(/type="file"/g)||[]).length===1 && lfSrc.includes('匯入 EXCEL 失物紀錄'), '⑦ 失物認領保持純文字紀錄（唯一檔案掣係 EXCEL 批量匯入）');
+ok(annSrc.includes('id="ug-file"') && annSrc.includes('id="ug-url"'), '⑦ 旅團須知表單應有檔案／連結附件欄位');
+ok(crisisSrc.includes('id="cr-file"') && crisisSrc.includes('id="cr-url"'), '⑦ 危機指引表單應有檔案／連結附件欄位');
+
+/* ⑦ 行為：旅團須知 — 可附連結，純文字亦照儲（附件可選） */
+vm.runInContext(`(()=>{ globalThis.__app.openUnitGuideForm(); document.getElementById('ug-title').value='測試須知附件'; document.getElementById('ug-category').value='報到'; document.getElementById('ug-desc').value='純文字都得'; document.getElementById('ug-url').value='https://drive.example.com/guide.pdf'; globalThis.__app.submitUnitGuideForm(); })();`, context);
+let ugSaved=JSON.parse(vm.runInContext(`JSON.stringify(globalThis.__app.getUnitGuideData().docs.find(d=>d.title==='測試須知附件')||null)`, context));
+ok(ugSaved && ugSaved.file_url==='https://drive.example.com/guide.pdf', '⑦ 旅團須知：可附連結');
+ok(vm.runInContext(`document.getElementById('module-content').innerHTML`, context).includes('開啟附件'), '⑦ 旅團須知：卡片顯示「開啟附件」');
+vm.runInContext(`(()=>{ globalThis.__app.openUnitGuideForm(); document.getElementById('ug-title').value='純文字須知'; document.getElementById('ug-desc').value='冇附件都儲到'; document.getElementById('ug-url').value=''; globalThis.__app.submitUnitGuideForm(); })();`, context);
+ok(vm.runInContext(`globalThis.__app.getUnitGuideData().docs.some(d=>d.title==='純文字須知'&&!d.file_url&&!d.file_data)`, context) === true, '⑦ 旅團須知：純文字仍可儲存（附件可選）');
+
+/* ⑦ 行為：危機指引 — 可附連結＋_userEdited（修正重新載入後消失）；純文字亦照儲 */
+vm.runInContext(`(()=>{ globalThis.__app.openCrisisDocForm(null,'其他'); document.getElementById('cr-title').value='測試危機指引附件'; document.getElementById('cr-url').value='https://drive.example.com/crisis.pdf'; globalThis.__app.submitCrisisDocForm(); })();`, context);
+let crSaved=JSON.parse(vm.runInContext(`JSON.stringify((globalThis.__app.getCrisisData().docs||[]).find(d=>d.title==='測試危機指引附件')||null)`, context));
+ok(crSaved && crSaved.file_url==='https://drive.example.com/crisis.pdf' && crSaved._userEdited===true, '⑦ 危機指引：可附連結＋_userEdited（重新載入唔會消失）');
+ok(vm.runInContext(`document.getElementById('crisis-tab-docs').innerHTML`, context).includes('開啟附件'), '⑦ 危機指引：卡片顯示「開啟附件」');
+vm.runInContext(`(()=>{ globalThis.__app.openCrisisDocForm(null,'其他'); document.getElementById('cr-title').value='純文字危機指引'; document.getElementById('cr-url').value=''; globalThis.__app.submitCrisisDocForm(); })();`, context);
+ok(vm.runInContext(`(globalThis.__app.getCrisisData().docs||[]).some(d=>d.title==='純文字危機指引'&&!d.file_url&&!d.file_data)`, context) === true, '⑦ 危機指引：純文字仍可儲存（附件可選）');
+
 console.log(`\n全部 v13 驗證通過 ✅（${n} 項）`);
 process.exit(0);

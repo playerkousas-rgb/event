@@ -1,6 +1,6 @@
 # v12.3 → v13.0 更新說明（2026-09-03）
 
-用戶實測回報 8 項，一次完成。回歸測試：**新增** `tests/v13_dept_center_finance_test.js`（90 項）＋全套 21 個測試檔（17 PASS／4 個為 v13 之前已存在嘅既有失敗：`ui_layout_check`／`v8_13`② 公開卡標籤、`v84`④ 舊攤位字眼、`v11_exec_manual`⑤ 舊紀念章字眼——全部係 v12.1／v12.2 改字前嘅過期預期，唔屬今次改動）。
+用戶實測回報 8 項，一次完成。回歸測試：**新增** `tests/v13_dept_center_finance_test.js`（100 項）＋全套 21 個測試檔（17 PASS／4 個為 v13 之前已存在嘅既有失敗：`ui_layout_check`／`v8_13`② 公開卡標籤、`v84`④ 舊攤位字眼、`v11_exec_manual`⑤ 舊紀念章字眼——全部係 v12.1／v12.2 改字前嘅過期預期，唔屬今次改動）。
 
 ---
 
@@ -49,9 +49,24 @@
 - 下方待批清單：一掣 **✅ 批**／**❌ 拒**（`approveExpense`／`rejectExpense`），批完即時刷新，並保留喺部門頁睇到結果。
 - 管理層唔使再入財務頁逐筆搵——匯總頁一頁睇晒各部門財政狀態。
 
-## ⑦ 上傳檔案或連結：所有「文件上傳」必須其一
+## ⑦ 全 APP「上傳地方」審查：淨係打得字嘅「文件性質」地方補返附件（v13.1 修正解讀）
 
-`submitDocumentForm`（各部門文件）：描述文字唔可以代替檔案——必須上傳檔案**或**填連結，否則 toast「請上傳檔案或填寫連結，唔可以只填文字描述」。協調組文件、管理層行政文件、場地佈置圖表單同樣規則。
+**審查範圍**：全 APP 所有可以開表入紀錄嘅地方，逐一檢查「上傳性質」嘅地方有冇得附檔案／連結（最新消息除外——佢係文字橫幅）。
+
+**已經有上傳（唔使改）**：文件中心（各部門文件：檔案＋連結）、會議紀錄（議程／紀錄／多重附件＋Drive 資料夾）、開支申報（收據）、執行手冊檔案（檔案＋連結）、典禮檔案（檔案）、協調組文件／場地佈置圖（⑤）、行政文件（⑧）。
+
+**純文字但性質正確（用戶確認唔使改）**：
+
+- **口頭報價**——口頭性質，登記嘅就係口頭內容（商戶／項目／金額），保持純文字。
+- **失物認領**——紀錄性質，保持純文字（唯一檔案掣係 EXCEL 批量匯入）。
+- 公告、攤位申請、物資／車輛／膳食申請、捐贈、意外報告、票券、職務大綱等——通知／申請／紀錄，文字就係內容本身。
+
+**發現兩個「文件／指引」性質但淨係打得字嘅地方，已補返（可選）附件**：
+
+- **單位指南（旅團須知）**：新增／編輯表單加「附件（檔案或連結，可選）」——旅團可以收到指南 PDF／連結；卡片有「📄 開啟附件」／「📥 下載附件」掣。純文字須知照舊儲到（文字內容本身就係須知）。
+- **危機管理指引**：同樣加可選檔案／連結附件（例如官方危機處理計劃 PDF）。**順手修復既有 bug**：用戶新增／編輯嘅危機指引而家會打 `_userEdited` 標記——之前喺有活動 JSON（如 isd_2026）嘅情況下，重新載入後用戶新增嘅指引會消失。
+
+**文件中心驗證**：`submitDocumentForm`（文件中心）必須上傳檔案**或**填連結（描述文字唔可以代替檔案），否則 toast「請上傳檔案或填寫連結（文件必須有檔案或連結）」。協調組文件、行政文件、場地佈置圖表單同樣規則（呢啲全部有上傳欄位）。
 
 ## ⑧ 行政文件（管理層）可上傳檔案／連結
 
@@ -72,6 +87,8 @@
 - `js/30-finance.js` — `refreshFinanceViews`（提交／批／拒／刪／批次批後所有開緊嘅財務視圖即時刷新）、`openExpenseForm` 支援預設組別、`renderGroupExpenseTabHTML`、`renderGroupFinanceGuideTabHTML`。
 - `js/28-oral-quotes.js` — `refreshOralQuoteViews`、`renderGroupQuotesTabHTML`、`openOralQuoteForm` 支援預設組別。
 - `js/37-coordinator.js` — `renderCoordDocs` 重整（3 固定卡＋其他文件格）、場地佈置圖上傳（`openCoordinatorVenueForm`／`submitCoordinatorVenueForm`／`downloadCoordinatorVenueMap`）、協調文件表單升級（檔案／連結必填其一、`downloadCoordinatorDocFile`）、`refreshCoordinatorDocViews`。
-- `js/36-crisis.js` — 協調組示範資料（場地圖／箱頭紙／物資借用表格／2 份文件）、`renderAdminFinanceTabHTML` 匯總頁、管理層行政文件表單升級（`openAdminDocForm`／`submitAdminDocForm`／`downloadAdminDocFile`）。
+- `js/36-crisis.js` — 協調組示範資料（場地圖／箱頭紙／物資借用表格／2 份文件）、`renderAdminFinanceTabHTML` 匯總頁、管理層行政文件表單升級（`openAdminDocForm`／`submitAdminDocForm`／`downloadAdminDocFile`）、危機指引可選附件＋`_userEdited` 修復（`downloadCrisisDocFile`）。
+- `js/34-announcements.js` — 旅團須知可選檔案／連結附件（`ug-file`／`ug-url`／`downloadUnitGuideFile`）。
 - `js/21-activities.js` — `submitDocumentForm` 檔案或連結必填其一。
-- `tests/v13_dept_center_finance_test.js` — **新增**，90 項：① 統計最頂＋摺疊 ② 4 格預設收合＋一鍵全展開 ③ 3 財務頁籤×4 組 ④ 財務頁無通用新增 ⑤ 口頭報價自動帶組 ⑥ 開支申報自動入紀錄＋統計跳數＋匯總可見＋批核即時刷新 ⑦⑧ 檔案或連結必填其一（協調文件／場地圖／行政文件）＋下載掣。
+- `js/28-oral-quotes.js`、`js/39-lost-found.js` — **冇改**（口頭報價＝口頭、失物認領＝紀錄，純文字正確；測試有斷言防止日後誤加）。
+- `tests/v13_dept_center_finance_test.js` — **新增**，100 項：① 統計最頂＋摺疊 ② 4 格預設收合＋一鍵全展開 ③ 3 財務頁籤×4 組 ④ 財務頁無通用新增 ⑤ 口頭報價自動帶組 ⑥ 開支申報自動入紀錄＋統計跳數＋匯總可見＋批核即時刷新 ⑦ 審查上傳地方（口頭報價／失物認領保持純文字；旅團須知／危機指引可附檔案連結、純文字照儲、`_userEdited` 唔會消失）⑧ 檔案或連結驗證（協調文件／場地圖／行政文件／文件中心）＋下載掣。
