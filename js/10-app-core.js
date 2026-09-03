@@ -722,6 +722,47 @@ Object.assign(ScoutEventApp.prototype,{
     };
   }
 ,
+  // v12.1：本組申請統計區塊（5 格數字：崗位／物資申請／攤位申請／車輛申請／膳食訂餐 ＋ 4 張明細表）
+  // 部門管理中心、行政組頁、協調組頁共用同一份，內容口徑一致，且整塊可直接列印。
+  groupApplyStatsHTML(groupName,{printId}={}){
+    groupName=normalizeGroupName(groupName);
+    const st=this.groupApplyStats(groupName);
+    const mealsData=this.getMealsData();
+    const groupOrg=this.getGroupOrgNodes(groupName);
+    const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
+    const supRows=st.requests.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.date_needed||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
+    const vehRows=st.vehicles.map(v=>`<tr><td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td><td class="border px-2 py-1">${escapeHtml(v.driver_name||'')}</td><td class="border px-2 py-1">${escapeHtml(v.entry_date||'')}→${escapeHtml(v.exit_date||'')}</td><td class="border px-2 py-1">${escapeHtml(v.parking_location||'待定')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(v.status)}</td></tr>`).join('');
+    const mealRows=st.orders.map(o=>{ const m=(mealsData.menus||[]).find(x=>x.menu_id===o.menu_id)||{}; return `<tr><td class="border px-2 py-1">${escapeHtml(m.date||'')} ${escapeHtml(m.meal_type||'')}</td><td class="border px-2 py-1">${escapeHtml(o.user_name||'')}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection||'')}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(o.status)}</td></tr>`; }).join('');
+    const boothRows=st.boothReqs.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.purpose||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
+    const pid=printId||('group-print-'+groupName);
+    return `
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          ${chip(groupOrg.length,'崗位','bg-slate-100 text-slate-700 border')}
+          ${chip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200')}
+          ${chip(st.boothReqs.length,'攤位申請','bg-orange-50 text-orange-700 border border-orange-200')}
+          ${chip(st.vehicles.length,'車輛申請','bg-amber-50 text-amber-700 border border-amber-200')}
+          ${chip(st.orders.length,'膳食訂餐','bg-purple-50 text-purple-700 border border-purple-200')}
+        </div>
+        <div id="${pid}" class="space-y-3">
+          <div class="bg-white border rounded-xl p-3">
+            <b class="text-[12px]"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-1"></i>本組物資申請及狀態 (${st.requests.length}，待批 ${st.supPending})</b>
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">需用日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${supRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+          </div>
+          <div class="bg-white border rounded-xl p-3">
+            <b class="text-[12px]"><i class="fa-solid fa-store text-orange-600 mr-1"></i>本組攤位申請及狀態 (${st.boothReqs.length}，待批 ${st.boothPending})</b>
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">用途</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${boothRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+          </div>
+          <div class="bg-white border rounded-xl p-3">
+            <b class="text-[12px]"><i class="fa-solid fa-car text-amber-600 mr-1"></i>本組車輛通行證及狀態 (${st.vehicles.length}，待批 ${st.vehPending})</b>
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">進出</th><th class="border px-2 py-1">停泊</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${vehRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+          </div>
+          <div class="bg-white border rounded-xl p-3">
+            <b class="text-[12px]"><i class="fa-solid fa-utensils text-purple-600 mr-1"></i>本組膳食訂餐及狀態 (${st.orders.length}，待處理 ${st.mealPending})</b>
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">日期/餐別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${mealRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+          </div>
+        </div>`;
+  }
+,
   // 本組崗位節點（「主頁部門卡片」與「部門管理中心」共用同一計算，確保崗位／人數兩處一致）
   getGroupOrgNodes(groupName){
     groupName=normalizeGroupName(groupName);
@@ -938,15 +979,8 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('module-content');
     const staffData=this.getStaffData();
     const groupContacts=(staffData.contacts||[]).filter(c=> normalizeGroupName(c.group_name)===groupName || (c.group_name||'').includes(groupName) || groupName.includes(c.group_name||''));
-    // 與主頁部門卡片共用同一份崗位計算（getGroupOrgNodes），主頁與進入卡片後的崗位數必定一致
-    const groupOrg=this.getGroupOrgNodes(groupName);
-    const st=this.groupApplyStats(groupName);
-    const mealsData=this.getMealsData();
-    const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
-    const supRows=st.requests.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.date_needed||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
-    const vehRows=st.vehicles.map(v=>`<tr><td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td><td class="border px-2 py-1">${escapeHtml(v.driver_name||'')}</td><td class="border px-2 py-1">${escapeHtml(v.entry_date||'')}→${escapeHtml(v.exit_date||'')}</td><td class="border px-2 py-1">${escapeHtml(v.parking_location||'待定')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(v.status)}</td></tr>`).join('');
-    const mealRows=st.orders.map(o=>{ const m=(mealsData.menus||[]).find(x=>x.menu_id===o.menu_id)||{}; return `<tr><td class="border px-2 py-1">${escapeHtml(m.date||'')} ${escapeHtml(m.meal_type||'')}</td><td class="border px-2 py-1">${escapeHtml(o.user_name||'')}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection||'')}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(o.status)}</td></tr>`; }).join('');
-    const boothRows=st.boothReqs.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.purpose||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
+    // v12.1：統計區塊（崗位／物資／攤位／車輛／膳食 5 格＋4 張明細表）改為共用 groupApplyStatsHTML
+    const statsHTML=this.groupApplyStatsHTML(groupName,{printId:`group-print-${groupName}`});
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed">
@@ -966,32 +1000,8 @@ Object.assign(ScoutEventApp.prototype,{
           ${groupTabList.map(t=>`<button onclick="app.switchGroupTab('${t.k}')" class="group-tab-btn ${tabCls(t.k)}">${t.label}</button>`).join('')}
         </div>`; })():''}
         <div id="group-tab-apps" class="space-y-4 ${this.groupBoothTab==='apps'?'':'hidden'}">
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          ${chip(groupOrg.length,'崗位','bg-slate-100 text-slate-700 border')}
-          ${chip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200')}
-          ${chip(st.boothReqs.length,'攤位申請','bg-orange-50 text-orange-700 border border-orange-200')}
-          ${chip(st.vehicles.length,'車輛申請','bg-amber-50 text-amber-700 border border-amber-200')}
-          ${chip(st.orders.length,'膳食訂餐','bg-purple-50 text-purple-700 border border-purple-200')}
-        </div>
         ${this.groupInfoBoxesHTML(groupName)}
-        <div id="group-print-${escapeHtml(groupName)}" class="space-y-3">
-          <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-1"></i>本組物資申請及狀態 (${st.requests.length}，待批 ${st.supPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">需用日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${supRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
-          </div>
-          <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-store text-orange-600 mr-1"></i>本組攤位申請及狀態 (${st.boothReqs.length}，待批 ${st.boothPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">用途</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${boothRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
-          </div>
-          <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-car text-amber-600 mr-1"></i>本組車輛通行證及狀態 (${st.vehicles.length}，待批 ${st.vehPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">進出</th><th class="border px-2 py-1">停泊</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${vehRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
-          </div>
-          <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-utensils text-purple-600 mr-1"></i>本組膳食訂餐及狀態 (${st.orders.length}，待處理 ${st.mealPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">日期/餐別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${mealRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
-          </div>
-        </div>
+        ${statsHTML}
         <!-- 快捷按鈕已移至組別介紹下方（正常組別：前往申請中心＋我的監察；個別組別另有專屬按鈕） -->
         ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
         </div>
@@ -1167,7 +1177,8 @@ Object.assign(ScoutEventApp.prototype,{
       document.getElementById('module-actions').innerHTML=`<span class="text-[11px] bg-teal-50 text-teal-700 px-3 py-2 rounded-full border border-teal-200">開戶（預設密碼 1234）</span>`;
     } else if(key==='dept_hub'){
       document.getElementById('module-actions').innerHTML='<span class="text-[11px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200"><i class="fa-solid fa-sitemap mr-1"></i>一按即見全部部門，點部門卡進入部門管理中心</span>';
-    } else if(key==='my_monitor'||key==='apply_hub'||key==='exec_manual'||key==='coordinator_group'){
+    } else if(key==='my_monitor'||key==='apply_hub'||key==='exec_manual'||key==='coordinator_group'||key==='admin_group'){
+      // v12.1：行政組／協調組部門頁有自己嘅按鈕（列印統計等），唔顯示通用「新增」掣（以前 admin_group 跌落兜底分支出咗粒多餘「新增」）
       document.getElementById('module-actions').innerHTML='';
     } else if(key==='donations'){
       document.getElementById('module-actions').innerHTML=this.canViewDonationsStats()

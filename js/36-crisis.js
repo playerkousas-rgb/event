@@ -1262,6 +1262,10 @@ Object.assign(ScoutEventApp.prototype,{
     const participants=this.getParticipantsData();
     const pSrc=this.eventData['participants_source']||{};
     const fin=this.getFinanceData();
+    // v12.1：行政組同其他組一樣有「崗位／物資申請／攤位申請／車輛申請／膳食訂餐」統計，且可列印
+    const actionsEl=document.getElementById('module-actions');
+    if(actionsEl) actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('admin-group-stats-print','行政組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
+    const groupStatsHTML=`<div class="bg-white border rounded-xl p-3" id="admin-group-stats-print"><div class="flex items-center justify-between flex-wrap gap-2 mb-2 no-print"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-chart-column text-indigo-600"></i>本組申請統計（行政組）</h4><button onclick="app.printCoordArea('admin-group-stats-print','行政組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印統計</button></div>${this.groupApplyStatsHTML('行政組',{printId:'admin-group-stats-print-inner'})}</div>`;
     const budgets=fin.group_itemized_budgets||[];
     const budgetItems=budgets.reduce((s,g)=>s+(g.items||[]).length,0);
     const expenses=fin.expenses||[];
@@ -1272,6 +1276,7 @@ Object.assign(ScoutEventApp.prototype,{
     const tabCls=t=>this.adminGroupTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
     const overviewHTML=`
         ${this.groupInfoBoxesHTML('行政組')}
+        ${groupStatsHTML}
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
             <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務管理（行政組轄下）</h4>

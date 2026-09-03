@@ -22,6 +22,9 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('module-content');
     if(!container) return;
     if(!this.coordSubTab) this.coordSubTab='overview';
+    // v12.1：協調組同其他組一樣有「崗位／物資申請／攤位申請／車輛申請／膳食訂餐」統計，且可列印
+    const actionsEl=document.getElementById('module-actions');
+    if(actionsEl) actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('coord-group-stats-print','協調組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
     const sup=this.getSuppliesData();
     const meals=this.getMealsData();
     const routeVisible=(area,items,approved)=>this.canApproveArea(area)?(items||[]):this.canExecuteArea(area)?(items||[]).filter(x=>approved.includes(x.status)):[];
@@ -49,6 +52,13 @@ Object.assign(ScoutEventApp.prototype,{
           <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
         </div>
         ${this.groupInfoBoxesHTML('協調組')}
+        <div class="bg-white border rounded-xl p-3" id="coord-group-stats-print">
+          <div class="flex items-center justify-between flex-wrap gap-2 mb-2 no-print">
+            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-chart-column text-indigo-600"></i>本組申請統計（協調組）</h4>
+            <button onclick="app.printCoordArea('coord-group-stats-print','協調組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印統計</button>
+          </div>
+          ${this.groupApplyStatsHTML('協調組',{printId:'coord-group-stats-print-inner'})}
+        </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
         <div id="coord-tab-body"></div>
       </div>`;
