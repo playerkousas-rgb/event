@@ -182,42 +182,39 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         </div>
       </div>
 
-      <!-- 公開資料（登入後先顯示；未登入時整個區塊隱藏，4 張公開卡改為底部導覽列 4 個按鈕）：公告及溝通 → 執行手冊 → 申請中心 → 童心捐贈大行動 -->
+      <!-- 公開資料 -->
       <div id="public-section" class="space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-globe"></i></span>公開資料 <span class="text-[10px] text-slate-400 font-normal">所有人可見，無需登入</span></h3>
+          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-globe"></i></span>公開資料</h3>
           <span id="public-count" class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200"></span>
         </div>
         <div id="public-cards-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <!-- 工作卡片（登入後才顯示；未登入無「登入後解鎖」區塊）；會議卡片在功能卡片最前；自己組標亮 -->
+      <!-- 工作卡片：會議卡片在功能卡片最前 -->
       <div id="identity-section" class="hidden space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-slate-700 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-people-group"></i></span><span id="identity-section-title">工作卡片</span> <span class="text-[10px] text-slate-400 font-normal">公開資料之後顯示・會議卡片最前・自己組標亮</span></h3>
+          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-slate-700 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-people-group"></i></span><span id="identity-section-title">工作卡片</span></h3>
           <span id="identity-count" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200"></span>
         </div>
         <div id="identity-cards-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <!-- 開戶、批核中心：總主任以上可見，固定放最後 -->
+      <!-- 管理工具 -->
       <div id="management-tools-section" class="hidden space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-slate-900 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-screwdriver-wrench"></i></span>管理工具 <span class="text-[10px] text-slate-400 font-normal">總主任以上可見</span></h3>
+          <h3 class="font-bold text-[13px] flex items-center gap-2"><span class="w-6 h-6 bg-slate-900 text-white rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-screwdriver-wrench"></i></span>管理工具</h3>
           <span id="management-tools-count" class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border"></span>
         </div>
         <div id="management-tools-grid" class="dash-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
 
-      <div id="simple-mode-note" class="hidden text-[11px] text-slate-400 bg-slate-50 border rounded-xl p-2.5">👀 （登入後顯示）全部卡片白底無顏色（更整潔）。最頂 BAR＝<b>身份・開戶（總主任以上）・改密碼・登出</b>；底部導覽列＝<b>執行手冊・申請中心・批核中心（有權限）・部門中心（登入後：執副以上一按見全部部門列表，普通人一按直接入自己部門）</b>。我的監察已併入頂部活動資訊橫幅（活動簡介下方）。</div>
+      <div id="simple-mode-note" class="hidden"></div>
     </div>
 
-    <!-- 舊版「認識活動／參與活動／協作與管理」彩色卡面分組已刪除（2026-08-27）：
-    一進來只顯示新卡片排版（公開資料 → 工作卡片 → 管理工具 → 部門管理中心），不再出現超舊版分組。 -->
-
-    <!-- 按組別一目了然 - 部門管理中心：每組一張卡片（依組織架構圖，不會多出部門） -->
+    <!-- 部門管理中心 -->
     <div id="group-management-section" class="hidden bg-white rounded-2xl p-5 border shadow-sm space-y-4">
-      <div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[15px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>部門管理中心</h3><span class="text-[11px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">各組透過管理卡片修改本組內容</span></div>
+      <div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[15px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>部門管理中心</h3></div>
       <div id="group-quick-access" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
   </div>
@@ -235,10 +232,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 </main>
 
-<!-- 底部導覽列（兩套）：
-     ① 未登入（訪客）＝4 個公開資料按鈕：公告及溝通・執行手冊・申請中心・童心捐贈（頁面只留活動資訊，超清爽；登入按鈕只在最頂 BAR 右上角）
-     ② 登入後＝還原原本設計：執行手冊・申請中心・批核中心（有權限）・部門中心 -->
-<nav id="bottom-nav" class="bottom-nav"><button id="bn-pub-announcements" style="display:none" onclick="app.openModule('announcements')"><i class="fa-solid fa-bullhorn"></i><span>公告及溝通</span></button><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-pub-donations" style="display:none" onclick="app.openModule('donations')"><i class="fa-solid fa-hand-holding-heart"></i><span>童心捐贈</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-dept" onclick="app.openDeptHub()"><i class="fa-solid fa-sitemap"></i><span>部門中心</span></button></nav>
+<!-- 底部導覽列：執行手冊・申請中心・批核中心（有權限）・部門中心 -->
+<nav id="bottom-nav" class="bottom-nav"><button id="bn-exec" onclick="app.openModule('exec_manual')"><i class="fa-solid fa-book"></i><span>執行手冊</span></button><button id="bn-apply" onclick="app.openModule('apply_hub')"><i class="fa-solid fa-file-pen"></i><span>申請中心</span></button><button id="bn-approvals" class="relative" onclick="app.switchTopTab('approvals')"><i class="fa-solid fa-user-check"></i><span>批核中心</span><span id="badge-pending-count" class="hidden absolute top-0 right-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span></button><button id="bn-dept" onclick="app.openDeptHub()"><i class="fa-solid fa-sitemap"></i><span>部門中心</span></button></nav>
 
 <!-- MODALS -->
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>

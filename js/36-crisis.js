@@ -1261,7 +1261,6 @@ Object.assign(ScoutEventApp.prototype,{
     const canUpload=this.canUploadDocument()||this.isAdmin();
     const participants=this.getParticipantsData();
     const pSrc=this.eventData['participants_source']||{};
-    // 財務已歸入行政組：在此顯示概覽 + 快速入口（完整財務頁仍可用）
     const fin=this.getFinanceData();
     const budgets=fin.group_itemized_budgets||[];
     const budgetItems=budgets.reduce((s,g)=>s+(g.items||[]).length,0);
@@ -1269,20 +1268,16 @@ Object.assign(ScoutEventApp.prototype,{
     const pendingExp=expenses.filter(e=>e.status==='pending').length;
     const incomeTotal=(fin.income||[]).reduce((s,i)=>s+(parseFloat(i.actual)||0),0);
     const expenseTotal=expenses.reduce((s,e)=>s+(parseFloat(e.actual)||0),0);
-    container.innerHTML=`
-      <div class="space-y-4">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>🏢 行政組 (完全取代舊手冊行政組頁面)：</b><br>舊版有活動通告、報名表、急救申請、膳食安排、參加旅團名單，現全部整合至此卡片，公開可看，僅修改需登入，部門間溝通更完善</div>
-        <div class="flex gap-2 flex-wrap">
-          <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
-          <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
-        </div>
+    if(!this.adminGroupTab) this.adminGroupTab='overview';
+    const tabCls=t=>this.adminGroupTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+    const overviewHTML=`
         ${this.groupInfoBoxesHTML('行政組')}
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
             <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務管理（行政組轄下）</h4>
             <button onclick="app.openModule('finance')" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整財務頁</button>
           </div>
-          <div class="text-[11px] text-slate-600 mb-3">財務屬行政組管轄（對應舊手冊「行政組/財務」資料夾），故不另設獨立卡片：指引、預算、開支申報、口頭報價、結算批核全部在此處理。</div>
+          <div class="text-[11px] text-slate-600 mb-3">財務屬行政組管轄，指引、預算、開支申報、口頭報價、結算批核全部在此處理。</div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
             <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">預算組別 / 項目</div><div class="font-bold text-sm text-amber-700">${budgets.length} / ${budgetItems}</div></div>
             <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">收入 (實際)</div><div class="font-bold text-sm text-emerald-700">$${incomeTotal.toLocaleString()}</div></div>
@@ -1319,8 +1314,47 @@ Object.assign(ScoutEventApp.prototype,{
             </div>`).join('')||'<p class="text-xs text-slate-400">暫無票券</p>'}
           </div>
         </div>
+    `;
+    container.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-white border rounded-xl p-3 text-[11px] leading-relaxed"><b>🏢 行政組</b> — 財務、參加名單、文件、票券、失物認領、紀念章派發統一管理</div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>申請中心</button>
+          <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+        </div>
+        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
+          <button onclick="app.switchAdminGroupTab('overview')" class="${tabCls('overview')}">📊 總覽</button>
+          <button onclick="app.switchAdminGroupTab('lost_found')" class="${tabCls('lost_found')}">🧳 失物認領</button>
+          <button onclick="app.switchAdminGroupTab('stamp_staff')" class="${tabCls('stamp_staff')}">🏅 紀念章-工作人員</button>
+          <button onclick="app.switchAdminGroupTab('stamp_guest')" class="${tabCls('stamp_guest')}">🏅 紀念章-嘉賓</button>
+        </div>
+        <div id="admin-tab-overview" class="space-y-4 ${this.adminGroupTab==='overview'?'':'hidden'}">${overviewHTML}</div>
+        <div id="admin-tab-lost_found" class="space-y-4 ${this.adminGroupTab==='lost_found'?'':'hidden'}"></div>
+        <div id="admin-tab-stamp_staff" class="space-y-4 ${this.adminGroupTab==='stamp_staff'?'':'hidden'}"></div>
+        <div id="admin-tab-stamp_guest" class="space-y-4 ${this.adminGroupTab==='stamp_guest'?'':'hidden'}"></div>
       </div>
     `;
+    const lfEl=document.getElementById('admin-tab-lost_found');
+    if(lfEl) lfEl.innerHTML=this.renderLostFoundHTML({compact:false});
+    const ssEl=document.getElementById('admin-tab-stamp_staff');
+    if(ssEl) ssEl.innerHTML=this.renderSouvenirStampsHTML('staff');
+    const sgEl=document.getElementById('admin-tab-stamp_guest');
+    if(sgEl) sgEl.innerHTML=this.renderSouvenirStampsHTML('guests');
+  }
+,
+  switchAdminGroupTab(tab){
+    this.adminGroupTab=tab;
+    ['overview','lost_found','stamp_staff','stamp_guest'].forEach(t=>{
+      const el=document.getElementById('admin-tab-'+t);
+      if(el) el.classList.toggle('hidden',t!==tab);
+    });
+    const container=document.getElementById('module-content');
+    if(!container) return;
+    container.querySelectorAll('[onclick^="app.switchAdminGroupTab"]').forEach(btn=>{
+      const m=btn.getAttribute('onclick').match(/'([^']+)'/);
+      const t=m?m[1]:'';
+      btn.className=t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+    });
   }
 ,
   openFinanceFromAdminGroup(tab){
