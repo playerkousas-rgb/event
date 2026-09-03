@@ -732,32 +732,25 @@ Object.assign(ScoutEventApp.prototype,{
     };
   }
 ,
-  // v12.1：本組申請統計區塊（5 格數字：崗位／物資申請／攤位申請／車輛申請／膳食訂餐 ＋ 4 張明細表）
-  // 部門管理中心、行政組頁、協調組頁共用同一份，內容口徑一致，且整塊可直接列印。
-  groupApplyStatsHTML(groupName,{printId}={}){
+  /* v13.2：統計卡「只留數字」——6 格數字（崗位 · 物資 · 攤位 · 車輛 · 膳食 · 開支），
+     每格可點擊：一按即跳到對應詳細資料（崗位→本組資訊成員格；其餘→「詳細統計資料」對應段落並自動展開）。
+     部門管理中心、行政組頁、協調組頁共用同一份，內容口徑一致。 */
+  groupStatChipsHTML(groupName){
     groupName=normalizeGroupName(groupName);
     const st=this.groupApplyStats(groupName);
     // v13 防呆：groupApplyStats 可被覆寫／舊快取冇開支欄位——統一補預設值，唔會 undefined
     st.expClaims=st.expClaims||[]; st.expTotal=st.expTotal||0; st.expPending=st.expPending||0; st.expApproved=st.expApproved||0; st.expRejected=st.expRejected||0;
     st.expPendingAmt=st.expPendingAmt||0; st.expApprovedAmt=st.expApprovedAmt||0;
-    const mealsData=this.getMealsData();
-    const groupOrg=this.getGroupOrgNodes(groupName);
-    const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
-    const supRows=st.requests.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.date_needed||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
-    const vehRows=st.vehicles.map(v=>`<tr><td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td><td class="border px-2 py-1">${escapeHtml(v.driver_name||'')}</td><td class="border px-2 py-1">${escapeHtml(v.entry_date||'')}→${escapeHtml(v.exit_date||'')}</td><td class="border px-2 py-1">${escapeHtml(v.parking_location||'待定')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(v.status)}</td></tr>`).join('');
-    const mealRows=st.orders.map(o=>{ const m=(mealsData.menus||[]).find(x=>x.menu_id===o.menu_id)||{}; return `<tr><td class="border px-2 py-1">${escapeHtml(m.date||'')} ${escapeHtml(m.meal_type||'')}</td><td class="border px-2 py-1">${escapeHtml(o.user_name||'')}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection||'')}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(o.status)}</td></tr>`; }).join('');
-    const boothRows=st.boothReqs.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.purpose||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
-    const pid=printId||('group-print-'+groupName);
-    // v13：6 格統一為「本組人數＋4 類申請＋開支申報」，申請格下方細分 待批／已批／已拒（負責人一眼掌握現況）；
-    //     開支格 extra 顯示待批／已批銀碼（各部門開支申報自動入財務，方便負責人掌握財政狀況）
-    const statChip=(total,label,cls,pend,appr,rej)=>`<div class="${cls} rounded-xl px-2 py-2 text-center">
+    // v13.2：每格加 onclick——點數字直接跳去詳細資料（jumpToGroupDetail）
+    const chipCls='rounded-xl px-2 py-2 text-center cursor-pointer select-none hover:shadow-md transition';
+    const statChip=(total,label,cls,pend,appr,rej,key)=>`<div class="${cls} ${chipCls}" title="點擊查看詳細資料" onclick="app.jumpToGroupDetail('${key}')">
       <div class="text-[17px] font-extrabold leading-none">${total}</div><div class="text-[10px] mt-0.5">${label}</div>
       <div class="text-[9.5px] mt-1 leading-tight">
         <span class="text-amber-600 font-bold">⏳${pend}</span>
         <span class="text-emerald-600 font-bold ml-1">✅${appr}</span>
         <span class="text-rose-500 font-bold ml-1">❌${rej}</span>
       </div></div>`;
-    const expChip=`<div class="bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl px-2 py-2 text-center" title="待批 $${st.expPendingAmt.toLocaleString()} ・ 已批核 $${st.expApprovedAmt.toLocaleString()}">
+    const expChip=`<div class="bg-emerald-50 text-emerald-700 border border-emerald-200 ${chipCls}" title="待批 $${st.expPendingAmt.toLocaleString()} ・ 已批核 $${st.expApprovedAmt.toLocaleString()}（點擊查看詳細資料）" onclick="app.jumpToGroupDetail('expense')">
       <div class="text-[17px] font-extrabold leading-none">${st.expTotal}</div><div class="text-[10px] mt-0.5">開支申報</div>
       <div class="text-[9.5px] mt-1 leading-tight">
         <span class="text-amber-600 font-bold">⏳${st.expPending}</span>
@@ -765,35 +758,76 @@ Object.assign(ScoutEventApp.prototype,{
         <span class="text-rose-500 font-bold ml-1">❌${st.expRejected}</span>
         <div class="text-[9px] text-emerald-600 mt-0.5">已批 $${st.expApprovedAmt.toLocaleString()}</div>
       </div></div>`;
-    const sectionTitle=(icon,color,title,total,pend,appr,rej)=>`<b class="text-[12px]"><i class="${icon} ${color} mr-1"></i>${title}（共 ${total}）</b>
-      <span class="ml-2 text-[10.5px] font-bold"><span class="text-amber-600">⏳待批 ${pend}</span>・<span class="text-emerald-600">✅已批 ${appr}</span>・<span class="text-rose-500">❌已拒 ${rej}</span></span>`;
     return `
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-          ${chip(st.memberCount,'本組人數','bg-slate-100 text-slate-700 border')}
-          ${statChip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200',st.supPending,st.supApproved,st.supRejected)}
-          ${statChip(st.boothReqs.length,'攤位申請','bg-orange-50 text-orange-700 border border-orange-200',st.boothPending,st.boothApproved,st.boothRejected)}
-          ${statChip(st.vehicles.length,'車輛申請','bg-amber-50 text-amber-700 border border-amber-200',st.vehPending,st.vehApproved,st.vehRejected)}
-          ${statChip(st.orders.length,'膳食訂餐','bg-purple-50 text-purple-700 border border-purple-200',st.mealPending,st.mealApproved,st.mealRejected)}
+          <div class="bg-slate-100 text-slate-700 border ${chipCls}" title="點擊查看崗位／成員詳細" onclick="app.jumpToGroupDetail('members')">
+            <div class="text-[17px] font-extrabold leading-none">${st.memberCount}</div><div class="text-[10px] mt-0.5">本組人數</div>
+            <div class="text-[9.5px] mt-1 leading-tight text-slate-400">👥 崗位／成員</div>
+          </div>
+          ${statChip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200',st.supPending,st.supApproved,st.supRejected,'supplies')}
+          ${statChip(st.boothReqs.length,'攤位申請','bg-orange-50 text-orange-700 border border-orange-200',st.boothPending,st.boothApproved,st.boothRejected,'booth')}
+          ${statChip(st.vehicles.length,'車輛申請','bg-amber-50 text-amber-700 border border-amber-200',st.vehPending,st.vehApproved,st.vehRejected,'vehicle')}
+          ${statChip(st.orders.length,'膳食訂餐','bg-purple-50 text-purple-700 border border-purple-200',st.mealPending,st.mealApproved,st.mealRejected,'meals')}
           ${expChip}
-        </div>
-        <div id="${pid}" class="space-y-3">
-          <div class="bg-white border rounded-xl p-3">
-            ${sectionTitle('fa-solid fa-boxes-stacked','text-blue-600','本組物資申請',st.requests.length,st.supPending,st.supApproved,st.supRejected)}
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">需用日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${supRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>'}</tbody></table></div>
-          </div>
-          <div class="bg-white border rounded-xl p-3">
-            ${sectionTitle('fa-solid fa-store','text-orange-600','本組攤位申請',st.boothReqs.length,st.boothPending,st.boothApproved,st.boothRejected)}
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">用途</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${boothRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>'}</tbody></table></div>
-          </div>
-          <div class="bg-white border rounded-xl p-3">
-            ${sectionTitle('fa-solid fa-car','text-amber-600','本組車輛通行證',st.vehicles.length,st.vehPending,st.vehApproved,st.vehRejected)}
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">進出</th><th class="border px-2 py-1">停泊</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${vehRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>'}</tbody></table></div>
-          </div>
-          <div class="bg-white border rounded-xl p-3">
-            ${sectionTitle('fa-solid fa-utensils','text-purple-600','本組膳食訂餐',st.orders.length,st.mealPending,st.mealApproved,st.mealRejected)}
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">日期/餐別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${mealRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無訂餐</td></tr>'}</tbody></table></div>
-          </div>
         </div>`;
+  }
+,
+  /* v13.2：詳細統計資料——5 段申請明細（物資／攤位／車輛／膳食／開支），
+     每段可獨立展開收合（默認全部收合，幾十人嘅組一開頁都唔會變長版面）；
+     每段右上角「＋」一按即前往申請（各類申請同申請中心同一入口）。
+     攤位段加入攤位名稱欄（同組幾個攤位都分得清，唔會撈亂）。
+     列印：printId 區域會複製到列印視窗（該視窗無 Tailwind，「hidden」收合中嘅段落照樣印出；
+     「＋」掣同箭嘴加 no-print 唔會印到；頂部統計摘要行 hidden 只喺列印時出現）。 */
+  groupApplyDetailsHTML(groupName,{printId}={}){
+    groupName=normalizeGroupName(groupName);
+    const st=this.groupApplyStats(groupName);
+    st.expClaims=st.expClaims||[]; st.expTotal=st.expTotal||0; st.expPending=st.expPending||0; st.expApproved=st.expApproved||0; st.expRejected=st.expRejected||0;
+    st.expPendingAmt=st.expPendingAmt||0; st.expApprovedAmt=st.expApprovedAmt||0;
+    const dst=this.groupDetailOpenState();
+    const mealsData=this.getMealsData();
+    const supRows=st.requests.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.date_needed||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
+    // v13.2：攤位段首欄＝攤位名稱（招牌名）＋攤位編號細字——同組多個攤位一眼分清
+    const boothRows=st.boothReqs.map(r=>{ const code=[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||''; return `<tr><td class="border px-2 py-1"><b>${escapeHtml(r.booth_name||'-')}</b>${code?`<div class="text-[9.5px] text-slate-400 font-mono">${escapeHtml(code)}</div>`:''}</td><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.purpose||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`; }).join('');
+    const vehRows=st.vehicles.map(v=>`<tr><td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td><td class="border px-2 py-1">${escapeHtml(v.driver_name||'')}</td><td class="border px-2 py-1">${escapeHtml(v.entry_date||'')}→${escapeHtml(v.exit_date||'')}</td><td class="border px-2 py-1">${escapeHtml(v.parking_location||'待定')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(v.status)}</td></tr>`).join('');
+    const mealRows=st.orders.map(o=>{ const m=(mealsData.menus||[]).find(x=>x.menu_id===o.menu_id)||{}; return `<tr><td class="border px-2 py-1">${escapeHtml(m.date||'')} ${escapeHtml(m.meal_type||'')}</td><td class="border px-2 py-1">${escapeHtml(o.user_name||'')}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection||'')}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(o.status)}</td></tr>`; }).join('');
+    // v13.2：開支申報段——本組開支申報逐宗列出（同「開支申報」頁籤同一數源：部門提交自動入財務紀錄）
+    const expRows=st.expClaims.map(e=>`<tr><td class="border px-2 py-1 font-mono">${escapeHtml(e.voucher||'')}</td><td class="border px-2 py-1"><b>${escapeHtml(e.item_name||'')}</b></td><td class="border px-2 py-1 text-center font-bold text-rose-700">$${(parseFloat(e.actual)||0).toLocaleString()}</td><td class="border px-2 py-1 text-center">${escapeHtml(e.date||'-')}</td><td class="border px-2 py-1">${escapeHtml(e.submitted_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(e.status)}</td></tr>`).join('');
+    const pid=printId||('group-print-'+groupName);
+    // 統計摘要行：屏幕上 hidden（Tailwind），列印視窗無 Tailwind → 照樣印出，列印本組統計時頂部有晒數字
+    const summaryLine=`<div class="hidden"><b>統計摘要（${escapeHtml(groupName)}）：</b>崗位 ${st.memberCount} 人 ・ 物資 ${st.requests.length}（⏳${st.supPending}／✅${st.supApproved}／❌${st.supRejected}）・ 攤位 ${st.boothReqs.length}（⏳${st.boothPending}／✅${st.boothApproved}／❌${st.boothRejected}）・ 車輛 ${st.vehicles.length}（⏳${st.vehPending}／✅${st.vehApproved}／❌${st.vehRejected}）・ 膳食 ${st.orders.length}（⏳${st.mealPending}／✅${st.mealApproved}／❌${st.mealRejected}）・ 開支 ${st.expTotal} 宗（待批 $${st.expPendingAmt.toLocaleString()}／已批 $${st.expApprovedAmt.toLocaleString()}）</div>`;
+    // v13.2：每段詳細資料＝獨立收合（默認收合）＋右上角「＋」前往申請
+    const plusBtn=(kind,btnCls,tip)=>`<button title="${tip}" onclick="app.goApplyFromGroupDetail('${kind}')" class="w-7 h-7 rounded-full ${btnCls} text-white font-bold hover:opacity-80 flex items-center justify-center text-[12px] leading-none no-print flex-shrink-0"><i class="fa-solid fa-plus"></i></button>`;
+    const section=(key,icon,color,title,total,pend,appr,rej,plus,thead,rows,colspan)=>`
+          <div id="gds-${key}" class="bg-white border rounded-xl overflow-hidden">
+            <div class="flex items-center justify-between gap-2 px-3 py-2 bg-slate-50 border-b cursor-pointer" onclick="app.toggleGroupDetailSection('${key}')">
+              <div class="flex items-center gap-2 flex-wrap min-w-0">
+                <b class="text-[12px]"><i class="${icon} ${color} mr-1"></i>${title}（共 ${total}）</b>
+                <span class="ml-1 text-[10.5px] font-bold"><span class="text-amber-600">⏳待批 ${pend}</span>・<span class="text-emerald-600">✅已批 ${appr}</span>・<span class="text-rose-500">❌已拒 ${rej}</span></span>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0" onclick="event.stopPropagation();">
+                ${plus}
+                <i id="gds-ico-${key}" class="fa-solid fa-chevron-${dst[key]?'up':'down'} text-slate-400 text-[11px] no-print"></i>
+              </div>
+            </div>
+            <div id="gds-body-${key}" class="p-3 ${dst[key]?'':'hidden'}">
+              <div class="table-responsive"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr>${thead}</tr></thead><tbody>${rows||`<tr><td colspan="${colspan}" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>`}</tbody></table></div>
+            </div>
+          </div>`;
+    return `
+        <div id="${pid}" class="space-y-3">
+          ${summaryLine}
+          ${section('supplies','fa-solid fa-boxes-stacked','text-blue-600','本組物資申請',st.requests.length,st.supPending,st.supApproved,st.supRejected,plusBtn('supplies','bg-blue-600','前往提交物資申請'),'<th class="border px-2 py-1">物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">需用日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th>',supRows,6)}
+          ${section('booth','fa-solid fa-store','text-orange-600','本組攤位申請',st.boothReqs.length,st.boothPending,st.boothApproved,st.boothRejected,plusBtn('booth','bg-orange-500','前往提交攤位計劃書'),'<th class="border px-2 py-1">攤位名稱</th><th class="border px-2 py-1">攤位物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">用途</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th>',boothRows,7)}
+          ${section('vehicle','fa-solid fa-car','text-amber-600','本組車輛通行證',st.vehicles.length,st.vehPending,st.vehApproved,st.vehRejected,plusBtn('vehicle','bg-amber-500','前往申請車輛通行證'),'<th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">進出</th><th class="border px-2 py-1">停泊</th><th class="border px-2 py-1">狀態</th>',vehRows,5)}
+          ${section('meals','fa-solid fa-utensils','text-purple-600','本組膳食訂餐',st.orders.length,st.mealPending,st.mealApproved,st.mealRejected,plusBtn('meals','bg-purple-600','前往膳食訂餐'),'<th class="border px-2 py-1">日期/餐別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">狀態</th>',mealRows,5)}
+          ${section('expense','fa-solid fa-receipt','text-emerald-600','本組開支申報',st.expTotal,st.expPending,st.expApproved,st.expRejected,plusBtn('expense','bg-emerald-600','前往新增開支申報（本組）'),'<th class="border px-2 py-1">憑單</th><th class="border px-2 py-1">項目</th><th class="border px-2 py-1">金額</th><th class="border px-2 py-1">日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th>',expRows,6)}
+        </div>`;
+  }
+,
+  // v13.2：兼容舊調用（協調組舊總覽頁等）——數字卡＋詳細資料一次過輸出
+  groupApplyStatsHTML(groupName,{printId}={}){
+    return `${this.groupStatChipsHTML(groupName)}
+        ${this.groupApplyDetailsHTML(groupName,{printId})}`;
   }
 ,
   // 本組崗位節點（「主頁部門卡片」與「部門管理中心」共用同一計算，確保崗位／人數兩處一致）
@@ -989,6 +1023,19 @@ Object.assign(ScoutEventApp.prototype,{
     }
   }
 ,
+  /* v13.2：本組資訊大卡整體可收合（3 大可收合卡片之二）；4 格仍可逐格／一鍵展開收合 */
+  groupInfoCardOpenState(){ if(this.groupInfoCardOpen===undefined) this.groupInfoCardOpen=true; return this.groupInfoCardOpen; }
+,
+  toggleGroupInfoCard(force){
+    this.groupInfoCardOpen=(force!==undefined)?!!force:!this.groupInfoCardOpen;
+    const grid=document.getElementById('gib-grid');
+    if(grid) grid.classList.toggle('hidden',!this.groupInfoCardOpen);
+    const ico=document.getElementById('gib-card-ico');
+    if(ico) ico.className='fa-solid fa-chevron-'+(this.groupInfoCardOpen?'up':'down')+' text-slate-400 text-[11px]';
+    const hint=document.getElementById('gib-card-hint');
+    if(hint) hint.textContent=this.groupInfoCardOpen?'點擊收合':'點擊展開';
+  }
+,
   groupInfoBoxesHTML(groupName){
     groupName=normalizeGroupName(groupName);
     const staffData=this.getStaffData();
@@ -1014,16 +1061,20 @@ Object.assign(ScoutEventApp.prototype,{
         <h4 class="font-bold text-xs">${title}</h4>
         <i id="gib-ico-${key}" class="fa-solid fa-chevron-${st[key]?'up':'down'} text-slate-400 text-[10px]"></i>
       </div>`;
+    const cardOpen=this.groupInfoCardOpenState();
     return `
         <div class="bg-white border rounded-xl overflow-hidden">
-          <div class="flex items-center justify-between flex-wrap gap-2 px-3 py-2.5 bg-slate-100 border-b">
+          <div class="flex items-center justify-between flex-wrap gap-2 px-3 py-2.5 bg-slate-100 border-b cursor-pointer" onclick="app.toggleGroupInfoCard()">
             <div class="flex items-center gap-2 flex-wrap">
-              <h4 class="font-bold text-[13px]"><i class="fa-solid fa-rectangle-list text-slate-500 mr-1"></i>本組資訊（一個整體）</h4>
+              <h4 class="font-bold text-[13px]"><i class="fa-solid fa-rectangle-list text-slate-500 mr-1"></i>本組資訊<span id="gib-card-hint" class="text-[10px] font-normal text-slate-400">${cardOpen?'點擊收合':'點擊展開'}</span></h4>
               <span class="text-[10.5px] text-slate-500">👥 崗位／成員 (${groupOrg.length}) · 📋 職務大綱 (${dutySections.length} 位) · 📁 文件 (${groupDocs.length}) · 🎪 攤位 (${booths.length}) · 💰 預算</span>
             </div>
-            <button id="gib-all-btn" onclick="app.toggleGroupInfoAll()" class="${this.groupInfoBoxKeys().every(k=>st[k])?'bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold':'bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold'}">${this.groupInfoBoxKeys().every(k=>st[k])?'<i class="fa-solid fa-chevron-up mr-1"></i>一鍵全收合':'<i class="fa-solid fa-chevron-down mr-1"></i>一鍵全展開'}</button>
+            <div class="flex items-center gap-2" onclick="event.stopPropagation();">
+              <button id="gib-all-btn" onclick="app.toggleGroupInfoAll()" class="${this.groupInfoBoxKeys().every(k=>st[k])?'bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold':'bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold'}">${this.groupInfoBoxKeys().every(k=>st[k])?'<i class="fa-solid fa-chevron-up mr-1"></i>一鍵全收合':'<i class="fa-solid fa-chevron-down mr-1"></i>一鍵全展開'}</button>
+              <i id="gib-card-ico" class="fa-solid fa-chevron-${cardOpen?'up':'down'} text-slate-400 text-[11px]"></i>
+            </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-3">
+          <div id="gib-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-3 ${cardOpen?'':'hidden'}">
           <div class="border rounded-xl bg-white overflow-hidden flex flex-col">
             ${boxHead('members',`👥 本組崗位／成員 (${groupOrg.length})`)}
             <div id="gib-body-members" class="p-3 ${st.members?'':'hidden'}"><div class="text-[11px] space-y-1 max-h-[140px] overflow-y-auto">${groupOrg.map(n=>`<div class="flex justify-between gap-2"><span>${escapeHtml(n.title||'')}</span><span class="text-slate-500">${escapeHtml(n.names||'')}</span></div>`).join('')||'<span class="text-slate-400">暫無（可於「組織架構與聯絡」加入）</span>'}</div><button onclick="app.openModule('staff')" class="mt-2 bg-white border px-2 py-1 rounded-xl text-[10px]">前往組織架構</button></div>
@@ -1059,7 +1110,8 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   /* v13：部門中心「本組統計」摺疊區——統計放最頂（本組申請頁籤內第一格），
-     可展開收合，默認展開；列印掣同區塊標題放埋一齊。 */
+     可展開收合，默認展開。
+     v13.2：只留數字（詳細表格移去最下「詳細統計資料」大卡）；點數字可跳到詳細資料。 */
   groupStatsOpenState(){ if(this.groupStatsOpen===undefined) this.groupStatsOpen=true; return this.groupStatsOpen; }
 ,
   toggleGroupStatsSection(force){
@@ -1080,12 +1132,105 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="flex items-center justify-between flex-wrap gap-2 px-3 py-2.5 bg-indigo-50 border-b cursor-pointer" onclick="app.toggleGroupStatsSection()">
             <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-chart-column text-indigo-600"></i>本組統計（崗位 · 物資 · 攤位 · 車輛 · 膳食 · 開支）<span id="group-stats-toggle-hint" class="text-[10px] font-normal text-slate-400">${open?'點擊收合':'點擊展開'}</span></h4>
             <div class="flex items-center gap-2" onclick="event.stopPropagation();">
-              <button onclick="app.printCoordArea('group-print-${escapeHtml(groupName)}','${escapeHtml(groupName)} - 本組申請統計')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印統計</button>
+              <span class="text-[10px] text-slate-400 hidden md:inline"><i class="fa-solid fa-hand-pointer mr-1"></i>點數字可跳到詳細資料</span>
               <i id="group-stats-toggle-ico" class="fa-solid fa-chevron-${open?'up':'down'} text-slate-400 text-[11px]"></i>
             </div>
           </div>
           <div id="group-stats-body" class="p-3 space-y-3 ${open?'':'hidden'}">
-            ${this.groupApplyStatsHTML(groupName,{printId:`group-print-${groupName}`})}
+            ${this.groupStatChipsHTML(groupName)}
+          </div>
+        </div>`;
+  }
+,
+  /* ============ v13.2：第 3 張大卡「詳細統計資料」（放最下） ============
+     本組有幾十人都唔會一開頁就長版面：大卡默認收合；入面 5 段（物資／攤位／車輛／膳食／開支）
+     每段可再獨立展開收合；每段右上角「＋」直接跳去申請；統計數字一按亦會跳到呢度對應段落。 */
+  groupDetailKeys(){ return ['supplies','booth','vehicle','meals','expense']; }
+,
+  groupDetailOpenState(){
+    if(!this.groupDetailOpen) this.groupDetailOpen={supplies:false,booth:false,vehicle:false,meals:false,expense:false}; // 默認全部收合
+    return this.groupDetailOpen;
+  }
+,
+  groupDetailCardOpenState(){ if(this.groupDetailCardOpen===undefined) this.groupDetailCardOpen=false; return this.groupDetailCardOpen; } // 大卡默認收合
+,
+  toggleGroupDetailCard(force){
+    this.groupDetailCardOpen=(force!==undefined)?!!force:!this.groupDetailCardOpen;
+    const body=document.getElementById('group-detail-body');
+    if(body) body.classList.toggle('hidden',!this.groupDetailCardOpen);
+    const ico=document.getElementById('group-detail-toggle-ico');
+    if(ico) ico.className='fa-solid fa-chevron-'+(this.groupDetailCardOpen?'up':'down')+' text-slate-400 text-[11px]';
+    const hint=document.getElementById('group-detail-toggle-hint');
+    if(hint) hint.textContent=this.groupDetailCardOpen?'點擊收合':'點擊展開';
+  }
+,
+  toggleGroupDetailSection(key,force){
+    const st=this.groupDetailOpenState();
+    st[key]=(force!==undefined)?!!force:!st[key];
+    this.syncGroupDetailDOM(key);
+  }
+,
+  syncGroupDetailDOM(key){
+    const st=this.groupDetailOpenState();
+    const body=document.getElementById('gds-body-'+key);
+    if(body) body.classList.toggle('hidden',!st[key]);
+    const ico=document.getElementById('gds-ico-'+key);
+    if(ico) ico.className='fa-solid fa-chevron-'+(st[key]?'up':'down')+' text-slate-400 text-[11px] no-print';
+  }
+,
+  /* v13.2：點統計數字 → 直接跳去詳細資料。
+     崗位→本組資訊「崗位／成員」格；物資／攤位／車輛／膳食／開支→「詳細統計資料」對應段落（自動展開＋滾動＋高亮）。 */
+  jumpToGroupDetail(key){
+    if(key==='members'){
+      if(!this.groupInfoCardOpenState()) this.toggleGroupInfoCard(true); // 確保本組資訊大卡已展開
+      const st=this.groupInfoOpenState();
+      if(!st.members){ st.members=true; this.syncGroupInfoBoxDOM('members'); }
+      this.flashGroupDetailEl('gib-body-members');
+      return;
+    }
+    if(!this.groupDetailKeys().includes(key)) return;
+    // 確保「本組申請」頁籤＋詳細統計資料大卡已展開，再展開對應段落
+    if(this.groupBoothTab && this.groupBoothTab!=='apps'){ try{ this.switchGroupTab('apps'); }catch(e){} }
+    if(!this.groupDetailCardOpenState()) this.toggleGroupDetailCard(true);
+    this.toggleGroupDetailSection(key,true);
+    this.flashGroupDetailEl('gds-'+key);
+  }
+,
+  // 跳轉目標滾動到眼前＋高亮 1.4 秒（ring 提示用戶跳到邊一段）
+  flashGroupDetailEl(id){
+    const el=document.getElementById(id);
+    if(!el) return;
+    try{ if(el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){}
+    try{ el.classList.add('ring-2','ring-indigo-400'); setTimeout(()=>{ try{ el.classList.remove('ring-2','ring-indigo-400'); }catch(e){} },1400); }catch(e){}
+  }
+,
+  /* v13.2：詳細資料右上角「＋」→ 前往申請（與申請中心同一路徑；開支直接開本組表單並帶入組別） */
+  goApplyFromGroupDetail(kind){
+    const g=this.currentGroupManaged||normalizeGroupName(this.currentUser?.group_name||'')||'';
+    switch(kind){
+      case 'supplies': this.openModule('supplies'); setTimeout(()=>this.openSupplyRequestForm(),350); break;
+      case 'booth': this.openModule('booth'); setTimeout(()=>this.openBoothSupplyForm(),350); break;
+      case 'vehicle': this.openModule('parking'); setTimeout(()=>this.openVehiclePassForm(),350); break;
+      case 'meals': this.openModule('meals'); setTimeout(()=>this.switchMealsTab('menus'),300); break;
+      case 'expense': this.openExpenseForm(null,g||null); break;
+    }
+  }
+,
+  groupDetailSectionHTML(groupName){
+    groupName=normalizeGroupName(groupName);
+    const open=this.groupDetailCardOpenState();
+    return `
+        <div class="bg-white border rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between flex-wrap gap-2 px-3 py-2.5 bg-indigo-50 border-b cursor-pointer" onclick="app.toggleGroupDetailCard()">
+            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-table-list text-indigo-600"></i>詳細統計資料（物資 · 攤位 · 車輛 · 膳食 · 開支）<span id="group-detail-toggle-hint" class="text-[10px] font-normal text-slate-400">${open?'點擊收合':'點擊展開'}</span></h4>
+            <div class="flex items-center gap-2" onclick="event.stopPropagation();">
+              <span class="text-[10px] text-slate-400 hidden md:inline">每段可獨立收合 ·「＋」前往申請</span>
+              <button onclick="app.printCoordArea('group-print-${escapeHtml(groupName)}','${escapeHtml(groupName)} - 本組申請統計')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印統計</button>
+              <i id="group-detail-toggle-ico" class="fa-solid fa-chevron-${open?'up':'down'} text-slate-400 text-[11px]"></i>
+            </div>
+          </div>
+          <div id="group-detail-body" class="p-3 space-y-3 ${open?'':'hidden'}">
+            ${this.groupApplyDetailsHTML(groupName,{printId:`group-print-${groupName}`})}
           </div>
         </div>`;
   }
@@ -1148,7 +1293,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed">
           <b>部門管理中心 - ${escapeHtml(groupName)}</b><br>
-          本組的<b>統計（最頂）</b>、人、職務、文件、攤位，以及本組提交的<b>所有申請及批核狀態</b>都在此。低於總主任提交的申請先由本組總主任以上確認，再按批核權限頁的多選路由交指定組別批核及執行。<br>
+          本頁分為 <b>3 大可收合卡片</b>：<b>① 本組統計</b>（最頂，只顯示數字，<b>點擊數字直接跳到詳細資料</b>）→ <b>② 本組資訊</b>（崗位／職務／文件／攤位預算）→ <b>③ 詳細統計資料</b>（最下，每段可獨立展開收合，每段右上角<b>「＋」</b>直接前往申請）。低於總主任提交的申請先由本組總主任以上確認，再按批核權限頁的多選路由交指定組別批核及執行。<br>
           <b>💰 開支申報</b>及<b>📝 口頭報價</b>可直接在本部門提交——提交後<b>自動</b>加入財務紀錄（毋須重新輸入），即時反映在<b>行政組「財務匯總」</b>及結算總表；<b>📖 財務指引</b>全文內建，方便各組查看。<br>
           登入成員可查看，僅本組或管理層可修改。${canManage?'<b class="text-emerald-700">你可管理本組內容。</b>':''}
         </div>
@@ -1164,9 +1309,10 @@ Object.assign(ScoutEventApp.prototype,{
           ${groupTabList.map(t=>`<button onclick="app.switchGroupTab('${t.k}')" class="group-tab-btn ${tabCls(t.k)}">${t.label}</button>`).join('')}
         </div>`; })():''}
         <div id="group-tab-apps" class="space-y-4 ${this.groupBoothTab==='apps'?'':'hidden'}">
-        <!-- v13：統計放最頂（可展開收合，默認展開）；成員／職務／文件／攤位預算 4 格算一個整體（默認收合，可一鍵全展開） -->
+        <!-- v13.2：3 大可收合卡片——① 本組統計（最頂，只留數字，點數字跳詳細）② 本組資訊（4 格）③ 詳細統計資料（最下，5 段每段獨立收合＋「＋」前往申請） -->
         ${this.groupStatsSectionHTML(groupName)}
         ${this.groupInfoBoxesHTML(groupName)}
+        ${this.groupDetailSectionHTML(groupName)}
         <!-- 快捷按鈕已移至組別介紹下方（正常組別：前往申請中心＋我的監察；個別組別另有專屬按鈕） -->
         ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
         </div>
