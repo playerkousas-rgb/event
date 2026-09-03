@@ -8,7 +8,12 @@
    ⑤ 各部門新增 開支申報＋口頭報價登記 頁籤，行政組「財務匯總」匯總各部門
    ⑥ 部門開支申報後自動加入財務紀錄（毋須重新輸入），即時反映在本組頁籤／預算格／統計格／行政組匯總
    ⑦ 財務頁唔再有冇用嘅通用「新增」掣（所有操作在下方分頁內）
-   ⑧ 各部門都有「財務指引」頁籤（全文內建） */
+   ⑧ 各部門都有「財務指引」頁籤（全文內建）
+   v13.2 疊加要求（3 大可收合卡片）：
+   ⑨ 統計卡只留數字；點統計數字直接跳到詳細資料（崗位→本組資訊成員格；其餘→詳細統計資料對應段並自動展開）
+   ⑩ 本組資訊標題刪去「（一個整體）」
+   ⑪ 詳細統計資料卡放最下（默認收合），內含 物資／攤位／車輛／膳食／開支 5 段，每段可獨立展開收合
+   ⑫ 攤位申請明細加入攤位名稱欄；每段詳細資料右上角「＋」可前往申請 */
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -47,6 +52,14 @@ ok(coreFlat.includes('groupStatsOpenState(){ if(this.groupStatsOpen===undefined)
 ok(coreSrc.includes('toggleGroupStatsSection'), '① 統計區可展開收合');
 const appsTab = coreSrc.slice(coreSrc.indexOf('id="group-tab-apps"'), coreSrc.indexOf('id="group-tab-apps"') + 3000);
 ok(appsTab.indexOf('groupStatsSectionHTML') < appsTab.indexOf('groupInfoBoxesHTML'), '① apps 頁籤內統計應在 4 格資訊之前（最頂）');
+
+/* v13.2：3 大可收合卡片——① 統計（只留數字）② 本組資訊 ③ 詳細統計資料（最下） */
+ok(appsTab.indexOf('groupInfoBoxesHTML') < appsTab.indexOf('groupDetailSectionHTML'), '⑪ 詳細統計資料卡應在本組資訊之後（最下）');
+ok(coreSrc.includes('groupStatChipsHTML(groupName){') && coreSrc.includes('groupApplyDetailsHTML(groupName,{printId}={}){'), '⑨ 統計數字卡與詳細資料應拆開兩個渲染方法');
+ok(coreSrc.includes('jumpToGroupDetail(key){'), '⑨ 點統計數字應可跳到詳細資料（jumpToGroupDetail）');
+ok(coreSrc.includes('goApplyFromGroupDetail(kind){'), '⑫ 每段詳細資料右上角「＋」應可前往申請（goApplyFromGroupDetail）');
+ok(coreSrc.includes('>攤位名稱</th>'), '⑫ 攤位申請明細應有「攤位名稱」欄');
+ok(!coreSrc.includes('本組資訊（一個整體）'), '⑩ 本組資訊標題應刪去「（一個整體）」');
 
 /* ② 4 格一個整體：默認收合＋一鍵全展開 */
 ok(coreFlat.includes('groupInfoOpenState(){ if(!this.groupInfoOpen) this.groupInfoOpen={members:false,duties:false,docs:false,booths:false};'), '② 4 格默認全部收合');
@@ -148,10 +161,16 @@ vm.runInContext(`
 /* ①②⑤⑧ 行為：部門中心排版＋摺疊＋新頁籤 */
 vm.runInContext(`(()=>{ globalThis.__app.openGroupManagement('主題節目組'); })();`, context);
 const themeHTML = vm.runInContext(`document.getElementById('module-content').innerHTML`, context);
-const idxStats = themeHTML.indexOf('本組統計');
-const idxInfo = themeHTML.indexOf('本組資訊');
-ok(idxStats >= 0 && idxInfo >= 0 && idxStats < idxInfo, '①② 部門中心：統計應在 4 格資訊之前');
+/* v13.2：3 大卡片次序＝統計（最頂）→ 本組資訊 → 詳細統計資料（最下） */
+const posStats = themeHTML.indexOf('id="group-stats-body"');
+const posInfo = themeHTML.indexOf('id="gib-body-members"');
+const posDetail = themeHTML.indexOf('id="group-detail-body"');
+ok(posStats >= 0 && posInfo > posStats && posDetail > posInfo, '①②⑪ 部門中心 3 大卡片次序：統計 → 本組資訊 → 詳細統計資料');
+ok(!themeHTML.includes('本組資訊（一個整體）') && themeHTML.includes('本組資訊<span id="gib-card-hint"'), '⑩ 本組資訊標題應已刪去「（一個整體）」（整體可收合）');
 ok(themeHTML.includes('id="group-stats-body" class="p-3 space-y-3 "'), '① 統計區默認展開（HTML 無 hidden）');
+const statsCardHTML = vm.runInContext(`globalThis.__app.groupStatsSectionHTML('主題節目組')`, context);
+ok(!statsCardHTML.includes('本組物資申請（共'), '⑨ 統計卡只留數字（明細表移去「詳細統計資料」卡）');
+ok(statsCardHTML.includes("app.jumpToGroupDetail('members')") && statsCardHTML.includes("app.jumpToGroupDetail('supplies')") && statsCardHTML.includes("app.jumpToGroupDetail('expense')"), '⑨ 統計數字格可點擊（跳到詳細資料）');
 vm.runInContext(`globalThis.__app.toggleGroupStatsSection();`, context);
 ok(vm.runInContext(`document.getElementById('group-stats-body').classList.contains('hidden')`, context) === true, '① 統計區可收合');
 vm.runInContext(`globalThis.__app.toggleGroupStatsSection();`, context);
@@ -171,6 +190,37 @@ vm.runInContext(`globalThis.__app.toggleGroupInfoAll();`, context);
 vm.runInContext(`globalThis.__app.toggleGroupInfoBox('duties');`, context);
 ok(vm.runInContext(`document.getElementById('gib-body-duties').classList.contains('hidden')`, context) === false, '② 職務大綱格可個別展開');
 ok(vm.runInContext(`document.getElementById('gib-body-members').classList.contains('hidden')`, context) === true, '② 個別展開唔影響其他格');
+
+/* v13.2：詳細統計資料卡（最下）——默認收合＋5 段獨立收合＋攤位名稱＋「＋」前往申請 */
+ok(themeHTML.includes('id="group-detail-body" class="p-3 space-y-3 hidden"'), '⑪ 詳細統計資料卡默認收合');
+ok(themeHTML.includes('id="gds-body-supplies" class="p-3 hidden"'), '⑪ 每段詳細資料默認收合');
+ok(themeHTML.includes('id="gib-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-3 "'), '⑩ 本組資訊卡默認展開（3 大卡片全部可收合）');
+vm.runInContext(`globalThis.__app.toggleGroupInfoCard();`, context);
+ok(vm.runInContext(`document.getElementById('gib-grid').classList.contains('hidden')`, context) === true, '⑩ 本組資訊卡可整體收合');
+vm.runInContext(`globalThis.__app.toggleGroupInfoCard();`, context);
+ok(vm.runInContext(`document.getElementById('gib-grid').classList.contains('hidden')`, context) === false, '⑩ 本組資訊卡可再展開');
+const detHTML = vm.runInContext(`globalThis.__app.groupApplyDetailsHTML('主題節目組')`, context);
+ok(detHTML.includes('本組物資申請（共') && detHTML.includes('本組攤位申請（共') && detHTML.includes('本組車輛通行證（共') && detHTML.includes('本組膳食訂餐（共') && detHTML.includes('本組開支申報（共'), '⑪ 詳細資料應含 物資／攤位／車輛／膳食／開支 5 段');
+ok(detHTML.includes('>攤位名稱</th>'), '⑫ 攤位申請明細應有攤位名稱欄');
+ok((detHTML.match(/goApplyFromGroupDetail/g) || []).length >= 5, '⑫ 每段詳細資料右上角應有「＋」前往申請');
+vm.runInContext(`globalThis.__app.toggleGroupDetailCard();`, context);
+ok(vm.runInContext(`document.getElementById('group-detail-body').classList.contains('hidden')`, context) === false, '⑪ 詳細統計資料卡可展開');
+vm.runInContext(`globalThis.__app.toggleGroupDetailSection('booth');`, context);
+ok(vm.runInContext(`document.getElementById('gds-body-booth').classList.contains('hidden')`, context) === false, '⑪ 攤位段可獨立展開');
+vm.runInContext(`globalThis.__app.toggleGroupDetailSection('vehicle');`, context);
+ok(vm.runInContext(`document.getElementById('gds-body-vehicle').classList.contains('hidden')`, context) === false, '⑪ 車輛段可獨立展開');
+vm.runInContext(`globalThis.__app.toggleGroupDetailSection('booth');`, context);
+ok(vm.runInContext(`document.getElementById('gds-body-booth').classList.contains('hidden')`, context) === true, '⑪ 攤位段可再收合');
+ok(vm.runInContext(`document.getElementById('gds-body-vehicle').classList.contains('hidden')`, context) === false, '⑪ 收合攤位段唔影響車輛段（獨立收合）');
+/* ⑨ 點統計數字 → 跳到詳細（自動展開大卡＋對應段） */
+vm.runInContext(`globalThis.__app.toggleGroupDetailCard(false);`, context);
+vm.runInContext(`globalThis.__app.jumpToGroupDetail('supplies');`, context);
+ok(vm.runInContext(`document.getElementById('group-detail-body').classList.contains('hidden')`, context) === false, '⑨ 點數字：詳細統計資料卡自動展開');
+ok(vm.runInContext(`document.getElementById('gds-body-supplies').classList.contains('hidden')`, context) === false, '⑨ 點數字：對應段落自動展開');
+vm.runInContext(`globalThis.__app.toggleGroupInfoCard(false);`, context);
+vm.runInContext(`globalThis.__app.jumpToGroupDetail('members');`, context);
+ok(vm.runInContext(`document.getElementById('gib-grid').classList.contains('hidden')`, context) === false, '⑨ 點「本組人數」：本組資訊大卡自動展開');
+ok(vm.runInContext(`document.getElementById('gib-body-members').classList.contains('hidden')`, context) === false, '⑨ 點「本組人數」：成員格自動展開');
 
 /* ⑤⑧ 行為：各部門 3 個財務頁籤（主題節目組＋行政組＋協調組＋顧問團） */
 [['主題節目組', themeHTML], ['行政組', null], ['協調組', null], ['顧問團', null]].forEach(([g]) => {
