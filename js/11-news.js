@@ -122,7 +122,7 @@ Object.assign(ScoutEventApp.prototype, {
 
     // ② 再寫後端（模擬示範版／未設定後端＝只留本機）
     if(this.mockMode){
-      showToast(this.isDemoEvent()?'已更新（模擬示範版：只儲存喺你嘅瀏覽器）':'已更新（未連後端：只儲存喺你嘅瀏覽器）','warning');
+      showToast('已更新（示範模式：只暫存喺你部機）','warning');
       return;
     }
     const res=await this.gasPost({action:'saveEventNews',api_key:this.apiKey,event_id:eid,news,updated_by:by});
@@ -130,7 +130,7 @@ Object.assign(ScoutEventApp.prototype, {
       showToast(news?'最新消息已發佈，全部人即刻睇到':'最新消息已清除','success');
     }else{
       const why=(res&&res.json&&res.json.error)||(res&&res.error)||'未知錯誤';
-      showToast('已喺你部機更新，但寫入後端失敗：'+why+'（後端 Code.gs 可能未更新到支援 saveEventNews，請重新部署）','error');
+      showToast('已喺你部機更新，但同步失敗，請稍後再試','error');
     }
   }
 });

@@ -191,7 +191,7 @@ Object.assign(ScoutEventApp.prototype,{
       try{
         const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveApprovalRouting',api_key:this.apiKey,event_id:this.currentEvent?.event_id||'isd_2026',routing:this.approvalRouting,updated_by:this.currentUser?.name||''})});
         const j=await res.json(); if(!j?.success) throw new Error(j?.error||'儲存失敗');
-      }catch(e){ showToast('路由已存本機，但後端同步失敗：'+e.message,'warning'); return; }
+      }catch(e){ showToast('設定已暫存，但同步失敗，請稍後再按儲存','warning'); return; }
     }
     showToast('批核權限表已確定更新','success');
   }
@@ -312,7 +312,7 @@ Object.assign(ScoutEventApp.prototype,{
         const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveUsers',api_key:this.apiKey,users:this.usersList})});
         const j=await res.json();
         if(!j?.success) throw new Error(j?.error||'後端未全部寫入');
-      }catch(e){ showToast('已存本機，後端同步失敗：'+e.message,'warning'); this.renderUsers(); return; }
+      }catch(e){ showToast('已暫存，但同步失敗，請稍後再試','warning'); this.renderUsers(); return; }
     }
     showToast('用戶資料已確定更新','success');
     this.renderUsers();
@@ -337,7 +337,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n朱家聰,朱家聰,chair@isd.local,chairperson,主席及執行副主席,,1234,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
 ,
-  handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請貼上JSON','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('JSON錯誤','error');}}
+  handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請先貼上資料','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('資料格式有誤，請檢查','error');}}
 ,
   confirmBulkCreate(){if(!this.bulkPending.length){showToast('無資料','warning'); return;} let list=this.getLocalUsers(); let added=0; const existing=new Set(list.map(u=>u.user_id)); this.bulkPending.forEach(r=>{ if(!existing.has(r.user_id)){ list.push({user_id:r.user_id,name:r.name,email:r.email,role:r.role,group_name:r.group_name,contact:r.contact,password:r.password||'1234',status:'active',can_tick:r.can_tick}); added++; } }); this.setLocalUsers(list); this.closeModal('modal-bulk'); showToast(`批量完成 成功${added}筆`,'success'); this.loadUsers();}
 ,
@@ -358,7 +358,7 @@ Object.assign(ScoutEventApp.prototype,{
       const r=await this.gasPost({action:'login',user_id:id,password:pwd});
       if(r.ok && r.json){
         const j=r.json;
-        if(j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:(j.user.user_id==='exec_vp'||(j.user.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':j.user.role,group_name:normalizeGroupName(j.user.group_name),job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功 '+(j.user.name||'')+(j.version?`（後端 ${j.version}）`:''),'success'); if(this.currentEvent) this.showDashboard(); return; }
+        if(j.success && j.user){ this.currentUser={user_id:j.user.user_id,name:j.user.name,role:(j.user.user_id==='exec_vp'||(j.user.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':j.user.role,group_name:normalizeGroupName(j.user.group_name),job_title:j.user.job_title||'',perm_see:parsePerm(j.user.perm_see),perm_edit:parsePerm(j.user.perm_edit)}; localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login'); showToast('登入成功，歡迎 '+(j.user.name||'')+(j.version?`（系統已更新至 ${j.version}）`:''),'success'); if(this.currentEvent) this.showDashboard(); return; }
         if(j.success && !j.user){
           // 後端將 POST 重新導向成 GET（常見於 /exec 部署係舊版本）：回應會變成 getEvents
           if(!this.mockMode){ showToast('登入失敗：後端回應異常（疑似部署係舊版本）。請喺 Apps Script 用「部署 → 管理部署 → 新版本」重新部署最新 Code.gs 後再試。','error'); return; }
@@ -428,7 +428,7 @@ Object.assign(ScoutEventApp.prototype,{
       this.currentUser={user_id:found.user_id,name:found.name,role:found.role,group_name:normalizeGroupName(found.group_name),job_title:found.job_title||'',perm_see:parsePerm(found.perm_see),perm_edit:parsePerm(found.perm_edit),offline:true};
       localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser));
       this.updateUserUI(); this.updateAdminNav(); this.closeModal('modal-login');
-      showToast('⚠️ 後端冇回應（'+reason+'）→ 已用本機名單登入「'+found.name+'」（離線：只睇到呢個瀏覽器嘅資料，改動唔會寫入後端）','warning');
+      showToast('⚠️ 網絡連線唔順利（'+reason+'），已用本機暫存名單登入「'+found.name+'」（離線模式：改動只暫存喺你部機，唔會影響正式活動）','warning');
       if(this.currentEvent) this.showDashboard();
       return true;
     }catch(err){ return false; }
@@ -454,7 +454,7 @@ Object.assign(ScoutEventApp.prototype,{
         const j=await res.json();
         if(j&&j.success){ this.closeModal('modal-changepwd'); showToast('密碼已更新','success'); }
         else showToast('修改失敗：'+(j&&j.error||'未知錯誤'),'error');
-      }catch(err){ showToast('無法連線後端：'+err.message,'error'); }
+      }catch(err){ showToast('網絡連線唔順利，密碼未更新，請再試一次','error'); }
       return;
     }
     // Mock 模式：更新本地示範帳戶

@@ -408,8 +408,8 @@ Object.assign(ScoutEventApp.prototype,{
     e.updated_at=new Date().toISOString();
     if(!e.created_at) e.created_at=e.updated_at;
     map[key]=e; data[scope]=map;
+    // v12.3：備註同 TICK 一樣只暫存＋入待儲存佇列（markStampDirty 會更新「有 N 項未儲存」狀態列），唔逐次彈 toast
     this.saveSouvenirStampData(data,{scope,key,row:e});
-    showToast(e.remark?`備註已暫存（${person.name}）：${e.remark} — 撳「儲存」先正式記錄`:`已清除 ${person.name} 嘅備註（未儲存）`,'success');
   }
 ,
   filterSouvenirStamps(scope){

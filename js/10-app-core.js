@@ -313,7 +313,7 @@ Object.assign(ScoutEventApp.prototype,{
             accVerdict='呢個係 SCRIPT 內建最高層管理帳號：Users 表入面冇佢嘅紀錄屬正常，一定要用 SCRIPT 常數（或「改密碼」後寫入 Users 表）嗰個密碼。'+(accPwd?probeTxt:'');
             rows.push(row('④ 密碼探針','ok',escapeHtml(probeTxt.trim())));
           }
-          else if((j.rows||[]).some(r=>!r.has_password)) accVerdict='⚠️ 呢個帳號喺 Users 表冇密碼（password_hash 空）→ 一定登入唔到，要喺後端設返密碼（或開戶）。';
+          else if((j.rows||[]).some(r=>!r.has_password)) accVerdict='⚠️ 呢個帳號喺 Users 表冇密碼（password_hash 空）→ 一定登入唔到，要搵管理員重設密碼（或重新開戶）。';
           else if(j.builtin_account&&accPwd){ accVerdict='呢個係 SCRIPT 內建最高層管理帳號，Users 表亦有紀錄。'+probeTxt; rows.push(row('④ 密碼探針','ok',escapeHtml(probeTxt.trim()))); }
         }
       } else {
@@ -712,13 +712,17 @@ Object.assign(ScoutEventApp.prototype,{
     const vehicles=(sup.vehicle_passes||[]).filter(v=>match(v.group_name));
     const orders=(meals.orders||[]).filter(o=>match(o.group_name));
     const cnt=(arr,st)=>arr.filter(x=>x.status===st).length;
+    // v12.3：本組人數（崗位卡上嘅人，統一以「人」為單位，同膳食訂餐口徑一致）
+    const members=new Set();
+    this.getGroupOrgNodes(groupName).forEach(n=>{ orgNameList(n.names).forEach(x=>{ if(x) members.add(x); }); });
     return {
       requests, boothReqs, vehicles, orders,
-      supPending:cnt(requests,'pending'), supApproved:cnt(requests,'approved')+cnt(requests,'modified'),
-      boothPending:cnt(boothReqs,'pending'), boothApproved:cnt(boothReqs,'approved')+cnt(boothReqs,'modified'),
-      vehPending:cnt(vehicles,'pending'), vehApproved:cnt(vehicles,'approved'),
+      memberCount:members.size,
+      supPending:cnt(requests,'pending'), supApproved:cnt(requests,'approved')+cnt(requests,'modified'), supRejected:cnt(requests,'rejected'),
+      boothPending:cnt(boothReqs,'pending'), boothApproved:cnt(boothReqs,'approved')+cnt(boothReqs,'modified'), boothRejected:cnt(boothReqs,'rejected'),
+      vehPending:cnt(vehicles,'pending'), vehApproved:cnt(vehicles,'approved'), vehRejected:cnt(vehicles,'rejected'),
       mealPending:orders.filter(o=>o.status==='pending'||o.status==='group_ok').length,
-      mealApproved:cnt(orders,'approved')
+      mealApproved:cnt(orders,'approved'), mealRejected:cnt(orders,'rejected')
     };
   }
 ,
@@ -735,30 +739,40 @@ Object.assign(ScoutEventApp.prototype,{
     const mealRows=st.orders.map(o=>{ const m=(mealsData.menus||[]).find(x=>x.menu_id===o.menu_id)||{}; return `<tr><td class="border px-2 py-1">${escapeHtml(m.date||'')} ${escapeHtml(m.meal_type||'')}</td><td class="border px-2 py-1">${escapeHtml(o.user_name||'')}</td><td class="border px-2 py-1 font-bold">${escapeHtml(o.selection||'')}</td><td class="border px-2 py-1">${escapeHtml(o.remarks||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(o.status)}</td></tr>`; }).join('');
     const boothRows=st.boothReqs.map(r=>`<tr><td class="border px-2 py-1">${escapeHtml(r.item_name||'')}</td><td class="border px-2 py-1 text-center">${r.qty_requested||0}${escapeHtml(r.unit||'')}</td><td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td><td class="border px-2 py-1">${escapeHtml(r.purpose||'-')}</td><td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}</td><td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}</td></tr>`).join('');
     const pid=printId||('group-print-'+groupName);
+    // v12.3：5 格統一改為「本組人數＋4 類申請」，申請格下方細分 待批／已批／已拒（負責人一眼掌握現況）
+    const statChip=(total,label,cls,pend,appr,rej)=>`<div class="${cls} rounded-xl px-2 py-2 text-center">
+      <div class="text-[17px] font-extrabold leading-none">${total}</div><div class="text-[10px] mt-0.5">${label}</div>
+      <div class="text-[9.5px] mt-1 leading-tight">
+        <span class="text-amber-600 font-bold">⏳${pend}</span>
+        <span class="text-emerald-600 font-bold ml-1">✅${appr}</span>
+        <span class="text-rose-500 font-bold ml-1">❌${rej}</span>
+      </div></div>`;
+    const sectionTitle=(icon,color,title,total,pend,appr,rej)=>`<b class="text-[12px]"><i class="${icon} ${color} mr-1"></i>${title}（共 ${total}）</b>
+      <span class="ml-2 text-[10.5px] font-bold"><span class="text-amber-600">⏳待批 ${pend}</span>・<span class="text-emerald-600">✅已批 ${appr}</span>・<span class="text-rose-500">❌已拒 ${rej}</span></span>`;
     return `
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          ${chip(groupOrg.length,'崗位','bg-slate-100 text-slate-700 border')}
-          ${chip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200')}
-          ${chip(st.boothReqs.length,'攤位申請','bg-orange-50 text-orange-700 border border-orange-200')}
-          ${chip(st.vehicles.length,'車輛申請','bg-amber-50 text-amber-700 border border-amber-200')}
-          ${chip(st.orders.length,'膳食訂餐','bg-purple-50 text-purple-700 border border-purple-200')}
+          ${chip(st.memberCount,'本組人數','bg-slate-100 text-slate-700 border')}
+          ${statChip(st.requests.length,'物資申請','bg-blue-50 text-blue-700 border border-blue-200',st.supPending,st.supApproved,st.supRejected)}
+          ${statChip(st.boothReqs.length,'攤位申請','bg-orange-50 text-orange-700 border border-orange-200',st.boothPending,st.boothApproved,st.boothRejected)}
+          ${statChip(st.vehicles.length,'車輛申請','bg-amber-50 text-amber-700 border border-amber-200',st.vehPending,st.vehApproved,st.vehRejected)}
+          ${statChip(st.orders.length,'膳食訂餐','bg-purple-50 text-purple-700 border border-purple-200',st.mealPending,st.mealApproved,st.mealRejected)}
         </div>
         <div id="${pid}" class="space-y-3">
           <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-1"></i>本組物資申請及狀態 (${st.requests.length}，待批 ${st.supPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">需用日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${supRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+            ${sectionTitle('fa-solid fa-boxes-stacked','text-blue-600','本組物資申請',st.requests.length,st.supPending,st.supApproved,st.supRejected)}
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">需用日期</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${supRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>'}</tbody></table></div>
           </div>
           <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-store text-orange-600 mr-1"></i>本組攤位申請及狀態 (${st.boothReqs.length}，待批 ${st.boothPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">用途</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${boothRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+            ${sectionTitle('fa-solid fa-store','text-orange-600','本組攤位申請',st.boothReqs.length,st.boothPending,st.boothApproved,st.boothRejected)}
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">攤位物資</th><th class="border px-2 py-1">申請</th><th class="border px-2 py-1">批核</th><th class="border px-2 py-1">用途</th><th class="border px-2 py-1">申請人</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${boothRows||'<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>'}</tbody></table></div>
           </div>
           <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-car text-amber-600 mr-1"></i>本組車輛通行證及狀態 (${st.vehicles.length}，待批 ${st.vehPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">進出</th><th class="border px-2 py-1">停泊</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${vehRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+            ${sectionTitle('fa-solid fa-car','text-amber-600','本組車輛通行證',st.vehicles.length,st.vehPending,st.vehApproved,st.vehRejected)}
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">進出</th><th class="border px-2 py-1">停泊</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${vehRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無申請</td></tr>'}</tbody></table></div>
           </div>
           <div class="bg-white border rounded-xl p-3">
-            <b class="text-[12px]"><i class="fa-solid fa-utensils text-purple-600 mr-1"></i>本組膳食訂餐及狀態 (${st.orders.length}，待處理 ${st.mealPending})</b>
-            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">日期/餐別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${mealRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無</td></tr>'}</tbody></table></div>
+            ${sectionTitle('fa-solid fa-utensils','text-purple-600','本組膳食訂餐',st.orders.length,st.mealPending,st.mealApproved,st.mealRejected)}
+            <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">日期/餐別</th><th class="border px-2 py-1">姓名</th><th class="border px-2 py-1">選擇</th><th class="border px-2 py-1">備註</th><th class="border px-2 py-1">狀態</th></tr></thead><tbody>${mealRows||'<tr><td colspan="5" class="border px-2 py-4 text-center text-slate-400">暫無訂餐</td></tr>'}</tbody></table></div>
           </div>
         </div>`;
   }
@@ -1184,11 +1198,11 @@ Object.assign(ScoutEventApp.prototype,{
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
       const isAdmin=this.canManageMeetings();
-      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>${isAdmin?'<button onclick="app.toggleMeetingRecordsEditor()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-code mr-1"></i>內建議程 JSON</button>':''}<button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
+      document.getElementById('module-actions').innerHTML=`<div class="flex gap-2"><input id="meeting-search" placeholder="搜尋會議/第X次" oninput="app.renderMeetingsList()" class="px-3 py-2 border rounded-xl text-xs w-32 sm:w-48"><select id="meeting-visibility-filter" onchange="app.renderMeetingsList()" class="px-2 py-2 border rounded-xl text-xs bg-white"><option value="">全部可見度</option><option value="public">公開</option><option value="private">僅管理員</option><option value="attendees">僅主任以上</option></select>${isAdmin?'<button onclick="app.openMeetingFormModal()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增會議</button>':''}<button onclick="app.exportMeetings()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>${isAdmin?'<button onclick="app.toggleMeetingRecordsEditor()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-code mr-1"></i>編輯內建議程</button>':''}<button onclick="app.downloadAllMeetingsFiles()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載全部</button></div>`;
     } else if(key==='staff'){
       const canManageStaff=this.canManageStaffContacts();
       document.getElementById('module-actions').innerHTML=canManageStaff
-        ?`<div class="flex gap-2 flex-wrap"><button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+ 單欄新增</button><button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載名單範本</button><label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`
+        ?`<div class="flex gap-2 flex-wrap"><button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+ 單欄新增</button><button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載名單範本</button><label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳 CSV／名單檔案<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts')"></label>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`
         :`<div class="flex gap-2 flex-wrap items-center"><span class="text-[11px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200"><i class="fa-solid fa-globe mr-1"></i>組織架構公開可看；聯絡資料 (電話/Email) 需登入</span>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`;
     } else if(key==='activities'){
       const canUpload=this.canUploadActivity();
@@ -1371,7 +1385,7 @@ Object.assign(ScoutEventApp.prototype,{
       </tr></thead><tbody class="divide-y bg-white">
       ${perms.map(p=>`<tr><td class="px-3 py-2 font-bold">${escapeHtml(p.name||p.user_id)}${p.name!==p.user_id&&p.user_id?`<div class="text-[10px] text-slate-400 font-mono">${escapeHtml(p.user_id)}</div>`:''}</td><td class="px-3 py-2">${escapeHtml(p.group_name||'')}</td>${APPROVAL_AREAS.map(a=>`<td class="px-2 py-2 text-center">${chip(p[a],a)}</td>`).join('')}</tr>`).join('')}
       </tbody></table></div>`
-      :'<p class="text-xs text-slate-400 py-4">尚未設定批核權限（請在後端 Sheet「Approval_Permissions」填寫）</p>';
+      :'<p class="text-xs text-slate-400 py-4">尚未設定批核權限，請聯絡管理員在批核權限表設定</p>';
     // 直看（頁 → 人）
     const byArea=APPROVAL_AREAS.map(a=>{
       const holders=perms.filter(p=>p[a]);
@@ -1442,7 +1456,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(mod==='account_setup'){this.renderAccountSetupModule(); return;}
     if(mod==='dept_hub'){this.renderDeptHubModule(); return;}
     if(mod==='permissions'){this.renderPermissionsModule(); return;}
-    container.innerHTML='<p class="text-sm text-slate-400">此模組內容 (全前端演示) 尚未有資料，點擊右上新增</p>';
+    container.innerHTML='<p class="text-sm text-slate-400">此模組暫時未有資料，點擊右上角新增</p>';
   }
 ,
 });

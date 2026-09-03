@@ -13,11 +13,6 @@ Object.assign(ScoutEventApp.prototype,{
     ];
   }
 ,
-  switchCoordTab(tab){
-    this.coordSubTab=tab;
-    this.renderCoordinatorGroupModule();
-  }
-,
   // v12.2：協調組統一用 openGroupManagement 部門中心基本形態（特色＝頂部頁籤）；保留方法名作兼容
   renderCoordinatorGroupModule(){ this.openGroupManagement('協調組'); }
 ,

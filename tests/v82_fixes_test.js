@@ -118,8 +118,8 @@ function makeHarness(fetchImpl) {
     assert.strictEqual(app.currentUser.role, 'super_admin', '(2) 應登入成功');
     const t = h.toastText();
     assert(/登入成功/.test(t), '(2) 應顯示登入成功，實際：' + t);
-    assert(/後端 v8\.2/.test(t), '(2) 成功訊息應顯示後端版本，實際：' + t);
-    console.log('✔ (2a) 後端帳戶登入成功：密碼 trim 生效，顯示後端版本');
+    assert(/v8\.2/.test(t), '(2) 成功訊息應顯示系統版本，實際：' + t);
+    console.log('✔ (2a) 系統帳戶登入成功：密碼 trim 生效，顯示系統版本（v12.3：技術用詞「後端」已移除）');
 
     // 舊部署（POST 被轉成 GET）：success:true 但無 user → 明確錯誤提示
     const h2 = makeHarness(async (url, opts) => {

@@ -455,14 +455,14 @@ Object.assign(ScoutEventApp.prototype,{
         const cached=JSON.parse(localStorage.getItem(LS.config(this.currentEvent?.event_id||'isd_2026')+'_meeting_drive')||'null');
         if(cached && (cached.subfolders||cached.files)){
           this.renderMeetingDriveTree(body,cached,folderId,true);
-          body.insertAdjacentHTML('afterbegin',`<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-800"><i class="fa-solid fa-circle-exclamation mr-1"></i>未能連線後端（${escapeHtml(e.message)}），顯示上次快取。點「重新整理」再試。</div>`);
+          body.insertAdjacentHTML('afterbegin',`<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-800"><i class="fa-solid fa-circle-exclamation mr-1"></i>網絡連線唔順利，顯示上次紀錄。可點「重新整理」再試。</div>`);
           return;
         }
       }
     }
     // 無後端／Mock：直接內嵌 Drive 資料夾（瀏覽器即時顯示，Drive 更新即時可見）
     body.innerHTML=`<div class="bg-white border rounded-xl p-3 space-y-2">
-      <div class="text-[11px] text-slate-500"><i class="fa-solid fa-circle-info mr-1 text-sky-600"></i>目前未連後端（示範/本地模式），顯示 Drive 內嵌資料夾即時檢視：</div>
+      <div class="text-[11px] text-slate-500"><i class="fa-solid fa-circle-info mr-1 text-sky-600"></i>顯示 Google Drive 資料夾即時檢視：</div>
       <iframe src="https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#list" class="w-full h-[65vh] rounded-xl border" title="會議 Drive"></iframe>
     </div>`;
   }
@@ -528,7 +528,7 @@ Object.assign(ScoutEventApp.prototype,{
         </button>
         <div id="md-f-root" class="hidden border-t divide-y divide-slate-100">${(tree.files||[]).map(fileRow).join('')}</div>
       </div>`:''}
-      <div class="text-[10px] text-slate-400">每次進入或按「重新整理」都會由 Google Drive 讀取最新內容；如未能連線後端，會顯示瀏覽器內嵌資料夾或上次快取。</div>`;
+      <div class="text-[10px] text-slate-400">每次進入或按「重新整理」都會由 Google Drive 讀取最新內容；如網絡唔順利，會顯示內嵌資料夾或上次紀錄。</div>`;
   }
 ,
   toggleMdFolder(id){
@@ -594,7 +594,7 @@ Object.assign(ScoutEventApp.prototype,{
         <b><i class="fa-solid fa-book-open mr-1"></i>議程／會議紀錄已「內建」喺 APP（免彈出 Google Drive APP）：</b>
         每張會議卡片下面按 <b>「議程（內建·即睇）」</b> 或 <b>「會議紀錄（內建·即睇）」</b>，內容會即刻喺卡片內展開（文字版：議程項目、議決事項、跟進事項），唔會跳去 Drive。
         原始 PDF 想睇就按 <b>「檔案（頁內預覽）」</b>，一樣係喺 APP 內用內嵌視窗打開，或直接下載。<br>
-        資料來源：<code class="font-mono">data/meeting_records.json</code>（隨 APP 發佈，離線都睇到）${isAdmin?' · 管理員可按右上「內建議程 JSON」直接編輯／匯出':''}。
+        資料來源：<code class="font-mono">data/meeting_records.json</code>（隨 APP 發佈，離線都睇到）${isAdmin?' · 管理員可按右上「編輯內建議程」直接修改':''}。
       </div>
       <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900 space-y-2">
         <div><b>會議卡片升級說明：</b><br>• 管理員可上傳議程及會議紀錄 (PDF/Word/圖片)，全部籌委成員點擊卡片即可觀看<br>• 分不同會議 (第0/1/2/3/4次) 上傳及觀看<br>• 各小組可上傳開會專用附件（簡報 PPT/PDF、活動章設計圖檔 PNG/JPG 等），議程及會議紀錄已直接關聯 Google Drive<br>• 全部文件支援下載 (單個或打包下載) · 管理員可刪除任何檔案 / 會議 / 組資料<br>• <b>指定資料夾 (FOLDER LINK)</b>：管理員可設定 Google Drive 資料夾連結，上傳時自動上傳到該資料夾，突破 5MB 限制</div>
@@ -610,7 +610,7 @@ Object.assign(ScoutEventApp.prototype,{
               </div>
             </div>
             <div class="mt-2 text-[10px]"><span class="bg-slate-100 px-2 py-0.5 rounded-full border font-mono">${folderStatus}</span> · 僅管理員可設定，其他人可見資料夾連結以便下載</div>
-            <div class="mt-1.5 text-[10px] text-slate-600">如何取得？打開 Drive 資料夾 → 右鍵「取得連結」→ 複製連結貼上。設定後：GAS 模式下上傳自動調用 <code>uploadFileToFolder</code> 上傳到該資料夾 (DriveApp)，回傳 Drive 連結；Mock 模式提示需關閉 Mock 才能上傳到 Drive。</div>
+            <div class="mt-1.5 text-[10px] text-slate-600">如何取得？打開 Google Drive 資料夾 → 右鍵「取得連結」→ 複製連結貼上。<br>💡 呢個係進階設定，有疑問可請教技術人員；示範模式下檔案只會暫存喺你部機。</div>
           </div></div>
         </div>
         <div class="bg-white border border-sky-200 rounded-xl p-2.5">
@@ -784,7 +784,7 @@ Object.assign(ScoutEventApp.prototype,{
     }
     this.saveMeetings(list);
     this.closeModal('modal-meeting-form');
-    showToast(mode==='edit'?'✅ 會議已更新 (全前端)':'✅ 會議已新增 (分次管理)','success');
+    showToast(mode==='edit'?'✅ 會議已更新':'✅ 會議已新增','success');
     this.renderMeetingsList();
   }
 ,
@@ -817,7 +817,7 @@ Object.assign(ScoutEventApp.prototype,{
       document.getElementById('md-agenda-file-name').textContent=m.agenda_file_name||'議程檔案'; 
       const isAgendaDrive=m.agenda_file_url&&String(m.agenda_file_url).includes('drive.google.com');
       document.getElementById('md-agenda-file-meta').textContent=isAgendaDrive?'Google Drive 資料夾':`${m.agenda_uploaded_by||''} · ${m.agenda_uploaded_at?new Date(m.agenda_uploaded_at).toLocaleString():''}`;
-      document.getElementById('md-agenda-file-info').innerHTML=isAgendaDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有議程檔案</span>`:`儲存位置：<b>${this.mockMode?'瀏覽器 localStorage':'Sheet + 快取'}</b>`;
+      document.getElementById('md-agenda-file-info').innerHTML=isAgendaDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有議程檔案</span>`:`儲存位置：<b>${this.mockMode?'本機暫存（示範模式）':'線上同步'}</b>`;
       document.getElementById('md-agenda-delete-btn').classList.toggle('hidden',!this.canManageMeetings());
     } else agendaArea.classList.add('hidden');
     // 插入 Drive 資料夾連結到議程分頁頂部
@@ -829,7 +829,7 @@ Object.assign(ScoutEventApp.prototype,{
       document.getElementById('md-minutes-file-name').textContent=m.minutes_file_name||'會議紀錄檔案';
       const isMinutesDrive=m.minutes_file_url&&String(m.minutes_file_url).includes('drive.google.com');
       document.getElementById('md-minutes-file-meta').textContent=isMinutesDrive?'Google Drive 資料夾':`${m.minutes_uploaded_by||''} · ${m.minutes_uploaded_at?new Date(m.minutes_uploaded_at).toLocaleString():''}`;
-      document.getElementById('md-minutes-file-info').innerHTML=isMinutesDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有會議紀錄檔案</span>`:`儲存位置：<b>${this.mockMode?'localStorage':'Sheet + 快取'}</b>`;
+      document.getElementById('md-minutes-file-info').innerHTML=isMinutesDrive?`<span class="text-emerald-700 font-bold"><i class="fa-brands fa-google-drive mr-1"></i>點擊「開啟」可瀏覽資料夾內所有會議紀錄檔案</span>`:`儲存位置：<b>${this.mockMode?'本機暫存（示範模式）':'線上同步'}</b>`;
       document.getElementById('md-minutes-delete-btn').classList.toggle('hidden',!this.canManageMeetings());
     } else minutesArea.classList.add('hidden');
     document.getElementById('md-attach-count').textContent=(m.attachments||[]).length;
@@ -995,7 +995,7 @@ Object.assign(ScoutEventApp.prototype,{
       else if(type==='minutes'){ list[idx].minutes_file_name=f.name; list[idx].minutes_file_data=fileUrl?'':data; list[idx].minutes_file_url=fileUrl; list[idx].minutes_uploaded_by=this.currentUser?.name||''; list[idx].minutes_uploaded_at=new Date().toISOString(); }
       else{ if(!list[idx].attachments) list[idx].attachments=[]; list[idx].attachments.push({file_id:'f_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),file_name:f.name,file_data:fileUrl?'':data,file_url:fileUrl,folder_id:folderCfg.id||'',file_size:f.size,uploaded_by:this.currentUser?.name||'',uploaded_at:new Date().toISOString(),description:''}); }
     }
-    this.saveMeetings(list); this.renderMeetingDetail(list[idx]); this.renderMeetingsList(); showToast(useDrive?'✅ 文件已上傳到指定資料夾 (Drive)':'✅ 文件已上傳 (全前端)','success'); input.value='';
+    this.saveMeetings(list); this.renderMeetingDetail(list[idx]); this.renderMeetingsList(); showToast(useDrive?'✅ 文件已上傳到指定資料夾':'✅ 文件已上傳（暫存喺你部機）','success'); input.value='';
   }
 ,
   async submitGroupUpload(e){

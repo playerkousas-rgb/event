@@ -153,12 +153,12 @@ Object.assign(ScoutEventApp.prototype,{
           <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（內建式，不用跳轉 Drive）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
           <a href="https://drive.google.com/file/d/${escapeHtml(src.drive_file_id)}/view" target="_blank" class="text-sky-700 underline">📂 開啟 Drive 檔案</a>
           <br>• 由<b>節目組副主席</b>負責更新。若該檔為原生「Google 試算表」，點「同步最新」即直接在 APP 內讀取最新內容（各組在 Drive 一改，APP 即時同步）。
-          <br>• 若仍是 .xlsx 檔：建議在 Drive「檔案 → 另存為 Google 試算表」後同步，或由副主席直接「上傳 Excel → 寫入後端」。
+          <br>• 若仍是 .xlsx 檔：建議在 Drive「檔案 → 另存為 Google 試算表」後同步，或由副主席直接「上傳 Excel（同步到名單）」。
         </div>`:''}
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
           ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel → 寫入後端<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
           <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
           <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印列表</button>
         </div>
@@ -167,7 +167,7 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th><th class="px-2 py-1 text-right">操作</th></tr></thead><tbody class="divide-y">${data.booths.map(b=>`
             <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number)}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name)}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td><td class="px-2 py-1 text-right" data-label="操作"><div class="flex gap-1 justify-end">${canUpload?`<button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></td></tr>
           `).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請上傳攤位列表或新增</td></tr>'}</tbody></table></div>
-          <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。節目組副主席可在 Drive 更新 Google 試算表後點「同步最新」，或直接上傳 Excel 寫入後端。</div>
+          <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。節目組副主席可在 Drive 更新 Google 試算表後點「同步最新」，或直接上傳 Excel 同步。</div>
         </div>
       </div>
     `;
@@ -193,7 +193,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="flex flex-wrap gap-2">
         <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
         ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
-        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel → 寫入後端<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
+        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
         <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
         <button onclick="app.printCoordArea('group-booth-print','2026 攤位總表（DRIVE 攤位資料）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
       </div>
@@ -672,10 +672,10 @@ Object.assign(ScoutEventApp.prototype,{
         try{
           const r=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveBooths',api_key:this.apiKey,event_id:this.currentEvent?.event_id||'isd_2026',booths})});
           const j=await r.json();
-          showToast(j&&j.success?`已上傳 ${booths.length} 筆並寫入後端 Sheet`:`本地已更新 ${booths.length} 筆（後端：${(j&&j.error)||'未寫入'}）`, j&&j.success?'success':'warning');
-        }catch(e){ showToast(`本地已更新 ${booths.length} 筆，但寫入後端失敗：${e.message}`,'warning'); }
+          showToast(j&&j.success?`已上傳 ${booths.length} 筆並同步`:`已暫存 ${booths.length} 筆（同步未成功：${(j&&j.error)||'請稍後再試'}）`, j&&j.success?'success':'warning');
+        }catch(e){ showToast(`已暫存 ${booths.length} 筆，但同步失敗，請稍後再試`,'warning'); }
       } else {
-        showToast(`已解析 ${booths.length} 筆攤位（Mock 模式僅存瀏覽器；正式連線 GAS 會寫入後端 Sheet）`,'success');
+        showToast(`已解析 ${booths.length} 筆攤位（示範模式：只暫存喺你部機，唔會影響正式活動）`,'success');
       }
       this.renderActivitiesBooths();
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
@@ -749,7 +749,7 @@ Object.assign(ScoutEventApp.prototype,{
       const fin=this.getFinanceData();
       fin.group_itemized_budgets=gb;
       this.saveFinanceData(fin);
-      showToast(`已解析 ${gb.length} 組預算（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      showToast(`已解析 ${gb.length} 組預算（示範模式：只暫存喺你部機，唔會影響正式活動）`,'success');
       this.renderFinanceBudgets();
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
@@ -958,7 +958,7 @@ Object.assign(ScoutEventApp.prototype,{
       const data=this.getStaffData();
       data.contacts=contacts;
       this.saveStaffData(data);
-      showToast(`已解析 ${contacts.length} 位工作人員（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      showToast(`已解析 ${contacts.length} 位工作人員（示範模式：只暫存喺你部機，唔會影響正式活動）`,'success');
       this.renderStaffContacts();
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
@@ -1018,7 +1018,7 @@ Object.assign(ScoutEventApp.prototype,{
       const sch=this.rowsToSchedule(rows);
       if(!sch.length){ showToast('解析不到日程，請確認欄位（時段/節目/位置/組別）','error'); return; }
       this.saveScheduleData(sch);
-      showToast(`已解析 ${sch.length} 個時段（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      showToast(`已解析 ${sch.length} 個時段（示範模式：只暫存喺你部機，唔會影響正式活動）`,'success');
       this.renderScheduleModule();
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
@@ -1073,7 +1073,7 @@ Object.assign(ScoutEventApp.prototype,{
       const p=this.rowsToParticipants(rows);
       if(!p.length){ showToast('解析不到名單，請確認欄位（旅團/支部/人數）','error'); return; }
       this.saveParticipantsData(p);
-      showToast(`已解析 ${p.length} 個旅團（Mock 模式存瀏覽器；正式 GAS 會寫後端 Sheet）`,'success');
+      showToast(`已解析 ${p.length} 個旅團（示範模式：只暫存喺你部機，唔會影響正式活動）`,'success');
       this.renderAdminGroupModule();
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }

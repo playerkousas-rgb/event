@@ -119,13 +119,13 @@ Object.assign(ScoutEventApp.prototype,{
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
             • Excel 填好範本後上傳，預覽無誤再一次過開戶；<b>ID 重複會自動跳過，不覆蓋舊帳及已改密碼</b><br>
-            • 範本有填 <b>password</b> → 可登入帳號；只填 帳號+姓名 → 僅加入名單（不可登入）。後端開戶一律預設密碼 1234<br>
+            • 範本有填 <b>password</b> → 可登入帳號；只填 帳號+姓名 → 僅加入名單（不可登入）。開戶一律預設密碼 1234<br>
             • 建議先試 2-3 筆，確認無誤再全團匯入
           </div>
           <div class="flex flex-wrap gap-2 items-center">
             <label class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳已填 CSV<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleAccBulkCSV(this.files[0])"></label>
             <span class="text-[10px] text-slate-400">或</span>
-            <button onclick="app.previewAccBulkJSON()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-code mr-1"></i>由下方 JSON 預覽</button>
+            <button onclick="app.previewAccBulkJSON()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-code mr-1"></i>由下方資料預覽</button>
           </div>
           <textarea id="acc-bulk-json" rows="3" placeholder='[{"user_id":"陳小明","name":"陳小明","role":"staff","group_name":"主題節目組","password":"1234"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea>
           <div id="acc-bulk-preview" class="hidden">
@@ -253,7 +253,7 @@ Object.assign(ScoutEventApp.prototype,{
   previewAccBulkJSON(){
     if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員可用','error'); return; }
     const text=(document.getElementById('acc-bulk-json')?.value||'').trim();
-    if(!text){ showToast('請先貼上 JSON 陣列','warning'); return; }
+    if(!text){ showToast('請先貼上資料（或上傳 CSV）','warning'); return; }
     try{ let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; this.bulkPending=this.normalizeBulkRows(arr); if(!this.bulkPending.length){ showToast('無有效資料（需要 user_id + name）','error'); return; } this.renderAccBulkPreview(); showToast(`已解析 ${this.bulkPending.length} 筆`,'success'); }
     catch(e){ showToast('JSON 格式錯誤','error'); }
   }
@@ -308,7 +308,7 @@ Object.assign(ScoutEventApp.prototype,{
         const j=await res.json();
         if(j&&j.success){ showToast(j.message||'已開戶','success'); await this.loadUsers(); this.renderAccountSetupModule(); }
         else showToast('開戶失敗：'+(j&&j.error||'未知錯誤'),'error');
-      }catch(e){ showToast('無法連線後端：'+e.message,'error'); }
+      }catch(e){ showToast('網絡連線唔順利，開戶未成功，請再試一次（或稍後再試）','error'); }
       return;
     }
     // Mock 模式：本地新增
