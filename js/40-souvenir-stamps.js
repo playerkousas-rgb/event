@@ -31,8 +31,8 @@ Object.assign(ScoutEventApp.prototype,{
     };
     localStorage.setItem(key,JSON.stringify(toSave));
     if(changed&&changed.row){
-      // v12.2 防呆：TICK／備註只存本機＋入待儲存佇列，唔會即時打後端。
-      // 使用者 TICK 完整個組別（幾十人）後，撳「💾 儲存到後端」先一次過批次寫入，避免逐 tick 打爆後端。
+      // v12.2 防呆：TICK／備註只暫存＋入待儲存佇列，唔會即時寫入。
+      // 使用者 TICK 完整個組別（幾十人）後，撳「💾 儲存」先一次過批次寫入。
       this._stampSyncQueue=this._stampSyncQueue||new Map();
       this._stampSyncQueue.set(`${changed.scope}::${changed.key}`,{scope:changed.scope,key:changed.key,row:changed.row});
       this.markStampDirty();
@@ -54,8 +54,8 @@ Object.assign(ScoutEventApp.prototype,{
     document.querySelectorAll('[data-stamp-sync-status]').forEach(el=>{
       el.dataset.stampSyncStatus=n?'dirty':'idle';
       el.innerHTML=n
-        ?`<i class="fa-solid fa-circle-exclamation mr-1 text-amber-600"></i><span class="stamp-sync-text text-amber-700 font-bold">有 ${n} 項未儲存到後端</span>`
-        :'<i class="fa-solid fa-cloud-arrow-up mr-1"></i><span class="stamp-sync-text">變更會先存本機，撳「儲存到後端」先同步</span>';
+        ?`<i class="fa-solid fa-circle-exclamation mr-1 text-amber-600"></i><span class="stamp-sync-text text-amber-700 font-bold">有 ${n} 項未儲存</span>`
+        :'<i class="fa-solid fa-floppy-disk mr-1"></i><span class="stamp-sync-text">改動會先暫存，撳「💾 儲存」先正式記錄</span>';
     });
   }
 ,
@@ -67,26 +67,26 @@ Object.assign(ScoutEventApp.prototype,{
         :state==='error'
         ?'<i class="fa-solid fa-triangle-exclamation mr-1 text-rose-600"></i><span class="stamp-sync-text text-rose-700 font-bold">部分儲存失敗，請再按儲存重試</span>'
         :state==='ok'
-        ?'<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i><span class="stamp-sync-text text-emerald-700 font-bold">✅ 已全部儲存到後端</span>'
-        :'<i class="fa-solid fa-cloud-arrow-up mr-1"></i><span class="stamp-sync-text">變更會先存本機，撳「儲存到後端」先同步</span>';
+        ?'<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i><span class="stamp-sync-text text-emerald-700 font-bold">✅ 已全部儲存</span>'
+        :'<i class="fa-solid fa-floppy-disk mr-1"></i><span class="stamp-sync-text">改動會先暫存，撳「💾 儲存」先正式記錄</span>';
     });
   }
 ,
   // 手動儲存鍵：把所有未儲存嘅 TICK／備註／匯入名單一次過批次寫入後端
   async saveSouvenirStampsToBackend(scope){
-    if(this.mockMode||!this.gasUrl){ showToast('示範模式（或未連後端）：紀錄已存本機','success'); return; }
+    if(this.mockMode||!this.gasUrl){ showToast('示範模式：紀錄已暫存於本機','success'); return; }
     const n=(this._stampSyncQueue?this._stampSyncQueue.size:0)+(this._stampCustomSyncQueue?this._stampCustomSyncQueue.size:0);
     if(!n){ showToast('冇未儲存嘅變更','warning'); return; }
     const btns=document.querySelectorAll('[data-stamp-save-btn]');
     btns.forEach(b=>{ b.disabled=true; b.classList.add('opacity-60','pointer-events-none'); });
     this.setStampSyncStatus('syncing');
-    showToast(`正在儲存 ${n} 項紀錄到後端…`,'success');
+    showToast(`正在儲存 ${n} 項紀錄…`,'success');
     await this.flushStampSync();
     const left=(this._stampSyncQueue?this._stampSyncQueue.size:0)+(this._stampCustomSyncQueue?this._stampCustomSyncQueue.size:0);
     btns.forEach(b=>{ b.disabled=false; b.classList.remove('opacity-60','pointer-events-none'); });
     document.querySelectorAll('[data-stamp-pending-count]').forEach(el=>{ el.textContent=left; el.classList.toggle('hidden',left===0); });
-    if(left===0){ showToast('✅ 全部紀錄已儲存到後端','success'); this.setStampSyncStatus('ok'); }
-    else { showToast(`⚠️ 仍有 ${left} 項儲存失敗，網絡恢復後再按「儲存到後端」（本機紀錄無丟失）`,'error'); this.setStampSyncStatus('error'); }
+    if(left===0){ showToast('✅ 全部紀錄已儲存','success'); this.setStampSyncStatus('ok'); }
+    else { showToast(`⚠️ 仍有 ${left} 項儲存失敗，網絡恢復後再按「儲存」（資料已暫存，唔會丟失）`,'error'); this.setStampSyncStatus('error'); }
   }
 ,
   async flushStampSync(){
@@ -329,7 +329,7 @@ Object.assign(ScoutEventApp.prototype,{
     const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('group','組別')}${sortTh('booth','攤位(如有)')}<th class="border px-2 py-1 text-left">身份</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註(改名)</th>`;
     const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('unit','單位')}<th class="border px-2 py-1 text-left">職銜</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註</th>`;
     return `<div class="space-y-3">
-      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先存本機，可以一口氣 TICK 完整個組別，撳「💾 儲存到後端」先一次過寫入（唔會逐 tick 打後端）。</b>':''}</div>
+      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先暫存，可以一口氣 TICK 完整個組別，完成後撳「💾 儲存」一次過記錄。</b>':''}</div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
         <div class="bg-white border rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${st.total}</div><div class="text-[10px]">${escapeHtml(def.label)}總人數</div></div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-emerald-700" id="stamp-count-${scope}">${st.ticked}</div><div class="text-[10px]">已派發</div></div>
@@ -342,7 +342,7 @@ Object.assign(ScoutEventApp.prototype,{
         <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="px-3 py-2 border rounded-xl text-xs bg-white">
           <option value="all">全部</option><option value="pending">只睇未派發</option><option value="ticked">只睇已派發</option>
         </select>
-        ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存到後端<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
+        ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
         <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
         <span class="text-[10px] text-slate-400 py-2">💡 點 header（姓名／組別／攤位／派發狀態）可排序，方便現場派發</span>
         ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
@@ -393,7 +393,7 @@ Object.assign(ScoutEventApp.prototype,{
     const c=document.getElementById('stamp-count-'+scope); if(c) c.textContent=st.ticked;
     const p=document.getElementById('stamp-pending-'+scope); if(p) p.textContent=st.pending;
     const pc=document.getElementById('stamp-pct-'+scope); if(pc) pc.textContent=(st.total?Math.round(st.ticked/st.total*100):0)+'%';
-    // v12.2：TICK 已即時存本機（唔打後端），唔再逐次 toast；狀態列會顯示「有 N 項未儲存到後端」
+    // v12.2：TICK 已即時暫存，唔再逐次 toast；狀態列會顯示「有 N 項未儲存」
   }
 ,
   saveSouvenirStampRemark(scope,key,value){
@@ -409,7 +409,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!e.created_at) e.created_at=e.updated_at;
     map[key]=e; data[scope]=map;
     this.saveSouvenirStampData(data,{scope,key,row:e});
-    showToast(e.remark?`備註已存本機（${person.name}）：${e.remark} — 撳「儲存到後端」先同步`:`已清除 ${person.name} 嘅備註（未儲存到後端）`,'success');
+    showToast(e.remark?`備註已暫存（${person.name}）：${e.remark} — 撳「儲存」先正式記錄`:`已清除 ${person.name} 嘅備註（未儲存）`,'success');
   }
 ,
   filterSouvenirStamps(scope){

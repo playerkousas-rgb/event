@@ -2,7 +2,7 @@
 'use strict';
 /* v12.2 回歸測試（用戶回報修正）：
    ① 紀念章派發「手動儲存鍵」防呆：TICK／備註只存本機入佇列，唔自動打後端；
-      撳「💾 儲存到後端」先一次過批次串行寫入（幾十人 tick 都係一批），失敗重試＋保留本機
+      撳「💾 儲存」先一次過批次串行寫入（幾十人 tick 都係一批），失敗重試＋保留暫存
    ② 最高層系統帳戶唔算工作人員：不計入紀念章派發名單／統計
    ③ 紀念章名單可 SORT（姓名／組別／攤位／派發狀態）
    ④ 行政組頁右上角唔再出現多餘通用「新增」掣
@@ -58,13 +58,13 @@ ok(/renderCoordinatorGroupModule\(\)\{[^}]*openGroupManagement/.test(coordSrc.re
 
 /* ① 手動儲存鍵 */
 ok(stampSrc.includes('saveSouvenirStampsToBackend'), '① 應有手動儲存鍵方法 saveSouvenirStampsToBackend');
-ok(stampSrc.includes('data-stamp-save-btn'), '① 工具列應有「💾 儲存到後端」按鈕');
+ok(stampSrc.includes('data-stamp-save-btn'), '① 工具列應有「💾 儲存」按鈕');
 ok(stampSrc.includes('data-stamp-pending-count'), '① 應顯示未儲存項數');
 ok(!stampSrc.includes('scheduleStampSync'), '① 唔應再有自動 debounce 同步（改為手動儲存）');
 ok(stampSrc.includes('_stampSyncBusy'), '① 批次儲存應串行（唔同時開大量連線）');
 ok(/for\s*\(\s*let\s+attempt\s*=\s*0\s*;\s*attempt\s*<\s*3/.test(stampSrc), '① 失敗應自動重試（最多 3 次）');
 ok(bootSrc.includes('flushStampSyncBeforeUnload'), '① 關頁前應嘗試把未儲存 TICK 送出');
-ok(/未儲存到後端/.test(bootSrc), '① 有未儲存改動關頁應有提示');
+ok(/未儲存（已暫存）|未儲存/.test(bootSrc), '① 有未儲存改動關頁應有提示');
 
 /* ③ 排序 */
 ok(stampSrc.includes('setStampSort') && stampSrc.includes('data-sort-key'), '③ 表格 header 應可點擊排序');
