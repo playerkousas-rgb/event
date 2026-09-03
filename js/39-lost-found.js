@@ -307,10 +307,15 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   // 執行手冊「各類附加資料」及「行政組」部門中心兩處同時出現，改完一齊刷新
   refreshLostFoundViews(){
-    ['exec-misc-tab-lost_found','group-tab-lost_found'].forEach(id=>{
+    ['exec-misc-tab-lost_found','group-tab-lost_found','admin-tab-lost_found'].forEach(id=>{
       const el=document.getElementById(id);
-      if(el&&el.innerHTML) el.innerHTML=this.renderLostFoundHTML({compact:id==='group-tab-lost_found'});
+      if(el&&el.innerHTML!==undefined) el.innerHTML=this.renderLostFoundHTML({compact:id==='group-tab-lost_found'});
     });
+    // admin_group 專用：若目前在行政組頁，重繪整個模組以保持分頁狀態
+    if(this.currentModule==='admin_group' && this.adminGroupTab==='lost_found'){
+      const lfEl=document.getElementById('admin-tab-lost_found');
+      if(lfEl) lfEl.innerHTML=this.renderLostFoundHTML({compact:false});
+    }
     const counter=document.getElementById('lost-found-count');
     if(counter) counter.textContent=`${this.lostFoundSorted().length} 筆`;
   }

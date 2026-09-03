@@ -1,31 +1,46 @@
-/* 40-souvenir-stamps.js — 紀念章派發 (Souvenir Stamp Distribution) v11（2026-08-31 新增）
-   用戶定案：紀念章只派發俾工作人員及典禮嘉賓，活動前已有全人名，所以派發時只需 TICK 人名。
-   ① 行政組部門中心 →「紀念章派發（工作人員）」：TICK 派咗俾邊位工作人員；
-      另有「備註」欄，用作紀錄改名／替假嘅工作人員（例：「改為 陳大文（替假）」）。
-   ② 嘉賓接待組部門中心 →「紀念章派發（嘉賓）」：TICK 派咗俾邊位嘉賓；
-      嘉賓名單唔可以改名（冇代嘉賓），名單跟「典禮儀式 → 嘉賓名單」。
-   管理組別：行政組（工作人員＋嘉賓）＋嘉賓接待組（嘉賓）。
-   儲存：localStorage（即時）＋後端 Souvenir_Stamps 工作表（跨裝置同步，見 23-sync.js）。 */
+/* 40-souvenir-stamps.js — 紀念章派發 (Souvenir Stamp Distribution) v11-v12
+   任務 5/6：支援 EXCEL 匯入
+   ① 工作人員：姓名 組別 攤位(如有) 身份 備註(改名) + TICK + 列印
+   ② 嘉賓：姓名 單位 職銜 + TICK
+   儲存：localStorage + 後端 Souvenir_Stamps */
 Object.assign(ScoutEventApp.prototype,{
 
   getSouvenirStampData(){
     const key=LS.souvenirStamps(this.currentEvent?.event_id||'isd_2026');
-    const local=JSON.parse(localStorage.getItem(key)||'null');
-    if(local&&typeof local==='object') return {staff:local.staff||{},guests:local.guests||{}};
-    return {staff:{},guests:{}};
+    try{
+      const local=JSON.parse(localStorage.getItem(key)||'null');
+      if(local&&typeof local==='object'){
+        return {
+          staff:local.staff||{},
+          guests:local.guests||{},
+          staff_custom:Array.isArray(local.staff_custom)?local.staff_custom:[],
+          guests_custom:Array.isArray(local.guests_custom)?local.guests_custom:[]
+        };
+      }
+    }catch(e){}
+    return {staff:{},guests:{},staff_custom:[],guests_custom:[]};
   }
 ,
   saveSouvenirStampData(data, changed){
     const key=LS.souvenirStamps(this.currentEvent?.event_id||'isd_2026');
-    localStorage.setItem(key,JSON.stringify(data));
-    // 只把改動咗嗰一行寫去後端（唔好成份 60 行逐次重寫）
+    const toSave={
+      staff:data.staff||{},
+      guests:data.guests||{},
+      staff_custom:data.staff_custom||[],
+      guests_custom:data.guests_custom||[]
+    };
+    localStorage.setItem(key,JSON.stringify(toSave));
     if(changed&&changed.row&&!this.mockMode&&this.gasUrl){
       const r=changed.row;
-      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${changed.scope}_${changed.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:changed.scope,person_key:changed.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}})}).catch(()=>{});
+      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${changed.scope}_${changed.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:changed.scope,person_key:changed.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}})}).catch(()=>{});
+    }
+    if(changed&&changed.custom){
+      if(!this.mockMode&&this.gasUrl){
+        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${changed.scope}_custom_${Date.now()}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:changed.scope+'_custom',person_key:'custom_batch',custom_data:JSON.stringify(changed.custom),updated_at:new Date().toISOString()}})}).catch(()=>{});
+      }
     }
   }
 ,
-  // 行政組＝工作人員＋嘉賓；嘉賓接待組＝嘉賓（管理層／MOCK 全權）
   canManageSouvenirStamps(scope){
     if(!this.currentUser) return false;
     if(this.isAdmin()||this.currentUser.mock_admin) return true;
@@ -37,14 +52,13 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   souvenirStampScopeDef(scope){ return SOUVENIR_STAMP_SCOPES.find(s=>s.scope===scope)||SOUVENIR_STAMP_SCOPES[0]; }
 ,
-  /* —— 工作人員全人名（活動前已有）：已開戶用戶 → 聯絡表 → 組織架構，同一姓名只列一次 —— */
   souvenirStaffRoster(){
     const out=[],seen=new Set();
-    const push=(name,group,job)=>{
+    const push=(name,group,job,extra)=>{
       const n=String(name||'').trim(); if(!n) return;
       const k=normalizeOrgText(n);
       if(seen.has(k)) return; seen.add(k);
-      out.push({key:k,name:n,group_name:normalizeGroupName(group||'')||'未分組',job_title:String(job||'')});
+      out.push({key:k,name:n,group_name:normalizeGroupName(group||'')||'未分組',job_title:String(job||''),booth:(extra&&extra.booth)||'',remark:(extra&&extra.remark)||'',unit:(extra&&extra.unit)||''});
     };
     let users=(this.usersList&&this.usersList.length)?this.usersList:[];
     if(!users.length){ try{ users=this.getLocalUsers()||[]; }catch(e){ users=[]; } }
@@ -54,7 +68,6 @@ Object.assign(ScoutEventApp.prototype,{
       if(u.role==='public') return;
       push(u.name||u.user_id,u.group_name,u.job_title||ROLE_LABELS[u.role]||'');
     });
-    // 未開戶但喺聯絡表／架構圖嘅工作人員一併列入（派紀念章唔關有冇帳戶）
     let staff=null;
     try{ staff=this.getStaffData(); }catch(e){ staff=null; }
     ((staff&&staff.contacts)||[]).forEach(c=>{ if(c&&c.name) push(c.name,c.group_name||c.group,c.role_title||c.role||''); });
@@ -63,22 +76,40 @@ Object.assign(ScoutEventApp.prototype,{
       const g=normalizeGroupName(String(n.level||'').replace(/\s*[(（][^)）]*[)）]\s*$/,''));
       orgNameList(n.names).forEach(nm=>push(nm,g,n.title||''));
     });
+    // 匯入的自訂名單（EXCEL）
+    try{
+      const custom=this.getSouvenirStampData().staff_custom||[];
+      custom.forEach(c=>{
+        if(!c||!c.name) return;
+        push(c.name,c.group_name||c.group,c.job_title||c.role||c.identity,{booth:c.booth||'',remark:c.remark||'',unit:c.unit||''});
+      });
+    }catch(e){}
     const gi=g=>{ const i=ORG_GROUPS.indexOf(normalizeGroupName(g)); return i<0?99:i; };
     out.sort((a,b)=>(gi(a.group_name)-gi(b.group_name))||String(a.name).localeCompare(String(b.name),'zh-HK'));
     return out;
   }
 ,
-  /* —— 典禮嘉賓名單（跟「典禮儀式 → 嘉賓名單」，唔可以改名）—— */
   souvenirGuestRoster(){
     const out=[],seen=new Set();
+    const pushGuest=(name,unit,title)=>{
+      const n=String(name||'').trim(); if(!n) return;
+      const k=normalizeOrgText(n);
+      if(seen.has(k)) return; seen.add(k);
+      out.push({key:k,name:n,group_name:'典禮嘉賓',title:String(title||''),job_title:String(title||''),unit:String(unit||''),booth:''});
+    };
     let cer=null;
     try{ cer=this.getCeremonyData(); }catch(e){ cer=null; }
     ((cer&&cer.guests)||[]).forEach(g=>{
       const n=String((g&&g.name)||'').trim(); if(!n) return;
-      const k=normalizeOrgText(n);
-      if(seen.has(k)) return; seen.add(k);
-      out.push({key:k,name:n,group_name:'典禮嘉賓',title:String(g.title||''),job_title:String(g.title||'')});
+      pushGuest(n,g.unit||g.organization||'',g.title||'');
     });
+    try{
+      const custom=this.getSouvenirStampData().guests_custom||[];
+      custom.forEach(c=>{
+        if(!c||!c.name) return;
+        pushGuest(c.name,c.unit||'',c.title||c.job_title||'');
+      });
+    }catch(e){}
     return out;
   }
 ,
@@ -91,66 +122,73 @@ Object.assign(ScoutEventApp.prototype,{
     return {total:roster.length,ticked,pending:roster.length-ticked};
   }
 ,
-  /* —— 派發表（TICK 人名）：行政組（工作人員）／嘉賓接待組（嘉賓）部門中心共用 —— */
   renderSouvenirStampsHTML(scope){
     const def=this.souvenirStampScopeDef(scope);
     const roster=this.souvenirRoster(scope);
-    const map=this.getSouvenirStampData()[scope]||{};
+    const store=this.getSouvenirStampData();
+    const map=store[scope]||{};
     const canManage=this.canManageSouvenirStamps(scope);
     const st=this.souvenirStampStats(scope);
     const pct=st.total?Math.round(st.ticked/st.total*100):0;
-    // 組別統計（工作人員版：逐組睇派咗幾多个）
     const byGroup={};
     roster.forEach(p=>{ const g=p.group_name||'未分組'; byGroup[g]=byGroup[g]||{total:0,ticked:0}; byGroup[g].total++; if(map[p.key]&&map[p.key].ticked) byGroup[g].ticked++; });
     const groupChips=Object.keys(byGroup).map(g=>`<span class="text-[10px] bg-white border px-2 py-1 rounded-full whitespace-nowrap">${escapeHtml(g)} <b>${byGroup[g].ticked}</b>/${byGroup[g].total}</span>`).join('');
+    const isStaff=scope==='staff';
     const rows=roster.map((p,i)=>{
       const e=map[p.key]||{};
       const ticked=!!e.ticked;
-      const search=`${p.name} ${p.group_name} ${p.job_title||p.title||''} ${e.remark||''}`.toLowerCase();
+      const remarkVal=e.remark||p.remark||'';
+      const boothVal=p.booth||e.booth||'';
+      const unitVal=p.unit||e.unit||'';
+      const search=`${p.name} ${p.group_name} ${p.job_title||p.title||''} ${remarkVal} ${boothVal} ${unitVal}`.toLowerCase();
+      const nameCell=escapeHtml(p.name);
+      const groupCell=escapeHtml(p.group_name||'');
+      const boothCell=escapeHtml(boothVal);
+      const titleCell=escapeHtml(p.job_title||p.title||'');
+      const unitCell=escapeHtml(unitVal);
       return `<tr class="${ticked?'bg-emerald-50/60':''}" data-search="${escapeHtml(search)}">
         <td class="border px-2 py-1 text-center"><input type="checkbox" class="w-4 h-4 accent-emerald-600" ${ticked?'checked':''} ${canManage?'':'disabled'} onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this)" title="派咗紀念章就剔"></td>
-        <td class="border px-2 py-1 font-bold whitespace-nowrap" data-label="姓名">${escapeHtml(p.name)}</td>
-        <td class="border px-2 py-1 whitespace-nowrap" data-label="組別">${escapeHtml(p.group_name||'')}</td>
-        <td class="border px-2 py-1 text-[10px]" data-label="${scope==='guests'?'職銜':'職位'}">${escapeHtml(p.job_title||p.title||'')}</td>
+        <td class="border px-2 py-1 font-bold whitespace-nowrap" data-label="姓名">${nameCell}</td>
+        ${isStaff?`<td class="border px-2 py-1 whitespace-nowrap" data-label="組別">${groupCell}</td><td class="border px-2 py-1 whitespace-nowrap text-[11px]" data-label="攤位">${boothCell||'<span class=text-slate-300>—</span>'}</td><td class="border px-2 py-1 text-[10px]" data-label="身份">${titleCell}</td>`
+        :`<td class="border px-2 py-1 whitespace-nowrap text-[11px]" data-label="單位">${unitCell||'<span class=text-slate-300>—</span>'}</td><td class="border px-2 py-1 text-[10px]" data-label="職銜">${titleCell}</td>`}
         <td class="border px-2 py-1 text-[10px] stamp-status-cell" data-label="派發紀錄">${ticked?`<span class="text-emerald-700 font-bold">✅ 已派</span><br><span class="text-slate-500">${escapeHtml(e.ticked_at||'')} · ${escapeHtml(e.ticked_by||'')}</span>`:'<span class="text-slate-400">⬜ 未派</span>'}</td>
-        ${def.canRename?`<td class="border px-2 py-1" data-label="備註">${canManage
-          ?`<input value="${escapeHtml(e.remark||'')}" placeholder="改名／替假請註明" onchange="app.saveSouvenirStampRemark('${scope}','${escapeHtml(p.key)}',this.value)" class="w-full min-w-[140px] px-2 py-1 border rounded-lg text-[11px]">`
-          :escapeHtml(e.remark||'')}</td>`:`<td class="border px-2 py-1 text-[10px] text-slate-400" data-label="備註">—（嘉賓名單不可改名）</td>`}
+        ${isStaff?`<td class="border px-2 py-1" data-label="備註(改名)">${canManage?`<input value="${escapeHtml(remarkVal)}" placeholder="改名／替假請註明" onchange="app.saveSouvenirStampRemark('${scope}','${escapeHtml(p.key)}',this.value)" class="w-full min-w-[140px] px-2 py-1 border rounded-lg text-[11px]">`:escapeHtml(remarkVal)}</td>`
+        :`<td class="border px-2 py-1 text-[10px] text-slate-400" data-label="備註">—</td>`}
       </tr>`;
     }).join('');
+    const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th><th class="border px-2 py-1 text-left">姓名</th><th class="border px-2 py-1 text-left">組別</th><th class="border px-2 py-1 text-left">攤位(如有)</th><th class="border px-2 py-1 text-left">身份</th><th class="border px-2 py-1 text-left">派發紀錄</th><th class="border px-2 py-1 text-left">備註(改名)</th>`;
+    const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th><th class="border px-2 py-1 text-left">姓名</th><th class="border px-2 py-1 text-left">單位</th><th class="border px-2 py-1 text-left">職銜</th><th class="border px-2 py-1 text-left">派發紀錄</th><th class="border px-2 py-1 text-left">備註</th>`;
     return `<div class="space-y-3">
-      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發）':'（你只可以查閱）'}</div>
+      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}</div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
         <div class="bg-white border rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${st.total}</div><div class="text-[10px]">${escapeHtml(def.label)}總人數</div></div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-emerald-700" id="stamp-count-${scope}">${st.ticked}</div><div class="text-[10px]">已派發</div></div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-amber-700" id="stamp-pending-${scope}">${st.pending}</div><div class="text-[10px]">未派發</div></div>
         <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-fuchsia-700" id="stamp-pct-${scope}">${pct}%</div><div class="text-[10px]">派發進度</div></div>
       </div>
-      ${scope==='staff'?`<div class="flex flex-wrap gap-1.5"><span class="text-[10px] text-slate-500 py-1">按組別進度：</span>${groupChips}</div>`:''}
+      ${isStaff?`<div class="flex flex-wrap gap-1.5"><span class="text-[10px] text-slate-500 py-1">按組別進度：</span>${groupChips}</div>`:''}
       <div class="flex gap-2 flex-wrap items-center">
-        <input id="stamp-search-${scope}" oninput="app.filterSouvenirStamps('${scope}')" placeholder="🔍 搜尋姓名／組別${def.canRename?'／備註':''}" class="px-3 py-2 border rounded-xl text-xs min-w-[180px]">
+        <input id="stamp-search-${scope}" oninput="app.filterSouvenirStamps('${scope}')" placeholder="🔍 搜尋姓名／組別／備註" class="px-3 py-2 border rounded-xl text-xs min-w-[180px]">
         <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="px-3 py-2 border rounded-xl text-xs bg-white">
           <option value="all">全部</option><option value="pending">只睇未派發</option><option value="ticked">只睇已派發</option>
         </select>
         ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
         <button onclick="app.exportSouvenirStampsCSV('${scope}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出派發紀錄 CSV</button>
         <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
+        ${canManage&&((isStaff&&(store.staff_custom||[]).length)||(!isStaff&&(store.guests_custom||[]).length))?`<button onclick="app.clearSouvenirCustom('${scope}')" class="bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>清除匯入名單</button>`:''}
       </div>
       <div id="stamp-print-${scope}" class="bg-white border rounded-xl p-3">
         <div class="table-responsive"><table class="min-w-full text-[11px] border" id="stamp-table-${scope}">
-          <thead class="bg-slate-100"><tr>
-            <th class="border px-2 py-1">派發<br>(TICK)</th><th class="border px-2 py-1 text-left">姓名</th><th class="border px-2 py-1 text-left">組別</th><th class="border px-2 py-1 text-left">${scope==='guests'?'職銜':'職位'}</th><th class="border px-2 py-1 text-left">派發紀錄</th><th class="border px-2 py-1 text-left">備註</th>
-          </tr></thead>
-          <tbody>${rows||`<tr><td colspan="6" class="border px-2 py-4 text-center text-slate-400">暫無${escapeHtml(def.label)}名單</td></tr>`}</tbody>
+          <thead class="bg-slate-100"><tr>${isStaff?headerStaff:headerGuest}</tr></thead>
+          <tbody>${rows||`<tr><td colspan="${isStaff?7:6}" class="border px-2 py-4 text-center text-slate-400">暫無${escapeHtml(def.label)}名單</td></tr>`}</tbody>
         </table></div>
-        <p class="text-[10px] text-slate-400 mt-2">${scope==='guests'
-          ?'嘉賓名單來自「執行手冊 → 典禮儀式 → 嘉賓名單」，唔可以改名（冇代嘉賓）；如名單有變請先改嘉賓名單。派發由行政組及嘉賓接待組管理。'
-          :'工作人員名單來自開戶用戶＋組織架構與聯絡表（活動前已有全人名）；有工作人員改名／替假，請喺「備註」註明實際領取人。派發由行政組管理。'}</p>
+        <p class="text-[10px] text-slate-400 mt-2">${isStaff
+          ?'工作人員名單來自開戶用戶＋組織架構與聯絡表＋EXCEL 匯入（活動前已有全人名）；有工作人員改名／替假，請喺「備註(改名)」註明實際領取人。欄位：姓名 組別 攤位(如有) 身份 備註(改名) TICK。派發由行政組管理。'
+          :'嘉賓名單來自「執行手冊 → 典禮儀式 → 嘉賓名單」＋EXCEL 匯入，唔可以改名（冇代嘉賓）；如名單有變請先改嘉賓名單。欄位：姓名 單位 職銜 TICK。派發由行政組及嘉賓接待組管理。'}</p>
       </div>
     </div>`;
   }
 ,
-  /* —— TICK 派發（記錄派咗俾邊個、幾時、邊個派）—— */
   toggleSouvenirStamp(scope,key,el){
     if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); if(el) el.checked=!el.checked; return; }
     const person=this.souvenirRoster(scope).find(p=>p.key===key)||{key,name:key,group_name:''};
@@ -160,7 +198,7 @@ Object.assign(ScoutEventApp.prototype,{
     const stamp=`${now.toLocaleDateString('zh-HK')} ${now.toTimeString().slice(0,5)}`;
     const e=map[key]||{};
     const ticked=el?!!el.checked:!e.ticked;
-    e.name=person.name; e.group_name=person.group_name||''; e.job_title=person.job_title||person.title||'';
+    e.name=person.name; e.group_name=person.group_name||''; e.job_title=person.job_title||person.title||''; e.booth=person.booth||e.booth||''; e.unit=person.unit||e.unit||'';
     if(ticked){
       e.ticked=true; e.ticked_at=stamp; e.ticked_by=this.currentUser?.name||''; e.ticked_by_id=this.currentUser?.user_id||'';
     }else{
@@ -170,7 +208,6 @@ Object.assign(ScoutEventApp.prototype,{
     if(!e.created_at) e.created_at=e.updated_at;
     map[key]=e; data[scope]=map;
     this.saveSouvenirStampData(data,{scope,key,row:e});
-    // 只更新呢一行＋頂部數字（唔重畫成個表，避免搜尋關鍵字消失）
     if(el){
       const tr=el.closest?el.closest('tr'):null;
       if(tr){
@@ -186,7 +223,6 @@ Object.assign(ScoutEventApp.prototype,{
     showToast(ticked?`已記錄派發紀念章俾 ${person.name}`:`已取消 ${person.name} 嘅派發紀錄`,'success');
   }
 ,
-  /* —— 備註（工作人員版专用：紀錄改名／替假）—— */
   saveSouvenirStampRemark(scope,key,value){
     if(!this.souvenirStampScopeDef(scope).canRename){ showToast('嘉賓名單唔可以改名','warning'); return; }
     if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); return; }
@@ -194,7 +230,7 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getSouvenirStampData();
     const map=data[scope]||{};
     const e=map[key]||{};
-    e.name=person.name; e.group_name=person.group_name||''; e.job_title=person.job_title||'';
+    e.name=person.name; e.group_name=person.group_name||''; e.job_title=person.job_title||''; e.booth=person.booth||e.booth||'';
     e.remark=String(value||'').trim();
     e.updated_at=new Date().toISOString();
     if(!e.created_at) e.created_at=e.updated_at;
@@ -222,11 +258,16 @@ Object.assign(ScoutEventApp.prototype,{
     const def=this.souvenirStampScopeDef(scope);
     const roster=this.souvenirRoster(scope);
     const map=this.getSouvenirStampData()[scope]||{};
-    const head=['姓名','組別',(scope==='guests'?'職銜':'職位'),'已派發','派發時間','派發人','備註'];
+    const isStaff=scope==='staff';
+    const head=isStaff?['姓名','組別','攤位','身份','已派發','派發時間','派發人','備註(改名)']:['姓名','單位','職銜','已派發','派發時間','派發人'];
     const esc=s=>`"${String(s??'').replace(/"/g,'""')}"`;
     const rows=roster.map(p=>{
       const e=map[p.key]||{};
-      return [p.name,p.group_name,p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||'',e.remark||''].map(esc).join(',');
+      if(isStaff){
+        return [p.name,p.group_name,p.booth||e.booth||'',p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||'',e.remark||p.remark||''].map(esc).join(',');
+      }else{
+        return [p.name,p.unit||e.unit||'',p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||''].map(esc).join(',');
+      }
     });
     const csv='\ufeff'+[head.map(esc).join(','),...rows].join('\n');
     const blob=new Blob([csv],{type:'text/csv'});
@@ -235,125 +276,123 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('已匯出紀念章派發紀錄','success');
   }
 ,
-  /* —— EXCEL 匯入名單 —— */
+  clearSouvenirCustom(scope){
+    if(!this.canManageSouvenirStamps(scope)) return;
+    if(!confirm('確定清除所有匯入的自訂名單？（已 TICK 紀錄會保留）')) return;
+    const data=this.getSouvenirStampData();
+    if(scope==='staff') data.staff_custom=[];
+    else data.guests_custom=[];
+    this.saveSouvenirStampData(data,{scope,custom:[]});
+    showToast('已清除匯入名單','success');
+    if(this.currentModule==='admin_group'){
+      this.adminGroupTab=scope==='staff'?'stamp_staff':'stamp_guest';
+      this.renderAdminGroupModule();
+      return;
+    }
+    const ids=[`admin-tab-${scope==='staff'?'stamp_staff':'stamp_guest'}`,`group-tab-${scope==='staff'?'stamp_staff':'stamp_guest'}`];
+    for(const id of ids){
+      const el=document.getElementById(id);
+      if(el){ el.innerHTML=this.renderSouvenirStampsHTML(scope); return; }
+    }
+    const mc=document.getElementById('module-content');
+    if(mc) mc.innerHTML=this.renderSouvenirStampsHTML(scope);
+  }
+,
   async handleSouvenirStampsExcelUpload(scope, file){
     if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); return; }
     if(!file){ showToast('請選擇 EXCEL 檔案','warning'); return; }
-    
     const overlay=document.getElementById('savingOverlay');
-    overlay.classList.add('active');
-    document.getElementById('savingText').textContent='正在解析 EXCEL 名單...';
-    
+    if(overlay) overlay.classList.add('active');
+    const savingText=document.getElementById('savingText');
+    if(savingText) savingText.textContent='正在解析 EXCEL 名單...';
     try{
-      const data=await this.readExcelFile(file);
-      const results=[];
-      
-      if(scope==='staff'){
-        // 工作人員名單：姓名、組別、攤位(如有)、身份、備註(改名)
-        const headerMap={};
-        const headers=data[0]||[];
-        headers.forEach((h,i)=>{ headerMap[String(h||'').trim().toLowerCase()]=i; });
-        
-        for(let i=1;i<data.length;i++){
-          const row=data[i]||[];
-          if(!row.length) continue;
-          
-          const name=String(row[headerMap['姓名']]||row[headerMap['name']]||row[0]||'').trim();
-          if(!name) continue;
-          
-          const group=String(row[headerMap['組別']]||row[headerMap['group']]||row[headerMap['group_name']]||'']).trim();
-          const booth=String(row[headerMap['攤位']]||row[headerMap['booth']]||'').trim();
-          const identity=String(row[headerMap['身份']]||row[headerMap['identity']]||row[headerMap['job_title']]||row[headerMap['role']]||'').trim();
-          const remark=String(row[headerMap['備註']]||row[headerMap['remark']]||row[headerMap['notes']]||'').trim();
-          
-          results.push({
-            key: normalizeOrgText(name),
-            name: name,
-            group_name: normalizeGroupName(group)||'未分組',
-            job_title: identity||'',
-            booth: booth||'',
-            remark: remark||''
-          });
+      const sheetData=await this.readExcelFile(file);
+      if(!sheetData||!sheetData.length){ showToast('EXCEL 空白','warning'); return; }
+      const headers=(sheetData[0]||[]).map(h=>String(h||'').trim());
+      const lowerHeaders=headers.map(h=>String(h||'').toLowerCase().replace(/\s+/g,''));
+      const findCol=names=>{
+        for(const n of names){
+          const nl=String(n).toLowerCase().replace(/\s+/g,'');
+          let idx=lowerHeaders.indexOf(nl);
+          if(idx>=0) return idx;
+          idx=lowerHeaders.findIndex(h=>h.includes(nl)||nl.includes(h));
+          if(idx>=0) return idx;
         }
-      } else if(scope==='guests'){
-        // 嘉賓名單：姓名、單位、職銜
-        const headerMap={};
-        const headers=data[0]||[];
-        headers.forEach((h,i)=>{ headerMap[String(h||'').trim().toLowerCase()]=i; });
-        
-        for(let i=1;i<data.length;i++){
-          const row=data[i]||[];
-          if(!row.length) continue;
-          
-          const name=String(row[headerMap['姓名']]||row[headerMap['name']]||row[0]||'').trim();
+        return -1;
+      };
+      const results=[];
+      if(scope==='staff'){
+        const idxName=findCol(['姓名','名字','name','姓名(全名)']);
+        const idxGroup=findCol(['組別','組','部門','group','組別名稱','group_name']);
+        const idxBooth=findCol(['攤位','攤位編號','booth','攤位(如有)','攤位號','攤位名稱']);
+        const idxRole=findCol(['身份','職位','身份/職位','role','job_title','身分','崗位','身份/組別','職銜']);
+        const idxRemark=findCol(['備註','備註(改名)','改名','備注','remark','notes','備註/改名','備註改名']);
+        for(let i=1;i<sheetData.length;i++){
+          const row=sheetData[i]||[];
+          if(!row||!row.length) continue;
+          const name=String(row[idxName>=0?idxName:0]||'').trim();
           if(!name) continue;
-          
-          const unit=String(row[headerMap['單位']]||row[headerMap['unit']]||row[headerMap['organization']]||'').trim();
-          const title=String(row[headerMap['職銜']]||row[headerMap['title']]||row[headerMap['job_title']]||'').trim();
-          
-          results.push({
-            key: normalizeOrgText(name),
-            name: name,
-            group_name: '典禮嘉賓',
-            title: title||'',
-            job_title: title||'',
-            unit: unit||''
-          });
+          const group=String(row[idxGroup>=0?idxGroup:1]||'').trim();
+          const booth=String(row[idxBooth>=0?idxBooth:2]||'').trim();
+          const role=String(row[idxRole>=0?idxRole:(idxBooth>=0?3:2)]||'').trim();
+          const remark=String(row[idxRemark>=0?idxRemark:4]||'').trim();
+          if(name.toLowerCase()==='姓名' || name.toLowerCase()==='name') continue;
+          results.push({name,group_name:normalizeGroupName(group)||group||'未分組',booth,role,job_title:role,identity:role,remark,group});
+        }
+      }else{
+        const idxName=findCol(['姓名','名字','name']);
+        const idxUnit=findCol(['單位','機構','unit','organization','單位名稱','organisation']);
+        const idxTitle=findCol(['職銜','職稱','職銜/職位','title','job_title','職位','身份']);
+        for(let i=1;i<sheetData.length;i++){
+          const row=sheetData[i]||[];
+          if(!row||!row.length) continue;
+          const name=String(row[idxName>=0?idxName:0]||'').trim();
+          if(!name) continue;
+          if(name.toLowerCase()==='姓名' || name.toLowerCase()==='name') continue;
+          const unit=String(row[idxUnit>=0?idxUnit:1]||'').trim();
+          const title=String(row[idxTitle>=0?idxTitle:2]||'').trim();
+          results.push({name,unit,title,job_title:title,group_name:'典禮嘉賓'});
         }
       }
-      
-      if(!results.length){ showToast('EXCEL 中未找到有效名單','warning'); return; }
-      
-      // 合併到現有名單（舊名單保留，新名單追加）
-      const existingRoster=this.souvenirRoster(scope);
-      const existingKeys=new Set(existingRoster.map(p=>p.key));
-      
-      const newEntries=[];
+      if(!results.length){ showToast('EXCEL 中未找到有效名單（請檢查欄位：姓名／組別／身份 等）','warning'); return; }
+      const store=this.getSouvenirStampData();
+      const customKey=scope==='staff'?'staff_custom':'guests_custom';
+      const existingCustom=store[customKey]||[];
+      const existingMap=new Map();
+      existingCustom.forEach(c=>{ if(c&&c.name) existingMap.set(normalizeOrgText(c.name), c); });
+      // 合併：同名覆蓋
       results.forEach(r=>{
-        if(!existingKeys.has(r.key)){
-          newEntries.push(r);
-          existingKeys.add(r.key);
+        const k=normalizeOrgText(r.name);
+        existingMap.set(k,r);
+      });
+      const merged=Array.from(existingMap.values());
+      store[customKey]=merged;
+      this.saveSouvenirStampData(store,{scope,custom:merged});
+      showToast(`成功匯入 ${results.length} 個名單，共 ${merged.length} 個自訂名單（同名會覆蓋）`,'success');
+      if(this.currentModule==='admin_group'){
+        this.adminGroupTab=scope==='staff'?'stamp_staff':'stamp_guest';
+        this.renderAdminGroupModule();
+      }else{
+        const tabId=scope==='staff'?'stamp_staff':'stamp_guest';
+        const candidates=[`admin-tab-${tabId}`,`group-tab-${tabId}`];
+        let done=false;
+        for(const cid of candidates){
+          const el=document.getElementById(cid);
+          if(el){ el.innerHTML=this.renderSouvenirStampsHTML(scope); done=true; break; }
         }
-      });
-      
-      if(!newEntries.length){ showToast('所有名單都已存在','warning'); return; }
-      
-      // 更新本地儲存
-      const data=this.getSouvenirStampData();
-      const map=data[scope]||{};
-      
-      newEntries.forEach(r=>{
-        const key=r.key;
-        map[key]={
-          name: r.name,
-          group_name: r.group_name,
-          job_title: r.job_title||r.title||'',
-          booth: r.booth||'',
-          unit: r.unit||'',
-          remark: r.remark||'',
-          ticked: false,
-          ticked_at: '',
-          ticked_by: '',
-          ticked_by_id: '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-      });
-      
-      data[scope]=map;
-      this.saveSouvenirStampData(data);
-      
-      showToast(`成功匯入 ${newEntries.length} 個名單（${results.length} 總數，${results.length-newEntries.length} 已存在）`,'success');
-      this.renderSouvenirStampsHTML(scope);
-      
+        if(!done){
+          const mc=document.getElementById('module-content');
+          if(mc) mc.innerHTML=this.renderSouvenirStampsHTML(scope);
+        }
+      }
     }catch(e){
-      showToast('匯入失敗：'+(e.message||e),'error');
+      console.error(e);
+      showToast('匯入失敗：'+(e&&e.message||e),'error');
     }finally{
-      overlay.classList.remove('active');
+      if(overlay) overlay.classList.remove('active');
     }
   }
 ,
-  /* —— 讀取 EXCEL 文件通用函數 —— */
   async readExcelFile(file){
     return new Promise((resolve, reject)=>{
       try{
@@ -365,11 +404,11 @@ Object.assign(ScoutEventApp.prototype,{
             const firstSheet=workbook.Sheets[workbook.SheetNames[0]];
             const jsonData=XLSX.utils.sheet_to_json(firstSheet, {header: 1});
             resolve(jsonData);
-          }catch(e){ reject(e); }
+          }catch(err){ reject(err); }
         };
         reader.onerror=reject;
         reader.readAsArrayBuffer(file);
-      }catch(e){ reject(e); }
+      }catch(err){ reject(err); }
     });
   }
 ,
