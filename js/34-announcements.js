@@ -217,6 +217,7 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="border rounded-xl p-4 bg-white space-y-2">
             <div class="flex justify-between items-start gap-2"><div><b class="text-[13px]">${escapeHtml(d.title)}</b> <span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border ml-1">${escapeHtml(d.category)}</span></div><div class="flex gap-1 flex-shrink-0">${canEdit?`<button onclick="app.openUnitGuideForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteUnitGuide('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
             <div class="text-[11px] text-slate-600 leading-relaxed whitespace-pre-line">${escapeHtml(d.description)}</div>
+            ${(d.file_url||d.file_data)?`<div class="flex gap-1 flex-wrap">${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" rel="noopener" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">📄 開啟附件</a>`:''}${d.file_data?`<button onclick="app.downloadUnitGuideFile('${d.id}')" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">📥 下載附件</button>`:''}</div>`:''}
           </div>
         `).join('') || '<p class="text-xs text-slate-400 py-4 text-center">暫無須知</p>'}</div>
       </div>
@@ -230,7 +231,13 @@ Object.assign(ScoutEventApp.prototype,{
     let html=`<input type="hidden" id="ug-mode" value="${existing?'edit':'create'}"><input type="hidden" id="ug-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">標題 *</label><input id="ug-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="mt-3"><label class="text-[11px] font-bold">分類</label><input id="ug-category" value="${escapeHtml(existing?.category||'報到')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="ug-desc" rows="5" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>`;
+      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="ug-desc" rows="5" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+      <div class="mt-3 border-t pt-3">
+        <label class="text-[11px] font-bold">附件（檔案或連結，可選）</label>
+        <input type="file" id="ug-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.xlsx,.xls,.txt" class="w-full text-xs mt-1">
+        <input id="ug-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="或貼上連結（例如 Drive／網上指南）" class="w-full px-3 py-2 border rounded-xl text-sm mt-2">
+        ${existing&&(existing.file_name||existing.file_url)?`<div class="text-[10px] text-slate-500 mt-1">已有附件：${escapeHtml(existing.file_name||existing.file_url)}（重新上傳檔案或填新連結會取代）</div>`:''}
+      </div>`;
     document.getElementById('record-modal-title').textContent=existing?'編輯旅團須知':'新增旅團須知';
     document.getElementById('record-form-fields').innerHTML=html;
     const form=document.getElementById('record-form');
@@ -238,16 +245,30 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('modal-record').classList.remove('hidden');
   }
 ,
-  submitUnitGuideForm(){
+  async submitUnitGuideForm(){
     const mode=document.getElementById('ug-mode').value, id=document.getElementById('ug-id').value;
     const title=document.getElementById('ug-title').value.trim(), category=document.getElementById('ug-category').value.trim(), description=document.getElementById('ug-desc').value.trim();
     if(!title){ showToast('請填寫標題','error'); return; }
     const data=this.getUnitGuideData();
-    if(mode==='edit'){ const i=data.docs.findIndex(d=>d.id===id); if(i>=0) data.docs[i]={...data.docs[i],title,category,description}; }
-    else data.docs.push({id:'ug_'+Date.now(),title,category,description,created_at:new Date().toISOString()});
+    const existing=mode==='edit'?data.docs.find(d=>d.id===id):null;
+    // v13.1：須知可附檔案或連結（可選——文字內容本身就係須知，附件係加強）
+    const file=document.getElementById('ug-file').files[0];
+    const url=document.getElementById('ug-url').value.trim();
+    let fileName=existing?.file_name||'', fileData=existing?.file_data||'', fileUrl=existing?.file_url||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; fileUrl=url; }
+    else if(url){ fileUrl=url; fileData=''; fileName=''; }
+    if(mode==='edit'){ const i=data.docs.findIndex(d=>d.id===id); if(i>=0) data.docs[i]={...data.docs[i],title,category,description,file_name:fileName,file_data:fileData,file_url:fileUrl,updated_by:this.currentUser?.name||'',updated_at:new Date().toISOString()}; }
+    else data.docs.push({id:'ug_'+Date.now(),title,category,description,file_name:fileName,file_data:fileData,file_url:fileUrl,created_by:this.currentUser?.name||'',created_at:new Date().toISOString()});
     this.saveUnitGuideData(data); this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
     showToast('已保存','success'); this.renderUnitGuideModule();
+  }
+,
+  downloadUnitGuideFile(id){
+    const d=this.getUnitGuideData().docs.find(x=>x.id===id);
+    if(!d) return;
+    if(d.file_data) downloadDataUrl(d.file_name||`${d.title||'unit_guide'}`, d.file_data);
+    else if(d.file_url) window.open(d.file_url,'_blank');
   }
 ,
   deleteUnitGuide(id){

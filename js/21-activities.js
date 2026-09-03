@@ -1357,9 +1357,12 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getDocumentsData();
     const existing=id?data.docs.find(d=>d.id===id):null;
     const file=document.getElementById('doc-file').files[0];
+    const url=document.getElementById('doc-url').value.trim();
     let fileData=existing?.file_data||'';
     let fileName=existing?.file_name||'';
     if(file){ fileData=await fileToDataUrl(file); fileName=file.name; }
+    // v13：上傳文件一定要有「檔案」或「連結」，唔可以淨係手打文字
+    if(!file&&!url&&!existing?.file_data&&!existing?.file_url){ showToast('請上傳檔案或填寫連結（文件必須有檔案或連結）','error'); return; }
     const record={
       id:existing?.id||'doc_'+Date.now(),
       title,

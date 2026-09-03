@@ -1121,6 +1121,7 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="border rounded-xl p-3 bg-slate-50">
             <div class="flex justify-between items-start gap-2"><b class="text-[12px]">${escapeHtml(d.title)}</b>${canEdit?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.openCrisisDocForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteCrisisDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}</div>
             <div class="text-[11px] text-slate-600 mt-1 whitespace-pre-line leading-relaxed">${escapeHtml(d.description)}</div>
+            ${(d.file_url||d.file_data)?`<div class="flex gap-1 flex-wrap mt-2">${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" rel="noopener" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">📄 開啟附件</a>`:''}${d.file_data?`<button onclick="app.downloadCrisisDocFile('${d.id}')" class="bg-white border px-2.5 py-1 rounded-xl text-[10px] font-bold">📥 下載附件</button>`:''}</div>`:''}
           </div>`).join('')}</div>
         ${canEdit?`<button onclick="app.openCrisisDocForm(null,'${cat}')" class="mt-2 bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增${escapeHtml(cat)}指引</button>`:''}
       </div>`;
@@ -1134,7 +1135,13 @@ Object.assign(ScoutEventApp.prototype,{
     let html=`<input type="hidden" id="cr-mode" value="${existing?'edit':'create'}"><input type="hidden" id="cr-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">標題 *</label><input id="cr-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="mt-3"><label class="text-[11px] font-bold">分類</label><select id="cr-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="定義">定義</option><option value="小組">小組</option><option value="天氣">天氣</option><option value="傳染病">傳染病</option><option value="意外">意外</option><option value="事故">事故</option><option value="取消">取消</option><option value="急救">急救</option><option value="保險">保險</option><option value="其他">其他</option></select></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="cr-desc" rows="6" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>`;
+      <div class="mt-3"><label class="text-[11px] font-bold">內容</label><textarea id="cr-desc" rows="6" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+      <div class="mt-3 border-t pt-3">
+        <label class="text-[11px] font-bold">附件（檔案或連結，可選）</label>
+        <input type="file" id="cr-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.xlsx,.xls,.txt" class="w-full text-xs mt-1">
+        <input id="cr-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="或貼上連結（例如 Drive／官方指引 PDF）" class="w-full px-3 py-2 border rounded-xl text-sm mt-2">
+        ${existing&&(existing.file_name||existing.file_url)?`<div class="text-[10px] text-slate-500 mt-1">已有附件：${escapeHtml(existing.file_name||existing.file_url)}（重新上傳檔案或填新連結會取代）</div>`:''}
+      </div>`;
     document.getElementById('record-modal-title').textContent=existing?'編輯危機指引':'新增危機指引';
     document.getElementById('record-form-fields').innerHTML=html;
     if(existing) document.getElementById('cr-category').value=existing.category; else document.getElementById('cr-category').value=cat;
@@ -1143,16 +1150,32 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('modal-record').classList.remove('hidden');
   }
 ,
-  submitCrisisDocForm(){
+  async submitCrisisDocForm(){
     const mode=document.getElementById('cr-mode').value, id=document.getElementById('cr-id').value;
     const title=document.getElementById('cr-title').value.trim(), category=document.getElementById('cr-category').value, description=document.getElementById('cr-desc').value.trim();
     if(!title){ showToast('請填寫標題','error'); return; }
     const data=this.getCrisisData();
-    if(mode==='edit'){ const i=data.docs.findIndex(d=>d.id===id); if(i>=0) data.docs[i]={...data.docs[i],title,category,description}; }
-    else data.docs.push({id:'cr_'+Date.now(),title,category,description,created_at:new Date().toISOString()});
+    const existing=mode==='edit'?(data.docs||[]).find(d=>d.id===id):null;
+    // v13.1：指引可附檔案或連結（可選——文字內容本身就係指引，附件係加強）
+    const file=document.getElementById('cr-file').files[0];
+    const url=document.getElementById('cr-url').value.trim();
+    let fileName=existing?.file_name||'', fileData=existing?.file_data||'', fileUrl=existing?.file_url||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; fileUrl=url; }
+    else if(url){ fileUrl=url; fileData=''; fileName=''; }
+    const stamp=new Date().toISOString();
+    // v13.1：_userEdited 標記令用戶新增／編輯嘅指引喺重新載入（活動 JSON 為準）後仍會保留
+    if(mode==='edit'){ const i=data.docs.findIndex(d=>d.id===id); if(i>=0) data.docs[i]={...data.docs[i],title,category,description,file_name:fileName,file_data:fileData,file_url:fileUrl,_userEdited:true,updated_by:this.currentUser?.name||'',updated_at:stamp}; }
+    else data.docs.push({id:'cr_'+Date.now(),title,category,description,file_name:fileName,file_data:fileData,file_url:fileUrl,_userEdited:true,updated_by:this.currentUser?.name||'',created_at:stamp});
     this.saveCrisisData(data); this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
     showToast('已保存','success'); this.renderCrisisModule();
+  }
+,
+  downloadCrisisDocFile(id){
+    const d=(this.getCrisisData().docs||[]).find(x=>x.id===id);
+    if(!d) return;
+    if(d.file_data) downloadDataUrl(d.file_name||`${d.title||'crisis_guide'}`, d.file_data);
+    else if(d.file_url) window.open(d.file_url,'_blank');
   }
 ,
   deleteCrisisDoc(id){
@@ -1266,16 +1289,50 @@ Object.assign(ScoutEventApp.prototype,{
     const pendingExp=expenses.filter(e=>e.status==='pending').length;
     const incomeTotal=(fin.income||[]).reduce((s,i)=>s+(parseFloat(i.actual)||0),0);
     const expenseTotal=expenses.reduce((s,e)=>s+(parseFloat(e.actual)||0),0);
-    return `<div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+    // v13：各部門開支申報及口頭報價「匯總」——各組喺自己部門中心提交後自動滙入呢度（毋須重新輸入）
+    const quotes=(this.getOralQuotesData().quotes||[]);
+    const groups=this.getEventGroups();
+    const grp=(g)=>{
+      const budget=(budgets||[]).find(b=>normalizeGroupName(b.group_name)===normalizeGroupName(g));
+      const bTotal=((budget&&budget.items)||[]).reduce((s,i)=>s+(parseFloat(i.budget)||0),0);
+      const exps=expenses.filter(e=>normalizeGroupName(e.group_name)===normalizeGroupName(g));
+      const pend=exps.filter(e=>e.status==='pending'), appr=exps.filter(e=>e.status==='approved'), rej=exps.filter(e=>e.status==='rejected');
+      const amt=arr=>arr.reduce((s,e)=>s+(parseFloat(e.actual)||0),0);
+      const gq=quotes.filter(q=>normalizeGroupName(q.group_name)===normalizeGroupName(g));
+      return {g,bTotal,expCount:exps.length,pend,appr,rej,pendAmt:amt(pend),apprAmt:amt(appr),rejAmt:amt(rej),claimTotal:amt(pend)+amt(appr),gqCount:gq.length,gqAmt:gq.reduce((s,q)=>s+(Number(q.amount)||0),0)};
+    };
+    const rows=groups.map(grp);
+    const tBud=rows.reduce((s,r)=>s+r.bTotal,0), tClaim=rows.reduce((s,r)=>s+r.claimTotal,0), tPend=rows.reduce((s,r)=>s+r.pendAmt,0), tAppr=rows.reduce((s,r)=>s+r.apprAmt,0);
+    const tPendN=rows.reduce((s,r)=>s+r.pend.length,0), tApprN=rows.reduce((s,r)=>s+r.appr.length,0), tQ=quotes.length;
+    const sumTr=rows.map(r=>`<tr>
+      <td class="border px-2 py-1 font-bold">${escapeHtml(r.g)}</td>
+      <td class="border px-2 py-1 text-right">$${r.bTotal.toLocaleString()}</td>
+      <td class="border px-2 py-1 text-center">${r.expCount}</td>
+      <td class="border px-2 py-1 text-right text-amber-600 font-bold">$${r.claimTotal.toLocaleString()}</td>
+      <td class="border px-2 py-1 text-center">${r.pend.length}<div class="text-[9.5px] text-slate-400">$${r.pendAmt.toLocaleString()}</div></td>
+      <td class="border px-2 py-1 text-center">${r.appr.length}<div class="text-[9.5px] text-slate-400">$${r.apprAmt.toLocaleString()}</div></td>
+      <td class="border px-2 py-1 text-center ${r.rej.length?'text-rose-600 font-bold':''}">${r.rej.length}</td>
+      <td class="border px-2 py-1 text-center">${r.gqCount}${r.gqAmt?`<div class="text-[9.5px] text-slate-400">$${r.gqAmt.toLocaleString()}</div>`:''}</td>
+      <td class="border px-2 py-1 text-right ${r.bTotal&&r.claimTotal>r.bTotal?'text-rose-600 font-bold':''}">${r.bTotal?'$'+(r.bTotal-r.claimTotal).toLocaleString():'—'}</td>
+    </tr>`).join('');
+    const canApprove=this.canApproveArea('finance');
+    const pendingList=expenses.filter(e=>e.status==='pending').slice(0,6).map(e=>`
+      <div class="border rounded-xl p-2.5 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="min-w-0"><div class="flex flex-wrap items-center gap-1.5"><b class="text-[12px]">${escapeHtml(e.item_name)}</b><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full border">${escapeHtml(e.group_name||'')}</span>${this.applicationStageHTML(e)}</div>
+        <div class="text-[11px] text-slate-500 mt-1">$${(parseFloat(e.actual)||0).toLocaleString()} · ${escapeHtml(e.voucher||'')} · ${escapeHtml(e.submitted_by||'')}</div></div>
+        <div class="flex gap-1 flex-shrink-0">${this.canConfirmApplication(e)?`<button onclick="app.confirmApplication('finance','${e.id}')" class="bg-sky-600 text-white px-2.5 py-1.5 rounded-xl text-[10px] font-bold">本組確認</button>`:''}${canApprove&&this.applicationReadyForApproval(e)?`<button onclick="app.approveExpense('${e.id}')" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded-xl text-[10px] font-bold">批准</button><button onclick="app.rejectExpense('${e.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1.5 rounded-xl text-[10px] font-bold">拒絕</button>`:''}</div>
+      </div>`).join('');
+    return `<div class="space-y-3">
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
       <div class="flex justify-between items-center flex-wrap gap-2">
-        <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務管理（行政組轄下）</h4>
+        <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務匯總（行政組轄下）</h4>
         <button onclick="app.openModule('finance')" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整財務頁</button>
       </div>
-      <div class="text-[11px] text-slate-600">財務屬行政組管轄，指引、預算、開支申報、口頭報價、結算批核全部在此處理。</div>
+      <div class="text-[11px] text-slate-600">財務屬行政組管轄。各部門在其部門中心「開支申報」及「口頭報價」頁籤提交後<b>自動匯入</b>以下匯總（毋須重新輸入）；指引、預算、結算批核全部在此處理。</div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
         <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">預算組別 / 項目</div><div class="font-bold text-sm text-amber-700">${budgets.length} / ${budgetItems}</div></div>
         <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">收入 (實際)</div><div class="font-bold text-sm text-emerald-700">$${incomeTotal.toLocaleString()}</div></div>
-        <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">開支 (實際)</div><div class="font-bold text-sm text-rose-600">$${expenseTotal.toLocaleString()}</div></div>
+        <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">開支申報 (已批核)</div><div class="font-bold text-sm text-rose-600">$${tAppr.toLocaleString()}</div></div>
         <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">待批開支</div><div class="font-bold text-sm ${pendingExp?'text-amber-600':'text-slate-400'}">${pendingExp} 項</div></div>
       </div>
       <div class="flex gap-2 flex-wrap">
@@ -1285,6 +1342,27 @@ Object.assign(ScoutEventApp.prototype,{
         <button onclick="app.openFinanceFromAdminGroup('oral_quotes')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-signature text-indigo-600 mr-1"></i>口頭報價</button>
         <button onclick="app.openFinanceFromAdminGroup('settlement')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print text-slate-600 mr-1"></i>結算總表</button>
       </div>
+    </div>
+    <div class="bg-white border rounded-xl p-4 space-y-2">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <b class="text-[13px]"><i class="fa-solid fa-chart-column text-amber-600 mr-1"></i>各部門開支申報及口頭報價匯總（自動）</b>
+        <button onclick="app.printCoordArea('admin-finance-summary-print','各部門開支申報及口頭報價匯總')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印匯總</button>
+      </div>
+      <div id="admin-finance-summary-print">
+      <div class="table-responsive"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr>
+        <th class="border px-2 py-1 text-left">組別</th><th class="border px-2 py-1">預算</th><th class="border px-2 py-1">申報宗數</th><th class="border px-2 py-1">已申報總額</th><th class="border px-2 py-1">待批</th><th class="border px-2 py-1">已批核</th><th class="border px-2 py-1">已拒絕</th><th class="border px-2 py-1">口頭報價</th><th class="border px-2 py-1">剩餘預算</th>
+      </tr></thead><tbody>
+        ${sumTr}
+        <tr class="bg-slate-900 text-white font-bold"><td class="border px-2 py-1">總計</td><td class="border px-2 py-1 text-right">$${tBud.toLocaleString()}</td><td class="border px-2 py-1 text-center">${expenses.length}</td><td class="border px-2 py-1 text-right">$${tClaim.toLocaleString()}</td><td class="border px-2 py-1 text-center">${tPendN}<div class="text-[9.5px]">$${tPend.toLocaleString()}</div></td><td class="border px-2 py-1 text-center">${tApprN}<div class="text-[9.5px]">$${tAppr.toLocaleString()}</div></td><td class="border px-2 py-1 text-center">${rows.reduce((s,r)=>s+r.rej.length,0)}</td><td class="border px-2 py-1 text-center">${tQ}</td><td class="border px-2 py-1 text-right">${tBud?'$'+(tBud-tClaim).toLocaleString():'—'}</td></tr>
+      </tbody></table></div>
+      <div class="text-[10px] text-slate-400 mt-1">各部門提交開支申報／口頭報價後即時自動更新；「剩餘預算」負數（紅字）表示該組已超出預算。</div>
+      </div>
+    </div>
+    ${pendingExp?`<div class="bg-white border rounded-xl p-4 space-y-2">
+      <b class="text-[13px]"><i class="fa-solid fa-hourglass-half text-amber-600 mr-1"></i>待處理開支申報（最新 ${Math.min(6,pendingExp)} 筆，共 ${pendingExp} 筆）</b>
+      <div class="space-y-2">${pendingList||''}</div>
+      <button onclick="app.openFinanceFromAdminGroup('expense')" class="text-[11px] text-sky-600 underline">查看全部待批開支 →</button>
+    </div>`:''}
     </div>`;
   }
 ,
@@ -1303,12 +1381,17 @@ Object.assign(ScoutEventApp.prototype,{
     const canUpload=this.canUploadDocument()||this.isAdmin();
     const data=this.getAdminGroupData();
     return `<div class="space-y-3">
-      <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 上傳文件</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
+      <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件（檔案／連結）</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${(data.docs||[]).map(d=>`
-        <div class="border rounded-xl p-4 bg-white space-y-2">
-          <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
-          <div class="text-[11px] text-slate-600">${escapeHtml(d.description)}</div>
-          <div class="flex gap-2">${canUpload?`<button onclick="app.openAdminDocForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAdminDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
+        <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col">
+          <div class="flex justify-between items-start gap-2"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border whitespace-nowrap">${escapeHtml(d.category)}</span></div>
+          ${d.description?`<div class="text-[11px] text-slate-600">${escapeHtml(d.description)}</div>`:''}
+          ${d.updated_by?`<div class="text-[10px] text-slate-400">上載：${escapeHtml(d.updated_by||'')}${d.updated_at?' · '+escapeHtml(String(d.updated_at).slice(0,10)):''}</div>`:''}
+          <div class="flex gap-2 flex-wrap mt-auto pt-1">
+            ${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</a>`:''}
+            ${d.file_data?`<button onclick="app.downloadAdminDocFile('${d.id}')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</button>`:''}
+            ${canUpload?`<button onclick="app.openAdminDocForm('${d.id}')" class="bg-white border px-2 py-1.5 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAdminDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1.5 rounded-xl text-[10px]">🗑️</button>`:''}
+          </div>
         </div>`).join('')||'<p class="text-xs text-slate-400 col-span-full">暫無行政組文件</p>'}</div>
     </div>`;
   }
@@ -1367,34 +1450,53 @@ Object.assign(ScoutEventApp.prototype,{
     if(!this.canUploadDocument() && !this.isAdmin()){ showToast('僅管理員/行政組總主任以上可上傳','error'); return; }
     const data=this.getAdminGroupData();
     const existing=id?data.docs.find(d=>d.id===id):null;
+    // v13：上傳文件＝上傳檔案或連結（唔再係淨係手打描述文字）；描述改為選填
     let html=`<input type="hidden" id="admin-doc-mode" value="${existing?'edit':'create'}"><input type="hidden" id="admin-doc-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">標題 *</label><input id="admin-doc-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="mt-3"><label class="text-[11px] font-bold">分類</label><input id="admin-doc-category" value="${escapeHtml(existing?.category||'通告')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">描述</label><textarea id="admin-doc-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>`;
-    document.getElementById('record-modal-title').textContent=existing?'編輯行政文件':'新增行政文件';
+      <div class="mt-3"><label class="text-[11px] font-bold">① 上傳檔案（PDF／圖片／Word／Excel）</label><input type="file" id="admin-doc-file" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx" class="w-full text-xs mt-1">${existing?.file_name?`<div class="text-[10px] text-slate-500 mt-1">現有檔案：${escapeHtml(existing.file_name)}</div>`:''}</div>
+      <div class="mt-3"><label class="text-[11px] font-bold">② 或貼上連結（Drive／外部連結）</label><input id="admin-doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div class="mt-3"><label class="text-[11px] font-bold">描述（選填）</label><textarea id="admin-doc-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+      <div class="text-[10px] text-slate-500 mt-2">⚠️ 須提供「檔案」或「連結」其中一項（唔可以只填文字描述）。</div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯行政文件':'上傳行政文件（檔案／連結）';
     document.getElementById('record-form-fields').innerHTML=html;
     const form=document.getElementById('record-form');
     form.onsubmit=(e)=>{ e.preventDefault(); this.submitAdminDocForm(); };
     document.getElementById('modal-record').classList.remove('hidden');
   }
 ,
-  submitAdminDocForm(){
+  async submitAdminDocForm(){
     const mode=document.getElementById('admin-doc-mode').value;
     const id=document.getElementById('admin-doc-id').value;
     const title=document.getElementById('admin-doc-title').value.trim();
     const category=document.getElementById('admin-doc-category').value.trim();
     const desc=document.getElementById('admin-doc-desc').value.trim();
+    const url=document.getElementById('admin-doc-url').value.trim();
+    const file=document.getElementById('admin-doc-file').files[0];
     if(!title){ showToast('請填寫標題','error'); return; }
     const data=this.getAdminGroupData();
+    const existing=mode==='edit'?(data.docs||[]).find(d=>d.id===id):null;
+    let fileData=existing?.file_data||'', fileName=existing?.file_name||'', fileUrl=existing?.file_url||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; fileUrl=url||''; }
+    else if(url){ fileUrl=url; fileData=''; }
+    else if(!existing?.file_data&&!existing?.file_url){ showToast('請上傳檔案或填寫連結（唔可以只填文字描述）','error'); return; }
     if(mode==='edit'){
       const idx=data.docs.findIndex(d=>d.id===id);
-      if(idx>=0) data.docs[idx]={...data.docs[idx], title, category, description:desc};
-    }else data.docs.push({id:'admin_'+Date.now(), title, category, description:desc, created_at:new Date().toISOString()});
+      if(idx>=0) data.docs[idx]={...data.docs[idx], title, category, description:desc, file_name:fileName, file_data:fileData, file_url:fileUrl, updated_by:this.currentUser?.name||'', updated_at:new Date().toISOString()};
+    }else data.docs.push({id:'admin_'+Date.now(), title, category, description:desc, file_name:fileName, file_data:fileData, file_url:fileUrl, updated_by:this.currentUser?.name||'', updated_at:new Date().toISOString(), created_at:new Date().toISOString()});
     this.saveAdminGroupData(data);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
     showToast('已保存行政文件','success');
     this.renderAdminGroupModule();
+  }
+,
+  downloadAdminDocFile(id){
+    const d=(this.getAdminGroupData().docs||[]).find(x=>x.id===id);
+    if(!d){ showToast('找不到文件','error'); return; }
+    if(d.file_data){ downloadDataUrl(d.file_name||d.title||'文件', d.file_data); return; }
+    if(d.file_url){ window.open(d.file_url,'_blank'); return; }
+    showToast('此文件無附件檔案','warning');
   }
 ,
   deleteAdminDoc(id){
@@ -1416,13 +1518,16 @@ Object.assign(ScoutEventApp.prototype,{
     const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_coord_group';
     const local=JSON.parse(localStorage.getItem(key)||'null');
     if(local) return local;
-    if(!this.isDemoEvent()) return {docs:[]}; // 真實活動：預留版位
-    return {docs:[
-      {id:'coord_1',title:'ISD2024 Site Setup Plan R7-SETUP PLAN.pdf',category:'場地佈置',description:'舊版協調組場地佈置圖，參考舊手冊協調組頁面',file_url:'',created_at:''},
-      {id:'coord_2',title:'物資借用表格 v.3 Fillable Form.pdf',category:'物資借用',description:'物資借用表格，可填寫',file_url:'',created_at:''},
-      {id:'coord_3',title:'箱頭紙.pdf',category:'箱頭紙',description:'箱頭紙範本',file_url:'',created_at:''},
-      {id:'coord_4',title:'場地佈置數據（2025）',category:'數據',description:'Spreadsheet 連結，舊版 場地佈置數據（2025）',file_url:'https://drive.google.com/open?id=1dLQnhQlA8MPpKkGHvHmtVZmI9IAVcDkrw8mt7b3S3WI',created_at:''}
-    ]};
+    if(!this.isDemoEvent()) return {docs:[],venue_map:{},supply_form:{}}; // 真實活動：預留版位
+    // v13：物資借用表格及箱頭紙已全部設定好（固定卡片，唔再當文件上傳）；場地佈置圖＝唯一未上傳項
+    return {
+      venue_map:{file_name:'',file_url:'',file_data:'',updated_by:'',updated_at:''},
+      supply_form:{file_name:'物資借用表格 v.3 Fillable Form',file_url:''},
+      docs:[
+        {id:'coord_1',title:'ISD2024 Site Setup Plan R7-SETUP PLAN.pdf',category:'場地佈置（舊版參考）',description:'舊版協調組場地佈置圖，參考舊手冊協調組頁面',file_url:'',file_name:'',file_data:'',created_at:''},
+        {id:'coord_4',title:'場地佈置數據（2025）',category:'數據',description:'Spreadsheet 連結，舊版 場地佈置數據（2025）',file_url:'https://drive.google.com/open?id=1dLQnhQlA8MPpKkGHvHmtVZmI9IAVcDkrw8mt7b3S3WI',file_name:'',file_data:'',created_at:''}
+      ]
+    };
   }
 ,
   saveCoordinatorGroupData(data){ localStorage.setItem(LS.config(this.currentEvent?.event_id||'isd_2026')+'_coord_group', JSON.stringify(data)); }

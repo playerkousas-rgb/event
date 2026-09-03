@@ -40,6 +40,44 @@ Object.assign(ScoutEventApp.prototype,{
     return false;
   }
 ,
+  /* v13：口頭報價登記／刪除後的刷新——留在目前所在的頁面
+     （部門中心「口頭報價」頁籤 → 重繪部門頁；財務頁 → 重繪口頭報價分頁；否則重繪口頭報價卡片） */
+  refreshOralQuoteViews(){
+    if(this.currentModule==='group_management' && this.currentGroupManaged){ this.openGroupManagement(this.currentGroupManaged); return; }
+    if(document.getElementById('finance-tab-oral_quotes')){ this.renderFinanceOralQuotesTab(); return; }
+    this.renderOralQuotesModule();
+  }
+,
+  /* v13：部門中心「口頭報價」頁籤——各部門登記本組口頭報價（組別自動帶入），行政組匯總全部 */
+  renderGroupQuotesTabHTML(groupName){
+    groupName=normalizeGroupName(groupName);
+    const canRecord=this.canRecordOralQuote();
+    const data=this.getOralQuotesData();
+    const quotes=(data.quotes||[]).filter(q=>normalizeGroupName(q.group_name)===groupName&&this.canViewOralQuote(q)).sort((a,b)=>(b.quote_date||'').localeCompare(a.quote_date||''));
+    const totalAmt=quotes.reduce((s,q)=>s+(Number(q.amount)||0),0);
+    return `
+      <div class="space-y-3">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
+          <b>📝 本組口頭報價登記（${escapeHtml(groupName)}，對應附件3）：</b>總主任以上可登記本組口頭報價；登記後<b>自動</b>匯入行政組「財務匯總」。<br>
+          報價金額達 <b>$500 或以上須作書面報價</b>（豁免商戶 $2,000 以上亦同），詳見本部門「📖 財務指引」頁籤。
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          ${canRecord?`<button onclick="app.openOralQuoteForm(null,'${escapeHtml(groupName)}')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>登記口頭報價（本組）</button>`:`<span class="text-[11px] bg-slate-100 text-slate-500 px-3 py-2 rounded-full border">僅總主任以上可登記</span>`}
+          <span class="text-[11px] bg-indigo-100 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200">本組 ${quotes.length} 筆 · 合計 $${totalAmt.toLocaleString()}</span>
+        </div>
+        <div class="space-y-3">${quotes.length?quotes.map(q=>`
+          <div class="border rounded-xl p-3 bg-white space-y-1">
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <div class="flex flex-wrap items-center gap-2"><b class="text-[13px]">${escapeHtml(q.vendor||'-')}</b><span class="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200">$${Number(q.amount)||0}</span></div>
+              <div class="text-[10px] text-slate-400">${escapeHtml(q.quote_date||'')} | 登記人: ${escapeHtml(q.quoted_by||'-')}</div>
+            </div>
+            <div class="text-[11px] text-slate-600">項目: ${escapeHtml(q.item_desc||'-')}</div>
+            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?`| ${escapeHtml(q.contact_phone)}`:''}</div>
+            ${q.notes?`<div class="text-[10px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(q.notes)}</div>`:''}
+          </div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無本組口頭報價登記</p>`}</div>
+      </div>`;
+  }
+,
   renderOralQuotesModule(){
     const container=document.getElementById('module-content');
     const canRecord=this.canRecordOralQuote();
@@ -78,17 +116,20 @@ Object.assign(ScoutEventApp.prototype,{
     }
   }
 ,
-  openOralQuoteForm(id=null){
+  openOralQuoteForm(id=null, presetGroup=null){
     if(!this.canRecordOralQuote()){ showToast('僅總主任以上可登記口頭報價','error'); return; }
     const data=this.getOralQuotesData();
     const existing=id?(data.quotes||[]).find(q=>q.oral_id===id):null;
+    // v13：部門中心「口頭報價」頁籤會帶入本組組別（presetGroup）
+    const groupDefault=existing?.group_name||presetGroup||normalizeGroupName(this.currentUser?.group_name)||'';
+    const groupOpts=ACCOUNT_GROUPS.includes(groupDefault)?orgGroupOptions(groupDefault):`<option value="${escapeHtml(groupDefault)}" selected>${escapeHtml(groupDefault)}</option>${orgGroupOptions('')}`;
     const title=existing?'編輯口頭報價登記':'登記口頭報價 (總主任以上)';
     let html=`
       <input type="hidden" id="oq-mode" value="${existing?'edit':'create'}">
       <input type="hidden" id="oq-id" value="${existing?.oral_id||''}">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div><label class="text-[11px] font-bold">報價日期 *</label><input type="date" id="oq-date" value="${existing?.quote_date||new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">所屬組別 *</label><select id="oq-group" required class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${orgGroupOptions(existing?.group_name||this.currentUser?.group_name||'')}</select></div>
+        <div><label class="text-[11px] font-bold">所屬組別 *</label><select id="oq-group" required class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1">${groupOpts}</select></div>
         <div class="col-span-2"><label class="text-[11px] font-bold">商戶／供應商名稱 *</label><input id="oq-vendor" value="${escapeHtml(existing?.vendor||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">聯絡人</label><input id="oq-contact-person" value="${escapeHtml(existing?.contact_person||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">聯絡電話</label><input id="oq-contact-phone" value="${escapeHtml(existing?.contact_phone||'')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
@@ -128,7 +169,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
     showToast(mode==='edit'?'已更新口頭報價登記':'已登記口頭報價','success');
-    this.renderOralQuotesModule();
+    this.refreshOralQuoteViews();
   }
 ,
   deleteOralQuote(id){
@@ -138,7 +179,7 @@ Object.assign(ScoutEventApp.prototype,{
     data.quotes=(data.quotes||[]).filter(q=>q.oral_id!==id);
     this.saveOralQuotesData(data);
     showToast('已刪除','warning');
-    this.renderOralQuotesModule();
+    this.refreshOralQuoteViews();
   }
 ,
   exportOralQuotes(){
