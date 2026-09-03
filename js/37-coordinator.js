@@ -314,20 +314,172 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   }
 ,
+  /* ── v13 場地佈置及文件頁：場地佈置圖（唯一未設定，可上傳檔案／連結）＋
+        物資借用表格（已全部設定好，毋須再設定）＋箱頭紙（已全部設定好，填寫／列印即可）＋其他場地文件 ── */
   renderCoordDocs(box){
     const data=this.getCoordinatorGroupData();
     const canUpload=this.canManageCoordinatorDocs();
-    box.innerHTML=`
-      <div class="space-y-3">
-        <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openCoordinatorDocForm()" class="bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 上傳文件</button>`:''}<button onclick="app.exportCoordinatorGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${(data.docs||[]).map(d=>`
-          <div class="border rounded-xl p-4 bg-white space-y-2">
-            <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
-            <div class="text-[11px] text-slate-600">${escapeHtml(d.description)}</div>
-            ${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold inline-block">開啟文件</a>`:''}
-            <div class="flex gap-2">${canUpload?`<button onclick="app.openCoordinatorDocForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteCoordinatorDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
-          </div>`).join('')||'<p class="text-xs text-slate-400">暫無文件（場地佈置圖、物資借用表格、箱頭紙、數據可在此上傳）</p>'}</div>
+    const vm=data.venue_map||{};
+    const hasMap=!!(vm.file_url||vm.file_data);
+    const supplyForm=data.supply_form||{};
+    // v13：箱頭紙／物資借用表格已改為固定卡片，舊紀錄（例如示範活動快取）唔再喺文件格重複出現
+    const docs=(data.docs||[]).filter(d=>!['箱頭紙','物資借用','物資借用表格'].includes(String(d.category||'').trim()) && !(String(d.title||'').includes('物資借用表格')));
+    const docCard=(d)=>`
+      <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col">
+        <div class="flex justify-between items-start gap-2"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border whitespace-nowrap">${escapeHtml(d.category||'文件')}</span></div>
+        ${d.description?`<div class="text-[11px] text-slate-600">${escapeHtml(d.description)}</div>`:''}
+        ${d.updated_by?`<div class="text-[10px] text-slate-400">上載：${escapeHtml(d.updated_by||'')} ${d.updated_at?' · '+escapeHtml(String(d.updated_at).slice(0,10)):''}</div>`:''}
+        <div class="flex gap-2 flex-wrap mt-auto pt-1">
+          ${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</a>`:''}
+          ${d.file_data?`<button onclick="app.downloadCoordinatorDocFile('${d.id}')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</button>`:''}
+          ${canUpload?`<button onclick="app.openCoordinatorDocForm('${d.id}')" class="bg-white border px-2 py-1.5 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteCoordinatorDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1.5 rounded-xl text-[10px]">🗑️</button>`:''}
+        </div>
       </div>`;
+    box.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-[11px] leading-relaxed">
+          <b>🗂️ 場地佈置及文件：</b>場地佈置圖、物資借用表格及箱頭紙集中在此。<b>物資借用表格及箱頭紙已全部設定好，毋須再設定</b>；目前只有<b>場地佈置圖</b>尚未上傳——用下方「上傳場地佈置圖」以<b>檔案或連結</b>加入。
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col ${hasMap?'':'border-amber-300'}">
+            <div class="flex justify-between items-start gap-2"><b class="text-[13px]">🗺️ 場地佈置圖</b>${hasMap?'<span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full border border-emerald-200 whitespace-nowrap">✅ 已上傳</span>':'<span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full border border-amber-200 whitespace-nowrap">未上傳</span>'}</div>
+            ${hasMap?`
+              <div class="text-[11px] text-slate-600">檔案：${escapeHtml(vm.file_name||'—')}<br>上載：${escapeHtml(vm.updated_by||'—')}${vm.updated_at?' · '+escapeHtml(String(vm.updated_at).slice(0,10)):''}</div>
+              <div class="flex gap-2 flex-wrap mt-auto pt-1">
+                ${vm.file_url?`<a href="${escapeHtml(vm.file_url)}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟</a>`:''}
+                ${vm.file_data?`<button onclick="app.downloadCoordinatorVenueMap()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載</button>`:''}
+                ${canUpload?`<button onclick="app.openCoordinatorVenueForm()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">更換</button>`:''}
+              </div>`:`
+              <div class="text-[11px] text-slate-500 flex-1">場地佈置圖尚未上傳（目前唯一未設定項目）。可上傳 PDF／圖片檔案，或貼上 Drive 連結。</div>
+              ${canUpload?`<button onclick="app.openCoordinatorVenueForm()" class="bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold mt-auto"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳場地佈置圖（檔案／連結）</button>`:'<div class="text-[10.5px] text-slate-400">僅協調組總主任以上或管理層可上傳</div>'}`}
+          </div>
+          <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col">
+            <div class="flex justify-between items-start gap-2"><b class="text-[13px]">📋 物資借用表格</b><span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full border border-emerald-200 whitespace-nowrap">✅ 已設定</span></div>
+            <div class="text-[11px] text-slate-500 flex-1">物資借用表格已全部設定好，<b>毋須再設定</b>。各組借用物資請到「申請中心 → 物資申請」提交，協調組在「物資批核」頁籤處理。</div>
+            <div class="flex gap-2 flex-wrap mt-auto pt-1">
+              ${supplyForm.file_url?`<a href="${escapeHtml(supplyForm.file_url)}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟表格</a>`:''}
+              <button onclick="app.openModule('supplies')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">物資申請紀錄</button>
+            </div>
+          </div>
+          <div class="border rounded-xl p-4 bg-white space-y-2 flex flex-col">
+            <div class="flex justify-between items-start gap-2"><b class="text-[13px]">📦 箱頭紙</b><span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full border border-emerald-200 whitespace-nowrap">✅ 已設定</span></div>
+            <div class="text-[11px] text-slate-500 flex-1">箱頭紙已採用地域<b>指定式樣</b>（一張 A4 上下兩張 A5），<b>毋須再設定</b>；填寫年份／組別等資料後即可列印貼箱。</div>
+            <div class="flex gap-2 flex-wrap mt-auto pt-1">
+              <button onclick="app.openBoxLabelModal('協調組')" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>填寫／列印箱頭紙</button>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border rounded-xl p-3 space-y-2">
+          <div class="flex justify-between items-center flex-wrap gap-2">
+            <b class="text-[12px]"><i class="fa-solid fa-folder-open text-orange-600 mr-1"></i>其他場地文件 (${docs.length})</b>
+            <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openCoordinatorDocForm()" class="bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件（檔案／連結）</button>`:''}<button onclick="app.exportCoordinatorGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${docs.map(docCard).join('')||'<p class="text-xs text-slate-400 col-span-full py-4 text-center">暫無其他場地文件（場地佈置數據、舊版平面圖等可在此上傳）</p>'}</div>
+        </div>
+      </div>`;
+  }
+,
+  /* v13：協調文件儲存後刷新——留在部門中心頁（或其他當前頁） */
+  refreshCoordinatorDocViews(){
+    if(this.currentModule==='group_management' && this.currentGroupManaged){ this.openGroupManagement(this.currentGroupManaged); return; }
+    this.renderCoordinatorGroupModule();
+  }
+,
+  /* v13：上傳場地佈置圖——必須是「上傳檔案」或「連結」，唔可以只係手打文字 */
+  openCoordinatorVenueForm(){
+    if(!this.canManageCoordinatorDocs()){ showToast('僅協調組總主任以上或管理層可上傳','error'); return; }
+    const data=this.getCoordinatorGroupData();
+    const vm=data.venue_map||{};
+    const html=`<input type="hidden" id="cvm-mode" value="edit">
+      <div><label class="text-[11px] font-bold">名稱</label><input id="cvm-name" value="${escapeHtml(vm.file_name||'場地佈置圖')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div class="mt-3"><label class="text-[11px] font-bold">① 上傳檔案（PDF／圖片／Word／Excel）</label><input type="file" id="cvm-file" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx" class="w-full text-xs mt-1">${vm.file_name?`<div class="text-[10px] text-slate-500 mt-1">現有檔案：${escapeHtml(vm.file_name)}</div>`:''}</div>
+      <div class="mt-3"><label class="text-[11px] font-bold">② 或貼上連結（Drive／外部連結）</label><input id="cvm-url" value="${escapeHtml(vm.file_url||'')}" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div class="text-[10px] text-slate-500 mt-2">⚠️ 須提供「檔案」或「連結」其中一項（唔可以只填文字描述）。</div>`;
+    document.getElementById('record-modal-title').textContent='上傳場地佈置圖（檔案／連結）';
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitCoordinatorVenueForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+,
+  async submitCoordinatorVenueForm(){
+    if(!this.canManageCoordinatorDocs()){ showToast('僅協調組總主任以上或管理層可上傳','error'); return; }
+    const data=this.getCoordinatorGroupData();
+    const old=data.venue_map||{};
+    const url=document.getElementById('cvm-url').value.trim();
+    const nameInput=document.getElementById('cvm-name').value.trim();
+    const file=document.getElementById('cvm-file').files[0];
+    // 檔案或連結二選一（可以兩樣都有）；一定要有其中一樣，唔可以淨係文字
+    let fileData=old.file_data||'', fileUrl=old.file_url||'', fileName=nameInput||old.file_name||'場地佈置圖';
+    if(file){ fileData=await fileToDataUrl(file); fileName=nameInput||file.name; fileUrl=url; }
+    else if(url){ fileUrl=url; fileData=''; }
+    else if(!old.file_data&&!old.file_url){ showToast('請上傳檔案或填寫連結（唔可以只填文字描述）','error'); return; }
+    data.venue_map={file_name:fileName, file_url:fileUrl, file_data:fileData, updated_by:this.currentUser?.name||'', updated_at:new Date().toISOString()};
+    this.saveCoordinatorGroupData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('已上傳場地佈置圖','success');
+    this.refreshCoordinatorDocViews();
+  }
+,
+  downloadCoordinatorVenueMap(){
+    const vm=this.getCoordinatorGroupData().venue_map||{};
+    if(vm.file_url){ window.open(vm.file_url,'_blank'); return; }
+    if(vm.file_data){ downloadDataUrl(vm.file_name||'場地佈置圖', vm.file_data); return; }
+    showToast('尚未上傳場地佈置圖','warning');
+  }
+,
+  downloadCoordinatorDocFile(id){
+    const d=(this.getCoordinatorGroupData().docs||[]).find(x=>x.id===id);
+    if(!d){ showToast('找不到文件','error'); return; }
+    if(d.file_data){ downloadDataUrl(d.file_name||d.title||'文件', d.file_data); return; }
+    if(d.file_url){ window.open(d.file_url,'_blank'); return; }
+    showToast('此文件無附件檔案','warning');
+  }
+,
+  openCoordinatorDocForm(id=null){
+    if(!this.canManageCoordinatorDocs()){ showToast('僅協調組總主任以上或管理層可上傳','error'); return; }
+    const data=this.getCoordinatorGroupData();
+    const existing=id?data.docs.find(d=>d.id===id):null;
+    // v13：上傳文件＝上傳檔案或連結（唔再係淨係手打描述文字）；描述改為選填
+    let html=`<input type="hidden" id="coord-doc-mode" value="${existing?'edit':'create'}"><input type="hidden" id="coord-doc-id" value="${existing?.id||''}">
+      <div><label class="text-[11px] font-bold">標題 *</label><input id="coord-doc-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div class="mt-3"><label class="text-[11px] font-bold">分類</label><input id="coord-doc-category" value="${escapeHtml(existing?.category||'場地文件')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div class="mt-3"><label class="text-[11px] font-bold">① 上傳檔案（PDF／圖片／Word／Excel）</label><input type="file" id="coord-doc-file" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx" class="w-full text-xs mt-1">${existing?.file_name?`<div class="text-[10px] text-slate-500 mt-1">現有檔案：${escapeHtml(existing.file_name)}</div>`:''}</div>
+      <div class="mt-3"><label class="text-[11px] font-bold">② 或貼上連結（Drive／外部連結）</label><input id="coord-doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+      <div class="mt-3"><label class="text-[11px] font-bold">描述（選填）</label><textarea id="coord-doc-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
+      <div class="text-[10px] text-slate-500 mt-2">⚠️ 須提供「檔案」或「連結」其中一項（唔可以只填文字描述）。</div>`;
+    document.getElementById('record-modal-title').textContent=existing?'編輯場地文件':'上傳場地文件（檔案／連結）';
+    document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form');
+    form.onsubmit=(e)=>{ e.preventDefault(); this.submitCoordinatorDocForm(); };
+    document.getElementById('modal-record').classList.remove('hidden');
+  }
+,
+  async submitCoordinatorDocForm(){
+    const mode=document.getElementById('coord-doc-mode').value;
+    const id=document.getElementById('coord-doc-id').value;
+    const title=document.getElementById('coord-doc-title').value.trim();
+    const category=document.getElementById('coord-doc-category').value.trim();
+    const desc=document.getElementById('coord-doc-desc').value.trim();
+    const url=document.getElementById('coord-doc-url').value.trim();
+    const file=document.getElementById('coord-doc-file').files[0];
+    if(!title){ showToast('請填寫標題','error'); return; }
+    const data=this.getCoordinatorGroupData();
+    const existing=mode==='edit'?(data.docs||[]).find(d=>d.id===id):null;
+    let fileData=existing?.file_data||'', fileName=existing?.file_name||'', fileUrl=existing?.file_url||'';
+    if(file){ fileData=await fileToDataUrl(file); fileName=file.name; fileUrl=url||''; }
+    else if(url){ fileUrl=url; fileData=''; }
+    else if(!existing?.file_data&&!existing?.file_url){ showToast('請上傳檔案或填寫連結（唔可以只填文字描述）','error'); return; }
+    if(mode==='edit'){
+      const idx=data.docs.findIndex(d=>d.id===id);
+      if(idx>=0) data.docs[idx]={...data.docs[idx], title, category, description:desc, file_name:fileName, file_data:fileData, file_url:fileUrl, updated_by:this.currentUser?.name||'', updated_at:new Date().toISOString()};
+    }else data.docs.push({id:'coord_'+Date.now(), title, category, description:desc, file_name:fileName, file_data:fileData, file_url:fileUrl, updated_by:this.currentUser?.name||'', updated_at:new Date().toISOString(), created_at:new Date().toISOString()});
+    this.saveCoordinatorGroupData(data);
+    this.closeModal('modal-record');
+    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+    showToast('已保存場地文件','success');
+    this.refreshCoordinatorDocViews();
   }
 ,
   /* 通用列印：把管理頁的統計/清單直接印出 */
@@ -378,49 +530,15 @@ Object.assign(ScoutEventApp.prototype,{
     this.downloadCSV(`膳食最終清單_${todayISO()}.csv`, rows);
   }
 ,
-  openCoordinatorDocForm(id=null){
-    if(!this.canManageCoordinatorDocs()){ showToast('僅協調組總主任以上或管理層可上傳','error'); return; }
-    const data=this.getCoordinatorGroupData();
-    const existing=id?data.docs.find(d=>d.id===id):null;
-    let html=`<input type="hidden" id="coord-doc-mode" value="${existing?'edit':'create'}"><input type="hidden" id="coord-doc-id" value="${existing?.id||''}">
-      <div><label class="text-[11px] font-bold">標題 *</label><input id="coord-doc-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">分類</label><input id="coord-doc-category" value="${escapeHtml(existing?.category||'場地佈置')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">描述</label><textarea id="coord-doc-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
-      <div class="mt-3"><label class="text-[11px] font-bold">文件連結 (Drive)</label><input id="coord-doc-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>`;
-    document.getElementById('record-modal-title').textContent=existing?'編輯協調文件':'新增協調文件';
-    document.getElementById('record-form-fields').innerHTML=html;
-    const form=document.getElementById('record-form');
-    form.onsubmit=(e)=>{ e.preventDefault(); this.submitCoordinatorDocForm(); };
-    document.getElementById('modal-record').classList.remove('hidden');
-  }
-,
-  submitCoordinatorDocForm(){
-    const mode=document.getElementById('coord-doc-mode').value;
-    const id=document.getElementById('coord-doc-id').value;
-    const title=document.getElementById('coord-doc-title').value.trim();
-    const category=document.getElementById('coord-doc-category').value.trim();
-    const desc=document.getElementById('coord-doc-desc').value.trim();
-    const url=document.getElementById('coord-doc-url').value.trim();
-    if(!title){ showToast('請填寫標題','error'); return; }
-    const data=this.getCoordinatorGroupData();
-    if(mode==='edit'){
-      const idx=data.docs.findIndex(d=>d.id===id);
-      if(idx>=0) data.docs[idx]={...data.docs[idx], title, category, description:desc, file_url:url};
-    }else data.docs.push({id:'coord_'+Date.now(), title, category, description:desc, file_url:url, created_at:new Date().toISOString()});
-    this.saveCoordinatorGroupData(data);
-    this.closeModal('modal-record');
-    document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast('已保存協調文件','success');
-    this.renderCoordinatorGroupModule();
-  }
-,
+  /* v13：openCoordinatorDocForm／submitCoordinatorDocForm／openCoordinatorVenueForm 已移至上方
+     （上傳文件＝上傳檔案或連結，唔可以只係手打文字）；舊版本已刪除，避免 Object.assign 後者覆蓋前者 */
   deleteCoordinatorDoc(id){
     if(!this.canManageCoordinatorDocs()) return;
     if(!confirm('確定刪除？')) return;
     const data=this.getCoordinatorGroupData();
     data.docs=data.docs.filter(d=>d.id!==id);
     this.saveCoordinatorGroupData(data);
-    this.renderCoordinatorGroupModule();
+    this.refreshCoordinatorDocViews();
   }
 ,
   exportCoordinatorGroup(){
