@@ -209,7 +209,7 @@ Object.assign(ScoutEventApp.prototype,{
         ${isAdmin||isExec?`<button onclick="app.openOrgNodeForm()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增頂級崗位 (主席/顧問)</button>`:''}
         <button onclick="app.exportStaffData('org_chart')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
         ${canAddNode||isAdmin||isExec?`<button onclick="app.downloadStaffTemplate('org')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳文件轉JSON<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'org_chart')"></label>`:''}
+        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 CSV／組織圖檔案<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'org_chart')"></label>`:''}
         ${(data.staff_source)?`<button onclick="app.syncOrgChartFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新架構 (Google Sheet)</button>`:''}
       </div>
       ${(data.staff_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>內置讀取：</b>組織架構直接讀取「${escapeHtml(data.staff_source.name||'Google Sheet')}」（行政組在該試算表更新職位／人名），APP 開啟即自動同步最新資料，也可按上方「同步最新架構」手動更新。</div>`:''}
@@ -589,7 +589,7 @@ Object.assign(ScoutEventApp.prototype,{
     let html=`<input type="hidden" id="duty-form-mode" value="${existing?'edit':'create'}"><input type="hidden" id="duty-form-id" value="${existing?.id||''}">
       <div><label class="text-[11px] font-bold">組別 *</label><input id="duty-group" value="${escapeHtml(existing?.group||'')}" placeholder="例如 行政組" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
       <div class="mt-3"><label class="text-[11px] font-bold">職務大綱 *</label><textarea id="duty-text" rows="8" placeholder="每行一項，可貼上 Word 解析後的文字..." class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.duty||'')}</textarea></div>
-      <div class="text-[10px] text-slate-500 mt-2">主席/行政副主席/執行副主席可修改全部，完成後儲存同步後端 (localStorage + GAS)</div>`;
+      <div class="text-[10px] text-slate-500 mt-2">主席/行政副主席/執行副主席可修改全部，完成後按「儲存」先會記錄</div>`;
     document.getElementById('record-modal-title').textContent=existing?'編輯職務大綱':'新增職務大綱';
     document.getElementById('record-form-fields').innerHTML=html;
     const form=document.getElementById('record-form');
@@ -611,7 +611,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.saveStaffData(data);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast('職務大綱已保存 (前端修改，同步後端)','success');
+    showToast('職務大綱已保存','success');
     this.renderStaffJobDuties();
   }
 ,
@@ -669,7 +669,7 @@ Object.assign(ScoutEventApp.prototype,{
       const data=this.getStaffData();
       data.job_duties=[...data.job_duties,...parsed];
       this.saveStaffData(data);
-      showToast(`Word 解析成功，已轉 ${parsed.length} 筆職務大綱寫入 JSON，自動同步後端`,'success');
+      showToast(`Word 解析成功，已轉 ${parsed.length} 筆職務大綱，按儲存後生效`,'success');
       this.renderStaffJobDuties();
       // Also open form for editing first parsed if needed
     }catch(err){

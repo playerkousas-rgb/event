@@ -42,9 +42,12 @@ ok(coreSrc.includes('groupInfoBoxesHTML(groupName){'), '① 應有共用 groupIn
 ok(coreSrc.includes("${this.groupInfoBoxesHTML(groupName)}"), '① 部門管理中心應使用共用 4 格');
 ok(!coreSrc.includes('返回儀表板'), '⑥ 「返回儀表板」按鈕應已從部門卡片刪除');
 const coordSrc = fs.readFileSync(path.join(root, 'js/37-coordinator.js'), 'utf8');
-ok(coordSrc.includes("this.groupInfoBoxesHTML('協調組')"), '① 協調組管理頁應有 成員/職務大綱/文件/預算 4 格');
 const crisisSrc = fs.readFileSync(path.join(root, 'js/36-crisis.js'), 'utf8');
-ok(crisisSrc.includes("this.groupInfoBoxesHTML('行政組')"), '① 行政組管理頁應有 成員/職務大綱/文件/預算 4 格');
+// v12.2：行政組／協調組統一走 openGroupManagement 部門中心基本形態（core 統一渲染 4 格），
+// 舊模組方法保留但只作重定向
+ok(crisisSrc.includes("this.openGroupManagement('行政組')"), '① 行政組應統一走部門中心基本形態（openGroupManagement）');
+ok(coordSrc.includes("this.openGroupManagement('協調組')"), '① 協調組應統一走部門中心基本形態（openGroupManagement）');
+ok(coreSrc.includes("groupName==='行政組'") && coreSrc.includes("groupName==='協調組'"), '① 部門中心應覆蓋行政組／協調組（統一基本形態＋特色頁籤）');
 
 /* ---------- ② 預算逐項顯示 ---------- */
 ok(coreSrc.includes('本組預算（逐項）'), '② 部門卡片預算應逐項列出');

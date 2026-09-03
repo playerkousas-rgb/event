@@ -13,15 +13,17 @@ Object.assign(ScoutEventApp.prototype,{
     ];
   }
 ,
-  switchCoordTab(tab){
-    this.coordSubTab=tab;
-    this.renderCoordinatorGroupModule();
-  }
+  // v12.2：協調組統一用 openGroupManagement 部門中心基本形態（特色＝頂部頁籤）；保留方法名作兼容
+  renderCoordinatorGroupModule(){ this.openGroupManagement('協調組'); }
 ,
-  renderCoordinatorGroupModule(){
+  renderCoordinatorGroupModuleOld(){
     const container=document.getElementById('module-content');
     if(!container) return;
     if(!this.coordSubTab) this.coordSubTab='overview';
+    // v12.2：協調組統一為部門中心基本形態（同其他組／行政組）——頁籤全部喺頂部；
+    // 「總覽」＝基本盤（本組成員/職務/文件/攤位＋本組申請統計＋列印）＋協調批核總覽；物資/車輛/膳食/文件為特色頁籤。
+    const actionsEl=document.getElementById('module-actions');
+    if(actionsEl) actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('coord-group-stats-print','協調組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
     const sup=this.getSuppliesData();
     const meals=this.getMealsData();
     const routeVisible=(area,items,approved)=>this.canApproveArea(area)?(items||[]):this.canExecuteArea(area)?(items||[]).filter(x=>approved.includes(x.status)):[];
@@ -33,31 +35,67 @@ Object.assign(ScoutEventApp.prototype,{
     const actualCoordinator=normalizeGroupName(this.currentUser?.group_name)==='協調組';
     const allowedTabs=new Set(['overview',...(this.canApproveArea('supplies')||this.canExecuteArea('supplies')?['supplies']:[]),...(this.canApproveArea('vehicle')||this.canExecuteArea('vehicle')?['vehicle']:[]),...(this.canApproveArea('meals')||this.canExecuteArea('meals')?['meals']:[]),...(actualCoordinator||this.canManageApprovalRouting()?['docs']:[])]);
     if(!allowedTabs.has(this.coordSubTab)) this.coordSubTab='overview';
+    const tabCls=t=>this.coordSubTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
     const tabBtns=this.coordTabs().filter(t=>allowedTabs.has(t.k)).map(t=>{
       const c=counts[t.k]!==undefined?` (${counts[t.k]})`:'';
       const badge=pend[t.k]?`<span class="ml-1 bg-amber-500 text-white text-[9.5px] px-1.5 py-0.5 rounded-full">${pend[t.k]} 待批</span>`:'';
-      return `<button onclick="app.switchCoordTab('${t.k}')" class="tab-btn ${this.coordSubTab===t.k?'active':''}"><i class="${t.icon} mr-1"></i> ${t.label}${c}${badge}</button>`;
+      return `<button onclick="app.switchCoordTab('${t.k}')" class="${tabCls(t.k)}"><i class="${t.icon} mr-1"></i> ${t.label}${c}${badge}</button>`;
     }).join('');
+    const active=this.coordSubTab;
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-[11px] leading-relaxed">
-          <b>🏗️ 協調組管理中心：</b>顯示目前路由交由協調組批核或執行的物資、車輛及膳食內容。實際批核組與執行／最後名單組以「批核權限表」的多選設定為準，可隨時改為一組或多組。<br>
-          申請入口統一在「申請中心」（各組提交），提交後即時在此出現待批核。場地佈置圖、物資借用表格、箱頭紙及數據在「場地佈置及文件」頁。
+          <b>部門管理中心 - 協調組</b><br>
+          <b>🏗️ 協調組職能：</b>物資借用、車輛通行證及膳食的批核／執行組（實際批核組與執行／最後名單組以「批核權限表」的多選設定為準，可隨時改為一組或多組）。<br>
+          申請入口統一在「申請中心」（各組提交），提交後即時在「待批核」出現。場地佈置圖、物資借用表格、箱頭紙及數據在「場地佈置及文件」頁。
         </div>
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>前往申請中心提交申請</button>
           <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
+          <button onclick="app.openBoxLabelModal('協調組')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-box-open mr-1"></i>箱頭紙</button>
         </div>
-        ${this.groupInfoBoxesHTML('協調組')}
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
-        <div id="coord-tab-body"></div>
+        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">${tabBtns}</div>
+
+        <div id="coord-tab-overview" class="space-y-4 ${active==='overview'?'':'hidden'}">
+          ${this.groupInfoBoxesHTML('協調組')}
+          <div class="bg-white border rounded-xl p-3" id="coord-group-stats-print">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-2 no-print">
+              <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-chart-column text-indigo-600"></i>本組申請統計（協調組）</h4>
+              <button onclick="app.printCoordArea('coord-group-stats-print','協調組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印統計</button>
+            </div>
+            ${this.groupApplyStatsHTML('協調組',{printId:'coord-group-stats-print-inner'})}
+          </div>
+          <div id="coord-overview-body"></div>
+        </div>
+        <div id="coord-tab-supplies" class="${active==='supplies'?'':'hidden'}"></div>
+        <div id="coord-tab-vehicle" class="${active==='vehicle'?'':'hidden'}"></div>
+        <div id="coord-tab-meals" class="${active==='meals'?'':'hidden'}"></div>
+        <div id="coord-tab-docs" class="${active==='docs'?'':'hidden'}"></div>
       </div>`;
-    const body=document.getElementById('coord-tab-body');
-    if(this.coordSubTab==='overview') this.renderCoordOverview(body);
-    else if(this.coordSubTab==='supplies') this.renderCoordSupplies(body);
-    else if(this.coordSubTab==='vehicle') this.renderCoordVehicles(body);
-    else if(this.coordSubTab==='meals') this.renderCoordMeals(body);
-    else this.renderCoordDocs(body);
+    const ov=document.getElementById('coord-overview-body');
+    if(ov) this.renderCoordOverview(ov);
+    const supEl=document.getElementById('coord-tab-supplies');
+    if(supEl) this.renderCoordSupplies(supEl);
+    const vehEl=document.getElementById('coord-tab-vehicle');
+    if(vehEl) this.renderCoordVehicles(vehEl);
+    const mealEl=document.getElementById('coord-tab-meals');
+    if(mealEl) this.renderCoordMeals(mealEl);
+    const docEl=document.getElementById('coord-tab-docs');
+    if(docEl) this.renderCoordDocs(docEl);
+  }
+,
+  // v12.2：頁籤只切換顯示（全部內容已一併渲染，唔使重繪）
+  switchCoordTab(tab){
+    this.coordSubTab=tab;
+    ['overview','supplies','vehicle','meals','docs'].forEach(t=>{
+      const el=document.getElementById('coord-tab-'+t);
+      if(el) el.classList.toggle('hidden',t!==tab);
+    });
+    document.querySelectorAll('[onclick^="app.switchCoordTab"]').forEach(btn=>{
+      const m=btn.getAttribute('onclick').match(/'([^']+)'/);
+      const t=m?m[1]:'';
+      btn.className=t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+    });
   }
 ,
   coordStatusChip(status){

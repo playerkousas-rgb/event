@@ -261,7 +261,7 @@ const EVENT_CATEGORIES=[
   {key:'isd',title:'港島童軍繽紛日',icon:'fa-solid fa-star',desc:'步操檢閱、頒獎典禮與攤位博覽',gradient:'from-brand-600 to-fuchsia-500'},
   {key:'trailwalk',title:'港島毅行',icon:'fa-solid fa-person-hiking',desc:'港島區步行籌款活動',gradient:'from-emerald-500 to-teal-500'},
   {key:'other',title:'其他大型活動',icon:'fa-solid fa-tent',desc:'其他大型露營、培訓及活動',gradient:'from-indigo-500 to-violet-600'},
-  {key:'demo',title:'模擬示範版',icon:'fa-solid fa-flask',desc:'完整示範資料·本地沙盒：介紹展示用，改動不影響正式活動',gradient:'from-slate-500 to-slate-700'}
+  {key:'demo',title:'模擬示範版',icon:'fa-solid fa-flask',desc:'完整示範資料·供試用體驗：改動只會暫存喺你部電話／電腦，唔會影響正式活動',gradient:'from-slate-500 to-slate-700'}
 ];
 // 簡單卡片模式：卡片顯示所有資料。身份 (角色+組別) 由管理員批核，決定：
 // - 看到什麼：minLevel / groups 達標才顯示該卡片 (minLevel 0 = 公開，所有人可見)

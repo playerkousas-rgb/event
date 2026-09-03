@@ -30,15 +30,122 @@ Object.assign(ScoutEventApp.prototype,{
       guests_custom:data.guests_custom||[]
     };
     localStorage.setItem(key,JSON.stringify(toSave));
-    if(changed&&changed.row&&!this.mockMode&&this.gasUrl){
-      const r=changed.row;
-      fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${changed.scope}_${changed.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:changed.scope,person_key:changed.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}})}).catch(()=>{});
+    if(changed&&changed.row){
+      // v12.2 防呆：TICK／備註只暫存＋入待儲存佇列，唔會即時寫入。
+      // 使用者 TICK 完整個組別（幾十人）後，撳「💾 儲存」先一次過批次寫入。
+      this._stampSyncQueue=this._stampSyncQueue||new Map();
+      this._stampSyncQueue.set(`${changed.scope}::${changed.key}`,{scope:changed.scope,key:changed.key,row:changed.row});
+      this.markStampDirty();
     }
     if(changed&&changed.custom){
-      if(!this.mockMode&&this.gasUrl){
-        fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${changed.scope}_custom_${Date.now()}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:changed.scope+'_custom',person_key:'custom_batch',custom_data:JSON.stringify(changed.custom),updated_at:new Date().toISOString()}})}).catch(()=>{});
-      }
+      this._stampCustomSyncQueue=this._stampCustomSyncQueue||new Map();
+      this._stampCustomSyncQueue.set(changed.scope,{scope:changed.scope,custom:changed.custom});
+      this.markStampDirty();
     }
+  }
+,
+  // 有待儲存改動：更新所有紀念章頁面嘅「儲存」按鈕／狀態列
+  markStampDirty(){
+    const n=(this._stampSyncQueue?this._stampSyncQueue.size:0)+(this._stampCustomSyncQueue?this._stampCustomSyncQueue.size:0);
+    document.querySelectorAll('[data-stamp-pending-count]').forEach(el=>{
+      el.textContent=n;
+      el.classList.toggle('hidden',n===0);
+    });
+    document.querySelectorAll('[data-stamp-sync-status]').forEach(el=>{
+      el.dataset.stampSyncStatus=n?'dirty':'idle';
+      el.innerHTML=n
+        ?`<i class="fa-solid fa-circle-exclamation mr-1 text-amber-600"></i><span class="stamp-sync-text text-amber-700 font-bold">有 ${n} 項未儲存</span>`
+        :'<i class="fa-solid fa-floppy-disk mr-1"></i><span class="stamp-sync-text">改動會先暫存，撳「💾 儲存」先正式記錄</span>';
+    });
+  }
+,
+  setStampSyncStatus(state){
+    document.querySelectorAll('[data-stamp-sync-status]').forEach(el=>{
+      el.dataset.stampSyncStatus=state;
+      el.innerHTML=state==='syncing'
+        ?'<i class="fa-solid fa-cloud-arrow-up fa-spin mr-1"></i><span class="stamp-sync-text">儲存中…</span>'
+        :state==='error'
+        ?'<i class="fa-solid fa-triangle-exclamation mr-1 text-rose-600"></i><span class="stamp-sync-text text-rose-700 font-bold">部分儲存失敗，請再按儲存重試</span>'
+        :state==='ok'
+        ?'<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i><span class="stamp-sync-text text-emerald-700 font-bold">✅ 已全部儲存</span>'
+        :'<i class="fa-solid fa-floppy-disk mr-1"></i><span class="stamp-sync-text">改動會先暫存，撳「💾 儲存」先正式記錄</span>';
+    });
+  }
+,
+  // 手動儲存鍵：把所有未儲存嘅 TICK／備註／匯入名單一次過批次寫入後端
+  async saveSouvenirStampsToBackend(scope){
+    if(this.mockMode||!this.gasUrl){ showToast('示範模式：紀錄已暫存於本機','success'); return; }
+    const n=(this._stampSyncQueue?this._stampSyncQueue.size:0)+(this._stampCustomSyncQueue?this._stampCustomSyncQueue.size:0);
+    if(!n){ showToast('冇未儲存嘅變更','warning'); return; }
+    const btns=document.querySelectorAll('[data-stamp-save-btn]');
+    btns.forEach(b=>{ b.disabled=true; b.classList.add('opacity-60','pointer-events-none'); });
+    this.setStampSyncStatus('syncing');
+    showToast(`正在儲存 ${n} 項紀錄…`,'success');
+    await this.flushStampSync();
+    const left=(this._stampSyncQueue?this._stampSyncQueue.size:0)+(this._stampCustomSyncQueue?this._stampCustomSyncQueue.size:0);
+    btns.forEach(b=>{ b.disabled=false; b.classList.remove('opacity-60','pointer-events-none'); });
+    document.querySelectorAll('[data-stamp-pending-count]').forEach(el=>{ el.textContent=left; el.classList.toggle('hidden',left===0); });
+    if(left===0){ showToast('✅ 全部紀錄已儲存','success'); this.setStampSyncStatus('ok'); }
+    else { showToast(`⚠️ 仍有 ${left} 項儲存失敗，網絡恢復後再按「儲存」（資料已暫存，唔會丟失）`,'error'); this.setStampSyncStatus('error'); }
+  }
+,
+  async flushStampSync(){
+    if(this._stampSyncBusy) return; // 串行：上一批未完唔會開新一批
+    if(this.mockMode||!this.gasUrl) return;
+    if(!this._stampSyncQueue) this._stampSyncQueue=new Map();
+    if(!this._stampCustomSyncQueue) this._stampCustomSyncQueue=new Map();
+    if(!this._stampSyncQueue.size&&!this._stampCustomSyncQueue.size) return;
+    // 快照本批要送嘅改動；儲存期間新 tick 會累積落 Map，下次按儲存再送
+    const pending=[];
+    this._stampSyncQueue.forEach((item,id)=>{ pending.push({type:'row',id,item}); });
+    this._stampCustomSyncQueue.forEach((item,scope)=>{ pending.push({type:'custom',id:scope,item}); });
+    this._stampSyncBusy=true;
+    const delay=ms=>new Promise(r=>{ try{ setTimeout(r,ms); }catch(e){ r(); } });
+    const stampPost=async (payload)=>{
+      let err=null;
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          const res=await fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+          if(res&&res.ok) return true;
+          err=new Error('HTTP '+(res&&res.status));
+        }catch(e){ err=e; }
+        if(attempt<2) await delay(400*(attempt+1));
+      }
+      throw err||new Error('sync failed');
+    };
+    let anyError=false;
+    // 逐筆串行（唔同時開大量連線打爆後端）；成功就喺佇列刪走，失敗留返（再按儲存重試，本機紀錄唔會丟）
+    for(const job of pending){
+      try{
+        if(job.type==='row'){
+          const r=job.item.row;
+          await stampPost({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${job.item.scope}_${job.item.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:job.item.scope,person_key:job.item.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}});
+        }else{
+          await stampPost({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${job.item.scope}_custom_${Date.now()}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:job.item.scope+'_custom',person_key:'custom_batch',custom_data:JSON.stringify(job.item.custom||[]),updated_at:new Date().toISOString()}});
+        }
+        this._stampSyncQueue.delete(job.id);
+        if(job.type==='custom') this._stampCustomSyncQueue.delete(job.id);
+      }catch(e){ anyError=true; }
+    }
+    this._stampSyncBusy=false;
+    if(anyError) this.setStampSyncStatus('error');
+    else this.setStampSyncStatus('ok');
+  }
+,
+  // 關閉／重新整理頁面前：若有未儲存 TICK，用 sendBeacon 逐筆盡量送出（本機已有備份，唔會丟）
+  flushStampSyncBeforeUnload(){
+    if(!this.gasUrl||this.mockMode) return;
+    const q=this._stampSyncQueue||new Map();
+    const cq=this._stampCustomSyncQueue||new Map();
+    if(!q.size&&!cq.size) return;
+    try{
+      const send=rec=>{
+        const blob=new Blob([JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:rec})],{type:'text/plain'});
+        navigator.sendBeacon?navigator.sendBeacon(this.gasUrl,blob):null;
+      };
+      q.forEach(item=>{ const r=item.row; send({stamp_id:`${item.scope}_${item.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:item.scope,person_key:item.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}); });
+      cq.forEach(item=>send({stamp_id:`${item.scope}_custom_${Date.now()}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:item.scope+'_custom',person_key:'custom_batch',custom_data:JSON.stringify(item.custom||[]),updated_at:new Date().toISOString()}));
+    }catch(e){}
   }
 ,
   canManageSouvenirStamps(scope){
@@ -62,19 +169,32 @@ Object.assign(ScoutEventApp.prototype,{
     };
     let users=(this.usersList&&this.usersList.length)?this.usersList:[];
     if(!users.length){ try{ users=this.getLocalUsers()||[]; }catch(e){ users=[]; } }
+    // v12.1：最高層系統帳戶（isSuperAdminUser 判定）唔係工作人員——不計入紀念章派發名單同統計
+    const superAdminNames=new Set();
     (users||[]).forEach(u=>{
       if(!u) return;
       if((u.status||'active')!=='active') return;
       if(u.role==='public') return;
+      if(typeof this.isSuperAdminUser==='function'&&this.isSuperAdminUser(u)){
+        superAdminNames.add(normalizeOrgText(u.name||u.user_id||''));
+        return;
+      }
       push(u.name||u.user_id,u.group_name,u.job_title||ROLE_LABELS[u.role]||'');
     });
     let staff=null;
     try{ staff=this.getStaffData(); }catch(e){ staff=null; }
-    ((staff&&staff.contacts)||[]).forEach(c=>{ if(c&&c.name) push(c.name,c.group_name||c.group,c.role_title||c.role||''); });
+    ((staff&&staff.contacts)||[]).forEach(c=>{
+      if(!c||!c.name) return;
+      if(superAdminNames.has(normalizeOrgText(c.name))) return; // 系統管理員即使出現喺聯絡表都唔計
+      push(c.name,c.group_name||c.group,c.role_title||c.role||'');
+    });
     ((staff&&staff.org_chart)||[]).forEach(n=>{
       if(!n) return;
       const g=normalizeGroupName(String(n.level||'').replace(/\s*[(（][^)）]*[)）]\s*$/,''));
-      orgNameList(n.names).forEach(nm=>push(nm,g,n.title||''));
+      orgNameList(n.names).forEach(nm=>{
+        if(superAdminNames.has(normalizeOrgText(nm))) return; // 系統管理員即使出現喺架構圖都唔計
+        push(nm,g,n.title||'');
+      });
     });
     // 匯入的自訂名單（EXCEL）
     try{
@@ -122,6 +242,54 @@ Object.assign(ScoutEventApp.prototype,{
     return {total:roster.length,ticked,pending:roster.length-ticked};
   }
 ,
+  // v12.1：紀念章名單排序（預設組別→姓名；可按 姓名／組別／攤位／派發狀態 排序，方便現場派發）
+  stampSortState(scope){
+    this._stampSort=this._stampSort||{};
+    if(!this._stampSort[scope]) this._stampSort[scope]={key:'group',dir:'asc'};
+    return this._stampSort[scope];
+  }
+,
+  setStampSort(scope,key){
+    const s=this.stampSortState(scope);
+    if(s.key===key) s.dir=s.dir==='asc'?'desc':'asc';
+    else { s.key=key; s.dir=key==='ticked'?'desc':'asc'; }
+    this.sortSouvenirStampRows(scope);
+  }
+,
+  sortSouvenirStampRows(scope){
+    const table=document.getElementById('stamp-table-'+scope);
+    if(!table) return;
+    const tbody=table.querySelector('tbody');
+    if(!tbody) return;
+    const s=this.stampSortState(scope);
+    const rows=Array.from(tbody.querySelectorAll('tr[data-key]'));
+    const val=tr=>{
+      if(s.key==='ticked') return tr.querySelector('input[type=checkbox]')?.checked?1:0;
+      return String(tr.dataset['sort_'+s.key]||'');
+    };
+    const cmp=(a,b)=>{
+      const va=val(a), vb=val(b);
+      let r;
+      if(s.key==='ticked') r=Number(va)-Number(vb);
+      else if(s.key==='booth'||s.key==='unit') r=String(va).localeCompare(String(vb),'zh-HK',{numeric:true});
+      else r=String(va).localeCompare(String(vb),'zh-HK');
+      return s.dir==='asc'?r:-r;
+    };
+    rows.sort(cmp);
+    // 穩定排序：姓名欄次序相同時保持原名單次序（roster index 已寫入 data-idx）
+    rows.forEach((tr,i)=>tbody.appendChild(tr));
+    // 更新 header 排序標示
+    table.querySelectorAll('th[data-sort-key]').forEach(th=>{
+      const k=th.getAttribute('data-sort-key');
+      const base=th.getAttribute('data-label-base')||'';
+      th.classList.toggle('stamp-th-active',k===s.key);
+      const arrow=k===s.key?(s.dir==='asc'?' ▲':' ▼'):'';
+      th.innerHTML=base+arrow;
+    });
+    // 排序後重新套用搜尋／篩選（否則 hidden 狀態會亂）
+    this.filterSouvenirStamps(scope);
+  }
+,
   renderSouvenirStampsHTML(scope){
     const def=this.souvenirStampScopeDef(scope);
     const roster=this.souvenirRoster(scope);
@@ -130,6 +298,8 @@ Object.assign(ScoutEventApp.prototype,{
     const canManage=this.canManageSouvenirStamps(scope);
     const st=this.souvenirStampStats(scope);
     const pct=st.total?Math.round(st.ticked/st.total*100):0;
+    const sortState=this.stampSortState(scope);
+    const sortTh=(key,label)=>`<th class="border px-2 py-1 cursor-pointer select-none hover:bg-slate-200 ${sortState.key===key?'stamp-th-active':''}" data-sort-key="${key}" data-label-base="${escapeHtml(label)}" onclick="app.setStampSort('${scope}','${key}')">${escapeHtml(label)}${sortState.key===key?(sortState.dir==='asc'?' ▲':' ▼'):''}</th>`;
     const byGroup={};
     roster.forEach(p=>{ const g=p.group_name||'未分組'; byGroup[g]=byGroup[g]||{total:0,ticked:0}; byGroup[g].total++; if(map[p.key]&&map[p.key].ticked) byGroup[g].ticked++; });
     const groupChips=Object.keys(byGroup).map(g=>`<span class="text-[10px] bg-white border px-2 py-1 rounded-full whitespace-nowrap">${escapeHtml(g)} <b>${byGroup[g].ticked}</b>/${byGroup[g].total}</span>`).join('');
@@ -146,7 +316,7 @@ Object.assign(ScoutEventApp.prototype,{
       const boothCell=escapeHtml(boothVal);
       const titleCell=escapeHtml(p.job_title||p.title||'');
       const unitCell=escapeHtml(unitVal);
-      return `<tr class="${ticked?'bg-emerald-50/60':''}" data-search="${escapeHtml(search)}">
+      return `<tr class="${ticked?'bg-emerald-50/60':''}" data-key="${escapeHtml(p.key)}" data-search="${escapeHtml(search)}" data-sort_name="${escapeHtml(p.name)}" data-sort_group="${groupCell}" data-sort_booth="${boothCell}" data-sort_unit="${unitCell}" data-sort_ticked="${ticked?1:0}">
         <td class="border px-2 py-1 text-center"><input type="checkbox" class="w-4 h-4 accent-emerald-600" ${ticked?'checked':''} ${canManage?'':'disabled'} onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this)" title="派咗紀念章就剔"></td>
         <td class="border px-2 py-1 font-bold whitespace-nowrap" data-label="姓名">${nameCell}</td>
         ${isStaff?`<td class="border px-2 py-1 whitespace-nowrap" data-label="組別">${groupCell}</td><td class="border px-2 py-1 whitespace-nowrap text-[11px]" data-label="攤位">${boothCell||'<span class=text-slate-300>—</span>'}</td><td class="border px-2 py-1 text-[10px]" data-label="身份">${titleCell}</td>`
@@ -156,10 +326,10 @@ Object.assign(ScoutEventApp.prototype,{
         :`<td class="border px-2 py-1 text-[10px] text-slate-400" data-label="備註">—</td>`}
       </tr>`;
     }).join('');
-    const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th><th class="border px-2 py-1 text-left">姓名</th><th class="border px-2 py-1 text-left">組別</th><th class="border px-2 py-1 text-left">攤位(如有)</th><th class="border px-2 py-1 text-left">身份</th><th class="border px-2 py-1 text-left">派發紀錄</th><th class="border px-2 py-1 text-left">備註(改名)</th>`;
-    const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th><th class="border px-2 py-1 text-left">姓名</th><th class="border px-2 py-1 text-left">單位</th><th class="border px-2 py-1 text-left">職銜</th><th class="border px-2 py-1 text-left">派發紀錄</th><th class="border px-2 py-1 text-left">備註</th>`;
+    const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('group','組別')}${sortTh('booth','攤位(如有)')}<th class="border px-2 py-1 text-left">身份</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註(改名)</th>`;
+    const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('unit','單位')}<th class="border px-2 py-1 text-left">職銜</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註</th>`;
     return `<div class="space-y-3">
-      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}</div>
+      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先暫存，可以一口氣 TICK 完整個組別，完成後撳「💾 儲存」一次過記錄。</b>':''}</div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
         <div class="bg-white border rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${st.total}</div><div class="text-[10px]">${escapeHtml(def.label)}總人數</div></div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-emerald-700" id="stamp-count-${scope}">${st.ticked}</div><div class="text-[10px]">已派發</div></div>
@@ -172,6 +342,9 @@ Object.assign(ScoutEventApp.prototype,{
         <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="px-3 py-2 border rounded-xl text-xs bg-white">
           <option value="all">全部</option><option value="pending">只睇未派發</option><option value="ticked">只睇已派發</option>
         </select>
+        ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
+        <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
+        <span class="text-[10px] text-slate-400 py-2">💡 點 header（姓名／組別／攤位／派發狀態）可排序，方便現場派發</span>
         ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
         <button onclick="app.exportSouvenirStampsCSV('${scope}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出派發紀錄 CSV</button>
         <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
@@ -220,7 +393,7 @@ Object.assign(ScoutEventApp.prototype,{
     const c=document.getElementById('stamp-count-'+scope); if(c) c.textContent=st.ticked;
     const p=document.getElementById('stamp-pending-'+scope); if(p) p.textContent=st.pending;
     const pc=document.getElementById('stamp-pct-'+scope); if(pc) pc.textContent=(st.total?Math.round(st.ticked/st.total*100):0)+'%';
-    showToast(ticked?`已記錄派發紀念章俾 ${person.name}`:`已取消 ${person.name} 嘅派發紀錄`,'success');
+    // v12.2：TICK 已即時暫存，唔再逐次 toast；狀態列會顯示「有 N 項未儲存」
   }
 ,
   saveSouvenirStampRemark(scope,key,value){
@@ -235,8 +408,8 @@ Object.assign(ScoutEventApp.prototype,{
     e.updated_at=new Date().toISOString();
     if(!e.created_at) e.created_at=e.updated_at;
     map[key]=e; data[scope]=map;
+    // v12.3：備註同 TICK 一樣只暫存＋入待儲存佇列（markStampDirty 會更新「有 N 項未儲存」狀態列），唔逐次彈 toast
     this.saveSouvenirStampData(data,{scope,key,row:e});
-    showToast(e.remark?`已記錄備註：${person.name} — ${e.remark}`:`已清除 ${person.name} 嘅備註`,'success');
   }
 ,
   filterSouvenirStamps(scope){
