@@ -1255,111 +1255,76 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   saveAdminGroupData(data){ localStorage.setItem(LS.config(this.currentEvent?.event_id||'isd_2026')+'_admin_group', JSON.stringify(data)); }
 ,
-  renderAdminGroupModule(){
-    const container=document.getElementById('module-content');
-    const data=this.getAdminGroupData();
-    const canUpload=this.canUploadDocument()||this.isAdmin();
-    const participants=this.getParticipantsData();
-    const pSrc=this.eventData['participants_source']||{};
+  // v12.2：行政組／協調組統一用 openGroupManagement 部門中心基本形態；以下為行政組特色頁籤內容
+  renderAdminGroupModule(){ this.openGroupManagement('行政組'); }
+,
+  renderAdminFinanceTabHTML(){
     const fin=this.getFinanceData();
-    // v12.1：行政組同其他組一樣有「崗位／物資申請／攤位申請／車輛申請／膳食訂餐」統計，且可列印
-    const actionsEl=document.getElementById('module-actions');
-    if(actionsEl) actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('admin-group-stats-print','行政組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
-    const groupStatsHTML=`<div class="bg-white border rounded-xl p-3" id="admin-group-stats-print"><div class="flex items-center justify-between flex-wrap gap-2 mb-2 no-print"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-chart-column text-indigo-600"></i>本組申請統計（行政組）</h4><button onclick="app.printCoordArea('admin-group-stats-print','行政組 - 本組申請統計')" class="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印統計</button></div>${this.groupApplyStatsHTML('行政組',{printId:'admin-group-stats-print-inner'})}</div>`;
     const budgets=fin.group_itemized_budgets||[];
     const budgetItems=budgets.reduce((s,g)=>s+(g.items||[]).length,0);
     const expenses=fin.expenses||[];
     const pendingExp=expenses.filter(e=>e.status==='pending').length;
     const incomeTotal=(fin.income||[]).reduce((s,i)=>s+(parseFloat(i.actual)||0),0);
     const expenseTotal=expenses.reduce((s,e)=>s+(parseFloat(e.actual)||0),0);
-    if(!this.adminGroupTab) this.adminGroupTab='overview';
-    const tabCls=t=>this.adminGroupTab===t?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
-    const overviewHTML=`
-        ${this.groupInfoBoxesHTML('行政組')}
-        ${groupStatsHTML}
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
-            <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務管理（行政組轄下）</h4>
-            <button onclick="app.openModule('finance')" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整財務頁</button>
-          </div>
-          <div class="text-[11px] text-slate-600 mb-3">財務屬行政組管轄，指引、預算、開支申報、口頭報價、結算批核全部在此處理。</div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-            <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">預算組別 / 項目</div><div class="font-bold text-sm text-amber-700">${budgets.length} / ${budgetItems}</div></div>
-            <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">收入 (實際)</div><div class="font-bold text-sm text-emerald-700">$${incomeTotal.toLocaleString()}</div></div>
-            <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">開支 (實際)</div><div class="font-bold text-sm text-rose-600">$${expenseTotal.toLocaleString()}</div></div>
-            <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">待批開支</div><div class="font-bold text-sm ${pendingExp?'text-amber-600':'text-slate-400'}">${pendingExp} 項</div></div>
-          </div>
-          <div class="flex gap-2 flex-wrap">
-            <button onclick="app.openFinanceFromAdminGroup('guidance')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-book text-amber-600 mr-1"></i>財務指引</button>
-            <button onclick="app.openFinanceFromAdminGroup('budgets')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-wallet text-amber-600 mr-1"></i>預算明細</button>
-            <button onclick="app.openFinanceFromAdminGroup('expense')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-receipt text-emerald-600 mr-1"></i>開支申報${pendingExp?`<span class="ml-1 bg-amber-500 text-white text-[9.5px] px-1.5 py-0.5 rounded-full">${pendingExp}</span>`:''}</button>
-            <button onclick="app.openFinanceFromAdminGroup('oral_quotes')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-signature text-indigo-600 mr-1"></i>口頭報價</button>
-            <button onclick="app.openFinanceFromAdminGroup('settlement')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print text-slate-600 mr-1"></i>結算總表</button>
-          </div>
-        </div>
-        <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 上傳文件</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
-        <div class="bg-white border rounded-xl p-4">
-          <div class="flex justify-between items-center mb-2"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>參加旅團名單 (${participants.length})</h4><div class="flex gap-2 flex-wrap"><button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer">上傳 Excel<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleParticipantsExcelUpload(this.files[0])"></label>`:''}<button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載欄位範本 CSV</button></div></div>
-          ${(pSrc.sheet_id||pSrc.drive_file_id)?`<div class="text-[10px] text-slate-500 mb-2">來源：「${escapeHtml(pSrc.name||'參加旅團名單')}」由行政組更新，可一鍵／自動同步。${this.driveSyncNotice()}</div>`:'<div class="text-[10px] text-slate-400 mb-2">尚未設定名單來源（participants_source）。行政組提供 Google Sheet 後即可同步。</div>'}
-          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.docs.map(d=>`
-          <div class="border rounded-xl p-4 bg-white space-y-2">
-            <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
-            <div class="text-[11px] text-slate-600">${escapeHtml(d.description)}</div>
-            <div class="flex gap-2">${canUpload?`<button onclick="app.openAdminDocForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAdminDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
-          </div>
-        `).join('')}</div>
-        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-          <div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-ticket text-indigo-600"></i>票券（行政組專用）</h4>${canUpload?`<button onclick="app.openAdminTicketForm()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增票券</button>`:''}</div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">${data.tickets.map(t=>`
-            <div class="border rounded-xl p-3 bg-white">
-              <div class="flex justify-between items-start gap-2"><b class="text-[13px]">${escapeHtml(t.name)}</b>${canUpload?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.openAdminTicketForm('${t.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAdminTicket('${t.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}</div>
-              <div class="text-[11px] text-slate-600 mt-1">${escapeHtml(t.desc)}</div>
-            </div>`).join('')||'<p class="text-xs text-slate-400">暫無票券</p>'}
-          </div>
-        </div>
-    `;
-    container.innerHTML=`
-      <div class="space-y-4">
-        <div class="bg-white border rounded-xl p-3 text-[11px] leading-relaxed"><b>🏢 行政組</b> — 財務、參加名單、文件、票券、失物認領、紀念章派發統一管理</div>
-        <div class="flex gap-2 flex-wrap">
-          <button onclick="app.openModule('apply_hub')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pen mr-1"></i>申請中心</button>
-          <button onclick="app.openModule('my_monitor')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>我的監察</button>
-        </div>
-        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
-          <button onclick="app.switchAdminGroupTab('overview')" class="${tabCls('overview')}">📊 總覽</button>
-          <button onclick="app.switchAdminGroupTab('lost_found')" class="${tabCls('lost_found')}">🧳 失物認領</button>
-          <button onclick="app.switchAdminGroupTab('stamp_staff')" class="${tabCls('stamp_staff')}">🏅 紀念章-工作人員</button>
-          <button onclick="app.switchAdminGroupTab('stamp_guest')" class="${tabCls('stamp_guest')}">🏅 紀念章-嘉賓</button>
-        </div>
-        <div id="admin-tab-overview" class="space-y-4 ${this.adminGroupTab==='overview'?'':'hidden'}">${overviewHTML}</div>
-        <div id="admin-tab-lost_found" class="space-y-4 ${this.adminGroupTab==='lost_found'?'':'hidden'}"></div>
-        <div id="admin-tab-stamp_staff" class="space-y-4 ${this.adminGroupTab==='stamp_staff'?'':'hidden'}"></div>
-        <div id="admin-tab-stamp_guest" class="space-y-4 ${this.adminGroupTab==='stamp_guest'?'':'hidden'}"></div>
+    return `<div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-600"></i>💰 財務管理（行政組轄下）</h4>
+        <button onclick="app.openModule('finance')" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-expand mr-1"></i>進入完整財務頁</button>
       </div>
-    `;
-    const lfEl=document.getElementById('admin-tab-lost_found');
-    if(lfEl) lfEl.innerHTML=this.renderLostFoundHTML({compact:false});
-    const ssEl=document.getElementById('admin-tab-stamp_staff');
-    if(ssEl) ssEl.innerHTML=this.renderSouvenirStampsHTML('staff');
-    const sgEl=document.getElementById('admin-tab-stamp_guest');
-    if(sgEl) sgEl.innerHTML=this.renderSouvenirStampsHTML('guests');
+      <div class="text-[11px] text-slate-600">財務屬行政組管轄，指引、預算、開支申報、口頭報價、結算批核全部在此處理。</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">預算組別 / 項目</div><div class="font-bold text-sm text-amber-700">${budgets.length} / ${budgetItems}</div></div>
+        <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">收入 (實際)</div><div class="font-bold text-sm text-emerald-700">$${incomeTotal.toLocaleString()}</div></div>
+        <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">開支 (實際)</div><div class="font-bold text-sm text-rose-600">$${expenseTotal.toLocaleString()}</div></div>
+        <div class="bg-white border rounded-xl p-2.5 text-center"><div class="text-[10px] text-slate-500">待批開支</div><div class="font-bold text-sm ${pendingExp?'text-amber-600':'text-slate-400'}">${pendingExp} 項</div></div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="app.openFinanceFromAdminGroup('guidance')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-book text-amber-600 mr-1"></i>財務指引</button>
+        <button onclick="app.openFinanceFromAdminGroup('budgets')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-wallet text-amber-600 mr-1"></i>預算明細</button>
+        <button onclick="app.openFinanceFromAdminGroup('expense')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-receipt text-emerald-600 mr-1"></i>開支申報${pendingExp?`<span class="ml-1 bg-amber-500 text-white text-[9.5px] px-1.5 py-0.5 rounded-full">${pendingExp}</span>`:''}</button>
+        <button onclick="app.openFinanceFromAdminGroup('oral_quotes')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-signature text-indigo-600 mr-1"></i>口頭報價</button>
+        <button onclick="app.openFinanceFromAdminGroup('settlement')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print text-slate-600 mr-1"></i>結算總表</button>
+      </div>
+    </div>`;
   }
 ,
-  switchAdminGroupTab(tab){
-    this.adminGroupTab=tab;
-    ['overview','lost_found','stamp_staff','stamp_guest'].forEach(t=>{
-      const el=document.getElementById('admin-tab-'+t);
-      if(el) el.classList.toggle('hidden',t!==tab);
-    });
-    const container=document.getElementById('module-content');
-    if(!container) return;
-    container.querySelectorAll('[onclick^="app.switchAdminGroupTab"]').forEach(btn=>{
-      const m=btn.getAttribute('onclick').match(/'([^']+)'/);
-      const t=m?m[1]:'';
-      btn.className=t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
-    });
+  renderAdminParticipantsTabHTML(){
+    const canUpload=this.canUploadDocument()||this.isAdmin();
+    const participants=this.getParticipantsData();
+    const pSrc=this.eventData['participants_source']||{};
+    return `<div class="bg-white border rounded-xl p-4 space-y-2">
+      <div class="flex justify-between items-center mb-1 flex-wrap gap-2"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>參加旅團名單 (${participants.length})</h4><div class="flex gap-2 flex-wrap"><button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer">上傳 Excel<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleParticipantsExcelUpload(this.files[0])"></label>`:''}<button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載欄位範本 CSV</button></div></div>
+      ${(pSrc.sheet_id||pSrc.drive_file_id)?`<div class="text-[10px] text-slate-500">來源：「${escapeHtml(pSrc.name||'參加旅團名單')}」由行政組更新，可一鍵／自動同步。${this.driveSyncNotice()}</div>`:'<div class="text-[10px] text-slate-400">尚未設定名單來源（participants_source）。行政組提供 Google Sheet 後即可同步。</div>'}
+      <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
+    </div>`;
+  }
+,
+  renderAdminDocsTabHTML(){
+    const canUpload=this.canUploadDocument()||this.isAdmin();
+    const data=this.getAdminGroupData();
+    return `<div class="space-y-3">
+      <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 上傳文件</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${(data.docs||[]).map(d=>`
+        <div class="border rounded-xl p-4 bg-white space-y-2">
+          <div class="flex justify-between"><b class="text-[13px]">${escapeHtml(d.title)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(d.category)}</span></div>
+          <div class="text-[11px] text-slate-600">${escapeHtml(d.description)}</div>
+          <div class="flex gap-2">${canUpload?`<button onclick="app.openAdminDocForm('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAdminDoc('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div>
+        </div>`).join('')||'<p class="text-xs text-slate-400 col-span-full">暫無行政組文件</p>'}</div>
+    </div>`;
+  }
+,
+  renderAdminTicketsTabHTML(){
+    const canUpload=this.canUploadDocument()||this.isAdmin();
+    const data=this.getAdminGroupData();
+    return `<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 space-y-3">
+      <div class="flex justify-between items-center"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-ticket text-indigo-600"></i>票券（行政組專用）</h4>${canUpload?`<button onclick="app.openAdminTicketForm()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增票券</button>`:''}</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">${(data.tickets||[]).map(t=>`
+        <div class="border rounded-xl p-3 bg-white">
+          <div class="flex justify-between items-start gap-2"><b class="text-[13px]">${escapeHtml(t.name)}</b>${canUpload?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.openAdminTicketForm('${t.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAdminTicket('${t.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}</div>
+          <div class="text-[11px] text-slate-600 mt-1">${escapeHtml(t.desc)}</div>
+        </div>`).join('')||'<p class="text-xs text-slate-400 md:col-span-3">暫無票券</p>'}
+      </div>
+    </div>`;
   }
 ,
   openFinanceFromAdminGroup(tab){

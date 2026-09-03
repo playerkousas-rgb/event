@@ -837,7 +837,8 @@ Object.assign(ScoutEventApp.prototype,{
     const isOwn=currentGroup && cleanGroup===currentGroup;
     const canManage=isAdmin || isOwn || this.isAllGroupViewer();
     const pending=st.supPending+st.boothPending+st.vehPending+st.mealPending;
-    const action = g==='協調組' ? "app.openModule('coordinator_group')" : (g==='行政組' ? "app.openModule('admin_group')" : `app.openGroupManagement('${g.replace(/'/g,"")}')`);
+    // v12.2：全部組（含行政組、協調組）統一用 openGroupManagement 部門中心基本形態；特色功能喺頁內頂部頁籤
+    const action = `app.openGroupManagement('${g.replace(/'/g,"")}')`;
     return `<div class="border rounded-2xl p-3.5 bg-white ${isOwn?'ring-4 ring-indigo-300 border-indigo-400 shadow-md':'shadow-sm'} hover:shadow-md transition cursor-pointer" onclick="${action}">
       <div class="flex items-start justify-between gap-2">
         <div class="flex items-center gap-2 min-w-0">
@@ -963,10 +964,23 @@ Object.assign(ScoutEventApp.prototype,{
     const canManage=this.isAdmin() || isOwn;
     // v8.8：主題節目組卡片加「攤位資料(Drive)／攤位總表／借用統計」頁籤（填完計劃書後的兩部分＋DRIVE 攤位資料）
     const isThemeGroup=groupName==='主題節目組';
-    // v11：行政組加「紀念章派發（工作人員）」＋「失物認領」；嘉賓接待組加「紀念章派發（嘉賓）」
+    // v12.2：基本形態（本組申請 apps）所有組一致；各組特色功能一律做頂部頁籤（行政組＝財務/旅團/文件/票券/紀念章/失物；協調組＝物資/車輛/膳食/場地文件）
     const groupExtraTabs=[
-      ...(groupName==='行政組'?[{k:'stamp_staff',label:'🏅 紀念章派發（工作人員）'},{k:'lost_found',label:'🧳 失物認領'}]:[]),
-      ...(groupName==='嘉賓接待組'?[{k:'stamp_guest',label:'🏅 紀念章派發（嘉賓）'}]:[])
+      ...(groupName==='行政組'?[
+        {k:'admin_finance',label:'💰 財務'},
+        {k:'admin_participants',label:'🚌 參加旅團'},
+        {k:'admin_docs',label:'📁 行政文件'},
+        {k:'admin_tickets',label:'🎟️ 票券'},
+        {k:'stamp_staff',label:'🏅 紀念章-工作人員'},
+        {k:'lost_found',label:'🧳 失物認領'}
+      ]:[]),
+      ...(groupName==='協調組'?[
+        {k:'coord_supplies',label:'📦 物資批核'},
+        {k:'coord_vehicle',label:'🚗 車輛批核'},
+        {k:'coord_meals',label:'🍱 膳食批核'},
+        {k:'coord_docs',label:'🗂️ 場地佈置及文件'}
+      ]:[]),
+      ...(groupName==='嘉賓接待組'?[{k:'stamp_guest',label:'🏅 紀念章-嘉賓'}]:[])
     ];
     const groupTabList=[
       {k:'apps',label:'📋 本組申請'},
@@ -1008,13 +1022,23 @@ Object.assign(ScoutEventApp.prototype,{
         ${isThemeGroup?`<div id="group-tab-drive" class="hidden"></div><div id="group-tab-master" class="hidden"></div><div id="group-tab-borrow" class="hidden"></div>`:''}
         ${groupExtraTabs.map(t=>`<div id="group-tab-${t.k}" class="${this.groupBoothTab===t.k?'':'hidden'}"></div>`).join('')}
       </div>`;
-    // v11：行政組／嘉賓接待組專屬頁籤內容（紀念章派發 TICK 人名；失物認領由行政組紀錄）
+    // v12.2：特色頁籤內容（全部喺頂部頁籤列；基本形態＝apps 本組申請）
     groupExtraTabs.forEach(t=>{
       const el=document.getElementById('group-tab-'+t.k);
       if(!el) return;
-      if(t.k==='stamp_staff') el.innerHTML=this.renderSouvenirStampsHTML('staff');
-      else if(t.k==='stamp_guest') el.innerHTML=this.renderSouvenirStampsHTML('guests');
-      else if(t.k==='lost_found') el.innerHTML=this.renderLostFoundHTML({compact:true});
+      switch(t.k){
+        case 'stamp_staff': el.innerHTML=this.renderSouvenirStampsHTML('staff'); break;
+        case 'stamp_guest': el.innerHTML=this.renderSouvenirStampsHTML('guests'); break;
+        case 'lost_found': el.innerHTML=this.renderLostFoundHTML({compact:true}); break;
+        case 'admin_finance': el.innerHTML=this.renderAdminFinanceTabHTML(); break;
+        case 'admin_participants': el.innerHTML=this.renderAdminParticipantsTabHTML(); break;
+        case 'admin_docs': el.innerHTML=this.renderAdminDocsTabHTML(); break;
+        case 'admin_tickets': el.innerHTML=this.renderAdminTicketsTabHTML(); break;
+        case 'coord_supplies': this.renderCoordSupplies(el); break;
+        case 'coord_vehicle': this.renderCoordVehicles(el); break;
+        case 'coord_meals': this.renderCoordMeals(el); break;
+        case 'coord_docs': this.renderCoordDocs(el); break;
+      }
     });
     if(isThemeGroup){
       const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
@@ -1035,8 +1059,8 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   switchGroupTab(tab){
     this.groupBoothTab=tab;
-    // v11：加入行政組／嘉賓接待組專屬頁籤（紀念章派發＋失物認領）
-    ['apps','drive','master','borrow','stamp_staff','stamp_guest','lost_found'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
+    // v12.2：頂部頁籤涵蓋全部特色功能（行政組財務/旅團/文件/票券/紀念章/失物；協調組物資/車輛/膳食/場地文件）
+    ['apps','drive','master','borrow','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
     document.querySelectorAll('.group-tab-btn').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className='group-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
