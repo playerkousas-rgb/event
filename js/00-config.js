@@ -436,7 +436,7 @@ const SOUVENIR_STAMP_SCOPES=[
 ];
 /* ══ v14（2026-09-05 用戶定案）執行手冊四張通用「名單＋點名」 ══════════════════
    用戶要求：先**預定位置及格式**，同時預備可讓用戶**上傳名單（EXCEL／WORD／PDF）**，
-   並提供 TICK 點名、更正原因、分組確認及後端留痕。
+   並提供 TICK 點名、「修正」取消（同紀念章一樣，見 docs/TICK_CONCURRENCY_RULES.md）、分組確認及後端留痕。
    ┌────────────────┬──────────────────────────┬──────────────┐
    │ 名單            │ 位置                      │ 負責組別      │
    ├────────────────┼──────────────────────────┼──────────────┤
@@ -459,7 +459,7 @@ const ROSTER_LIST_DEFS=[
     key:'section_award', match_fields:['name','award'], title:'支部獎勵獲獎名單', tab_label:'支部獎勵名單', icon:'fa-solid fa-medal',
     accent:'amber', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 支部獎勵名單', dept_tab:'cer_award_section',
-    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
+    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發支部最高獎章嘉許信』。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
     source:'roster', editable:true, required:'name', group_field:'section', sort_fields:['area','section','unit','name'],
     columns:[
@@ -477,7 +477,7 @@ const ROSTER_LIST_DEFS=[
     key:'leader_award', match_fields:['name','award','unit'], title:'領袖獎勵獲獎名單', tab_label:'領袖獎勵名單', icon:'fa-solid fa-award',
     accent:'indigo', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 領袖獎勵名單', dept_tab:'cer_award_leader',
-    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
+    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒總監委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
     source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
     columns:[
@@ -497,7 +497,7 @@ const ROSTER_LIST_DEFS=[
     key:'participants', match_fields:['unit','section'], title:'參加旅團名單', tab_label:'參加旅團名單', icon:'fa-solid fa-people-group',
     accent:'emerald', owner_group:'行政組', owner_note:'行政組',
     exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
-    tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消 TICK 必須填寫更正原因。',
+    tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊行政組「參加旅團名單」（2025 版為「旅團報名人數」PDF）。名單本身沿用行政組維護之結構表（Drive 同步／Excel 上傳），v14 於同一頁加入報到點名。',
     source:'participants', editable:false, required:'unit', group_field:'section', sort_fields:['area','section','unit'],
     total_fields:[{k:'headcount',label:'人數'}],
@@ -515,7 +515,7 @@ const ROSTER_LIST_DEFS=[
     key:'meal_box', match_fields:['unit'], title:'代訂餐盒旅團名單', tab_label:'代訂餐盒名單', icon:'fa-solid fa-bowl-food',
     accent:'rose', owner_group:'協調組', owner_note:'協調組',
     exec_location:'執行手冊 → 代訂餐盒名單', dept_tab:'coord_mealbox',
-    tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消 TICK 必須填寫更正原因。',
+    tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊「代訂餐盒」名單（2025 版列於行政組膳食安排內）。名單由協調組上載及點名，用以向判單對數及派發時核對；各組仍可在「膳食管理」自行訂餐，兩邊數字如有出入以本名單為準並註明備註。',
     source:'roster', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
     total_fields:[{k:'qty_a',label:'A餐'},{k:'qty_b',label:'B餐'},{k:'qty_c',label:'C餐'},{k:'qty_total',label:'總數'}],
@@ -541,7 +541,7 @@ const MERIT_AWARD_ROSTER_DEF={
   key:'merit_award', match_fields:['unit','section'], title:'優異旅團獲獎名單', tab_label:'優異旅團獲獎名單', icon:'fa-solid fa-trophy',
   accent:'sky', owner_group:'會操及典禮組', owner_note:'典禮組',
   exec_location:'執行手冊 → 典禮儀式 → 優異旅團獲獎名單', dept_tab:'cer_award_merit',
-  tick_label:'點名', tick_col_label:'出席', tick_hint:'優異旅團代表上台前由典禮組逐團點名；取消 TICK 必須填寫更正原因。',
+  tick_label:'點名', tick_col_label:'出席', tick_hint:'優異旅團代表上台前由典禮組逐團點名；取消請同時剔「修正」格（TICK 只加不減）。',
   intro:'優異旅團獲獎名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
   source:'ceremony_merit', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
   upload_label:'上傳獲獎名單',

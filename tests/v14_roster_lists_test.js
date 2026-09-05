@@ -214,7 +214,8 @@ ok(appCer.rosterTableHTML('leader_award', appCer.rosterViewRows('leader_award'),
 const blank = appCer.rosterGridToRows(wDef, [['a'], ['b']]);
 ok(blank.rows.length === 0, 'B21 冇必填欄（姓名）嘅行唔會入名單');
 
-// 手動新增／編輯＋TICK（含取消 TICK 必須填原因）
+// 手動新增／編輯＋TICK（取消＝「修正」格：跟 docs/TICK_CONCURRENCY_RULES.md ＋ 紀念章派發同一套，冇 prompt）
+const chk = (checked) => ({ checked, closest() { return null; } });   // 模擬 checkbox 元素
 const appGd = mkApp({ name: '典禮總主任', role: ROLE.gd, group_name: '會操及典禮組', user_id: 'u5' });
 el('record-modal-title'); el('record-form-fields'); el('record-form'); el('modal-record');
 el('rs-mode').value = 'create'; el('rs-id').value = ''; el('rs-key').value = 'section_award';
@@ -223,27 +224,50 @@ el('rs-f-name').value = '趙六'; el('rs-f-award').value = '貝登堡獎章'; el
 appGd.submitRosterRowForm('section_award');
 let rows = appGd.rosterRows('section_award');
 ok(rows.length === 1 && rows[0].name === '趙六' && rows[0].award === '貝登堡獎章', 'B22 可逐行新增（版位已預留，未上載前都填到）');
-appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), true);
+context.prompt = () => { throw new Error('rosterTick 唔應該再用 prompt 問更正原因'); };
+const rowKey0 = encodeURIComponent(rows[0]._key);
+// 修正格單獨剔（TICK 未有）→ 冇動作、修正格彈返空白
+{ const c = chk(true); appGd.rosterTick('section_award', rowKey0, c, true);
+  ok(appGd.rosterRows('section_award')[0]._checked === false && c.checked === false && !appGd.rosterRows('section_award')[0]._correction, 'B23a 未 TICK 時單剔「修正」冇動作（修正格彈返空白）'); }
+appGd.rosterTick('section_award', rowKey0, chk(true), false);
 rows = appGd.rosterRows('section_award');
-ok(rows[0]._checked === true && rows[0]._by === '典禮總主任', 'B23 點名 TICK 生效並保存審計資料');
-promptAnswer = '';
-appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), false);
-ok(appGd.rosterRows('section_award')[0]._checked === true, 'B24 取消 TICK 冇填原因會被打回');
-promptAnswer = '誤點';
-appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), false);
-ok(appGd.rosterRows('section_award')[0]._checked === false && appGd.rosterRows('section_award')[0]._note === '誤點', 'B25 取消 TICK 需原因並留紀錄');
-appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), true);
-ok(appGd.rosterViewRows('section_award')[0]._checked === true, 'B26 重新 TICK 返（唔設永久鎖）');
+ok(rows[0]._checked === true && rows[0]._by === '典禮總主任' && rows[0]._at, 'B23 點名 TICK 生效並保存審計資料（操作者／時間）');
+const firstAt = rows[0]._at;
+// 重覆 TICK 冪等：唔會覆蓋原操作者／時間
+appGd.currentUser = { name: '另一位典禮組', role: ROLE.staff, group_name: '會操及典禮組', user_id: 'u5b' };
+appGd.rosterTick('section_award', rowKey0, chk(true), false);
+ok(appGd.rosterRows('section_award')[0]._checked === true && appGd.rosterRows('section_award')[0]._by === '典禮總主任' && appGd.rosterRows('section_award')[0]._at === firstAt, 'B23b 重覆 TICK 冪等（唔互相抵消、唔覆蓋原紀錄）');
+appGd.currentUser = { name: '典禮總主任', role: ROLE.gd, group_name: '會操及典禮組', user_id: 'u5' };
+// 直接剔走 TICK（冇修正格）＝ NO-OP：本機空白唔係取消指令，checkbox 彈返 checked
+{ const c = chk(false); appGd.rosterTick('section_award', rowKey0, c, false);
+  ok(appGd.rosterRows('section_award')[0]._checked === true && c.checked === true, 'B24 直接剔走 TICK 唔會取消（本機空白唔係刪除指令，格會彈返）'); }
+ok(appGd.rosterRows('section_award')[0]._by === '典禮總主任' && appGd.rosterRows('section_award')[0]._at === firstAt, 'B24b NO-OP 唔會改動紀錄／唔會覆蓋操作者');
+// TICK=Y ＋ 修正=Y → 取消呢一次 TICK；之後兩格清空
+appGd.rosterTick('section_award', rowKey0, chk(true), true);
+{ const r0 = appGd.rosterRows('section_award')[0];
+  ok(r0._checked === false && r0._correction === true && r0._by === '典禮總主任', 'B25 TICK=Y＋修正=Y 先會取消，並留低修正操作者／時間'); }
+{ const tbl = appGd.rosterTableHTML('section_award');
+  const cell = tbl.slice(tbl.indexOf('roster-tick-cell'), tbl.indexOf('</td>', tbl.indexOf('roster-tick-cell')));
+  ok(!/ checked/.test(cell) && (cell.match(/type="checkbox"/g) || []).length === 2, 'B25b 取消後 TICK 格同「修正」格都係空白（兩格清空）');
+  ok(tbl.includes('修正取消') && tbl.includes('accent-rose-600') && tbl.includes('>修正</span>'), 'B25c 點名紀錄欄顯示「修正取消」；每行都有紅色「修正」格（同紀念章一樣）'); }
+// 修正唔係永久鎖：另一位工作人員再核對到可以重新 TICK
+appGd.currentUser = { name: '另一位典禮組', role: ROLE.staff, group_name: '會操及典禮組', user_id: 'u5b' };
+appGd.rosterTick('section_award', rowKey0, chk(true), false);
+ok(appGd.rosterViewRows('section_award')[0]._checked === true && appGd.rosterViewRows('section_award')[0]._by === '另一位典禮組' && !appGd.rosterViewRows('section_award')[0]._correction, 'B26 修正後可由另一人重新 TICK（唔設永久鎖）');
+appGd.currentUser = { name: '典禮總主任', role: ROLE.gd, group_name: '會操及典禮組', user_id: 'u5' };
+ok(!roster.includes('prompt('), 'B26b 名單引擎源碼冇 prompt()（取消唔再問更正原因）');
+ok(roster.includes("app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,true)") && roster.includes('修正：取消這一次 TICK'), 'B26c 每行有獨立「修正」checkbox（同 40-souvenir-stamps.js 一樣嘅做法）');
 
 // 分組進度 chips／排序／匯出／範本
 const g = appGd.rosterPanelInnerHTML('section_award', 'test');
-ok(g.includes('目前進度：已點名／總數　1/1'), 'B27 進度顯示已點名／總數');
+ok(g.includes('目前進度：已點名／全名單　1/1'), 'B27 進度顯示已點名／全名單（按目前顯示範圍計）');
+ok(g.includes('TICK 只加不減') && g.includes('同時剔紅色「修正」格'), 'B27b 面板講明 TICK／修正規則');
 ok(g.includes('按區會') && g.includes('未點名優先'), 'B28 排序選項（按區會／支部／旅團／姓名／未點名優先）');
 appGd.rosterSetSort('section_award', 'tick'); ok(appGd['_rosterSort_section_award'] === 'tick', 'B29 排序狀態保存');
 let csv = null;
 appGd.exportTableExcel = (fn, grid, opts) => { csv = { fn, grid, opts }; };
 appGd.rosterExportExcel('section_award');
-ok(csv && /\.xlsx$/.test(csv.fn) && csv.grid[0][0] === '出席' && csv.grid[1][csv.grid[0].indexOf('獲獎人姓名')] === '趙六', 'B30 匯出 Excel（.xlsx）帶點名狀態（欄名跟手冊「出席」）');
+ok(csv && /\.xlsx$/.test(csv.fn) && csv.grid[0][0] === '出席' && csv.grid[1][csv.grid[0].indexOf('獲獎人姓名')] === '趙六' && csv.grid[1][csv.grid[1].length - 1] === 'TICK', 'B30 匯出 Excel（.xlsx）帶點名狀態＋最後動作（欄名跟手冊「出席」）');
 ok(appGd.rosterDef('meal_box').tick_col_label === undefined && appGd.rosterDef('meal_box').tick_label === '派發', 'B30b 無 tick_col_label 時匯出用 tick_label（派發）');
 csv = null; appGd.rosterExportCSV('section_award');
 ok(csv && /\.xlsx$/.test(csv.fn), 'B30c 舊名 rosterExportCSV 一樣出 Excel（唔會再出 CSV）');
@@ -265,10 +289,15 @@ appMerit.saveCeremonyData(meritData);
 let meritRows = appMerit.rosterRows('merit_award');
 ok(appMerit.rosterDef('merit_award').columns.length === 3 && meritRows.length === 1 && meritRows[0]._checked === true, 'B32b 優異旅團獲獎名單讀取既有主名單及舊點名狀態');
 ok(appMerit.rosterPanelHTML('merit_award', { scope: 'test' }).includes('上傳獲獎名單'), 'B32c 優異旅團獲獎名單使用指定上傳標籤');
-promptAnswer = '誤點，代表尚未到場';
-appMerit.rosterTick('merit_award', encodeURIComponent(meritRows[0]._key), false);
+// 舊優異旅團 TICK：直接剔走＝NO-OP；要用「修正」格先取消，並回寫典禮回條資料（correction_cancelled）
+appMerit.rosterTick('merit_award', encodeURIComponent(meritRows[0]._key), chk(false), false);
+ok(appMerit.rosterRows('merit_award')[0]._checked === true && appMerit.getCeremonyData().responses[0].ticked === true, 'B32d0 舊優異旅團 TICK 直接剔走唔會取消');
+appMerit.rosterTick('merit_award', encodeURIComponent(meritRows[0]._key), chk(true), true);
 let meritAfter = appMerit.getCeremonyData();
-ok(appMerit.rosterRows('merit_award')[0]._checked === false && meritAfter.responses[0].ticked === false && meritAfter.responses[0].checkin_note.includes('誤點'), 'B32d 取消舊優異旅團 TICK 必須留更正原因並回寫典禮資料');
+ok(appMerit.rosterRows('merit_award')[0]._checked === false && appMerit.rosterRows('merit_award')[0]._correction === true && meritAfter.responses[0].ticked === false && meritAfter.responses[0].correction_cancelled === true && meritAfter.responses[0].checked_by === '優異旅團典禮主任', 'B32d 修正取消舊優異旅團 TICK 會回寫典禮資料（ticked=false＋correction_cancelled＋操作者）');
+ok(appMerit.rosterStatusHTML('merit_award').includes('已到／回覆出席／全名單　0/1/1'), 'B32d2 優異旅團統計格式＝已到／回覆出席／全名單（按目前顯示範圍）');
+appMerit.rosterTick('merit_award', encodeURIComponent(meritRows[0]._key), chk(true), false);
+ok(appMerit.rosterStatusHTML('merit_award').includes('已到／回覆出席／全名單　1/1/1') && appMerit.getCeremonyData().responses[0].ticked === true && appMerit.getCeremonyData().responses[0].correction_cancelled === false, 'B32d3 修正後可再 TICK，回條資料同步返 ticked=true');
 appMerit._rosterPending = { merit_award: { rows: [{ area: 'SKW 筲箕灣區', unit: '港島第6旅', section: '深資童軍' }], meta: { source: 'merit.xlsx' } } };
 appMerit.applyRosterImport('merit_award');
 meritAfter = appMerit.getCeremonyData();
@@ -280,7 +309,7 @@ const appA = mkApp({ name: '行政總主任', role: ROLE.gd, group_name: '行政
   { unit_name: '港島第2旅', section: '幼童軍', headcount: '45', notes: '10:00 前排到' }
 ]);
 ok(appA.rosterRows('participants').length === 2 && appA.rosterRows('participants')[0].unit === '港島第1旅', 'B33 參加旅團點名表直接讀結構表');
-appA.rosterTick('participants', encodeURIComponent(appA.rosterRows('participants')[0]._key), true);
+appA.rosterTick('participants', encodeURIComponent(appA.rosterRows('participants')[0]._key), chk(true), false);
 ok(appA.rosterRows('participants')[0]._checked === true && appA.getParticipantsData().length === 2 && appA.getParticipantsData()[0].ticked === undefined, 'B34 點名唔污染名單資料（名單仍以結構表為準）');
 appA._rosterPending = { participants: { rows: [{ area: '', unit: '港島第3旅', section: '小童軍', headcount: '25', notes: '' }], meta: { source: 'list.xlsx' } } };
 appA.applyRosterImport('participants');
@@ -389,14 +418,24 @@ async function verifyMeritRosterBackendPull(){
   ok(!!pullApp.getRosterData().confirmed.merit_award['HKW 港島西區'], 'D3 優異旅團由後端取回時保留分組確認狀態');
   let savedCheckin=null;
   context.fetch=(url,opts)=>{ savedCheckin=JSON.parse(opts.body); return Promise.resolve({json:async()=>({success:true})}); };
-  pullApp.rosterSaveTickToGas('merit_award',pullApp.rosterDef('merit_award'),pulled,{checked:false,by:'同步典禮主任',at:'2026-09-05T11:00:00.000Z',note:'誤點'});
-  ok(savedCheckin.record.checked_in==='N' && savedCheckin.record.correction_cancelled==='Y', 'D4 取消優異旅團點名會以未點名狀態及更正旗標保存至後端');
-  // 相容讀取較舊的取消紀錄：舊記錄可帶 Y，但 correction_cancelled 必須優先還原為未點名。
-  remoteData.Roster_Rollcall_Checkins=[{list_key:'merit_award',row_key:'港島第15旅|童軍',checked_in:'Y',correction_cancelled:'Y',checked_by:'最新典禮主任',checked_at:'2026-09-05T11:00:00.000Z',checkin_note:'誤點'}];
+  // 修正動作：同紀念章一樣以 checked_in=Y＋correction_cancelled=Y 送出（後端 Code.gs 才改成 N），唔會送「裸 N」
+  pullApp.rosterSaveTickToGas('merit_award',pullApp.rosterDef('merit_award'),pulled,{checked:false,correction:true,by:'同步典禮主任',at:'2026-09-05T11:00:00.000Z',note:''});
+  ok(savedCheckin.record.checked_in==='Y' && savedCheckin.record.correction_cancelled==='Y' && savedCheckin.record.checked_by==='同步典禮主任', 'D4 修正取消以 TICK=Y＋correction_cancelled=Y 送後端（後端負責改成 N，並保存最後操作者／時間）');
+  ok(gs.includes("moduleName === 'Roster_Rollcall_Checkins' && String(record.correction_cancelled || '') === 'Y') record.checked_in = 'N'"), 'D4b Code.gs 收到 correction_cancelled=Y 先改 checked_in=N（本機空白永遠唔會刪後端 TICK）');
+  savedCheckin=null;
+  pullApp.rosterSaveTickToGas('merit_award',pullApp.rosterDef('merit_award'),pulled,{checked:true,by:'同步典禮主任',at:'2026-09-05T11:30:00.000Z',note:''});
+  ok(savedCheckin.record.checked_in==='Y' && savedCheckin.record.correction_cancelled==='', 'D4c 普通 TICK 只送 ADD（冇 correction 旗標）');
+  // 相容讀取後端修正紀錄：checked_in 可為 Y，但 correction_cancelled=Y 必須優先還原為未點名，並顯示「修正取消」。
+  remoteData.Roster_Rollcall_Checkins=[{list_key:'merit_award',row_key:'港島第15旅|童軍',checked_in:'Y',correction_cancelled:'Y',checked_by:'最新典禮主任',checked_at:'2026-09-05T11:00:00.000Z',checkin_note:''}];
   context.fetch=async()=>({json:async()=>({success:true,data:remoteData})});
   await pullApp.rosterPullFromGas('merit_award');
   const cancelled=pullApp.rosterRows('merit_award')[0];
-  ok(!cancelled._checked && cancelled._note==='誤點' && cancelled._by==='最新典禮主任', 'D5 重新整理會保留取消點名的原因、操作者及正確狀態');
+  ok(!cancelled._checked && cancelled._correction===true && cancelled._by==='最新典禮主任', 'D5 重新整理／多裝置取回會用後端最新修正狀態（未點名＋修正操作者）');
+  ok(pullApp.rosterTableHTML('merit_award').includes('修正取消'), 'D5b 取回後點名紀錄欄顯示「修正取消」');
+  // 較舊嘅本機／後端紀錄唔會覆蓋較新操作
+  remoteData.Roster_Rollcall_Checkins=[{list_key:'merit_award',row_key:'港島第15旅|童軍',checked_in:'Y',checked_by:'舊裝置',checked_at:'2026-09-05T09:30:00.000Z',checkin_note:''}];
+  await pullApp.rosterPullFromGas('merit_award');
+  ok(!pullApp.rosterRows('merit_award')[0]._checked && pullApp.rosterRows('merit_award')[0]._by==='最新典禮主任', 'D6 較舊嘅 TICK 紀錄唔會把較新嘅修正復原（以操作時間拒絕舊操作）');
 }
 
 verifyMeritRosterBackendPull().then(()=>{

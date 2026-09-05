@@ -75,9 +75,11 @@ Object.assign(ScoutEventApp.prototype,{
       const legacyHasAudit=legacy&&Object.prototype.hasOwnProperty.call(legacy,'ticked');
       const legacyChecked=legacy&&(/^(Y|y|true|1|是)$/.test(String(legacy.ticked||''))||legacy.ticked===true);
       const t=hasLocalTick ? ticks[k] : (legacyHasAudit?{
-        checked:!!legacyChecked,by:legacy.checked_by||legacy.updated_by||'已保存',at:legacy.checked_at||legacy.updated_at||legacy.created_at||'',note:legacy.checkin_note||''
+        checked:!!legacyChecked,by:legacy.checked_by||legacy.updated_by||'已保存',at:legacy.checked_at||legacy.updated_at||legacy.created_at||'',note:legacy.checkin_note||'',
+        correction:!!legacy.correction_cancelled&&!legacyChecked
       }:{});
-      r._key=k; r._checked=!!t.checked; r._by=t.by||''; r._at=t.at||''; r._note=t.note||'';
+      // _correction＝最後一次動作係「修正取消」（只係紀錄，唔係鎖：之後任何人都可以再 TICK）
+      r._key=k; r._checked=!!t.checked; r._by=t.by||''; r._at=t.at||''; r._note=t.note||''; r._correction=!t.checked&&!!t.correction;
     });
     return rows;
   },
@@ -161,6 +163,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div>${escapeHtml(def.intro)}</div>
         <div class="text-[10px] text-slate-500">位置：${escapeHtml(def.exec_location)}｜格式（${cols.length} 欄）：${cols.map(c=>escapeHtml(c.label)).join(' / ')}＋<b>${escapeHtml(def.tick_label)} TICK</b></div>
         ${this.currentUser?'':'<div class=\"text-[10px] text-slate-500\">'+this.rosterNeedsLogin(key)+'</div>'}
+        ${canTick?`<div class="text-[10px] text-slate-600"><b>TICK 只加不減</b>（同紀念章派發一樣）：剔綠色格＝${escapeHtml(def.tick_label)}；要取消請喺同一行<b>同時剔紅色「修正」格</b>（TICK=Y＋修正=Y 先會取消），取消後兩格清空，之後如真係到場可再 TICK。直接剔走 TICK 唔會當取消。</div>`:''}
       </div>
       ${meritReplyStatus}
       <div class="flex flex-wrap gap-2 items-center">
@@ -201,19 +204,28 @@ Object.assign(ScoutEventApp.prototype,{
   // 附件版位：參加旅團沿用執行手冊既有嘅「participants」區（兩邊入口見到同一組附件）；其餘另有 roster_ 區
   rosterAttachSection(key){ return key==='participants'?'participants':'roster_'+key; },
 
+  // 統計一律按「目前顯示範圍」計（TICK_CONCURRENCY_RULES：已到／回覆出席／FULL LIST）；
+  // 優異旅團有回條先有「回覆出席」一節，其餘名單顯示「已X／全名單」。
+  rosterScopeStats(def,rows){
+    const done=rows.filter(r=>r._checked).length;
+    const hasReply=def.source==='ceremony_merit';
+    const replied=hasReply?rows.filter(r=>r._meritReply&&String(r._meritReply.attendance||'')==='出席').length:0;
+    return {done,replied,total:rows.length,hasReply,text:hasReply?`${done}/${replied}/${rows.length}`:`${done}/${rows.length}`};
+  },
   rosterStatusHTML(key){
     const def=this.rosterDef(key);
     const rows=this.rosterViewRows(key);
-    const done=rows.filter(r=>r._checked).length;
+    const all=this.rosterScopeStats(def,rows);
     const gk=def.group_field||'area';
     const groups=[...new Set(rows.map(r=>String(r[gk]||'').trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y,'zh-Hant'));
     const canTick=this.rosterCanTick(key);
     const confirmed=this.getRosterData().confirmed[key]||{};
     const progressLabel=def.source==='participants'?'旅團報到':(def.source==='ceremony_merit'?'優異旅團點名':'分組點名');
-    return `<div class="text-[11px] font-bold text-slate-700 mb-1">目前進度：已${escapeHtml(def.tick_label)}／總數　${done}/${rows.length}${groups.length?`　｜　${progressLabel}`:''}</div>
+    const legend=all.hasReply?'已到／回覆出席／全名單':`已${escapeHtml(def.tick_label)}／全名單`;
+    return `<div class="text-[11px] font-bold text-slate-700 mb-1">目前進度：${legend}　${all.text}${groups.length?`　｜　${progressLabel}`:''}</div>
       ${groups.length?`<div class="flex flex-wrap gap-1 mb-2">${groups.map(g=>{
-        const rs=rows.filter(r=>String(r[gk]||'').trim()===g), d=rs.filter(r=>r._checked).length, c=confirmed[g]?' · ✅已確認':'';
-        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] bg-slate-100 text-slate-700">${escapeHtml(g)} ${d}/${rs.length}${escapeHtml(c)}${canTick&&d===rs.length&&rs.length?`<button onclick="app.rosterConfirmGroup('${key}','${encodeURIComponent(g)}')" class="text-emerald-700 font-bold underline">確認</button>`:''}</span>`;
+        const rs=rows.filter(r=>String(r[gk]||'').trim()===g), st=this.rosterScopeStats(def,rs), c=confirmed[g]?' · ✅已確認':'';
+        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] bg-slate-100 text-slate-700" title="${legend}">${escapeHtml(g)}：${st.text}${escapeHtml(c)}${canTick&&st.done===st.total&&st.total?`<button onclick="app.rosterConfirmGroup('${key}','${encodeURIComponent(g)}')" class="text-emerald-700 font-bold underline">確認</button>`:''}</span>`;
       }).join('')}</div>`:''}`;
   },
 
@@ -232,7 +244,7 @@ Object.assign(ScoutEventApp.prototype,{
     };
     return `<div class="table-responsive"><table class="min-w-full text-[11px]">
       <thead class="bg-slate-100"><tr>
-        <th class="px-2 py-1 text-center w-14">${escapeHtml(this.rosterTickColLabel(def))}</th>
+        <th class="px-2 py-1 text-center w-14">${escapeHtml(this.rosterTickColLabel(def))}<br><span class="text-[9px] font-normal text-slate-400">TICK／修正</span></th>
         ${cols.map(c=>`<th class="px-2 py-1 text-left">${escapeHtml(c.label)}</th>`).join('')}
         ${hasMeritReply?'<th class="px-2 py-1 text-left">回條／出席</th>':''}
         ${canTick?'<th class="px-2 py-1 text-left">點名紀錄</th>':''}
@@ -240,10 +252,10 @@ Object.assign(ScoutEventApp.prototype,{
       </tr></thead>
       <tbody class="divide-y">
         ${rows.length?rows.map(r=>`<tr class="${r._checked?'bg-emerald-50/50':''}">
-          <td class="px-2 py-1 text-center" data-label="${escapeHtml(this.rosterTickColLabel(def))}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this.checked)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"></td>
+          <td class="px-2 py-1 text-center roster-tick-cell" data-label="${escapeHtml(this.rosterTickColLabel(def))}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,false)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"><br><input type="checkbox" ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,true)" class="w-3 h-3 accent-rose-600" title="修正：取消這一次 TICK（只在已 TICK 時生效；取消後可再 TICK）"> <span class="text-[9px] text-rose-600">修正</span></td>
           ${cols.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-medium':''}" data-label="${escapeHtml(c.label)}">${escapeHtml(String(r[c.k]??''))||'<span class="text-slate-300">—</span>'}</td>`).join('')}
           ${hasMeritReply?meritReplyCell(r):''}
-          ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}`:(r._note?`<span class="text-rose-600">取消：${escapeHtml(r._note)}</span><span class="block text-slate-400">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:'—')}</td>`:''}
+          ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`<span class="text-emerald-700 font-bold">✅ 已${escapeHtml(def.tick_label)}</span><span class="block">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:(r._correction||r._note?`<span class="text-rose-600">↩ 修正取消${r._note?'：'+escapeHtml(r._note):''}</span><span class="block text-slate-400">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:'—')}</td>`:''}
           ${canManage&&def.editable?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openRosterRowForm('${key}','${escapeHtml(r.id||'')}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteRosterRow('${key}','${escapeHtml(r.id||'')}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}
         </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
       </tbody>
@@ -287,24 +299,39 @@ Object.assign(ScoutEventApp.prototype,{
   rosterSetSort(key,val){ this['_rosterSort_'+key]=val; this.rosterRefreshBody(key); },
   rosterToggleSortDir(key){ this['_rosterDesc_'+key]=!this['_rosterDesc_'+key]; this.rosterRefreshBody(key); },
 
-  /* ══════════════ 點名（TICK）：本機即時＋後端留痕；取消 TICK 必須填更正原因 ══════════════ */
-  rosterTick(key,rowKey,checked){
+  /* ══════════════ 點名（TICK）：本機即時＋後端留痕 ══════════════
+     跟 docs/TICK_CONCURRENCY_RULES.md ＋ 紀念章派發（40-souvenir-stamps.js）同一套：
+     ① TICK 係正向動作，只 ADD、冪等；本機空白永遠唔係「取消」指令（直接剔走 TICK ＝ NO-OP，會彈返原狀）。
+     ② 「修正」係一次性反向動作：只有 TICK=Y ＋ 修正=Y 先會取消呢一次 TICK；取消後兩格清空，之後任何人可再 TICK（唔係永久鎖）。
+     ③ 後端每筆保存最後操作者／時間／動作（correction_cancelled=Y 代表修正），並只接受較新操作。
+     el：checkbox 元素（UI）；亦接受 boolean（舊呼叫：true＝TICK，false＝NO-OP）。 */
+  rosterTick(key,rowKey,el,isCorrection=false){
     const def=this.rosterDef(key); if(!def) return;
     rowKey=decodeURIComponent(String(rowKey||''));
+    const isEl=!!(el&&typeof el==='object');
+    const want=isEl?!!el.checked:(typeof el==='boolean'?el:true);
     if(!this.rosterCanTick(key)){ showToast(`僅已登入嘅${def.owner_group}（${def.owner_note}）／管理層可以${def.tick_label}`,'error'); this.rosterRefreshBody(key); return; }
     const d=this.getRosterData(); const ticks=d.ticks[key]||{};
-    const row=this.rosterRows(key).find(r=>r._key===rowKey); if(!row) return;
-    let note='';
-    if(!checked && ((ticks[rowKey]&&ticks[rowKey].checked)||row._checked)){
-      note=prompt(`你正在取消已保存嘅${def.tick_label}。請輸入更正原因（例如：誤點、核對後未到）：`,'')||'';
-      if(!note.trim()){ showToast(`取消${def.tick_label}必須填寫更正原因`,'error'); this.rosterRefreshBody(key); return; }
+    const row=this.rosterRows(key).find(r=>r._key===rowKey); if(!row){ if(isEl) el.checked=false; return; }
+    const cur=!!row._checked;
+    const now=new Date().toISOString(), by=this.currentUser?.name||'', byId=this.currentUser?.user_id||this.currentUser?.id||'';
+    let rec;
+    if(isCorrection){
+      if(!want){ return; }                       // 剔走「修正」格本身冇動作
+      if(!cur){ if(isEl) el.checked=false; showToast(`呢行未有${def.tick_label}，毋須修正`,'warning'); return; }
+      rec=Object.assign({},ticks[rowKey]||{},{checked:false,by,by_id:byId,at:now,correction:true,note:''});
+    }else{
+      if(!want){                                  // 直接剔走 TICK ＝ NO-OP（本機空白唔會刪後端 TICK）
+        if(cur){ if(isEl) el.checked=true; showToast(`要取消${def.tick_label}，請喺同一行同時剔紅色「修正」格（TICK 只加不減）`,'warning'); }
+        return;
+      }
+      if(cur){ if(isEl) el.checked=true; return; }// 重覆 TICK 冪等：唔覆蓋原操作者／時間
+      rec=Object.assign({},ticks[rowKey]||{},{checked:true,by,by_id:byId,at:now,correction:false,note:''});
     }
-    const rec=Object.assign({},ticks[rowKey]||{},{checked:!!checked,by:this.currentUser?.name||'',at:new Date().toISOString()});
-    if(note.trim()) rec.note=note.trim(); else if(checked) rec.note='';
     ticks[rowKey]=rec; d.ticks[key]=ticks; this.saveRosterData(d);
     if(def.source==='ceremony_merit') this.syncMeritAwardTick(row,rec);
     this.rosterSaveTickToGas(key,def,row,rec);
-    this.rosterRefreshBody(key);
+    this.rosterRefreshBody(key);                  // 修正後兩格清空；TICK 後顯示 ✅＋操作者／時間
   },
 
   // 保留優異旅團回條資料，同時把新點名結果寫回去，讓舊入口與部門中心永遠顯示同一狀態。
@@ -324,6 +351,7 @@ Object.assign(ScoutEventApp.prototype,{
       ceremony.responses.push(reply);
     }
     reply.ticked=!!rec.checked;
+    reply.correction_cancelled=!rec.checked&&!!rec.correction;
     reply.checked_by=rec.by||this.currentUser?.name||'';
     reply.checked_at=rec.at||new Date().toISOString();
     reply.checkin_note=rec.note||'';
@@ -339,7 +367,7 @@ Object.assign(ScoutEventApp.prototype,{
     const d=this.getRosterData(); const ticks=d.ticks[key]||{};
     const now=new Date().toISOString(), by=this.currentUser?.name||'';
     rows.forEach(r=>{
-      ticks[r._key]=Object.assign({},ticks[r._key]||{},{checked:true,by,at:now,note:''});
+      ticks[r._key]=Object.assign({},ticks[r._key]||{},{checked:true,by,by_id:this.currentUser?.user_id||this.currentUser?.id||'',at:now,correction:false,note:''});
       if(def.source==='ceremony_merit') this.syncMeritAwardTick(r,ticks[r._key]);
       this.rosterSaveTickToGas(key,def,r,ticks[r._key]);
     });
@@ -374,8 +402,10 @@ Object.assign(ScoutEventApp.prototype,{
     const url=this.gasUrl||localStorage.getItem(LS.gasUrl), ak=this.apiKey||localStorage.getItem(LS.apiKey);
     if(!url||!ak||typeof fetch!=='function') return;
     const eid=this.currentEvent?.event_id||'isd_2026', uid=this.currentUser?.user_id||this.currentUser?.id||'';
-    const cancelled=(!rec.checked&&rec.note)?'Y':'';
-    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:ak,module:'Roster_Rollcall_Checkins',record:{checkin_id:`${eid}_${key}_${row._key||row.id}`,event_id:eid,list_key:key,list_title:def.title,row_key:row._key||'',area:row.area||'',unit:row.unit||'',name:row.name||row.unit||'',section:row.section||'',award:row.award||'',checked_in:rec.checked?'Y':'N',correction_cancelled:cancelled,checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:rec.at||new Date().toISOString(),checkin_note:rec.note||''}})}).catch(()=>showToast(`${def.tick_label}已本機保存，後端同步失敗`,'warning'));
+    // 同紀念章一樣：普通 TICK＝checked_in=Y；修正＝checked_in=Y＋correction_cancelled=Y（後端 Code.gs 收到後改成 N，並只接受較新操作）。
+    // 本機空白（rec.checked=false 而非修正）唔會送出刪除——呼叫方根本唔會為 NO-OP 建紀錄。
+    const cancelled=(!rec.checked&&rec.correction)?'Y':'';
+    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:ak,module:'Roster_Rollcall_Checkins',record:{checkin_id:`${eid}_${key}_${row._key||row.id}`,event_id:eid,list_key:key,list_title:def.title,row_key:row._key||'',area:row.area||'',unit:row.unit||'',name:row.name||row.unit||'',section:row.section||'',award:row.award||'',checked_in:(rec.checked||cancelled)?'Y':'N',correction_cancelled:cancelled,checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:rec.at||new Date().toISOString(),checkin_note:rec.note||''}})}).catch(()=>showToast(`${def.tick_label}已本機保存，後端同步失敗`,'warning'));
   },
 
   /* ══════════════ 逐行新增／編輯／刪除（參加旅團名單不在此改，改回結構表） ══════════════ */
@@ -719,8 +749,8 @@ Object.assign(ScoutEventApp.prototype,{
   rosterExportGrid(key){
     const def=this.rosterDef(key); if(!def) return [];
     const rows=this.rosterViewRows(key);
-    const grid=[[this.rosterTickColLabel(def),...def.columns.map(c=>c.label),`${def.tick_label}時間`,`${def.tick_label}人`,`備註(${def.tick_label})`]];
-    rows.forEach(r=>grid.push([r._checked?'已'+def.tick_label:'未'+def.tick_label,...def.columns.map(c=>String(r[c.k]??'')),String(r._at||'').replace('T',' ').slice(0,19),r._by||'',r._note||'']));
+    const grid=[[this.rosterTickColLabel(def),...def.columns.map(c=>c.label),`${def.tick_label}時間`,`${def.tick_label}人`,`最後動作`]];
+    rows.forEach(r=>grid.push([r._checked?'已'+def.tick_label:'未'+def.tick_label,...def.columns.map(c=>String(r[c.k]??'')),String(r._at||'').replace('T',' ').slice(0,19),r._by||'',r._checked?'TICK':(r._correction?'修正取消'+(r._note?'：'+r._note:''):(r._note||''))]));
     return grid;
   },
 
@@ -829,7 +859,7 @@ Object.assign(ScoutEventApp.prototype,{
         // 早期取消紀錄會用 correction_cancelled 標示；即使其舊 checked_in 值為 Y，仍必須還原成未點名。
         const cancelled=/^(Y|y|true|1|是)$/.test(String(r.correction_cancelled||''));
         const checked=!cancelled&&/^(Y|y|true|1|是)$/.test(String(r.checked_in||''));
-        applyTick(rowKey,{checked,by:r.checked_by||'後端同步',at:String(r.checked_at||r.updated_at||''),note:r.checkin_note||''});
+        applyTick(rowKey,{checked,by:r.checked_by||'後端同步',at:String(r.checked_at||r.updated_at||''),note:r.checkin_note||'',correction:cancelled});
       });
       d.ticks[key]=ticks;
       d.confirmed=d.confirmed||{};

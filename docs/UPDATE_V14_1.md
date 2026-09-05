@@ -16,7 +16,7 @@
 |---|---|---|
 | 逐行 TICK | ✅ `rosterTick`（每行一個 checkbox，即時存 localStorage＋後端 `Roster_Rollcall_Checkins`） | ✅ 逐人 TICK，要按 💾 先寫後端 |
 | 邊個可以點 | 負責組別（典禮組／行政組／協調組）登入成員＋管理層（`rosterCanTick`） | 行政組／嘉賓接待組＋管理層 |
-| 取消 TICK | 必須填「更正原因」（prompt），留痕 | 「修正」checkbox |
+| 取消 TICK | ~~必須填「更正原因」（prompt）~~ → **v14.2 起同紀念章一樣：「修正」checkbox**（見 `UPDATE_V14_2.md`） | 「修正」checkbox |
 | 分組確認 | ✅ 按區會／支部／獎項分組進度 chip → `rosterConfirmGroup` 整組確認 → 後端 `Roster_Rollcall_Batches` | 冇 |
 | 全選 | 「全選本欄」 | 冇 |
 | 排序 | 按區會／支部／旅團／姓名／未點名優先 | 點表頭排序 |
