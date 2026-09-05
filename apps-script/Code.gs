@@ -318,6 +318,7 @@ function initializeSheets() {
   // 紀念章派發：行政組（工作人員，可填備註紀錄改名／替假）＋嘉賓接待組（嘉賓，不可改名）
   ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
   ensureSheet(ss, 'Ceremony_Merit_Checkins', ['checkin_id', 'event_id', 'merit_id', 'area', 'unit', 'section', 'checked_in', 'checked_by', 'checked_by_id', 'checked_at', 'checkin_note']);
+  ensureSheet(ss, 'Ceremony_Merit_Checkin_Batches', ['batch_id', 'event_id', 'area', 'confirmed', 'confirmed_by', 'confirmed_by_id', 'confirmed_at', 'total', 'ticked']);
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
   // 車輛通行證（含泊車）：前端一直有寫出，但舊版 GS 未建立此表 → 之前寫出會被丟棄，現正式建立
   ensureSheet(ss, 'Vehicle_Passes', ['pass_id', 'event_id', 'plate', 'driver_name', 'driver_contact', 'vehicle_type', 'purpose', 'group_name', 'entry_date', 'exit_date', 'parking_location', 'deadline', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
@@ -1311,7 +1312,7 @@ function getEventAllData(eventId) {
   // v8.9 補漏：加入 Booth_Requests——前端 saveSuppliesData 一直有把「攤位計劃書」寫出後端，但 getEventAllData 冇回傳，
   // 令其他裝置／重開後讀唔返攤位計劃書（攤位卡／總表／借用統計只睇到本機）。現正式回傳，前端 syncApplicationsFromGas 亦已合併。
   // v11：加入 Lost_Found（失物認領）及 Souvenir_Stamps（紀念章派發）——前端 23-sync.js 會合併
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Ceremony_Merit_Checkins', 'Users'];
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Ceremony_Merit_Checkins', 'Ceremony_Merit_Checkin_Batches', 'Users'];
   const result = {};
   
   modules.forEach(mod => {
