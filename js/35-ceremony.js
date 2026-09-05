@@ -535,7 +535,7 @@ Object.assign(ScoutEventApp.prototype,{
             <b class="text-[13px] mr-auto"><i class="fa-solid fa-medal text-yellow-600 mr-1"></i>步操比賽及其他獲獎結果</b>
             ${canEdit?`<button onclick="app.openCeremonyFileForm(null,'awards')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳獲獎結果附件</button>`:''}
             <button onclick="app.exportAwards()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出結果</button>
-            ${canEdit?`<label class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 更新結果<input type="file" accept=".xlsx,.xls,.xlsm,.csv" class="hidden" onchange="app.handleCeremonyAwardsExcelUpload(this.files[0]);this.value=''"></label>`:''}
+            ${canEdit?`<label class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 更新結果<input type="file" accept=".xlsx,.xls,.xlsm" class="hidden" onchange="app.handleCeremonyAwardsExcelUpload(this.files[0]);this.value=''"></label>`:''}
           </div>
           <div class="space-y-4">${data.categories.map(cat=>`
             <div class="bg-white border rounded-xl p-4">

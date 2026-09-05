@@ -159,7 +159,7 @@ Object.assign(ScoutEventApp.prototype,{
           <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
           ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
-          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
+          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
           <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印列表</button>
         </div>
         <div id="booths-print-area" class="bg-white border rounded-xl p-4">
@@ -194,7 +194,7 @@ Object.assign(ScoutEventApp.prototype,{
         <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
         ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
         <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
-        <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
+        <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
         <button onclick="app.printCoordArea('group-booth-print','2026 攤位總表（DRIVE 攤位資料）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
       </div>
       <div id="group-booth-print" class="bg-white border rounded-xl p-4">
@@ -1080,12 +1080,13 @@ Object.assign(ScoutEventApp.prototype,{
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
 ,
-  /* v14：參加旅團名單上傳統一入口 — EXCEL／CSV 走結構表；WORD（含表格）解析成行列；PDF 只作附件內嵌預覽 */
+  /* v14：參加旅團名單上傳統一入口 — EXCEL 走結構表；WORD（含表格）解析成行列；PDF 只作附件內嵌預覽（v14.1：不再接受 CSV） */
   async handleParticipantsUploadFile(file){
     if(!file) return;
     const name=String(file.name||'').toLowerCase();
-    // EXCEL／CSV 一律行經「匯入預覽」（可揀取代／附加，TICK 唔會冇）；舊入口 handleParticipantsExcelUpload 保留俾其他模組用
-    if(/\.(xlsx|xlsm|xls|csv)$/.test(name)){
+    // EXCEL 一律行經「匯入預覽」（可揀取代／附加，TICK 唔會冇）；舊入口 handleParticipantsExcelUpload 保留俾其他模組用
+    if(/\.csv$/.test(name)){ showToast('系統已不接受 CSV：請用 Excel 開啟後「另存新檔」為 .xlsx 再上傳','error'); return; }
+    if(/\.(xlsx|xlsm|xls)$/.test(name)){
       const overlay2=document.getElementById('savingOverlay'); if(overlay2) overlay2.classList.add('active');
       try{
         const raw=await this.parseExcelToRows(file);
@@ -1109,20 +1110,19 @@ Object.assign(ScoutEventApp.prototype,{
       } else if(/\.pdf$/.test(name)){
         await this.rosterAttachFile('participants',file,'');
         showToast('PDF 已內嵌預覽（名單版位已保留）；如需可點名嘅行列名單，請用 EXCEL／WORD 或「貼上文字」','warning');
-      } else { showToast('不支援嘅檔案格式（可用：.xlsx .xls .csv .docx .pdf）','error'); }
+      } else { showToast('不支援嘅檔案格式（可用：.xlsx .xls .docx .pdf）','error'); }
       this.rosterRefresh('participants');
     }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
 ,
+  // v14.1：範本一律 Excel（冇 CSV）
   downloadScheduleTemplate(){
-    const csv='time_slot,title,location,group_name,description\n07:45 - 08:30,會操及頒獎禮場地設置劃位,大操場,協調組,各功能組別場地佈置\n08:30 - 10:30,參加旅團報到及攤位最後佈置,報到處,行政組,旅團報到及攤位佈置\n10:45 - 10:55,嘉賓接待及就座,莫榮大樓地下,行政組,嘉賓接待後就座大操場\n11:00 - 12:00,第一部分典禮：優異旅團及各項獎勵頒發儀式,大操場,會操及典禮組,吳家麗會長主禮\n12:00 - 13:00,第二部分典禮：會操檢閱及頒獎儀式,大操場,會操及典禮組,區永樑指揮官主禮\n13:00 - 14:00,嘉賓茶聚,莫榮大樓地下,行政組,嘉賓茶聚及工作人員午膳\n14:00 - 17:00,主題攤位節目／參觀主題活動區,營地全區,主題節目組,公眾參觀攤位\n';
-    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='schedule_template.csv'; a.click(); showToast('已下載日程表範本','success');
+    downloadExcel('日程表範本.xlsx',[['time_slot','title','location','group_name','description'],['07:45 - 08:30','會操及頒獎禮場地設置劃位','大操場','協調組','各功能組別場地佈置'],['08:30 - 10:30','參加旅團報到及攤位最後佈置','報到處','行政組','旅團報到及攤位佈置'],['10:45 - 10:55','嘉賓接待及就座','莫榮大樓地下','行政組','嘉賓接待後就座大操場'],['11:00 - 12:00','第一部分典禮：優異旅團及各項獎勵頒發儀式','大操場','會操及典禮組','吳家麗會長主禮'],['12:00 - 13:00','第二部分典禮：會操檢閱及頒獎儀式','大操場','會操及典禮組','區永樑指揮官主禮'],['13:00 - 14:00','嘉賓茶聚','莫榮大樓地下','行政組','嘉賓茶聚及工作人員午膳'],['14:00 - 17:00','主題攤位節目／參觀主題活動區','營地全區','主題節目組','公眾參觀攤位']],{sheet:'日程表'});
   }
 ,
   downloadParticipantsTemplate(){
-    const csv='區會,旅團,支部,人數,領隊,備註\nCHW 柴灣區,港島第1旅,童軍,30,陳旅長,\nHKS 港島南區,港島第2旅,幼童軍,45,李領隊,10:00 前排到\nSKW 筲箕灣區,港島第3旅,小童軍,25,,\n';
-    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='participants_template.csv'; a.click(); showToast('已下載參加旅團名單範本','success');
+    downloadExcel('參加旅團名單範本.xlsx',[['區會','旅團','支部','人數','領隊','備註'],['CHW 柴灣區','港島第1旅','童軍','30','陳旅長',''],['HKS 港島南區','港島第2旅','幼童軍','45','李領隊','10:00 前排到'],['SKW 筲箕灣區','港島第3旅','小童軍','25','','']],{sheet:'參加旅團名單'});
   }
 ,
   openGameCardForm(editId=null){
@@ -1213,23 +1213,7 @@ Object.assign(ScoutEventApp.prototype,{
             this.renderActivitiesBooths();
           }
         }else if(file.name.endsWith('.csv')){
-          const rows=parseCSV(text);
-          if(type==='booth'){
-            const parsed=rows.map(r=>({id:'booth_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),booth_number:r.booth_number||r.編號||'',booth_name:r.booth_name||r.名稱||'',location:r.location||r.位置||'',group_name:r.group_name||r.組別||'',theme:r.theme||r.主題||'',game_type:r.game_type||r.遊戲類型||'',responsible:r.responsible||r.負責人||'',contact:r.contact||r.聯絡||'',description:r.description||r.描述||''})).filter(b=>b.booth_number||b.booth_name);
-            const data=this.getActivitiesData();
-            data.booths=[...data.booths,...parsed];
-            this.saveActivitiesData(data);
-            showToast(`已匯入 ${parsed.length} 筆攤位`,'success');
-            this.renderActivitiesBooths();
-          }else if(type==='map'){
-            // For map, if CSV contains title,description,url
-            const data=this.getActivitiesData();
-            const parsed=rows.map(r=>({id:'map_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),title:r.title||r.標題||'地圖',description:r.description||r.描述||'',file_url:r.file_url||r.url||'',file_name:r.file_name||'',created_by:this.currentUser?.name||'',created_at:new Date().toISOString()}));
-            data.maps=[...data.maps,...parsed];
-            this.saveActivitiesData(data);
-            showToast(`已匯入 ${parsed.length} 筆地圖`,'success');
-            this.renderActivitiesMaps();
-          }
+          showToast('系統已不接受 CSV：請用 Excel 開啟後「另存新檔」為 .xlsx 再上傳','error');
         }else{
           // For map/gamecard image/pdf, directly upload as map or gamecard
           const dataUrl=text;
@@ -1253,19 +1237,11 @@ Object.assign(ScoutEventApp.prototype,{
     else reader.readAsText(file);
   }
 ,
+  // v14.1：範本一律 Excel（冇 CSV）
   downloadActivityTemplate(type){
-    let csv='', filename='';
-    if(type==='booth'){
-      csv='booth_number,booth_name,location,group_name,theme,game_type,responsible,contact,description\nA01,童軍技能挑戰,主營地 A區,港島第1旅,繩結,挑戰,負責人,91234567,繩結挑戰\nA02,定向追蹤,主營地 A區,港島第2旅,定向,定向,負責人,92345678,定向追蹤遊戲\n';
-      filename='booth_template.csv';
-    }else if(type==='map'){
-      csv='title,description,file_url\n場地分佈圖,主營地及警察學院分佈,https://drive.google.com/file/d/.../view\n泊車位置圖,停車場及車輛進出路線,\n';
-      filename='map_template.csv';
-    }else if(type==='gamecard'){
-      csv='title,description,version,file_url\n遊戲記錄冊,集印章換禮物，含10個攤位印章,v1,https://drive.google.com/file/d/.../view\n積極公民獎章回條,幼童軍支部回條,v1,\n';
-      filename='gamecard_template.csv';
-    }
-    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); showToast('已下載範本 '+filename,'success');
+    const T={booth:{name:'攤位範本.xlsx',grid:[['booth_number','booth_name','location','group_name','theme','game_type','responsible','contact','description'],['A01','童軍技能挑戰','主營地 A區','港島第1旅','繩結','挑戰','負責人','91234567','繩結挑戰'],['A02','定向追蹤','主營地 A區','港島第2旅','定向','定向','負責人','92345678','定向追蹤遊戲']]},map:{name:'地圖範本.xlsx',grid:[['title','description','file_url'],['場地分佈圖','主營地及警察學院分佈','https://drive.google.com/file/d/.../view'],['泊車位置圖','停車場及車輛進出路線','']]},gamecard:{name:'遊戲卡範本.xlsx',grid:[['title','description','version','file_url'],['遊戲記錄冊','集印章換禮物，含10個攤位印章','v1','https://drive.google.com/file/d/.../view'],['積極公民獎章回條','幼童軍支部回條','v1','']]}};
+    const d=T[type]; if(!d) return;
+    downloadExcel(d.name,d.grid,{sheet:'範本'});
   }
 ,
   exportActivitiesData(){
@@ -1471,8 +1447,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   downloadDocumentTemplate(){
-    const csv='title,category,description,file_url\n活動通告,通告,活動重要資訊,https://example.com/file.pdf\n報名表格,表格,旅團報名資料,\n';
-    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='documents_template.csv'; a.click(); showToast('已下載文件範本','success');
+    downloadExcel('文件範本.xlsx',[['title','category','description','file_url'],['活動通告','通告','活動重要資訊','https://example.com/file.pdf'],['報名表格','表格','旅團報名資料','']],{sheet:'文件'});
   }
 ,
   exportDocumentsData(){

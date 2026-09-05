@@ -325,6 +325,69 @@ function splitCSVLines(text){
 function parseCSV(text){let lines=splitCSVLines(text);while(lines.length&&!String(lines[0]||'').replace(/[",]/g,'').trim())lines.shift();if(!lines.length)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^\"|\"$/g,''));const out=[];for(let i=1;i<lines.length;i++){const line=lines[i];if(!line.trim())continue;const cols=[];let cur='',inQ=false;for(let c=0;c<line.length;c++){const ch=line[c];if(ch==='\"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim().replace(/^\"|\"$/g,''));cur='';}else cur+=ch;}cols.push(cur.trim().replace(/^\"|\"$/g,''));const obj={};headers.forEach((h,idx)=>obj[h]=cols[idx]||'');out.push(obj);}return out;}
 function downloadDataUrl(fileName,dataUrl){const a=document.createElement('a');a.href=dataUrl;a.download=fileName||'download';document.body.appendChild(a);a.click();a.remove();}
 function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+/* ── v14.1：全站唔再有 CSV（普通用戶開唔到／會亂碼）。
+   匯出只有三種：Excel（.xlsx，SheetJS）／Word（.doc，HTML 格式，Word／WPS／Pages 直接開）／PDF（瀏覽器列印 → 另存 PDF）。
+   匯入只收 Excel（.xlsx／.xls／.xlsm）、JSON（技術備份）、Word／PDF（名單引擎另行解析）。
+   上面 splitCSVLines／parseCSV 只留俾內部用：Google 試算表 export=csv 同步（21-activities）及內建 data/committee_accounts.csv，唔會俾用戶落手 CSV。 */
+function downloadBlob(fileName,blob){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fileName||'download';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},5000);}
+// 二維陣列 → HTML 表格（Word 匯出／列印共用；第一行係表頭）
+function rowsToHtmlTable(rows){
+  const list=(rows||[]).map(r=>Array.isArray(r)?r:[r]); if(!list.length) return '<p>（沒有資料）</p>';
+  const [h,...body]=list; const w=Math.max(...list.map(r=>r.length));
+  const cell=(v,tag)=>`<${tag}>${escapeHtml(v===null||v===undefined?'':v).replace(/\n/g,'<br>')}</${tag}>`;
+  return `<table><thead><tr>${Array.from({length:w},(_,i)=>cell(h[i],'th')).join('')}</tr></thead><tbody>${body.map(r=>`<tr>${Array.from({length:w},(_,i)=>cell(r[i],'td')).join('')}</tr>`).join('')}</tbody></table>`;
+}
+// 匯出 Excel：rows＝二維陣列（第一行表頭）；opts.sheet＝工作表名；opts.sheets＝[{name,rows}] 可多張工作表。
+// 未載入 SheetJS（離線／CDN 失敗）時退而求其次輸出 HTML 版 .xls（Excel 照樣開到）。
+function downloadExcel(fileName,rows,opts){
+  opts=opts||{};
+  const base=String(fileName||'匯出').replace(/\.(csv|xlsx|xls)$/i,'');
+  const sheets=(Array.isArray(opts.sheets)&&opts.sheets.length)?opts.sheets:[{name:opts.sheet||'Sheet1',rows:rows||[]}];
+  const safeName=(s,i)=>(String(s||'').replace(/[\\\/\?\*\[\]:]/g,' ').trim().slice(0,31))||('Sheet'+(i+1));
+  if(typeof XLSX!=='undefined'&&XLSX.utils&&XLSX.writeFile){
+    const wb=XLSX.utils.book_new();
+    sheets.forEach((s,i)=>{
+      const aoa=(s.rows||[]).map(r=>(Array.isArray(r)?r:[r]).map(c=>c===null||c===undefined?'':c));
+      const ws=XLSX.utils.aoa_to_sheet(aoa);
+      const widths=[]; aoa.forEach(r=>r.forEach((c,ci)=>{const len=String(c).split('\n').reduce((m,l)=>Math.max(m,[...l].reduce((n,ch)=>n+(/[^\x00-\xff]/.test(ch)?2:1),0)),0); widths[ci]=Math.min(60,Math.max(widths[ci]||6,len+2));}));
+      ws['!cols']=widths.map(w=>({wch:w}));
+      XLSX.utils.book_append_sheet(wb,ws,safeName(s.name,i));
+    });
+    XLSX.writeFile(wb,base+'.xlsx');
+    if(!opts.silent) showToast('已匯出 Excel：'+base+'.xlsx','success');
+    return true;
+  }
+  // 後備：HTML 表格版 .xls（毋須外掛程式庫）
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>td,th{border:1px solid #999;padding:2px 4px;mso-number-format:"\\@"}</style></head><body>${sheets.map(s=>`<h3>${escapeHtml(s.name||'')}</h3>${rowsToHtmlTable(s.rows||[])}`).join('<br>')}</body></html>`;
+  downloadBlob(base+'.xls',new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel;charset=utf-8'}));
+  if(!opts.silent) showToast('已匯出 Excel（相容格式 .xls，Excel 可直接開啟）：'+base+'.xls','success');
+  return true;
+}
+// 匯出 Word：bodyHtml＝內容（可用 rowsToHtmlTable 產生表格）；opts.meta＝標題下方一行小字；opts.landscape＝橫向
+function downloadWord(fileName,title,bodyHtml,opts){
+  opts=opts||{};
+  const base=String(fileName||'匯出').replace(/\.(csv|docx?|html?)$/i,'');
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${escapeHtml(title||'')}</title>`+
+    `<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->`+
+    `<style>@page WordSection1{size:${opts.landscape?'29.7cm 21cm':'21cm 29.7cm'};margin:1.5cm 1.5cm 1.5cm 1.5cm;mso-page-orientation:${opts.landscape?'landscape':'portrait'}} div.WordSection1{page:WordSection1} body{font-family:'Microsoft JhengHei','PMingLiU','Noto Sans TC',sans-serif;font-size:11pt} table{border-collapse:collapse;width:100%;margin:4pt 0 8pt} th,td{border:1px solid #888;padding:2pt 4pt;font-size:9.5pt;text-align:left;vertical-align:top} th{background:#eeeeee;font-weight:bold} h1{font-size:16pt;margin:0 0 4pt} h2,h3,h4{font-size:12pt;margin:10pt 0 4pt} .meta{font-size:9pt;color:#555555;margin-bottom:8pt} button,input,select,textarea,.no-print{display:none}</style></head>`+
+    `<body><div class="WordSection1">${title?`<h1>${escapeHtml(title)}</h1>`:''}${opts.meta?`<div class="meta">${opts.meta}</div>`:''}${bodyHtml||''}</div></body></html>`;
+  downloadBlob(base+'.doc',new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'}));
+  if(!opts.silent) showToast('已匯出 Word：'+base+'.doc','success');
+  return true;
+}
+// 讀取用戶上傳嘅表格檔（取代舊 CSV 匯入）：Excel → 以第一行為表頭嘅物件陣列（同舊 parseCSV 輸出一樣）；JSON → 原樣解析
+async function readTabularFile(file){
+  const name=String(file&&file.name||'').toLowerCase();
+  if(/\.json$/.test(name)) return {kind:'json',rows:JSON.parse(await file.text())};
+  if(/\.(xlsx|xlsm|xls)$/.test(name)){
+    if(typeof XLSX==='undefined') throw new Error('未載入 Excel 元件（需連線 CDN），請重新整理後再試');
+    const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    return {kind:'excel',rows:XLSX.utils.sheet_to_json(ws,{defval:'',raw:false})};
+  }
+  if(/\.csv$/.test(name)) throw new Error('系統已不接受 CSV：請用 Excel 開啟後「另存新檔」為 .xlsx 再上傳');
+  throw new Error('只接受 Excel（.xlsx／.xls）或 JSON 檔案');
+}
 
 /* ── 攤位計劃書對標資料 ──
    ① 品牌推廣組「2026 攤位總表」Google Sheet（分區 A-G＋編號＋負責單位）：
@@ -384,7 +447,7 @@ const SOUVENIR_STAMP_SCOPES=[
    └────────────────┴──────────────────────────┴──────────────┘
    各名單亦並設於所屬組別「部門中心」頁籤（典禮組＝支部及領袖獎勵名單；優異旅團名單另沿用 ceremony 資料來源、行政組＝參加旅團、協調組＝代訂餐盒）。
    欄位格式（columns）即「預定格式」：匯入 Excel／Word 時按 aliases 對位（中英文表頭均可），
-   「下載格式範本 CSV」則按 labels 產生表頭，用家照樣板填回覆上即可。 */
+   「下載 Excel 範本」則按 labels 產生表頭，用家照樣板填回覆上即可（v14.1 起全站冇 CSV，只有 Excel／Word／PDF）。 */
 const ROSTER_AREAS=['CHW 柴灣區','HKN 港島北區','HKS 港島南區','HKW 港島西區','SKW 筲箕灣區','VIC 維多利亞城區','WCH 灣仔區'];
 const ROSTER_SECTIONS=['小童軍','幼童軍','童軍','深資童軍','樂行童軍'];
 // 支部最高獎章（2026 執行手冊：頒發支部最高獎章嘉許信）
@@ -398,7 +461,6 @@ const ROSTER_LIST_DEFS=[
     exec_location:'執行手冊 → 典禮儀式 → 支部獎勵名單', dept_tab:'cer_award_section',
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發支部最高獎章嘉許信』。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
-    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
     source:'roster', editable:true, required:'name', group_field:'section', sort_fields:['area','section','unit','name'],
     columns:[
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
@@ -417,7 +479,6 @@ const ROSTER_LIST_DEFS=[
     exec_location:'執行手冊 → 典禮儀式 → 領袖獎勵名單', dept_tab:'cer_award_leader',
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒總監委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
-    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
     source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
     columns:[
       {k:'no',label:'編號（唱名序）',type:'text',aliases:['編號','唱名編號','序號','序','call no','no','No.','No']},
@@ -437,7 +498,6 @@ const ROSTER_LIST_DEFS=[
     accent:'emerald', owner_group:'行政組', owner_note:'行政組',
     exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
     tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消 TICK 必須填寫更正原因。',
-    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
     intro:'對應執行手冊行政組「參加旅團名單」（2025 版為「旅團報名人數」PDF）。名單本身沿用行政組維護之結構表（Drive 同步／Excel 上傳），v14 於同一頁加入報到點名。',
     source:'participants', editable:false, required:'unit', group_field:'section', sort_fields:['area','section','unit'],
     total_fields:[{k:'headcount',label:'人數'}],
@@ -456,7 +516,6 @@ const ROSTER_LIST_DEFS=[
     accent:'rose', owner_group:'協調組', owner_note:'協調組',
     exec_location:'執行手冊 → 代訂餐盒名單', dept_tab:'coord_mealbox',
     tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消 TICK 必須填寫更正原因。',
-    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
     intro:'對應執行手冊「代訂餐盒」名單（2025 版列於行政組膳食安排內）。名單由協調組上載及點名，用以向判單對數及派發時核對；各組仍可在「膳食管理」自行訂餐，兩邊數字如有出入以本名單為準並註明備註。',
     source:'roster', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
     total_fields:[{k:'qty_a',label:'A餐'},{k:'qty_b',label:'B餐'},{k:'qty_c',label:'C餐'},{k:'qty_total',label:'總數'}],
@@ -484,7 +543,6 @@ const MERIT_AWARD_ROSTER_DEF={
   exec_location:'執行手冊 → 典禮儀式 → 優異旅團獲獎名單', dept_tab:'cer_award_merit',
   tick_label:'點名', tick_col_label:'出席', tick_hint:'優異旅團代表上台前由典禮組逐團點名；取消 TICK 必須填寫更正原因。',
   intro:'優異旅團獲獎名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
-  format_note:'可上傳 Excel／Word／PDF；Excel／Word 匯入前會先按表頭預覽，PDF 會保留為可預覽附件。重新上載相同行不會弄丟已做嘅 TICK。',
   source:'ceremony_merit', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
   upload_label:'上傳獲獎名單',
   columns:[

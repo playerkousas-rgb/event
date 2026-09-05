@@ -140,7 +140,8 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.exportDonationsData()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出全部 JSON</button>
-          <button onclick="app.exportDonationsCSV()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出 CSV</button>
+          <button onclick="app.exportDonationsCSV()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出 Excel</button>
+          <button onclick="app.exportDonationsCSV(null,'word')" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
         </div>
       </div>`;
   }
@@ -157,7 +158,7 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.openGoodsDonationForm()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>填寫物品捐贈表</button>
-          <button onclick="app.exportDonationsCSV('goods')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出物品 CSV</button>
+          <button onclick="app.exportDonationsCSV('goods')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出物品 Excel</button>
         </div>
         ${goods.length?`<div class="space-y-3">${goods.map(g=>{
           const total=g.items.reduce((s,i)=>s+(parseInt(i.quantity)||0),0);
@@ -183,7 +184,7 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.openFoodDonationForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>填寫食品捐贈表</button>
-          <button onclick="app.exportDonationsCSV('food')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出食品 CSV</button>
+          <button onclick="app.exportDonationsCSV('food')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出食品 Excel</button>
         </div>
         ${food.length?`<div class="space-y-3">${food.map(f=>{
           const total=f.items.reduce((s,i)=>s+(parseInt(i.quantity)||0),0);
@@ -376,14 +377,17 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('已匯出捐贈資料 JSON','success');
   }
 ,
-  exportDonationsCSV(type){
+  // v14.1：捐贈紀錄匯出 Excel（預設）／Word（fmt='word'）；舊名保留
+  exportDonationsCSV(type,fmt){
     const data=this.getDonationsData();
     const rows=[['類型','旅團','領袖','職位','電話','電郵','日期','捐贈者姓名','數量']];
     const addRows=(list,donType)=>list.forEach(f=>{(f.items||[]).forEach(it=>rows.push([donType,f.scout_group,f.leader_name,f.leader_position,f.leader_phone,f.leader_email,f.date,it.name,it.quantity]));});
     if(!type||type==='goods') addRows(data.goods||[],'物品');
     if(!type||type==='food') addRows(data.food||[],'食品');
     if(rows.length<=1){ showToast('暫無捐贈資料','warning'); return; }
-    this.downloadCSV(`donations_${todayISO()}.csv`,rows);
+    const label=type==='goods'?'物品捐贈':type==='food'?'食品捐贈':'童心捐贈';
+    if(fmt==='word') this.exportTableWord(`${label}紀錄_${todayISO()}.doc`,`${label}紀錄`,rows);
+    else this.exportTableExcel(`${label}紀錄_${todayISO()}.xlsx`,rows,{sheet:label});
   }
 ,
 });

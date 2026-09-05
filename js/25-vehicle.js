@@ -28,8 +28,8 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex flex-wrap gap-2">
           
           <button onclick="app.openEntranceChecklist()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-traffic-light mr-1"></i>🚦 入口檢查清單 (已批核)</button>
-          <button onclick="app.downloadVehicleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button>
-          ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleVehicleFileUpload(this.files[0])"></label>`:''}
+          <button onclick="app.downloadVehicleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
+          ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 批量<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleVehicleFileUpload(this.files[0]);this.value=''"></label>`:''}
           ${(this.canApproveArea('vehicle')||this.canExecuteArea('vehicle'))?`<button onclick="app.exportVehicleData()" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
         </div>
         <div class="space-y-3">${list.length?list.map(v=>{
@@ -154,24 +154,24 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
 
+  // v14.1：範本一律 Excel（冇 CSV）
   downloadVehicleTemplate(){
-    const csv='plate,driver_name,driver_contact,vehicle_type,purpose,group_name,entry_date,exit_date,parking_location\nAM1234,陳大文,91234567,私家車,運送物資及音響器材,會操及典禮組,2026-10-03,2026-10-04,警察學院停車場A\nBV5678,李小明,92345678,貨車,運送帳篷及營具,主題節目組,2026-10-04,2026-10-04,主營地側\n';
-    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='vehicle_pass_template.csv'; a.click(); showToast('已下載車輛通行證範本','success');
+    downloadExcel('車輛通行證範本.xlsx',[['plate','driver_name','driver_contact','vehicle_type','purpose','group_name','entry_date','exit_date','parking_location'],['AM1234','陳大文','91234567','私家車','運送物資及音響器材','會操及典禮組','2026-10-03','2026-10-04','警察學院停車場A'],['BV5678','李小明','92345678','貨車','運送帳篷及營具','主題節目組','2026-10-04','2026-10-04','主營地側']],{sheet:'車輛通行證'});
   }
 ,
-  handleVehicleFileUpload(file){
+  // v14.1：批量匯入只收 Excel（.xlsx／.xls）或 JSON，唔再收 CSV
+  async handleVehicleFileUpload(file){
     if(!this.canManageAreaOperations('vehicle')){ showToast('只供指定車輛批核／執行組總主任以上批量匯入','error'); return; }
     if(!file) return;
-    const reader=new FileReader();
-    reader.onload=(e)=>{
+    let res; try{ res=await readTabularFile(file); }catch(err){ showToast('檔案讀取失敗：'+err.message,'error'); return; }
+    {
       try{
-        const text=e.target.result;
         let parsed=[];
-        if(file.name.endsWith('.json')){
-          const json=JSON.parse(text);
+        if(res.kind==='json'){
+          const json=res.rows;
           parsed=Array.isArray(json)?json:json.vehicle_passes||[json];
         }else{
-          const rows=parseCSV(text);
+          const rows=res.rows;
           parsed=rows.map(r=>({
             pass_id:'veh_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
             plate:r.plate||r.car_plate||r.車牌||'',
@@ -196,8 +196,7 @@ Object.assign(ScoutEventApp.prototype,{
         showToast(`已批量匯入 ${parsed.length} 筆車輛通行證`,'success');
         this.refreshSuppliesViews();
       }catch(err){ showToast('解析失敗:'+err.message,'error'); }
-    };
-    reader.readAsText(file);
+    }
   }
 ,
   exportVehicleData(){

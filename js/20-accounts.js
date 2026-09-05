@@ -114,8 +114,8 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="bg-white border rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between flex-wrap gap-2">
-            <h4 class="font-bold text-sm"><i class="fa-solid fa-file-csv text-amber-600 mr-1"></i>批量開戶（CSV/JSON 上傳） <span class="text-[10px] bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">管理員專用</span></h4>
-            <button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-download mr-1"></i>下載範本 CSV</button>
+            <h4 class="font-bold text-sm"><i class="fa-solid fa-file-excel text-amber-600 mr-1"></i>批量開戶（Excel 上傳） <span class="text-[10px] bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">管理員專用</span></h4>
+            <button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900">
             • Excel 填好範本後上傳，預覽無誤再一次過開戶；<b>ID 重複會自動跳過，不覆蓋舊帳及已改密碼</b><br>
@@ -123,7 +123,7 @@ Object.assign(ScoutEventApp.prototype,{
             • 建議先試 2-3 筆，確認無誤再全團匯入
           </div>
           <div class="flex flex-wrap gap-2 items-center">
-            <label class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳已填 CSV<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleAccBulkCSV(this.files[0])"></label>
+            <label class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳已填 Excel<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleAccBulkCSV(this.files[0]);this.value=''"></label>
             <span class="text-[10px] text-slate-400">或</span>
             <button onclick="app.previewAccBulkJSON()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-code mr-1"></i>由下方資料預覽</button>
           </div>
@@ -232,28 +232,26 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('acc-bulk-table').innerHTML=`<table class="min-w-full text-xs"><thead class="bg-slate-100 sticky top-0"><tr><th class="px-2 py-1 text-left">帳號</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">層級</th><th class="px-2 py-1 text-left">組別</th><th class="px-2 py-1 text-left">可登入</th></tr></thead><tbody class="divide-y">${this.bulkPending.map(r=>`<tr><td class="px-2 py-1 font-mono">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td><td class="px-2 py-1">${escapeHtml(ROLE_LABELS[r.role]||r.role)}</td><td class="px-2 py-1">${escapeHtml(r.group_name)}</td><td class="px-2 py-1">${r.password?'✅':'—'}</td></tr>`).join('')}</tbody></table>`;
   }
 ,
-  handleAccBulkCSV(file){
+  // v14.1：批量開戶檔案只收 Excel（.xlsx／.xls）或 JSON（舊名 handleAccBulkCSV 保留俾 onchange 呼叫）
+  async handleAccBulkCSV(file){
     if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員可用','error'); return; }
     if(!file){ showToast('請選擇檔案','warning'); return; }
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      try{
-        let rows=[];
-        if(file.name.endsWith('.json')){ const j=JSON.parse(e.target.result); rows=Array.isArray(j)?j:[j]; }
-        else rows=parseCSV(e.target.result);
-        this.bulkPending=this.normalizeBulkRows(rows);
-        if(!this.bulkPending.length){ showToast('解析不到有效資料（需要 user_id/ymis + name）','error'); return; }
-        this.renderAccBulkPreview();
-        showToast(`已解析 ${this.bulkPending.length} 筆，請預覽確認`,'success');
-      }catch(err){ showToast('檔案解析失敗：'+err.message,'error'); }
-    };
-    reader.readAsText(file);
+    try{
+      const res=await readTabularFile(file);
+      const rows=res.kind==='json'?(Array.isArray(res.rows)?res.rows:[res.rows]):res.rows;
+      this.bulkPending=this.normalizeBulkRows(rows);
+      if(!this.bulkPending.length){ showToast('解析不到有效資料（需要 user_id/ymis + name）','error'); return; }
+      this.renderAccBulkPreview();
+      showToast(`已解析 ${this.bulkPending.length} 筆，請預覽確認`,'success');
+    }catch(err){ showToast('檔案解析失敗：'+err.message,'error'); }
   }
+,
+  handleAccBulkExcel(file){ return this.handleAccBulkCSV(file); }
 ,
   previewAccBulkJSON(){
     if(!this.canBulkOnboard()){ showToast('批量開戶僅管理員可用','error'); return; }
     const text=(document.getElementById('acc-bulk-json')?.value||'').trim();
-    if(!text){ showToast('請先貼上資料（或上傳 CSV）','warning'); return; }
+    if(!text){ showToast('請先貼上資料（或上傳 Excel）','warning'); return; }
     try{ let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; this.bulkPending=this.normalizeBulkRows(arr); if(!this.bulkPending.length){ showToast('無有效資料（需要 user_id + name）','error'); return; } this.renderAccBulkPreview(); showToast(`已解析 ${this.bulkPending.length} 筆`,'success'); }
     catch(e){ showToast('JSON 格式錯誤','error'); }
   }

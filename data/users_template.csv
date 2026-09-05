@@ -1,9 +1,0 @@
-ymis,name,email,role,group_name,contact,password,can_tick,allowed_modules,squad,squad_role,status,job_desc
-陳小明,陳小明,chan@example.com,staff,主題節目組,91234567,1234,true,*,紅隊,member,active,遊戲攤位執行 - 由領袖批量開戶
-李小華,李小華,lee@example.com,director,會操及典禮組,92345678,1234,true,*,藍隊,member,active,步操訓練統籌
-王大明,王大明,wang@example.com,general_director,會操及典禮組,93456789,1234,true,*,紅隊,隊長,active,總主任 - 可批核
-梁文澧,梁文澧,leung@example.com,director,品牌推廣組,94567890,1234,true,*, , ,active,主任 - 品牌設計
-黃偉安,黃偉安,wong@example.com,general_director,服務及發展組,91111111,1234,true,*, , ,active,總主任 - 服務發展
-朱家聰,朱家聰,chu@example.com,general_director,行政組,92222222,1234,true,*, , ,active,總主任 - 行政
-義工A,義工A,volunteerA@isd.local,public,嘉賓接待組,, ,false,,未分配,member,active,義工 - 只看公開
-義工B,義工B,volunteerB@isd.local,staff,嘉賓接待組,95550001,,false,meetings,綠隊,member,active,接待組義工 - 只能看會議

@@ -1,7 +1,7 @@
 /* 41-roster-lists.js — 執行手冊「名單＋點名」共用引擎
    支部獎勵、領袖獎勵、參加旅團、代訂餐盒，以及既有優異旅團獲獎名單均共用：
    欄位範本、Excel／Word／PDF 上傳、貼上文字、手動新增／編輯、防錯點名、
-   分組進度、匯出 CSV、列印及後端留痕。 */
+   分組進度、匯出 Excel／Word、列印（PDF）及後端留痕（v14.1：全站唔再有 CSV）。 */
 Object.assign(ScoutEventApp.prototype,{
 
   /* ══════════════ 基本資料／權限 ══════════════ */
@@ -148,6 +148,8 @@ Object.assign(ScoutEventApp.prototype,{
     const files=this.getExecManualFiles(attachKey);
     const cols=def.columns||[];
     const uploadLabel=def.upload_label||'上傳名單（EXCEL／WORD／PDF）';
+    // 淺色按鈕一律寫明深色字（v14.1 修正：以前 <label> 嘅 onchange 屬性漏咗收尾引號，後面幾粒掣被吞入 text-white 嘅 label 內 → 白底白字睇唔到）
+    const light='bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-bold';
     const meritReplyStatus=def.source==='ceremony_merit'&&typeof this.meritAwardReplyStatusHTML==='function'
       ?this.meritAwardReplyStatusHTML():'';
     return `
@@ -158,19 +160,19 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div>${escapeHtml(def.intro)}</div>
         <div class="text-[10px] text-slate-500">位置：${escapeHtml(def.exec_location)}｜格式（${cols.length} 欄）：${cols.map(c=>escapeHtml(c.label)).join(' / ')}＋<b>${escapeHtml(def.tick_label)} TICK</b></div>
-        ${def.format_note?`<div class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-book-open mr-1"></i>${escapeHtml(def.format_note)}</div>`:''}
         ${this.currentUser?'':'<div class=\"text-[10px] text-slate-500\">'+this.rosterNeedsLogin(key)+'</div>'}
       </div>
       ${meritReplyStatus}
       <div class="flex flex-wrap gap-2 items-center">
-        ${canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''></label>`:''}
-        ${canManage?`<button onclick="app.openRosterPasteForm('${def.key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
-        ${canManage&&def.editable?`<button onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}
-        ${def.source==='participants'?'':`<button onclick="app.rosterDownloadTemplate('${def.key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>下載格式範本 CSV</button>`}
-        <button onclick="app.rosterExportCSV('${def.key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 CSV</button>
-        <button onclick="app.printRosterList('${def.key}','${scope}')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印${escapeHtml(def.tick_label)}表</button>
-        ${canManage?`<button onclick="app.openExecManualFileForm('${attachKey}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paperclip mr-1"></i>上傳附件（PDF／Word／圖片／Drive 連結）</button>`:''}
-        ${this.rosterBackendReady()?`<button onclick="app.rosterPushToGas('${def.key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>同步名單至後端</button><button onclick="app.rosterPullFromGas('${def.key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>由後端取回</button>`:''}
+        ${canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''"></label>`:''}
+        ${canManage?`<button type="button" onclick="app.openRosterPasteForm('${def.key}')" class="${light}"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
+        ${canManage&&def.editable?`<button type="button" onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}
+        ${def.source==='participants'?'':`<button type="button" onclick="app.rosterDownloadTemplate('${def.key}')" class="${light}"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`}
+        <button type="button" onclick="app.rosterExportExcel('${def.key}')" class="${light}"><i class="fa-solid fa-file-excel mr-1"></i>匯出 Excel</button>
+        <button type="button" onclick="app.rosterExportWord('${def.key}')" class="${light}"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
+        <button type="button" onclick="app.printRosterList('${def.key}','${scope}')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印／PDF ${escapeHtml(def.tick_label)}表</button>
+        ${canManage?`<button type="button" onclick="app.openExecManualFileForm('${attachKey}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paperclip mr-1"></i>上傳附件（PDF／Word／圖片／Drive 連結）</button>`:''}
+        ${this.rosterBackendReady()?`<button type="button" onclick="app.rosterPushToGas('${def.key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>同步名單至後端</button><button type="button" onclick="app.rosterPullFromGas('${def.key}')" class="${light}"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>由後端取回</button>`:''}
       </div>
       <div class="bg-white border rounded-xl p-3 space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -186,7 +188,7 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div id="roster-print-${scope}-${key}" data-roster-body="${key}">${this.rosterBodyHTML(key)}</div>
       </div>
-      ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載格式範本 CSV」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
+      ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載 Excel 範本」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
       ${files.length?`<div class="space-y-2"><b class="text-[12px]"><i class="fa-solid fa-paperclip mr-1"></i>${escapeHtml(def.title)}附件（${files.length}）</b><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,attachKey,canManage)).join('')}</div></div>`:''}
     `;
   },
@@ -461,7 +463,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.saveRosterData(d); this.rosterRefresh(key); showToast('已刪除','warning');
   },
 
-  /* ══════════════ 匯入：Excel／CSV／Word（表格）／PDF（附件）／貼上文字 ══════════════ */
+  /* ══════════════ 匯入：Excel／Word（表格）／PDF（附件）／貼上文字（v14.1：不再接受 CSV） ══════════════ */
   // 代訂餐盒：「餐盒總數」空缺時以 A＋B＋C 自動加總（格式預設，減少判單對數錯漏）
   rosterApplyAutoSum(def,row){
     const cfg=ROSTER_AUTO_SUM&&ROSTER_AUTO_SUM[def.key]; if(!cfg) return row;
@@ -552,7 +554,8 @@ Object.assign(ScoutEventApp.prototype,{
     const name=String(file.name||'').toLowerCase();
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
-      if(/\.(xlsx|xlsm|xls|csv)$/.test(name)){
+      if(/\.csv$/.test(name)) throw new Error('系統已不接受 CSV：請用 Excel 開啟後「另存新檔」為 .xlsx 再上傳');
+      if(/\.(xlsx|xlsm|xls)$/.test(name)){
         if(typeof XLSX==='undefined') throw new Error('未載入 Excel 解析庫（需連線 CDN）');
         const raw=await this.parseExcelToRows(file);
         const rows=this.rosterMapObjects(def,raw);
@@ -574,7 +577,7 @@ Object.assign(ScoutEventApp.prototype,{
         showToast('PDF 已內嵌預覽；PDF 唔支援自動解析成行列 — 請用 EXCEL／WORD 匯入點名名單，或「貼上文字」','warning');
         return;
       }
-      throw new Error('不支援嘅檔案格式（可用：.xlsx .xls .csv .docx .pdf）');
+      throw new Error('不支援嘅檔案格式（可用：.xlsx .xls .docx .pdf）');
     }catch(e){ showToast('名單讀取失敗：'+e.message,'error'); }
     finally{ if(overlay) overlay.classList.remove('active'); }
   },
@@ -704,19 +707,40 @@ Object.assign(ScoutEventApp.prototype,{
     if(!replace) { const m=document.querySelector('input[name="rs-imp-mode"][value="append"]'); if(m) m.checked=true; }
   },
 
-  /* ══════════════ 範本／匯出／列印 ══════════════ */
+  /* ══════════════ 範本／匯出（Excel／Word）／列印（PDF） ══════════════
+     v14.1：全站唔再有 CSV。範本＝Excel；匯出＝Excel 或 Word；PDF＝「列印」再揀「另存為 PDF」。 */
   rosterDownloadTemplate(key){
     const def=this.rosterDef(key); if(!def) return;
     const grid=[def.columns.map(c=>c.label)].concat(def.sample_rows||[]);
-    this.downloadCSV(`roster_${key}_template_${todayISO()}.csv`, grid);
+    this.exportTableExcel(`${def.title}_範本_${todayISO()}.xlsx`, grid, {sheet:'名單範本'});
   },
 
-  rosterExportCSV(key){
-    const def=this.rosterDef(key); if(!def) return;
+  // 匯出用嘅二維陣列（第一行表頭；含 TICK 狀態、時間、點名人）——Excel／Word 共用
+  rosterExportGrid(key){
+    const def=this.rosterDef(key); if(!def) return [];
     const rows=this.rosterViewRows(key);
-    const grid=[[this.rosterTickColLabel(def),...def.columns.map(c=>c.label),'點名時間','點名人','備註(點名)']];
+    const grid=[[this.rosterTickColLabel(def),...def.columns.map(c=>c.label),`${def.tick_label}時間`,`${def.tick_label}人`,`備註(${def.tick_label})`]];
     rows.forEach(r=>grid.push([r._checked?'已'+def.tick_label:'未'+def.tick_label,...def.columns.map(c=>String(r[c.k]??'')),String(r._at||'').replace('T',' ').slice(0,19),r._by||'',r._note||'']));
-    this.downloadCSV(`roster_${key}_${todayISO()}.csv`, grid);
+    return grid;
+  },
+
+  rosterExportExcel(key){
+    const def=this.rosterDef(key); if(!def) return;
+    const grid=this.rosterExportGrid(key);
+    if(grid.length<=1){ showToast('名單係空嘅，冇嘢可匯出','warning'); return; }
+    this.exportTableExcel(`${def.title}_${todayISO()}.xlsx`, grid, {sheet:def.tab_label||def.title});
+  },
+  // 舊名保留（其他模組／測試仍會叫）：一律出 Excel
+  rosterExportCSV(key){ return this.rosterExportExcel(key); },
+
+  rosterExportWord(key){
+    const def=this.rosterDef(key); if(!def) return;
+    const grid=this.rosterExportGrid(key);
+    if(grid.length<=1){ showToast('名單係空嘅，冇嘢可匯出','warning'); return; }
+    const rows=this.rosterViewRows(key), done=rows.filter(r=>r._checked).length;
+    const totals=(def.total_fields||[]).map(f=>`${f.label}：${rows.reduce((n,r)=>n+(Number(String(r[f.k]||'').replace(/[^0-9.\-]/g,''))||0),0)}`).join('　');
+    const meta=`活動：${escapeHtml(this.currentEvent?.event_name||'')}　負責組別：${escapeHtml(def.owner_group)}　已${escapeHtml(def.tick_label)}：${done}／${rows.length}${totals?'　'+escapeHtml(totals):''}　匯出：${new Date().toLocaleString()}（${escapeHtml(this.currentUser?.name||'公開')}）`;
+    downloadWord(`${def.title}_${todayISO()}.doc`,`${def.title}（${this.rosterTickColLabel(def)}表）`,rowsToHtmlTable(grid),{meta,landscape:grid[0].length>7});
   },
 
   printRosterList(key,scope){

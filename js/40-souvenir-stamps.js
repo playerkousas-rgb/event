@@ -346,7 +346,8 @@ Object.assign(ScoutEventApp.prototype,{
         <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
         <span class="text-[10px] text-slate-400 py-2">💡 點 header（姓名／組別／攤位／派發狀態）可排序，方便現場派發</span>
         ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
-        <button onclick="app.exportSouvenirStampsCSV('${scope}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出派發紀錄 CSV</button>
+        <button onclick="app.exportSouvenirStampsExcel('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出派發紀錄 Excel</button>
+        <button onclick="app.exportSouvenirStampsWord('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
         <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
         ${canManage&&((isStaff&&(store.staff_custom||[]).length)||(!isStaff&&(store.guests_custom||[]).length))?`<button onclick="app.clearSouvenirCustom('${scope}')" class="bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>清除匯入名單</button>`:''}
       </div>
@@ -431,27 +432,38 @@ Object.assign(ScoutEventApp.prototype,{
     });
   }
 ,
-  exportSouvenirStampsCSV(scope){
-    const def=this.souvenirStampScopeDef(scope);
+  // 派發紀錄二維陣列（第一行表頭）——Excel／Word 共用（v14.1 起冇 CSV）
+  souvenirStampsGrid(scope){
     const roster=this.souvenirRoster(scope);
     const map=this.getSouvenirStampData()[scope]||{};
     const isStaff=scope==='staff';
     const head=isStaff?['姓名','組別','攤位','身份','已派發','派發時間','派發人','備註(改名)']:['姓名','單位','職銜','已派發','派發時間','派發人'];
-    const esc=s=>`"${String(s??'').replace(/"/g,'""')}"`;
     const rows=roster.map(p=>{
       const e=map[p.key]||{};
-      if(isStaff){
-        return [p.name,p.group_name,p.booth||e.booth||'',p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||'',e.remark||p.remark||''].map(esc).join(',');
-      }else{
-        return [p.name,p.unit||e.unit||'',p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||''].map(esc).join(',');
-      }
+      return isStaff
+        ?[p.name,p.group_name,p.booth||e.booth||'',p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||'',e.remark||p.remark||'']
+        :[p.name,p.unit||e.unit||'',p.job_title||p.title||'',e.ticked?'已派發':'未派發',e.ticked_at||'',e.ticked_by||''];
     });
-    const csv='\ufeff'+[head.map(esc).join(','),...rows].join('\n');
-    const blob=new Blob([csv],{type:'text/csv'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download=`紀念章派發紀錄_${def.label}.csv`; a.click();
-    showToast('已匯出紀念章派發紀錄','success');
+    return [head,...rows];
   }
+,
+  exportSouvenirStampsExcel(scope){
+    const def=this.souvenirStampScopeDef(scope);
+    const grid=this.souvenirStampsGrid(scope);
+    if(grid.length<=1){ showToast('暫無名單可匯出','warning'); return; }
+    downloadExcel(`紀念章派發紀錄_${def.label}_${todayISO()}.xlsx`,grid,{sheet:'派發紀錄'});
+  }
+,
+  exportSouvenirStampsWord(scope){
+    const def=this.souvenirStampScopeDef(scope);
+    const grid=this.souvenirStampsGrid(scope);
+    if(grid.length<=1){ showToast('暫無名單可匯出','warning'); return; }
+    const done=grid.slice(1).filter(r=>r[grid[0].indexOf('已派發')]==='已派發').length;
+    downloadWord(`紀念章派發紀錄_${def.label}_${todayISO()}.doc`,`紀念章派發紀錄（${def.label}）`,rowsToHtmlTable(grid),{meta:`活動：${escapeHtml(this.currentEvent?.event_name||'')}　已派發 ${done}／${grid.length-1}　匯出：${new Date().toLocaleString()}（${escapeHtml(this.currentUser?.name||'')}）`,landscape:grid[0].length>6});
+  }
+,
+  // 舊名保留（一律出 Excel）
+  exportSouvenirStampsCSV(scope){ return this.exportSouvenirStampsExcel(scope); }
 ,
   clearSouvenirCustom(scope){
     if(!this.canManageSouvenirStamps(scope)) return;

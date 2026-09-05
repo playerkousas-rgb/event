@@ -39,6 +39,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","
 .header-chip{display:inline-flex;align-items:center;padding:7px 11px;border-radius:12px;font-size:11.5px;font-weight:700;line-height:1;white-space:nowrap;transition:.2s;border:1px solid transparent;cursor:pointer}
 /* 補回編譯 tailwind.css 欠缺的工具類（新排版／監察統計格線用到） */
 .grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* v14.1：名單引擎／失物認領／紀念章用到但編譯版冇嘅工具類 */
+.bg-white\/70{background-color:rgba(255,255,255,.7)} .text-amber-300{color:#fcd34d} .accent-emerald-600{accent-color:#059669} .accent-rose-600{accent-color:#e11d48}
+.overflow-auto{overflow:auto} .max-h-\[280px\]{max-height:280px} .min-w-\[140px\]{min-width:140px} .select-none{user-select:none}
+.bg-fuchsia-50{background-color:#fdf4ff} .border-fuchsia-200{border-color:#f5d0fe} .text-fuchsia-900{color:#701a75}
+@media(min-width:768px){.md\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .col-span-4{grid-column:span 4/span 4}
 .gap-0\.5{gap:.125rem}
 .gap-x-2{column-gap:.5rem}
@@ -226,7 +231,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
   </div>
 
   <div id="view-users" class="hidden space-y-4"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold flex items-center"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> 用戶管理</h3></div><p class="text-[11px] text-slate-500 mt-1">一次過查看／修改可見帳戶的角色、組別、密碼及卡片權限。可視範圍依職級：<b>執行副主席／主席／顧問／管理員</b>＝可見全部人；<b>副主席</b>只睇自己組；<b>總主任</b>睇自己組但不包括副主席；<b>主任</b>只睇自己組普通工作人員。</p><div id="users-container" class="mt-4 space-y-3"></div></div></div>
-  <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批量開戶中心</h3></div><p class="text-xs text-slate-500 mt-2">支援 CSV / JSON / GS 三軌，參考 v6.0</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button></div></div>
+  <div id="view-bulk" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批量開戶中心</h3></div><p class="text-xs text-slate-500 mt-2">支援 Excel 上傳 / JSON / GS 三軌</p><button onclick="app.downloadUsersTemplate()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button></div></div>
   <div id="view-system" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm space-y-3"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">控制台</h3></div><p class="text-xs text-slate-500 leading-relaxed">此頁只供系統技術人員調整後端連線（GAS URL／API Key）。一般籌委不需要進入。會議預告、開戶、批核等都在儀表板卡片處理，不是在這裡。</p><button onclick="app.openSettingsModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">開啟系統設定</button></div></div>
   <div id="view-approvals" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批核中心</h3></div><div id="approval-content" class="mt-4"></div></div></div>
   <div id="view-approvalmatrix" class="hidden"><div class="bg-white rounded-2xl p-5 border shadow-sm"><div class="flex items-center gap-2 flex-wrap"><button onclick="app.backToDashboard()" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-left mr-1"></i> 返回</button><h3 class="font-bold">批核權限表</h3></div><div id="approval-matrix-content" class="mt-4"></div></div></div>
@@ -363,7 +368,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <div id="modal-user" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">用戶管理</h3><button onclick="app.closeModal('modal-user')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form id="user-form" onsubmit="app.submitUserForm(event)" class="space-y-3"><input type="hidden" id="u-form-mode" value="create"><input type="hidden" id="u-form-original-id"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-bold">登入帳號（中文姓名）*</label><input id="u-ymis" required placeholder="例如 陳子明" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">姓名*</label><input id="u-name" required class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">Email</label><input id="u-email" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">角色</label><select id="u-role" class="w-full px-3 py-2 border rounded-xl text-sm bg-white"><option value="staff">staff</option><option value="director">director</option><option value="general_director">總主任</option><option value="vice_chairperson">副主席</option><option value="chairperson">主席</option><option value="advisor">顧問</option><option value="admin">管理員</option></select></div><div><label class="text-xs font-bold">組別</label><input id="u-group" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div><label class="text-xs font-bold">電話</label><input id="u-contact" class="w-full px-3 py-2 border rounded-xl text-sm"></div><div id="u-pwd-wrap"><label class="text-xs font-bold">密碼（管理層可改）</label><input id="u-password" type="text" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="留空則不改"></div></div><div class="flex justify-end gap-2 pt-3 border-t"><button type="button" onclick="app.closeModal('modal-user')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm">保存</button></div></form></div></div>
 
-<div id="modal-bulk" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-3xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">批量開戶</h3><button onclick="app.closeModal('modal-bulk')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold">下載範本 CSV</button><div class="mt-3"><label class="text-xs font-bold">貼上資料（JSON 格式，技術選項）</label><textarea id="bulk-json-modal" rows="4" placeholder='[{"ymis":"001","name":"test"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea><button onclick="app.handleBulkJSON(true)" class="mt-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">預覽資料</button></div><div id="bulk-modal-preview" class="hidden"><div class="flex justify-between mt-3"><h4 class="font-bold text-sm">預覽 <span id="bulk-modal-count">0</span></h4><button onclick="app.confirmBulkCreate(true)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">確認開戶</button></div><div id="bulk-modal-table" class="table-responsive mt-2"></div></div></div></div>
+<div id="modal-bulk" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-3xl w-full p-6 shadow-2xl space-y-4 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold">批量開戶</h3><button onclick="app.closeModal('modal-bulk')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><button onclick="app.downloadUsersTemplate()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button><label class="ml-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳已填 Excel<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleBulkModalExcel(this.files[0]);this.value=''"></label><div class="mt-3"><label class="text-xs font-bold">貼上資料（JSON 格式，技術選項）</label><textarea id="bulk-json-modal" rows="4" placeholder='[{"ymis":"001","name":"test"}]' class="w-full p-3 border rounded-xl text-xs font-mono"></textarea><button onclick="app.handleBulkJSON(true)" class="mt-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold">預覽資料</button></div><div id="bulk-modal-preview" class="hidden"><div class="flex justify-between mt-3"><h4 class="font-bold text-sm">預覽 <span id="bulk-modal-count">0</span></h4><button onclick="app.confirmBulkCreate(true)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs">確認開戶</button></div><div id="bulk-modal-table" class="table-responsive mt-2"></div></div></div></div>
 
 <!-- 最新消息編輯（v11.2）：只供 執行副主席以上（主席／顧問／管理員／系統管理員）＋ 秘書處 使用；儲存即時寫入後端 Events 表，全部人即刻睇到，唔使再改 GitHub JSON -->
 <div id="modal-news" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-bullhorn text-amber-600 mr-2"></i>修改最新消息</h3><button onclick="app.closeModal('modal-news')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed space-y-1"><div><i class="fa-solid fa-user-shield mr-1"></i><b>可修改：</b>執行副主席以上（主席／顧問／管理員／系統管理員）及秘書處。</div><div><i class="fa-solid fa-bolt mr-1"></i>儲存後即時顯示喺全站最頂「最新消息」橫幅，其他人重新整理即見（毋須改 GitHub／重新部署）。</div></div><form onsubmit="app.saveEventNews(event)" class="space-y-3"><div><label class="text-[11px] font-bold">最新消息內容（留空 ＝ 收起橫幅）</label><textarea id="news-input" rows="4" maxlength="300" placeholder="例如：活動如期舉行，敬請留意最新消息。" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></textarea><div class="text-[10px] text-slate-400 mt-1">最多 300 字；建議一至兩句，橫幅會顯示全文。</div></div><div id="news-editor-meta" class="text-[11px] text-slate-500"></div><div class="flex justify-between gap-2 pt-3 border-t"><button type="button" onclick="app.clearEventNews()" class="px-3 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm">清除消息</button><div class="flex gap-2"><button type="button" onclick="app.closeModal('modal-news')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-bold">發佈</button></div></div></form></div></div>
@@ -424,9 +429,9 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900 space-y-1">
           <b>申請表設計（一次申請多項，唔使重複填）：</b><br>
           • <b>物資申請：</b>每項物資只填「名稱＋數量（＋單位）」，按「增加一項物資」繼續加；<b>所屬組別／聯絡電話／申請原因是整張申請共用，只填一次</b>，電話自動載入你登記時嘅聯絡號碼。<br>
-          • <b>攤位計劃書＝獨立卡片＋公開可填寫（v8.7）：</b>對標主題節目組「主題節目攤位計劃書」表單＋「2026 攤位總表」（分區＋編號＋負責單位選擇、攤位招牌名稱／活動內容／「十五五」主題自填、帳篷 3mW x 3mD／摺枱／摺椅只填數量、負責人姓名／年齡組別／單位／職位／WhatsApp／電郵）；<b>「總表」頁籤按攤位匯總：TOTAL 總數（帳篷／摺枱／摺椅／圍布／電源）＋每個攤位一行明細，未提交攤位顯示「未提交」</b>；與地域物資借用兩項紀錄完全分開。<b>任何人無需登入都可提交</b>（未登入請留姓名＋聯絡電話）；聯絡電話／電郵只供登入後查看。<b>可匯出總表 CSV（Excel）</b>。<br>
+          • <b>攤位計劃書＝獨立卡片＋公開可填寫（v8.7）：</b>對標主題節目組「主題節目攤位計劃書」表單＋「2026 攤位總表」（分區＋編號＋負責單位選擇、攤位招牌名稱／活動內容／「十五五」主題自填、帳篷 3mW x 3mD／摺枱／摺椅只填數量、負責人姓名／年齡組別／單位／職位／WhatsApp／電郵）；<b>「總表」頁籤按攤位匯總：TOTAL 總數（帳篷／摺枱／摺椅／圍布／電源）＋每個攤位一行明細，未提交攤位顯示「未提交」</b>；與地域物資借用兩項紀錄完全分開。<b>任何人無需登入都可提交</b>（未登入請留姓名＋聯絡電話）；聯絡電話／電郵只供登入後查看。<b>可匯出總表 Excel／Word，或列印成 PDF</b>。<br>
           • <b>膳食：</b>菜單開放俾所有人填寫訂餐（無需登入，可選不吃）；菜單不設「組別」欄。公眾只見到「菜單＋我的訂餐」；訂餐紀錄/統計與列印派發只供本組總主任以上／批核／執行組。訂餐由本組總主任以上確認，再由指定組批核，最後由執行組落單派飯。<br>
-          • <b>童心捐贈：</b>公眾直接見到物品／食品兩張捐贈表（無須登入）；QR Code 下載同統計只列予服務及發展組／管理層。<br>          • <b>紀念章派發（v11）：</b>紀念章只派發俾<b>工作人員</b>及<b>典禮嘉賓</b>，活動前已有全人名，所以派發時只需 <b>TICK 人名</b>。<b>行政組</b>部門中心＝工作人員派發（另有「備註」欄，用作紀錄改名／替假嘅工作人員）；<b>嘉賓接待組</b>部門中心＝嘉賓派發（嘉賓名單跟典禮儀式，<b>不可改名</b>，因為冇代嘉賓）。嘉賓派發由行政組及嘉賓接待組管理，可匯出 CSV／列印。<br>
+          • <b>童心捐贈：</b>公眾直接見到物品／食品兩張捐贈表（無須登入）；QR Code 下載同統計只列予服務及發展組／管理層。<br>          • <b>紀念章派發（v11）：</b>紀念章只派發俾<b>工作人員</b>及<b>典禮嘉賓</b>，活動前已有全人名，所以派發時只需 <b>TICK 人名</b>。<b>行政組</b>部門中心＝工作人員派發（另有「備註」欄，用作紀錄改名／替假嘅工作人員）；<b>嘉賓接待組</b>部門中心＝嘉賓派發（嘉賓名單跟典禮儀式，<b>不可改名</b>，因為冇代嘉賓）。嘉賓派發由行政組及嘉賓接待組管理，可匯出 Excel／Word 或列印成 PDF。<br>
           • <b>失物認領（v11）：</b>執行手冊「各類附加資料」及「行政組 → 部門管理中心」同一份紀錄；<b>由行政組紀錄</b>（登記拾獲日期／地點／物品，認領時更新狀態及認領人），其他組別及公眾只可查閱（未登入隱藏認領人聯絡）。<br>
           • <b>返回：</b>所有頁面頂部只有一個「← 返回」，一律＝<b>返回上一層級</b>（例如由申請中心入咗「物資申請」，撳返回就返申請中心，唔會跳晒返主頁）。
         </div>
@@ -506,30 +511,30 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
-<script src="js/00-config.js?v=20260905c"></script>
-<script src="js/10-app-core.js?v=20260905c"></script>
+<script src="js/00-config.js?v=20260905d"></script>
+<script src="js/10-app-core.js?v=20260905d"></script>
 <script src="js/11-news.js?v=20260901a"></script>
-<script src="js/20-accounts.js?v=20260831a"></script>
-<script src="js/21-activities.js?v=20260905c"></script>
+<script src="js/20-accounts.js?v=20260905d"></script>
+<script src="js/21-activities.js?v=20260905d"></script>
 <script src="js/22-meals.js?v=20260831a"></script>
-<script src="js/23-sync.js?v=20260831a"></script>
-<script src="js/24-supplies.js?v=20260831a"></script>
-<script src="js/25-vehicle.js?v=20260831a"></script>
-<script src="js/26-monitor-apply.js?v=20260905c"></script>
+<script src="js/23-sync.js?v=20260905d"></script>
+<script src="js/24-supplies.js?v=20260905d"></script>
+<script src="js/25-vehicle.js?v=20260905d"></script>
+<script src="js/26-monitor-apply.js?v=20260905d"></script>
 <script src="js/27-parking.js?v=20260831a"></script>
 <script src="js/28-oral-quotes.js?v=20260831a"></script>
-<script src="js/30-finance.js?v=20260831a"></script>
-<script src="js/31-staff.js?v=20260831a"></script>
+<script src="js/30-finance.js?v=20260905d"></script>
+<script src="js/31-staff.js?v=20260905d"></script>
 <script src="js/32-meetings.js?v=20260831a"></script>
-<script src="js/33-users.js?v=20260831a"></script>
+<script src="js/33-users.js?v=20260905d"></script>
 <script src="js/34-announcements.js?v=20260831a"></script>
-<script src="js/35-ceremony.js?v=20260905c"></script>
-<script src="js/36-crisis.js?v=20260831a"></script>
-<script src="js/37-coordinator.js?v=20260905c"></script>
-<script src="js/38-donations.js?v=20260831a"></script>
-<script src="js/39-lost-found.js?v=20260902a"></script>
-<script src="js/40-souvenir-stamps.js?v=20260902a"></script>
-<script src="js/41-roster-lists.js?v=20260905c"></script>
+<script src="js/35-ceremony.js?v=20260905d"></script>
+<script src="js/36-crisis.js?v=20260905d"></script>
+<script src="js/37-coordinator.js?v=20260905d"></script>
+<script src="js/38-donations.js?v=20260905d"></script>
+<script src="js/39-lost-found.js?v=20260905d"></script>
+<script src="js/40-souvenir-stamps.js?v=20260905d"></script>
+<script src="js/41-roster-lists.js?v=20260905d"></script>
 <script src="js/90-bootstrap.js?v=20260831b"></script>
 </body>
 </html>

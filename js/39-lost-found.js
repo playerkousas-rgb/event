@@ -9,7 +9,9 @@
    所有時間（登記時間 created_at／完成時間 claimed_at）都係系統自動紀錄，唔使人手填。
    · 查閱：任何人（含未登入公眾）都可睇清單（未登入時隱藏聯絡電話）
    · 紀錄：行政組登入成員＋管理層（LOST_FOUND_MANAGERS）可新增／處理／刪除
-   · 儲存：localStorage（即時）＋後端 Lost_Found 工作表（跨裝置同步，見 23-sync.js） */
+   · 儲存：localStorage（即時）＋後端 Lost_Found 工作表（跨裝置同步，見 23-sync.js）
+   v14.1：確認認領／尋回只改狀態（紀錄唔會刪，只有 🗑️ 先會刪）；新增「尋回率」＋按日摘要（當日失咗乜、物主係邊個、幾多已尋回）；
+          匯出改為 Excel／Word（冇 CSV），PDF 用「列印」。 */
 Object.assign(ScoutEventApp.prototype,{
 
   // 系統自動時間戳（本地時間，格式 YYYY-MM-DD HH:MM）——登記／認領一律自動紀錄
@@ -102,6 +104,42 @@ Object.assign(ScoutEventApp.prototype,{
     </tr></thead><tbody>${rows||`<tr><td colspan="${canManage?9:8}" class="border px-2 py-4 text-center text-slate-400">${empty}</td></tr>`}</tbody></table></div>`;
   }
 ,
+  /* —— 統計：總數／已完成／尋回率（已認領＋已尋回 ÷ 全部登記）；按日分組供報告用 —— */
+  lostFoundStats(list){
+    const all=list||this.lostFoundSorted();
+    const found=all.filter(r=>(r.type||'found')!=='seeking'), seeking=all.filter(r=>(r.type||'found')==='seeking');
+    const closed=all.filter(r=>this.isLostFoundClosed(r));
+    const rate=all.length?Math.round(closed.length*100/all.length):0;
+    const seekClosed=seeking.filter(r=>this.isLostFoundClosed(r)).length, foundClosed=found.filter(r=>this.isLostFoundClosed(r)).length;
+    return {total:all.length,found:found.length,seeking:seeking.length,closed:closed.length,pending:all.length-closed.length,rate,
+      seekRate:seeking.length?Math.round(seekClosed*100/seeking.length):0,foundRate:found.length?Math.round(foundClosed*100/found.length):0,seekClosed,foundClosed};
+  }
+,
+  // 按日摘要：每日登記幾多、已完成幾多、尋回率、物主／尋物者名單（供當日回顧同報告）
+  lostFoundDaily(list){
+    const all=list||this.lostFoundSorted();
+    const byDay={};
+    all.forEach(r=>{ const d=r.found_date||(r.created_at||'').slice(0,10)||'（未填日期）'; (byDay[d]=byDay[d]||[]).push(r); });
+    return Object.keys(byDay).sort((a,b)=>b.localeCompare(a)).map(day=>{
+      const rows=byDay[day], st=this.lostFoundStats(rows);
+      const owners=rows.map(r=>{ const who=r.claimed_by||((r.type||'found')==='seeking'?r.found_by:''); return who?`${r.item_name||'物品'}→${who}`:''; }).filter(Boolean);
+      return {day,rows,stats:st,owners};
+    });
+  }
+,
+  lostFoundDailyHTML(){
+    const days=this.lostFoundDaily();
+    if(!days.length) return '';
+    const isPublic=!this.currentUser;
+    return `<div class="bg-white border rounded-xl p-3">
+      <h4 class="font-bold text-[12px] mb-2 flex items-center gap-2"><i class="fa-solid fa-calendar-day text-teal-700"></i>按日摘要（當日失咗乜／物主／尋回率）</h4>
+      <div class="table-responsive"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr>
+        <th class="border px-2 py-1 text-left">日期</th><th class="border px-2 py-1">登記</th><th class="border px-2 py-1">失物</th><th class="border px-2 py-1">尋物</th><th class="border px-2 py-1">已完成</th><th class="border px-2 py-1">待處理</th><th class="border px-2 py-1">尋回率</th><th class="border px-2 py-1 text-left">物品 → 物主／領回人</th></tr></thead>
+        <tbody>${days.map(d=>`<tr><td class="border px-2 py-1 whitespace-nowrap font-bold">${escapeHtml(d.day)}</td><td class="border px-2 py-1 text-center">${d.stats.total}</td><td class="border px-2 py-1 text-center">${d.stats.found}</td><td class="border px-2 py-1 text-center">${d.stats.seeking}</td><td class="border px-2 py-1 text-center text-emerald-700 font-bold">${d.stats.closed}</td><td class="border px-2 py-1 text-center ${d.stats.pending?'text-amber-700 font-bold':''}">${d.stats.pending}</td><td class="border px-2 py-1 text-center font-bold ${d.stats.rate>=80?'text-emerald-700':d.stats.rate>=50?'text-amber-700':'text-rose-700'}">${d.stats.rate}%</td><td class="border px-2 py-1 text-[10px]">${d.owners.length?d.owners.map(escapeHtml).join('；'):'<span class="text-slate-400">—</span>'}</td></tr>`).join('')}</tbody></table></div>
+      <p class="text-[10px] text-slate-400 mt-1">尋回率＝（已認領＋已尋回）÷ 該日全部登記。${isPublic?'':'確認認領／尋回後紀錄會保留（唔會刪），所以事後仍可查返當日失物同物主。'}</p>
+    </div>`;
+  }
+,
   /* —— 清單 HTML（執行手冊「各類附加資料」及「行政組」部門中心共用同一份）—— */
   renderLostFoundHTML(opts){
     const o=opts||{};
@@ -113,24 +151,28 @@ Object.assign(ScoutEventApp.prototype,{
     const pendingFound=found.filter(r=>!this.isLostFoundClosed(r)).length;
     const pendingSeek=seeking.filter(r=>!this.isLostFoundClosed(r)).length;
     const closed=all.filter(r=>this.isLostFoundClosed(r)).length;
+    const st=this.lostFoundStats(all);
     const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
     return `<div class="space-y-3">
       <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900"><b>🧳 失物認領：</b>兩種登記情況 —— <b>①有失物登記</b>（拾獲物品交來）及 <b>②有人要尋找物品</b>（失主報失）。兩者都會在下方列表出現，<b>點入該筆紀錄即可處理認領</b>（失物找到物主＝已認領／尋物者尋回失物＝已尋回），確認時<b>系統自動紀錄時間</b>。<b>由行政組紀錄</b>（同時設於「行政組 → 部門管理中心」）；其他組別及公眾只可查閱${isPublic?'（聯絡電話需登入先可見）':''}。</div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-2xl">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-2 max-w-3xl" data-lost-found-stats>
         ${chip(found.length,'失物登記','bg-slate-100 text-slate-700 border')}
         ${chip(seeking.length,'尋物登記','bg-slate-100 text-slate-700 border')}
         ${chip(pendingFound+pendingSeek,'待處理','bg-amber-50 text-amber-700 border border-amber-200')}
         ${chip(closed,'已完成（已認領／已尋回）','bg-emerald-50 text-emerald-700 border border-emerald-200')}
+        ${chip(`${st.rate}%`,`尋回率（${st.closed}／${st.total}）`,st.rate>=80?'bg-emerald-600 text-white border border-emerald-700':st.total?'bg-teal-50 text-teal-800 border border-teal-200':'bg-slate-100 text-slate-500 border')}
       </div>
       <div class="flex gap-2 flex-wrap">
         ${canManage?`<button onclick="app.openLostFoundForm('found')" class="bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-box-archive mr-1"></i>① 登記失物（拾獲物品）</button>
         <button onclick="app.openLostFoundForm('seeking')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-magnifying-glass mr-1"></i>② 登記尋物（有人要尋找物品）</button>`:`<span class="text-[11px] text-slate-500 bg-white border px-3 py-2 rounded-xl"><i class="fa-solid fa-lock mr-1"></i>只讀 — 失物由行政組紀錄</span>`}
         ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 失物紀錄<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleLostFoundExcelUpload(this.files[0])"></label>`:''}
-        <button onclick="app.exportLostFoundCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出 CSV</button>
-        <button onclick="app.printCoordArea('lost-found-print','失物認領清單')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印清單</button>
+        <button onclick="app.exportLostFoundExcel()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出報告 Excel</button>
+        <button onclick="app.exportLostFoundWord()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出報告 Word</button>
+        <button onclick="app.printCoordArea('lost-found-print','失物認領報告')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印／PDF</button>
         <span id="lost-found-count" class="text-[11px] bg-teal-100 text-teal-700 px-3 py-2 rounded-full border border-teal-200">${all.length} 筆</span>
       </div>
       <div id="lost-found-print" class="space-y-4">
+        ${this.lostFoundDailyHTML()}
         <div class="bg-white border rounded-xl p-3">
           <h4 class="font-bold text-[12px] mb-2 flex items-center gap-2"><i class="fa-solid fa-box-archive text-teal-700"></i>① 失物登記列表（拾獲物品 · 等候物主認領）<span class="text-[10px] text-slate-400 font-normal">${found.length} 筆${canManage?' · 點擊該行處理認領':''}</span></h4>
           ${this.lostFoundTableHTML('found')}
@@ -275,7 +317,7 @@ Object.assign(ScoutEventApp.prototype,{
     data.records[idx]=rec;
     this.saveLostFoundData(data);
     this.closeModal('modal-record');
-    showToast(`${seeking?'已確認尋回失物':'已確認失物認領'}（自動記錄時間 ${stamp}）`,'success');
+    showToast(`${seeking?'已確認尋回失物':'已確認失物認領'}（自動記錄時間 ${stamp}；紀錄已保留，可於按日摘要查閱）`,'success');
     this.refreshLostFoundViews();
   }
 ,
@@ -320,17 +362,38 @@ Object.assign(ScoutEventApp.prototype,{
     if(counter) counter.textContent=`${this.lostFoundSorted().length} 筆`;
   }
 ,
-  exportLostFoundCSV(){
-    const list=this.lostFoundSorted();
+  // 報告用二維陣列（第一行表頭）——Excel／Word 共用
+  lostFoundReportGrid(list){
     const head=['登記類別','登記時間(自動)','日期','時間','物品','描述','地點','拾獲者/尋物者','聯絡','狀態','認領/領回人','認領人聯絡','認領/尋回時間(自動)','處理人','備註','紀錄人'];
-    const esc=s=>`"${String(s??'').replace(/"/g,'""')}"`;
-    const rows=list.map(r=>[(r.type||'found')==='seeking'?'尋物登記':'失物登記',(r.created_at||'').replace('T',' ').slice(0,16),r.found_date,r.found_time,r.item_name,r.description,r.found_location,r.found_by,r.contact,r.status,r.claimed_by,r.claimed_contact,r.claimed_at,r.closed_by,r.notes,r.recorded_by].map(esc).join(','));
-    const csv='\ufeff'+[head.map(esc).join(','),...rows].join('\n');
-    const blob=new Blob([csv],{type:'text/csv'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='失物認領清單.csv'; a.click();
-    showToast('已匯出失物認領 CSV','success');
+    const rows=(list||this.lostFoundSorted()).map(r=>[(r.type||'found')==='seeking'?'尋物登記':'失物登記',(r.created_at||'').replace('T',' ').slice(0,16),r.found_date||'',r.found_time||'',r.item_name||'',r.description||'',r.found_location||'',r.found_by||'',r.contact||'',r.status||this.lostFoundOpenLabel(r.type),r.claimed_by||'',r.claimed_contact||'',r.claimed_at||'',r.closed_by||'',r.notes||'',r.recorded_by||'']);
+    return [head,...rows];
   }
+,
+  lostFoundSummaryGrid(){
+    const st=this.lostFoundStats();
+    const grid=[['日期','登記總數','失物登記','尋物登記','已完成（已認領／已尋回）','待處理','尋回率','物品 → 物主／領回人']];
+    this.lostFoundDaily().forEach(d=>grid.push([d.day,d.stats.total,d.stats.found,d.stats.seeking,d.stats.closed,d.stats.pending,d.stats.rate+'%',d.owners.join('；')]));
+    grid.push(['合計',st.total,st.found,st.seeking,st.closed,st.pending,st.rate+'%','']);
+    return grid;
+  }
+,
+  exportLostFoundExcel(){
+    const list=this.lostFoundSorted();
+    if(!list.length){ showToast('暫無失物認領紀錄','warning'); return; }
+    downloadExcel(`失物認領報告_${todayISO()}.xlsx`,null,{sheets:[{name:'按日摘要（尋回率）',rows:this.lostFoundSummaryGrid()},{name:'全部紀錄',rows:this.lostFoundReportGrid(list)}]});
+  }
+,
+  exportLostFoundWord(){
+    const list=this.lostFoundSorted();
+    if(!list.length){ showToast('暫無失物認領紀錄','warning'); return; }
+    const st=this.lostFoundStats(list);
+    const meta=`活動：${escapeHtml(this.currentEvent?.event_name||'')}　登記 ${st.total} 筆（失物 ${st.found}／尋物 ${st.seeking}）　已完成 ${st.closed}　待處理 ${st.pending}　<b>尋回率 ${st.rate}%</b>　匯出：${new Date().toLocaleString()}（${escapeHtml(this.currentUser?.name||'公開')}）`;
+    const body=`<h3>一、按日摘要</h3>${rowsToHtmlTable(this.lostFoundSummaryGrid())}<h3>二、全部紀錄</h3>${rowsToHtmlTable(this.lostFoundReportGrid(list))}<p style="font-size:9pt;color:#555">失物認領由行政組紀錄：登記時間與認領（尋回）時間全部由系統自動紀錄；確認認領／尋回後紀錄保留，不會刪除。</p>`;
+    downloadWord(`失物認領報告_${todayISO()}.doc`,'失物認領報告',body,{meta,landscape:true});
+  }
+,
+  // 舊名保留（一律出 Excel）
+  exportLostFoundCSV(){ return this.exportLostFoundExcel(); }
 ,
   /* —— EXCEL 匯入失物紀錄 —— */
   async handleLostFoundExcelUpload(file){

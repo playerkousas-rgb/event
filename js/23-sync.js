@@ -282,7 +282,7 @@ Object.assign(ScoutEventApp.prototype,{
       actionsEl.innerHTML=`
         <div class="flex gap-2 flex-wrap">
           ${canManage?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單 (${escapeHtml(this.approvalRouteLabel('meals','executor_groups'))})</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0])"></label>`:''}
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 批量<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleMealsFileUpload(this.files[0]);this.value=''"></label>`:''}
           ${this.canExecuteArea('meals')?`<button onclick="app.exportMealsData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出最後名單</button>`:'<span class="text-[11px] bg-purple-50 text-purple-700 px-3 py-2 rounded-full border border-purple-200"><i class="fa-solid fa-lock mr-1"></i>登入後提交；最後名單只供指定執行組</span>'}
         </div>
       `;
@@ -673,19 +673,19 @@ Object.assign(ScoutEventApp.prototype,{
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`meals_${todayISO()}.json`; a.click(); showToast('已匯出膳食 JSON','success');
   }
 ,
-  handleMealsFileUpload(file){
+  // v14.1：批量匯入只收 Excel（.xlsx／.xls）或 JSON，唔再收 CSV
+  async handleMealsFileUpload(file){
     if(!file) return;
     if(!this.canManageMealMenu() && !this.isAdmin()){ showToast(`只有膳食執行組（${this.approvalRouteLabel('meals','executor_groups')}）主任以上或管理員可上傳`,'error'); return; }
-    const reader=new FileReader();
-    reader.onload=(e)=>{
+    let res; try{ res=await readTabularFile(file); }catch(err){ showToast('檔案讀取失敗：'+err.message,'error'); return; }
+    {
       try{
-        const text=e.target.result;
         let parsed=[];
-        if(file.name.endsWith('.json')){
-          const json=JSON.parse(text);
-          parsed=json.menus||json.orders||[];
+        if(res.kind==='json'){
+          const json=res.rows;
+          parsed=json.menus||json.orders||(Array.isArray(json)?json:[]);
         }else{
-          const rows=parseCSV(text);
+          const rows=res.rows;
           // Assume orders
           parsed=rows.map(r=>({order_id:'order_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),menu_id:r.menu_id||'',user_name:r.user_name||r.name||'',group_name:r.group_name||r.group||'',selection:r.selection||r.選項||'',remarks:r.remarks||'',created_at:new Date().toISOString()}));
         }
@@ -701,8 +701,7 @@ Object.assign(ScoutEventApp.prototype,{
         showToast(`已批量匯入 ${parsed.length} 筆膳食資料`,'success');
         this.refreshMealsViews();
       }catch(err){ showToast('解析失敗:'+err.message,'error'); }
-    };
-    reader.readAsText(file);
+    }
   }
 ,
 });

@@ -515,7 +515,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>2026 攤位總表</b>（品牌推廣組分區＋編號；攤位名稱／預計內容／「十五五」元素／場地物資需求由「攤位計劃書」提交自動填入；已聯絡／已回覆／確認出席為聯絡進度）。${isPublic?'<b class="text-emerald-700">全公開可看</b>（聯絡人電話／電郵需登入先見）。':''}</div>
       <div class="flex gap-2 flex-wrap">
         <button onclick="app.openModule('booth')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交／查看攤位計劃書（借用統計）</button>
-        ${this.isAdmin()||this.isCoordinatorViceChair()?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.printCoordArea('booth-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}
+        ${this.isAdmin()||this.isCoordinatorViceChair()?`<button onclick="app.exportBoothExcel()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出總表 Excel</button><button onclick="app.exportBoothWord()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出總表 Word</button><button onclick="app.printCoordArea('booth-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}
       </div>
       <div id="booth-master-print">${this.renderBoothMasterTableHTML(agg,isPublic)}</div>
     </div>`;
@@ -539,7 +539,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div><label class="text-[11px] font-bold">標題 *</label><input id="emf-title" value="${escapeHtml(existing?.title||'')}" required placeholder="檔案名稱" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">描述</label><textarea id="emf-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">版本</label><input id="emf-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">上傳檔案 (PDF/Word/JSON/圖片)</label><input type="file" id="emf-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.xlsx,.xls,.csv,.json,.txt" class="w-full text-xs mt-1"></div>
+        <div><label class="text-[11px] font-bold">上傳檔案 (PDF/Word/JSON/圖片)</label><input type="file" id="emf-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.xlsx,.xls,.json,.txt" class="w-full text-xs mt-1"></div>
         <div><label class="text-[11px] font-bold">或貼上 Drive 連結</label><input id="emf-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         ${existing?.file_name?`<div class="text-[11px]">已上傳: ${escapeHtml(existing.file_name)}</div>`:''}
       </div>`;
@@ -604,7 +604,7 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('已匯出 JSON','success');
   }
 ,
-  // ── 參加旅團名單分頁：結構表（同步／上傳 CSV）＋ 上傳檔案──
+  // ── 參加旅團名單分頁：結構表（同步／上傳 Excel）＋ 上傳檔案──
   renderExecManualParticipants(panel){
     const participants=this.getParticipantsData();
     const pSrc=this.eventData['participants_source']||{};
@@ -615,8 +615,8 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示（附件顯示喺下方點名面板內）。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>
-          ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>`:''}
-          <button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載欄位範本 CSV</button>
+          ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>`:''}
+          <button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
           ${canUp?`<button onclick="app.openExecManualFileForm('participants')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案</button>`:''}
           <button onclick="app.exportExecManualFiles('participants')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 JSON</button>
         </div>
@@ -637,7 +637,7 @@ Object.assign(ScoutEventApp.prototype,{
     const def=this.rosterDef('meal_box');
     box.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載格式：<b>EXCEL／CSV／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載格式：<b>EXCEL／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
         <div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('meal_box',{scope:'exec'})}</div>
         ${this.mealBoxDigestHTML()}
       </div>`;

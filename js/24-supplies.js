@@ -285,7 +285,7 @@ Object.assign(ScoutEventApp.prototype,{
           ${canSubmit?`<button onclick="app.openSupplyRequestForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交物資申請</button>`:''}
           ${(this.canApproveArea('supplies')||this.canExecuteArea('supplies')||isCoordinator||isAdmin)?`<button onclick="app.exportSuppliesData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}
 
-          ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳CSV批量<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0])"></label>`:''}
+          ${isCoordinator?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 批量<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleSuppliesFileUpload(this.files[0]);this.value=''"></label>`:''}
         </div>
       `;
     }
@@ -676,19 +676,18 @@ Object.assign(ScoutEventApp.prototype,{
     if(document.getElementById('view-approvals')&&!document.getElementById('view-approvals').classList.contains('hidden')) this.renderApprovalCenter();
   }
 ,
-  handleSuppliesFileUpload(file){
+  // v14.1：批量匯入只收 Excel（.xlsx／.xls）或 JSON，唔再收 CSV
+  async handleSuppliesFileUpload(file){
     if(!this.isCoordinatorViceChair()){ showToast('只供指定物資批核／執行組總主任以上批量匯入','error'); return; }
     if(!file) return;
-    const reader=new FileReader();
-    reader.onload=(e)=>{
+    const run=(res)=>{
       try{
-        const text=e.target.result;
         let parsed=[];
-        if(file.name.endsWith('.json')){
-          const json=JSON.parse(text);
+        if(res.kind==='json'){
+          const json=res.rows;
           parsed=Array.isArray(json)?json:json.inventory||[json];
         }else{
-          const rows=parseCSV(text);
+          const rows=res.rows;
           // Check if it's inventory or requests
           if(rows[0] && rows[0].item_name!==undefined && rows[0].total_qty!==undefined){
             // inventory
@@ -712,7 +711,7 @@ Object.assign(ScoutEventApp.prototype,{
         }
       }catch(err){ showToast('解析失敗:'+err.message,'error'); }
     };
-    reader.readAsText(file);
+    try{ run(await readTabularFile(file)); }catch(err){ showToast('檔案讀取失敗：'+err.message,'error'); }
   }
 ,
   exportSuppliesData(){
@@ -766,14 +765,14 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="flex gap-2 flex-wrap items-center">
         <div class="inline-flex bg-slate-100 rounded-xl p-1 overflow-x-auto max-w-full">${tabBtn('borrow','📊 借用統計（要借什麼）')}${tabBtn('sign','🪧 招牌統計')}${tabBtn('list',`📄 計劃書明細（${plans.length}）`)}</div>
         <button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交攤位計劃書${isPublic?'（無需登入）':''}</button>
-        ${canExport?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出總表 CSV</button><button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
+        ${canExport?`<button onclick="app.exportBoothExcel()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出總表 Excel</button><button onclick="app.exportBoothWord()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出總表 Word</button><button onclick="app.exportBoothData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
         <button onclick="app.openModule('exec_manual'); setTimeout(()=>app.switchExecManualTab('booth_master'),200)" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-table-cells mr-1"></i>執行手冊 → 攤位總表</button>
       </div>
       <div id="booth-tab-content">${this.boothSubTab==='list'?this.renderBoothPlanListHTML(isPublic):(this.boothSubTab==='sign'?this.renderBoothSignboardHTML(isPublic):this.renderBoothBorrowStatsHTML(agg,isPublic))}</div>
     </div>`;
     const actionsEl=document.getElementById('module-actions');
     if(actionsEl){
-      actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>提交攤位計劃書</button>${canExport?`<button onclick="app.exportBoothCSV()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出總表 CSV</button>`:''}<button onclick="app.openModule('exec_manual'); setTimeout(()=>app.switchExecManualTab('booth_master'),200)" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">執行手冊 → 攤位總表</button></div>`;
+      actionsEl.innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.openBoothSupplyForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>提交攤位計劃書</button>${canExport?`<button onclick="app.exportBoothExcel()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出總表 Excel</button>`:''}<button onclick="app.openModule('exec_manual'); setTimeout(()=>app.switchExecManualTab('booth_master'),200)" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">執行手冊 → 攤位總表</button></div>`;
     }
   },
   switchBoothTab(tab){ this.boothSubTab=tab; this.renderBoothModule(); },
@@ -1169,35 +1168,42 @@ Object.assign(ScoutEventApp.prototype,{
     showToast(mode==='edit'?'已更新攤位計劃書，重新進入流程':(this.applicationNeedsGroupConfirmation(rec)?'已提交攤位計劃書：待本組總主任確認（資料已入借用統計＋執行手冊攤位總表）':'已提交攤位計劃書：已交批核組（資料已入借用統計＋執行手冊攤位總表）'),'success');
     this.refreshSuppliesViews();
   },
-  /* —— 匯出：總表 CSV（對標 2026 攤位總表，供大會／外判商下單）＋完整 JSON —— */
-  exportBoothCSV(){
-    if(!(this.isAdmin()||this.isCoordinatorViceChair())){ showToast('匯出只供指定物資批核／執行組總主任以上','error'); return; }
+  /* —— 匯出：總表 Excel／Word（對標 2026 攤位總表，供大會／外判商下單）＋完整 JSON（v14.1 起冇 CSV） —— */
+  boothMasterGrid(){
     const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
     const t=agg.totals;
-    const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
     const lines=[];
-    lines.push(['分區','編號','攤位','主題範疇','負責單位','攤位名稱（招牌）','攤位活動內容','「十五五」主題內容','帳篷(頂)','摺枱(張)','摺椅(張)','帳篷圍布(塊)','電源(W)','其他要求','其他物資','運送需求','攤位負責人','負責人電話(WhatsApp)','負責人電郵','所屬組別','提交人','狀態'].map(esc).join(','));
-    lines.push(['TOTAL','','TOTAL','','','','','',t.tent,t.table,t.chair,t.skirting,t.power_w,'','','',`${t.booths} 攤位有計劃書`,'','',''].map(esc).join(','));
+    lines.push(['分區','編號','攤位','主題範疇','負責單位','攤位名稱（招牌）','攤位活動內容','「十五五」主題內容','帳篷(頂)','摺枱(張)','摺椅(張)','帳篷圍布(塊)','電源(W)','其他要求','其他物資','運送需求','攤位負責人','負責人電話(WhatsApp)','負責人電郵','所屬組別','提交人','狀態']);
+    lines.push(['TOTAL','','TOTAL','','','','','',t.tent,t.table,t.chair,t.skirting,t.power_w,'','','',`${t.booths} 攤位有計劃書`,'','','','','']);
     const rowLine=(z,no,code,theme,unit,row)=>{
       const st=row?(row.status==='pending'?'待批核':row.status==='rejected'?'已拒絕':row.status==='modified'?'已批核(修改)':'已批核'):'未提交';
       return [z,no,code,theme,unit,row?(row.booth_name||''):'未提交',row?(row.activity_desc||''):'',row?(row.fif15_content||''):'',
         row?row.equip.tent:0,row?row.equip.table:0,row?row.equip.chair:0,row?row.equip.skirting:0,row?row.equip.power_w:0,
         row?(row.other_req||''):'',row?(row.equip.other||[]).join('; '):'',row?(row.delivery||''):'',
-        row?(row.owner_name||''):'',row?(row.owner_phone||''):'',row?(row.owner_email||''):'',row?(row.group_name||''):'',row?(row.requested_by||''):'',st].map(esc).join(',');
+        row?(row.owner_name||''):'',row?(row.owner_phone||''):'',row?(row.owner_email||''):'',row?(row.group_name||''):'',row?(row.requested_by||''):'',st];
     };
     const known=new Set();
     BOOTH_ZONES_2026.forEach(z=>{
       (z.units||[]).forEach(u=>{ known.add(z.zone+u.no); lines.push(rowLine(z.zone,u.no,z.zone+u.no,z.theme,u.name,agg.rows[z.zone+u.no])); });
-      if(!(z.units||[]).length) lines.push([z.zone,'',z.zone+'-',z.theme,'','','未提交','','','','','','','','','','','','','未提交'].map(esc).join(','));
+      if(!(z.units||[]).length) lines.push([z.zone,'',z.zone+'-',z.theme,'','','未提交','','','','','','','','','','','','','','','未提交']);
     });
     Object.values(agg.rows).forEach(row=>{
       const k=(row.zone&&row.booth_no)?row.zone+row.booth_no:null;
       if(!k||!known.has(k)) lines.push(rowLine(row.zone||'',row.booth_no||'',k||'（自行填寫）',row.zone?boothZoneLabel(row.zone):'',row.unit_name||'',row));
     });
-    const blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`booth_master_${todayISO()}.csv`; a.click();
-    showToast('已匯出總表 CSV（含 BOM，Excel 直接開啟）','success');
+    return lines;
   },
+  exportBoothExcel(){
+    if(!(this.isAdmin()||this.isCoordinatorViceChair())){ showToast('匯出只供指定物資批核／執行組總主任以上','error'); return; }
+    downloadExcel(`2026攤位總表_${todayISO()}.xlsx`,this.boothMasterGrid(),{sheet:'攤位總表'});
+  },
+  exportBoothWord(){
+    if(!(this.isAdmin()||this.isCoordinatorViceChair())){ showToast('匯出只供指定物資批核／執行組總主任以上','error'); return; }
+    const grid=this.boothMasterGrid();
+    downloadWord(`2026攤位總表_${todayISO()}.doc`,'2026 攤位總表',rowsToHtmlTable(grid),{meta:`活動：${escapeHtml(this.currentEvent?.event_name||'')}　匯出：${new Date().toLocaleString()}（${escapeHtml(this.currentUser?.name||'')}）`,landscape:true});
+  },
+  // 舊名保留（一律出 Excel）
+  exportBoothCSV(){ return this.exportBoothExcel(); },
   exportBoothData(){
     const data=this.getSuppliesData();
     const blob=new Blob([JSON.stringify(data.booth_requests||[],null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='booth_plans.json'; a.click(); showToast('已匯出攤位計劃書 JSON','success');
