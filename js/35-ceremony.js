@@ -511,6 +511,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-[11px] leading-relaxed text-yellow-900">
           <b>🏆 獲獎名單：</b>優異旅團、步操比賽及支部／領袖獎勵名單，公眾可查閱。管理員／副主席以上可編輯。
         </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3"><div class="flex justify-between items-center gap-2 flex-wrap"><b class="text-xs">優異旅團名單（按回條資料）</b><select onchange="app.sortCeremonyResponses(this.value)" class="border rounded-lg px-2 py-1 text-[11px]"><option value="area">按區會</option><option value="section">按支部</option><option value="unit">按旅號</option><option value="tick">未 TICK 優先</option></select></div><div id="ceremony-response-list" class="mt-2"></div></div>
         <div class="flex gap-2 flex-wrap">${canEdit?`<button onclick="app.openCeremonyFileForm(null,'awards')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳獲獎名單 (同遊戲卡)</button>`:''}<button onclick="app.exportAwards()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>${canEdit?`<label class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 更新名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleCeremonyAwardsExcelUpload(this.files[0])"></label>`:''}</div>
         <div class="space-y-4">${data.categories.map(cat=>`
           <div class="bg-white border rounded-xl p-4">
@@ -519,6 +520,19 @@ Object.assign(ScoutEventApp.prototype,{
             ${canEdit?`<button onclick="app.openCeremonyFileForm(null,'awards')" class="mt-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳獲獎名單 (同遊戲卡)</button>`:''}
           </div>`).join('')||'<p class="text-xs text-slate-400 py-4 text-center">暫無獲獎名單</p>'}</div>
       </div>`;
+    this.sortCeremonyResponses(this.ceremonyResponseSort||'area');
+  }
+,
+  sortCeremonyResponses(sort){
+    this.ceremonyResponseSort=sort; const el=document.getElementById('ceremony-response-list'); if(!el) return;
+    const d=this.getCeremonyData(), rows=[...(d.responses||[])];
+    rows.sort((a,b)=>sort==='tick'?Number(!!a.ticked)-Number(!!b.ticked):String(a[sort==='unit'?'unit':sort]||'').localeCompare(String(b[sort==='unit'?'unit':sort]||''),'zh-Hant',{numeric:true}));
+    const canTick=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60||this.isCardOwnerGroup('ceremony');
+    el.innerHTML=rows.length?`<div class="table-responsive"><table class="min-w-full text-[11px]"><thead class="bg-white"><tr><th> TICK</th><th>區會</th><th>旅號</th><th>支部</th><th>出席</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="text-center"><input type="checkbox" ${r.ticked?'checked':''} ${canTick?'':'disabled'} onchange="app.toggleCeremonyResponseTick('${r.id}',this.checked)"></td><td>${escapeHtml(r.area)}</td><td>${escapeHtml(r.unit)}</td><td>${escapeHtml(r.section)}</td><td>${escapeHtml(r.attendance)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="text-[11px] text-slate-400">尚未有優異旅團回條</p>';
+  },
+  toggleCeremonyResponseTick(id,checked){
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60&&!this.isCardOwnerGroup('ceremony')){showToast('你沒有優異旅團 TICK 權限','error');return;}
+    const d=this.getCeremonyData(), r=(d.responses||[]).find(x=>x.id===id); if(!r)return; r.ticked=!!checked; this.saveCeremonyData(d); this.sortCeremonyResponses(this.ceremonyResponseSort||'area');
   }
 ,
   openAwardCategoryForm(id=null){
