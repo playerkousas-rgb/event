@@ -105,7 +105,7 @@ Object.assign(ScoutEventApp.prototype,{
           <button onclick="app.switchCeremonyTab('awards')" class="tab-btn ${this.ceremonySubTab==='awards'?'active':''}"><i class="fa-solid fa-trophy mr-1"></i> 獲獎名單</button>
           <button onclick="app.switchCeremonyTab('map')" class="tab-btn ${this.ceremonySubTab==='map'?'active':''}"><i class="fa-solid fa-map-location-dot mr-1"></i> 嘉賓地圖</button>
           <button onclick="app.switchCeremonyTab('exec_manual')" class="tab-btn ${this.ceremonySubTab==='exec_manual'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 執行手冊</button>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0OPjLO5T6K24GC74bN9FNckVnpnGT02QCVgWjeilOZk_dpQ/viewform" target="_blank" class="tab-btn bg-emerald-600 text-white"><i class="fa-solid fa-file-pen mr-1"></i> 儀式申請表</a>
+          <button onclick="app.openCeremonyApplicationForm()" class="tab-btn bg-emerald-600 text-white"><i class="fa-solid fa-file-pen mr-1"></i> 優異旅團回條（APP內填寫）</button>
         </div>
         <div id="ceremony-tab-rundown" class="${this.ceremonySubTab==='rundown'?'':'hidden'}"></div>
         <div id="ceremony-tab-mc" class="${this.ceremonySubTab==='mc'?'':'hidden'}"></div>
@@ -504,6 +504,8 @@ Object.assign(ScoutEventApp.prototype,{
     this._awardsContainer=container;
     const data=this.getAwardsData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
+    const canTick=canEdit||this.isCardOwnerGroup('ceremony');
+    data.categories.forEach(cat=>cat.items=(cat.items||[]).slice().sort((a,b)=>String(a.place||'').localeCompare(String(b.place||''),'zh-Hant')));
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-[11px] leading-relaxed text-yellow-900">
@@ -513,7 +515,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="space-y-4">${data.categories.map(cat=>`
           <div class="bg-white border rounded-xl p-4">
             <div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-medal text-yellow-600"></i>${escapeHtml(cat.name)}</h4>${canEdit?`<div class="flex gap-1"><button onclick="app.openAwardCategoryForm('${cat.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteAwardCategory('${cat.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}</div>
-            <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-center">TICK</th><th class="px-2 py-1 text-left">單位</th><th class="px-2 py-1 text-left">獎項/類別</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${cat.items.map(it=>`<tr><td class="px-2 py-1 text-center" data-label="TICK"><input type="checkbox" ${it.checked?'checked':''} onchange="app.toggleAwardTick('${cat.id}','${it.id}',this.checked)" class="w-4 h-4 accent-emerald-600"></td><td class="px-2 py-1 font-medium" data-label="單位">${escapeHtml(it.place)}</td><td class="px-2 py-1" data-label="獎項">${escapeHtml(it.section)}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openAwardItemForm('${cat.id}','${it.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteAwardItem('${cat.id}','${it.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="3" class="px-2 py-4 text-center text-slate-400">暫無獲獎單位</td></tr>'}</tbody></table></div>
+            <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-center">TICK</th><th class="px-2 py-1 text-left">單位</th><th class="px-2 py-1 text-left">獎項/類別</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${cat.items.map(it=>`<tr><td class="px-2 py-1 text-center" data-label="TICK"><input type="checkbox" ${it.checked?'checked':''} onchange="app.toggleAwardTick('${cat.id}','${it.id}',this.checked)" ${canTick?'':'disabled'} class="w-4 h-4 accent-emerald-600"></td><td class="px-2 py-1 font-medium" data-label="單位">${escapeHtml(it.place)}</td><td class="px-2 py-1" data-label="獎項">${escapeHtml(it.section)}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openAwardItemForm('${cat.id}','${it.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteAwardItem('${cat.id}','${it.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="3" class="px-2 py-4 text-center text-slate-400">暫無獲獎單位</td></tr>'}</tbody></table></div>
             ${canEdit?`<button onclick="app.openCeremonyFileForm(null,'awards')" class="mt-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳獲獎名單 (同遊戲卡)</button>`:''}
           </div>`).join('')||'<p class="text-xs text-slate-400 py-4 text-center">暫無獲獎名單</p>'}</div>
       </div>`;
@@ -585,7 +587,14 @@ Object.assign(ScoutEventApp.prototype,{
     this.saveAwardsData(data); this.renderAwardsModule();
   }
 ,
+  openCeremonyApplicationForm(){
+    const d=this.getCeremonyData(); const existing=d.responses||[];
+    const html=`<div class="space-y-3"><div><label class="text-xs font-bold">出席優異旅團嘉許儀式 *</label><select id="ca-attend" class="w-full border rounded-xl px-3 py-2 mt-1"><option value="出席">派出一名代表出席嘉許儀式</option><option value="不出席">無暇出席</option></select></div><div><label class="text-xs font-bold">所屬區會 *</label><select id="ca-area" class="w-full border rounded-xl px-3 py-2 mt-1"><option>CHW 柴灣區</option><option>HKN 港島北區</option><option>HKS 港島南區</option><option>HKW 港島西區</option><option>SKW 筲箕灣區</option><option>VIC 維多利亞城區</option><option>WCH 灣仔區</option></select></div><div><label class="text-xs font-bold">童軍旅（只須填寫旅號，例如 157） *</label><input id="ca-unit" inputmode="numeric" required class="w-full border rounded-xl px-3 py-2 mt-1"></div><div><label class="text-xs font-bold">所屬支部 *</label><input id="ca-section" required class="w-full border rounded-xl px-3 py-2 mt-1"></div><p class="text-[11px] text-slate-500">截止日期：2026年9月21日；報到時間：上午8時30分。此為 APP 內建回條，不會跳轉 Google Form。</p></div>`;
+    document.getElementById('record-modal-title').textContent='優異旅團嘉許儀式回條（APP內填寫）'; document.getElementById('record-form-fields').innerHTML=html;
+    const form=document.getElementById('record-form'); form.onsubmit=(e)=>{e.preventDefault(); const unit=document.getElementById('ca-unit').value.trim(); if(!/^[0-9]+$/.test(unit)){showToast('旅號只可填寫數字','error');return;} const x={id:'ca_'+Date.now(),attendance:document.getElementById('ca-attend').value,area:document.getElementById('ca-area').value,unit,section:document.getElementById('ca-section').value.trim(),created_at:new Date().toISOString(),status:'待核對'}; if(!x.section){showToast('請填寫所屬支部','error');return;} d.responses=[...existing,x]; this.saveCeremonyData(d); this.closeModal('modal-record'); showToast('回條已提交','success');}; document.getElementById('modal-record').classList.remove('hidden');
+  },
   toggleAwardTick(catId,id,checked){
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60&&!this.isCardOwnerGroup('ceremony')){showToast('你沒有 TICK 權限','error');return;}
     const d=this.getAwardsData(), c=d.categories.find(x=>x.id===catId), i=c?.items.find(x=>x.id===id); if(!i) return;
     i.checked=!!checked; this.saveAwardsData(d);
   },
