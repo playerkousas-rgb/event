@@ -26,7 +26,7 @@
 // v11.2：新增 saveEventNews —— 「最新消息」改為 APP 內可改（執行副主席以上＋秘書處），
 //        寫入 Events 表 news / news_updated_by / news_updated_at（欄位不存在會自動補建），
 //        getEvents 亦會一併回傳，前端 loadEvents 以後端值覆蓋 events.json 嘅預設消息。
-const GS_VERSION = 'v11.2-2026-09-01';
+const GS_VERSION = 'v14.0-2026-09-05';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -319,6 +319,17 @@ function initializeSheets() {
   ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'correction_cancelled', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
   ensureSheet(ss, 'Ceremony_Merit_Checkins', ['checkin_id', 'event_id', 'merit_id', 'area', 'unit', 'section', 'checked_in', 'correction_cancelled', 'checked_by', 'checked_by_id', 'checked_at', 'checkin_note']);
   ensureSheet(ss, 'Ceremony_Merit_Checkin_Batches', ['batch_id', 'event_id', 'area', 'confirmed', 'confirmed_by', 'confirmed_by_id', 'confirmed_at', 'total', 'ticked']);
+  // ═══ v14 (2026-09-05) 執行手冊四張名單（支部獎勵／領袖獎勵／參加旅團／代訂餐盒）═══
+  // 名單行：一份名單＝多行；欄位以 row_json 承載（新增欄位唔使改表結構，非破壞性）
+  ensureSheet(ss, 'Roster_Lists', ['row_id', 'event_id', 'list_key', 'list_title', 'row_json', 'ticked', 'tick_json', 'updated_by', 'updated_at', 'created_at']);
+  // 點名留痕：每次 TICK／更正都係一行（做法同 Ceremony_Merit_Checkins）
+  ensureSheet(ss, 'Roster_Rollcall_Checkins', ['checkin_id', 'event_id', 'list_key', 'list_title', 'row_key', 'area', 'unit', 'name', 'section', 'award', 'checked_in', 'correction_cancelled', 'checked_by', 'checked_by_id', 'checked_at', 'checkin_note']);
+  ensureSheet(ss, 'Roster_Rollcall_Batches', ['batch_id', 'event_id', 'list_key', 'list_title', 'group_value', 'confirmed', 'confirmed_by', 'confirmed_by_id', 'confirmed_at', 'total', 'ticked']);
+  const rosterSheet = ss.getSheetByName('Roster_Lists');
+  if (rosterSheet) rosterSheet.getRange('A1').setNote(
+    'v14 名單＋點名：list_key = section_award（支部獎勵，典禮組）／leader_award（領袖獎勵，典禮組）／participants（參加旅團，行政組）／meal_box（代訂餐盒，協調組）。\n' +
+    'row_json 係該名單嘅欄位值（前端按「預定格式」產生）；APP「同步名單至後端」寫入、「由後端取回」讀返。點名紀錄請睇 Roster_Rollcall_Checkins。'
+  );
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
   // 車輛通行證（含泊車）：前端一直有寫出，但舊版 GS 未建立此表 → 之前寫出會被丟棄，現正式建立
   ensureSheet(ss, 'Vehicle_Passes', ['pass_id', 'event_id', 'plate', 'driver_name', 'driver_contact', 'vehicle_type', 'purpose', 'group_name', 'entry_date', 'exit_date', 'parking_location', 'deadline', 'status', 'requested_by', 'requested_by_id', 'approved_by', 'approved_at', 'notes', 'created_at']);
@@ -1312,7 +1323,7 @@ function getEventAllData(eventId) {
   // v8.9 補漏：加入 Booth_Requests——前端 saveSuppliesData 一直有把「攤位計劃書」寫出後端，但 getEventAllData 冇回傳，
   // 令其他裝置／重開後讀唔返攤位計劃書（攤位卡／總表／借用統計只睇到本機）。現正式回傳，前端 syncApplicationsFromGas 亦已合併。
   // v11：加入 Lost_Found（失物認領）及 Souvenir_Stamps（紀念章派發）——前端 23-sync.js 會合併
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Ceremony_Merit_Checkins', 'Ceremony_Merit_Checkin_Batches', 'Users'];
+  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Ceremony_Merit_Checkins', 'Ceremony_Merit_Checkin_Batches', 'Users', 'Roster_Lists', 'Roster_Rollcall_Checkins', 'Roster_Rollcall_Batches'];
   const result = {};
   
   modules.forEach(mod => {
@@ -1379,6 +1390,15 @@ function saveRecord(data) {
   // 修正是一個明確動作：前端會以 checked_in=Y + correction_cancelled=Y 傳送，
   // 後端才把最終狀態改為 N；一般本機空白不會送出取消。
   if (moduleName === 'Ceremony_Merit_Checkins' && String(record.correction_cancelled || '') === 'Y') record.checked_in = 'N';
+  // v14：四張名單嘅點名同樣「只接受較新操作」，避免舊裝置把新更正覆寫
+  if (moduleName === 'Roster_Rollcall_Checkins' && rowIndex > 0) {
+    const old = rows[rowIndex - 1];
+    const timeIdx = headers.indexOf('checked_at');
+    if (timeIdx >= 0 && old[timeIdx] && record.checked_at && new Date(old[timeIdx]).getTime() > new Date(record.checked_at).getTime()) {
+      return { success: true, id: recordId, ignored: true, reason: '後端已有較新的點名／修正操作' };
+    }
+  }
+  if (moduleName === 'Roster_Rollcall_Checkins' && String(record.correction_cancelled || '') === 'Y') record.checked_in = 'N';
   if (moduleName === 'Souvenir_Stamps' && String(record.correction_cancelled || '') === 'Y') { record.ticked = ''; record.correction_cancelled = ''; }
   const rowValues = headers.map(h => record[h] !== undefined ? record[h] : '');
   if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);

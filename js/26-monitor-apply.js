@@ -271,6 +271,7 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
       {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
       {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
+      {k:'meal_box',    icon:'fa-solid fa-bowl-food',          label:'代訂餐盒名單'},
       {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
@@ -314,6 +315,7 @@ Object.assign(ScoutEventApp.prototype,{
       ceremony:()=>this.renderCeremonyModule(panel),
       crisis:()=>this.renderCrisisModule(panel),
       participants:()=>this.renderExecManualParticipants(panel),
+      meal_box:()=>{ this.renderExecManualMealBox(panel); },
       misc:()=>this.renderExecManualMisc(panel),
       finance_guide:()=>{
         const fin=this.getFinanceData();
@@ -427,6 +429,9 @@ Object.assign(ScoutEventApp.prototype,{
     if(!this.currentUser) return false;
     if(this.currentUser.mock_admin||this.isAdmin()) return true;
     const g=normalizeGroupName(this.currentUser.group_name||'');
+    // v14：四張名單嘅附件區（roster_<list>）→ 交返比名單引擎判斷（典禮組／行政組／協調組）
+    if(String(section||'').indexOf('roster_')===0){ const k=String(section).slice(7); if(this.rosterDef(k)) return this.rosterCanManage(k); }
+    if(section==='meal_box') return g.includes('協調')||g.includes('行政')||this.canUploadDocument();
     if(section==='participants') return g.includes('行政')||this.canUploadDocument();
     if(section==='permit') return g.includes('協調')||g.includes('行政')||this.canUploadActivity();
     if(section==='venue_setup') return g.includes('協調')||g.includes('行政')||this.canUploadActivity();
@@ -534,7 +539,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div><label class="text-[11px] font-bold">標題 *</label><input id="emf-title" value="${escapeHtml(existing?.title||'')}" required placeholder="檔案名稱" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">描述</label><textarea id="emf-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">版本</label><input id="emf-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">上傳檔案 (PDF/Word/JSON/圖片)</label><input type="file" id="emf-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.json,.txt" class="w-full text-xs mt-1"></div>
+        <div><label class="text-[11px] font-bold">上傳檔案 (PDF/Word/JSON/圖片)</label><input type="file" id="emf-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc,.xlsx,.xls,.csv,.json,.txt" class="w-full text-xs mt-1"></div>
         <div><label class="text-[11px] font-bold">或貼上 Drive 連結</label><input id="emf-url" value="${escapeHtml(existing?.file_url||'')}" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         ${existing?.file_name?`<div class="text-[11px]">已上傳: ${escapeHtml(existing.file_name)}</div>`:''}
       </div>`;
@@ -603,15 +608,14 @@ Object.assign(ScoutEventApp.prototype,{
   renderExecManualParticipants(panel){
     const participants=this.getParticipantsData();
     const pSrc=this.eventData['participants_source']||{};
-    const canUpload=this.canUploadDocument()||this.isAdmin();
-    const files=this.getExecManualFiles('participants');
+    const canUpload=this.canUploadDocument()||this.isAdmin()||this.rosterCanManage('participants');
     const canUp=this.canManageExecManualUpload('participants');
     panel.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案（同遊戲卡方式）</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案（同遊戲卡方式）</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示（附件顯示喺下方點名面板內）。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>
-          ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳 Excel<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleParticipantsExcelUpload(this.files[0])"></label>`:''}
+          ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>`:''}
           <button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載欄位範本 CSV</button>
           ${canUp?`<button onclick="app.openExecManualFileForm('participants')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案</button>`:''}
           <button onclick="app.exportExecManualFiles('participants')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 JSON</button>
@@ -621,8 +625,38 @@ Object.assign(ScoutEventApp.prototype,{
           <h4 class="font-bold text-[13px] mb-2 flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>名單 (${participants.length})</h4>
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
         </div>
-        ${files.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,'participants',canUp)).join('')}</div>`:''}
+        <div class="border-t pt-3">${this.rosterPanelHTML('participants',{scope:'exec'})}</div>
       </div>`;
+  }
+,
+  /* ══ v14 執行手冊新分頁「代訂餐盒名單」（協調組負責）══════════════════════════
+     预定位置：執行手冊 → 代訂餐盒名單；同「參加旅團名單」一樣＝結構表＋點名＋附件三位一體。
+     名單來源：Excel／Word 上載（或「貼上文字」）；PDF 只可作附件內嵌預覽。 */
+  renderExecManualMealBox(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const def=this.rosterDef('meal_box');
+    box.innerHTML=`
+      <div class="space-y-3">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載方式同「遊戲卡」— <b>EXCEL／CSV／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
+        <div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('meal_box',{scope:'exec'})}</div>
+        ${this.mealBoxDigestHTML()}
+      </div>`;
+  }
+,
+  /* 代訂餐盒 ↔ 膳食訂餐 對照（方便協調組落單：APP 訂餐數字 vs 名單數字） */
+  mealBoxDigestHTML(){
+    const roster=this.rosterViewRows('meal_box');
+    const num=v=>Number(String(v??'').replace(/[^0-9.\-]/g,''))||0;
+    const rosterTotal=roster.reduce((n,r)=>n+(num(r.qty_total)||num(r.qty_a)+num(r.qty_b)+num(r.qty_c)),0);
+    const units=roster.length;
+    const meals=this.getMealsData?this.getMealsData():{orders:[]};
+    const approved=(meals.orders||[]).filter(o=>o.status==='approved'||o.status==='modified');
+    const appTotal=approved.reduce((n,o)=>n+(Number(o.quantity)||0),0);
+    const diff=appTotal-rosterTotal;
+    return `<div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700">
+      <b><i class="fa-solid fa-scale-balanced mr-1"></i>對數（自動）：</b>名單 ${units} 個旅團／<b>${rosterTotal}</b> 盒　｜　膳食管理已批核訂餐 <b>${appTotal}</b> 份　｜　差額 <b class="${diff===0?'text-emerald-700':'text-rose-600'}">${diff>0?'+':''}${diff}</b>${diff!==0?'（名單與訂餐紀錄唔一致，落單前請與行政組／旅團核實）':'（兩邊一致）'}
+      <div class="text-[10px] text-slate-500 mt-1">如旅團係自行訂餐（冇經大會代訂），請喺名單「備註」註明，避免重複落單。</div>
+    </div>`;
   }
 ,
 

@@ -305,7 +305,9 @@ const DASH_CARD_DEFS=[
 ];
 const LS={gasUrl:'gas_url',apiKey:'api_key',currentUser:'current_user',currentEvent:'current_event',mockMode:'mock_mode',events:'event_events_v7',users:(eid)=>`event_users_v7_${eid}`,meetings:(eid)=>`event_meetings_v7_${eid}`,staff:(eid)=>`event_staff_v7_${eid}`,finance:(eid)=>`event_finance_v7_${eid}`,supplies:(eid)=>`event_supplies_v7_${eid}`,meals:(eid)=>`event_meals_v7_${eid}`,activities:(eid)=>`event_activities_v7_${eid}`,theme_badges:(eid)=>`event_theme_badges_v7_${eid}`,documents:(eid)=>`event_documents_v7_${eid}`,announcements:(eid)=>`event_announcements_v7_${eid}`,safety:(eid)=>`event_safety_v7_${eid}`,unit_guide:(eid)=>`event_unit_guide_v7_${eid}`,crisis:(eid)=>`event_crisis_v7_${eid}`,ceremony:(eid)=>`event_ceremony_v7_${eid}`,awards:(eid)=>`event_awards_v7_${eid}`,parking:(eid)=>`event_parking_v7_${eid}`,oral_quotes:(eid)=>`event_oral_quotes_v7_${eid}`,notifications:(eid,uid)=>`event_notifications_v7_${eid}_${uid}`,myMealOrders:(eid)=>`event_my_meal_orders_v7_${eid}`,pending:(eid)=>`event_pending_v7_${eid}`,config:(eid)=>`event_config_v7_${eid}`,schedule:(eid)=>`event_schedule_v7_${eid}`,participants:(eid)=>`event_participants_v7_${eid}`,approvalRouting:(eid)=>`event_approval_routing_v8_${eid}`,deletedRecords:(eid)=>`event_deleted_records_v8_${eid}`,execManual:(eid)=>`event_exec_manual_v10_${eid}`,
   // v11：失物認領（行政組紀錄）＋紀念章派發（行政組＝工作人員／嘉賓接待組＝嘉賓）
-  lostFound:(eid)=>`event_lost_found_v11_${eid}`,souvenirStamps:(eid)=>`event_souvenir_stamps_v11_${eid}`};
+  lostFound:(eid)=>`event_lost_found_v11_${eid}`,souvenirStamps:(eid)=>`event_souvenir_stamps_v11_${eid}`,
+  // v14：執行手冊四張名單（支部獎勵／領袖獎勵／參加旅團／代訂餐盒）——行＋點名＋附件；附件本身沿用 execManual sections
+  rosterLists:(eid)=>`event_roster_lists_v14_${eid}`};
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function escapeHtml(s){return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3500);}
@@ -369,6 +371,112 @@ const SOUVENIR_STAMP_SCOPES=[
   {scope:'staff',label:'工作人員',group:'行政組',icon:'fa-solid fa-users',canRename:true,hint:'紀念章只派發俾工作人員，活動前已有全人名；派發時 TICK 人名，如有改名／替假請喺「備註」紀錄。'},
   {scope:'guests',label:'嘉賓',group:'嘉賓接待組',icon:'fa-solid fa-user-tie',canRename:false,hint:'派發紀念章俾典禮嘉賓：TICK 派咗俾邊位嘉賓。嘉賓名單唔可以改名（冇代嘉賓），名單跟「典禮儀式 → 嘉賓名單」。'}
 ];
+/* ══ v14（2026-09-05 用戶定案）執行手冊「名單＋點名」四張名單 ══════════════════
+   用戶要求：先**預定位置及格式**，同時預備可讓用戶**上傳名單（EXCEL／WORD／PDF）**，
+   並加入「像優異旅團那種的點名」（TICK 點名＋更正需填原因＋分組確認＋後端留痕）。
+   ┌────────────────┬──────────────────────────┬──────────────┐
+   │ 名單            │ 位置                      │ 負責組別      │
+   ├────────────────┼──────────────────────────┼──────────────┤
+   │ 支部獎勵獲獎名單 │ 執行手冊 → 典禮儀式 → 支部獎勵名單 │ 會操及典禮組  │
+   │ 領袖獎勵獲獎名單 │ 執行手冊 → 典禮儀式 → 領袖獎勵名單 │ 會操及典禮組  │
+   │ 參加旅團名單     │ 執行手冊 → 參加旅團名單（既有分頁加點名）│ 行政組     │
+   │ 代訂餐盒旅團名單 │ 執行手冊 → 代訂餐盒名單（新分頁）      │ 協調組     │
+   └────────────────┴──────────────────────────┴──────────────┘
+   各名單亦並設於所屬組別「部門中心」頁籤（典禮組＝兩份獎勵名單、行政組＝參加旅團、協調組＝代訂餐盒）。
+   欄位格式（columns）即「預定格式」：匯入 Excel／Word 時按 aliases 對位（中英文表頭均可），
+   「下載格式範本 CSV」則按 labels 產生表頭，用家照樣板填回覆上即可。 */
+const ROSTER_AREAS=['CHW 柴灣區','HKN 港島北區','HKS 港島南區','HKW 港島西區','SKW 筲箕灣區','VIC 維多利亞城區','WCH 灣仔區'];
+const ROSTER_SECTIONS=['小童軍','幼童軍','童軍','深資童軍','樂行童軍'];
+// 支部最高獎章（2026 執行手冊：頒發支部最高獎章嘉許信）
+const ROSTER_SECTION_AWARDS=['總領袖獎章','榮譽童軍獎章','貝登堡獎章'];
+// 領袖及委員獎勵（下拉建議值；唔限死——「5年／五年」等寫法並存做別名，方便任何版本嘅 Excel／Word 匯入）
+const ROSTER_LEADER_AWARDS=['總監委任書','副總監委任書','五年長期服務獎狀','長期服務獎章','5年長期服務獎狀','10年長期服務獎狀','15年長期服務獎狀','20年長期服務獎狀','長期服務一星獎章','長期服務二星獎章','長期服務三星獎章','長期服務四星獎章','優異服務獎章','嘉許信'];
+const ROSTER_LIST_DEFS=[
+  {
+    key:'section_award', match_fields:['name','award'], title:'支部獎勵獲獎名單', tab_label:'支部獎勵名單', icon:'fa-solid fa-medal',
+    accent:'amber', owner_group:'會操及典禮組', owner_note:'典禮組',
+    exec_location:'執行手冊 → 典禮儀式 → 支部獎勵名單', dept_tab:'cer_award_section',
+    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
+    intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發支部最高獎章嘉許信』。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
+    source:'roster', editable:true, required:'name', group_field:'section', sort_fields:['area','section','unit','name'],
+    columns:[
+      {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
+      {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']},
+      {k:'unit',label:'旅團／單位',type:'text',aliases:['旅團','旅號','單位','童軍旅','所屬單位','unit','Group']},
+      {k:'name',label:'獲獎人姓名',type:'text',aliases:['姓名','獲獎人','獲獎人士','獲獎者','name','Name']},
+      {k:'award',label:'獎項（支部最高獎章）',type:'text',list:'section_awards',aliases:['獎項','獎章','最高獎章','項目','award','Award','奬項']},
+      {k:'cert_no',label:'嘉許信／證書編號',type:'text',aliases:['嘉許信編號','證書編號','編號','文件編號','no','cert','Cert No']},
+      {k:'notes',label:'備註',type:'text',aliases:['備註','說明','事項','note','notes','Remarks']}
+    ],
+    sample_rows:[['HKW 港島西區','童軍','港島第15旅','陳大文','總領袖獎章','ISD26/SL/001',''],['SKW 筲箕灣區','深資童軍','港島第6旅','李小明','榮譽童軍獎章','','請代領']]
+  },
+  {
+    key:'leader_award', match_fields:['name','award','unit'], title:'領袖獎勵獲獎名單', tab_label:'領袖獎勵名單', icon:'fa-solid fa-award',
+    accent:'indigo', owner_group:'會操及典禮組', owner_note:'典禮組',
+    exec_location:'執行手冊 → 典禮儀式 → 領袖獎勵名單', dept_tab:'cer_award_leader',
+    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
+    intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒總監委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
+    source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
+    columns:[
+      {k:'no',label:'編號（唱名序）',type:'text',aliases:['編號','唱名編號','序號','序','call no','no','No.','No']},
+      {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
+      {k:'unit',label:'所屬單位（旅團／委員會）',type:'text',aliases:['所屬單位','單位','旅團','旅號','委員會','unit','Group']},
+      {k:'rank',label:'職級／職銜',type:'text',aliases:['職級','職銜','職位','會職','rank','position','Appointment']},
+      {k:'name',label:'獲獎人姓名',type:'text',aliases:['姓名','獲獎人','獲獎人士','name','Name']},
+      {k:'award',label:'獎項（領袖及委員獎勵）',type:'text',list:'leader_awards',aliases:['獎項','獎狀','獎章','委任書','項目','award','Award','奬項']},
+      {k:'oath',label:'需覆誓',type:'select',options:['','是','否'],aliases:['覆誓','需覆誓','監誓','宣誓','oath']},
+      {k:'notes',label:'備註',type:'text',aliases:['備註','說明','事項','note','notes','Remarks']}
+    ],
+    sample_rows:[['LS5-1','VIC 維多利亞城區','港島第16旅','團高級指導員','張三','10年長期服務獎狀','',''],['LM-1','HKN 港島北區','地域執行委員會','總監','李四','總監委任書','是','10:55 前排練覆誓']]
+  },
+  {
+    // 參加旅團名單：既有執行手冊分頁（結構表＝Drive 同步／Excel 上傳）——v14 只加「點名」，名單本身仍跟 participants
+    key:'participants', match_fields:['unit','section'], title:'參加旅團名單', tab_label:'參加旅團名單', icon:'fa-solid fa-people-group',
+    accent:'emerald', owner_group:'行政組', owner_note:'行政組',
+    exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
+    tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消 TICK 必須填寫更正原因。',
+    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
+    intro:'對應執行手冊行政組「參加旅團名單」（2025 版為「旅團報名人數」PDF）。名單本身沿用行政組維護之結構表（Drive 同步／Excel 上傳），v14 於同一頁加入報到點名。',
+    source:'participants', editable:false, required:'unit', group_field:'section', sort_fields:['area','section','unit'],
+    total_fields:[{k:'headcount',label:'人數'}],
+    columns:[
+      {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
+      {k:'unit',label:'旅團',type:'text',aliases:['旅團','旅號','單位','童軍旅','unit_name','unit','Group','旅團名稱']},
+      {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']},
+      {k:'headcount',label:'人數',type:'number',aliases:['人數','參加人數','_headcount','count','headcount','Participants']},
+      {k:'leader',label:'領隊／旅長',type:'text',aliases:['領隊','旅長','負責人','领袖','leader']},
+      {k:'notes',label:'備註',type:'text',aliases:['備註','說明','note','notes','Remarks']}
+    ],
+    sample_rows:[['CHW 柴灣區','港島第6旅','幼童軍','42','陳旅長',''],['HKS 港島南區','港島第175旅','小童軍','25','','延至 10/10']]
+  },
+  {
+    key:'meal_box', match_fields:['unit'], title:'代訂餐盒旅團名單', tab_label:'代訂餐盒名單', icon:'fa-solid fa-bowl-food',
+    accent:'rose', owner_group:'協調組', owner_note:'協調組',
+    exec_location:'執行手冊 → 代訂餐盒名單', dept_tab:'coord_mealbox',
+    tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消 TICK 必須填寫更正原因。',
+    format_note:'預設欄位格式（只係呢四張名單用）；未符可改本檔 ROSTER_LIST_DEFS，匯入按表頭名對位，改欄名唔會弄丟已做嘅 TICK。',
+    intro:'對應執行手冊「代訂餐盒」名單（2025 版列於行政組膳食安排內）。名單由協調組上載及點名，用以向判單對數及派發時核對；各組仍可在「膳食管理」自行訂餐，兩邊數字如有出入以本名單為準並註明備註。',
+    source:'roster', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
+    total_fields:[{k:'qty_a',label:'A餐'},{k:'qty_b',label:'B餐'},{k:'qty_c',label:'C餐'},{k:'qty_total',label:'總數'}],
+    columns:[
+      {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
+      {k:'unit',label:'旅團',type:'text',aliases:['旅團','旅號','單位','童軍旅','unit_name','unit','Group','旅團名稱']},
+      {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']},
+      {k:'qty_a',label:'A餐',type:'number',aliases:['A餐','A','A飯','Qty A','qty_a']},
+      {k:'qty_b',label:'B餐',type:'number',aliases:['B餐','B','B飯','Qty B','qty_b']},
+      {k:'qty_c',label:'C餐',type:'number',aliases:['C餐','C','C飯','素','素食','Qty C','qty_c']},
+      {k:'qty_total',label:'餐盒總數',type:'number',aliases:['總數','餐盒總數','合共','合計','人數','total','Total','qty']},
+      {k:'pickup',label:'取餐時間／地點',type:'text',aliases:['取餐時間','派發時間','取餐地點','領取','pickup','time']},
+      {k:'notes',label:'備註（走辣／額外）',type:'text',aliases:['備註','要求','特殊要求','說明','note','notes','Remarks']}
+    ],
+    sample_rows:[['HKS 港島南區','港島第175旅','小童軍','20','15','5','40','11:45／有蓋操場側','走辣 x3'],['CHW 柴灣區','港島第6旅','幼童軍','25','20','0','45','11:45／有蓋操場側','']]
+  }
+];
+// 匯入時「總數」若空缺，則以 A＋B＋C 自動加總（代訂餐盒）
+const ROSTER_AUTO_SUM={'meal_box':{field:'qty_total',parts:['qty_a','qty_b','qty_c']}};
+function rosterListsOf(){ return ROSTER_LIST_DEFS; }
 // 2026 攤位總表聯絡狀態顯示：Y / N / 🤷（原表「待確認」）／ —（未有紀錄）
 function boothContactMark(v){ return v==='Y'?'Y':(v==='N'?'N':(v==='?'?'🤷':'—')); }
 function boothUnitOf(zone,no){ const z=BOOTH_ZONES_2026.find(x=>x.zone===zone); const u=(z&&z.units||[]).find(x=>x.no===String(no).padStart(2,'0')); return u||null; }
