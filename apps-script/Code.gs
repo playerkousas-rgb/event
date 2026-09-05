@@ -1376,6 +1376,9 @@ function saveRecord(data) {
       return { success: true, id: recordId, ignored: true, reason: '後端已有較新的點名／修正操作' };
     }
   }
+  // 修正是一個明確動作：前端會以 checked_in=Y + correction_cancelled=Y 傳送，
+  // 後端才把最終狀態改為 N；一般本機空白不會送出取消。
+  if (moduleName === 'Ceremony_Merit_Checkins' && String(record.correction_cancelled || '') === 'Y') record.checked_in = 'N';
   const rowValues = headers.map(h => record[h] !== undefined ? record[h] : '');
   if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);
   else sheet.appendRow(rowValues);

@@ -550,7 +550,7 @@ Object.assign(ScoutEventApp.prototype,{
   saveCeremonyCheckinToGas(r,checked,correctionNote=''){
     const url=this.gasUrl||localStorage.getItem(LS.gasUrl), key=this.apiKey||localStorage.getItem(LS.apiKey); if(!url||!key)return;
     const eid=this.currentEvent?.event_id||'isd_2026', uid=this.currentUser?.user_id||this.currentUser?.id||'';
-    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:key,module:'Ceremony_Merit_Checkins',record:{checkin_id:`${eid}_${r.id}`,event_id:eid,merit_id:r.id,area:r.area||'',unit:r.unit||'',section:r.section||'',checked_in:checked?'Y':'N',checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:new Date().toISOString(),correction_cancelled:(!checked&&correctionNote)?'Y':'',checkin_note:correctionNote||''}})}).catch(()=>showToast('TICK 已本機保存，後端同步失敗','warning'));
+    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:key,module:'Ceremony_Merit_Checkins',record:{checkin_id:`${eid}_${r.id}`,event_id:eid,merit_id:r.id,area:r.area||'',unit:r.unit||'',section:r.section||'',checked_in:(correctionNote?'Y':(checked?'Y':'N')),checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:new Date().toISOString(),correction_cancelled:(!checked&&correctionNote)?'Y':'',checkin_note:correctionNote||''}})}).catch(()=>showToast('TICK 已本機保存，後端同步失敗','warning'));
   },
   openAwardCategoryForm(id=null){
     if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可編輯','error'); return; }
