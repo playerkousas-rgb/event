@@ -191,7 +191,11 @@ const noHeader = appCer.rosterGridToRows(wDef, [
 ok(noHeader.rows.length === 1 && noHeader.rows[0].name === '王五' && noHeader.rows[0].no === 'LS3-1', 'B20 冇表頭行時按欄位順序對位');
 // 2017 手冊核對：兩張獎勵名單用「出席」做 TICK 欄名；四張名單都俾到格式來源
 ok(['section_award', 'leader_award'].every(k => appCer.rosterDef(k).tick_col_label === '出席'), 'B20c 獎勵名單 TICK 欄名跟手冊「出席」');
-ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => /2017 版 P\./.test(appCer.rosterDef(k).format_note || '') && /ROSTER_LIST_DEFS/.test(appCer.rosterDef(k).format_note || '')), 'B20e 每張名單都列明格式來源頁碼＋欄位可改（唔係死格式）');
+ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => /ROSTER_LIST_DEFS/.test(appCer.rosterDef(k).format_note || '')), 'B20e 每張名單都註明「預設欄位、可改 ROSTER_LIST_DEFS」（唔係死格式）');
+{
+  const defsBlock0 = (cfg.match(/const ROSTER_LIST_DEFS=\[[\s\S]*?\n\];/) || [''])[0];
+  ok(!/20[01]\d/.test(defsBlock0) && !/工作人員手冊/.test(defsBlock0), 'B20g 名單 def／UI 字樣唔引用十年前去處（2025／2026 除外；出處只記喺 docs）');
+}
 ok(appCer.rosterTableHTML('leader_award', appCer.rosterViewRows('leader_award'), true, false).includes('出席') , 'B20f 表頭顯示「出席」');
 const blank = appCer.rosterGridToRows(wDef, [['a'], ['b']]);
 ok(blank.rows.length === 0, 'B21 冇必填欄（姓名）嘅行唔會入名單');
@@ -315,6 +319,11 @@ ok(JSON.stringify(appCer.getRosterData()) === before, 'B50 未登入者上傳名
   const core = read('js/10-app-core.js');
   ok((core.match(/k:'coord_mealbox'|k:'cer_award_section'|k:'cer_award_leader'/g) || []).length === 3, 'C5 部門中心只加三個名單頁籤');
   ok(!/k:'(coord_guestbook|coord_carpark|coord_insurance|cer_manual_catalog)'/.test(core), 'C5b 冇為咗跟手冊而新增其他組別頁籤');
+  const defsBlock = (cfg.match(/const ROSTER_LIST_DEFS=\[[\s\S]*?\n\];/) || [''])[0];
+  const defLabels = [...defsBlock.matchAll(/\{k:'[a-z_]+',label:'([^']+)'/g)].map(m => m[1]);
+  ok(defLabels.length >= 20, 'C7a 欄位標籤攞到（每張名單嘅 columns）');
+  ok(defLabels.every(l => /區會|支部|旅團|姓名|獎項|嘉許信|證書|備註|人數|領隊|職|需覆誓|編號|餐|總數|取餐/.test(l)), 'C7 欄位清單只包含名單本身欄位（冇混入手冊其他章節欄位）');
+  ok(!/通訊錄|車許可證|水劵|飯劵|保險|意外通報|攤位設備|場地圖|遊戲劵|升國旗/.test(defsBlock), 'C8 def 冇混入手冊其他章節（通訊錄／車輛／水飯劵／保險／攤位／地圖／升旗等）');
   // 引擎只認四張名單嘅 key（防止其他人硬塞第五張入嚟但冇 config）
   ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => appCer.rosterDef(k)), 'C6 四張名單都搵到 def（config 與引擎一一對應）');
 }
