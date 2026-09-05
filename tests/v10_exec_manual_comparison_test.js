@@ -3,12 +3,12 @@
 /* v10 回歸測試（2026-08-31，對應用戶八項要求）：
    ① 會議提醒「發送提醒」權限＝執行副主席以上及秘書處（canSendMeetingReminder）
    ② 選擇活動頁 新增/編輯/刪除活動 已移除（活動只由 GIT data/events.json 管理），無 isEventManager、無墓碑
-   ③ 執行手冊 > 典禮儀式：所有「新增」均改用「上傳(同遊戲卡)」按鈕，內建 JSON 保留
+   ③ 執行手冊 > 典禮儀式：所有「新增」均改用「附件上傳」按鈕，內建 JSON 保留
    ④ 執行手冊新頁面不顯示「對標文件」卡片（比較表只作參考，不貼在頁面）
-   ⑤ 參加旅團名單：上傳式（同遊戲卡）
-   ⑥ 場地佈置總覽：上傳式（同遊戲卡）
+   ⑤ 參加旅團名單：上傳式
+   ⑥ 場地佈置總覽：上傳式
    ⑦ 箱頭紙：只改年份、一頁 A4 印兩張、預設登入組別、部門中心可填寫列印
-   ⑧ 許可證式樣：上傳式（同遊戲卡），由協調組／行政組管理 */
+   ⑧ 許可證式樣：上傳式，由協調組／行政組管理 */
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -152,13 +152,13 @@ check(!core10.includes('addEventToCategory') && !core10.includes('editEvent') &&
 // html 中亦無 modal-event 活動表單
 check(!html.includes('id="modal-event"'), '② index.html 不應再有 modal-event 活動表單');
 
-/* ================= ③ 典禮儀式「新增」＝上傳(同遊戲卡) ================= */
+/* ================= ③ 典禮儀式「新增」＝附件上傳 ================= */
 const cerSrc = fs.readFileSync(path.join(root, 'js/35-ceremony.js'), 'utf8');
-check(cerSrc.includes("openCeremonyFileForm(null,'rundown')"), '③ RUNDOWN「新增」＝上傳(同遊戲卡)');
-check(cerSrc.includes("openCeremonyFileForm(null,'mc')"), '③ 司儀稿「新增」＝上傳(同遊戲卡)');
-check(cerSrc.includes("openCeremonyFileForm(null,'guests')"), '③ 嘉賓「新增」＝上傳(同遊戲卡)');
-check(cerSrc.includes("openCeremonyFileForm(null,'seating')"), '③ 座位「新增」＝上傳(同遊戲卡)');
-check(cerSrc.includes("openCeremonyFileForm(null,'awards')"), '③ 獲獎名單「新增」＝上傳(同遊戲卡)');
+check(cerSrc.includes("openCeremonyFileForm(null,'rundown')"), '③ RUNDOWN「新增」＝附件上傳');
+check(cerSrc.includes("openCeremonyFileForm(null,'mc')"), '③ 司儀稿「新增」＝附件上傳');
+check(cerSrc.includes("openCeremonyFileForm(null,'guests')"), '③ 嘉賓「新增」＝附件上傳');
+check(cerSrc.includes("openCeremonyFileForm(null,'seating')"), '③ 座位「新增」＝附件上傳');
+check(cerSrc.includes("openCeremonyFileForm(null,'awards')"), '③ 獲獎名單「新增」＝附件上傳');
 check(cerSrc.includes('mammoth.extractRawText'), '③ 應有 Word→JSON 文字解析（內嵌）');
 check(cerSrc.includes('application\\/pdf'), '③ 應有 PDF 整份內嵌');
 

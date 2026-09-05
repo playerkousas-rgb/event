@@ -101,7 +101,7 @@ Object.assign(ScoutEventApp.prototype,{
     `;
     this.renderActivitiesMaps();
     this.renderActivitiesBooths();
-    this.renderActivitiesVenueSetupPanel();   // v11：場地佈置總覽（上傳式，同遊戲卡）已移入本頁
+    this.renderActivitiesVenueSetupPanel();   // v11：場地佈置總覽（上傳式）已移入本頁
     this.renderActivitiesGameCards();
     this.renderActivitiesList();
   }
@@ -127,7 +127,7 @@ Object.assign(ScoutEventApp.prototype,{
           ${canUpload?`<button onclick="app.openActivityMapForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-map mr-1"></i>上傳地圖 (主任/副主席以上)</button>`:''}
           <button onclick="app.downloadActivityTemplate('map')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載地圖範本</button>
         </div>
-        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900 leading-relaxed">上傳方式同「遊戲卡」：可上傳 <b>PDF／Word／圖片</b>，或貼上 <b>Drive 連結</b>；Word 會自動解析成文字內嵌，PDF 會整份內嵌預覽。</div>
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900 leading-relaxed">可上傳 <b>PDF／Word／圖片</b>，或貼上 <b>Drive 連結</b>；Word 會自動解析成文字內嵌，PDF 會整份內嵌預覽。</div>
         ${data.maps.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.maps.map(m=>`
           <div class="border rounded-xl p-3 bg-white space-y-2">
             <div class="flex justify-between items-start"><div><b class="text-[13px]">${escapeHtml(m.title||'場地地圖')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(m.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(m.created_by||'')} | ${m.created_at?new Date(m.created_at).toLocaleString():''} | 版本: ${escapeHtml(m.version||'v1')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openActivityMapForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteActivityMap('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
@@ -258,7 +258,7 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.activities.map(a=>`<div class="border rounded-xl p-3 bg-white"><b class="text-[13px]">${escapeHtml(a.title)}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(a.type||'')} | ${escapeHtml(a.location||'')} | ${escapeHtml(a.description||'')}</div></div>`).join('') || '<p class="text-xs text-slate-400">暫無活動項目</p>'}</div></div>`;
   }
 ,
-  /* ── 檔案預覽（地圖／遊戲卡共用，上傳方式完全一致）：Drive 連結→iframe 預覽；圖片→img；PDF→整份內嵌；Word/JSON→解析文字內嵌 ── */
+  /* ── 檔案預覽（地圖及遊戲卡共用）：Drive 連結→iframe 預覽；圖片→img；PDF→整份內嵌；Word/JSON→解析文字內嵌 ── */
   activityFilePreviewHTML(f,type){
     if(!f) return '';
     const isSiteUrl=!!f.file_url&&String(f.file_url).includes('sites.google');

@@ -152,7 +152,7 @@ const PERM_CARDS=[
   {id:'documents',label:'通告及文件',icon:'fa-solid fa-file-shield'},
   {id:'unit_guide',label:'旅團須知',icon:'fa-solid fa-book-open'},
   {id:'ceremony',label:'典禮儀式',icon:'fa-solid fa-crown'},
-  {id:'awards',label:'獲獎名單',icon:'fa-solid fa-trophy'},
+  {id:'awards',label:'優異旅團獲獎名單',icon:'fa-solid fa-trophy'},
   {id:'crisis',label:'危機處理',icon:'fa-solid fa-triangle-exclamation'},
   {id:'meetings',label:'會議卡片',icon:'fa-solid fa-handshake'},
   {id:'supplies',label:'物資+車輛',icon:'fa-solid fa-boxes-stacked'},
@@ -281,7 +281,7 @@ const DASH_CARD_DEFS=[
   {id:'documents',title:'通告及文件',desc:'',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],hideOnDashboard:true},
   {id:'unit_guide',title:'旅團須知',desc:'',icon:'fa-solid fa-book-open',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
   {id:'ceremony',title:'典禮儀式',desc:'',icon:'fa-solid fa-crown',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
-  {id:'awards',title:'獲獎名單',desc:'',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
+  {id:'awards',title:'優異旅團獲獎名單',desc:'',icon:'fa-solid fa-trophy',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
   {id:'meetings',title:'會議卡片',desc:'',icon:'fa-solid fa-handshake',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,editLevel:80},
   {id:'supplies',title:'物資申請',desc:'',icon:'fa-solid fa-boxes-stacked',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,editLevel:40,hideOnDashboard:true},
   {id:'vehicle',title:'車輛通行證（含泊車證）',desc:'',icon:'fa-solid fa-car',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,groups:['協調組'],editLevel:40,editGroups:['協調組'],hideOnDashboard:true,action:"app.openModule('parking')"},
@@ -371,9 +371,9 @@ const SOUVENIR_STAMP_SCOPES=[
   {scope:'staff',label:'工作人員',group:'行政組',icon:'fa-solid fa-users',canRename:true,hint:'紀念章只派發俾工作人員，活動前已有全人名；派發時 TICK 人名，如有改名／替假請喺「備註」紀錄。'},
   {scope:'guests',label:'嘉賓',group:'嘉賓接待組',icon:'fa-solid fa-user-tie',canRename:false,hint:'派發紀念章俾典禮嘉賓：TICK 派咗俾邊位嘉賓。嘉賓名單唔可以改名（冇代嘉賓），名單跟「典禮儀式 → 嘉賓名單」。'}
 ];
-/* ══ v14（2026-09-05 用戶定案）執行手冊「名單＋點名」四張名單 ══════════════════
+/* ══ v14（2026-09-05 用戶定案）執行手冊四張通用「名單＋點名」 ══════════════════
    用戶要求：先**預定位置及格式**，同時預備可讓用戶**上傳名單（EXCEL／WORD／PDF）**，
-   並加入「像優異旅團那種的點名」（TICK 點名＋更正需填原因＋分組確認＋後端留痕）。
+   並提供 TICK 點名、更正原因、分組確認及後端留痕。
    ┌────────────────┬──────────────────────────┬──────────────┐
    │ 名單            │ 位置                      │ 負責組別      │
    ├────────────────┼──────────────────────────┼──────────────┤
@@ -382,7 +382,7 @@ const SOUVENIR_STAMP_SCOPES=[
    │ 參加旅團名單     │ 執行手冊 → 參加旅團名單（既有分頁加點名）│ 行政組     │
    │ 代訂餐盒旅團名單 │ 執行手冊 → 代訂餐盒名單（新分頁）      │ 協調組     │
    └────────────────┴──────────────────────────┴──────────────┘
-   各名單亦並設於所屬組別「部門中心」頁籤（典禮組＝兩份獎勵名單、行政組＝參加旅團、協調組＝代訂餐盒）。
+   各名單亦並設於所屬組別「部門中心」頁籤（典禮組＝支部及領袖獎勵名單；優異旅團名單另沿用 ceremony 資料來源、行政組＝參加旅團、協調組＝代訂餐盒）。
    欄位格式（columns）即「預定格式」：匯入 Excel／Word 時按 aliases 對位（中英文表頭均可），
    「下載格式範本 CSV」則按 labels 產生表頭，用家照樣板填回覆上即可。 */
 const ROSTER_AREAS=['CHW 柴灣區','HKN 港島北區','HKS 港島南區','HKW 港島西區','SKW 筲箕灣區','VIC 維多利亞城區','WCH 灣仔區'];
@@ -474,6 +474,26 @@ const ROSTER_LIST_DEFS=[
     sample_rows:[['HKS 港島南區','港島第175旅','小童軍','20','15','5','40','11:45／有蓋操場側','走辣 x3'],['CHW 柴灣區','港島第6旅','幼童軍','25','20','0','45','11:45／有蓋操場側','']]
   }
 ];
+/* 優異旅團獲獎名單本來已有回條資料來源（ceremony.meritRoster／responses）。
+   此定義讓它沿用三張名單共用的上傳、預覽、範本、列印及防錯點名流程，
+   而不改變既有回條資料。它刻意獨立於 v14 的四張 ROSTER_LIST_DEFS，
+   以免影響那四張名單既有欄位設定。 */
+const MERIT_AWARD_ROSTER_DEF={
+  key:'merit_award', match_fields:['unit','section'], title:'優異旅團獲獎名單', tab_label:'優異旅團獲獎名單', icon:'fa-solid fa-trophy',
+  accent:'sky', owner_group:'會操及典禮組', owner_note:'典禮組',
+  exec_location:'執行手冊 → 典禮儀式 → 優異旅團獲獎名單', dept_tab:'cer_award_merit',
+  tick_label:'點名', tick_col_label:'出席', tick_hint:'優異旅團代表上台前由典禮組逐團點名；取消 TICK 必須填寫更正原因。',
+  intro:'優異旅團獲獎名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+  format_note:'可上傳 Excel／Word／PDF；Excel／Word 匯入前會先按表頭預覽，PDF 會保留為可預覽附件。重新上載相同行不會弄丟已做嘅 TICK。',
+  source:'ceremony_merit', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
+  upload_label:'上傳獲獎名單',
+  columns:[
+    {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
+    {k:'unit',label:'優異旅團',type:'text',aliases:['優異旅團','旅團','旅號','童軍旅','單位','unit','Group','旅團名稱']},
+    {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']}
+  ],
+  sample_rows:[['HKW 港島西區','港島第15旅','童軍'],['SKW 筲箕灣區','港島第6旅','深資童軍']]
+};
 // 匯入時「總數」若空缺，則以 A＋B＋C 自動加總（代訂餐盒）
 const ROSTER_AUTO_SUM={'meal_box':{field:'qty_total',parts:['qty_a','qty_b','qty_c']}};
 function rosterListsOf(){ return ROSTER_LIST_DEFS; }

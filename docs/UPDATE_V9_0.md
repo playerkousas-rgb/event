@@ -11,8 +11,8 @@
 | # | 要求 | 做法 |
 |---|------|------|
 | 1 | 執行手冊對標 2025，分類及標亮 | 新增 `docs/2025_EXEC_MANUAL_COMPARISON.md`：逐頁抓取 2025 Google Sites（首頁／行政組／主題節目組／協調組），14 項文件逐項對應 2026 位置並分類（✅已有／🟢升級／🟡版位待填／⚠️已轉移／❌未有），待決項目用 `<mark>` 標亮 |
-| 2 | 地圖上傳方式同遊戲卡 | `js/21-activities.js`：地圖頁移除散落「上傳文件」掣；地圖表單加「版本」欄（同遊戲卡）；兩者 accept 改為 `.pdf,.docx,.doc,.jpg,.jpeg,.png`；新增共用 `activityFilePreviewHTML()`（Drive 連結→iframe、圖片→img、PDF→整份內嵌 iframe、Word→mammoth 解析文字內嵌）；地圖／遊戲卡卡面支援編輯＋顯示版本 |
-| 3 | 典禮儀式所有項目上傳同遊戲卡 | `js/35-ceremony.js`：`getCeremonyData()` 加 `files:[]`；新增附件區（7 個項目：RUNDOWN／司儀稿／嘉賓名單／座位表／致辭稿／獲獎名單／嘉賓地圖）；`openCeremonyFileForm`／`submitCeremonyFileForm`／`deleteCeremonyFile`／`downloadCeremonyFile`；Word→mammoth 解析 JSON 文字內嵌，JSON 檔→pretty-print 內嵌，PDF→整份 base64 內嵌 iframe；原內建 JSON（rundown／mc／guests／seating／speech）保留 |
+| 2 | 地圖附件上傳 | `js/21-activities.js`：地圖頁移除散落「上傳文件」掣；地圖表單加「版本」欄；兩者 accept 改為 `.pdf,.docx,.doc,.jpg,.jpeg,.png`；新增共用 `activityFilePreviewHTML()`（Drive 連結→iframe、圖片→img、PDF→整份內嵌 iframe、Word→mammoth 解析文字內嵌）；地圖／遊戲卡卡面支援編輯＋顯示版本 |
+| 3 | 典禮儀式所有項目附件上傳 | `js/35-ceremony.js`：`getCeremonyData()` 加 `files:[]`；新增附件區（7 個項目：RUNDOWN／司儀稿／嘉賓名單／座位表／致辭稿／優異旅團獲獎名單／嘉賓地圖）；`openCeremonyFileForm`／`submitCeremonyFileForm`／`deleteCeremonyFile`／`downloadCeremonyFile`；Word→mammoth 解析 JSON 文字內嵌，JSON 檔→pretty-print 內嵌，PDF→整份 base64 內嵌 iframe；原內建 JSON（rundown／mc／guests／seating／speech）保留 |
 | 4 | 身份／登出只在右上角 | `js/26-monitor-apply.js`：申請中心登入後綠 bar 移除「姓名（角色·組別）＋登出按鈕」，改為純文字提示「身份及登出位於最頂 BAR 右上角」；我的監察無權限頁移除身份卡（姓名／角色／組別徽章），只留說明；`index.html` 登入 modal 內 MOCK 掣改名「🌍 切換為訪客（公開）」；全站 `app.logout()` 只餘 頂 BAR `#logout-btn` 及 modal 內 MOCK 切換掣 |
 | 5 | 訪客身份指引卡 | **保留**（用戶確認正確）：未登入時儀表板仍顯示「你好，訪客！公開」指引卡（初始帳戶＝中文姓名、密碼 1234、開戶找所屬組別總主任），屬 v8.12 設計，不在移除範圍 |
 

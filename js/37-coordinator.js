@@ -650,7 +650,7 @@ Object.assign(ScoutEventApp.prototype,{
             <div><b>12:00 第二部分典禮：會操檢閱及頒獎儀式</b>（港島總區指揮官區永樑先生主禮）— 主禮嘉賓進場、檢閱步操比賽隊伍、幼童軍團呼及頒獎、主禮嘉賓致辭、頒發升旗／步操／隊列比賽獎項、頒發區際錦標、步操隊伍離場</div>
             <div><b>13:00</b> 頒獎典禮完畢；嘉賓茶聚（莫榮大樓地下）</div>
             <div><b>14:00</b> 參觀主題活動區</div>
-            <div class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>司儀稿、獲獎名單、嘉賓地圖：</b>詳見「典禮儀式」卡片（司儀稿／嘉賓名單／座位表／獲獎名單／嘉賓地圖分頁），全部人可查閱。</div>
+            <div class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>司儀稿、優異旅團獲獎名單、嘉賓地圖：</b>詳見「典禮儀式」卡片（司儀稿／嘉賓名單／座位表／優異旅團獲獎名單／嘉賓地圖分頁），全部人可查閱。</div>
           </div>
         </div>
       </div>

@@ -399,7 +399,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
 
-  /* ===================== 執行手冊新分頁：上傳式（同遊戲卡）＋ 箱頭紙 ＝====================
+  /* ===================== 執行手冊新分頁：上傳式＋箱頭紙 ＝====================
      v10：依 2025 執行手冊對標，加入「參加旅團名單／場地佈置總覽／許可證式樣」三個上傳式分頁
      （PDF／Word／圖片／Drive 連結，Word→文字內嵌、PDF→整份內嵌、JSON→美化顯示），
      「箱頭紙」則係互動填寫＋一頁列印兩張。 */
@@ -457,7 +457,7 @@ Object.assign(ScoutEventApp.prototype,{
     const a=this.execManualAccentCls(opts.accent||'indigo');
     return `
       <div class="space-y-3">
-        <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>${escapeHtml(opts.title)}：</b>${escapeHtml(opts.intro||'')} 上傳方式同「遊戲卡」— 可上傳 <b>PDF／Word／圖片</b> 或貼 <b>Drive 連結</b>；Word 自動解析成文字內嵌、PDF 整份內嵌、JSON 檔會美化顯示。${canUp?'<b class="text-emerald-700">你可上傳／編輯。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>${escapeHtml(opts.title)}：</b>${escapeHtml(opts.intro||'')} 可上傳 <b>PDF／Word／圖片</b> 或貼 <b>Drive 連結</b>；Word 自動解析成文字內嵌、PDF 整份內嵌、JSON 檔會美化顯示。${canUp?'<b class="text-emerald-700">你可上傳／編輯。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
         <div class="flex flex-wrap gap-2">
           ${canUp?`<button onclick="app.openExecManualFileForm('${key}')" class="${a.btn} text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案 (${escapeHtml(opts.title)})</button>`:''}
           <button onclick="app.exportExecManualFiles('${key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 ${escapeHtml(opts.title)} JSON</button>
@@ -492,7 +492,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="exec-misc-tab-permit" class="${this.execManualMiscTab==='permit'?'':'hidden'}"></div>
         <div id="exec-misc-tab-lost_found" class="${this.execManualMiscTab==='lost_found'?'':'hidden'}">${this.renderLostFoundHTML()}</div>
       </div>`;
-    this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣 — 由協調組／行政組上載（同遊戲卡方式：PDF／Word／圖片／Drive 連結）'},document.getElementById('exec-misc-tab-permit'));
+    this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣 — 由協調組／行政組上載（PDF／Word／圖片／Drive 連結）'},document.getElementById('exec-misc-tab-permit'));
   }
 ,
   switchExecManualMiscTab(tab){
@@ -521,10 +521,10 @@ Object.assign(ScoutEventApp.prototype,{
     </div>`;
   }
 ,
-  /* —— 場地佈置總覽（上傳式，同遊戲卡）：v11 由「場地與活動總覽」內部分頁顯示 —— */
+  /* —— 場地佈置總覽（上傳式）：v11 由「場地與活動總覽」內部分頁顯示 —— */
   renderActivitiesVenueSetupPanel(box){
     const panel=box||document.getElementById('activities-tab-venue_setup'); if(!panel) return;
-    this.renderExecManualUploadTab('venue_setup',{title:'場地佈置總覽',accent:'sky',empty:'暫無場地佈置檔案 — 協調組／行政組可用「上傳檔案」加入 2026 版場地佈置圖、數據或連結（同遊戲卡方式）'},panel);
+    this.renderExecManualUploadTab('venue_setup',{title:'場地佈置總覽',accent:'sky',empty:'暫無場地佈置檔案 — 協調組／行政組可用「上傳檔案」加入 2026 版場地佈置圖、數據或連結'},panel);
   }
 ,
   openExecManualFileForm(key,id=null){
@@ -604,7 +604,7 @@ Object.assign(ScoutEventApp.prototype,{
     showToast('已匯出 JSON','success');
   }
 ,
-  // ── 參加旅團名單分頁：結構表（同步／上傳 CSV）＋ 上傳檔案（遊戲卡方式）──
+  // ── 參加旅團名單分頁：結構表（同步／上傳 CSV）＋ 上傳檔案──
   renderExecManualParticipants(panel){
     const participants=this.getParticipantsData();
     const pSrc=this.eventData['participants_source']||{};
@@ -612,7 +612,7 @@ Object.assign(ScoutEventApp.prototype,{
     const canUp=this.canManageExecManualUpload('participants');
     panel.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案（同遊戲卡方式）</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示（附件顯示喺下方點名面板內）。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示（附件顯示喺下方點名面板內）。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>
           ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>`:''}
@@ -630,14 +630,14 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   /* ══ v14 執行手冊新分頁「代訂餐盒名單」（協調組負責）══════════════════════════
-     预定位置：執行手冊 → 代訂餐盒名單；同「參加旅團名單」一樣＝結構表＋點名＋附件三位一體。
+     預定位置：執行手冊 → 代訂餐盒名單；提供結構表、點名及附件。
      名單來源：Excel／Word 上載（或「貼上文字」）；PDF 只可作附件內嵌預覽。 */
   renderExecManualMealBox(panel){
     const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
     const def=this.rosterDef('meal_box');
     box.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載方式同「遊戲卡」— <b>EXCEL／CSV／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載格式：<b>EXCEL／CSV／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
         <div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('meal_box',{scope:'exec'})}</div>
         ${this.mealBoxDigestHTML()}
       </div>`;
