@@ -316,7 +316,7 @@ function initializeSheets() {
   // v11.1：兩種登記情況（type：found＝有失物登記／seeking＝有人要尋找物品）＋聯絡／處理人欄（非破壞性補欄）
   ensureColumns(ss.getSheetByName('Lost_Found'), ['type', 'contact', 'closed_by']);
   // 紀念章派發：行政組（工作人員，可填備註紀錄改名／替假）＋嘉賓接待組（嘉賓，不可改名）
-  ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
+  ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'correction_cancelled', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
   ensureSheet(ss, 'Ceremony_Merit_Checkins', ['checkin_id', 'event_id', 'merit_id', 'area', 'unit', 'section', 'checked_in', 'correction_cancelled', 'checked_by', 'checked_by_id', 'checked_at', 'checkin_note']);
   ensureSheet(ss, 'Ceremony_Merit_Checkin_Batches', ['batch_id', 'event_id', 'area', 'confirmed', 'confirmed_by', 'confirmed_by_id', 'confirmed_at', 'total', 'ticked']);
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
@@ -1379,6 +1379,7 @@ function saveRecord(data) {
   // 修正是一個明確動作：前端會以 checked_in=Y + correction_cancelled=Y 傳送，
   // 後端才把最終狀態改為 N；一般本機空白不會送出取消。
   if (moduleName === 'Ceremony_Merit_Checkins' && String(record.correction_cancelled || '') === 'Y') record.checked_in = 'N';
+  if (moduleName === 'Souvenir_Stamps' && String(record.correction_cancelled || '') === 'Y') { record.ticked = ''; record.correction_cancelled = ''; }
   const rowValues = headers.map(h => record[h] !== undefined ? record[h] : '');
   if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);
   else sheet.appendRow(rowValues);

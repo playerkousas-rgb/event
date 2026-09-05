@@ -119,7 +119,7 @@ Object.assign(ScoutEventApp.prototype,{
       try{
         if(job.type==='row'){
           const r=job.item.row;
-          await stampPost({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${job.item.scope}_${job.item.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:job.item.scope,person_key:job.item.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}});
+          await stampPost({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${job.item.scope}_${job.item.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:job.item.scope,person_key:job.item.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.correction_cancelled?'Y':(r.ticked?'Y':''),correction_cancelled:r.correction_cancelled?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}});
         }else{
           await stampPost({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:{stamp_id:`${job.item.scope}_custom_${Date.now()}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:job.item.scope+'_custom',person_key:'custom_batch',custom_data:JSON.stringify(job.item.custom||[]),updated_at:new Date().toISOString()}});
         }
@@ -143,7 +143,7 @@ Object.assign(ScoutEventApp.prototype,{
         const blob=new Blob([JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Souvenir_Stamps',record:rec})],{type:'text/plain'});
         navigator.sendBeacon?navigator.sendBeacon(this.gasUrl,blob):null;
       };
-      q.forEach(item=>{ const r=item.row; send({stamp_id:`${item.scope}_${item.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:item.scope,person_key:item.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.ticked?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}); });
+      q.forEach(item=>{ const r=item.row; send({stamp_id:`${item.scope}_${item.key}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:item.scope,person_key:item.key,name:r.name||'',group_name:r.group_name||'',job_title:r.job_title||r.title||'',ticked:r.correction_cancelled?'Y':(r.ticked?'Y':''),correction_cancelled:r.correction_cancelled?'Y':'',ticked_at:r.ticked_at||'',ticked_by:r.ticked_by||'',ticked_by_id:r.ticked_by_id||'',remark:r.remark||'',booth:r.booth||'',unit:r.unit||'',updated_at:r.updated_at||'',created_at:r.created_at||r.updated_at||''}); });
       cq.forEach(item=>send({stamp_id:`${item.scope}_custom_${Date.now()}`,event_id:this.currentEvent?.event_id||'isd_2026',scope:item.scope+'_custom',person_key:'custom_batch',custom_data:JSON.stringify(item.custom||[]),updated_at:new Date().toISOString()}));
     }catch(e){}
   }
@@ -317,7 +317,7 @@ Object.assign(ScoutEventApp.prototype,{
       const titleCell=escapeHtml(p.job_title||p.title||'');
       const unitCell=escapeHtml(unitVal);
       return `<tr class="${ticked?'bg-emerald-50/60':''}" data-key="${escapeHtml(p.key)}" data-search="${escapeHtml(search)}" data-sort_name="${escapeHtml(p.name)}" data-sort_group="${groupCell}" data-sort_booth="${boothCell}" data-sort_unit="${unitCell}" data-sort_ticked="${ticked?1:0}">
-        <td class="border px-2 py-1 text-center"><input type="checkbox" class="w-4 h-4 accent-emerald-600" ${ticked?'checked':''} ${canManage?'':'disabled'} onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this)" title="派咗紀念章就剔"></td>
+        <td class="border px-2 py-1 text-center"><input type="checkbox" class="w-4 h-4 accent-emerald-600" ${ticked?'checked':''} ${canManage?'':'disabled'} onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this,false)" title="派咗紀念章就剔"><br><input type="checkbox" class="w-3 h-3 accent-rose-600" ${canManage?'':'disabled'} onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this,true)" title="修正：取消這一次 TICK"> <span class="text-[9px] text-rose-600">修正</span></td>
         <td class="border px-2 py-1 font-bold whitespace-nowrap" data-label="姓名">${nameCell}</td>
         ${isStaff?`<td class="border px-2 py-1 whitespace-nowrap" data-label="組別">${groupCell}</td><td class="border px-2 py-1 whitespace-nowrap text-[11px]" data-label="攤位">${boothCell||'<span class=text-slate-300>—</span>'}</td><td class="border px-2 py-1 text-[10px]" data-label="身份">${titleCell}</td>`
         :`<td class="border px-2 py-1 whitespace-nowrap text-[11px]" data-label="單位">${unitCell||'<span class=text-slate-300>—</span>'}</td><td class="border px-2 py-1 text-[10px]" data-label="職銜">${titleCell}</td>`}
@@ -362,7 +362,7 @@ Object.assign(ScoutEventApp.prototype,{
     </div>`;
   }
 ,
-  toggleSouvenirStamp(scope,key,el){
+  toggleSouvenirStamp(scope,key,el,isCorrection=false){
     if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); if(el) el.checked=!el.checked; return; }
     const person=this.souvenirRoster(scope).find(p=>p.key===key)||{key,name:key,group_name:''};
     const data=this.getSouvenirStampData();
@@ -371,8 +371,12 @@ Object.assign(ScoutEventApp.prototype,{
     const stamp=`${now.toLocaleDateString('zh-HK')} ${now.toTimeString().slice(0,5)}`;
     const e=map[key]||{};
     const ticked=el?!!el.checked:!e.ticked;
+    if(isCorrection){
+      if(!e.ticked){ if(el) el.checked=false; return; }
+      e.correction_cancelled=true; e.ticked=false; e.ticked_at=''; e.ticked_by=''; e.ticked_by_id='';
+    } else e.correction_cancelled=false;
     e.name=person.name; e.group_name=person.group_name||''; e.job_title=person.job_title||person.title||''; e.booth=person.booth||e.booth||''; e.unit=person.unit||e.unit||'';
-    if(ticked){
+    if(ticked&&!isCorrection){
       e.ticked=true; e.ticked_at=stamp; e.ticked_by=this.currentUser?.name||''; e.ticked_by_id=this.currentUser?.user_id||'';
     }else{
       e.ticked=false; e.ticked_at=''; e.ticked_by=''; e.ticked_by_id='';
