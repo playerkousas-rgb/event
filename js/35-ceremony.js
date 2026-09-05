@@ -536,7 +536,9 @@ Object.assign(ScoutEventApp.prototype,{
   },
   toggleCeremonyResponseTick(id,checked){
     if(!this.currentUser||((ROLE_HIERARCHY[this.currentUser?.role]||0)<60&&!this.isCardOwnerGroup('ceremony'))){showToast('TICK 必須由已登入及獲授權的典禮組工作人員操作','error');return;}
-    const d=this.getCeremonyData(); let r=(d.responses||[]).find(x=>x.id===id); if(!r&&String(id).startsWith('master_')){const i=Number(String(id).slice(7)); const m=(d.meritRoster||[])[i]; if(m){r={...m,id,attendance:'待現場核對',response:'未回覆／現場核對',ticked:false}; d.responses=d.responses||[]; d.responses.push(r);}} if(!r)return; r.ticked=!!checked; this.saveCeremonyData(d); this.saveCeremonyCheckinToGas(r,checked); this.sortCeremonyResponses(this.ceremonyResponseSort||'area');
+    let correctionNote='';
+    if(!checked){correctionNote=prompt('你正在取消已保存的 TICK。請輸入更正原因（例如：誤點、核對後未到）：','')||''; if(!correctionNote.trim()){showToast('取消 TICK 必須填寫更正原因','error'); this.sortCeremonyResponses(this.ceremonyResponseSort||'area'); return;}}
+    const d=this.getCeremonyData(); let r=(d.responses||[]).find(x=>x.id===id); if(!r&&String(id).startsWith('master_')){const i=Number(String(id).slice(7)); const m=(d.meritRoster||[])[i]; if(m){r={...m,id,attendance:'待現場核對',response:'未回覆／現場核對',ticked:false}; d.responses=d.responses||[]; d.responses.push(r);}} if(!r)return; r.ticked=!!checked; this.saveCeremonyData(d); this.saveCeremonyCheckinToGas(r,checked,correctionNote); this.sortCeremonyResponses(this.ceremonyResponseSort||'area');
   }
 ,
   confirmCeremonyArea(area){
@@ -545,10 +547,10 @@ Object.assign(ScoutEventApp.prototype,{
     const url=this.gasUrl||localStorage.getItem(LS.gasUrl),key=this.apiKey||localStorage.getItem(LS.apiKey); if(!url||!key){showToast('未設定後端，無法確認本區','error');return;}
     const eid=this.currentEvent?.event_id||'isd_2026'; fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:key,module:'Ceremony_Merit_Checkin_Batches',record:{batch_id:`${eid}_${area}`,event_id:eid,area,confirmed:'Y',confirmed_by:this.currentUser.name||'',confirmed_by_id:this.currentUser.user_id||'',confirmed_at:new Date().toISOString(),total:rows.length,ticked}})}).then(()=>{showToast(`${area} 已確認完成`,'success');}).catch(()=>showToast('本區確認同步失敗','error'));
   },
-  saveCeremonyCheckinToGas(r,checked){
+  saveCeremonyCheckinToGas(r,checked,correctionNote=''){
     const url=this.gasUrl||localStorage.getItem(LS.gasUrl), key=this.apiKey||localStorage.getItem(LS.apiKey); if(!url||!key)return;
     const eid=this.currentEvent?.event_id||'isd_2026', uid=this.currentUser?.user_id||this.currentUser?.id||'';
-    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:key,module:'Ceremony_Merit_Checkins',record:{checkin_id:`${eid}_${r.id}`,event_id:eid,merit_id:r.id,area:r.area||'',unit:r.unit||'',section:r.section||'',checked_in:checked?'Y':'N',checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:new Date().toISOString(),checkin_note:r.response==='未回覆'?'現場補登':''}})}).catch(()=>showToast('TICK 已本機保存，後端同步失敗','warning'));
+    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:key,module:'Ceremony_Merit_Checkins',record:{checkin_id:`${eid}_${r.id}`,event_id:eid,merit_id:r.id,area:r.area||'',unit:r.unit||'',section:r.section||'',checked_in:checked?'Y':'N',checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:new Date().toISOString(),checkin_note:correctionNote||''}})}).catch(()=>showToast('TICK 已本機保存，後端同步失敗','warning'));
   },
   openAwardCategoryForm(id=null){
     if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可編輯','error'); return; }
