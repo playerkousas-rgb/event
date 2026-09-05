@@ -495,10 +495,11 @@ Object.assign(ScoutEventApp.prototype,{
     if(def.source==='participants'){
       // 名單本身仍由 participants（Drive 結構表／Excel）承載——呢度只係將匯入結果寫返過去
       const base=mode==='replace'?[]:(this.getParticipantsData()||[]).map(p=>({...p}));
-      const keyOf=p=>[String(p.area||''),String(p.unit_name||p.unit||''),String(p.section||'')].map(x=>x.trim()).join('|');
+      // 對位 key 同點名一致（旅團＋支部）：之後補「區會」欄亦唔會弄丟已報到嘅 TICK
+      const keyOf=p=>this.rosterRowKey(def,{unit:String(p.unit_name||p.unit||''),section:String(p.section||'')});
       const idx=new Map(base.map(p=>[keyOf(p),p]));
       incoming.forEach(o=>{
-        const rec={unit_name:String(o.unit||'').trim(),section:String(o.section||'').trim(),headcount:String(o.headcount||'').trim(),area:String(o.area||'').trim(),notes:[o.leader?('領隊：'+o.leader):'',String(o.notes||'')].filter(Boolean).join('；')};
+        const rec={unit_name:String(o.unit||'').trim(),section:String(o.section||'').trim(),headcount:String(o.headcount||'').trim(),area:String(o.area||'').trim(),leader:String(o.leader||'').trim(),notes:String(o.notes||'').trim()};
         const k=keyOf(rec);
         if(idx.has(k)) Object.assign(idx.get(k),rec); else { base.push(rec); idx.set(k,rec); }
       });

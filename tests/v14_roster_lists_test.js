@@ -237,6 +237,12 @@ appA._rosterPending = { participants: { rows: [{ area: '', unit: '港島第3旅'
 appA.applyRosterImport('participants');
 ok(appA.getParticipantsData().length === 3, 'B35 匯入（附加）寫返入 participants');
 ok(appA.rosterRows('participants')[0]._checked === true, 'B36 匯入後原有報到 TICK 唔會消失');
+// 之後補「區會」欄（重新匯入）唔應該弄丟已報到嘅 TICK
+appA._rosterPending = { participants: { rows: [{ area: 'CHW 柴灣區', unit: '港島第1旅', section: '童軍', headcount: '32', notes: '' }], meta: { source: 'v2.xlsx' } } };
+appA.applyRosterImport('participants');
+const p2 = appA.rosterViewRows('participants').find(r => r.unit === '港島第1旅');
+ok(p2 && p2._checked === true, 'B37b 補區會後 TICK 保留（對位用旅團＋支部）');
+ok(p2 && String(p2.area).includes('柴灣') && String(p2.headcount) === '32', 'B37c 匯入會更新人數／區會');
 // 名額總數（TOTAL 一行）
 ok(appA.rosterTotalsHTML('participants').includes('人數'), 'B37 參加旅團名單顯示 TOTAL 人數');
 // 代訂餐盒 TOTAL ＋對數

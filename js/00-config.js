@@ -393,7 +393,7 @@ const ROSTER_SECTION_AWARDS=['總領袖獎章','榮譽童軍獎章','貝登堡�
 const ROSTER_LEADER_AWARDS=['總監委任書','副總監委任書','5年長期服務獎狀','10年長期服務獎狀','15年長期服務獎狀','20年長期服務獎狀','長期服務一星獎章','長期服務二星獎章','長期服務三星獎章','長期服務四星獎章','優異服務獎章','嘉許信'];
 const ROSTER_LIST_DEFS=[
   {
-    key:'section_award', match_fields:['area','unit','name','award'], title:'支部獎勵獲獎名單', tab_label:'支部獎勵名單', icon:'fa-solid fa-medal',
+    key:'section_award', match_fields:['name','award'], title:'支部獎勵獲獎名單', tab_label:'支部獎勵名單', icon:'fa-solid fa-medal',
     accent:'amber', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 支部獎勵名單', dept_tab:'cer_award_section',
     tick_label:'點名', tick_hint:'獲獎人上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
@@ -430,7 +430,7 @@ const ROSTER_LIST_DEFS=[
   },
   {
     // 參加旅團名單：既有執行手冊分頁（結構表＝Drive 同步／Excel 上傳）——v14 只加「點名」，名單本身仍跟 participants
-    key:'participants', match_fields:['area','unit','section'], title:'參加旅團名單', tab_label:'參加旅團名單', icon:'fa-solid fa-people-group',
+    key:'participants', match_fields:['unit','section'], title:'參加旅團名單', tab_label:'參加旅團名單', icon:'fa-solid fa-people-group',
     accent:'emerald', owner_group:'行政組', owner_note:'行政組',
     exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
     tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消 TICK 必須填寫更正原因。',
@@ -448,7 +448,7 @@ const ROSTER_LIST_DEFS=[
     sample_rows:[['CHW 柴灣區','港島第6旅','幼童軍','42','陳旅長',''],['HKS 港島南區','港島第175旅','小童軍','25','','延至 10/10']]
   },
   {
-    key:'meal_box', match_fields:['area','unit'], title:'代訂餐盒旅團名單', tab_label:'代訂餐盒名單', icon:'fa-solid fa-bowl-food',
+    key:'meal_box', match_fields:['unit'], title:'代訂餐盒旅團名單', tab_label:'代訂餐盒名單', icon:'fa-solid fa-bowl-food',
     accent:'rose', owner_group:'協調組', owner_note:'協調組',
     exec_location:'執行手冊 → 代訂餐盒名單', dept_tab:'coord_mealbox',
     tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消 TICK 必須填寫更正原因。',

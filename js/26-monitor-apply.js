@@ -609,11 +609,10 @@ Object.assign(ScoutEventApp.prototype,{
     const participants=this.getParticipantsData();
     const pSrc=this.eventData['participants_source']||{};
     const canUpload=this.canUploadDocument()||this.isAdmin()||this.rosterCanManage('participants');
-    const files=this.getExecManualFiles('participants');
     const canUp=this.canManageExecManualUpload('participants');
     panel.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案（同遊戲卡方式）</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b>參加旅團名單：</b>對應 2025 行政組「參加旅團名單」，供公眾查閱。名單可用結構表（同步 Drive／上傳 Excel 寫入），亦可直接<b>上傳檔案（同遊戲卡方式）</b>：PDF／Word／圖片／Drive 連結，JSON 會美化顯示（附件顯示喺下方點名面板內）。${canUp?'<b class="text-emerald-700">你可管理。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>
           ${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>`:''}
@@ -626,7 +625,6 @@ Object.assign(ScoutEventApp.prototype,{
           <h4 class="font-bold text-[13px] mb-2 flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>名單 (${participants.length})</h4>
           <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
         </div>
-        ${files.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,'participants',canUp)).join('')}</div>`:''}
         <div class="border-t pt-3">${this.rosterPanelHTML('participants',{scope:'exec'})}</div>
       </div>`;
   }

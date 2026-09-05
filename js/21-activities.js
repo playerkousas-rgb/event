@@ -1084,7 +1084,18 @@ Object.assign(ScoutEventApp.prototype,{
   async handleParticipantsUploadFile(file){
     if(!file) return;
     const name=String(file.name||'').toLowerCase();
-    if(/\.(xlsx|xlsm|xls|csv)$/.test(name)) return this.handleParticipantsExcelUpload(file);
+    // EXCEL／CSV 一律行經「匯入預覽」（可揀取代／附加，TICK 唔會冇）；舊入口 handleParticipantsExcelUpload 保留俾其他模組用
+    if(/\.(xlsx|xlsm|xls|csv)$/.test(name)){
+      const overlay2=document.getElementById('savingOverlay'); if(overlay2) overlay2.classList.add('active');
+      try{
+        const raw=await this.parseExcelToRows(file);
+        const rows=this.rosterMapObjects(this.rosterDef('participants'),raw);
+        if(!rows.length){ showToast('解析唔到名單，請確認表頭（旅團／支部／人數；可加 區會／領隊／備註）','error'); return; }
+        this.openRosterImportPreview('participants',rows,{source:file.name,note:`（Excel：${raw.length} 行 → 配對 ${rows.length} 行）`});
+      }catch(e){ showToast('Excel 讀取失敗：'+e.message,'error'); }
+      finally{ if(overlay2) overlay2.classList.remove('active'); }
+      return;
+    }
     // 權限同「名單＋點名」引擎一致：行政組（負責組別）主任以上／副主席以上／管理層
     if(!this.rosterCanManage('participants')){ showToast('僅行政組（參加旅團名單負責組別）主任以上及管理層可上載名單','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
