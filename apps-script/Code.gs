@@ -1367,16 +1367,13 @@ function saveRecord(data) {
     if (rows[i][0] === recordId) { rowIndex = i + 1; break; }
   }
   
-  // 典禮點名：修正／取消是明確的 tombstone。其他工作人員的舊本機 TICK
-  // 不可以把負責人已取消的錯誤 TICK 復原；只有日後明確清除修正欄才可重新 TICK。
+  // 典禮點名：每次 TICK／修正都是一次操作，不保留永久取消鎖。
+  // 只接受較新的操作，避免舊本機資料把較新的修正復原；日後另一位工作人員真的看到到場，再以新的 TICK 恢復即可。
   if (moduleName === 'Ceremony_Merit_Checkins' && rowIndex > 0) {
-    const correctionIdx = headers.indexOf('correction_cancelled');
-    const checkedIdx = headers.indexOf('checked_in');
     const old = rows[rowIndex - 1];
-    if (correctionIdx >= 0 && String(old[correctionIdx]) === 'Y' && String(record.correction_cancelled || '') !== 'Y' && String(record.checked_in || '') === 'Y') {
-      record.checked_in = 'N';
-      record.correction_cancelled = 'Y';
-      record.checkin_note = old[headers.indexOf('checkin_note')] || '已由負責人修正取消';
+    const timeIdx = headers.indexOf('checked_at');
+    if (timeIdx >= 0 && old[timeIdx] && record.checked_at && new Date(old[timeIdx]).getTime() > new Date(record.checked_at).getTime()) {
+      return { success: true, id: recordId, ignored: true, reason: '後端已有較新的點名／修正操作' };
     }
   }
   const rowValues = headers.map(h => record[h] !== undefined ? record[h] : '');
