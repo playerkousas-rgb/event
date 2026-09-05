@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 /* v9.0 回歸測試（2026-08-31，對應用戶四項要求）：
-   ② 場地與活動總覽「地圖上傳方式同遊戲卡」：地圖頁移除散落嘅「上傳文件」掣，格式/版本欄同遊戲卡一致，
+   ② 場地與活動總覽「地圖附件上傳」：地圖頁移除散落嘅「上傳文件」掣，格式/版本欄齊備，
       兩者都支援 PDF／Word／圖片／Drive 連結；Word 用 mammoth 解析成文字內嵌、PDF 整份內嵌。
-   ③ 典禮儀式所有項目上傳方式同遊戲卡：新增「附件（PDF／Word／連結）」區（7 個項目），
+   ③ 典禮儀式所有項目附件上傳：新增「附件（PDF／Word／連結）」區（7 個項目），
       可解析 JSON／Word 文字內嵌，無法解析時整份 PDF 內嵌。
    ④ 身份／登出按鈕只在最頂 BAR 右上角：申請中心、我的監察等模組頁不再出現身份卡／登出按鈕；
       全站僅 #logout-btn（頂 BAR）同登入 modal 內嘅 MOCK 切換掣呼叫 app.logout()。 */
@@ -119,11 +119,11 @@ function ok(cond, msg) { assert(cond, msg); }
 let n = 0;
 function check(cond, msg) { ok(cond, msg); n++; }
 
-/* ================= ② 地圖上傳方式同遊戲卡 ================= */
+/* ================= ② 地圖附件上傳 ================= */
 const actSrc = fs.readFileSync(path.join(root, 'js/21-activities.js'), 'utf8');
 check(!actSrc.includes("onchange=\"app.handleActivityFileUpload(this.files[0],'map')\""),
-  '② 地圖頁應移除散落嘅「上傳文件」掣（只留「上傳地圖」按鈕，同遊戲卡一致）');
-check(actSrc.includes('activity-map-version'), '② 地圖表單應有「版本」欄（同遊戲卡）');
+  '② 地圖頁應移除散落嘅「上傳文件」掣（只留「上傳地圖」按鈕）');
+check(actSrc.includes('activity-map-version'), '② 地圖表單應有「版本」欄');
 check(actSrc.includes('accept=".jpg,.jpeg,.png,.pdf,.docx,.doc"'), '② 地圖/遊戲卡應接受 PDF/Word/圖片');
 check(actSrc.includes("mammoth.extractRawText"), '② 應有 mammoth 解析 Word 文字（JSON 內嵌）');
 check(actSrc.includes('activityFilePreviewHTML'), '② 應有共用檔案預覽 helper');
@@ -136,7 +136,7 @@ let mapsHtml = elements['activities-tab-maps'].innerHTML;
 check(mapsHtml.includes('app.openActivityMapForm()'), '② 地圖頁應有「上傳地圖」按鈕');
 check(mapsHtml.includes("app.downloadActivityTemplate('map')"), '② 地圖頁應有下載範本');
 check(!mapsHtml.includes('handleActivityFileUpload'), '② 地圖頁不應再有 inline 檔案上傳');
-check(mapsHtml.includes('上傳方式同「遊戲卡」'), '② 地圖頁應說明上傳方式同遊戲卡');
+check(mapsHtml.includes('可上傳 <b>PDF／Word／圖片</b>') && !mapsHtml.includes(['同','「','遊','戲','卡','」'].join('')), '② 地圖頁應直接說明可上傳的附件格式');
 
 // 實測地圖表單：含版本欄 + PDF/Word 接受類型
 app.openActivityMapForm();
@@ -163,7 +163,7 @@ app.submitActivityMapForm().then(() => {
   check(elements[formId].innerHTML.includes('gamecard-version'), '② 遊戲卡表單應有版本欄');
   check(elements[formId].innerHTML.includes('accept=".jpg,.jpeg,.png,.pdf,.docx,.doc"'), '② 遊戲卡表單應接受 PDF/Word/圖片');
 
-  /* ================= ③ 典禮儀式上傳方式同遊戲卡 ================= */
+  /* ================= ③ 典禮儀式附件上傳 ================= */
   const cerSrc = fs.readFileSync(path.join(root, 'js/35-ceremony.js'), 'utf8');
   check(cerSrc.includes('openCeremonyFileForm'), '③ 應有典禮附件上傳表單');
   check(cerSrc.includes('mammoth.extractRawText'), '③ 典禮附件應有 Word 解析（JSON 內嵌）');

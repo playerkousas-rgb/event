@@ -1,16 +1,16 @@
-/* 41-roster-lists.js — v14 執行手冊「名單＋點名」引擎（2026-09-05 用戶定案）
-   四張名單（位置／格式／負責組別見 js/00-config.js 的 ROSTER_LIST_DEFS）：
-     ① 支部獎勵獲獎名單  → 執行手冊 → 典禮儀式 → 支部獎勵名單（會操及典禮組／典禮組負責）
-     ② 領袖獎勵獲獎名單  → 執行手冊 → 典禮儀式 → 領袖獎勵名單（會操及典禮組／典禮組負責）
-     ③ 參加旅團名單      → 執行手冊 → 參加旅團名單（行政組負責；名單跟結構表，此頁加報到點名）
-     ④ 代訂餐盒旅團名單  → 執行手冊 → 代訂餐盒名單（協調組負責）
-   每張名單一律提供：預定格式（欄位表＋可下載範本 CSV）、上傳 Excel／Word／PDF、貼上文字、
-   手動新增／編輯、點名 TICK（取消 TICK 須填更正原因）、分組進度 chips、匯出 CSV、列印、後端留痕。
-   點名做法對標「優異旅團 FULL LIST」（js/35-ceremony.js sortCeremonyResponses 一套）。 */
+/* 41-roster-lists.js — 執行手冊「名單＋點名」共用引擎
+   支部獎勵、領袖獎勵、參加旅團、代訂餐盒，以及既有優異旅團獲獎名單均共用：
+   欄位範本、Excel／Word／PDF 上傳、貼上文字、手動新增／編輯、防錯點名、
+   分組進度、匯出 CSV、列印及後端留痕。 */
 Object.assign(ScoutEventApp.prototype,{
 
   /* ══════════════ 基本資料／權限 ══════════════ */
-  rosterDef(key){ return ROSTER_LIST_DEFS.find(d=>d.key===key)||null; },
+  // 優異旅團獲獎名單保留原有 ceremony.meritRoster／回條資料來源，
+  // 但其上傳和點名介面與另外兩張獲獎名單共用同一套流程。
+  rosterDef(key){
+    if(key==='merit_award' && typeof MERIT_AWARD_ROSTER_DEF!=='undefined') return MERIT_AWARD_ROSTER_DEF;
+    return ROSTER_LIST_DEFS.find(d=>d.key===key)||null;
+  },
 
   rosterStoreKey(){ return LS.rosterLists(this.currentEvent?.event_id||'isd_2026'); },
 
@@ -31,6 +31,27 @@ Object.assign(ScoutEventApp.prototype,{
     return fields.map(k=>String(row[k]??'').trim().toLowerCase().replace(/\s+/g,'')).join('|');
   },
 
+  // 優異旅團名單繼續讀取既有回條資料；尚未上傳正式名單時，已填回條的旅團仍可讓典禮組點名。
+  rosterMeritRows(def){
+    const ceremony=this.getCeremonyData?this.getCeremonyData():{};
+    const master=Array.isArray(ceremony.meritRoster)?ceremony.meritRoster:[];
+    const replies=Array.isArray(ceremony.responses)?ceremony.responses:[];
+    const replyOf=row=>replies.find(r=>this.rosterRowKey(def,r)===this.rosterRowKey(def,row))||null;
+    const rows=master.map((row,i)=>{
+      const copy={...row,id:row.id||`merit_${i}`};
+      copy._meritReply=replyOf(copy);
+      return copy;
+    });
+    // 回條可先於正式名單提交；當主名單仍是空白時，先把這些回條列入點名表。
+    if(!rows.length){
+      replies.forEach((row,i)=>{
+        if(!String(row.unit||'').trim()) return;
+        rows.push({...row,id:row.id||`merit_reply_${i}`,_meritReply:row});
+      });
+    }
+    return rows;
+  },
+
   rosterRows(key){
     const def=this.rosterDef(key); if(!def) return [];
     const d=this.getRosterData(), ticks=d.ticks[key]||{};
@@ -41,11 +62,21 @@ Object.assign(ScoutEventApp.prototype,{
         area:p.area||'', unit:p.unit_name||p.unit||'', section:p.section||'',
         headcount:p.headcount||'', leader:p.leader||'', notes:p.notes||''
       }));
+    } else if(def.source==='ceremony_merit'){
+      rows=this.rosterMeritRows(def);
     } else {
       rows=(d.rows[key]||[]).map(r=>({...r}));
     }
     rows.forEach(r=>{
-      const k=this.rosterRowKey(def,r); const t=ticks[k]||{};
+      const k=this.rosterRowKey(def,r);
+      // 舊版優異旅團 TICK 仍保留可讀；新操作會一律寫入共用防錯 TICK 紀錄。
+      const hasLocalTick=Object.prototype.hasOwnProperty.call(ticks,k);
+      const legacy=r._meritReply;
+      const legacyHasAudit=legacy&&Object.prototype.hasOwnProperty.call(legacy,'ticked');
+      const legacyChecked=legacy&&(/^(Y|y|true|1|是)$/.test(String(legacy.ticked||''))||legacy.ticked===true);
+      const t=hasLocalTick ? ticks[k] : (legacyHasAudit?{
+        checked:!!legacyChecked,by:legacy.checked_by||legacy.updated_by||'已保存',at:legacy.checked_at||legacy.updated_at||legacy.created_at||'',note:legacy.checkin_note||''
+      }:{});
       r._key=k; r._checked=!!t.checked; r._by=t.by||''; r._at=t.at||''; r._note=t.note||'';
     });
     return rows;
@@ -116,6 +147,9 @@ Object.assign(ScoutEventApp.prototype,{
     const attachKey=this.rosterAttachSection(key);
     const files=this.getExecManualFiles(attachKey);
     const cols=def.columns||[];
+    const uploadLabel=def.upload_label||'上傳名單（EXCEL／WORD／PDF）';
+    const meritReplyStatus=def.source==='ceremony_merit'&&typeof this.meritAwardReplyStatusHTML==='function'
+      ?this.meritAwardReplyStatusHTML():'';
     return `
       <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700 space-y-1.5">
         <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -127,8 +161,9 @@ Object.assign(ScoutEventApp.prototype,{
         ${def.format_note?`<div class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-book-open mr-1"></i>${escapeHtml(def.format_note)}</div>`:''}
         ${this.currentUser?'':'<div class=\"text-[10px] text-slate-500\">'+this.rosterNeedsLogin(key)+'</div>'}
       </div>
+      ${meritReplyStatus}
       <div class="flex flex-wrap gap-2 items-center">
-        ${canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.xlsm,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''></label>`:''}
+        ${canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.csv,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''></label>`:''}
         ${canManage?`<button onclick="app.openRosterPasteForm('${def.key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
         ${canManage&&def.editable?`<button onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}
         ${def.source==='participants'?'':`<button onclick="app.rosterDownloadTemplate('${def.key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>下載格式範本 CSV</button>`}
@@ -139,7 +174,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>
       <div class="bg-white border rounded-xl p-3 space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <b class="text-[12px]"><i class="fa-solid fa-clipboard-check mr-1 text-emerald-600"></i>${escapeHtml(def.tick_label)}表（點名做法同「優異旅團」）</b>
+          <b class="text-[12px]"><i class="fa-solid fa-clipboard-check mr-1 text-emerald-600"></i>${escapeHtml(def.tick_label)}表</b>
           <div class="flex items-center gap-2 flex-wrap">
             <select onchange="app.rosterSetSort('${def.key}',this.value)" class="border rounded-lg px-2 py-1 text-[11px] bg-white">
               ${(def.sort_fields||[]).map(f=>{const c=cols.find(x=>x.k===f);return `<option value="${f}" ${((this['_rosterSort_'+key])||def.group_field)===f?'selected':''}>按${escapeHtml(c?c.label:f)}</option>`;}).join('')}
@@ -172,7 +207,8 @@ Object.assign(ScoutEventApp.prototype,{
     const groups=[...new Set(rows.map(r=>String(r[gk]||'').trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y,'zh-Hant'));
     const canTick=this.rosterCanTick(key);
     const confirmed=this.getRosterData().confirmed[key]||{};
-    return `<div class="text-[11px] font-bold text-slate-700 mb-1">目前進度：已${escapeHtml(def.tick_label)}／總數　${done}/${rows.length}${groups.length?`　｜　${def.source==='participants'?'旅團報到':'分組點名'}`:''}</div>
+    const progressLabel=def.source==='participants'?'旅團報到':(def.source==='ceremony_merit'?'優異旅團點名':'分組點名');
+    return `<div class="text-[11px] font-bold text-slate-700 mb-1">目前進度：已${escapeHtml(def.tick_label)}／總數　${done}/${rows.length}${groups.length?`　｜　${progressLabel}`:''}</div>
       ${groups.length?`<div class="flex flex-wrap gap-1 mb-2">${groups.map(g=>{
         const rs=rows.filter(r=>String(r[gk]||'').trim()===g), d=rs.filter(r=>r._checked).length, c=confirmed[g]?' · ✅已確認':'';
         return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] bg-slate-100 text-slate-700">${escapeHtml(g)} ${d}/${rs.length}${escapeHtml(c)}${canTick&&d===rs.length&&rs.length?`<button onclick="app.rosterConfirmGroup('${key}','${encodeURIComponent(g)}')" class="text-emerald-700 font-bold underline">確認</button>`:''}</span>`;
@@ -184,10 +220,19 @@ Object.assign(ScoutEventApp.prototype,{
     const rows=this.rosterViewRows(key);
     const canManage=this.rosterCanManage(key), canTick=this.rosterCanTick(key);
     const cols=def.columns||[];
+    const hasMeritReply=def.source==='ceremony_merit';
+    const meritReplyCell=r=>{
+      const reply=r._meritReply;
+      const status=reply?(reply.response||(reply.created_at?'已回覆':'現場核對')):'未回覆';
+      const attendance=reply?.attendance||'—';
+      const statusClass=status==='已回覆'?'text-emerald-700':(status==='未回覆'?'text-rose-600':'text-sky-700');
+      return `<td class="px-2 py-1 text-[10px]" data-label="回條／出席"><span class="${statusClass} font-bold">${escapeHtml(status)}</span><span class="text-slate-500">／${escapeHtml(attendance)}</span></td>`;
+    };
     return `<div class="table-responsive"><table class="min-w-full text-[11px]">
       <thead class="bg-slate-100"><tr>
         <th class="px-2 py-1 text-center w-14">${escapeHtml(this.rosterTickColLabel(def))}</th>
         ${cols.map(c=>`<th class="px-2 py-1 text-left">${escapeHtml(c.label)}</th>`).join('')}
+        ${hasMeritReply?'<th class="px-2 py-1 text-left">回條／出席</th>':''}
         ${canTick?'<th class="px-2 py-1 text-left">點名紀錄</th>':''}
         ${canManage&&def.editable?'<th class="px-2 py-1 text-right">操作</th>':''}
       </tr></thead>
@@ -195,9 +240,10 @@ Object.assign(ScoutEventApp.prototype,{
         ${rows.length?rows.map(r=>`<tr class="${r._checked?'bg-emerald-50/50':''}">
           <td class="px-2 py-1 text-center" data-label="${escapeHtml(this.rosterTickColLabel(def))}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this.checked)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"></td>
           ${cols.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-medium':''}" data-label="${escapeHtml(c.label)}">${escapeHtml(String(r[c.k]??''))||'<span class="text-slate-300">—</span>'}</td>`).join('')}
-          ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}`:(r._note?`<span class="text-rose-600">取消：${escapeHtml(r._note)}</span>`:'—')}</td>`:''}
+          ${hasMeritReply?meritReplyCell(r):''}
+          ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}`:(r._note?`<span class="text-rose-600">取消：${escapeHtml(r._note)}</span><span class="block text-slate-400">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:'—')}</td>`:''}
           ${canManage&&def.editable?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openRosterRowForm('${key}','${escapeHtml(r.id||'')}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteRosterRow('${key}','${escapeHtml(r.id||'')}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}
-        </tr>`).join(''):`<tr><td colspan="${cols.length+(canTick?2:1)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
+        </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
       </tbody>
     </table></div>`;
   },
@@ -218,6 +264,10 @@ Object.assign(ScoutEventApp.prototype,{
   // 匯入／刪除後刷新：本面板全部實例；參加旅團另需重畫宿主（執行手冊分頁／行政組頁籤嘅結構表）
   rosterReloadHosts(key){
     const def=this.rosterDef(key);
+    if(def&&def.source==='ceremony_merit'){
+      this.rosterRefresh(key);
+      return;
+    }
     if(def&&def.source==='participants'){
       if(this.currentModule==='exec_manual'&&document.getElementById('exec-manual-panel')){ this.renderExecManualTab(); return; }
       const adminTab=document.getElementById('group-tab-admin_participants');
@@ -243,15 +293,39 @@ Object.assign(ScoutEventApp.prototype,{
     const d=this.getRosterData(); const ticks=d.ticks[key]||{};
     const row=this.rosterRows(key).find(r=>r._key===rowKey); if(!row) return;
     let note='';
-    if(!checked && ticks[rowKey] && ticks[rowKey].checked){
+    if(!checked && ((ticks[rowKey]&&ticks[rowKey].checked)||row._checked)){
       note=prompt(`你正在取消已保存嘅${def.tick_label}。請輸入更正原因（例如：誤點、核對後未到）：`,'')||'';
       if(!note.trim()){ showToast(`取消${def.tick_label}必須填寫更正原因`,'error'); this.rosterRefreshBody(key); return; }
     }
     const rec=Object.assign({},ticks[rowKey]||{},{checked:!!checked,by:this.currentUser?.name||'',at:new Date().toISOString()});
     if(note.trim()) rec.note=note.trim(); else if(checked) rec.note='';
     ticks[rowKey]=rec; d.ticks[key]=ticks; this.saveRosterData(d);
+    if(def.source==='ceremony_merit') this.syncMeritAwardTick(row,rec);
     this.rosterSaveTickToGas(key,def,row,rec);
     this.rosterRefreshBody(key);
+  },
+
+  // 保留優異旅團回條資料，同時把新點名結果寫回去，讓舊入口與部門中心永遠顯示同一狀態。
+  syncMeritAwardTick(row,rec){
+    const def=this.rosterDef('merit_award');
+    const ceremony=this.getCeremonyData?this.getCeremonyData():null;
+    if(!def||!ceremony) return;
+    ceremony.responses=Array.isArray(ceremony.responses)?ceremony.responses:[];
+    const rowKey=this.rosterRowKey(def,row);
+    let reply=ceremony.responses.find(r=>this.rosterRowKey(def,r)===rowKey);
+    if(!reply){
+      reply={
+        id:`merit_tick_${Date.now()}_${ceremony.responses.length}`,
+        area:row.area||'', unit:row.unit||'', section:row.section||'',
+        attendance:'待現場核對', response:'未回覆／現場核對'
+      };
+      ceremony.responses.push(reply);
+    }
+    reply.ticked=!!rec.checked;
+    reply.checked_by=rec.by||this.currentUser?.name||'';
+    reply.checked_at=rec.at||new Date().toISOString();
+    reply.checkin_note=rec.note||'';
+    this.saveCeremonyData(ceremony);
   },
 
   rosterTickAllVisible(key){
@@ -262,7 +336,11 @@ Object.assign(ScoutEventApp.prototype,{
     if(!confirm(`確定將目前顯示嘅 ${rows.length} 行一次過${def.tick_label}？`)) return;
     const d=this.getRosterData(); const ticks=d.ticks[key]||{};
     const now=new Date().toISOString(), by=this.currentUser?.name||'';
-    rows.forEach(r=>{ ticks[r._key]=Object.assign({},ticks[r._key]||{},{checked:true,by,at:now,note:''}); this.rosterSaveTickToGas(key,def,r,ticks[r._key]); });
+    rows.forEach(r=>{
+      ticks[r._key]=Object.assign({},ticks[r._key]||{},{checked:true,by,at:now,note:''});
+      if(def.source==='ceremony_merit') this.syncMeritAwardTick(r,ticks[r._key]);
+      this.rosterSaveTickToGas(key,def,r,ticks[r._key]);
+    });
     d.ticks[key]=ticks; this.saveRosterData(d);
     this.rosterRefreshBody(key); showToast(`已一次過${def.tick_label} ${rows.length} 行`,'success');
   },
@@ -295,7 +373,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!url||!ak||typeof fetch!=='function') return;
     const eid=this.currentEvent?.event_id||'isd_2026', uid=this.currentUser?.user_id||this.currentUser?.id||'';
     const cancelled=(!rec.checked&&rec.note)?'Y':'';
-    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:ak,module:'Roster_Rollcall_Checkins',record:{checkin_id:`${eid}_${key}_${row._key||row.id}`,event_id:eid,list_key:key,list_title:def.title,row_key:row._key||'',area:row.area||'',unit:row.unit||'',name:row.name||row.unit||'',section:row.section||'',award:row.award||'',checked_in:(cancelled?'Y':(rec.checked?'Y':'N')),correction_cancelled:cancelled,checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:rec.at||new Date().toISOString(),checkin_note:rec.note||''}})}).catch(()=>showToast(`${def.tick_label}已本機保存，後端同步失敗`,'warning'));
+    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:ak,module:'Roster_Rollcall_Checkins',record:{checkin_id:`${eid}_${key}_${row._key||row.id}`,event_id:eid,list_key:key,list_title:def.title,row_key:row._key||'',area:row.area||'',unit:row.unit||'',name:row.name||row.unit||'',section:row.section||'',award:row.award||'',checked_in:rec.checked?'Y':'N',correction_cancelled:cancelled,checked_by:this.currentUser?.name||'未登入',checked_by_id:uid,checked_at:rec.at||new Date().toISOString(),checkin_note:rec.note||''}})}).catch(()=>showToast(`${def.tick_label}已本機保存，後端同步失敗`,'warning'));
   },
 
   /* ══════════════ 逐行新增／編輯／刪除（參加旅團名單不在此改，改回結構表） ══════════════ */
@@ -328,6 +406,24 @@ Object.assign(ScoutEventApp.prototype,{
     def.columns.forEach(c=>{ const el=document.getElementById('rs-f-'+c.k); o[c.k]=this.rosterCoerce(c,el?String(el.value||'').trim():''); });
     this.rosterApplyAutoSum(def,o);
     if(!String(o[def.required]||'').trim()){ showToast(`請填寫「${(def.columns.find(c=>c.k===def.required)||{}).label||def.required}」`,'error'); return; }
+
+    // 優異旅團主名單延續原本 ceremony 資料；其他名單照常放在 roster store。
+    if(def.source==='ceremony_merit'){
+      const ceremony=this.getCeremonyData();
+      const rows=Array.isArray(ceremony.meritRoster)?ceremony.meritRoster.map(r=>({...r})):[];
+      const sourceIndex=rows.findIndex((r,i)=>String(r.id||`merit_${i}`)===String(id));
+      if(mode==='edit'&&sourceIndex>=0){
+        rows[sourceIndex]=Object.assign({},rows[sourceIndex],o,{id:rows[sourceIndex].id||id,updated_at:new Date().toISOString()});
+      }else{
+        rows.push(Object.assign({id:'ma_'+Date.now(),created_at:new Date().toISOString(),created_by:this.currentUser?.name||''},o));
+      }
+      ceremony.meritRoster=rows;
+      this.saveCeremonyData(ceremony);
+      this.closeModal('modal-record'); document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+      showToast('已保存','success'); this.rosterRefresh(key);
+      return;
+    }
+
     const d=this.getRosterData(); const rows=d.rows[key]||[];
     if(mode==='edit'){ const i=rows.findIndex(r=>r.id===id); if(i>=0) rows[i]=Object.assign({},rows[i],o,{id,updated_at:new Date().toISOString()}); }
     else rows.push(Object.assign({id:'rr_'+Date.now(),created_at:new Date().toISOString(),created_by:this.currentUser?.name||''},o));
@@ -340,6 +436,24 @@ Object.assign(ScoutEventApp.prototype,{
     const def=this.rosterDef(key); if(!def) return;
     if(!this.rosterCanManage(key)){ showToast(`僅${def.owner_group}（${def.owner_note}）主任以上及管理層可刪除`,'error'); return; }
     if(!confirm('確定刪除此行？（點名紀錄會一併移除）')) return;
+
+    if(def.source==='ceremony_merit'){
+      const ceremony=this.getCeremonyData();
+      const rendered=this.rosterRows(key).find(r=>String(r.id)===String(id));
+      const rowKey=rendered?this.rosterRowKey(def,rendered):'';
+      ceremony.meritRoster=(Array.isArray(ceremony.meritRoster)?ceremony.meritRoster:[])
+        .filter((r,i)=>String(r.id||`merit_${i}`)!==String(id));
+      // 刪除該名單行是明確的破壞性操作；一併移除同一行回條，避免主名單清空後從回條後備來源再次顯示。
+      if(rowKey&&Array.isArray(ceremony.responses)){
+        ceremony.responses=ceremony.responses.filter(r=>this.rosterRowKey(def,r)!==rowKey);
+      }
+      this.saveCeremonyData(ceremony);
+      const d=this.getRosterData();
+      if(rowKey&&d.ticks[key]) delete d.ticks[key][rowKey];
+      this.saveRosterData(d); this.rosterRefresh(key); showToast('已刪除','warning');
+      return;
+    }
+
     const d=this.getRosterData();
     const row=(d.rows[key]||[]).find(r=>r.id===id);
     d.rows[key]=(d.rows[key]||[]).filter(r=>r.id!==id);
@@ -513,6 +627,40 @@ Object.assign(ScoutEventApp.prototype,{
       showToast(`已匯入參加旅團名單：${base.length} 個旅團（${mode==='replace'?'取代':'附加'}）`,'success');
       return;
     }
+    if(def.source==='ceremony_merit'){
+      const ceremony=this.getCeremonyData();
+      let rows=(Array.isArray(ceremony.meritRoster)?ceremony.meritRoster:[]).map(r=>({...r}));
+      const oldTicks=d.ticks[key]||{};
+      if(mode==='replace'){
+        const oldByKey=new Map(rows.map(r=>[this.rosterRowKey(def,r),r]));
+        const nextTicks={};
+        rows=incoming.map(r=>{
+          const row=oldByKey.get(this.rosterRowKey(def,r));
+          const next=Object.assign({},r,{id:row?.id||r.id});
+          const rowKey=this.rosterRowKey(def,next);
+          if(oldTicks[rowKey]) nextTicks[rowKey]=oldTicks[rowKey];
+          return next;
+        });
+        d.ticks[key]=nextTicks;
+      }else{
+        const seen=new Map(rows.map(r=>[this.rosterRowKey(def,r),r]));
+        incoming.forEach(r=>{
+          const rowKey=this.rosterRowKey(def,r);
+          if(seen.has(rowKey)) Object.assign(seen.get(rowKey),r,{id:seen.get(rowKey).id||r.id});
+          else { rows.push(r); seen.set(rowKey,r); }
+        });
+      }
+      ceremony.meritRoster=rows;
+      this.saveCeremonyData(ceremony);
+      d.meta=d.meta||{};
+      d.meta[key]={count:rows.length,imported_at:new Date().toISOString(),imported_by:this.currentUser?.name||'',file:pending.meta.source||''};
+      this.saveRosterData(d);
+      delete (this._rosterPending||{})[key];
+      this.closeModal('modal-record'); document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+      this.rosterReloadHosts(key);
+      showToast(`已匯入${def.title}：${rows.length} 行（${mode==='replace'?'取代':'附加'}）`,'success');
+      return;
+    }
     let rows=(d.rows[key]||[]).map(r=>({...r}));
     if(mode==='replace'){
       const oldTicks=d.ticks[key]||{}; const nextTicks={};
@@ -620,20 +768,64 @@ Object.assign(ScoutEventApp.prototype,{
     const eid=this.currentEvent?.event_id||'isd_2026';
     try{
       const res=await fetch(`${url}?action=getEventData&event_id=${encodeURIComponent(eid)}&api_key=${encodeURIComponent(ak)}`);
-      const j=await res.json(); const list=((j&&j.data)||{}).Roster_Lists||[];
+      const j=await res.json(); const all=(j&&j.data)||{};
+      const list=all.Roster_Lists||[];
       const mine=list.filter(r=>String(r.list_key||'')===key);
       if(!mine.length){ showToast('後端暫時冇呢份名單嘅紀錄（可先「同步名單至後端」）','warning'); return; }
       const d=this.getRosterData(); const rows=[]; const ticks=d.ticks[key]||{};
+      // 較新紀錄才覆蓋本機，避免舊裝置取回資料時復原較新的現場修正。
+      const isNewer=(next,old)=>{
+        if(!old) return true;
+        const nt=Date.parse(next?.at||''), ot=Date.parse(old?.at||'');
+        if(!Number.isNaN(nt)&&!Number.isNaN(ot)) return nt>=ot;
+        if(!Number.isNaN(nt)&&Number.isNaN(ot)) return true;
+        if(Number.isNaN(nt)&&!Number.isNaN(ot)) return false;
+        return !old.at&&!!next?.at;
+      };
+      const applyTick=(rowKey,next)=>{
+        if(!rowKey||!next||!isNewer(next,ticks[rowKey])) return;
+        ticks[rowKey]=Object.assign({},ticks[rowKey]||{},next);
+      };
       mine.forEach(r=>{
         let o={}; try{ o=JSON.parse(r.row_json||'{}'); }catch(e){}
         const row=Object.assign({id:'rr_gas_'+String(r.row_id||'').replace(/[^0-9A-Za-z_\-.|]/g,'_')},o);
         const k=this.rosterRowKey(def,row);
-        try{ const t=JSON.parse(r.tick_json||'null'); if(t&&t.checked&&!ticks[k]) ticks[k]=t; }catch(e){}
-        if(/^(Y|y|true|1|是)$/.test(String(r.ticked||''))) ticks[k]=Object.assign({checked:true,by:'後端同步',at:String(r.updated_at||'')},ticks[k]||{},{checked:true});
+        try{
+          const t=JSON.parse(r.tick_json||'null');
+          if(t&&typeof t==='object'&&Object.prototype.hasOwnProperty.call(t,'checked')) applyTick(k,{checked:!!t.checked,by:t.by||r.updated_by||'後端同步',at:t.at||r.updated_at||'',note:t.note||''});
+          else if(/^(Y|y|true|1|是)$/.test(String(r.ticked||''))) applyTick(k,{checked:true,by:r.updated_by||'後端同步',at:String(r.updated_at||''),note:''});
+        }catch(e){
+          if(/^(Y|y|true|1|是)$/.test(String(r.ticked||''))) applyTick(k,{checked:true,by:r.updated_by||'後端同步',at:String(r.updated_at||''),note:''});
+        }
         rows.push(row);
       });
-      d.rows[key]=rows; d.ticks[key]=ticks; d.meta=d.meta||{}; d.meta[key]={count:rows.length,pulled_at:new Date().toISOString(),pulled_by:this.currentUser?.name||''};
-      this.saveRosterData(d); this.rosterRefresh(key);
+      // Roster_Lists 保存名單內容；逐次點名／更正則以專用審計表作最後狀態來源。
+      (all.Roster_Rollcall_Checkins||[]).filter(r=>String(r.list_key||'')===key).forEach(r=>{
+        const rowKey=String(r.row_key||'')||this.rosterRowKey(def,r);
+        // 早期取消紀錄會用 correction_cancelled 標示；即使其舊 checked_in 值為 Y，仍必須還原成未點名。
+        const cancelled=/^(Y|y|true|1|是)$/.test(String(r.correction_cancelled||''));
+        const checked=!cancelled&&/^(Y|y|true|1|是)$/.test(String(r.checked_in||''));
+        applyTick(rowKey,{checked,by:r.checked_by||'後端同步',at:String(r.checked_at||r.updated_at||''),note:r.checkin_note||''});
+      });
+      d.ticks[key]=ticks;
+      d.confirmed=d.confirmed||{};
+      (all.Roster_Rollcall_Batches||[]).filter(r=>String(r.list_key||'')===key&&/^(Y|y|true|1|是)$/.test(String(r.confirmed||''))).forEach(r=>{
+        const group=String(r.group_value||''); if(!group) return;
+        d.confirmed[key]=d.confirmed[key]||{};
+        const old=d.confirmed[key][group], next={confirmed:true,by:r.confirmed_by||'後端同步',at:String(r.confirmed_at||''),total:Number(r.total)||0,ticked:Number(r.ticked)||0};
+        if(!old||!old.at||Date.parse(next.at)>=Date.parse(old.at)) d.confirmed[key][group]=next;
+      });
+      if(def.source==='ceremony_merit'){
+        const ceremony=this.getCeremonyData();
+        ceremony.meritRoster=rows;
+        this.saveCeremonyData(ceremony);
+        // 舊回條資料同步保留，令舊資料及新的共用點名表在刷新後仍一致。
+        rows.forEach(row=>{ const tick=ticks[this.rosterRowKey(def,row)]; if(tick) this.syncMeritAwardTick(row,tick); });
+      }else{
+        d.rows[key]=rows;
+      }
+      d.meta=d.meta||{}; d.meta[key]={count:rows.length,pulled_at:new Date().toISOString(),pulled_by:this.currentUser?.name||''};
+      this.saveRosterData(d); this.rosterReloadHosts(key);
       showToast(`已由後端取回 ${rows.length} 行`,'success');
     }catch(e){ showToast('取回失敗：'+e.message,'error'); }
   },

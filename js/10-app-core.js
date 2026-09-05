@@ -1270,8 +1270,9 @@ Object.assign(ScoutEventApp.prototype,{
         {k:'coord_mealbox',label:'🍱 代訂餐盒名單'},
         {k:'coord_docs',label:'🗂️ 場地佈置及文件'}
       ]:[]),
-      // v14：支部／領袖獎勵名單同時設於「會操及典禮組（典禮組）」部門中心——與執行手冊同一份名單、同一個點名狀態
+      // 三張典禮獎勵名單均在「會操及典禮組（典禮組）」部門中心提供操作入口。
       ...(groupName==='會操及典禮組'?[
+        {k:'cer_award_merit',label:'🏆 優異旅團獲獎名單'},
         {k:'cer_award_section',label:'🏅 支部獎勵名單'},
         {k:'cer_award_leader',label:'🎖️ 領袖獎勵名單'}
       ]:[]),
@@ -1342,8 +1343,9 @@ Object.assign(ScoutEventApp.prototype,{
         case 'coord_vehicle': this.renderCoordVehicles(el); break;
         case 'coord_meals': this.renderCoordMeals(el); break;
         case 'coord_docs': this.renderCoordDocs(el); break;
-        // v14：名單＋點名（同執行手冊共用一份資料；呢度只做本組操作入口）
+        // 名單與點名資料在各入口共用；此處提供負責組的操作入口。
         case 'coord_mealbox': el.innerHTML=this.rosterPanelHTML('meal_box',{scope:'coord'}); break;
+        case 'cer_award_merit': el.innerHTML=this.rosterPanelHTML('merit_award',{scope:'dept'}); break;
         case 'cer_award_section': el.innerHTML=this.rosterPanelHTML('section_award',{scope:'dept'}); break;
         case 'cer_award_leader': el.innerHTML=this.rosterPanelHTML('leader_award',{scope:'dept'}); break;
       }
@@ -1376,7 +1378,7 @@ Object.assign(ScoutEventApp.prototype,{
   switchGroupTab(tab){
     this.groupBoothTab=tab;
     // v13：頂部頁籤涵蓋全部特色功能＋全部門共設財務頁籤（行政組財務匯總/旅團/文件/票券/紀念章/失物；協調組物資/車輛/膳食/場地文件；各組開支申報/口頭報價/財務指引）
-    ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
+    ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','cer_award_merit','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
     document.querySelectorAll('.group-tab-btn').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className='group-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
@@ -1495,7 +1497,7 @@ Object.assign(ScoutEventApp.prototype,{
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動',dept_hub:'部門管理中心'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'優異旅團獲獎名單',crisis:'危機處理',theme_badges:'活動主題章',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動',dept_hub:'部門管理中心'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';

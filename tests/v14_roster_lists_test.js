@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 'use strict';
-/* v14 回歸測試（2026-09-05，對應用戶要求）：
-   ① 先「預定位置及格式」：四張名單喺執行手冊嘅位置固定、欄位格式固定（可下載範本）
+/* v14+ 優異旅團回歸測試（2026-09-05，對應用戶要求）：
+   ① 先「預定位置及格式」：四張通用名單喺執行手冊嘅位置固定、欄位格式固定（可下載範本）；
+      優異旅團獲獎名單沿用既有典禮資料來源，並採用同一名單引擎。
    ② 預備可讓用戶上傳名單：EXCEL／WORD／PDF（Excel／Word 解析成行列；PDF 作附件內嵌預覽）
-   ③ 支部獎勵獲獎名單（執行手冊內）＋像優異旅團那種點名 → 歸典禮組（會操及典禮組）
+   ③ 支部獎勵獲獎名單（執行手冊內）＋防錯點名 → 歸典禮組（會操及典禮組）
    ④ 領袖獎勵獲獎名單（執行手冊內）＋點名 → 歸典禮組
    ⑤ 參加旅團名單（執行手冊內）＋點名 → 歸行政組
    ⑥ 代訂餐盒旅團名單（執行手冊內）＋點名 → 歸協調組 */
@@ -34,20 +35,26 @@ ok(cfg.includes("title:'領袖獎勵獲獎名單'"), 'A3 領袖獎勵獲獎名�
 ok(cfg.includes("title:'參加旅團名單'") && /key:'participants'[\s\S]{0,400}owner_group:'行政組'/.test(cfg), 'A4 參加旅團名單歸行政組');
 ok(cfg.includes("title:'代訂餐盒旅團名單'") && /key:'meal_box'[\s\S]{0,400}owner_group:'協調組'/.test(cfg), 'A5 代訂餐盒旅團名單歸協調組');
 ok(cfg.includes('rosterLists:(eid)=>`event_roster_lists_v14_${eid}`'), 'A6 localStorage 版位 key（v14）');
+ok(cfg.includes('const MERIT_AWARD_ROSTER_DEF=') && cfg.includes("key:'merit_award'") && cfg.includes("source:'ceremony_merit'"), 'A6b 優異旅團獲獎名單使用獨立典禮資料來源定義');
+ok(roster.includes("if(key==='merit_award'") && roster.includes('syncMeritAwardTick'), 'A6c 優異旅團獲獎名單已接入共用防錯點名流程');
 
 // 位置：執行手冊 → 代訂餐盒名單（新分頁）；參加旅團名單（既有分頁加点名）；兩份獎勵名單喺典礼儀式分頁內
 ok(/k:'meal_box',\s*icon:'fa-solid fa-bowl-food',\s*label:'代訂餐盒名單'/.test(execm), 'A7 執行手冊分頁列應有「代訂餐盒名單」');
 ok(execm.includes("participants:()=>this.renderExecManualParticipants(panel)") && execm.includes("meal_box:()=>{ this.renderExecManualMealBox(panel); }"), 'A7 執行手冊分頁渲染對照表應接上新分頁');
 ok(execm.includes("this.rosterPanelHTML('participants',{scope:'exec'})"), 'A8 參加旅團名單分頁應掛上報到點名');
 ok(ceremony.includes("switchCeremonyTab('section_award')") && ceremony.includes("switchCeremonyTab('leader_award')"), 'A9 典禮儀式應有兩張獎勵名單分頁（執行手冊內）');
-ok(ceremony.includes("'awards','section_award','leader_award','map'"), 'A9 分頁切換清單包含兩張新名單');
+ok(ceremony.includes("'awards','section_award','leader_award','map'") && ceremony.includes("rosterPanelHTML('merit_award',{scope:'merit'})"), 'A9 分頁切換清單及優異旅團獲獎名單均已接入');
 ok(ceremony.includes("rosterPanelHTML('section_award',{scope:'cer'})") && ceremony.includes("rosterPanelHTML('leader_award',{scope:'cer'})"), 'A10 兩張獎勵名單用同一名單引擎渲染');
+ok(ceremony.includes("<b>🏆 優異旅團獲獎名單：</b>") && ceremony.includes("switchCeremonyTab('section_award')") && ceremony.includes("switchCeremonyTab('leader_award')"), 'A10b 優異旅團獲獎名單介紹已包含兩張獎勵名單連結');
+ok(!ceremony.includes("switchCeremonyTab('exec_manual')") && !ceremony.includes('ceremony-tab-exec_manual') && ceremony.includes("exec_manual:'過往附件'"), 'A10c 已移除典禮內嵌執行手冊頁籤，舊附件仍以過往附件顯示');
+const retiredGameCardHint=['同','「','遊','戲','卡','」'].join('');
+ok(![cfg, roster, ceremony, execm, acts, core].join('\n').includes(retiredGameCardHint), 'A10d 介面源碼不再展示用於比對的遊戲卡說明');
 
 // 部門中心入口（同執行手冊共用一份名單）
 ok(core.includes("coord_mealbox',label:'🍱 代訂餐盒名單'"), 'A11 協調組部門中心應有代訂餐盒名單頁籤');
-ok(core.includes("cer_award_section',label:'🏅 支部獎勵名單'") && core.includes("cer_award_leader',label:'🎖️ 領袖獎勵名單'"), 'A12 典禮組部門中心應有兩份獎勵名單頁籤');
-ok(core.includes("case 'coord_mealbox'") && core.includes("case 'cer_award_section'") && core.includes("case 'cer_award_leader'"), 'A13 部門中心頁籤渲染 case');
-ok(core.includes("'coord_mealbox','cer_award_section','cer_award_leader']"), 'A14 頁籤切換清單已登記新頁籤');
+ok(core.includes("cer_award_merit',label:'🏆 優異旅團獲獎名單'") && core.includes("cer_award_section',label:'🏅 支部獎勵名單'") && core.includes("cer_award_leader',label:'🎖️ 領袖獎勵名單'"), 'A12 典禮組部門中心應有三份獎勵名單頁籤');
+ok(core.includes("case 'coord_mealbox'") && core.includes("case 'cer_award_merit'") && core.includes("case 'cer_award_section'") && core.includes("case 'cer_award_leader'"), 'A13 部門中心頁籤渲染 case');
+ok(core.includes("'coord_mealbox','cer_award_merit','cer_award_section','cer_award_leader']"), 'A14 頁籤切換清單已登記三張典禮獎勵名單');
 ok(crisis.includes("this.rosterPanelHTML('participants',{scope:'admin'})"), 'A15 行政組部門中心「參加旅團」頁籤應含點名');
 
 // 上傳入口：EXCEL／WORD／PDF（名單）＋ 附件（PDF／Word／圖片／Drive 連結）
@@ -138,7 +145,9 @@ const ROLE = { staff: 'staff', director: 'director', gd: 'general_director', vic
 
 const appPublic = mkApp(null);
 ok(appPublic.rosterDef('section_award').columns.length === 7, 'B1 支部獎勵格式＝7 欄（區會／支部／旅團／姓名／獎項／編號／備註）');
-ok(appPublic.rosterDef('meal_box').columns.map(c => c.k).join(',').includes('qty_a,qty_b,qty_c'), 'B2 代訂餐盒格式含 A／B／C 餐欄');
+ok(appPublic.rosterDef('section_award').intro.includes('頒發支部最高獎章嘉許信') && appPublic.rosterDef('section_award').intro.includes('公眾可查閱'), 'B1b 支部獎勵保留用途、負責組別與公開說明');
+ok(appPublic.rosterDef('leader_award').columns.length === 8 && appPublic.rosterDef('leader_award').columns.some(c=>c.k==='no') && appPublic.rosterDef('leader_award').columns.some(c=>c.k==='oath'), 'B1c 領袖獎勵格式＝8 欄，含唱名序及需覆誓');
+ok(appPublic.rosterDef('meal_box').columns.length === 9 && appPublic.rosterDef('meal_box').tick_label === '派發' && appPublic.rosterDef('meal_box').intro.includes('判單對數'), 'B2 代訂餐盒保留九欄、派發 TICK 及對數說明');
 let panel = appPublic.rosterPanelHTML('section_award', { scope: 'test' });
 ok(panel.includes('支部獎勵獲獎名單') && panel.includes('負責組別：會操及典禮組'), 'B3 面板顯示名單名稱＋負責組別');
 ok(panel.includes('位置：執行手冊 → 典禮儀式 → 支部獎勵名單'), 'B4 面板講明預定位置');
@@ -211,7 +220,7 @@ let rows = appGd.rosterRows('section_award');
 ok(rows.length === 1 && rows[0].name === '趙六' && rows[0].award === '貝登堡獎章', 'B22 可逐行新增（版位已預留，未上載前都填到）');
 appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), true);
 rows = appGd.rosterRows('section_award');
-ok(rows[0]._checked === true && rows[0]._by === '典禮總主任', 'B23 點名 TICK 生效（做法同優異旅團）');
+ok(rows[0]._checked === true && rows[0]._by === '典禮總主任', 'B23 點名 TICK 生效並保存審計資料');
 promptAnswer = '';
 appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), false);
 ok(appGd.rosterRows('section_award')[0]._checked === true, 'B24 取消 TICK 冇填原因會被打回');
@@ -219,7 +228,7 @@ promptAnswer = '誤點';
 appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), false);
 ok(appGd.rosterRows('section_award')[0]._checked === false && appGd.rosterRows('section_award')[0]._note === '誤點', 'B25 取消 TICK 需原因並留紀錄');
 appGd.rosterTick('section_award', encodeURIComponent(rows[0]._key), true);
-ok(appGd.rosterViewRows('section_award')[0]._checked === true, 'B26 重新 TICK 返（唔設永久鎖，同優異旅團一致）');
+ok(appGd.rosterViewRows('section_award')[0]._checked === true, 'B26 重新 TICK 返（唔設永久鎖）');
 
 // 分組進度 chips／排序／匯出／範本
 const g = appGd.rosterPanelInnerHTML('section_award', 'test');
@@ -234,6 +243,25 @@ ok(appGd.rosterDef('meal_box').tick_col_label === undefined && appGd.rosterDef('
 appGd.rosterDownloadTemplate('section_award');
 ok(csv.grid.length === 3 && csv.grid[0].join(',') === '區會,支部,旅團／單位,獲獎人姓名,獎項（支部最高獎章）,嘉許信／證書編號,備註', 'B31 格式範本 CSV＝預定格式表頭＋樣板行');
 ok(appGd.rosterDef('participants').columns.map(c => c.label).join('|') === '區會|旅團|支部|人數|領隊／旅長|備註', 'B32 參加旅團名單格式（含區會／領隊）');
+
+// 優異旅團獲獎名單：沿用 ceremony.meritRoster／responses，但使用同一上傳、點名和更正流程。
+const appMerit = mkApp({ name: '優異旅團典禮主任', role: ROLE.director, group_name: '會操及典禮組', user_id: 'u_merit' });
+appMerit.currentEvent.event_id = 'merit_roster_test';
+const meritData = appMerit.getCeremonyData();
+meritData.meritRoster = [{ id: 'ma_1', area: 'HKW 港島西區', unit: '港島第15旅', section: '童軍' }];
+meritData.responses = [{ id: 'reply_1', area: 'HKW 港島西區', unit: '港島第15旅', section: '童軍', attendance: '出席', ticked: true, checked_by: '舊典禮主任', checked_at: '2026-09-05T09:00:00.000Z' }];
+appMerit.saveCeremonyData(meritData);
+let meritRows = appMerit.rosterRows('merit_award');
+ok(appMerit.rosterDef('merit_award').columns.length === 3 && meritRows.length === 1 && meritRows[0]._checked === true, 'B32b 優異旅團獲獎名單讀取既有主名單及舊點名狀態');
+ok(appMerit.rosterPanelHTML('merit_award', { scope: 'test' }).includes('上傳獲獎名單'), 'B32c 優異旅團獲獎名單使用指定上傳標籤');
+promptAnswer = '誤點，代表尚未到場';
+appMerit.rosterTick('merit_award', encodeURIComponent(meritRows[0]._key), false);
+let meritAfter = appMerit.getCeremonyData();
+ok(appMerit.rosterRows('merit_award')[0]._checked === false && meritAfter.responses[0].ticked === false && meritAfter.responses[0].checkin_note.includes('誤點'), 'B32d 取消舊優異旅團 TICK 必須留更正原因並回寫典禮資料');
+appMerit._rosterPending = { merit_award: { rows: [{ area: 'SKW 筲箕灣區', unit: '港島第6旅', section: '深資童軍' }], meta: { source: 'merit.xlsx' } } };
+appMerit.applyRosterImport('merit_award');
+meritAfter = appMerit.getCeremonyData();
+ok(meritAfter.meritRoster.length === 2 && !(appMerit.getRosterData().rows || {}).merit_award, 'B32e 優異旅團匯入寫回典禮主名單而非通用 rows 儲存區');
 
 // 參加旅團名單：名單仍跟 participants（Drive／Excel），點名存喺名單引擎
 const appA = mkApp({ name: '行政總主任', role: ROLE.gd, group_name: '行政組', user_id: 'u6' }, [
@@ -282,6 +310,11 @@ appCer.renderCeremonyModule(mod);
 ok(mod.innerHTML.includes("switchCeremonyTab('section_award')") && mod.innerHTML.includes('支部獎勵名單'), 'B43 典禮儀式分頁列有「支部獎勵名單」');
 ok(mod.innerHTML.includes("switchCeremonyTab('leader_award')") && mod.innerHTML.includes('領袖獎勵名單'), 'B44 典禮儀式分頁列有「領袖獎勵名單」');
 ok(mod.innerHTML.includes('ceremony-tab-section_award') && mod.innerHTML.includes('ceremony-tab-leader_award'), 'B45 兩個新分頁有容器');
+appCer.ceremonySubTab = 'awards';
+appCer.renderCeremonyModule(mod);
+ok(mod.innerHTML.includes('優異旅團獲獎名單') && !mod.innerHTML.includes('ceremony-tab-exec_manual') && el('ceremony-tab-awards').innerHTML.includes('data-roster-panel="merit_award"'), 'B45b 優異旅團獲獎名單分頁會即時渲染共用名單面板，且無內嵌執行手冊頁籤');
+appCer.ceremonySubTab = 'rundown';
+appCer.renderCeremonyModule(mod);
 el('ceremony-tab-section_award').innerHTML = '';
 appCer.switchCeremonyTab('section_award');
 ok(el('ceremony-tab-section_award').innerHTML.includes('data-roster-panel="section_award"'), 'B46 進入分頁即渲染名單面板');
@@ -298,7 +331,7 @@ const before = JSON.stringify(appCer.getRosterData());
 appPublic.rosterImportFile('section_award', { name: 'list.xlsx' });
 ok(JSON.stringify(appCer.getRosterData()) === before, 'B50 未登入者上傳名單會被拒，資料唔變');
 
-// ===== C) 範圍守則：v14 只加咗用戶指定嘅四張名單，冇將 2017 手冊其他章節抄落 app =====
+// ===== C) 範圍守則：四張通用名單加上既有優異旅團的相容入口，冇將 2017 手冊其他章節抄落 app =====
 {
   const defKeys = [...cfg.matchAll(/^\s*key:'([a-z_]+)'/gm)].map(m => m[1]).filter(k => ['section_award', 'leader_award', 'participants', 'meal_box'].includes(k)).sort();
   ok(JSON.stringify(defKeys) === JSON.stringify(['leader_award', 'meal_box', 'participants', 'section_award']), 'C1 名單版位只有四張（唔多唔少）');
@@ -312,20 +345,52 @@ ok(JSON.stringify(appCer.getRosterData()) === before, 'B50 未登入者上傳名
   const execKeys = [...execTabs.matchAll(/\{k:'([a-z_]+)'/g)].map(m => m[1]);
   ok(JSON.stringify(execKeys) === JSON.stringify(['staff', 'activities', 'ceremony', 'crisis', 'finance_guide', 'documents', 'participants', 'meal_box', 'misc']), 'C3 執行手冊分頁只多咗「代訂餐盒名單」');
   ok((execTabs.match(/label:'[^']*名單'/g) || []).length === 2, 'C3b 執行手冊只有兩張名單分頁（參加旅團／代訂餐盒）');
-  // 典禮儀式子分頁：只多咗兩張獎勵名單
+  // 典禮儀式子分頁：保留優異旅團主頁籤，另有兩張獎勵名單
   const cerTabs = (read('js/35-ceremony.js').match(/\['rundown'[^\]]*\]/) || [''])[0];
-  ok(cerTabs.includes("'section_award'") && cerTabs.includes("'leader_award'") && !/通訊錄|來賓名簿/.test(cerTabs), 'C4 典禮儀式子分頁只加兩張獎勵名單');
-  // 部門中心：只加咗 3 個頁籤（協調組餐盒、典禮組兩張名單）
+  ok(cerTabs.includes("'section_award'") && cerTabs.includes("'leader_award'") && !/通訊錄|來賓名簿/.test(cerTabs), 'C4 典禮儀式保留優異旅團主頁籤並有兩張獎勵名單');
+  // 部門中心：協調組餐盒及典禮組三張獎勵名單頁籤
   const core = read('js/10-app-core.js');
-  ok((core.match(/k:'coord_mealbox'|k:'cer_award_section'|k:'cer_award_leader'/g) || []).length === 3, 'C5 部門中心只加三個名單頁籤');
+  ok((core.match(/k:'coord_mealbox'|k:'cer_award_merit'|k:'cer_award_section'|k:'cer_award_leader'/g) || []).length === 4, 'C5 部門中心有餐盒及三個典禮獎勵名單頁籤');
   ok(!/k:'(coord_guestbook|coord_carpark|coord_insurance|cer_manual_catalog)'/.test(core), 'C5b 冇為咗跟手冊而新增其他組別頁籤');
   const defsBlock = (cfg.match(/const ROSTER_LIST_DEFS=\[[\s\S]*?\n\];/) || [''])[0];
   const defLabels = [...defsBlock.matchAll(/\{k:'[a-z_]+',label:'([^']+)'/g)].map(m => m[1]);
   ok(defLabels.length >= 20, 'C7a 欄位標籤攞到（每張名單嘅 columns）');
   ok(defLabels.every(l => /區會|支部|旅團|姓名|獎項|嘉許信|證書|備註|人數|領隊|職|需覆誓|編號|餐|總數|取餐/.test(l)), 'C7 欄位清單只包含名單本身欄位（冇混入手冊其他章節欄位）');
   ok(!/通訊錄|車許可證|水劵|飯劵|保險|意外通報|攤位設備|場地圖|遊戲劵|升國旗/.test(defsBlock), 'C8 def 冇混入手冊其他章節（通訊錄／車輛／水飯劵／保險／攤位／地圖／升旗等）');
-  // 引擎只認四張名單嘅 key（防止其他人硬塞第五張入嚟但冇 config）
-  ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => appCer.rosterDef(k)), 'C6 四張名單都搵到 def（config 與引擎一一對應）');
+  // 引擎認得四張通用名單及獨立的優異旅團資料來源。
+  ok(['section_award', 'leader_award', 'participants', 'meal_box', 'merit_award'].every(k => appCer.rosterDef(k)), 'C6 四張通用名單及優異旅團獲獎名單均可找到定義');
 }
 
-console.log(`V14_ROSTER_LISTS_OK (${n} checks)`);
+async function verifyMeritRosterBackendPull(){
+  const pullApp=mkApp({name:'同步典禮主任',role:ROLE.director,group_name:'會操及典禮組',user_id:'pull_u'});
+  pullApp.currentEvent.event_id='merit_pull_test';
+  pullApp.gasUrl='https://example.test/api'; pullApp.apiKey='key';
+  const remoteData={
+    Roster_Lists:[{list_key:'merit_award',row_id:'m_1',row_json:JSON.stringify({area:'HKW 港島西區',unit:'港島第15旅',section:'童軍'}),ticked:'N',tick_json:JSON.stringify({checked:false,by:'舊資料',at:'2026-09-05T09:00:00.000Z',note:'更正'})}],
+    Roster_Rollcall_Checkins:[{list_key:'merit_award',row_key:'港島第15旅|童軍',checked_in:'Y',checked_by:'最新典禮主任',checked_at:'2026-09-05T10:00:00.000Z',checkin_note:''}],
+    Roster_Rollcall_Batches:[{list_key:'merit_award',group_value:'HKW 港島西區',confirmed:'Y',confirmed_by:'最新典禮主任',confirmed_at:'2026-09-05T10:00:00.000Z',total:'1',ticked:'1'}]
+  };
+  context.fetch=async()=>({json:async()=>({success:true,data:remoteData})});
+  await pullApp.rosterPullFromGas('merit_award');
+  const pulled=pullApp.rosterRows('merit_award')[0];
+  ok(!!pulled && pulled._checked && pulled._by==='最新典禮主任', 'D1 優異旅團由後端取回時採用較新的點名審計紀錄');
+  ok(!((pullApp.getRosterData().rows||{}).merit_award) && pullApp.getCeremonyData().meritRoster.length===1, 'D2 優異旅團由後端取回時寫回典禮主名單而非通用 rows');
+  ok(!!pullApp.getRosterData().confirmed.merit_award['HKW 港島西區'], 'D3 優異旅團由後端取回時保留分組確認狀態');
+  let savedCheckin=null;
+  context.fetch=(url,opts)=>{ savedCheckin=JSON.parse(opts.body); return Promise.resolve({json:async()=>({success:true})}); };
+  pullApp.rosterSaveTickToGas('merit_award',pullApp.rosterDef('merit_award'),pulled,{checked:false,by:'同步典禮主任',at:'2026-09-05T11:00:00.000Z',note:'誤點'});
+  ok(savedCheckin.record.checked_in==='N' && savedCheckin.record.correction_cancelled==='Y', 'D4 取消優異旅團點名會以未點名狀態及更正旗標保存至後端');
+  // 相容讀取較舊的取消紀錄：舊記錄可帶 Y，但 correction_cancelled 必須優先還原為未點名。
+  remoteData.Roster_Rollcall_Checkins=[{list_key:'merit_award',row_key:'港島第15旅|童軍',checked_in:'Y',correction_cancelled:'Y',checked_by:'最新典禮主任',checked_at:'2026-09-05T11:00:00.000Z',checkin_note:'誤點'}];
+  context.fetch=async()=>({json:async()=>({success:true,data:remoteData})});
+  await pullApp.rosterPullFromGas('merit_award');
+  const cancelled=pullApp.rosterRows('merit_award')[0];
+  ok(!cancelled._checked && cancelled._note==='誤點' && cancelled._by==='最新典禮主任', 'D5 重新整理會保留取消點名的原因、操作者及正確狀態');
+}
+
+verifyMeritRosterBackendPull().then(()=>{
+  console.log(`V14_ROSTER_LISTS_OK (${n} checks)`);
+}).catch(err=>{
+  console.error(err);
+  process.exitCode=1;
+});
