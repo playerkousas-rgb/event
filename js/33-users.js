@@ -335,7 +335,18 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   submitUserForm(e){e.preventDefault(); let uid=document.getElementById('u-ymis').value.trim(); const name=document.getElementById('u-name').value.trim(); if(!name) return; if(!uid) uid=name; if(document.getElementById('u-form-mode').value==='create' && isLegacyLatinLogin(uid) && hasCjk(name)) uid=name; if(!uid) return; const role=document.getElementById('u-role').value; const myLv=this.roleLevel(this.currentUser?.role||'public'); if(role && myLv<ROLE_HIERARCHY[role]){ showToast('不可設定比自己更高的權限','error'); return; } if(!this.currentUser?.mock_admin&&!['super_admin','admin'].includes(this.currentUser?.role) && !ACCOUNT_SETUP_ROLES.includes(role)){ showToast('副主席及以上職級由管理員處理','error'); return; } if(!this.pendingUsers) this.pendingUsers=JSON.parse(JSON.stringify(this.usersList||this.getLocalUsers())); let list=this.pendingUsers; const pwdEl=document.getElementById('u-password'); const newPwd=(pwdEl?.value||'').trim(); if(list.some(x=>x.user_id===uid)){ const idx=list.findIndex(x=>x.user_id===uid); list[idx].name=name; list[idx].role=role; list[idx].group_name=document.getElementById('u-group').value; list[idx].contact=document.getElementById('u-contact').value; list[idx].email=document.getElementById('u-email').value; if(newPwd && this.canSeeUserPasswords()) list[idx].password=newPwd; } else list.push({user_id:uid,name,role,group_name:document.getElementById('u-group').value,contact:document.getElementById('u-contact').value,email:document.getElementById('u-email').value,password:newPwd||'1234',status:'active',can_tick:false}); this.pendingUsers=list; this.closeModal('modal-user'); showToast('已暫存，請按「確定更新用戶」才套用',''); this.renderUsers();}
 ,
-  downloadUsersTemplate(){const csv='ymis,name,email,role,group_name,contact,password,can_tick\\n朱家聰,朱家聰,chair@isd.local,chairperson,主席及執行副主席,,1234,true\\n'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='users_template.csv'; a.click(); showToast('已下載範本','success');}
+  downloadUsersTemplate(){ downloadExcel('批量開戶範本.xlsx',[['ymis','name','email','role','group_name','contact','password','can_tick'],['朱家聰','朱家聰','chair@isd.local','chairperson','主席及執行副主席','','1234','true'],['陳小明','陳小明','','staff','主題節目組','91234567','1234','']],{sheet:'開戶名單'}); }
+,
+  // v14.1：批量開戶彈窗直接上傳 Excel（.xlsx／.xls）或 JSON，唔再用 CSV；解析後行同一個預覽／確認流程
+  async handleBulkModalExcel(file){
+    if(!file) return;
+    try{
+      const res=await readTabularFile(file);
+      const arr=res.kind==='json'?(Array.isArray(res.rows)?res.rows:[res.rows]):res.rows;
+      const ta=document.getElementById('bulk-json-modal'); if(ta) ta.value=JSON.stringify(arr);
+      this.handleBulkJSON(true);
+    }catch(err){ showToast('檔案讀取失敗：'+err.message,'error'); }
+  }
 ,
   handleBulkJSON(isModal){const text=document.getElementById('bulk-json-modal')?.value||''; if(!text){showToast('請先貼上資料','warning'); return;} try{let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; const valid=arr.filter(r=>r.ymis&&r.name); this.bulkPending=valid.map(r=>({user_id:r.ymis,name:r.name,email:r.email||'',role:r.role||'staff',group_name:r.group_name||r.group||'主題節目組',contact:r.contact||'',password:r.password||'1234',can_tick:!!r.can_tick})); document.getElementById('bulk-modal-preview').classList.remove('hidden'); document.getElementById('bulk-modal-count').textContent=this.bulkPending.length; document.getElementById('bulk-modal-table').innerHTML=`<table class="min-w-full text-xs"><tr><th class="px-2 py-1 text-left">ID</th><th class="px-2 py-1 text-left">姓名</th></tr>${this.bulkPending.map(r=>`<tr><td class="px-2 py-1">${escapeHtml(r.user_id)}</td><td class="px-2 py-1">${escapeHtml(r.name)}</td></tr>`).join('')}</table>`; showToast('已解析','success');}catch(e){showToast('資料格式有誤，請檢查','error');}}
 ,

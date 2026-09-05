@@ -3,7 +3,7 @@
 //       想把成員一次過寫入其中的 Users 工作表，實現全前端以外的備用批量軌。
 //
 // 用法 (參考 scoutbadge 設計)：
-//   1. 在 Google Sheets 新建試算表，檔案 > 匯入 > 上載 > 選取本機 CSV，選 data/users_template.csv
+//   1. 在 Google Sheets 新建試算表，檔案 > 匯入 > 上載 > 選取本機檔案，選 data/users_template.xlsx
 //   2. 擴充套件 > Apps Script，貼上本檔，儲存
 //   3. 回到試算表，重新整理，出現「批量開戶」選單
 //   4. 填好資料後：

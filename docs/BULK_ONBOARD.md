@@ -8,16 +8,16 @@
 
 | 方式 | 定位 | 說明 |
 |---|---|---|
-| ① 前端上傳 CSV 範本 | **批量開戶主路 (推薦·最快)** | 下載範本 → Excel 填寫 → 前端上傳 → 預覽 → 一鍵開戶，全部在瀏覽器完成，支援 Mock |
+| ① 前端上傳 Excel 範本 | **批量開戶主路 (推薦·最快)** | 下載範本 → Excel 填寫 → 前端上傳 → 預覽 → 一鍵開戶，全部在瀏覽器完成，支援 Mock |
 | ② 前端貼上 JSON 陣列 | **進階/系統對接** | 直接貼 [{ymis,name,...}] 批量建立，適合從其他系統匯出轉入 |
-| ③ Google Sheets 直寫 (Code.gs) | **備用/超大量/無前端權限** | 把 CSV 匯入全新 Sheet，用附帶 Code.gs 直寫主資料表，自動建表頭，密碼雜湊儲存 |
+| ③ Google Sheets 直寫 (Code.gs) | **備用/超大量/無前端權限** | 把 Excel 範本匯入全新 Sheet，用附帶 Code.gs 直寫主資料表，自動建表頭，密碼雜湊儲存 |
 
 > 原則：所有開戶盡量在前端完成。方法③僅作備用，日常不建議。
 
 ## 流程總覽
 
 ```
-下載範本 CSV -> Excel 填寫 -> 前端上傳 -> 預覽 -> 一鍵批量開戶 (全前端·手機友善)
+下載 Excel 範本 -> Excel 填寫 -> 前端上傳 -> 預覽 -> 一鍵批量開戶 (全前端·手機友善)
 ```
 
 主資料表 Users 欄位 (與後端 Code.gs 兼容)：
@@ -26,11 +26,11 @@
 user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, status, allowed_modules, squad, squad_role, job_desc, created_at, last_login, auth_by, auth_date
 ```
 
-## 方法一：前端上傳 CSV (主路)
+## 方法一：前端上傳 Excel (主路)
 
-1. 登入系統 → 首頁或「批量開戶中心」或「用戶管理」→ **📥 批量開戶** → **下載範本 CSV** (`data/users_template.csv`)
+1. 登入系統 → 首頁或「批量開戶中心」或「用戶管理」→ **📥 批量開戶** → **下載 Excel 範本** (`data/users_template.xlsx`)
 2. Excel / Google Sheets 打開，填寫每位成員資料
-3. 回到對話框，**📥 上傳已填 CSV**，系統自動解析並預覽
+3. 回到對話框，**📥 上傳已填 Excel**，系統自動解析並預覽
 4. 確認 **✅ 確認批量開戶**，資料寫入 localStorage (Mock) 或透過 GAS 寫入 Sheet
    - 有填 `password` → 開立可登入帳號 (password 以 SHA-256 雜湊)
    - 只填 `user_id + name` → 只加入成員，不可登入
@@ -45,7 +45,7 @@ user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, s
 | role | 必填，advisor / admin / chairperson / vice_chairperson / general_director / director / staff / public |
 | group_name | 必填，組別，例如 主題節目組（組別下拉已移除「顧問團」「主席及執行副主席」兩組） |
 
-> ⚠️ **v7.8 起**：批量 CSV／JSON 屬管理員專用，可填全部職級（副主席及以上由管理員在此處理）；前端「快速批量開戶」逐行選單只提供 工作人員／主任／總主任。
+> ⚠️ **v7.8 起**：批量 Excel／JSON 屬管理員專用，可填全部職級（副主席及以上由管理員在此處理）；前端「快速批量開戶」逐行選單只提供 工作人員／主任／總主任。
 | contact | 選填，電話 |
 | password | 選填，有填則開立可登入帳號 |
 | can_tick | true/false，是否可批核/可勾選 |
@@ -73,7 +73,7 @@ user_id/ymis, name, email, role, group_name, contact, password_hash, can_tick, s
 適合無前端權限、超大量 (100+) 或網絡不穩時。
 
 1. Google Sheets 新建空白試算表
-2. 檔案 > 匯入 > 上載 CSV，選 `data/users_template.csv`
+2. 檔案 > 匯入 > 上載，選 `data/users_template.xlsx`
 3. 填寫資料
 4. 擴充套件 > Apps Script，貼上 `assets/batch-onboard/Code.gs`，儲存
 5. 修改檔首 CONFIG：

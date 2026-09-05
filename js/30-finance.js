@@ -349,8 +349,8 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex flex-wrap gap-2">
           <button onclick="app.openExpenseForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增開支申報</button>
-          <button onclick="app.downloadFinanceTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載申報範本 CSV</button>
-          ${(this.canApproveArea('finance')||this.canManageApprovalRouting())?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳 CSV 批量申報<input type="file" accept=".csv,.json" class="hidden" onchange="app.handleFinanceFileUpload(this.files[0])"></label>`:''}
+          <button onclick="app.downloadFinanceTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載申報 Excel 範本</button>
+          ${(this.canApproveArea('finance')||this.canManageApprovalRouting())?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>上傳 Excel 批量申報<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleFinanceFileUpload(this.files[0]);this.value=''"></label>`:''}
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="bg-white border rounded-xl p-4">
@@ -556,24 +556,24 @@ Object.assign(ScoutEventApp.prototype,{
     this.refreshFinanceViews();
   }
 ,
+  // v14.1：範本一律 Excel（冇 CSV）
   downloadFinanceTemplate(){
-    const csv='voucher,item_name,group_name,budget,actual,date,description\n憑單#01,嘉賓紀念品,會操及典禮組,500,246,2026-10-04,不超過$500免報價\n憑單#02,遊戲道具,主題節目組,26000,13872.53,2026-10-04,各旅團支援費\n';
-    const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='finance_expense_template.csv'; a.click(); showToast('已下載申報範本','success');
+    downloadExcel('開支申報範本.xlsx',[['voucher','item_name','group_name','budget','actual','date','description'],['憑單#01','嘉賓紀念品','會操及典禮組','500','246','2026-10-04','不超過$500免報價'],['憑單#02','遊戲道具','主題節目組','26000','13872.53','2026-10-04','各旅團支援費']],{sheet:'開支申報'});
   }
 ,
-  handleFinanceFileUpload(file){
+  // v14.1：批量匯入只收 Excel（.xlsx／.xls）或 JSON，唔再收 CSV
+  async handleFinanceFileUpload(file){
     if(!this.canApproveArea('finance')&&!this.canManageApprovalRouting()){ showToast('只供指定財務批核組批量匯入','error'); return; }
     if(!file) return;
-    const reader=new FileReader();
-    reader.onload=(e)=>{
+    let res; try{ res=await readTabularFile(file); }catch(err){ showToast('檔案讀取失敗：'+err.message,'error'); return; }
+    {
       try{
-        const text=e.target.result;
         let parsed=[];
-        if(file.name.endsWith('.json')){
-          const json=JSON.parse(text);
+        if(res.kind==='json'){
+          const json=res.rows;
           parsed=Array.isArray(json)?json:json.expenses||[json];
         }else{
-          const rows=parseCSV(text);
+          const rows=res.rows;
           parsed=rows.map(r=>({id:'exp_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),voucher:r.voucher||'',item_name:r.item_name||r.item||'',group_name:r.group_name||r.group||'',budget:parseFloat(r.budget||0),actual:parseFloat(r.actual||0),date:r.date||todayISO(),description:r.description||r.notes||'',status:'pending',submitted_by:this.currentUser?.name||'',created_at:new Date().toISOString()})).filter(r=>r.item_name);
         }
         if(!parsed.length){ showToast('無有效資料','error'); return; }
@@ -583,8 +583,7 @@ Object.assign(ScoutEventApp.prototype,{
         showToast(`已批量匯入 ${parsed.length} 筆開支申報`,'success');
         this.refreshFinanceViews();
       }catch(err){ showToast('解析失敗:'+err.message,'error'); }
-    };
-    reader.readAsText(file);
+    }
   }
 ,
   exportFinanceData(){

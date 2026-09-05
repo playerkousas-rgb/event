@@ -194,7 +194,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex flex-wrap gap-2 items-center">
           ${canApprove?`<span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full font-bold"><i class="fa-solid fa-user-check mr-1"></i>你可批核物資</span>`:`<span class="text-[11px] bg-slate-100 text-slate-500 border px-3 py-1.5 rounded-full">只讀（無物資批核權）</span>`}
           <button onclick="app.printCoordArea('coord-supplies-print','物資申請及批核清單')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印清單</button>
-          ${canExecute?`<button onclick="app.exportCoordSuppliesCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出最終清單 (已批核)</button>`:''}
+          ${canExecute?`<button onclick="app.exportCoordSuppliesCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出最終清單 Excel (已批核)</button><button onclick="app.exportCoordSuppliesCSV('word')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>`:''}
           <button onclick="app.openModule('supplies')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">開啟完整物資模組</button>
         </div>
         <div id="coord-supplies-print" class="space-y-3">
@@ -245,7 +245,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex flex-wrap gap-2 items-center">
           ${canApprove?`<span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full font-bold"><i class="fa-solid fa-user-check mr-1"></i>你可批核車輛</span>`:`<span class="text-[11px] bg-slate-100 text-slate-500 border px-3 py-1.5 rounded-full">只讀（無車輛批核權）</span>`}
           ${canExecute?`<button onclick="app.printCoordArea('coord-vehicle-print','車輛通行證及入口檢查清單')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印入口檢查清單</button>
-          <button onclick="app.exportCoordVehiclesCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出最終清單 (已批核)</button>`:''}
+          <button onclick="app.exportCoordVehiclesCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出最終清單 Excel (已批核)</button><button onclick="app.exportCoordVehiclesCSV('word')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>`:''}
         </div>
         <div id="coord-vehicle-print" class="space-y-3">
           <div class="bg-white border rounded-xl p-3">
@@ -307,7 +307,7 @@ Object.assign(ScoutEventApp.prototype,{
           ${canManageMenu?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單</button>`:''}
           ${canFinal?`<button onclick="app.approveAllConfirmedMeals()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-check-double mr-1"></i>一鍵審批已確認</button>`:''}
           ${canRouteExecute?`<button onclick="app.printCoordArea('coord-meals-print','膳食派發清單')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印派發清單</button>
-          <button onclick="app.exportCoordMealsCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出最終清單 (已審批)</button>`:''}
+          <button onclick="app.exportCoordMealsCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出最終清單 Excel (已審批)</button><button onclick="app.exportCoordMealsCSV('word')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>`:''}
           <button onclick="app.openModule('meals')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">開啟完整膳食模組</button>
         </div>
         <div id="coord-meals-print" class="space-y-3">${menuBlocks||'<p class="text-xs text-slate-400 py-6 text-center">暫無菜單，按「加入菜單」開始</p>'}</div>
@@ -493,41 +493,48 @@ Object.assign(ScoutEventApp.prototype,{
     win.document.close();
   }
 ,
-  csvCell(v){ const s=String(v===null||v===undefined?'':v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+  /* v14.1：全站取消 CSV（普通用戶開唔到）。表格匯出一律 Excel（.xlsx，SheetJS）；
+     downloadCSV 舊名保留俾所有舊呼叫（自動變成 Excel，副檔名會改成 .xlsx），新程式請直接用 exportTableExcel／exportTableWord。 */
+  exportTableExcel(filename, rows, opts){ return downloadExcel(filename, rows, opts); }
 ,
-  downloadCSV(filename, rows){
-    const csv='\ufeff'+rows.map(r=>r.map(c=>this.csvCell(c)).join(',')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
-    showToast('已匯出 '+filename,'success');
+  exportTableWord(filename, title, rows, opts){
+    const o=Object.assign({landscape:(rows&&rows[0]&&rows[0].length>7)},opts||{});
+    if(!o.meta) o.meta=`活動：${escapeHtml(this.currentEvent?.event_name||'')}　匯出：${new Date().toLocaleString()}（${escapeHtml(this.currentUser?.name||'公開')}）`;
+    return downloadWord(filename, title, rowsToHtmlTable(rows), o);
   }
 ,
-  exportCoordSuppliesCSV(){
+  downloadCSV(filename, rows, opts){ return this.exportTableExcel(String(filename||'匯出').replace(/\.csv$/i,'.xlsx'), rows, opts); }
+,
+  // 最終清單匯出：預設 Excel；傳入 'word' 則出 Word（v14.1 起冇 CSV）
+  exportCoordSuppliesCSV(fmt){
     if(!this.canExecuteArea('supplies')){ showToast(`物資最後名單只供 ${this.approvalRouteLabel('supplies','executor_groups')} 匯出`,'error'); return; }
     const reqs=(this.getSuppliesData().requests||[]).filter(r=>r.status==='approved'||r.status==='modified');
     if(!reqs.length){ showToast('尚未有已批核物資','warning'); return; }
     const rows=[['組別','物資','申請數量','批核數量','單位','需用日期','申請人','聯絡','用途','批核人','狀態']];
     reqs.forEach(r=>rows.push([r.group_name,r.item_name,r.qty_requested,(r.qty_approved!==null&&r.qty_approved!==undefined)?r.qty_approved:r.qty_requested,r.unit,r.date_needed,r.requested_by,r.contact,r.reason,r.approved_by,r.status]));
-    this.downloadCSV(`物資最終清單_${todayISO()}.csv`, rows);
+    if(fmt==='word') this.exportTableWord(`物資最終清單_${todayISO()}.doc`,'物資最終清單（已批核）',rows);
+    else this.exportTableExcel(`物資最終清單_${todayISO()}.xlsx`, rows, {sheet:'物資最終清單'});
   }
 ,
-  exportCoordVehiclesCSV(){
+  exportCoordVehiclesCSV(fmt){
     if(!this.canExecuteArea('vehicle')){ showToast(`車輛最後名單只供 ${this.approvalRouteLabel('vehicle','executor_groups')} 匯出`,'error'); return; }
     const vehs=(this.getSuppliesData().vehicle_passes||[]).filter(v=>v.status==='approved');
     if(!vehs.length){ showToast('尚未有已批核車輛','warning'); return; }
     const rows=[['車牌','司機','聯絡','車種','用途','組別','進場','離場','停泊位置','批核人']];
     vehs.forEach(v=>rows.push([v.plate,v.driver_name,v.driver_contact,v.vehicle_type,v.purpose,v.group_name,v.entry_date,v.exit_date,v.parking_location,v.approved_by]));
-    this.downloadCSV(`車輛通行證最終清單_${todayISO()}.csv`, rows);
+    if(fmt==='word') this.exportTableWord(`車輛通行證最終清單_${todayISO()}.doc`,'車輛通行證最終清單（已批核）',rows);
+    else this.exportTableExcel(`車輛通行證最終清單_${todayISO()}.xlsx`, rows, {sheet:'車輛通行證'});
   }
 ,
-  exportCoordMealsCSV(){
+  exportCoordMealsCSV(fmt){
     if(!this.canExecuteArea('meals')){ showToast(`膳食最後名單只供 ${this.approvalRouteLabel('meals','executor_groups')} 匯出`,'error'); return; }
     const data=this.getMealsData();
     const orders=(data.orders||[]).filter(o=>o.status==='approved');
     if(!orders.length){ showToast('尚未有已審批訂餐','warning'); return; }
     const rows=[['日期','餐別','菜單','組別','姓名','選擇','數量','備註','組長確認','行政審批']];
     orders.forEach(o=>{ const m=(data.menus||[]).find(x=>x.menu_id===o.menu_id)||{}; rows.push([m.date,m.meal_type,m.menu_desc,o.group_name,o.user_name,o.selection,o.quantity||1,o.remarks,o.confirmed_by,o.approved_by]); });
-    this.downloadCSV(`膳食最終清單_${todayISO()}.csv`, rows);
+    if(fmt==='word') this.exportTableWord(`膳食最終清單_${todayISO()}.doc`,'膳食最終清單（已審批）',rows);
+    else this.exportTableExcel(`膳食最終清單_${todayISO()}.xlsx`, rows, {sheet:'膳食最終清單'});
   }
 ,
   /* v13：openCoordinatorDocForm／submitCoordinatorDocForm／openCoordinatorVenueForm 已移至上方
@@ -578,7 +585,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncScheduleFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新日程 (Drive)</button>
           ${((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
-          <button onclick="app.downloadScheduleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載欄位範本 CSV</button>
+          <button onclick="app.downloadScheduleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchScheduleTab('overall')" class="tab-btn ${this.scheduleSubTab==='overall'?'active':''}">總表 (參加者)</button>

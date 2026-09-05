@@ -154,7 +154,7 @@ ok(manualHTML.includes('分區 A · 積極公民') && manualHTML.includes('分�
 ok(manualHTML.includes('TOTAL（全部分區總數）'), '③b 總表有 TOTAL 行');
 ok(manualHTML.includes('🤷'), '③b 聯絡狀態顯示待確認（原表 🤷）');
 ok(manualHTML.includes('94000002'), '③b 登入後總表顯示負責人電話');
-ok(manualHTML.includes('匯出總表 CSV'), '③b 管理層可匯出總表 CSV');
+ok(manualHTML.includes('匯出總表 Excel') && manualHTML.includes('匯出總表 Word') && !manualHTML.includes('CSV'), '③b 管理層可匯出總表 Excel／Word（v14.1：冇 CSV）');
 // 未登入（公眾）：電話隱藏
 run(`__app.currentUser=null; __app.switchExecManualTab('booth_master');`);
 manualHTML = elements['exec-manual-panel'].innerHTML;

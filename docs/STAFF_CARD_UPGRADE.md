@@ -10,11 +10,11 @@
   - CSV 欄位：`name,role_title,group_name,contact,job_desc,email,squad`
   - JSON：陣列 `[{name,role_title,group_name,contact,...}]` 或包含 `contacts` 欄位
   - 流程：上傳文件 → APP 讀取 → 轉 JSON → 寫入 `event_staff_v6_{event_id}` localStorage + 嘗試同步 GAS
-  - 支援從 `data/staff_template.csv` 範本
+  - 支援從 `data/staff_template.xlsx` 範本
 - **下載範本批量輸入**
-  - `data/staff_template.csv` 名單範本
-  - `data/org_template.csv` 架構範本
-  - `data/duties_template.csv` 職務範本
+  - `data/staff_template.xlsx` 名單範本
+  - `data/org_template.xlsx` 架構範本
+  - `data/duties_template.xlsx` 職務範本
   - 前端提供「下載範本 CSV」按鈕，一鍵下載
 - **匯出 JSON**：匯出全部名單為 JSON 備份
 
@@ -34,7 +34,7 @@
   - 解析後自動寫入 JSON，顯示在職務大綱 Tab
 - **前端觀看**：所有人可在「職務大綱」Tab 觀看，卡片式顯示組別 + 職務內容
 - **前端修改**：行政副主席、執行副主席或主席以上 (Level >=60 或 execViceOrChair) 可點擊「✏️ 編輯」直接修改，完成後儲存同步後端 (localStorage + GAS)
-- **範本**：`data/duties_template.csv` `group,duty` 兩欄
+- **範本**：`data/duties_template.xlsx` `group,duty` 兩欄
 
 ### 權限
 - 查看：所有籌委
@@ -69,9 +69,9 @@
 
 ## 檔案
 
-- `data/staff_template.csv` 名單範本
-- `data/org_template.csv` 架構範本 `group,level_num,title,names,desc,parent_id`
-- `data/duties_template.csv` 職務範本 `group,duty`
+- `data/staff_template.xlsx` 名單範本
+- `data/org_template.xlsx` 架構範本 `group,level_num,title,names,desc,parent_id`
+- `data/duties_template.xlsx` 職務範本 `group,duty`
 - 前端範本下載按鈕直接生成 CSV Blob，無需後端
 
 ## 手機友善
