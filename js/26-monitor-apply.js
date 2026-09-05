@@ -637,7 +637,7 @@ Object.assign(ScoutEventApp.prototype,{
     const def=this.rosterDef('meal_box');
     box.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」（2017 手冊第 9 項）。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載方式同「遊戲卡」— <b>EXCEL／CSV／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900"><b>代訂餐盒旅團名單：</b>對應執行手冊目錄之「代訂餐盒」。<b>由${escapeHtml(def.owner_group)}負責上載及點名</b>；名單用作向判單落單及當日派發核對（TOTAL＝A／B／C 餐合計），公眾可查閱。上載方式同「遊戲卡」— <b>EXCEL／CSV／WORD（含表格）自動解析成行列</b>、PDF 作附件內嵌預覽、亦可貼 Drive 連結。${this.rosterCanManage('meal_box')?'<b class=\"text-emerald-700\">你可管理。</b>':'<span class=\"text-slate-400\">（只讀）</span>'}</div>
         <div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('meal_box',{scope:'exec'})}</div>
         ${this.mealBoxDigestHTML()}
       </div>`;

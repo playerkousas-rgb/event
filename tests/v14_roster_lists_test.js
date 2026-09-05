@@ -191,7 +191,7 @@ const noHeader = appCer.rosterGridToRows(wDef, [
 ok(noHeader.rows.length === 1 && noHeader.rows[0].name === '王五' && noHeader.rows[0].no === 'LS3-1', 'B20 冇表頭行時按欄位順序對位');
 // 2017 手冊核對：兩張獎勵名單用「出席」做 TICK 欄名；四張名單都俾到格式來源
 ok(['section_award', 'leader_award'].every(k => appCer.rosterDef(k).tick_col_label === '出席'), 'B20c 獎勵名單 TICK 欄名跟手冊「出席」');
-ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => /2017 工作人員手冊/.test(appCer.rosterDef(k).format_note || '')), 'B20e 每張名單都列明格式來源（2017 手冊頁碼）');
+ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => /2017 版 P\./.test(appCer.rosterDef(k).format_note || '') && /ROSTER_LIST_DEFS/.test(appCer.rosterDef(k).format_note || '')), 'B20e 每張名單都列明格式來源頁碼＋欄位可改（唔係死格式）');
 ok(appCer.rosterTableHTML('leader_award', appCer.rosterViewRows('leader_award'), true, false).includes('出席') , 'B20f 表頭顯示「出席」');
 const blank = appCer.rosterGridToRows(wDef, [['a'], ['b']]);
 ok(blank.rows.length === 0, 'B21 冇必填欄（姓名）嘅行唔會入名單');
@@ -293,5 +293,30 @@ ok(appAdmin.rosterPanelHTML('meal_box', { scope: 'coord' }).includes('roster-pri
 const before = JSON.stringify(appCer.getRosterData());
 appPublic.rosterImportFile('section_award', { name: 'list.xlsx' });
 ok(JSON.stringify(appCer.getRosterData()) === before, 'B50 未登入者上傳名單會被拒，資料唔變');
+
+// ===== C) 範圍守則：v14 只加咗用戶指定嘅四張名單，冇將 2017 手冊其他章節抄落 app =====
+{
+  const defKeys = [...cfg.matchAll(/^\s*key:'([a-z_]+)'/gm)].map(m => m[1]).filter(k => ['section_award', 'leader_award', 'participants', 'meal_box'].includes(k)).sort();
+  ok(JSON.stringify(defKeys) === JSON.stringify(['leader_award', 'meal_box', 'participants', 'section_award']), 'C1 名單版位只有四張（唔多唔少）');
+  // 2017 手冊其他章節（通訊錄／車許可證／水劵飯劵／保險文件／意外通報／攤位設備清單）唔應該因為跟手冊而新增
+  const rosterSrc = read('js/41-roster-lists.js') + cfg + read('js/35-ceremony.js') + read('js/36-crisis.js');
+  ['車許可證', '水劵', '飯劵', '保險文件', '意外通報指引', '攤位設備清單'].forEach(banned => {
+    ok(!rosterSrc.includes(banned), `C2 名單模組冇混入手冊其他章節「${banned}」`);
+  });
+  // 執行手冊分頁：只有 meal_box 屬新增（participants 屬既有版位）
+  const execTabs = (read('js/26-monitor-apply.js').match(/if\(!this\.execManualSubTab\)[\s\S]*?const tabs=\[([\s\S]*?)\];/) || ['', ''])[1];
+  const execKeys = [...execTabs.matchAll(/\{k:'([a-z_]+)'/g)].map(m => m[1]);
+  ok(JSON.stringify(execKeys) === JSON.stringify(['staff', 'activities', 'ceremony', 'crisis', 'finance_guide', 'documents', 'participants', 'meal_box', 'misc']), 'C3 執行手冊分頁只多咗「代訂餐盒名單」');
+  ok((execTabs.match(/label:'[^']*名單'/g) || []).length === 2, 'C3b 執行手冊只有兩張名單分頁（參加旅團／代訂餐盒）');
+  // 典禮儀式子分頁：只多咗兩張獎勵名單
+  const cerTabs = (read('js/35-ceremony.js').match(/\['rundown'[^\]]*\]/) || [''])[0];
+  ok(cerTabs.includes("'section_award'") && cerTabs.includes("'leader_award'") && !/通訊錄|來賓名簿/.test(cerTabs), 'C4 典禮儀式子分頁只加兩張獎勵名單');
+  // 部門中心：只加咗 3 個頁籤（協調組餐盒、典禮組兩張名單）
+  const core = read('js/10-app-core.js');
+  ok((core.match(/k:'coord_mealbox'|k:'cer_award_section'|k:'cer_award_leader'/g) || []).length === 3, 'C5 部門中心只加三個名單頁籤');
+  ok(!/k:'(coord_guestbook|coord_carpark|coord_insurance|cer_manual_catalog)'/.test(core), 'C5b 冇為咗跟手冊而新增其他組別頁籤');
+  // 引擎只認四張名單嘅 key（防止其他人硬塞第五張入嚟但冇 config）
+  ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => appCer.rosterDef(k)), 'C6 四張名單都搵到 def（config 與引擎一一對應）');
+}
 
 console.log(`V14_ROSTER_LISTS_OK (${n} checks)`);
