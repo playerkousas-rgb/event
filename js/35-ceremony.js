@@ -538,7 +538,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!this.currentUser||((ROLE_HIERARCHY[this.currentUser?.role]||0)<60&&!this.isCardOwnerGroup('ceremony'))){showToast('TICK 必須由已登入及獲授權的典禮組工作人員操作','error');return;}
     let correctionNote='';
     if(!checked){correctionNote=prompt('你正在取消已保存的 TICK。請輸入更正原因（例如：誤點、核對後未到）：','')||''; if(!correctionNote.trim()){showToast('取消 TICK 必須填寫更正原因','error'); this.sortCeremonyResponses(this.ceremonyResponseSort||'area'); return;}}
-    const d=this.getCeremonyData(); let r=(d.responses||[]).find(x=>x.id===id); if(!r&&String(id).startsWith('master_')){const i=Number(String(id).slice(7)); const m=(d.meritRoster||[])[i]; if(m){r={...m,id,attendance:'待現場核對',response:'未回覆／現場核對',ticked:false}; d.responses=d.responses||[]; d.responses.push(r);}} if(!r)return; r.ticked=!!checked; this.saveCeremonyData(d); this.saveCeremonyCheckinToGas(r,checked,correctionNote); this.sortCeremonyResponses(this.ceremonyResponseSort||'area');
+    const d=this.getCeremonyData(); let r=(d.responses||[]).find(x=>x.id===id); if(!r&&String(id).startsWith('master_')){const i=Number(String(id).slice(7)); const m=(d.meritRoster||[])[i]; if(m){r={...m,id,attendance:'待現場核對',response:'未回覆／現場核對',ticked:false}; d.responses=d.responses||[]; d.responses.push(r);}} if(!r)return; r.ticked=!!checked; this.saveCeremonyData(d); if(checked||correctionNote) this.saveCeremonyCheckinToGas(r,checked,correctionNote); this.sortCeremonyResponses(this.ceremonyResponseSort||'area');
   }
 ,
   confirmCeremonyArea(area){
