@@ -390,14 +390,15 @@ const ROSTER_SECTIONS=['小童軍','幼童軍','童軍','深資童軍','樂行�
 // 支部最高獎章（2026 執行手冊：頒發支部最高獎章嘉許信）
 const ROSTER_SECTION_AWARDS=['總領袖獎章','榮譽童軍獎章','貝登堡獎章'];
 // 領袖及委員獎勵（2026 執行手冊：頒發領袖及委員獎勵；長服年數／星級可自行填寫）
-const ROSTER_LEADER_AWARDS=['總監委任書','副總監委任書','5年長期服務獎狀','10年長期服務獎狀','15年長期服務獎狀','20年長期服務獎狀','長期服務一星獎章','長期服務二星獎章','長期服務三星獎章','長期服務四星獎章','優異服務獎章','嘉許信'];
+const ROSTER_LEADER_AWARDS=['總監委任書','副總監委任書','五年長期服務獎狀','長期服務獎章','5年長期服務獎狀','10年長期服務獎狀','15年長期服務獎狀','20年長期服務獎狀','長期服務一星獎章','長期服務二星獎章','長期服務三星獎章','長期服務四星獎章','優異服務獎章','嘉許信'];
 const ROSTER_LIST_DEFS=[
   {
     key:'section_award', match_fields:['name','award'], title:'支部獎勵獲獎名單', tab_label:'支部獎勵名單', icon:'fa-solid fa-medal',
     accent:'amber', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 支部獎勵名單', dept_tab:'cer_award_section',
-    tick_label:'點名', tick_hint:'獲獎人上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
+    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發支部最高獎章嘉許信』。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    format_note:'格式依「港島童軍繽紛日 2017 工作人員手冊」P.32『支部獎勵獲獎名單』；典禮程序按支部計「出席／獲獎」（如 總領袖獎章 26/50、榮譽童軍獎章 6/8、貝登堡獎章 3/3）——即本面板之「已點名／總數」。',
     source:'roster', editable:true, required:'name', group_field:'section', sort_fields:['area','section','unit','name'],
     columns:[
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
@@ -414,10 +415,12 @@ const ROSTER_LIST_DEFS=[
     key:'leader_award', match_fields:['name','award','unit'], title:'領袖獎勵獲獎名單', tab_label:'領袖獎勵名單', icon:'fa-solid fa-award',
     accent:'indigo', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 領袖獎勵名單', dept_tab:'cer_award_leader',
-    tick_label:'點名', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
-    intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒总监委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消 TICK 必須填寫更正原因。',
+    intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒總監委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    format_note:'格式依「港島童軍繽紛日 2017 工作人員手冊」P.33『領袖奬勵獲獎名單』；司儀稿逐位以「編號（如 5yr-1／LM-1／LS3-1）＋職位＋姓名」唱名，故本表設『編號』欄跟同一順序排序。',
     source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
     columns:[
+      {k:'no',label:'編號（唱名序）',type:'text',aliases:['編號','唱名編號','序號','序','call no','no','No.','No']},
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
       {k:'unit',label:'所屬單位（旅團／委員會）',type:'text',aliases:['所屬單位','單位','旅團','旅號','委員會','unit','Group']},
       {k:'rank',label:'職級／職銜',type:'text',aliases:['職級','職銜','職位','會職','rank','position','Appointment']},
@@ -426,7 +429,7 @@ const ROSTER_LIST_DEFS=[
       {k:'oath',label:'需覆誓',type:'select',options:['','是','否'],aliases:['覆誓','需覆誓','監誓','宣誓','oath']},
       {k:'notes',label:'備註',type:'text',aliases:['備註','說明','事項','note','notes','Remarks']}
     ],
-    sample_rows:[['VIC 維多利亞城區','港島第16旅','團高級指導員','張三','10年長期服務獎狀','',''],['HKN 港島北區','地域執行委員會','總監','李四','總監委任書','是','10:55 前排練覆誓']]
+    sample_rows:[['LS5-1','VIC 維多利亞城區','港島第16旅','團高級指導員','張三','五年長期服務獎狀','',''],['LM-1','HKN 港島北區','地域執行委員會','總監','李四','總監委任書','是','10:55 前排練覆誓']]
   },
   {
     // 參加旅團名單：既有執行手冊分頁（結構表＝Drive 同步／Excel 上傳）——v14 只加「點名」，名單本身仍跟 participants
@@ -434,6 +437,7 @@ const ROSTER_LIST_DEFS=[
     accent:'emerald', owner_group:'行政組', owner_note:'行政組',
     exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
     tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消 TICK 必須填寫更正原因。',
+    format_note:'格式依「港島童軍繽紛日 2017 工作人員手冊」P.34–35『參加旅團名單』（按區會分組，逐團列旅團＋團別）；2025 版為「旅團報名人數」PDF。領隊／人數等以 2026 報名結構表為準。',
     intro:'對應執行手冊行政組「參加旅團名單」（2025 版為「旅團報名人數」PDF）。名單本身沿用行政組維護之結構表（Drive 同步／Excel 上傳），v14 於同一頁加入報到點名。',
     source:'participants', editable:false, required:'unit', group_field:'section', sort_fields:['area','section','unit'],
     total_fields:[{k:'headcount',label:'人數'}],
@@ -452,6 +456,7 @@ const ROSTER_LIST_DEFS=[
     accent:'rose', owner_group:'協調組', owner_note:'協調組',
     exec_location:'執行手冊 → 代訂餐盒名單', dept_tab:'coord_mealbox',
     tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消 TICK 必須填寫更正原因。',
+    format_note:'格式依「港島童軍繽紛日 2017 工作人員手冊」P.36『代訂餐盒旅團名單』（每團按支部人数訂購）；A／B／C 餐為 2026 供應商分類，如供應商改用「飯卷數目」可只填其中一欄。',
     intro:'對應執行手冊「代訂餐盒」名單（2017 手冊目錄第 9 項；2025 版列於行政組膳食安排內）。名單由協調組上載及點名，用以向判單對數及派發時核對；各組仍可在「膳食管理」自行訂餐，兩邊數字如有出入以本名單為準並註明備註。',
     source:'roster', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
     total_fields:[{k:'qty_a',label:'A餐'},{k:'qty_b',label:'B餐'},{k:'qty_c',label:'C餐'},{k:'qty_total',label:'總數'}],

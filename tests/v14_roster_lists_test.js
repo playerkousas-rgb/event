@@ -179,15 +179,20 @@ ok(mealRows[0].qty_total === '40' && mealRows[1].qty_total === '45', 'B18 代訂
 // Word 表格 → 行列（有表頭 / 冇表頭都可以），同埋「貼上文字」用同一個 grid parser
 const wDef = appCer.rosterDef('leader_award');
 const withHeader = appCer.rosterGridToRows(wDef, [
-  ['區會', '所屬單位', '職級', '姓名', '獎項', '需覆誓', '備註'],
-  ['VIC 維多利亞城區', '港島第16旅', '團高級指導員', '張三', '10年長期服務獎狀', '', ''],
-  ['HKN 港島北區', '地域執行委員會', '總監', '李四', '總監委任書', '是', '10:55 前排練覆誓']
+  ['唱名編號', '區會', '所屬單位', '職位', '姓名', '獎項', '覆誓', '備註'],
+  ['LS5-1', 'VIC 維多利亞城區', '港島第16旅', '團高級指導員', '張三', '五年長期服務獎狀', '', ''],
+  ['LM-1', 'HKN 港島北區', '地域執行委員會', '總監', '李四', '總監委任書', '是', '10:55 前排練覆誓']
 ]);
 ok(withHeader.rows.length === 2 && withHeader.rows[1].oath === '是', 'B19 Word/文字表格（有表頭）按表頭對位');
+ok(withHeader.rows[0].no === 'LS5-1' && withHeader.rows[0].rank === '團高級指導員', 'B19b 手冊「編號／職位」表頭（别名）亦對到欄');
 const noHeader = appCer.rosterGridToRows(wDef, [
-  ['CHW 柴灣區', '港島第2旅', '助理總監', '王五', '優異服務獎章', '否', '']
+  ['LS3-1', 'CHW 柴灣區', '港島第2旅', '助理總監', '王五', '優異服務獎章', '否', '']
 ]);
-ok(noHeader.rows.length === 1 && noHeader.rows[0].name === '王五', 'B20 冇表頭行時按欄位順序對位');
+ok(noHeader.rows.length === 1 && noHeader.rows[0].name === '王五' && noHeader.rows[0].no === 'LS3-1', 'B20 冇表頭行時按欄位順序對位');
+// 2017 手冊核對：兩張獎勵名單用「出席」做 TICK 欄名；四張名單都俾到格式來源
+ok(['section_award', 'leader_award'].every(k => appCer.rosterDef(k).tick_col_label === '出席'), 'B20c 獎勵名單 TICK 欄名跟手冊「出席」');
+ok(['section_award', 'leader_award', 'participants', 'meal_box'].every(k => /2017 工作人員手冊/.test(appCer.rosterDef(k).format_note || '')), 'B20e 每張名單都列明格式來源（2017 手冊頁碼）');
+ok(appCer.rosterTableHTML('leader_award', appCer.rosterViewRows('leader_award'), true, false).includes('出席') , 'B20f 表頭顯示「出席」');
 const blank = appCer.rosterGridToRows(wDef, [['a'], ['b']]);
 ok(blank.rows.length === 0, 'B21 冇必填欄（姓名）嘅行唔會入名單');
 
@@ -220,7 +225,8 @@ appGd.rosterSetSort('section_award', 'tick'); ok(appGd['_rosterSort_section_awar
 let csv = null;
 appGd.downloadCSV = (fn, grid) => { csv = { fn, grid }; };
 appGd.rosterExportCSV('section_award');
-ok(csv && csv.grid[0][0] === '點名' && csv.grid[1][csv.grid[0].indexOf('獲獎人姓名')] === '趙六', 'B30 匯出 CSV 帶點名狀態');
+ok(csv && csv.grid[0][0] === '出席' && csv.grid[1][csv.grid[0].indexOf('獲獎人姓名')] === '趙六', 'B30 匯出 CSV 帶點名狀態（欄名跟手冊「出席」）');
+ok(appGd.rosterDef('meal_box').tick_col_label === undefined && appGd.rosterDef('meal_box').tick_label === '派發', 'B30b 無 tick_col_label 時 CSV 用 tick_label（派發）');
 appGd.rosterDownloadTemplate('section_award');
 ok(csv.grid.length === 3 && csv.grid[0].join(',') === '區會,支部,旅團／單位,獲獎人姓名,獎項（支部最高獎章）,嘉許信／證書編號,備註', 'B31 格式範本 CSV＝預定格式表頭＋樣板行');
 ok(appGd.rosterDef('participants').columns.map(c => c.label).join('|') === '區會|旅團|支部|人數|領隊／旅長|備註', 'B32 參加旅團名單格式（含區會／領隊）');

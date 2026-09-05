@@ -124,6 +124,7 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div>${escapeHtml(def.intro)}</div>
         <div class="text-[10px] text-slate-500">位置：${escapeHtml(def.exec_location)}｜格式（${cols.length} 欄）：${cols.map(c=>escapeHtml(c.label)).join(' / ')}＋<b>${escapeHtml(def.tick_label)} TICK</b></div>
+        ${def.format_note?`<div class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-book-open mr-1"></i>${escapeHtml(def.format_note)}</div>`:''}
         ${this.currentUser?'':'<div class=\"text-[10px] text-slate-500\">'+this.rosterNeedsLogin(key)+'</div>'}
       </div>
       <div class="flex flex-wrap gap-2 items-center">
@@ -185,14 +186,14 @@ Object.assign(ScoutEventApp.prototype,{
     const cols=def.columns||[];
     return `<div class="table-responsive"><table class="min-w-full text-[11px]">
       <thead class="bg-slate-100"><tr>
-        <th class="px-2 py-1 text-center w-14">${escapeHtml(def.tick_label)}</th>
+        <th class="px-2 py-1 text-center w-14">${escapeHtml(this.rosterTickColLabel(def))}</th>
         ${cols.map(c=>`<th class="px-2 py-1 text-left">${escapeHtml(c.label)}</th>`).join('')}
         ${canTick?'<th class="px-2 py-1 text-left">點名紀錄</th>':''}
         ${canManage&&def.editable?'<th class="px-2 py-1 text-right">操作</th>':''}
       </tr></thead>
       <tbody class="divide-y">
         ${rows.length?rows.map(r=>`<tr class="${r._checked?'bg-emerald-50/50':''}">
-          <td class="px-2 py-1 text-center" data-label="${escapeHtml(def.tick_label)}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this.checked)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"></td>
+          <td class="px-2 py-1 text-center" data-label="${escapeHtml(this.rosterTickColLabel(def))}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this.checked)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"></td>
           ${cols.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-medium':''}" data-label="${escapeHtml(c.label)}">${escapeHtml(String(r[c.k]??''))||'<span class="text-slate-300">—</span>'}</td>`).join('')}
           ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}`:(r._note?`<span class="text-rose-600">取消：${escapeHtml(r._note)}</span>`:'—')}</td>`:''}
           ${canManage&&def.editable?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openRosterRowForm('${key}','${escapeHtml(r.id||'')}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteRosterRow('${key}','${escapeHtml(r.id||'')}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}
@@ -565,7 +566,7 @@ Object.assign(ScoutEventApp.prototype,{
   rosterExportCSV(key){
     const def=this.rosterDef(key); if(!def) return;
     const rows=this.rosterViewRows(key);
-    const grid=[[def.tick_label,...def.columns.map(c=>c.label),'點名時間','點名人','備註(點名)']];
+    const grid=[[this.rosterTickColLabel(def),...def.columns.map(c=>c.label),'點名時間','點名人','備註(點名)']];
     rows.forEach(r=>grid.push([r._checked?'已'+def.tick_label:'未'+def.tick_label,...def.columns.map(c=>String(r[c.k]??'')),String(r._at||'').replace('T',' ').slice(0,19),r._by||'',r._note||'']));
     this.downloadCSV(`roster_${key}_${todayISO()}.csv`, grid);
   },
@@ -573,7 +574,8 @@ Object.assign(ScoutEventApp.prototype,{
   printRosterList(key,scope){
     const el=document.getElementById(`roster-print-${scope||'main'}-${key}`);
     if(!el){ showToast('找不到列印區域','error'); return; }
-    this.printCoordArea(el.id,`${(this.rosterDef(key)||{}).title||'名單'}（${(this.rosterDef(key)||{}).tick_label||'點名'}表）`);
+    const pd=this.rosterDef(key)||{};
+    this.printCoordArea(el.id,`${pd.title||'名單'}（${this.rosterTickColLabel(pd)}表）`);
   },
 
   /* ══════════════ 附件（沿用執行手冊上傳機制：PDF／Word／圖片／Drive 連結） ══════════════ */
@@ -637,6 +639,9 @@ Object.assign(ScoutEventApp.prototype,{
   },
 
   /* ══════════════ 給其他模組嘅小工具 ══════════════ */
+  rosterTickColLabel(def){
+    return (def&&(def.tick_col_label||def.tick_label))||'點名';
+  },
   rosterCounts(key){
     const rows=this.rosterViewRows(key);
     return {total:rows.length,ticked:rows.filter(r=>r._checked).length};
