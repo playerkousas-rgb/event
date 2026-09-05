@@ -317,7 +317,7 @@ function initializeSheets() {
   ensureColumns(ss.getSheetByName('Lost_Found'), ['type', 'contact', 'closed_by']);
   // 紀念章派發：行政組（工作人員，可填備註紀錄改名／替假）＋嘉賓接待組（嘉賓，不可改名）
   ensureSheet(ss, 'Souvenir_Stamps', ['stamp_id', 'event_id', 'scope', 'person_key', 'name', 'group_name', 'job_title', 'ticked', 'ticked_at', 'ticked_by', 'ticked_by_id', 'remark', 'created_at', 'updated_at']);
-  ensureSheet(ss, 'Ceremony_Merit_Checkins', ['checkin_id', 'event_id', 'merit_id', 'area', 'unit', 'section', 'checked_in', 'checked_by', 'checked_by_id', 'checked_at', 'checkin_note']);
+  ensureSheet(ss, 'Ceremony_Merit_Checkins', ['checkin_id', 'event_id', 'merit_id', 'area', 'unit', 'section', 'checked_in', 'correction_cancelled', 'checked_by', 'checked_by_id', 'checked_at', 'checkin_note']);
   ensureSheet(ss, 'Ceremony_Merit_Checkin_Batches', ['batch_id', 'event_id', 'area', 'confirmed', 'confirmed_by', 'confirmed_by_id', 'confirmed_at', 'total', 'ticked']);
   // ═══ v7.7 新增／補漏（全部非破壞性：只會新增工作表或於最右加欄，不會改動既有資料）═══
   // 車輛通行證（含泊車）：前端一直有寫出，但舊版 GS 未建立此表 → 之前寫出會被丟棄，現正式建立
@@ -1367,6 +1367,18 @@ function saveRecord(data) {
     if (rows[i][0] === recordId) { rowIndex = i + 1; break; }
   }
   
+  // 典禮點名：修正／取消是明確的 tombstone。其他工作人員的舊本機 TICK
+  // 不可以把負責人已取消的錯誤 TICK 復原；只有日後明確清除修正欄才可重新 TICK。
+  if (moduleName === 'Ceremony_Merit_Checkins' && rowIndex > 0) {
+    const correctionIdx = headers.indexOf('correction_cancelled');
+    const checkedIdx = headers.indexOf('checked_in');
+    const old = rows[rowIndex - 1];
+    if (correctionIdx >= 0 && String(old[correctionIdx]) === 'Y' && String(record.correction_cancelled || '') !== 'Y' && String(record.checked_in || '') === 'Y') {
+      record.checked_in = 'N';
+      record.correction_cancelled = 'Y';
+      record.checkin_note = old[headers.indexOf('checkin_note')] || '已由負責人修正取消';
+    }
+  }
   const rowValues = headers.map(h => record[h] !== undefined ? record[h] : '');
   if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);
   else sheet.appendRow(rowValues);
