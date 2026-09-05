@@ -1036,13 +1036,13 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   saveParticipantsData(data){ localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
 ,
-  participantHeaderMap(){ return { unit_name:['旅團','旅團名稱','單位','unit','unit_name','group','名稱'], section:['支部','section','支部名稱','組別'], headcount:['人數','headcount','count','參加人數'], notes:['備註','notes','說明','remark'] }; }
+  participantHeaderMap(){ return { unit_name:['旅團','旅團名稱','單位','unit','unit_name','group','名稱'], section:['支部','section','支部名稱','組別'], headcount:['人數','headcount','count','參加人數'], notes:['備註','notes','說明','remark'], area:['區會','區','所屬區會','area','District'], leader:['領隊','旅長','負責人','领袖','leader','unit_leader'] }; }
 ,
   normalizeParticipantRow(r){
     const b=(w)=>{ const want=(Array.isArray(w)?w:[w]).map(x=>String(x).trim().toLowerCase()); for(const kk of Object.keys(r)){ if(want.includes(String(kk).trim().toLowerCase())){ const v=r[kk]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } } return ''; };
     const unit_name=b(this.participantHeaderMap().unit_name);
     if(!unit_name) return null;
-    return { unit_name, section:b(this.participantHeaderMap().section), headcount:b(this.participantHeaderMap().headcount), notes:b(this.participantHeaderMap().notes) };
+    return { unit_name, section:b(this.participantHeaderMap().section), headcount:b(this.participantHeaderMap().headcount), notes:b(this.participantHeaderMap().notes), area:b(this.participantHeaderMap().area), leader:b(this.participantHeaderMap().leader) };
   }
 ,
   rowsToParticipants(rows){ return (rows||[]).map(r=>this.normalizeParticipantRow(r)).filter(Boolean); }
@@ -1066,7 +1066,8 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleParticipantsExcelUpload(file){
     if(!file) return;
-    if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅行政組主任以上可上傳','error'); return; }
+    // v14：權限口徑同「名單＋點名」引擎一致（行政組主任以上／副主席以上／管理層），唔再另設一套
+    if(!(this.canUploadDocument()||this.isAdmin()) && !this.rosterCanManage('participants')){ showToast('僅行政組（參加旅團名單負責組別）主任以上及管理層可上傳','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
       const rows=await this.parseExcelToRows(file);
@@ -1079,13 +1080,37 @@ Object.assign(ScoutEventApp.prototype,{
     finally{ if(overlay) overlay.classList.remove('active'); }
   }
 ,
+  /* v14：參加旅團名單上傳統一入口 — EXCEL／CSV 走結構表；WORD（含表格）解析成行列；PDF 只作附件內嵌預覽 */
+  async handleParticipantsUploadFile(file){
+    if(!file) return;
+    const name=String(file.name||'').toLowerCase();
+    if(/\.(xlsx|xlsm|xls|csv)$/.test(name)) return this.handleParticipantsExcelUpload(file);
+    // 權限同「名單＋點名」引擎一致：行政組（負責組別）主任以上／副主席以上／管理層
+    if(!this.rosterCanManage('participants')){ showToast('僅行政組（參加旅團名單負責組別）主任以上及管理層可上載名單','error'); return; }
+    const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
+    try{
+      const def=this.rosterDef('participants');
+      if(/\.docx?$/.test(name)){
+        const p=await this.rosterParseDocx(def,file);
+        await this.rosterAttachFile('participants',file,p.text?String(p.text).slice(0,20000):'');
+        if(p.rows.length) this.openRosterImportPreview('participants',p.rows,{source:file.name,note:`（Word 解析 ${p.rows.length} 行）${p.note||''}`});
+        else showToast('Word 已內嵌為附件（冇可辨識嘅表格／行列）；點名名單請用 EXCEL 或「貼上文字」','warning');
+      } else if(/\.pdf$/.test(name)){
+        await this.rosterAttachFile('participants',file,'');
+        showToast('PDF 已內嵌預覽（名單版位已保留）；如需可點名嘅行列名單，請用 EXCEL／WORD 或「貼上文字」','warning');
+      } else { showToast('不支援嘅檔案格式（可用：.xlsx .xls .csv .docx .pdf）','error'); }
+      this.rosterRefresh('participants');
+    }catch(e){ showToast('上傳失敗：'+e.message,'error'); }
+    finally{ if(overlay) overlay.classList.remove('active'); }
+  }
+,
   downloadScheduleTemplate(){
     const csv='time_slot,title,location,group_name,description\n07:45 - 08:30,會操及頒獎禮場地設置劃位,大操場,協調組,各功能組別場地佈置\n08:30 - 10:30,參加旅團報到及攤位最後佈置,報到處,行政組,旅團報到及攤位佈置\n10:45 - 10:55,嘉賓接待及就座,莫榮大樓地下,行政組,嘉賓接待後就座大操場\n11:00 - 12:00,第一部分典禮：優異旅團及各項獎勵頒發儀式,大操場,會操及典禮組,吳家麗會長主禮\n12:00 - 13:00,第二部分典禮：會操檢閱及頒獎儀式,大操場,會操及典禮組,區永樑指揮官主禮\n13:00 - 14:00,嘉賓茶聚,莫榮大樓地下,行政組,嘉賓茶聚及工作人員午膳\n14:00 - 17:00,主題攤位節目／參觀主題活動區,營地全區,主題節目組,公眾參觀攤位\n';
     const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='schedule_template.csv'; a.click(); showToast('已下載日程表範本','success');
   }
 ,
   downloadParticipantsTemplate(){
-    const csv='unit_name,section,headcount,notes\n港島第1旅,童軍,30,\n港島第2旅,幼童軍,45,\n港島第3旅,小童軍,25,\n';
+    const csv='區會,旅團,支部,人數,領隊,備註\nCHW 柴灣區,港島第1旅,童軍,30,陳旅長,\nHKS 港島南區,港島第2旅,幼童軍,45,李領隊,10:00 前排到\nSKW 筲箕灣區,港島第3旅,小童軍,25,,\n';
     const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='participants_template.csv'; a.click(); showToast('已下載參加旅團名單範本','success');
   }
 ,
