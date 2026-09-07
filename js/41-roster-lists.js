@@ -154,7 +154,13 @@ Object.assign(ScoutEventApp.prototype,{
     const light='bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-bold';
     const meritReplyStatus=def.source==='ceremony_merit'&&typeof this.meritAwardReplyStatusHTML==='function'
       ?this.meritAwardReplyStatusHTML():'';
+    // v15.14：管理區（上載/匯出/列印/同步/說明/附件）收入摺合格——寫嘢要有，用嗰陣唔阻。
+    //         手機預設收埋、電腦預設展開、每張名單各自記住（localStorage）。
+    const admOpenRZ=this.opsAdminOpen('roster_'+key);
     return `
+      <details class="ops-admin" ontoggle="app.opsAdminSave('roster_${key}',this.open)" ${admOpenRZ?'open':''}>
+        <summary class="ops-admin-sum"><i class="fa-solid fa-gear mr-1"></i>名單管理・說明・附件<span class="ops-admin-note">（手機預設收埋：點名用下面嗰格 TICK 就得）</span></summary>
+        <div class="ops-admin-body space-y-3">
       <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700 space-y-1.5">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <b class="text-[13px]"><i class="${def.icon} mr-1"></i>${escapeHtml(def.title)}</b>
@@ -166,7 +172,7 @@ Object.assign(ScoutEventApp.prototype,{
         ${canTick?`<div class="text-[10px] text-slate-600"><b>TICK 只加不減</b>（同紀念章派發一樣）：剔綠色格＝${escapeHtml(def.tick_label)}；要取消請喺同一行<b>同時剔紅色「修正」格</b>（TICK=Y＋修正=Y 先會取消），取消後兩格清空，之後如真係到場可再 TICK。直接剔走 TICK 唔會當取消。</div>`:''}
       </div>
       ${meritReplyStatus}
-      <div class="flex flex-wrap gap-2 items-center">
+      <div class="flex flex-wrap gap-2 items-center roster-toolbar">
         ${canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''"></label>`:''}
         ${canManage?`<button type="button" onclick="app.openRosterPasteForm('${def.key}')" class="${light}"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
         ${canManage&&def.editable?`<button type="button" onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}
@@ -177,28 +183,48 @@ Object.assign(ScoutEventApp.prototype,{
         ${canManage?`<button type="button" onclick="app.openExecManualFileForm('${attachKey}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paperclip mr-1"></i>上傳附件（PDF／Word／圖片／Drive 連結）</button>`:''}
         ${this.rosterBackendReady()?`<button type="button" onclick="app.rosterPushToGas('${def.key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>同步名單至後端</button><button type="button" onclick="app.rosterPullFromGas('${def.key}')" class="${light}"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>由後端取回</button>`:''}
       </div>
+            ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載 Excel 範本」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
+            ${files.length?`<div class="space-y-2"><b class="text-[12px]"><i class="fa-solid fa-paperclip mr-1"></i>${escapeHtml(def.title)}附件（${files.length}）</b><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,attachKey,canManage)).join('')}</div></div>`:''}
+      </div>
+      </details>
+
       <div class="bg-white border rounded-xl p-3 space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <b class="text-[12px]"><i class="fa-solid fa-clipboard-check mr-1 text-emerald-600"></i>${escapeHtml(def.tick_label)}表</b>
           <div class="flex items-center gap-2 flex-wrap">
-            <select onchange="app.rosterSetSort('${def.key}',this.value)" class="border rounded-lg px-2 py-1 text-[11px] bg-white">
+            <input type="search" inputmode="search" class="roster-q" placeholder="🔍 篩選姓名／旅團…" value="${escapeHtml(this['_rosterQ_'+def.key]||'')}" oninput="app.rosterLocalFilter('${def.key}',this.value)">
+            <select onchange="app.rosterSetSort('${def.key}',this.value)" class="roster-sel border rounded-lg px-2 py-1 text-[11px] bg-white">
               ${(def.sort_fields||[]).map(f=>{const c=cols.find(x=>x.k===f);return `<option value="${f}" ${((this['_rosterSort_'+key])||def.group_field)===f?'selected':''}>按${escapeHtml(c?c.label:f)}</option>`;}).join('')}
               <option value="tick" ${(this['_rosterSort_'+key]||'')==='tick'?'selected':''}>未${escapeHtml(def.tick_label)}優先</option>
             </select>
-            <button onclick="app.rosterToggleSortDir('${def.key}')" class="bg-white border rounded-lg px-2 py-1 text-[11px]">↕ ${this['_rosterDesc_'+key]?'倒序':'順序'}</button>
-            ${canTick?`<button onclick="app.rosterTickAllVisible('${def.key}')" class="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg px-2 py-1 text-[11px] font-bold">全選本欄${escapeHtml(def.tick_label)}</button>`:''}
+            <button onclick="app.rosterToggleSortDir('${def.key}')" class="roster-dirbtn bg-white border rounded-lg px-2 py-1 text-[11px]">↕ ${this['_rosterDesc_'+key]?'倒序':'順序'}</button>
+            ${canTick?`<button onclick="app.rosterTickAllVisible('${def.key}')" class="roster-dirbtn bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg px-2 py-1 text-[11px] font-bold">全選本欄${escapeHtml(def.tick_label)}</button>`:''}
           </div>
         </div>
         <div id="roster-print-${scope}-${key}" data-roster-body="${key}">${this.rosterBodyHTML(key)}</div>
       </div>
-      ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載 Excel 範本」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
-      ${files.length?`<div class="space-y-2"><b class="text-[12px]"><i class="fa-solid fa-paperclip mr-1"></i>${escapeHtml(def.title)}附件（${files.length}）</b><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,attachKey,canManage)).join('')}</div></div>`:''}
     `;
   },
 
+  /* ══ v15.14 實戰分層：「寫嘅嘢」同「用嘅嘢」分開 ══════════════════════
+     點名／派章面板有兩類內容：
+     · 管理區（上載名單／匯出／列印／同步／說明）——寫入資料用嘅，實戰嗰陣係干擾
+     · 作戰區（篩選＋大 TICK 卡）——活動日 90% 時間用嘅
+     做法：管理區收入 <details> 摺合格（手機預設收埋、電腦預設展開、每格各自記住開合）。
+     「。」層名：'roster_<名單key>' / 'stamp_<scope>'，localStorage 長期記住。 */
+  opsAdminOpen(zone){
+    let v=null; try{ v=localStorage.getItem('ops_admin_'+zone); }catch(e){}
+    if(v!==null) return v==='1';
+    return !((typeof window!=='undefined')&&typeof window.matchMedia==='function'&&window.matchMedia('(max-width:768px)').matches);
+  }
+,
+  opsAdminSave(zone, open){ try{ localStorage.setItem('ops_admin_'+zone, open?'1':'0'); }catch(e){} }
+,
+
   rosterBodyHTML(key){
     const def=this.rosterDef(key); if(!def) return '';
-    return `${this.rosterStatusHTML(key)}${this.rosterTableHTML(key)}${this.rosterTotalsHTML(key)}`;
+    // 電腦版＝完整表格；手機版＝一人一行緊湊點名卡（CSS 按熒幕寬度二選一，列印時手機卡以 no-print 隱藏）
+    return `${this.rosterStatusHTML(key)}<div class="roster-desktop-wrap">${this.rosterTableHTML(key)}</div>${this.rosterMobileListHTML(key)}${this.rosterTotalsHTML(key)}`;
   },
 
   // 附件版位：參加旅團沿用執行手冊既有嘅「participants」區（兩邊入口見到同一組附件）；其餘另有 roster_ 區
@@ -222,11 +248,15 @@ Object.assign(ScoutEventApp.prototype,{
     const confirmed=this.getRosterData().confirmed[key]||{};
     const progressLabel=def.source==='participants'?'旅團報到':(def.source==='ceremony_merit'?'優異旅團點名':'分組點名');
     const legend=all.hasReply?'已到／回覆出席／全名單':`已${escapeHtml(def.tick_label)}／全名單`;
+    const activeG=this['_rosterG_'+key]||'';
     return `<div class="text-[11px] font-bold text-slate-700 mb-1">目前進度：${legend}　${all.text}${groups.length?`　｜　${progressLabel}`:''}</div>
-      ${groups.length?`<div class="flex flex-wrap gap-1 mb-2">${groups.map(g=>{
-        const rs=rows.filter(r=>String(r[gk]||'').trim()===g), st=this.rosterScopeStats(def,rs), c=confirmed[g]?' · ✅已確認':'';
-        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] bg-slate-100 text-slate-700" title="${legend}">${escapeHtml(g)}：${st.text}${escapeHtml(c)}${canTick&&st.done===st.total&&st.total?`<button onclick="app.rosterConfirmGroup('${key}','${encodeURIComponent(g)}')" class="text-emerald-700 font-bold underline">確認</button>`:''}</span>`;
-      }).join('')}</div>`:''}`;
+      ${groups.length?`<div class="flex flex-wrap gap-1 mb-2" id="roster-chips-${key}">
+        <span class="roster-gchip inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] bg-slate-100 text-slate-700 border ${activeG?'':'active'}" onclick="app.rosterFilterGroup('${key}','')" title="一撳篩選／再撳還原">全部</span>
+        ${groups.map(g=>{
+          const rs=rows.filter(r=>String(r[gk]||'').trim()===g), st=this.rosterScopeStats(def,rs), c=confirmed[g]?' · ✅已確認':'';
+          return `<span class="roster-gchip inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] bg-slate-100 text-slate-700 border ${activeG===g?'active':''}" data-g="${escapeHtml(g)}" onclick="app.rosterFilterGroup('${key}','${encodeURIComponent(g)}')" title="一撳只睇呢組，再撳還原全部" >${escapeHtml(g)}：${st.text}${escapeHtml(c)}${canTick&&st.done===st.total&&st.total?`<button onclick="event.stopPropagation();app.rosterConfirmGroup('${key}','${encodeURIComponent(g)}')" class="text-emerald-700 font-bold underline">確認</button>`:''}</span>`;
+        }).join('')}</div>
+        ${groups.length?`<div class="text-[9.5px] text-slate-400 -mt-1 mb-2">💡 撳組別章＝只睇嗰組（例如去到邊區就撳邊區），再撳「全部」還原</div>`:''}`:''}`;
   },
 
   rosterTableHTML(key){
@@ -234,6 +264,7 @@ Object.assign(ScoutEventApp.prototype,{
     const rows=this.rosterViewRows(key);
     const canManage=this.rosterCanManage(key), canTick=this.rosterCanTick(key);
     const cols=def.columns||[];
+    const gk=def.group_field||'area';
     const hasMeritReply=def.source==='ceremony_merit';
     const meritReplyCell=r=>{
       const reply=r._meritReply;
@@ -251,7 +282,7 @@ Object.assign(ScoutEventApp.prototype,{
         ${canManage&&def.editable?'<th class="px-2 py-1 text-right">操作</th>':''}
       </tr></thead>
       <tbody class="divide-y">
-        ${rows.length?rows.map(r=>`<tr class="${r._checked?'bg-emerald-50/50':''}">
+        ${rows.length?rows.map(r=>`<tr class="${r._checked?'bg-emerald-50/50':''}" data-rg="${escapeHtml(String(r[gk]||'').trim())}">
           <td class="px-2 py-1 text-center roster-tick-cell" data-label="${escapeHtml(this.rosterTickColLabel(def))}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,false)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"><br><input type="checkbox" ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,true)" class="w-3 h-3 accent-rose-600" title="修正：取消這一次 TICK（只在已 TICK 時生效；取消後可再 TICK）"> <span class="text-[9px] text-rose-600">修正</span></td>
           ${cols.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-medium':''}" data-label="${escapeHtml(c.label)}">${escapeHtml(String(r[c.k]??''))||'<span class="text-slate-300">—</span>'}</td>`).join('')}
           ${hasMeritReply?meritReplyCell(r):''}
@@ -260,6 +291,50 @@ Object.assign(ScoutEventApp.prototype,{
         </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
       </tbody>
     </table></div>`;
+  },
+
+  /* ══════════════ 手機版點名：一人一行（大 TICK 目標＋展開詳情） ══════════════
+     只喺熒幕 ≤768px 顯示（電腦仍用 rosterTableHTML 完整表格）；防錯邏輯 0 改動：
+     大格＝TICK（onChange 直接走 rosterTick）；「修正」格＋編輯／刪除收喺展開區。 */
+  rosterMobileListHTML(key){
+    const def=this.rosterDef(key); if(!def) return '';
+    const rows=this.rosterViewRows(key);
+    const canManage=this.rosterCanManage(key), canTick=this.rosterCanTick(key);
+    const cols=def.columns||[];
+    const reqK=def.required||(cols[0]&&cols[0].k)||'';
+    const gk=def.group_field||'area';
+    const hasMeritReply=def.source==='ceremony_merit';
+    const mobKeys=Array.isArray(def.mobile_fields)&&def.mobile_fields.length?def.mobile_fields:cols.filter(c=>c.k!==reqK&&c.k!=='notes').slice(0,4).map(c=>c.k);
+    const mobCols=mobKeys.map(k=>cols.find(c=>c.k===k)).filter(Boolean).filter(c=>c.k!==reqK);
+    const timeShort=v=>{const s=String(v||'');const m=s.match(/T(\d{2}:\d{2})/);return m?m[1]:s.replace('T',' ').slice(5,16);};
+    if(!rows.length) return `<div class="roster-mobile-list no-print"><div class="border border-dashed border-slate-300 rounded-xl py-6 text-center text-[12px] text-slate-400">尚未有${escapeHtml(def.title)}（可上傳 Excel／Word 或逐行新增）</div></div>`;
+    return `<div class="roster-mobile-list no-print">${rows.map(r=>{
+      const enc=encodeURIComponent(r._key||'');
+      const pri=escapeHtml(String(r[reqK]??'').trim())||'<span class="text-slate-300">—</span>';
+      const sec=mobCols.map(c=>{const v=String(r[c.k]??'').trim();return v?`<span class="rm-pair"><span class="rm-lb">${escapeHtml(c.label)}</span>${escapeHtml(v)}</span>`:'';}).filter(Boolean).join('');
+      const notes=String(r.notes??'').trim();
+      const chip=r._checked?`<span class="rm-chip rm-ok"><i class="fa-solid fa-check mr-0.5"></i>已${escapeHtml(def.tick_label)}${r._at?' '+escapeHtml(timeShort(r._at)):''}</span>`:(r._correction?`<span class="rm-chip rm-fix">↩ 已修正</span>`:'');
+      const record=r._checked?`✅ 已${escapeHtml(def.tick_label)} · ${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}`:(r._correction||r._note?`↩ 修正取消${r._note?'：'+escapeHtml(r._note):''} · ${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}`:`未${escapeHtml(def.tick_label)}`);
+      const reply=hasMeritReply?(r._meritReply?`<div class="rm-record">回條：<b>${escapeHtml(r._meritReply.response||(r._meritReply.created_at?'已回覆':'現場核對'))}</b>／${escapeHtml(r._meritReply.attendance||'—')}</div>`:`<div class="rm-record">回條：<b class="text-rose-600">未回覆</b></div>`):'';
+      return `<div class="rm-row ${r._checked?'on':''}" data-rg="${escapeHtml(String(r[gk]||'').trim())}">
+        <div class="rm-main">
+          <label class="rm-tick" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後'+escapeHtml(def.tick_label)}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${enc}',this,false)"><span class="rm-box"><i class="fa-solid fa-check"></i></span></label>
+          <div class="rm-info" onclick="var x=this.closest('.rm-row');if(x)x.classList.toggle('open')">
+            <div class="rm-line1"><b>${pri}</b>${chip}</div>
+            ${sec?`<div class="rm-line2">${sec}</div>`:''}
+            ${notes?`<div class="rm-notes"><i class="fa-regular fa-note-sticky mr-0.5"></i>${escapeHtml(notes)}</div>`:''}
+            <i class="fa-solid fa-chevron-down rm-chev"></i>
+          </div>
+        </div>
+        <div class="rm-detail">
+          <div class="rm-grid">${cols.map(c=>`<div><span class="rm-d-lb">${escapeHtml(c.label)}：</span>${escapeHtml(String(r[c.k]??''))||'<span class="text-slate-300">—</span>'}</div>`).join('')}</div>
+          ${reply}
+          <div class="rm-record">${record}</div>
+          ${canTick?`<label class="rm-fix"><input type="checkbox" onchange="app.rosterTick('${key}','${enc}',this,true)" class="accent-rose-600"><span><b>修正：</b>取消這一次 ${escapeHtml(def.tick_label)}（只喺已 ${escapeHtml(def.tick_label)} 時生效；取消後可再 TICK）</span></label>`:''}
+          ${canManage&&def.editable?`<div class="rm-actions"><button type="button" onclick="app.openRosterRowForm('${key}','${escapeHtml(r.id||'')}')">✏️ 編輯</button><button type="button" onclick="app.deleteRosterRow('${key}','${escapeHtml(r.id||'')}')" class="bg-rose-50 border-rose-200 text-rose-600">🗑️ 刪除</button></div>`:''}
+        </div>
+      </div>`;
+    }).join('')}</div>`;
   },
 
   // 總數列（代訂餐盒 A／B／C／總數；參加旅團人數）——像攤位總表 TOTAL 一行
@@ -273,6 +348,7 @@ Object.assign(ScoutEventApp.prototype,{
 
   rosterRefresh(key){
     document.querySelectorAll(`[data-roster-panel="${key}"]`).forEach(el=>{ el.innerHTML=this.rosterPanelInnerHTML(key, el.dataset.rosterScope||'main'); });
+    this.rosterApplyLocalFilter(key);      // 全面重畫（匯入／刪行等）後篩選繼續生效
   },
 
   // 匯入／刪除後刷新：本面板全部實例；參加旅團另需重畫宿主（執行手冊分頁／行政組頁籤嘅結構表）
@@ -283,9 +359,9 @@ Object.assign(ScoutEventApp.prototype,{
       return;
     }
     if(def&&def.source==='participants'){
-      if(this.currentModule==='exec_manual'&&document.getElementById('exec-manual-panel')){ this.renderExecManualTab(); return; }
+      if(this.currentModule==='exec_manual'&&document.getElementById('exec-manual-panel')){ this.renderExecManualTab(); this.rosterApplyLocalFilter(key); return; }
       const adminTab=document.getElementById('group-tab-admin_participants');
-      if(adminTab&&adminTab.innerHTML.trim()){ adminTab.innerHTML=this.renderAdminParticipantsTabHTML(); return; }
+      if(adminTab&&adminTab.innerHTML.trim()){ adminTab.innerHTML=this.renderAdminParticipantsTabHTML(); this.rosterApplyLocalFilter(key); return; }
     }
     this.rosterRefresh(key);
   }
@@ -294,6 +370,34 @@ Object.assign(ScoutEventApp.prototype,{
     const rows=this.rosterViewRows(key);
     document.querySelectorAll(`[data-roster-body="${key}"]`).forEach(el=>{ el.innerHTML=this.rosterBodyHTML(key); });
     void rows;
+    this.rosterApplyLocalFilter(key);       // TICK ／修正後重畫，關鍵字＋分組篩選繼續生效
+  },
+
+  // 關鍵字＋分組章篩選（純顯示層，唔郁資料）：桌面表格行＋手機一人一行卡同步套用
+  rosterLocalFilter(key,q,group){
+    if(q!==undefined) this['_rosterQ_'+key]=String(q||'');
+    if(group!==undefined) this['_rosterG_'+key]=String(group||'');
+    const needle=String(this['_rosterQ_'+key]||'').trim().toLowerCase();
+    const g=String(this['_rosterG_'+key]||'');
+    document.querySelectorAll(`[data-roster-panel="${key}"]`).forEach(panel=>{
+      panel.querySelectorAll('[data-roster-body] tbody tr,[data-roster-body] .rm-row').forEach(row=>{
+        const okQ=!needle||row.textContent.toLowerCase().includes(needle);
+        const okG=!g||String(row.getAttribute&&row.getAttribute('data-rg')||'')===g;
+        row.style.display=(okQ&&okG)?'':'none';
+      });
+    });
+  },
+  // 已記住嘅篩選條件重新套用（任何重畫之後呼叫）
+  rosterApplyLocalFilter(key){
+    if((this['_rosterQ_'+key]||'')===''&&(this['_rosterG_'+key]||'')==='') return;
+    this.rosterLocalFilter(key);
+  },
+  // 分組章一撳篩選（再撳同一組＝還原「全部」）：去到現場邊區／邊組，撳一下即只剩嗰幾個
+  rosterFilterGroup(key,g){
+    g=decodeURIComponent(String(g||''));
+    const cur=this['_rosterG_'+key]||'';
+    this['_rosterG_'+key]=(!g||cur===g)?'':g;
+    this.rosterRefreshBody(key);
   },
 
   rosterSetSort(key,val){ this['_rosterSort_'+key]=val; this.rosterRefreshBody(key); },

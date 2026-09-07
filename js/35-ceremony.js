@@ -100,7 +100,7 @@ Object.assign(ScoutEventApp.prototype,{
           </div>
           <div id="ceremony-files-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
         </div>
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
+        <div class="m-tabbar flex gap-2 border-b pb-3 overflow-x-auto flex-wrap m-subtab">
           <button onclick="app.switchCeremonyTab('rundown')" class="tab-btn ${this.ceremonySubTab==='rundown'?'active':''}"><i class="fa-solid fa-list mr-1"></i> RUNDOWN</button>
           <button onclick="app.switchCeremonyTab('mc')" class="tab-btn ${this.ceremonySubTab==='mc'?'active':''}"><i class="fa-solid fa-microphone-lines mr-1"></i> 司儀稿</button>
           <button onclick="app.switchCeremonyTab('guests')" class="tab-btn ${this.ceremonySubTab==='guests'?'active':''}"><i class="fa-solid fa-user-tie mr-1"></i> 嘉賓名單</button>

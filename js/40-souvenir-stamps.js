@@ -278,6 +278,12 @@ Object.assign(ScoutEventApp.prototype,{
     rows.sort(cmp);
     // 穩定排序：姓名欄次序相同時保持原名單次序（roster index 已寫入 data-idx）
     rows.forEach((tr,i)=>tbody.appendChild(tr));
+    // v15.1：手機一人一行卡同步排序（行帶同一套 data-sort_*）
+    const mob=document.getElementById('stamp-mobile-'+scope);
+    if(mob){
+      const mrows=Array.from(mob.querySelectorAll('.rm-row[data-key]'));
+      mrows.sort(cmp); mrows.forEach(mr=>mob.appendChild(mr));
+    }
     // 更新 header 排序標示
     table.querySelectorAll('th[data-sort-key]').forEach(th=>{
       const k=th.getAttribute('data-sort-key');
@@ -302,8 +308,46 @@ Object.assign(ScoutEventApp.prototype,{
     const sortTh=(key,label)=>`<th class="border px-2 py-1 cursor-pointer select-none hover:bg-slate-200 ${sortState.key===key?'stamp-th-active':''}" data-sort-key="${key}" data-label-base="${escapeHtml(label)}" onclick="app.setStampSort('${scope}','${key}')">${escapeHtml(label)}${sortState.key===key?(sortState.dir==='asc'?' ▲':' ▼'):''}</th>`;
     const byGroup={};
     roster.forEach(p=>{ const g=p.group_name||'未分組'; byGroup[g]=byGroup[g]||{total:0,ticked:0}; byGroup[g].total++; if(map[p.key]&&map[p.key].ticked) byGroup[g].ticked++; });
-    const groupChips=Object.keys(byGroup).map(g=>`<span class="text-[10px] bg-white border px-2 py-1 rounded-full whitespace-nowrap">${escapeHtml(g)} <b>${byGroup[g].ticked}</b>/${byGroup[g].total}</span>`).join('');
+    // v15.1：分組章＝一撳篩選（去到攤位，撳「該組」即只剩幾個人）；再撳一次／撳「全部」還原
+    const activeGrp=((this._stampF||{})[scope]||{}).group||'';
+    const groupChips=Object.keys(byGroup).map(g=>`<span class="stamp-gchip text-[10px] bg-white border px-2 py-1 rounded-full whitespace-nowrap ${activeGrp===g?'active':''}" data-g="${escapeHtml(g)}" onclick="app.stampFilterGroup('${scope}','${encodeURIComponent(g)}')" title="一撳只睇呢組，再撳還原">${escapeHtml(g)} <b>${byGroup[g].ticked}</b>/${byGroup[g].total}</span>`).join('');
+    // 攤位下拉（有攤位資料先顯示）：去到邊個攤位就揀邊個
+    const booths=scope==='staff'?[...new Set(roster.map(p=>String(p.booth||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-HK',{numeric:true})):[];
+    const boothSel=booths.length?`<select id="stamp-booth-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="stamp-ctl px-3 py-2 border rounded-xl text-xs bg-white font-bold" title="揀攤位 → 只剩該攤位工作人員"><option value="">🎯 全部攤位</option><option value="__none__">（無編配攤位）</option>${booths.map(b=>`<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('')}</select>`:'';
     const isStaff=scope==='staff';
+    // v15.1 手機派發：一人一卡（大 TICK 目標）；行帶 data-* 同表格行一致，排序／篩選兩邊同步
+    const mobileRow=(p)=>{
+      const e=map[p.key]||{};
+      const ticked=!!e.ticked;
+      const remarkVal=e.remark||p.remark||'';
+      const boothVal=p.booth||e.booth||'';
+      const unitVal=p.unit||e.unit||'';
+      const search=`${p.name} ${p.group_name} ${p.job_title||p.title||''} ${remarkVal} ${boothVal} ${unitVal}`.toLowerCase();
+      const chip=ticked?`<div class="rm-chip-wrap">${`<span class="rm-chip rm-ok"><i class="fa-solid fa-check mr-0.5"></i>已派 ${escapeHtml((String(e.ticked_at||'').split(' ').pop())||'')}</span>`}</div>`:'<div class="rm-chip-wrap"></div>';
+      const record=ticked?`✅ 已派 · ${escapeHtml(e.ticked_by||'')} · ${escapeHtml(e.ticked_at||'')}`:'⬜ 未派';
+      const grid=isStaff
+        ?[['姓名',p.name],['組別',p.group_name],['攤位',boothVal],['身份',p.job_title||p.title||'']]
+        :[['姓名',p.name],['單位',unitVal],['職銜',p.job_title||p.title||'']];
+      return `<div class="rm-row ${ticked?'on':''}" data-key="${escapeHtml(p.key)}" data-search="${escapeHtml(search)}" data-sort_name="${escapeHtml(p.name)}" data-sort_group="${escapeHtml(p.group_name||'')}" data-sort_booth="${escapeHtml(boothVal)}" data-sort_unit="${escapeHtml(unitVal)}" data-sort_ticked="${ticked?1:0}">
+        <div class="rm-main">
+          <label class="rm-tick" title="${canManage?'派咗紀念章就剔':'紀念章派發由'+escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))+'管理'}"><input type="checkbox" ${ticked?'checked':''} ${canManage?'':'disabled'} onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this,false)"><span class="rm-box"><i class="fa-solid fa-check"></i></span></label>
+          <div class="rm-info" onclick="var x=this.closest('.rm-row');if(x)x.classList.toggle('open')">
+            <div class="rm-line1"><b>${escapeHtml(p.name)}</b>${chip}</div>
+            <div class="rm-line2">${isStaff
+              ?`<span class="rm-pair"><span class="rm-lb">組別</span>${escapeHtml(p.group_name||'—')}</span>${boothVal?`<span class="rm-pair"><span class="rm-lb">攤位</span>${escapeHtml(boothVal)}</span>`:''}${(p.job_title||p.title||'').trim()?`<span class="rm-pair"><span class="rm-lb">身份</span>${escapeHtml(p.job_title||p.title||'')}</span>`:''}`
+              :`${unitVal.trim()?`<span class="rm-pair"><span class="rm-lb">單位</span>${escapeHtml(unitVal)}</span>`:''}${(p.job_title||p.title||'').trim()?`<span class="rm-pair"><span class="rm-lb">職銜</span>${escapeHtml(p.job_title||p.title||'')}</span>`:''}`}</div>
+            <i class="fa-solid fa-chevron-down rm-chev"></i>
+          </div>
+        </div>
+        <div class="rm-detail">
+          <div class="rm-grid">${grid.map(x=>`<div><span class="rm-d-lb">${x[0]}：</span>${escapeHtml(String(x[1]||''))||'<span class="text-slate-300">—</span>'}</div>`).join('')}</div>
+          <div class="rm-record">${record}</div>
+          ${canManage?`<label class="rm-fix"><input type="checkbox" onchange="app.toggleSouvenirStamp('${scope}','${escapeHtml(p.key)}',this,true)" class="accent-rose-600"><span><b>修正：</b>取消這一次派發（只喺已 TICK 時生效）</span></label>`:''}
+          ${canManage&&isStaff?`<input value="${escapeHtml(remarkVal)}" placeholder="備註：改名／替假請註明實際領取人" onchange="app.saveSouvenirStampRemark('${scope}','${escapeHtml(p.key)}',this.value)" class="w-full px-3 py-2.5 border rounded-xl text-sm mt-1 bg-white" style="font-size:16px">`:''}
+        </div>
+      </div>`;
+    };
+    const mobileRows=roster.map(p=>mobileRow(p)).join('');
     const rows=roster.map((p,i)=>{
       const e=map[p.key]||{};
       const ticked=!!e.ticked;
@@ -328,34 +372,47 @@ Object.assign(ScoutEventApp.prototype,{
     }).join('');
     const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('group','組別')}${sortTh('booth','攤位(如有)')}<th class="border px-2 py-1 text-left">身份</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註(改名)</th>`;
     const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('unit','單位')}<th class="border px-2 py-1 text-left">職銜</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註</th>`;
+    // v15.14：說明＋管理掣（匯入/匯出/列印/清除）收「⚙️ 名單管理」摺合格；
+    //         戰鬥嘢全部留面：進度數字、組別章、攤位下拉、搜尋、篩選、💾儲存、大 TICK 卡。
+    const admOpenST=this.opsAdminOpen('stamp_'+scope);
     return `<div class="space-y-3">
+      <details class="ops-admin" ontoggle="app.opsAdminSave('stamp_${scope}',this.open)" ${admOpenST?'open':''}>
+        <summary class="ops-admin-sum"><i class="fa-solid fa-gear mr-1"></i>名單管理・說明<span class="ops-admin-note">（手機預設收埋：派發用下面就得）</span></summary>
+        <div class="ops-admin-body space-y-3">
       <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先暫存，可以一口氣 TICK 完整個組別，完成後撳「💾 儲存」一次過記錄。</b>':''}</div>
+        <div class="ops-admin-tools flex gap-2 flex-wrap items-center">
+        <span class="text-[10px] text-slate-400 py-2">💡 手機：撳組別章／揀攤位即篩剩幾個人；電腦：點標題列（姓名／組別／攤位／派發狀態）排序</span>
+        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
+        <button onclick="app.exportSouvenirStampsExcel('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出派發紀錄 Excel</button>
+        <button onclick="app.exportSouvenirStampsWord('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
+        <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
+        ${canManage&&((isStaff&&(store.staff_custom||[]).length)||(!isStaff&&(store.guests_custom||[]).length))?`<button onclick="app.clearSouvenirCustom('${scope}')" class="bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>清除匯入名單</button>`:''}
+        </div>
+      </div>
+      </details>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
         <div class="bg-white border rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${st.total}</div><div class="text-[10px]">${escapeHtml(def.label)}總人數</div></div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-emerald-700" id="stamp-count-${scope}">${st.ticked}</div><div class="text-[10px]">已派發</div></div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-amber-700" id="stamp-pending-${scope}">${st.pending}</div><div class="text-[10px]">未派發</div></div>
         <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-fuchsia-700" id="stamp-pct-${scope}">${pct}%</div><div class="text-[10px]">派發進度</div></div>
       </div>
-      ${isStaff?`<div class="flex flex-wrap gap-1.5"><span class="text-[10px] text-slate-500 py-1">按組別進度：</span>${groupChips}</div>`:''}
-      <div class="flex gap-2 flex-wrap items-center">
-        <input id="stamp-search-${scope}" oninput="app.filterSouvenirStamps('${scope}')" placeholder="🔍 搜尋姓名／組別／備註" class="px-3 py-2 border rounded-xl text-xs min-w-[180px]">
-        <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="px-3 py-2 border rounded-xl text-xs bg-white">
+      ${isStaff?`<div class="flex flex-wrap gap-1.5 items-center" id="stamp-chips-${scope}"><span class="text-[10px] text-slate-500 py-1">按組別進度（一撳篩選）：</span><span class="stamp-gchip text-[10px] bg-white border px-2 py-1 rounded-full whitespace-nowrap ${activeGrp?'':'active'}" onclick="app.stampFilterGroup('${scope}','')" title="顯示全部組別">全部</span>${groupChips}</div>`:''}
+      <div class="flex gap-2 flex-wrap items-center roster-toolbar">
+        <input id="stamp-search-${scope}" oninput="app.filterSouvenirStamps('${scope}')" placeholder="🔍 搜尋姓名／組別／攤位／備註" class="stamp-ctl px-3 py-2 border rounded-xl text-xs min-w-[180px] flex-1">
+        ${boothSel}
+        <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="stamp-ctl px-3 py-2 border rounded-xl text-xs bg-white">
           <option value="all">全部</option><option value="pending">只睇未派發</option><option value="ticked">只睇已派發</option>
         </select>
+        <span id="stamp-showing-${scope}" class="text-[10px] text-slate-500 py-2 whitespace-nowrap"></span>
         ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
         <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
-        <span class="text-[10px] text-slate-400 py-2">💡 點 header（姓名／組別／攤位／派發狀態）可排序，方便現場派發</span>
-        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
-        <button onclick="app.exportSouvenirStampsExcel('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出派發紀錄 Excel</button>
-        <button onclick="app.exportSouvenirStampsWord('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
-        <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
-        ${canManage&&((isStaff&&(store.staff_custom||[]).length)||(!isStaff&&(store.guests_custom||[]).length))?`<button onclick="app.clearSouvenirCustom('${scope}')" class="bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>清除匯入名單</button>`:''}
       </div>
       <div id="stamp-print-${scope}" class="bg-white border rounded-xl p-3">
-        <div class="table-responsive"><table class="min-w-full text-[11px] border" id="stamp-table-${scope}">
+        <div class="roster-desktop-wrap"><div class="table-responsive"><table class="min-w-full text-[11px] border" id="stamp-table-${scope}">
           <thead class="bg-slate-100"><tr>${isStaff?headerStaff:headerGuest}</tr></thead>
           <tbody>${rows||`<tr><td colspan="${isStaff?7:6}" class="border px-2 py-4 text-center text-slate-400">暫無${escapeHtml(def.label)}名單</td></tr>`}</tbody>
-        </table></div>
+        </table></div></div>
+        <div class="roster-mobile-list no-print" id="stamp-mobile-${scope}">${mobileRows||`<div class="border border-dashed border-slate-300 rounded-xl py-6 text-center text-[12px] text-slate-400">暫無${escapeHtml(def.label)}名單</div>`}</div>
         <p class="text-[10px] text-slate-400 mt-2">${isStaff
           ?'工作人員名單來自開戶用戶＋組織架構與聯絡表＋EXCEL 匯入（活動前已有全人名）；有工作人員改名／替假，請喺「備註(改名)」註明實際領取人。欄位：姓名 組別 攤位(如有) 身份 備註(改名) TICK。派發由行政組管理。'
           :'嘉賓名單來自「執行手冊 → 典禮儀式 → 嘉賓名單」＋EXCEL 匯入，唔可以改名（冇代嘉賓）；如名單有變請先改嘉賓名單。欄位：姓名 單位 職銜 TICK。派發由行政組及嘉賓接待組管理。'}</p>
@@ -387,12 +444,35 @@ Object.assign(ScoutEventApp.prototype,{
     map[key]=e; data[scope]=map;
     this.saveSouvenirStampData(data,{scope,key,row:e});
     if(el){
-      const tr=el.closest?el.closest('tr'):null;
-      if(tr){
-        const cell=tr.querySelector('.stamp-status-cell');
-        if(cell) cell.innerHTML=ticked?`<span class="text-emerald-700 font-bold">✅ 已派</span><br><span class="text-slate-500">${escapeHtml(e.ticked_at)} · ${escapeHtml(e.ticked_by)}</span>`:'<span class="text-slate-400">⬜ 未派</span>';
-        tr.classList.toggle('bg-emerald-50/60',ticked);
-      }
+      // 顯示狀態＝操作後嘅真正狀態（修正後 e.ticked=false；唔好用 checkbox 嘅 checked 直接顯示）
+      // 同一個人喺桌面表格＋手機一人一行卡各有一行，兩邊同步更新（任何一版 TICK 另一版都跟住變）
+      const shownTicked=!!e.ticked;
+      [document.getElementById('stamp-table-'+scope),document.getElementById('stamp-mobile-'+scope)].forEach(box=>{
+        if(!box||!box.querySelectorAll) return;
+        box.querySelectorAll('[data-key]').forEach(row=>{
+          if(row.getAttribute('data-key')!==key) return;
+          if(row.dataset) row.dataset.sort_ticked=shownTicked?'1':'0';
+          if(row.tagName==='TR'){
+            const cell=row.querySelector('.stamp-status-cell');
+            if(cell) cell.innerHTML=shownTicked?`<span class="text-emerald-700 font-bold">✅ 已派</span><br><span class="text-slate-500">${escapeHtml(e.ticked_at)} · ${escapeHtml(e.ticked_by)}</span>`:'<span class="text-slate-400">⬜ 未派</span>';
+            row.classList.toggle('bg-emerald-50/60',shownTicked);
+            const mainCb=row.querySelector('input[type=checkbox]');
+            if(mainCb) mainCb.checked=shownTicked;   // 篩選（只睇未派發）係讀呢個狀態，兩版要一致
+          }else{
+            row.classList.toggle('on',shownTicked);
+            const bigTick=row.querySelector('.rm-tick input');
+            if(bigTick) bigTick.checked=shownTicked;
+            const chipWrap=row.querySelector('.rm-chip-wrap');
+            if(chipWrap) chipWrap.innerHTML=shownTicked?`<span class="rm-chip rm-ok"><i class="fa-solid fa-check mr-0.5"></i>已派 ${escapeHtml((String(e.ticked_at||'').split(' ').pop())||'')}</span>`:'';
+            const rec=row.querySelector('.rm-record');
+            if(rec) rec.textContent=shownTicked?`✅ 已派 · ${e.ticked_by||''} · ${e.ticked_at||''}`:'⬜ 未派';
+          }
+          const fixIn=row.querySelector('.rm-fix input');
+          if(fixIn) fixIn.checked=false;
+        });
+      });
+      // 「只睇未派發」模式下 TICK 完該行即收走，順手下一位
+      this.filterSouvenirStamps(scope);
     }
     const st=this.souvenirStampStats(scope);
     const c=document.getElementById('stamp-count-'+scope); if(c) c.textContent=st.ticked;
@@ -417,19 +497,51 @@ Object.assign(ScoutEventApp.prototype,{
     this.saveSouvenirStampData(data,{scope,key,row:e});
   }
 ,
+  // v15.1：關鍵字＋派發狀態＋組別章＋攤位下拉四重篩選；桌面表格行＋手機一人一行卡同步套用
   filterSouvenirStamps(scope){
     const q=(document.getElementById('stamp-search-'+scope)?.value||'').trim().toLowerCase();
     const mode=document.getElementById('stamp-filter-'+scope)?.value||'all';
+    const boothSel=document.getElementById('stamp-booth-'+scope);
+    const booth=boothSel?String(boothSel.value||''):'';
+    this._stampF=this._stampF||{}; this._stampF[scope]=this._stampF[scope]||{group:''};
+    const group=this._stampF[scope].group||'';
+    const targets=[];
     const table=document.getElementById('stamp-table-'+scope);
-    if(!table||!table.querySelectorAll) return;
-    table.querySelectorAll('tbody tr').forEach(tr=>{
+    if(table&&table.querySelectorAll) table.querySelectorAll('tbody tr').forEach(tr=>targets.push(tr));
+    const mob=document.getElementById('stamp-mobile-'+scope);
+    if(mob&&mob.querySelectorAll) mob.querySelectorAll('.rm-row[data-key]').forEach(mr=>targets.push(mr));
+    if(!targets.length) return;
+    let shown=0;
+    targets.forEach(tr=>{
       const text=String((tr.getAttribute&&tr.getAttribute('data-search'))||'').toLowerCase();
       const cb=tr.querySelector?tr.querySelector('input[type=checkbox]'):null;
       const ticked=!!(cb&&cb.checked);
       const hitQ=!q||text.includes(q);
       const hitM=mode==='all'||(mode==='ticked'?ticked:!ticked);
-      tr.classList.toggle('hidden',!(hitQ&&hitM));
+      const hitG=!group||String(tr.getAttribute('data-sort_group')||'')===group;
+      const bv=String(tr.getAttribute('data-sort_booth')||'').trim();
+      const hitB=!booth||(booth==='__none__'?bv==='':bv===booth);
+      const show=hitQ&&hitM&&hitG&&hitB;
+      tr.classList.toggle('hidden',!show);
+      if(show) shown++;
     });
+    // 計數：每個範圍（桌面／手機）各 unique person 計一次
+    const total=targets.length/((table&&mob)?2:1)||targets.length;
+    const hint=document.getElementById('stamp-showing-'+scope);
+    if(hint) hint.textContent=(q||mode!=='all'||group||booth)?`顯示 ${Math.round(shown/((table&&mob)?2:1))}/${Math.round(total)} 人`:'';
+  },
+
+  // 分組章一撳篩選（去到攤位，撳「該組」即只剩幾個人；再撳一次＝顯示全部）
+  stampFilterGroup(scope,g){
+    g=decodeURIComponent(String(g||''));
+    this._stampF=this._stampF||{}; this._stampF[scope]=this._stampF[scope]||{group:''};
+    this._stampF[scope].group=(!g||this._stampF[scope].group===g)?'':g;
+    const cur=this._stampF[scope].group;
+    const wrap=document.getElementById('stamp-chips-'+scope);
+    if(wrap) wrap.querySelectorAll('.stamp-gchip').forEach(c=>{
+      c.classList.toggle('active', String(c.getAttribute('data-g')||'')===cur||(!cur&&!c.getAttribute('data-g')));
+    });
+    this.filterSouvenirStamps(scope);
   }
 ,
   // 派發紀錄二維陣列（第一行表頭）——Excel／Word 共用（v14.1 起冇 CSV）
@@ -468,6 +580,7 @@ Object.assign(ScoutEventApp.prototype,{
   clearSouvenirCustom(scope){
     if(!this.canManageSouvenirStamps(scope)) return;
     if(!confirm('確定清除所有匯入的自訂名單？（已 TICK 紀錄會保留）')) return;
+    this._stampF=this._stampF||{}; this._stampF[scope]={group:''};   // 全面重畫後還原篩選
     const data=this.getSouvenirStampData();
     if(scope==='staff') data.staff_custom=[];
     else data.guests_custom=[];
@@ -557,6 +670,7 @@ Object.assign(ScoutEventApp.prototype,{
       const merged=Array.from(existingMap.values());
       store[customKey]=merged;
       this.saveSouvenirStampData(store,{scope,custom:merged});
+      this._stampF=this._stampF||{}; this._stampF[scope]={group:''};   // 全面重畫後還原篩選
       showToast(`成功匯入 ${results.length} 個名單，共 ${merged.length} 個自訂名單（同名會覆蓋）`,'success');
       if(this.currentModule==='admin_group'){
         this.adminGroupTab=scope==='staff'?'stamp_staff':'stamp_guest';

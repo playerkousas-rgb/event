@@ -636,7 +636,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed">
           <b>⚠️ 結算總表批核已修正 (按附件1銀碼區分)：</b><br>
           舊版四格印僅寫「組別總主任/副主席」「行政/財務」「主席」，現已按附件1 <b>報價要求</b> 修正為不同銀碼不同批核鏈，並保留四格印 Checked/Certified 流程。請參照下表：<br>
-          <div class="mt-2 bg-white border rounded-xl overflow-hidden">
+          <div class="mt-2 bg-white border rounded-xl overflow-hidden tbl-scroll">
             <table class="min-w-full text-[10px] border-collapse">
               <thead class="bg-slate-100 font-bold"><tr><th class="border px-2 py-1">支出金額</th><th class="border px-2 py-1">報價要求</th><th class="border px-2 py-1">批核人士 (申請→批→再確認)</th></tr></thead>
               <tbody>

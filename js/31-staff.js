@@ -157,7 +157,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] text-indigo-900">
           組織架構公開可看；電話／Email 需登入；名單及職務大綱由有權限者管理。
         </div>
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
+        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap m-tabbar m-subtab">
           <button onclick="app.switchStaffTab('org_chart')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='org_chart'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-sitemap mr-1"></i> 組織架構圖 (樹形)</button>
           <button onclick="app.switchStaffTab('contacts')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='contacts'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-address-book mr-1"></i> 名單及聯絡 (批量)</button>
           <button onclick="app.switchStaffTab('job_duties')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='job_duties'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-clipboard-list mr-1"></i> 職務大綱（2026 人名／年份）</button>

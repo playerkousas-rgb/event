@@ -1,0 +1,16 @@
+{
+  "name": "童軍活動管理系統",
+  "short_name": "童軍活動",
+  "description": "活動執行手冊・名單點名・紀念章派發・批核中心——手機離線可用",
+  "lang": "zh-HK",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8FAFC",
+  "theme_color": "#6d28d9",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

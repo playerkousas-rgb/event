@@ -51,7 +51,7 @@ ok(coreSrc.includes('groupStatsSectionHTML'), '① 應有 groupStatsSectionHTML�
 ok(coreFlat.includes('groupStatsOpenState(){ if(this.groupStatsOpen===undefined) this.groupStatsOpen=true;'), '① 統計區默認展開');
 ok(coreSrc.includes('toggleGroupStatsSection'), '① 統計區可展開收合');
 const appsTab = coreSrc.slice(coreSrc.indexOf('id="group-tab-apps"'), coreSrc.indexOf('id="group-tab-apps"') + 3000);
-ok(appsTab.indexOf('groupStatsSectionHTML') < appsTab.indexOf('groupInfoBoxesHTML'), '① apps 頁籤內統計應在 4 格資訊之前（最頂）');
+ok(appsTab.indexOf('groupInfoBoxesHTML') < appsTab.indexOf('groupStatsSectionHTML'), '① v15.12 前線優先：4 格資訊導嚮最頂，統計數字沉底（統計係管理層嘅嘢）');
 
 /* v13.2：3 大可收合卡片——① 統計（只留數字）② 本組資訊 ③ 詳細統計資料（最下） */
 ok(appsTab.indexOf('groupInfoBoxesHTML') < appsTab.indexOf('groupDetailSectionHTML'), '⑪ 詳細統計資料卡應在本組資訊之後（最下）');
@@ -165,7 +165,7 @@ const themeHTML = vm.runInContext(`document.getElementById('module-content').inn
 const posStats = themeHTML.indexOf('id="group-stats-body"');
 const posInfo = themeHTML.indexOf('id="gib-body-members"');
 const posDetail = themeHTML.indexOf('id="group-detail-body"');
-ok(posStats >= 0 && posInfo > posStats && posDetail > posInfo, '①②⑪ 部門中心 3 大卡片次序：統計 → 本組資訊 → 詳細統計資料');
+ok(posStats >= 0 && posDetail > posInfo && posStats > posDetail, '①②⑪ v15.12 前線優先：資訊 → 詳細統計資料 → 統計數字沉底（舊定案次序已由用戶 2026-09-07 反轉）');
 ok(!themeHTML.includes('本組資訊（一個整體）') && themeHTML.includes('本組資訊<span id="gib-card-hint"'), '⑩ 本組資訊標題應已刪去「（一個整體）」（整體可收合）');
 ok(themeHTML.includes('id="group-stats-body" class="p-3 space-y-3 "'), '① 統計區默認展開（HTML 無 hidden）');
 const statsCardHTML = vm.runInContext(`globalThis.__app.groupStatsSectionHTML('主題節目組')`, context);

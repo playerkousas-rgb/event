@@ -83,7 +83,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-900">
           <b>場地與活動總覽：</b>地圖、攤位列表（Drive 攤位資料）、攤位總表（2026 總表）、場地佈置總覽、遊戲卡、活動列表；上傳需主任／副主席以上。
         </div>
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
+        <div class="m-tabbar flex gap-2 border-b pb-3 overflow-x-auto flex-wrap m-subtab">
           <button onclick="app.switchActivitiesTab('maps')" class="tab-btn ${this.activitiesSubTab==='maps'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 地圖 (${data.maps.length})</button>
           <button onclick="app.switchActivitiesTab('booths')" class="tab-btn ${this.activitiesSubTab==='booths'?'active':''}"><i class="fa-solid fa-table mr-1"></i> 攤位列表 (${data.booths.length})</button>
           <button onclick="app.switchActivitiesTab('booth_master')" class="tab-btn ${this.activitiesSubTab==='booth_master'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位總表</button>

@@ -263,7 +263,10 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('module-content');
     if(!container) return;
     if(!this.execManualSubTab) this.execManualSubTab='staff';
+    // v15.11：目錄唔入 APP（用 APP 嘅人撳章就得，唔使目錄）；目錄只喺「列印整本手冊」度出現，見 execPrintAll()
     const tabs=[
+      {k:'ann_list',  icon:'fa-solid fa-bullhorn',             label:'公告'},
+      {k:'schedule',  icon:'fa-solid fa-calendar-days',        label:'日程表'},
       {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
       {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
@@ -272,15 +275,82 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
       {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
       {k:'meal_box',    icon:'fa-solid fa-bowl-food',          label:'代訂餐盒名單'},
+      {k:'unit_guide', icon:'fa-solid fa-book-open',           label:'旅團須知'},
+      {k:'theme_badges', icon:'fa-solid fa-award',             label:'活動主題章'},
       {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
+        <div id="exec-crumb" class="exec-crumb" aria-label="路線列"></div>
+        <div class="m-tabbar flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
         <div id="exec-manual-panel"></div>
       </div>`;
+    this.ensureExecCrumbWrap();
     this.renderExecManualTab();
+    // v15.11：唔好逐章印 — 手冊最終係整本列印先有意義；一粒掣印全本（自動附目錄頁）
+    const actionsEl=document.getElementById('module-actions');
+    if(actionsEl) actionsEl.innerHTML='<button onclick="app.execPrintAll()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印整本手冊</button>';
+  }
+,
+  /* v15.7 執行手冊「路線列」：執行手冊 › 章名 › 節名 ⟵ 一睇就知而家喺邊個大標題下面。
+     章名＝章列黑底掣、節名＝節列 active 掣，全部讀 DOM 動態攞（唔使逐個模組改 label）。
+     手機顯示短名嗰陣，路線列一律用全稱（.lbl-long 優先），唔會齋見到「指引」。 */
+  execBtnLabel(btn){
+    if(!btn) return '';
+    const lg=btn.querySelector('.lbl-long');
+    return (((lg?lg.textContent:btn.textContent)||'').replace(/\s+/g,' ').trim());
+  }
+,
+  execCrumbUpdate(){
+    const crumb=document.getElementById('exec-crumb');
+    const root=document.getElementById('module-content');
+    if(!crumb||!root) return;
+    const activeLabel=(bar)=>{
+      if(!bar) return '';
+      const b=bar.querySelector('.tab-btn.active')
+        ||[...bar.querySelectorAll('button')].find(x=>/text-white/.test(x.className||''));
+      return this.execBtnLabel(b);
+    };
+    const chap=activeLabel(root.querySelector('.m-tabbar:not(.m-subtab)'));
+    const sec=activeLabel(root.querySelector('.m-subtab'));
+    crumb.innerHTML='<i class="fa-solid fa-book-open"></i><span>執行手冊</span>'
+      +(chap?'<i class="fa-solid fa-angle-right exec-crumb-sep"></i><b>'+escapeHtml(chap)+'</b>':'')
+      +(sec&&sec!==chap?'<i class="fa-solid fa-angle-right exec-crumb-sep"></i><b class="exec-crumb-sec">'+escapeHtml(sec)+'</b>':'');
+  }
+,
+  // 內部分頁切換函數包一浸：切完即更新路線列（佢哋多數只 toggle hidden、唔會 re-render 全版）
+  ensureExecCrumbWrap(){
+    ['switchStaffTab','switchActivitiesTab','switchCeremonyTab','switchCrisisTab','switchExecManualMiscTab'].forEach(n=>{
+      const o=ScoutEventApp.prototype[n];
+      if(typeof o==='function' && !o._crumbWrapped){
+        const w=function(){ const r=o.apply(this,arguments); try{ this.execCrumbUpdate(); }catch(e){} return r; };
+        w._crumbWrapped=true;
+        ScoutEventApp.prototype[n]=w;
+      }
+    });
+  }
+,
+  /* ══ v15.12 頂 BAR 緊急掣：任何頁一撳直去「危機處理 → 緊急聯絡」（公開、未登入都得）══
+     活動日十秒火警思路：唔使諗喺邊度，頂頭永遠有粒紅掣。版本號隔籬，醒目。
+     未入活動就自動入第一個活動先；入完手冊再切危機章、緊急聯絡節，碌埋落去。 */
+  goEmergency(){
+    if(!this.currentEvent){
+      const evs=this.eventsList||this.events||[];
+      if(evs.length){ this.currentEvent=evs[0]; }
+    }
+    const go=()=>{
+      this.openModule('exec_manual');
+      setTimeout(()=>{
+        this.switchExecManualTab('crisis');
+        setTimeout(()=>{
+          try{ this.switchCrisisTab('contacts'); }catch(e){}
+          const el=document.getElementById('crisis-tab-contacts');
+          if(el&&el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'start'});
+        },250);
+      },250);
+    };
+    go();
   }
 ,
   switchExecManualTab(tab){
@@ -310,6 +380,12 @@ Object.assign(ScoutEventApp.prototype,{
     const panel=document.getElementById('exec-manual-panel');
     if(!panel) return;
     const map={
+      // v15.9：公告及溝通嘅資訊內容併入執行手冊（資料得一份，掛原 renderer）。
+      //      公告用 id=ann-tab-list 包裝：佢內部搜尋靠 getElementById 返呢個 id 重繪。
+      ann_list:()=>{ panel.innerHTML='<div id="ann-tab-list"></div>'; this.renderAnnList(document.getElementById('ann-tab-list')); },
+      schedule:()=>this.renderScheduleModule(panel),
+      unit_guide:()=>this.renderUnitGuideModule(panel),
+      theme_badges:()=>this.renderThemeBadgesModule(panel),
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
@@ -345,6 +421,144 @@ Object.assign(ScoutEventApp.prototype,{
       documents:()=>this.renderDocumentsModule(panel)
     };
     (map[this.execManualSubTab]||map.staff)();
+    // v15.6：平面長章包「節」手風琴（參加旅團名單／代訂餐盒名單）；其餘章本身有內部分頁條＝節列，唔加工
+    if(this.execManualSubTab==='participants'||this.execManualSubTab==='meal_box'){ try{ this.sectionizeExecPanel(panel,this.execManualSubTab); }catch(e){} }
+    try{ this.execCrumbUpdate(); }catch(e){}   // v15.7：路線列
+  }
+,
+  /* ══ v15.6 執行手冊「章→節→內容」手風琴（手機為主、電腦行為不變）══════════════
+     執行手冊係大總管，分類要明確：
+     · 章＝頂排分頁條；節＝章內可收合大標題卡；節內內容原樣照放
+     · 手機預設只開第一節（一入章頁就係大綱視圖）；電腦預設全部展開（行為不變）
+     · localStorage 按「活動＋章＋節名」記住開關，下次入嚟直接見返
+     · 標題含「緊急」嘅節永遠預設展開（救命資料唔收埋）
+     · 簡介橫幅（bg-*-50）／按鈕工具列唔收，保持一眼可見可撳 */
+  execSecSlug(t){ return encodeURIComponent(String(t||'').replace(/\s+/g,'')).slice(0,48); }
+,
+  execSecStoreKey(){ return 'exec_sections_open_'+(this.currentEvent?.event_id||'isd_2026'); }
+,
+  execSecPrefs(){ try{ return JSON.parse(localStorage.getItem(this.execSecStoreKey())||'{}'); }catch(e){ return {}; } }
+,
+  // 「全部展開／全部收合」掣：toggle 事件會自動落盤（見下面 listener），呢度唔使再寫
+  execSecToggleAll(chapter, open){
+    const panel=document.getElementById('exec-manual-panel'); if(!panel) return;
+    panel.querySelectorAll('details.exec-sec').forEach(d=>{ d.open=!!open; });
+  }
+,
+  /* ══ v15.11 列印整本執行手冊（目錄頁只喺列印版出現，APP 內唔加——對用 APP 嘅人冇用）══
+     做法：逐章用 switchExecManualTab 真 render 入 #exec-manual-panel（所有節一次過
+     render 晒，hidden 節都照有內容；列印窗口冇 Tailwind → hidden 自動全現身），clone
+     後剷走掣／輸入／手機版名單、節卡攤開變 h2，砌埋目錄頁送列印窗，最後還原用戶原本開緊嗰章。 */
+  execPrintAll(){
+    const panel=document.getElementById('exec-manual-panel');
+    if(!panel||typeof window.open!=='function'){ showToast('請先開啟執行手冊','error'); return; }
+    const BOOK=[   // 印本次序＋各章節目（只係目錄頁用）
+      {k:'ann_list',      label:'公告'},
+      {k:'schedule',      label:'日程表'},
+      {k:'staff',         label:'組織架構與聯絡', secs:['組織架構圖','名單及聯絡','職務大綱']},
+      {k:'activities',    label:'場地與活動總覽', secs:['地圖','攤位列表','攤位總表','場地佈置總覽','遊戲卡','活動列表']},
+      {k:'ceremony',      label:'典禮儀式',       secs:['RUNDOWN','司儀稿','嘉賓名單','座位表','致辭稿','優異旅團獲獎名單','支部獎勵名單','領袖獎勵名單','嘉賓地圖']},
+      {k:'crisis',        label:'危機處理',       secs:['應變指引（急救・保險）','意外事件報告表','上傳危機處理手冊','危機應變小組','緊急聯絡']},
+      {k:'finance_guide', label:'財務指引'},
+      {k:'documents',     label:'通告及文件'},
+      {k:'participants',  label:'參加旅團名單'},
+      {k:'meal_box',      label:'代訂餐盒名單'},
+      {k:'unit_guide',    label:'旅團須知'},
+      {k:'theme_badges',  label:'活動主題章'},
+      {k:'misc',          label:'各類附加資料',   secs:['箱頭紙','許可證式樣','失物認領']}
+    ];
+    showToast('準備整本列印中…');
+    const orig=this.execManualSubTab;
+    const parts=[];
+    try{
+      BOOK.forEach((ch,idx)=>{
+        this.switchExecManualTab(ch.k);
+        const clone=panel.cloneNode(true);
+        clone.querySelectorAll('script,style,button,input,select,textarea,label,iframe,.exec-sec-tools,.roster-mobile-list,.to-top-btn').forEach(n=>n.remove());
+        clone.querySelectorAll('details.exec-sec').forEach(d=>{
+          const sum=d.querySelector('summary');
+          const t=sum?sum.textContent.trim():'';
+          const div=document.createElement('div');
+          if(t) div.innerHTML='<h2 class="p-sec-h">'+escapeHtml(t)+'</h2>';
+          [...d.children].forEach(c=>{ if(c!==sum) div.appendChild(c); });
+          d.replaceWith(div);
+        });
+        parts.push('<section class="chapter"><h1 class="p-chap-h">'+(idx+1)+'. '+escapeHtml(ch.label)+'</h1>'+clone.innerHTML+'</section>');
+      });
+    }finally{
+      this.switchExecManualTab(orig);   // 還原用戶原本開緊嗰章（章列 highlight 一齊還原）
+    }
+    const tocHtml='<div class="toc-page"><h1 style="font-size:22px;text-align:center;margin:0 0 4px">'+escapeHtml(this.currentEvent?.event_name||'')+'　執行手冊</h1>'
+      +'<div class="meta" style="text-align:center">印製日期：'+new Date().toLocaleString()+'（目錄頁只屬列印版）</div>'
+      +'<h2 style="font-size:16px;margin:14px 0 6px">目錄</h2><ol class="toc">'
+      +BOOK.map((c,i)=>'<li><b>'+(i+1)+'. '+escapeHtml(c.label)+'</b>'
+        +(c.secs?'<ul>'+c.secs.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>':'')+'</li>').join('')
+      +'</ol></div>';
+    const win=window.open('','_blank');
+    if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
+    win.document.write('<html><head><meta charset="utf-8"><title>執行手冊（整本）</title><style>'
+      +"body{font-family:'Noto Sans TC',sans-serif;padding:22px;color:#000}"
+      +'.meta{font-size:11px;color:#555;margin-bottom:14px}'
+      +'.toc{list-style:none;padding:0;margin:0}.toc>li{margin:8px 0;font-size:13px}'
+      +'.toc ul{margin:2px 0 2px 20px;padding:0;list-style:none;font-size:11px;color:#444}.toc ul li{margin:1px 0}'
+      +'.chapter{page-break-before:always;break-before:page}'
+      +'.p-chap-h{font-size:19px;border-bottom:2.5px solid #000;margin:0 0 10px;padding-bottom:5px}'
+      +'.p-sec-h{font-size:15px;border-bottom:1.5px solid #000;margin:16px 0 6px;padding-bottom:3px}'
+      +'table{width:100%;border-collapse:collapse;margin-top:6px}th,td{border:1px solid #999;padding:5px;font-size:11px;text-align:left}'
+      +'a{color:#000;text-decoration:none}.no-print{display:none!important}'
+      +'</style></head><body>'+tocHtml+parts.join('\n')
+      +'<script>window.onload=()=>setTimeout(()=>window.print(),400)<\/script></body></html>');
+    win.document.close();
+  }
+,
+  sectionizeExecPanel(panel, chapterKey){
+    if(!panel || typeof document.createElement!=='function') return;
+    const box=panel.firstElementChild; if(!box) return;
+    const BANNER_RE=/bg-(indigo|sky|rose|emerald|amber|slate|purple|teal)-50/;
+    const prefs=this.execSecPrefs();
+    const isMobile=(typeof window.matchMedia==='function')?window.matchMedia('(max-width:768px)').matches:true;
+    let secIdx=0;
+    [...box.children].forEach(el=>{
+      if(el.tagName==='DETAILS') return;                          // 已包裝
+      const cls=String(el.className||'');
+      if(BANNER_RE.test(cls)) return;                             // 簡介橫幅／小提示保持原樣
+      const hasHeading=!!el.querySelector('h1,h2,h3,h4,h5');
+      const hasContent=!!el.querySelector('table,.roster-panel,iframe,img,[class*="grid"]');
+      if(!hasHeading&&!hasContent) return;                        // 工具掣列／一行小字唔收
+      // 節名＝入面第一個標題；無標題就攞第一個粗體字；都無就放過
+      let title=(el.querySelector('h1,h2,h3,h4,h5')?.textContent||'').trim();
+      if(!title){ const b=el.querySelector('b,strong,[class*="font-bold"]'); title=(b?.textContent||'').trim(); }
+      title=title.replace(/\s+/g,' ').slice(0,40);
+      if(!title) return;
+      const details=document.createElement('details');
+      details.className='exec-sec';
+      details.dataset.secKey=chapterKey+'::'+this.execSecSlug(title);
+      const sum=document.createElement('summary');
+      sum.className='exec-sec-sum';
+      sum.innerHTML='<i class="fa-solid fa-chevron-down exec-sec-ico" aria-hidden="true"></i><span class="exec-sec-title">'+escapeHtml(title)+'</span>';
+      details.appendChild(sum);
+      el.replaceWith(details);
+      details.appendChild(el);
+      details.addEventListener('toggle',()=>{                    // 開關自動落盤
+        const k=details.dataset.secKey; if(!k) return;
+        const p=this.execSecPrefs();
+        if(details.open) p[k]=1; else delete p[k];
+        try{ localStorage.setItem(this.execSecStoreKey(),JSON.stringify(p)); }catch(e){}
+      });
+      const pref=prefs[details.dataset.secKey];
+      const defOpen=/緊急/.test(title) || !isMobile || secIdx===0;
+      details.open=(pref!==undefined)?!!pref:defOpen;
+      secIdx++;
+    });
+    // 有 ≥2 節先值得放「全部展開／收合」工具列（插喺第一節前）
+    if(secIdx>=2 && !box.querySelector('.exec-sec-tools')){
+      const tools=document.createElement('div');
+      tools.className='exec-sec-tools';
+      tools.innerHTML='<span class="exec-sec-tip"><i class="fa-solid fa-layer-group mr-1"></i>本章大綱：撳一節展開內容</span>'
+        +'<button type="button" onclick="app.execSecToggleAll(0,true)" class="exec-sec-btn">全部展開</button>'
+        +'<button type="button" onclick="app.execSecToggleAll(0,false)" class="exec-sec-btn">全部收合</button>';
+      box.insertBefore(tools,box.querySelector('details.exec-sec'));
+    }
   }
 ,
 
@@ -485,7 +699,7 @@ Object.assign(ScoutEventApp.prototype,{
     box.innerHTML=`
       <div class="space-y-3">
         <div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>📎 各類附加資料：</b>箱頭紙・許可證式樣・失物認領。<b>失物認領由行政組紀錄</b>，同一份紀錄亦設於「行政組 → 部門管理中心」。</div>
-        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
+        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap m-tabbar m-subtab">
           ${tabs.map(t=>`<button onclick="app.switchExecManualMiscTab('${t.k}')" class="exec-misc-tab-btn ${cls(t.k)}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('')}
         </div>
         <div id="exec-misc-tab-box_label" class="${this.execManualMiscTab==='box_label'?'':'hidden'}">${this.boxLabelPanelHTML()}</div>

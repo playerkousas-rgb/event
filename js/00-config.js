@@ -462,6 +462,8 @@ const ROSTER_LIST_DEFS=[
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發支部最高獎章嘉許信』。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
     source:'roster', editable:true, required:'name', group_field:'section', sort_fields:['area','section','unit','name'],
+    // 手機版「一人一行」點名卡顯示欄位（required 欄＝大名，其餘欄收喺展開詳情）
+    mobile_fields:['unit','section','award'],
     columns:[
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
       {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']},
@@ -480,6 +482,8 @@ const ROSTER_LIST_DEFS=[
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒總監委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
     source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
+    // 手機版「一人一行」點名卡顯示欄位（唱名序／獎項／覆誓最需要一眼見到）
+    mobile_fields:['no','unit','award','oath'],
     columns:[
       {k:'no',label:'編號（唱名序）',type:'text',aliases:['編號','唱名編號','序號','序','call no','no','No.','No']},
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
@@ -500,6 +504,7 @@ const ROSTER_LIST_DEFS=[
     tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊行政組「參加旅團名單」（2025 版為「旅團報名人數」PDF）。名單本身沿用行政組維護之結構表（Drive 同步／Excel 上傳），v14 於同一頁加入報到點名。',
     source:'participants', editable:false, required:'unit', group_field:'section', sort_fields:['area','section','unit'],
+    mobile_fields:['section','area','headcount','leader'],
     total_fields:[{k:'headcount',label:'人數'}],
     columns:[
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
@@ -518,6 +523,7 @@ const ROSTER_LIST_DEFS=[
     tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'對應執行手冊「代訂餐盒」名單（2025 版列於行政組膳食安排內）。名單由協調組上載及點名，用以向判單對數及派發時核對；各組仍可在「膳食管理」自行訂餐，兩邊數字如有出入以本名單為準並註明備註。',
     source:'roster', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
+    mobile_fields:['qty_a','qty_b','qty_c','qty_total','pickup'],
     total_fields:[{k:'qty_a',label:'A餐'},{k:'qty_b',label:'B餐'},{k:'qty_c',label:'C餐'},{k:'qty_total',label:'總數'}],
     columns:[
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
@@ -544,6 +550,7 @@ const MERIT_AWARD_ROSTER_DEF={
   tick_label:'點名', tick_col_label:'出席', tick_hint:'優異旅團代表上台前由典禮組逐團點名；取消請同時剔「修正」格（TICK 只加不減）。',
   intro:'優異旅團獲獎名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
   source:'ceremony_merit', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
+  mobile_fields:['section','area'],
   upload_label:'上傳獲獎名單',
   columns:[
     {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
