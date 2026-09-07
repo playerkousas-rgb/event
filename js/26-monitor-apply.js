@@ -268,7 +268,6 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
       {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
-      {k:'first_aid', icon:'fa-solid fa-kit-medical',           label:'急救文件'},
       {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
       {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
       {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
@@ -315,12 +314,6 @@ Object.assign(ScoutEventApp.prototype,{
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
       crisis:()=>this.renderCrisisModule(panel),
-      first_aid:()=>this.renderExecManualUploadTab('first_aid',{
-        title:'急救文件',
-        accent:'emerald',
-        intro:'集中存放急救服務申請、救傷站安排、急救流程、醫療人員名單及相關附件。',
-        empty:'暫無急救文件 — 行政組可上傳 PDF／Word／圖片或加入 Drive 連結'
-      },panel),
       participants:()=>this.renderExecManualParticipants(panel),
       meal_box:()=>{ this.renderExecManualMealBox(panel); },
       misc:()=>this.renderExecManualMisc(panel),
@@ -440,7 +433,6 @@ Object.assign(ScoutEventApp.prototype,{
     if(String(section||'').indexOf('roster_')===0){ const k=String(section).slice(7); if(this.rosterDef(k)) return this.rosterCanManage(k); }
     if(section==='meal_box') return g.includes('協調')||g.includes('行政')||this.canUploadDocument();
     if(section==='participants') return g.includes('行政')||this.canUploadDocument();
-    if(section==='first_aid') return g.includes('行政')||this.canUploadDocument();
     if(section==='permit') return g.includes('協調')||g.includes('行政')||this.canUploadActivity();
     if(section==='venue_setup') return g.includes('協調')||g.includes('行政')||this.canUploadActivity();
     return false;
