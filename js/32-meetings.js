@@ -210,7 +210,7 @@ Object.assign(ScoutEventApp.prototype,{
     </div>`:'';
     const actHtml=actions.length?`<div class="bg-white border border-amber-300 rounded-xl p-2.5">
       <b class="text-[12px] text-amber-800"><i class="fa-solid fa-list-check mr-1"></i>跟進事項</b>
-      <div class="mt-1 overflow-hidden rounded-lg border"><table class="min-w-full"><thead class="bg-amber-50"><tr><th class="px-2 py-1 text-left text-[10px]">事項</th><th class="px-2 py-1 text-left text-[10px]">負責</th><th class="px-2 py-1 text-left text-[10px]">限期</th></tr></thead><tbody>${actions.map(a=>`<tr class="border-t align-top"><td class="px-2 py-1.5 text-[12px]">${escapeHtml(a.item||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.owner||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.due||'')}</td></tr>`).join('')}</tbody></table></div>
+      <div class="mt-1 overflow-x-auto rounded-lg border"><table class="min-w-full"><thead class="bg-amber-50"><tr><th class="px-2 py-1 text-left text-[10px]">事項</th><th class="px-2 py-1 text-left text-[10px]">負責</th><th class="px-2 py-1 text-left text-[10px]">限期</th></tr></thead><tbody>${actions.map(a=>`<tr class="border-t align-top"><td class="px-2 py-1.5 text-[12px]">${escapeHtml(a.item||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.owner||'')}</td><td class="px-2 py-1.5 text-[11px] text-slate-600 whitespace-nowrap">${escapeHtml(a.due||'')}</td></tr>`).join('')}</tbody></table></div>
     </div>`:'';
     return `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2">${head}${secHtml}${decHtml}${actHtml}${this.builtInFullTextBar(m,'minutes',ctx)}</div>`;
   }

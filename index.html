@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6d28d9">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <title>童軍活動管理系統 v8.6</title>
 <link rel="stylesheet" href="assets/tailwind.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- v15.2：xlsx／mammoth 兩個大檔改 defer——戶外弱訊號時頁面即刻開到，唔使等成 1MB 先見到嘢；
+     兩者只喺撳上傳／匯出時先用到（defer 會喺 DOMContentLoaded 前執行完，一撳就有） -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--brand:#6d28d9;--brand-dark:#5b21b6;--brand-deep:#4c1d95;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-hover:0 8px 24px rgba(0,0,0,0.12);}
 *{ -webkit-tap-highlight-color:transparent; }
@@ -61,6 +66,58 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
 /* 底部導覽列：未登入＝公告及溝通・執行手冊・申請中心・童心捐贈（4 項公開資料）；登入後還原＝執行手冊・申請中心・批核中心・部門中心，手機／電腦同步顯示 */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;max-width:180px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
+/* v15 手機點名：名單改為「一人一行」緊湊卡片（大 TICK 目標＋點按展開詳情）；電腦版維持完整表格不變 */
+.roster-mobile-list{display:none}
+.rm-row{border:1px solid #e2e8f0;border-radius:12px;background:#fff;margin-bottom:6px;overflow:hidden}
+.rm-row.on{background:#f0fdf4;border-color:#86efac}
+.rm-main{display:flex;align-items:stretch}
+.rm-tick{display:flex;align-items:center;justify-content:center;width:60px;min-height:58px;flex-shrink:0;background:#f8fafc;border-right:1px solid #f1f5f9;cursor:pointer;user-select:none;-webkit-user-select:none}
+.rm-row.on .rm-tick{background:#dcfce7;border-right-color:#bbf7d0}
+.rm-tick input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.rm-box{width:30px;height:30px;border-radius:10px;border:2.5px solid #cbd5e1;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent;transition:all .15s;flex-shrink:0}
+.rm-tick input:checked+.rm-box{background:#059669;border-color:#059669;color:#fff;box-shadow:0 1px 4px rgba(5,150,105,.4)}
+.rm-tick input:disabled+.rm-box{opacity:.45}
+.rm-tick:active .rm-box{transform:scale(.88)}
+.rm-info{flex:1;min-width:0;padding:7px 30px 7px 10px;position:relative;cursor:pointer}
+.rm-line1{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13.5px;line-height:1.35}
+.rm-line2{display:flex;flex-wrap:wrap;gap:1px 10px;margin-top:2px;font-size:11px;color:#64748b;line-height:1.5}
+.rm-pair{white-space:nowrap}
+.rm-lb{color:#94a3b8;margin-right:2px;font-size:10px}
+.rm-chip{font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:999px;white-space:nowrap}
+.rm-chip.rm-ok{background:#059669;color:#fff}
+.rm-chip.rm-fix{background:#fff1f2;color:#e11d48;border:1px solid #fecdd3}
+.rm-notes{font-size:10.5px;color:#b45309;margin-top:2px;line-height:1.4}
+.rm-chev{position:absolute;right:10px;top:13px;font-size:11px;color:#94a3b8;transition:transform .18s}
+.rm-row.open .rm-chev{transform:rotate(180deg)}
+.rm-detail{display:none;border-top:1px dashed #e2e8f0;padding:8px 10px;background:#f8fafc}
+.rm-row.open .rm-detail{display:block}
+.rm-row.on .rm-detail{background:#f6fef9}
+.rm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 12px;font-size:11px;line-height:1.55;overflow-wrap:anywhere}
+.rm-d-lb{color:#94a3b8;font-size:10px}
+.rm-record{font-size:10.5px;color:#64748b;margin-top:6px;line-height:1.5}
+.rm-fix{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;color:#be123c;min-height:40px;line-height:1.4}
+.rm-fix input{width:22px;height:22px;flex-shrink:0}
+.rm-actions{display:flex;gap:6px;margin-top:8px}
+.rm-actions button{flex:1;padding:9px 6px;border-radius:10px;font-size:11.5px;font-weight:700;border:1px solid #e2e8f0;background:#fff}
+.roster-q{flex:1;min-width:120px;border:1px solid #cbd5e1;border-radius:10px;padding:6px 10px;font-size:12.5px;background:#fff;-webkit-appearance:none;appearance:none}
+/* v15.1：分組章＝一撳篩選（去到攤位，撳「該攤位／該組」即只剩幾個人）；active＝紫底白字 */
+.roster-gchip,.stamp-gchip{cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s,border-color .15s}
+.roster-gchip:hover,.stamp-gchip:hover{border-color:#8b5cf6;background:#ede9fe}
+.roster-gchip.active,.stamp-gchip.active{background:#6d28d9!important;color:#fff!important;border-color:#6d28d9!important}
+.roster-gchip.active b,.stamp-gchip.active b{color:#fff}
+.stamp-ctl{}
+@media screen and (max-width:768px){
+  .roster-desktop-wrap{display:none}
+  .roster-mobile-list{display:block}
+  .roster-toolbar>button,.roster-toolbar>label{font-size:10.5px!important;padding:6px 9px!important;border-radius:10px!important}
+  /* 手機加大篩選控制：至少 44px 高；input 字體 ≥16px 防 iOS 聚焦自動放大 */
+  .roster-q{min-height:44px;font-size:16px}
+  .roster-sel{min-height:40px;font-size:13px!important;padding:8px 8px!important}
+  .roster-dirbtn{min-height:40px;font-size:12px!important;padding:8px 10px!important}
+  .roster-gchip,.stamp-gchip{padding:8px 10px!important;font-size:12px!important;border-radius:999px}
+  .stamp-ctl{min-height:44px!important;font-size:16px!important;border-radius:12px!important;padding:10px 12px!important}
+  select.stamp-ctl{font-size:14px!important}
+}
 /* 內建財務指引：可摺疊章節 icon 旋轉（編譯版 tailwind 無 group-open 變體） */
 details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 .meeting-card{border:1px solid #e2e8f0;border-radius:16px;padding:16px;background:#fff;transition:all .22s ease;cursor:pointer} .meeting-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:#8b5cf6}
@@ -73,7 +130,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 @media(max-width:768px){
   .nav-tab{font-size:11px;padding:10px 2px;border-radius:0}
   .header-chip{padding:6px 9px;font-size:10.5px;border-radius:10px} .header-chip i{margin-right:2px}
-  body{font-size:15px} .table-responsive table{min-width:0;width:100%} .table-responsive thead{display:none} .table-responsive tbody tr{display:block;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;padding:8px;background:#fff} .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:none;border-bottom:1px dashed #f1f5f9;font-size:13px} .table-responsive tbody td:last-child{border-bottom:none} .table-responsive tbody td::before{content:attr(data-label);font-weight:700;color:#475569;font-size:11px;flex-shrink:0;margin-right:12px}
+  body{font-size:15px} .table-responsive{border-radius:10px} .table-responsive table{min-width:0;width:100%} .table-responsive thead{display:none} .table-responsive tbody tr{display:block;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:6px;padding:2px 0;background:#fff} .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 10px;border:none;border-bottom:1px dashed #f1f5f9;font-size:12.5px;line-height:1.4} .table-responsive tbody td:last-child{border-bottom:none} .table-responsive tbody td::before{content:attr(data-label);font-weight:700;color:#475569;font-size:10.5px;flex-shrink:0;max-width:44%;margin-right:2px;overflow-wrap:anywhere;line-height:1.3} .table-responsive tbody td[data-label=""]::before{display:none;content:none}
   .modal{align-items:flex-end!important;padding:0!important} .modal>div{border-radius:16px 16px 0 0!important;max-height:88vh!important;width:100%!important;max-width:100%!important} .hero-gradient{border-radius:16px!important;padding:18px!important} .bottom-pad{padding-bottom:78px} .btn-mobile{min-height:44px} .form-group input,.form-group select,.form-group textarea{min-height:44px;font-size:16px!important}
   /* 手機：儀表板卡片由 1 個長方形開成 2 個正方形（兩欄），卡片內容相應縮小 */
   .dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.6rem}
@@ -511,7 +568,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
-<script src="js/00-config.js?v=20260905e"></script>
+<script src="js/00-config.js?v=20260906a"></script>
 <script src="js/10-app-core.js?v=20260905d"></script>
 <script src="js/11-news.js?v=20260901a"></script>
 <script src="js/20-accounts.js?v=20260905d"></script>
@@ -533,8 +590,50 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <script src="js/37-coordinator.js?v=20260905d"></script>
 <script src="js/38-donations.js?v=20260905d"></script>
 <script src="js/39-lost-found.js?v=20260905d"></script>
-<script src="js/40-souvenir-stamps.js?v=20260905d"></script>
-<script src="js/41-roster-lists.js?v=20260905e"></script>
+<script src="js/40-souvenir-stamps.js?v=20260906a"></script>
+<script src="js/41-roster-lists.js?v=20260906a"></script>
 <script src="js/90-bootstrap.js?v=20260831b"></script>
+<script>
+/* v15.3 全站手機表格自動補 data-label：任何 .table-responsive 表格嘅 <td> 若冇手寫 data-label，
+   自動按該表 <th> 順序對位（手機版把每欄變「標籤＋值」行，冇標籤＝一堆唔知係乜嘅值＝混亂根源）。
+   MutationObserver 監聽：任何模組 innerHTML 重畫後自動補；手寫咗嘅 data-label 一律唔郁。 */
+(function(){
+  function labelize(t){
+    if(!t||t.tagName!=='TABLE') return;
+    const heads=t.querySelectorAll('thead th');
+    if(!heads.length) return;
+    const labels=Array.prototype.map.call(heads,function(th){return String(th.textContent||'').replace(/[▲▼]/g,'').replace(/\s+/g,' ').trim();});
+    t.querySelectorAll('tbody tr').forEach(function(tr){
+      const tds=tr.querySelectorAll(':scope > td');
+      const multi=tds.length>1;
+      for(let i=0;i<tds.length;i++){
+        const td=tds[i];
+        if(td.hasAttribute('data-label')) continue;    // 手寫標籤永遠優先
+        td.setAttribute('data-label', multi ? (labels[i]||'') : '');   // 獨欄（如「暫無資料」colspan行）唔出標籤
+      }
+    });
+  }
+  function scan(root){
+    if(!root||root.nodeType!==1) return;
+    if(root.closest&&(root.matches('tr')||root.matches('td')||root.matches('tbody')||root.matches('table'))){ const t=root.closest('.table-responsive table'); if(t) labelize(t); }
+    if(root.querySelectorAll) root.querySelectorAll('.table-responsive table').forEach(labelize);
+  }
+  if(typeof MutationObserver!=='undefined'&&document.body){
+    new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes.forEach(scan); }); })
+      .observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  else if(document.body) scan(document.body);
+})();
+</script>
+<script>
+/* v15.2 離線可用（戶外場地冇訊號頂用）：開過一次之後外殼＋內置資料入電話快取，
+   斷網照樣開到 APP 查名單、TICK 點名／派紀念章（TICK 本就 localStorage 先行，有網先同步）。 */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () { /* 舊機／私隱模式就當冇 PWA，功能不受影響 */ });
+  });
+}
+</script>
 </body>
 </html>
