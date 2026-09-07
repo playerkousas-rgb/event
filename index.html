@@ -130,6 +130,9 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 /* v15.4 返回頂部掣（只喺手機顯示；電腦頁短唔使） */
 .to-top-btn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;background:#6d28d9;color:#fff;border:none;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:54;display:none;align-items:center;justify-content:center;font-size:16px}
 @media(min-width:769px){.to-top-btn{display:none!important}}
+/* v15.5 分頁短名：預設顯示全稱（電腦）；≤768px 換短名 */
+.lbl-short{display:none}
+@media(max-width:768px){.lbl-long{display:none}.lbl-short{display:inline}}
 @media(max-width:768px){
   .nav-tab{font-size:11px;padding:10px 2px;border-radius:0}
   .header-chip{padding:6px 9px;font-size:10.5px;border-radius:10px} .header-chip i{margin-right:2px}
@@ -611,7 +614,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <script>
 /* v15.3 全站手機表格自動補 data-label：任何 .table-responsive 表格嘅 <td> 若冇手寫 data-label，
    自動按該表 <th> 順序對位（手機版把每欄變「標籤＋值」行，冇標籤＝一堆唔知係乜嘅值＝混亂根源）。
-   MutationObserver 監聽：任何模組 innerHTML 重畫後自動補；手寫咗嘅 data-label 一律唔郁。 */
+   同場加映 v15.5 分頁短名：分頁掣電腦保留全稱，≤768px 自動換 2–4 字短名＋title 存全稱。
+   MutationObserver 監聽：任何模組 innerHTML 重畫後自動補；手寫咗嘅一律唔郁。 */
 (function(){
   function labelize(t){
     if(!t||t.tagName!=='TABLE') return;
@@ -628,10 +632,51 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
       }
     });
   }
+  /* 分頁長名→手機短名（2–4 字）。最長者排先，避免局部誤配 */
+  const SHORT_TAB_LABELS=[
+    ['優異旅團獲獎名單','優異旅團'],['上傳危機處理手冊','上傳手冊'],['應變指引 (急救·保險)','指引'],
+    ['組織架構與聯絡','架構'],['場地與活動總覽','場地'],['參加旅團名單','旅團名單'],['代訂餐盒名單','餐盒名單'],
+    ['各類附加資料','附加資料'],['支部獎勵名單','支部獎勵'],['領袖獎勵名單','領袖獎勵'],['場地佈置總覽','佈置總覽'],
+    ['意外事件報告表','意外報告'],['危機應變小組','應變小組'],['借用統計＋招牌','借用統計'],['攤位資料 (Drive)','攤位資料'],
+    ['通告及文件','通告'],['活動列表','活動'],['典禮儀式','典禮'],['財務指引','財務']
+  ];
+  function shortenTabs(root){
+    if(typeof document.createTreeWalker!=='function') return;
+    const btns=[];
+    if(root.matches&&root.matches('.m-tabbar button, .tab-btn, button.group-tab-btn')) btns.push(root);
+    if(root.querySelectorAll) root.querySelectorAll('.m-tabbar button, .tab-btn, button.group-tab-btn').forEach(function(b){btns.push(b);});
+    btns.forEach(function(btn){
+      if(btn.getAttribute('data-st-done')==='1') return;
+      const walker=document.createTreeWalker(btn,4);
+      let node;
+      while((node=walker.nextNode())){
+        const txt=node.nodeValue||'';
+        let done=false;
+        for(let i=0;i<SHORT_TAB_LABELS.length;i++){
+          const lng=SHORT_TAB_LABELS[i][0], srt=SHORT_TAB_LABELS[i][1];
+          const idx=txt.indexOf(lng);
+          if(idx<0) continue;
+          const before=txt.slice(0,idx), after=txt.slice(idx+lng.length);
+          const frag=document.createDocumentFragment();
+          if(before.trim()) frag.appendChild(document.createTextNode(before));
+          const sl=document.createElement('span'); sl.className='lbl-long'; sl.textContent=lng;
+          const ss2=document.createElement('span'); ss2.className='lbl-short'; ss2.textContent=srt;
+          frag.appendChild(sl); frag.appendChild(ss2);
+          if(after.trim()) frag.appendChild(document.createTextNode(after));
+          node.parentNode.replaceChild(frag,node);
+          if(!btn.title) btn.title=lng;      // 長撳／無障礙讀到全稱
+          done=true; break;
+        }
+        if(done) break;
+      }
+      btn.setAttribute('data-st-done','1');
+    });
+  }
   function scan(root){
     if(!root||root.nodeType!==1) return;
     if(root.closest&&(root.matches('tr')||root.matches('td')||root.matches('tbody')||root.matches('table'))){ const t=root.closest('.table-responsive table'); if(t) labelize(t); }
     if(root.querySelectorAll) root.querySelectorAll('.table-responsive table').forEach(labelize);
+    shortenTabs(root);
   }
   if(typeof MutationObserver!=='undefined'&&document.body){
     new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes.forEach(scan); }); })

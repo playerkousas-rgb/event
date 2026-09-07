@@ -200,4 +200,14 @@ ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-ta
 ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
 ok(/src="js\/26-monitor-apply\.js\?v=20260906a/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
 
+/* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
+ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
+ok(html.includes("'組織架構與聯絡','架構'") && html.includes("'代訂餐盒名單','餐盒名單'"), 'I2 執行手冊分頁短名齊全');
+ok(html.includes("'意外事件報告表','意外報告'") && html.includes("'借用統計＋招牌','借用統計'"), 'I3 危機處理／部門中心分頁短名齊全');
+ok(/\.lbl-short\{display:none\}/.test(html) && /@media\(max-width:768px\)\{\.lbl-long\{display:none\}\.lbl-short\{display:inline\}\}/.test(html),
+  'I4 電腦顯示全稱、手機顯示短名（純 CSS 按闊度切換）');
+ok(html.includes("btn.title=lng"), 'I5 全稱保留喺 title（長撳／無障礙讀到）');
+ok(html.includes("createTreeWalker(btn,4)"), 'I6 用 TreeWalker 只動文字節點（icon／徽章元素唔會整爛）');
+ok(html.includes("data-st-done"), 'I7 每粒掣只縮一次，排序／換 class 唔會重複包 span');
+
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');
