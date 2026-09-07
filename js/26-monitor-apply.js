@@ -268,6 +268,8 @@ Object.assign(ScoutEventApp.prototype,{
     }
     const tabs=[
       {k:'toc',       icon:'fa-solid fa-book-open',            label:'目錄'},
+      {k:'ann_list',  icon:'fa-solid fa-bullhorn',             label:'公告'},
+      {k:'schedule',  icon:'fa-solid fa-calendar-days',        label:'日程表'},
       {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
       {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
@@ -276,6 +278,8 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
       {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
       {k:'meal_box',    icon:'fa-solid fa-bowl-food',          label:'代訂餐盒名單'},
+      {k:'unit_guide', icon:'fa-solid fa-book-open',           label:'旅團須知'},
+      {k:'theme_badges', icon:'fa-solid fa-award',             label:'活動主題章'},
       {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
@@ -333,6 +337,8 @@ Object.assign(ScoutEventApp.prototype,{
      目的：用戶唔使逐章撞，一版目錄答到「我要嘅嘢喺邊」。 */
   execManualTOC(){
     return [
+      {k:'ann_list',  icon:'fa-solid fa-bullhorn',             tint:'bg-amber-100 text-amber-700',    label:'公告', has:'大會公告存檔・組別溝通（@組別／任務跟進）。最新一條永遠喺全站最頂橫幅'},
+      {k:'schedule',  icon:'fa-solid fa-calendar-days',        tint:'bg-sky-100 text-sky-700',        label:'日程表', has:'活動日流程・時間・地點一覽'},
       {k:'staff',     icon:'fa-solid fa-sitemap',              tint:'bg-indigo-100 text-indigo-700', label:'組織架構與聯絡', has:'架構圖・全體名單及聯絡・職務大綱（2026）'},
       {k:'activities',icon:'fa-solid fa-map-location-dot',     tint:'bg-emerald-100 text-emerald-700', label:'場地與活動總覽', has:'場地地圖・攤位列表・攤位總表・佈置圖・遊戲卡・活動列表'},
       {k:'ceremony',  icon:'fa-solid fa-crown',               tint:'bg-amber-100 text-amber-700',    label:'典禮儀式', has:'RUNDOWN・司儀稿・嘉賓名單・座位表・致辭稿'},
@@ -341,6 +347,8 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'documents', icon:'fa-solid fa-file-shield',          tint:'bg-sky-100 text-sky-700',        label:'通告及文件', has:'大會通告・指引・表格（可搜尋）'},
       {k:'participants', icon:'fa-solid fa-people-group',      tint:'bg-purple-100 text-purple-700',  label:'參加旅團名單', has:'旅團・支部・人數一覽＋附件'},
       {k:'meal_box',  icon:'fa-solid fa-bowl-food',            tint:'bg-orange-100 text-orange-700',  label:'代訂餐盒名單', has:'代訂餐旅團名單・點名・附件'},
+      {k:'unit_guide', icon:'fa-solid fa-book-open',           tint:'bg-indigo-100 text-indigo-700',  label:'旅團須知', has:'參加旅團注意事項・守則'},
+      {k:'theme_badges', icon:'fa-solid fa-award',             tint:'bg-purple-100 text-purple-700',  label:'活動主題章', has:'主題章設計・收集方法・名單'},
       {k:'misc',      icon:'fa-solid fa-layer-group',          tint:'bg-slate-200 text-slate-700',    label:'各類附加資料', has:'箱頭紙・許可證式樣・失物認領'}
     ];
   }
@@ -352,6 +360,7 @@ Object.assign(ScoutEventApp.prototype,{
       {q:'急救／保險點做？', go:"app.switchExecManualTab('crisis')"},
       {q:'點樣報銷？',       go:"app.switchExecManualTab('finance_guide')"},
       {q:'點名表',           go:"app.switchExecManualTab('participants')"},
+      {q:'今日日程',         go:"app.switchExecManualTab('schedule')"},
       {q:'失物認領',         go:"app.switchExecManualTab('misc'); setTimeout(()=>app.switchExecManualMiscTab&&app.switchExecManualMiscTab('lost_found'),200)"},
       {q:'座位表',           go:"app.switchExecManualTab('ceremony'); setTimeout(()=>app.switchCeremonyTab&&app.switchCeremonyTab('seating'),200)"}
     ];
@@ -398,6 +407,12 @@ Object.assign(ScoutEventApp.prototype,{
     if(!panel) return;
     const map={
       toc:()=>this.renderExecManualTOC(panel),
+      // v15.9：公告及溝通嘅資訊內容併入執行手冊（資料得一份，掛原 renderer）。
+      //      公告用 id=ann-tab-list 包裝：佢內部搜尋靠 getElementById 返呢個 id 重繪。
+      ann_list:()=>{ panel.innerHTML='<div id="ann-tab-list"></div>'; this.renderAnnList(document.getElementById('ann-tab-list')); },
+      schedule:()=>this.renderScheduleModule(panel),
+      unit_guide:()=>this.renderUnitGuideModule(panel),
+      theme_badges:()=>this.renderThemeBadgesModule(panel),
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
