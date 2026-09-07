@@ -9,7 +9,7 @@
    - cdnjs（xlsx／mammoth／font-awesome，版本鎖死 URL）＝ Cache-first
    - 後端 API（/api/config、script.google.com）及非 GET：完全唔攔截，直接上網
    升級版本時改下面 CACHE 版本號，舊快取會喺 activate 自動清走。 */
-const CACHE = 'scout-ops-v15-2';
+const CACHE = 'scout-ops-v15-3';  // v15.14b：俾裝咗 PWA 嘅手機即刻睇到新檔（離線都不會中舊版）
 
 /* 安裝時預快取嘅 App 外殼（一次開過之後離線可用） */
 const PRECACHE = [

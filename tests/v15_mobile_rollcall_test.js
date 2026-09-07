@@ -339,4 +339,7 @@ ok(j32.includes('overflow-hidden tbl-scroll') && j32.includes('mt-1 overflow-x-a
 ok(read('js/33-users.js').includes('<div class="tbl-scroll"><table class="min-w-full text-xs">'),
   'S4 用戶清單表（多欄）有橫滾');
 
+/* ══════════ T. v15.14b sw 倉名 bump（離線亦攞到新檔） ══════════ */
+ok(read('sw.js').includes("scout-ops-v15-3"), 'T1 sw.js CACHE_NAME 跟返 v15.14 代');
+
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');
