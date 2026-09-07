@@ -1294,28 +1294,40 @@ Object.assign(ScoutEventApp.prototype,{
     this.eventData['documents']=normalized.docs;
   }
 ,
-  renderDocumentsModule(box){
+  // 執行手冊是活動當日的操作工具，不是整個籌備期的文件倉庫。
+  // 明確標示「當日使用／執行手冊」的文件必定顯示；舊資料則按分類及標題兼容判斷。
+  isOperationalDocument(d){
+    if(d?.execution_manual===true || d?.day_of_use===true) return true;
+    const category=String(d?.category||'').trim();
+    const text=`${d?.title||''} ${category} ${d?.description||''}`.toLowerCase();
+    if(/會議|agenda|minutes|籌委|邀請函|邀請卡|回條|嘉許計劃|獎章系列|機電先鋒|工作坊教材|報價|budget|財務指引|結算/.test(text)) return false;
+    if(/急救|醫療|安全|危機|緊急|保險|事故|疏散|惡劣天氣|(?:^|[_\s-])fa(?:[_\s-]|$)|first aid/.test(category+text)) return true;
+    return /日程表|run\s?down|rundown|場地地圖|site map|當日流程|典禮程序|parade ceremony|場地佈置|通行證|工作人員名單|緊急聯絡/.test(text);
+  }
+,
+  renderDocumentsModule(box, operationalOnly=false){
     const container=box||document.getElementById('module-content');
     if(!container) return;
     const data=this.getDocumentsData();
+    const sourceDocs=operationalOnly?data.docs.filter(d=>this.isOperationalDocument(d)):data.docs;
     const q=(document.getElementById('document-search')?.value||'').toLowerCase();
     const cat=(document.getElementById('document-category-filter')?.value||'');
     const canUpload=this.canUploadDocument();
-    const categories=[...new Set(data.docs.map(d=>d.category).filter(Boolean))].sort();
-    const filtered=data.docs.filter(d=>{
-      const hit=!q || (d.title+d.category+d.description+d.uploaded_by).toLowerCase().includes(q);
+    const categories=[...new Set(sourceDocs.map(d=>d.category).filter(Boolean))].sort();
+    const filtered=sourceDocs.filter(d=>{
+      const hit=!q || (`${d.title||''}${d.category||''}${d.description||''}${d.uploaded_by||''}`).toLowerCase().includes(q);
       const catOk=!cat || d.category===cat;
       return hit && catOk;
     });
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-700">
-          <b>通告及文件：</b>通告、指引、表格，公開可查閱；上傳需權限。
+          ${operationalOnly?'<b>活動當日文件：</b>只顯示當日遇事或執行流程時會用到的文件（如急救、緊急應變、地圖及日程）；會議紀錄、籌備文件及活動教材不會放入執行手冊。':'<b>完整文件庫：</b>通告、指引、表格及籌備文件，公開可查閱；上傳需權限。'}
         </div>
         <div class="flex gap-2 flex-wrap">
           ${canUpload?`<button onclick="app.openDocumentForm()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件</button>`:''}
-          <input id="document-search" value="${escapeHtml(q)}" placeholder="搜尋文件/分類" oninput="app.renderDocumentsModule()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
-          <select id="document-category-filter" onchange="app.renderDocumentsModule()" class="px-3 py-2 border rounded-xl text-xs bg-white"><option value="">全部分類</option>${categories.map(c=>`<option value="${escapeHtml(c)}" ${cat===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select>
+          <input id="document-search" value="${escapeHtml(q)}" placeholder="搜尋文件/分類" oninput="app.renderDocumentsModule(${operationalOnly?"document.getElementById('exec-manual-panel'),true":''})" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
+          <select id="document-category-filter" onchange="app.renderDocumentsModule(${operationalOnly?"document.getElementById('exec-manual-panel'),true":''})" class="px-3 py-2 border rounded-xl text-xs bg-white"><option value="">全部分類</option>${categories.map(c=>`<option value="${escapeHtml(c)}" ${cat===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select>
           <button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">

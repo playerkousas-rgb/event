@@ -342,7 +342,8 @@ Object.assign(ScoutEventApp.prototype,{
           </div>
         </div>`;
       },
-      documents:()=>this.renderDocumentsModule(panel)
+      // 執行手冊只收活動當日真正會用到的文件；會議、籌備及活動教材仍留在完整文件庫。
+      documents:()=>this.renderDocumentsModule(panel,true)
     };
     (map[this.execManualSubTab]||map.staff)();
   }
