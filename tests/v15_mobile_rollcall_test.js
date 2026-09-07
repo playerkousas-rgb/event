@@ -202,8 +202,12 @@ ok(/src="js\/26-monitor-apply\.js\?v=20260906a/.test(html) && /src="js\/10-app-c
 
 /* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
 ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
-ok(html.includes("'組織架構與聯絡','架構'") && html.includes("'代訂餐盒名單','餐盒名單'"), 'I2 執行手冊分頁短名齊全');
+ok(html.includes("'組織架構與聯絡','架構聯絡'") && html.includes("'代訂餐盒名單','餐盒名單'"), 'I2 執行手冊分頁短名齊全');
+ok(html.includes("'應變指引 (急救·保險)','危機指引'") && !html.includes("'危機指引','指引'"),
+  'I3a 短名必留物件關鍵詞（應變指引→危機指引，唔會齋叫「指引」）');
 ok(html.includes("'意外事件報告表','意外報告'") && html.includes("'借用統計＋招牌','借用統計'"), 'I3 危機處理／部門中心分頁短名齊全');
+ok(html.includes("'組織架構與聯絡','架構聯絡'") && html.includes("'場地與活動總覽','場地總覽'"), 'I3b 短名 4 字內但語意完整（架構聯絡／場地總覽）');
+ok(!html.includes("'財務指引','財務'"), 'I3c 4 字或以內唔郁（財務指引原樣保留）');
 ok(/\.lbl-short\{display:none\}/.test(html) && /@media\(max-width:768px\)\{\.lbl-long\{display:none\}\.lbl-short\{display:inline\}\}/.test(html),
   'I4 電腦顯示全稱、手機顯示短名（純 CSS 按闊度切換）');
 ok(html.includes("btn.title=lng"), 'I5 全稱保留喺 title（長撳／無障礙讀到）');
