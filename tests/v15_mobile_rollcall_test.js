@@ -198,7 +198,7 @@ ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-ta
 ['js/26-monitor-apply.js','js/21-activities.js','js/35-ceremony.js','js/36-crisis.js','js/10-app-core.js'].forEach(f =>
   ok(read(f).includes('m-tabbar'), 'H5 ' + f + ' 分頁條已掛 m-tabbar'));
 ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
-ok(/src="js\/26-monitor-apply\.js\?v=2026090(6|7)a/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
+ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][ab]/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
 
 /* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
 ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
@@ -230,7 +230,17 @@ ok(html.includes('details.exec-sec>summary.exec-sec-sum') && html.includes('.m-s
 ok(read('js/31-staff.js').includes('m-tabbar m-subtab') && j26.includes('m-tabbar m-subtab') &&
    read('js/21-activities.js').includes('m-subtab') && read('js/35-ceremony.js').includes('m-subtab') && read('js/36-crisis.js').includes('m-subtab'),
   'J7 五條章內分頁條全部掛 m-tabbar＋m-subtab（手機一排橫滑＋視覺分層）');
-ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907a/.test(html),
+ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907(a|b)/.test(html),
   'J8 今轉改動咗嘅 js 版本號已 bump');
+
+/* ══════════ K. v15.7 執行手冊路線列（執行手冊 › 章 › 節） ══════════ */
+ok(j26.includes('id="exec-crumb"') && html.includes('.exec-crumb{'), 'K1 章頁最頂常駐路線列（div#exec-crumb＋CSS）');
+ok(j26.includes('execCrumbUpdate()') && j26.includes(".m-tabbar:not(.m-subtab)") && j26.includes(".m-subtab"),
+  'K2 路線列讀 DOM：章＝章列 active、節＝節列 active（唔使逐個模組改 label）');
+ok(j26.includes("'switchStaffTab','switchActivitiesTab','switchCeremonyTab','switchCrisisTab','switchExecManualMiscTab'") && j26.includes('_crumbWrapped'),
+  'K3 五個內部分頁切換函數已包更新；_crumbWrapped 防重複包');
+ok(j26.includes("btn.querySelector('.lbl-long')"), 'K4 路線列用全稱（.lbl-long 優先），手機短名唔會走樣');
+ok(html.includes('.exec-crumb-sec{color:#6d28d9'), 'K5 節名用主色突出（層次一眼可見）');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907b/.test(html), 'K6 js 版本號 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

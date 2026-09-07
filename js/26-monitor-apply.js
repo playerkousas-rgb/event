@@ -277,10 +277,50 @@ Object.assign(ScoutEventApp.prototype,{
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`
       <div class="space-y-4">
+        <div id="exec-crumb" class="exec-crumb" aria-label="路線列"></div>
         <div class="m-tabbar flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
         <div id="exec-manual-panel"></div>
       </div>`;
+    this.ensureExecCrumbWrap();
     this.renderExecManualTab();
+  }
+,
+  /* v15.7 執行手冊「路線列」：執行手冊 › 章名 › 節名 ⟵ 一睇就知而家喺邊個大標題下面。
+     章名＝章列黑底掣、節名＝節列 active 掣，全部讀 DOM 動態攞（唔使逐個模組改 label）。
+     手機顯示短名嗰陣，路線列一律用全稱（.lbl-long 優先），唔會齋見到「指引」。 */
+  execBtnLabel(btn){
+    if(!btn) return '';
+    const lg=btn.querySelector('.lbl-long');
+    return (((lg?lg.textContent:btn.textContent)||'').replace(/\s+/g,' ').trim());
+  }
+,
+  execCrumbUpdate(){
+    const crumb=document.getElementById('exec-crumb');
+    const root=document.getElementById('module-content');
+    if(!crumb||!root) return;
+    const activeLabel=(bar)=>{
+      if(!bar) return '';
+      const b=bar.querySelector('.tab-btn.active')
+        ||[...bar.querySelectorAll('button')].find(x=>/text-white/.test(x.className||''));
+      return this.execBtnLabel(b);
+    };
+    const chap=activeLabel(root.querySelector('.m-tabbar:not(.m-subtab)'));
+    const sec=activeLabel(root.querySelector('.m-subtab'));
+    crumb.innerHTML='<i class="fa-solid fa-book-open"></i><span>執行手冊</span>'
+      +(chap?'<i class="fa-solid fa-angle-right exec-crumb-sep"></i><b>'+escapeHtml(chap)+'</b>':'')
+      +(sec&&sec!==chap?'<i class="fa-solid fa-angle-right exec-crumb-sep"></i><b class="exec-crumb-sec">'+escapeHtml(sec)+'</b>':'');
+  }
+,
+  // 內部分頁切換函數包一浸：切完即更新路線列（佢哋多數只 toggle hidden、唔會 re-render 全版）
+  ensureExecCrumbWrap(){
+    ['switchStaffTab','switchActivitiesTab','switchCeremonyTab','switchCrisisTab','switchExecManualMiscTab'].forEach(n=>{
+      const o=ScoutEventApp.prototype[n];
+      if(typeof o==='function' && !o._crumbWrapped){
+        const w=function(){ const r=o.apply(this,arguments); try{ this.execCrumbUpdate(); }catch(e){} return r; };
+        w._crumbWrapped=true;
+        ScoutEventApp.prototype[n]=w;
+      }
+    });
   }
 ,
   switchExecManualTab(tab){
@@ -347,6 +387,7 @@ Object.assign(ScoutEventApp.prototype,{
     (map[this.execManualSubTab]||map.staff)();
     // v15.6：平面長章包「節」手風琴（參加旅團名單／代訂餐盒名單）；其餘章本身有內部分頁條＝節列，唔加工
     if(this.execManualSubTab==='participants'||this.execManualSubTab==='meal_box'){ try{ this.sectionizeExecPanel(panel,this.execManualSubTab); }catch(e){} }
+    try{ this.execCrumbUpdate(); }catch(e){}   // v15.7：路線列
   }
 ,
   /* ══ v15.6 執行手冊「章→節→內容」手風琴（手機為主、電腦行為不變）══════════════
