@@ -282,20 +282,20 @@ const j10 = read('js/10-app-core.js');
 const iInfo=j10.indexOf('${this.groupInfoBoxesHTML(groupName)}'), iDetail=j10.indexOf('${this.groupDetailSectionHTML(groupName)}'), iStats=j10.indexOf('${this.groupStatsSectionHTML(groupName)}');
 ok(iInfo>0 && iInfo<iDetail && iDetail<iStats, 'O3 部門頁預設排版改為 資訊→詳細→統計數字沉底（前線優先）');
 ok(j10.includes('前線優先排序') && j10.includes('統計</b>（最下'), 'O4 部門頁簡介用返新次序');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907[a-c]/.test(html), 'O5 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907[a-d]/.test(html), 'O5 版本號 bump');
 
 /* ══════════ P. v15.13 部門頁 3 大卡自行調序（本組總主任以上） ══════════ */
 ok(j10.includes("groupCardOrder(groupName)") && j10.includes("const DEF=['info','detail','stats']") && j10.includes('grp_card_order_'),
   'P1 卡次序存 localStorage（按活動＋組），預設 資訊→詳細→統計');
-ok(j10.includes("ROLE_HIERARCHY[this.currentUser?.role]||0") && j10.includes('>=40') && j10.includes('isAllGroupViewer()'),
-  'P2 調序權限＝管理員／執副以上／本組總主任以上');
+ok(j10.includes('canOrderGroupCards(){ return true; }') && j10.includes('唔再設總主任門檻'),
+  'P2 v15.14a 拆閘：調序＝個人版面喜好（只影響自己部機），全部工作人員都用得');
 ok(j10.includes("applyGroupCardOrder(groupName)") && j10.includes('data-grp-card') && j10.includes('box.appendChild(el)'),
   'P3 重排用 appendChild 搬節點（唔使全版重繪，慳電）');
 ok(j10.includes('moveGroupCard(groupName, key, dir)') && j10.includes('saveGroupCardOrder(groupName, order)') && j10.includes('呢部機'),
   'P4 調序即存即用；文案講明只影響呢部機（將來全組統一要搬後端）');
 ok(j10.includes('id="group-apps-cards"') && j10.includes('querySelectorAll(\'.grp-card-ctl\').forEach(n=>n.remove())'),
   'P5 卡區獨立容器＋調序欄重建防重複');
-ok(html.includes('.grp-card-ctl{') && /src="js\/10-app-core\.js\?v=20260907[b-c]/.test(html), 'P6 調序欄 CSS＋版本號 bump');
+ok(html.includes('.grp-card-ctl{') && /src="js\/10-app-core\.js\?v=20260907[b-d]/.test(html), 'P6 調序欄 CSS＋版本號 bump');
 
 /* ══════════ Q. v15.14 實戰分層：管理區摺合＋慣用 tab 記憶 ══════════ */
 const j41 = read('js/41-roster-lists.js');
@@ -316,7 +316,16 @@ ok(!tb.includes('匯入 EXCEL') && !tb.includes('列印名單') && !tb.includes(
   'Q6 管理掣已搬離戰鬥工具列');
 ok(j10.includes("grp_last_tab_") && j10.includes('記住本組慣用 tab'),
   'Q7 部門頁記住本組上次慣用 tab（重入直達）');
-ok(/src="js\/40-souvenir-stamps\.js\?v=20260907a/.test(html) && /src="js\/41-roster-lists\.js\?v=20260907a/.test(html) && /src="js\/10-app-core\.js\?v=20260907c/.test(html),
+ok(/src="js\/40-souvenir-stamps\.js\?v=20260907a/.test(html) && /src="js\/41-roster-lists\.js\?v=20260907a/.test(html) && /src="js\/10-app-core\.js\?v=20260907[a-d]/.test(html),
   'Q8 三個 js 版本號 bump');
+
+/* ══════════ R. v15.14a 登出後設定保留＋還原預設 ══════════ */
+const j33 = read('js/33-users.js');
+ok(/logout\(\)\{[^}]*localStorage\.removeItem\(LS\.currentUser\)/.test(j33) && !j33.match(/logout[\s\S]{0,300}localStorage\.clear/),
+  'R1 登出只清登入身份（LS.currentUser），調序/摺合/慣用 tab 等個人設定全部留返');
+ok(j10.includes('resetGroupCardOrder') && j10.includes("box.classList.add('grp-custom')") && html.includes('.grp-custom .grp-card-reset{display:inline}'),
+  'R2 部門頁還原掣：自訂咗先浮出 ↺，撳返還原預設排版');
+ok(j10.includes('調成你順眼嘅版；只跟呢部機，唔影響其他人'), 'R3 欄上寫明機制（唔會誤會郁咗人哋部電腦）');
+ok(j10.includes('每卡頂有 ▲▼ 可以自己調版') && j10.includes('登出再登入都仲係咁'), 'R4 部門頁簡介寫明：可自調＋登出唔甩（前線好關心㖞呢樣）');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

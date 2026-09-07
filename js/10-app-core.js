@@ -1000,11 +1000,9 @@ Object.assign(ScoutEventApp.prototype,{
     try{ localStorage.setItem(KEY, JSON.stringify(order)); }catch(e){}
   }
 ,
-  canOrderGroupCards(groupName){
-    const lvl=ROLE_HIERARCHY[this.currentUser?.role]||0;
-    return this.isAdmin() || this.isAllGroupViewer()
-      || (normalizeGroupName(this.currentUser?.group_name||'')===groupName && lvl>=40); // 總主任以上
-  }
+  // v15.14a：調序=個人版面喜好（只影響呢部機、唔郁任何人資料），所以人人用得，
+  //           唔再設總主任門檻。想還原預設：撳「↺ 還原預設」。
+  canOrderGroupCards(){ return true; }
 ,
   applyGroupCardOrder(groupName){
     const box=document.getElementById('group-apps-cards'); if(!box) return;
@@ -1015,19 +1013,28 @@ Object.assign(ScoutEventApp.prototype,{
     const canOrder=this.canOrderGroupCards(groupName);
     box.querySelectorAll('.grp-card-ctl').forEach(n=>n.remove());           // 重建（禁用態跟位）
     if(!canOrder) return;
+    // 還原預設掣：同預設次序唔同先顯示（容器加 grp-custom class，CSS 話事）
+    const isDef=order.join(',')==='info,detail,stats';
+    if(isDef) box.classList.remove('grp-custom'); else box.classList.add('grp-custom');
     order.forEach((k,i)=>{
       const el=box.querySelector('[data-grp-card="'+k+'"]'); if(!el) return;
       const bar=document.createElement('div');
       bar.className='grp-card-ctl';
-      bar.innerHTML='<span><i class="fa-solid fa-up-down mr-1"></i>'+NAMES[k]+'（可自行調序：只影響呢部機）</span>'
+      bar.innerHTML='<span><i class="fa-solid fa-up-down mr-1"></i>'+NAMES[k]+'（撳 ▲▼ 調成你順眼嘅版；只跟呢部機，唔影響其他人）</span>'
+        +'<button type="button" onclick="app.resetGroupCardOrder(\''+groupName.replace(/'/g,"\\'")+'\')" title="還原預設排版" class="grp-card-reset">↺</button>'
         +'<span><button type="button" '+(i===0?'disabled ':'')+'onclick="app.moveGroupCard(\''+groupName.replace(/'/g,"\\'")+'\',\''+k+'\',-1)" title="調上">▲</button>'
         +'<button type="button" '+(i===order.length-1?'disabled ':'')+'onclick="app.moveGroupCard(\''+groupName.replace(/'/g,"\\'")+'\',\''+k+'\',1)" title="調下">▼</button></span>';
       el.insertBefore(bar, el.firstChild);
     });
   }
 ,
+  resetGroupCardOrder(groupName){
+    try{ localStorage.removeItem('grp_card_order_'+(this.currentEvent?.event_id||'isd_2026')+'_'+groupName); }catch(e){}
+    this.applyGroupCardOrder(groupName);
+    showToast('已還原預設排版','success');
+  }
+,
   moveGroupCard(groupName, key, dir){
-    if(!this.canOrderGroupCards(groupName)){ showToast('只有本組總主任以上先可以調序','error'); return; }
     const order=this.groupCardOrder(groupName);
     const i=order.indexOf(key); const j=i+dir;
     if(i<0||j<0||j>=order.length) return;
@@ -1358,7 +1365,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed">
           <b>部門管理中心 - ${escapeHtml(groupName)}</b><br>
-          本頁分為 <b>3 大可收合卡片</b>（前線優先排序）：<b>① 本組資訊</b>（崗位／職務／文件／攤位預算）→ <b>② 詳細統計資料</b>（每段可獨立展開收合，每段右上角<b>「＋」</b>直接前往申請）→ <b>③ 本組統計</b>（最下，只留數字，<b>點擊數字可睇返詳細</b>）。低於總主任提交的申請先由本組總主任以上確認，再按批核權限頁的多選路由交指定組別批核及執行。<br>
+          本頁分為 <b>3 大可收合卡片</b>（前線優先排序）：<b>① 本組資訊</b>（崗位／職務／文件／攤位預算）→ <b>② 詳細統計資料</b>（每段可獨立展開收合，每段右上角<b>「＋」</b>直接前往申請）→ <b>③ 本組統計</b>（最下，只留數字，<b>點擊數字可睇返詳細</b>）。<b>每卡頂有 ▲▼ 可以自己調版</b>（只跟你呢部機，登出再登入都仲係咁）。低於總主任提交的申請先由本組總主任以上確認，再按批核權限頁的多選路由交指定組別批核及執行。<br>
           <b>💰 開支申報</b>及<b>📝 口頭報價</b>可直接在本部門提交——提交後<b>自動</b>加入財務紀錄（毋須重新輸入），即時反映在<b>行政組「財務匯總」</b>及結算總表；<b>📖 財務指引</b>全文內建，方便各組查看。<br>
           登入成員可查看，僅本組或管理層可修改。${canManage?'<b class="text-emerald-700">你可管理本組內容。</b>':''}
         </div>
