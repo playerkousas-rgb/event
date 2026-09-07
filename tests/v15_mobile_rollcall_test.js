@@ -186,4 +186,18 @@ ok(html.includes("multi ? (labels[i]||'') : ''"), 'G6 多欄行先對位標籤�
 // 行為已用真 DOM（linkedom＋MutationObserver）獨立驗證：
 //   td 自動獲對應 th 標籤 ✔　手寫標籤不受干擾 ✔　colspan 行留空 ✔　innerHTML 重畫後補標籤 ✔
 
+/* ══════════ H. v15.4 全站手機適配（唔止表格：整體觀感） ══════════ */
+ok(html.includes('toTopBtn') && html.includes("window.scrollY||document.documentElement.scrollTop") && html.includes("typeof window.addEventListener!=='function'"),
+  'H1 長頁返回頂部掣（守衛式，mock 環境唔炸）');
+ok(/@media\(max-width:768px\)\{[\s\S]*input:not\(\[type=checkbox\]\)[^}]*font-size:16px/.test(html),
+  'H2 全站輸入框手機 ≥16px（防 iOS 聚焦自動縮放跳畫面）');
+ok(html.includes('[class^="text-[9px]"]') && html.includes('[class^="text-[11px]"]'),
+  'H3 9–11.5px 超細字字體地板（≥11px 先見得人）；sm: 前綴變體唔會被誤中（^ 或空格開頭先中）');
+ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-tabbar>button{min-height:40px'),
+  'H4 模組分頁條手機一排橫滑唔折行，每個 ≥40px');
+['js/26-monitor-apply.js','js/21-activities.js','js/35-ceremony.js','js/36-crisis.js','js/10-app-core.js'].forEach(f =>
+  ok(read(f).includes('m-tabbar'), 'H5 ' + f + ' 分頁條已掛 m-tabbar'));
+ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
+ok(/src="js\/26-monitor-apply\.js\?v=20260906a/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
+
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

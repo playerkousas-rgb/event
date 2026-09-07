@@ -127,6 +127,9 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 .file-chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;transition:.15s} .file-chip:hover{background:#ede9fe;border-color:#8b5cf6;color:#6d28d9}
 .tab-btn{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#64748b;transition:.2s} .tab-btn.active{background:#6d28d9;color:#fff;border-color:#6d28d9;box-shadow:0 2px 8px rgba(109,40,217,0.25)}
 .stamp-th-active{background:#c7d2fe!important;color:#3730a3;font-weight:800}
+/* v15.4 返回頂部掣（只喺手機顯示；電腦頁短唔使） */
+.to-top-btn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;background:#6d28d9;color:#fff;border:none;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:54;display:none;align-items:center;justify-content:center;font-size:16px}
+@media(min-width:769px){.to-top-btn{display:none!important}}
 @media(max-width:768px){
   .nav-tab{font-size:11px;padding:10px 2px;border-radius:0}
   .header-chip{padding:6px 9px;font-size:10.5px;border-radius:10px} .header-chip i{margin-right:2px}
@@ -150,7 +153,17 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
   #events-grid .py-3{padding-top:.5rem!important;padding-bottom:.5rem!important}
   #events-grid .w-9{width:2rem!important;height:2rem!important;font-size:13px!important}
   #events-grid h4{font-size:12.5px!important}
-  #events-grid select{font-size:12px!important;padding:.45rem .5rem!important}
+  /* v15.4 手機全站適配（活動日工作人員＝手機為主）：可讀性＋防誤觸＋防 iOS 自動縮放 */
+  .table-responsive tbody td{flex-wrap:wrap;row-gap:2px}
+  input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}
+  [class^="text-[9px]"],[class*=" text-[9px]"],[class^="text-[9.5px]"],[class*=" text-[9.5px]"]{font-size:11px!important}
+  [class^="text-[10px]"],[class*=" text-[10px]"],[class^="text-[10.5px]"],[class*=" text-[10.5px]"]{font-size:12px!important}
+  [class^="text-[11px]"],[class*=" text-[11px]"],[class^="text-[11.5px]"],[class*=" text-[11.5px]"]{font-size:12.5px!important}
+  /* 模組分頁條（執行手冊／場地／典禮／危機／部門中心）：手機一排橫滑、唔再折成兩三行，每個 ≥40px 好撳 */
+  .m-tabbar{flex-wrap:nowrap!important;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:6px;padding-bottom:6px}
+  .m-tabbar::-webkit-scrollbar{display:none}
+  .m-tabbar>button{min-height:40px;flex-shrink:0;white-space:nowrap}
+  .m-tabbar>button.tab-btn{padding:10px 14px;font-size:12.5px}
 }
 </style>
 </head>
@@ -565,19 +578,21 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <div id="saveBar" class="save-bar"><div class="flex items-center gap-2 text-sm"><span class="dot"></span><span id="pendingText">0 項未保存</span></div><div class="flex gap-2"><button onclick="app.discardChanges()" class="px-4 py-2 border bg-white rounded-xl text-xs font-bold">捨棄</button><button onclick="app.saveChanges()" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold">確認寫入</button></div></div>
 <div id="savingOverlay" class="saving-overlay"><div class="spinner"></div><h3 id="savingText" class="font-bold">寫入中...</h3><p id="savingSub" class="text-xs text-slate-500">請稍候</p><div class="w-[200px] h-1 bg-slate-200 rounded-full overflow-hidden"><div id="savingProgress" class="h-full w-0 bg-[#6d28d9] transition-all"></div></div></div>
 <div id="toast" class="toast"></div>
+<!-- v15.4：長頁一撳返頂（執行手冊／點名頁好長；手機放喺底部導覽列上方） -->
+<button id="toTopBtn" class="to-top-btn" style="display:none" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回頂部"><i class="fa-solid fa-angle-up"></i></button>
 
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
 <script src="js/00-config.js?v=20260906a"></script>
-<script src="js/10-app-core.js?v=20260905d"></script>
+<script src="js/10-app-core.js?v=20260906a"></script>
 <script src="js/11-news.js?v=20260901a"></script>
 <script src="js/20-accounts.js?v=20260905d"></script>
-<script src="js/21-activities.js?v=20260905d"></script>
+<script src="js/21-activities.js?v=20260906a"></script>
 <script src="js/22-meals.js?v=20260831a"></script>
 <script src="js/23-sync.js?v=20260905d"></script>
 <script src="js/24-supplies.js?v=20260905d"></script>
 <script src="js/25-vehicle.js?v=20260905d"></script>
-<script src="js/26-monitor-apply.js?v=20260905d"></script>
+<script src="js/26-monitor-apply.js?v=20260906a"></script>
 <script src="js/27-parking.js?v=20260831a"></script>
 <script src="js/28-oral-quotes.js?v=20260831a"></script>
 <script src="js/30-finance.js?v=20260905d"></script>
@@ -585,8 +600,8 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <script src="js/32-meetings.js?v=20260831a"></script>
 <script src="js/33-users.js?v=20260905d"></script>
 <script src="js/34-announcements.js?v=20260831a"></script>
-<script src="js/35-ceremony.js?v=20260905d"></script>
-<script src="js/36-crisis.js?v=20260905d"></script>
+<script src="js/35-ceremony.js?v=20260906a"></script>
+<script src="js/36-crisis.js?v=20260906a"></script>
 <script src="js/37-coordinator.js?v=20260905d"></script>
 <script src="js/38-donations.js?v=20260905d"></script>
 <script src="js/39-lost-found.js?v=20260905d"></script>
@@ -634,6 +649,14 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () { /* 舊機／私隱模式就當冇 PWA，功能不受影響 */ });
   });
 }
+/* v15.4 返回頂部掣：長頁向下 600px 先浮出（守衛式，舊測試 mock 環境唔會炸） */
+(function(){
+  var b=document.getElementById('toTopBtn');
+  if(!b||typeof window.addEventListener!=='function') return;
+  window.addEventListener('scroll',function(){
+    b.style.display=((window.scrollY||document.documentElement.scrollTop)>600)?'flex':'none';
+  },{passive:true});
+})();
 </script>
 </body>
 </html>
