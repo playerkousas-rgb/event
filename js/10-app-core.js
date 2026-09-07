@@ -1346,7 +1346,10 @@ Object.assign(ScoutEventApp.prototype,{
       ...groupExtraTabs
     ];
     const hasGroupTabs=groupTabList.length>1;
-    if(!this.groupBoothTab||!groupTabList.some(t=>t.k===this.groupBoothTab)) this.groupBoothTab='apps';
+    // v15.14 記住本組慣用 tab：同一部機重入部門頁直接返到上次用開嗰格（實戰唔使次次搵）
+    const _gltk='grp_last_tab_'+(this.currentEvent?.event_id||'isd_2026')+'_'+groupName;
+    let _savedTab=null; try{ _savedTab=localStorage.getItem(_gltk); }catch(e){}
+    this.groupBoothTab=(_savedTab&&groupTabList.some(t=>t.k===_savedTab))?_savedTab:'apps';
     document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap"><button onclick="app.printCoordArea('group-print-${escapeHtml(groupName)}','${escapeHtml(groupName)} - 本組申請統計')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本組統計</button></div>`;
     const container=document.getElementById('module-content');
     const staffData=this.getStaffData();
@@ -1436,6 +1439,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   switchGroupTab(tab){
     this.groupBoothTab=tab;
+    try{ localStorage.setItem('grp_last_tab_'+(this.currentEvent?.event_id||'isd_2026')+'_'+(this.currentGroupManaged||''), tab); }catch(e){}
     // v13：頂部頁籤涵蓋全部特色功能＋全部門共設財務頁籤（行政組財務匯總/旅團/文件/票券/紀念章/失物；協調組物資/車輛/膳食/場地文件；各組開支申報/口頭報價/財務指引）
     ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','cer_award_merit','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
     document.querySelectorAll('.group-tab-btn').forEach(btn=>{

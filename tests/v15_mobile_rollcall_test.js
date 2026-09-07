@@ -33,7 +33,7 @@ ok(/tbody td\{display:flex;justify-content:space-between;align-items:center;gap:
   'A6 全站手機表格「標籤＋值」行距收緊（8px10px→5px10px）');
 ok(/tbody tr\{display:block;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:6px/.test(html),
   'A7 手機表格卡片間距收緊（10px→6px）');
-ok(html.includes('<script src="js/00-config.js?v=20260906a">') && html.includes('<script src="js/41-roster-lists.js?v=20260906a">'),
+ok(html.includes('<script src="js/00-config.js?v=20260906a">') && html.includes('<script src="js/41-roster-lists.js?v=20260907a">'),
   'A8 已更新 JS 版本號，手機瀏覽器唔會食舊快取');
 
 /* ══════════ B. 名單定義：mobile_fields ══════════ */
@@ -282,7 +282,7 @@ const j10 = read('js/10-app-core.js');
 const iInfo=j10.indexOf('${this.groupInfoBoxesHTML(groupName)}'), iDetail=j10.indexOf('${this.groupDetailSectionHTML(groupName)}'), iStats=j10.indexOf('${this.groupStatsSectionHTML(groupName)}');
 ok(iInfo>0 && iInfo<iDetail && iDetail<iStats, 'O3 部門頁預設排版改為 資訊→詳細→統計數字沉底（前線優先）');
 ok(j10.includes('前線優先排序') && j10.includes('統計</b>（最下'), 'O4 部門頁簡介用返新次序');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907[a-b]/.test(html), 'O5 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907[a-c]/.test(html), 'O5 版本號 bump');
 
 /* ══════════ P. v15.13 部門頁 3 大卡自行調序（本組總主任以上） ══════════ */
 ok(j10.includes("groupCardOrder(groupName)") && j10.includes("const DEF=['info','detail','stats']") && j10.includes('grp_card_order_'),
@@ -295,6 +295,28 @@ ok(j10.includes('moveGroupCard(groupName, key, dir)') && j10.includes('saveGroup
   'P4 調序即存即用；文案講明只影響呢部機（將來全組統一要搬後端）');
 ok(j10.includes('id="group-apps-cards"') && j10.includes('querySelectorAll(\'.grp-card-ctl\').forEach(n=>n.remove())'),
   'P5 卡區獨立容器＋調序欄重建防重複');
-ok(html.includes('.grp-card-ctl{') && /src="js\/10-app-core\.js\?v=20260907b/.test(html), 'P6 調序欄 CSS＋版本號 bump');
+ok(html.includes('.grp-card-ctl{') && /src="js\/10-app-core\.js\?v=20260907[b-c]/.test(html), 'P6 調序欄 CSS＋版本號 bump');
+
+/* ══════════ Q. v15.14 實戰分層：管理區摺合＋慣用 tab 記憶 ══════════ */
+const j41 = read('js/41-roster-lists.js');
+const j40 = read('js/40-souvenir-stamps.js');
+ok(j41.includes('opsAdminOpen(zone)') && j41.includes("matchMedia('(max-width:768px)')") && j41.includes('ops_admin_'),
+  'Q1 管理區摺合 helper：手機預設收、電腦預設開、每格 localStorage 記住');
+ok(j41.includes('class="ops-admin"') && j41.includes("opsAdminSave('roster_${key}'"),
+  'Q2 點名面板：上載/匯出/列印/同步/說明/附件 入 ⚙️ 名單管理摺合格');
+ok(j41.indexOf('ops-admin-sum') < j41.indexOf('fa-clipboard-check'),
+  'Q3 摺合格喺 TICK 卡之前（收埋時點名卡貼頂）');
+ok(j40.includes("opsAdminSave('stamp_${scope}'") && j40.includes('ops-admin-tools'),
+  'Q4 派章面板：說明＋匯入/匯出/列印/清除 入摺合格');
+ok(j40.includes('stamp-search-${scope}') && j40.includes('stamp-filter-${scope}') && j40.includes('data-stamp-save-btn'),
+  'Q5b 戰鬥嘢全留面：搜尋／攤位下拉／篩選／💾儲存');
+const tbStart=j40.indexOf('roster-toolbar'); const tbEnd=j40.indexOf('id="stamp-print-');
+const tb=j40.slice(tbStart,tbEnd);
+ok(!tb.includes('匯入 EXCEL') && !tb.includes('列印名單') && !tb.includes('清除匯入名單'),
+  'Q6 管理掣已搬離戰鬥工具列');
+ok(j10.includes("grp_last_tab_") && j10.includes('記住本組慣用 tab'),
+  'Q7 部門頁記住本組上次慣用 tab（重入直達）');
+ok(/src="js\/40-souvenir-stamps\.js\?v=20260907a/.test(html) && /src="js\/41-roster-lists\.js\?v=20260907a/.test(html) && /src="js\/10-app-core\.js\?v=20260907c/.test(html),
+  'Q8 三個 js 版本號 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

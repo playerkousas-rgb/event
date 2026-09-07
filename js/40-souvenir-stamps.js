@@ -372,8 +372,24 @@ Object.assign(ScoutEventApp.prototype,{
     }).join('');
     const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('group','組別')}${sortTh('booth','攤位(如有)')}<th class="border px-2 py-1 text-left">身份</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註(改名)</th>`;
     const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('unit','單位')}<th class="border px-2 py-1 text-left">職銜</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註</th>`;
+    // v15.14：說明＋管理掣（匯入/匯出/列印/清除）收「⚙️ 名單管理」摺合格；
+    //         戰鬥嘢全部留面：進度數字、組別章、攤位下拉、搜尋、篩選、💾儲存、大 TICK 卡。
+    const admOpenST=this.opsAdminOpen('stamp_'+scope);
     return `<div class="space-y-3">
+      <details class="ops-admin" ontoggle="app.opsAdminSave('stamp_${scope}',this.open)" ${admOpenST?'open':''}>
+        <summary class="ops-admin-sum"><i class="fa-solid fa-gear mr-1"></i>名單管理・說明<span class="ops-admin-note">（手機預設收埋：派發用下面就得）</span></summary>
+        <div class="ops-admin-body space-y-3">
       <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先暫存，可以一口氣 TICK 完整個組別，完成後撳「💾 儲存」一次過記錄。</b>':''}</div>
+        <div class="ops-admin-tools flex gap-2 flex-wrap items-center">
+        <span class="text-[10px] text-slate-400 py-2">💡 手機：撳組別章／揀攤位即篩剩幾個人；電腦：點標題列（姓名／組別／攤位／派發狀態）排序</span>
+        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
+        <button onclick="app.exportSouvenirStampsExcel('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出派發紀錄 Excel</button>
+        <button onclick="app.exportSouvenirStampsWord('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
+        <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
+        ${canManage&&((isStaff&&(store.staff_custom||[]).length)||(!isStaff&&(store.guests_custom||[]).length))?`<button onclick="app.clearSouvenirCustom('${scope}')" class="bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>清除匯入名單</button>`:''}
+        </div>
+      </div>
+      </details>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
         <div class="bg-white border rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${st.total}</div><div class="text-[10px]">${escapeHtml(def.label)}總人數</div></div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-emerald-700" id="stamp-count-${scope}">${st.ticked}</div><div class="text-[10px]">已派發</div></div>
@@ -390,12 +406,6 @@ Object.assign(ScoutEventApp.prototype,{
         <span id="stamp-showing-${scope}" class="text-[10px] text-slate-500 py-2 whitespace-nowrap"></span>
         ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
         <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
-        <span class="text-[10px] text-slate-400 py-2">💡 手機：撳組別章／揀攤位即篩剩幾個人；電腦：點標題列（姓名／組別／攤位／派發狀態）排序</span>
-        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
-        <button onclick="app.exportSouvenirStampsExcel('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出派發紀錄 Excel</button>
-        <button onclick="app.exportSouvenirStampsWord('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
-        <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
-        ${canManage&&((isStaff&&(store.staff_custom||[]).length)||(!isStaff&&(store.guests_custom||[]).length))?`<button onclick="app.clearSouvenirCustom('${scope}')" class="bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>清除匯入名單</button>`:''}
       </div>
       <div id="stamp-print-${scope}" class="bg-white border rounded-xl p-3">
         <div class="roster-desktop-wrap"><div class="table-responsive"><table class="min-w-full text-[11px] border" id="stamp-table-${scope}">

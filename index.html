@@ -147,6 +147,13 @@ details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;
 .exec-sec-btn{background:#0f172a;color:#fff;border:none;border-radius:10px;padding:6px 10px;font-size:10.5px;font-weight:700;cursor:pointer}
 /* 節列（章嘅內部分頁條）：灰底膠囊條，同黑色嘅章列分清層次 */
 .m-subtab{background:#f1f5f9!important;border-radius:12px;padding:5px;border-bottom:none!important;margin-top:2px}
+/* v15.14 實戰分層：管理區摺合格（上載/匯出/說明收埋；手機預設收、電腦預設開、每格記住） */
+details.ops-admin{border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;overflow:hidden}
+details.ops-admin>summary.ops-admin-sum{list-style:none;display:flex;align-items:center;gap:6px;padding:9px 12px;cursor:pointer;font-size:11.5px;font-weight:800;color:#475569;-webkit-tap-highlight-color:transparent}
+details.ops-admin>summary.ops-admin-sum::-webkit-details-marker{display:none}
+details.ops-admin .ops-admin-note{font-weight:500;color:#94a3b8;font-size:10px;margin-left:auto;text-align:right}
+details.ops-admin[open]>summary.ops-admin-sum{border-bottom:1px dashed #e2e8f0}
+.ops-admin-body{padding:10px}
 /* v15.13 部門頁管理者調卡序掣（普通成員完全睇唔到呢條欄） */
 .grp-card-ctl{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#eef2ff;border:1px dashed #c7d2fe;border-radius:10px;padding:4px 8px;margin-bottom:6px;font-size:10.5px;color:#4f46e5}
 .grp-card-ctl button{background:#fff;border:1px solid #c7d2fe;color:#4338ca;border-radius:8px;min-width:34px;min-height:30px;font-weight:800;cursor:pointer;margin-left:4px}
@@ -612,7 +619,7 @@ details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
 <script src="js/00-config.js?v=20260906a"></script>
-<script src="js/10-app-core.js?v=20260907b"></script>
+<script src="js/10-app-core.js?v=20260907c"></script>
 <script src="js/11-news.js?v=20260901a"></script>
 <script src="js/20-accounts.js?v=20260905d"></script>
 <script src="js/21-activities.js?v=20260907a"></script>
@@ -633,8 +640,8 @@ details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;
 <script src="js/37-coordinator.js?v=20260905d"></script>
 <script src="js/38-donations.js?v=20260905d"></script>
 <script src="js/39-lost-found.js?v=20260905d"></script>
-<script src="js/40-souvenir-stamps.js?v=20260906a"></script>
-<script src="js/41-roster-lists.js?v=20260906a"></script>
+<script src="js/40-souvenir-stamps.js?v=20260907a"></script>
+<script src="js/41-roster-lists.js?v=20260907a"></script>
 <script src="js/90-bootstrap.js?v=20260831b"></script>
 <script>
 /* v15.3 全站手機表格自動補 data-label：任何 .table-responsive 表格嘅 <td> 若冇手寫 data-label，

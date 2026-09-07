@@ -154,7 +154,13 @@ Object.assign(ScoutEventApp.prototype,{
     const light='bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-bold';
     const meritReplyStatus=def.source==='ceremony_merit'&&typeof this.meritAwardReplyStatusHTML==='function'
       ?this.meritAwardReplyStatusHTML():'';
+    // v15.14：管理區（上載/匯出/列印/同步/說明/附件）收入摺合格——寫嘢要有，用嗰陣唔阻。
+    //         手機預設收埋、電腦預設展開、每張名單各自記住（localStorage）。
+    const admOpenRZ=this.opsAdminOpen('roster_'+key);
     return `
+      <details class="ops-admin" ontoggle="app.opsAdminSave('roster_${key}',this.open)" ${admOpenRZ?'open':''}>
+        <summary class="ops-admin-sum"><i class="fa-solid fa-gear mr-1"></i>名單管理・說明・附件<span class="ops-admin-note">（手機預設收埋：點名用下面嗰格 TICK 就得）</span></summary>
+        <div class="ops-admin-body space-y-3">
       <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700 space-y-1.5">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <b class="text-[13px]"><i class="${def.icon} mr-1"></i>${escapeHtml(def.title)}</b>
@@ -177,6 +183,11 @@ Object.assign(ScoutEventApp.prototype,{
         ${canManage?`<button type="button" onclick="app.openExecManualFileForm('${attachKey}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paperclip mr-1"></i>上傳附件（PDF／Word／圖片／Drive 連結）</button>`:''}
         ${this.rosterBackendReady()?`<button type="button" onclick="app.rosterPushToGas('${def.key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>同步名單至後端</button><button type="button" onclick="app.rosterPullFromGas('${def.key}')" class="${light}"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>由後端取回</button>`:''}
       </div>
+            ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載 Excel 範本」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
+            ${files.length?`<div class="space-y-2"><b class="text-[12px]"><i class="fa-solid fa-paperclip mr-1"></i>${escapeHtml(def.title)}附件（${files.length}）</b><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,attachKey,canManage)).join('')}</div></div>`:''}
+      </div>
+      </details>
+
       <div class="bg-white border rounded-xl p-3 space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <b class="text-[12px]"><i class="fa-solid fa-clipboard-check mr-1 text-emerald-600"></i>${escapeHtml(def.tick_label)}表</b>
@@ -192,10 +203,23 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div id="roster-print-${scope}-${key}" data-roster-body="${key}">${this.rosterBodyHTML(key)}</div>
       </div>
-      ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載 Excel 範本」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
-      ${files.length?`<div class="space-y-2"><b class="text-[12px]"><i class="fa-solid fa-paperclip mr-1"></i>${escapeHtml(def.title)}附件（${files.length}）</b><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,attachKey,canManage)).join('')}</div></div>`:''}
     `;
   },
+
+  /* ══ v15.14 實戰分層：「寫嘅嘢」同「用嘅嘢」分開 ══════════════════════
+     點名／派章面板有兩類內容：
+     · 管理區（上載名單／匯出／列印／同步／說明）——寫入資料用嘅，實戰嗰陣係干擾
+     · 作戰區（篩選＋大 TICK 卡）——活動日 90% 時間用嘅
+     做法：管理區收入 <details> 摺合格（手機預設收埋、電腦預設展開、每格各自記住開合）。
+     「。」層名：'roster_<名單key>' / 'stamp_<scope>'，localStorage 長期記住。 */
+  opsAdminOpen(zone){
+    let v=null; try{ v=localStorage.getItem('ops_admin_'+zone); }catch(e){}
+    if(v!==null) return v==='1';
+    return !((typeof window!=='undefined')&&typeof window.matchMedia==='function'&&window.matchMedia('(max-width:768px)').matches);
+  }
+,
+  opsAdminSave(zone, open){ try{ localStorage.setItem('ops_admin_'+zone, open?'1':'0'); }catch(e){} }
+,
 
   rosterBodyHTML(key){
     const def=this.rosterDef(key); if(!def) return '';
