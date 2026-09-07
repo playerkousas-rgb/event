@@ -328,4 +328,15 @@ ok(j10.includes('resetGroupCardOrder') && j10.includes("box.classList.add('grp-c
 ok(j10.includes('調成你順眼嘅版；只跟呢部機，唔影響其他人'), 'R3 欄上寫明機制（唔會誤會郁咗人哋部電腦）');
 ok(j10.includes('每卡頂有 ▲▼ 可以自己調版') && j10.includes('登出再登入都仲係咁'), 'R4 部門頁簡介寫明：可自調＋登出唔甩（前線好關心㖞呢樣）');
 
+/* ══════════ S. v15.14b 補網：無 data-label 嘅細表唔會剪走欄 ══════════ */
+const j30 = read('js/30-finance.js');
+const j32 = read('js/32-meetings.js');
+ok(html.includes('.tbl-scroll{overflow-x:auto'), 'S1 全域 .tbl-scroll 純橫滾 class 已落 CSS');
+ok(j30.includes('overflow-hidden tbl-scroll') && j30.includes('text-[10px] border-collapse'),
+  'S2 財政結算總表說明區細表：剪走→橫滾');
+ok(j32.includes('overflow-hidden tbl-scroll') && j32.includes('mt-1 overflow-x-auto rounded-lg border'),
+  'S3 會議出席＋跟進事項兩張表都有橫滾');
+ok(read('js/33-users.js').includes('<div class="tbl-scroll"><table class="min-w-full text-xs">'),
+  'S4 用戶清單表（多欄）有橫滾');
+
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

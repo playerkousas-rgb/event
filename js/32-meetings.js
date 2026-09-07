@@ -181,7 +181,7 @@ Object.assign(ScoutEventApp.prototype,{
       <td class="px-2 py-1.5 text-[11px] text-slate-500 whitespace-nowrap">${escapeHtml(it.presenter||'')}</td>
     </tr>`).join('');
     return `<div class="bg-sky-50 border border-sky-200 rounded-xl p-3">${head}${meta}
-      <div class="bg-white border rounded-xl overflow-hidden"><table class="min-w-full"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left text-[10px]">項</th><th class="px-2 py-1 text-left text-[10px]">議題</th><th class="px-2 py-1 text-left text-[10px]">負責</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="bg-white border rounded-xl overflow-hidden tbl-scroll"><table class="min-w-full"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left text-[10px]">項</th><th class="px-2 py-1 text-left text-[10px]">議題</th><th class="px-2 py-1 text-left text-[10px]">負責</th></tr></thead><tbody>${rows}</tbody></table></div>
       ${this.builtInFullTextBar(m,'agenda',ctx)}
     </div>`;
   }

@@ -66,6 +66,7 @@ html,body{overflow-x:clip} @supports not (overflow-x:clip){html,body{overflow-x:
 /* 底部導覽列：未登入＝公告及溝通・執行手冊・申請中心・童心捐贈（4 項公開資料）；登入後還原＝執行手冊・申請中心・批核中心・部門中心，手機／電腦同步顯示 */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:55;box-shadow:0 -2px 12px rgba(0,0,0,0.06)} .bottom-nav button{flex:1;max-width:180px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;font-size:10px;color:#64748b;min-height:52px;justify-content:center} .bottom-nav button.active{color:#6d28d9;font-weight:700} .bottom-nav button i{font-size:18px}
 .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #e2e8f0;background:#fff} .table-responsive table{width:100%;min-width:600px}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%} /* v15.14b：無 data-label 嘅細表 → 淨橫滾唔變卡式 */
 /* v15 手機點名：名單改為「一人一行」緊湊卡片（大 TICK 目標＋點按展開詳情）；電腦版維持完整表格不變 */
 .roster-mobile-list{display:none}
 .rm-row{border:1px solid #e2e8f0;border-radius:12px;background:#fff;margin-bottom:6px;overflow:hidden}
