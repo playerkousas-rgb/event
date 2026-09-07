@@ -262,12 +262,9 @@ Object.assign(ScoutEventApp.prototype,{
   renderExecManualModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
-    // v15.8：手機預設開「目錄」（一入就知資料喺邊章）；電腦照舊直開第一章
-    if(!this.execManualSubTab){
-      this.execManualSubTab=(typeof window.matchMedia==='function'&&window.matchMedia('(max-width:768px)').matches)?'toc':'staff';
-    }
+    if(!this.execManualSubTab) this.execManualSubTab='staff';
+    // v15.11：目錄唔入 APP（用 APP 嘅人撳章就得，唔使目錄）；目錄只喺「列印整本手冊」度出現，見 execPrintAll()
     const tabs=[
-      {k:'toc',       icon:'fa-solid fa-book-open',            label:'目錄'},
       {k:'ann_list',  icon:'fa-solid fa-bullhorn',             label:'公告'},
       {k:'schedule',  icon:'fa-solid fa-calendar-days',        label:'日程表'},
       {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
@@ -291,9 +288,9 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
     this.ensureExecCrumbWrap();
     this.renderExecManualTab();
-    // v15.10 紙版橋樑：一撳列印本章（好多工作人員仲係想袋張紙 — 印得靚就係過渡鑊）
+    // v15.11：唔好逐章印 — 手冊最終係整本列印先有意義；一粒掣印全本（自動附目錄頁）
     const actionsEl=document.getElementById('module-actions');
-    if(actionsEl) actionsEl.innerHTML='<button onclick="app.execPrintChapter()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印本章</button>';
+    if(actionsEl) actionsEl.innerHTML='<button onclick="app.execPrintAll()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印整本手冊</button>';
   }
 ,
   /* v15.7 執行手冊「路線列」：執行手冊 › 章名 › 節名 ⟵ 一睇就知而家喺邊個大標題下面。
@@ -334,54 +331,6 @@ Object.assign(ScoutEventApp.prototype,{
     });
   }
 ,
-  /* ══ v15.8 執行手冊「目錄」頁：一入就知資料喺邊章 ════════════════════
-     每章一張大卡：章名＋「入面有咩」（白話），撳卡直去嗰章；
-     再上有一行「我想搵…」常見需求捷徑，直去該章該節。
-     目的：用戶唔使逐章撞，一版目錄答到「我要嘅嘢喺邊」。 */
-  execManualTOC(){
-    return [
-      {k:'ann_list',  icon:'fa-solid fa-bullhorn',             tint:'bg-amber-100 text-amber-700',    label:'公告', has:'大會公告存檔。最新一條永遠喺全站最頂橫幅，一開 APP 就見'},
-      {k:'schedule',  icon:'fa-solid fa-calendar-days',        tint:'bg-sky-100 text-sky-700',        label:'日程表', has:'活動日流程・時間・地點一覽'},
-      {k:'staff',     icon:'fa-solid fa-sitemap',              tint:'bg-indigo-100 text-indigo-700', label:'組織架構與聯絡', has:'架構圖・全體名單及聯絡・職務大綱（2026）'},
-      {k:'activities',icon:'fa-solid fa-map-location-dot',     tint:'bg-emerald-100 text-emerald-700', label:'場地與活動總覽', has:'場地地圖・攤位列表・攤位總表・佈置圖・遊戲卡・活動列表'},
-      {k:'ceremony',  icon:'fa-solid fa-crown',               tint:'bg-amber-100 text-amber-700',    label:'典禮儀式', has:'RUNDOWN・司儀稿・嘉賓名單・座位表・致辭稿'},
-      {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', tint:'bg-rose-100 text-rose-700',      label:'危機處理', has:'應變指引（急救・保險）・意外事件報告表・手冊上傳・應變小組'},
-      {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', tint:'bg-teal-100 text-teal-700',   label:'財務指引', has:'報銷程序・報價要求・結算總表・範本文件'},
-      {k:'documents', icon:'fa-solid fa-file-shield',          tint:'bg-sky-100 text-sky-700',        label:'通告及文件', has:'大會通告・指引・表格（可搜尋）'},
-      {k:'participants', icon:'fa-solid fa-people-group',      tint:'bg-purple-100 text-purple-700',  label:'參加旅團名單', has:'旅團・支部・人數一覽＋附件'},
-      {k:'meal_box',  icon:'fa-solid fa-bowl-food',            tint:'bg-orange-100 text-orange-700',  label:'代訂餐盒名單', has:'代訂餐旅團名單・點名・附件'},
-      {k:'unit_guide', icon:'fa-solid fa-book-open',           tint:'bg-indigo-100 text-indigo-700',  label:'旅團須知', has:'參加旅團注意事項・守則'},
-      {k:'theme_badges', icon:'fa-solid fa-award',             tint:'bg-purple-100 text-purple-700',  label:'活動主題章', has:'主題章設計・收集方法・名單'},
-      {k:'misc',      icon:'fa-solid fa-layer-group',          tint:'bg-slate-200 text-slate-700',    label:'各類附加資料', has:'箱頭紙・許可證式樣・失物認領'}
-    ];
-  }
-,
-  renderExecManualTOC(panel){
-    // 「我想搵…」常見需求：白話問句 → 直去嗰章嗰節（用返現有跳轉通道）
-    const quick=[
-      {q:'我攤位喺邊？',     go:"app.switchExecManualTab('activities'); setTimeout(()=>app.switchActivitiesTab&&app.switchActivitiesTab('booths'),200)"},
-      {q:'急救／保險點做？', go:"app.switchExecManualTab('crisis')"},
-      {q:'點樣報銷？',       go:"app.switchExecManualTab('finance_guide')"},
-      {q:'點名表',           go:"app.switchExecManualTab('participants')"},
-      {q:'今日日程',         go:"app.switchExecManualTab('schedule')"},
-      {q:'失物認領',         go:"app.switchExecManualTab('misc'); setTimeout(()=>app.switchExecManualMiscTab&&app.switchExecManualMiscTab('lost_found'),200)"},
-      {q:'座位表',           go:"app.switchExecManualTab('ceremony'); setTimeout(()=>app.switchCeremonyTab&&app.switchCeremonyTab('seating'),200)"}
-    ];
-    panel.innerHTML=`
-      <div class="space-y-4">
-        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900"><b>📑 執行手冊目錄：</b>唔使逐章撞 — 睇準撳入去就係。常見需求可以直撳下面「我想搵…」。</div>
-        <div><div class="text-[11px] font-bold text-slate-500 mb-1.5">我想搵…</div>
-          <div class="flex gap-2 flex-wrap">${quick.map(x=>`<button type="button" onclick="${x.go}" class="exec-toc-q">${escapeHtml(x.q)}</button>`).join('')}</div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          ${this.execManualTOC().map(c=>`<button type="button" onclick="app.switchExecManualTab('${c.k}')" class="exec-toc-card border rounded-2xl p-4 bg-white text-left hover:shadow-md transition">
-            <div class="flex items-center gap-2.5 mb-1.5"><span class="w-9 h-9 ${c.tint} rounded-xl flex items-center justify-center text-[15px] flex-shrink-0"><i class="${c.icon}"></i></span><b class="text-[13.5px]">${escapeHtml(c.label)}</b></div>
-            <div class="text-[11px] text-slate-500 leading-relaxed">${escapeHtml(c.has)}</div>
-          </button>`).join('')}
-        </div>
-      </div>`;
-  }
-,
   switchExecManualTab(tab){
     // v11：舊分頁已搬家（攤位總表／場地佈置總覽 → 場地與活動總覽；箱頭紙／許可證式樣 → 各類附加資料）。
     //      舊連結照樣行得：自動轉去新分頁並揀返對應嘅內部分頁。
@@ -409,7 +358,6 @@ Object.assign(ScoutEventApp.prototype,{
     const panel=document.getElementById('exec-manual-panel');
     if(!panel) return;
     const map={
-      toc:()=>this.renderExecManualTOC(panel),
       // v15.9：公告及溝通嘅資訊內容併入執行手冊（資料得一份，掛原 renderer）。
       //      公告用 id=ann-tab-list 包裝：佢內部搜尋靠 getElementById 返呢個 id 重繪。
       ann_list:()=>{ panel.innerHTML='<div id="ann-tab-list"></div>'; this.renderAnnList(document.getElementById('ann-tab-list')); },
@@ -475,35 +423,69 @@ Object.assign(ScoutEventApp.prototype,{
     panel.querySelectorAll('details.exec-sec').forEach(d=>{ d.open=!!open; });
   }
 ,
-  /* v15.10 列印本章：手冊章一撳成紙（紙版友橋樑）。
-     做法：clone 全章 → 節卡全部攤開做普通標題 → 剷走掣／輸入／手機版名單 → 送列印窗。
-     有節列嘅章會全章齊印（列印窗無 Tailwind CSS，hidden 分頁照樣現身）。 */
-  execPrintChapter(){
+  /* ══ v15.11 列印整本執行手冊（目錄頁只喺列印版出現，APP 內唔加——對用 APP 嘅人冇用）══
+     做法：逐章用 switchExecManualTab 真 render 入 #exec-manual-panel（所有節一次過
+     render 晒，hidden 節都照有內容；列印窗口冇 Tailwind → hidden 自動全現身），clone
+     後剷走掣／輸入／手機版名單、節卡攤開變 h2，砌埋目錄頁送列印窗，最後還原用戶原本開緊嗰章。 */
+  execPrintAll(){
     const panel=document.getElementById('exec-manual-panel');
-    if(!panel){ showToast('找不到內容','error'); return; }
-    const clone=panel.cloneNode(true);
-    clone.querySelectorAll('script,style,button,input,select,textarea,label,iframe,.exec-sec-tools,.roster-mobile-list,.to-top-btn').forEach(n=>n.remove());
-    clone.querySelectorAll('details.exec-sec').forEach(d=>{
-      const sum=d.querySelector('summary');
-      const t=sum?sum.textContent.trim():'';
-      const div=document.createElement('div');
-      if(t) div.innerHTML='<h2 class="p-sec-h">'+escapeHtml(t)+'</h2>';
-      [...d.children].forEach(c=>{ if(c!==sum) div.appendChild(c); });
-      d.replaceWith(div);
-    });
-    const title=(document.getElementById('exec-crumb')?.textContent||'執行手冊').replace(/\s+/g,' ').trim();
+    if(!panel||typeof window.open!=='function'){ showToast('請先開啟執行手冊','error'); return; }
+    const BOOK=[   // 印本次序＋各章節目（只係目錄頁用）
+      {k:'ann_list',      label:'公告'},
+      {k:'schedule',      label:'日程表'},
+      {k:'staff',         label:'組織架構與聯絡', secs:['組織架構圖','名單及聯絡','職務大綱']},
+      {k:'activities',    label:'場地與活動總覽', secs:['地圖','攤位列表','攤位總表','場地佈置總覽','遊戲卡','活動列表']},
+      {k:'ceremony',      label:'典禮儀式',       secs:['RUNDOWN','司儀稿','嘉賓名單','座位表','致辭稿','優異旅團獲獎名單','支部獎勵名單','領袖獎勵名單','嘉賓地圖']},
+      {k:'crisis',        label:'危機處理',       secs:['應變指引（急救・保險）','意外事件報告表','上傳危機處理手冊','危機應變小組','緊急聯絡']},
+      {k:'finance_guide', label:'財務指引'},
+      {k:'documents',     label:'通告及文件'},
+      {k:'participants',  label:'參加旅團名單'},
+      {k:'meal_box',      label:'代訂餐盒名單'},
+      {k:'unit_guide',    label:'旅團須知'},
+      {k:'theme_badges',  label:'活動主題章'},
+      {k:'misc',          label:'各類附加資料',   secs:['箱頭紙','許可證式樣','失物認領']}
+    ];
+    showToast('準備整本列印中…');
+    const orig=this.execManualSubTab;
+    const parts=[];
+    try{
+      BOOK.forEach((ch,idx)=>{
+        this.switchExecManualTab(ch.k);
+        const clone=panel.cloneNode(true);
+        clone.querySelectorAll('script,style,button,input,select,textarea,label,iframe,.exec-sec-tools,.roster-mobile-list,.to-top-btn').forEach(n=>n.remove());
+        clone.querySelectorAll('details.exec-sec').forEach(d=>{
+          const sum=d.querySelector('summary');
+          const t=sum?sum.textContent.trim():'';
+          const div=document.createElement('div');
+          if(t) div.innerHTML='<h2 class="p-sec-h">'+escapeHtml(t)+'</h2>';
+          [...d.children].forEach(c=>{ if(c!==sum) div.appendChild(c); });
+          d.replaceWith(div);
+        });
+        parts.push('<section class="chapter"><h1 class="p-chap-h">'+(idx+1)+'. '+escapeHtml(ch.label)+'</h1>'+clone.innerHTML+'</section>');
+      });
+    }finally{
+      this.switchExecManualTab(orig);   // 還原用戶原本開緊嗰章（章列 highlight 一齊還原）
+    }
+    const tocHtml='<div class="toc-page"><h1 style="font-size:22px;text-align:center;margin:0 0 4px">'+escapeHtml(this.currentEvent?.event_name||'')+'　執行手冊</h1>'
+      +'<div class="meta" style="text-align:center">印製日期：'+new Date().toLocaleString()+'（目錄頁只屬列印版）</div>'
+      +'<h2 style="font-size:16px;margin:14px 0 6px">目錄</h2><ol class="toc">'
+      +BOOK.map((c,i)=>'<li><b>'+(i+1)+'. '+escapeHtml(c.label)+'</b>'
+        +(c.secs?'<ul>'+c.secs.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>':'')+'</li>').join('')
+      +'</ol></div>';
     const win=window.open('','_blank');
     if(!win){ showToast('請允許彈出視窗以列印','warning'); return; }
-    win.document.write('<html><head><meta charset="utf-8"><title>'+escapeHtml(title)+'</title><style>'
-      +"body{font-family:'Noto Sans TC',sans-serif;padding:20px;color:#000}"
-      +'h1{font-size:17px;margin:0 0 2px}.meta{font-size:11px;color:#555;margin-bottom:14px}'
+    win.document.write('<html><head><meta charset="utf-8"><title>執行手冊（整本）</title><style>'
+      +"body{font-family:'Noto Sans TC',sans-serif;padding:22px;color:#000}"
+      +'.meta{font-size:11px;color:#555;margin-bottom:14px}'
+      +'.toc{list-style:none;padding:0;margin:0}.toc>li{margin:8px 0;font-size:13px}'
+      +'.toc ul{margin:2px 0 2px 20px;padding:0;list-style:none;font-size:11px;color:#444}.toc ul li{margin:1px 0}'
+      +'.chapter{page-break-before:always;break-before:page}'
+      +'.p-chap-h{font-size:19px;border-bottom:2.5px solid #000;margin:0 0 10px;padding-bottom:5px}'
       +'.p-sec-h{font-size:15px;border-bottom:1.5px solid #000;margin:16px 0 6px;padding-bottom:3px}'
       +'table{width:100%;border-collapse:collapse;margin-top:6px}th,td{border:1px solid #999;padding:5px;font-size:11px;text-align:left}'
       +'a{color:#000;text-decoration:none}.no-print{display:none!important}'
-      +'</style></head><body><h1>'+escapeHtml(title)+'</h1>'
-      +'<div class="meta">活動：'+escapeHtml(this.currentEvent?.event_name||'')+'　列印日期：'+new Date().toLocaleString()+'　列印人：'+escapeHtml(this.currentUser?.name||'公開')+'</div>'
-      +clone.innerHTML
-      +'<script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');
+      +'</style></head><body>'+tocHtml+parts.join('\n')
+      +'<script>window.onload=()=>setTimeout(()=>window.print(),400)<\/script></body></html>');
     win.document.close();
   }
 ,
