@@ -198,7 +198,7 @@ ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-ta
 ['js/26-monitor-apply.js','js/21-activities.js','js/35-ceremony.js','js/36-crisis.js','js/10-app-core.js'].forEach(f =>
   ok(read(f).includes('m-tabbar'), 'H5 ' + f + ' 分頁條已掛 m-tabbar'));
 ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
-ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][a-f]/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
+ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][a-g]/.test(html) && /src="js\/10-app-core\.js\?v=2026090[67][a-g]/.test(html), 'H7 改動咗嘅 js 已更新版本號');
 
 /* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
 ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
@@ -230,7 +230,7 @@ ok(html.includes('details.exec-sec>summary.exec-sec-sum') && html.includes('.m-s
 ok(read('js/31-staff.js').includes('m-tabbar m-subtab') && j26.includes('m-tabbar m-subtab') &&
    read('js/21-activities.js').includes('m-subtab') && read('js/35-ceremony.js').includes('m-subtab') && read('js/36-crisis.js').includes('m-subtab'),
   'J7 五條章內分頁條全部掛 m-tabbar＋m-subtab（手機一排橫滑＋視覺分層）');
-ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907[a-f]/.test(html),
+ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907[a-g]/.test(html),
   'J8 今轉改動咗嘅 js 版本號已 bump');
 
 /* ══════════ K. v15.7 執行手冊路線列（執行手冊 › 章 › 節） ══════════ */
@@ -241,7 +241,7 @@ ok(j26.includes("'switchStaffTab','switchActivitiesTab','switchCeremonyTab','swi
   'K3 五個內部分頁切換函數已包更新；_crumbWrapped 防重複包');
 ok(j26.includes("btn.querySelector('.lbl-long')"), 'K4 路線列用全稱（.lbl-long 優先），手機短名唔會走樣');
 ok(html.includes('.exec-crumb-sec{color:#6d28d9'), 'K5 節名用主色突出（層次一眼可見）');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907[b-f]/.test(html), 'K6 js 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907[b-g]/.test(html), 'K6 js 版本號 bump');
 
 /* ══════════ L. v15.11 目錄只屬列印版；APP 內唔要 ══════════ */
 ok(!j26.includes("{k:'toc'") && !j26.includes('renderExecManualTOC') && !j26.includes('execManualTOC'),
@@ -270,7 +270,18 @@ ok(j26.includes('目錄頁只屬列印版') && j26.includes("'嘉賓地圖'") &&
 ok(j26.includes('this.switchExecManualTab(orig)') && j26.includes('}finally{'),
   'N6 印完還原用戶原本開緊嗰章（finally，唔會卡喺最後一章）');
 ok(j26.includes('列印整本手冊') && !j26.includes('列印本章'), 'N7 只剩「列印整本手冊」一粒掣');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907f/.test(html) && /src="js\/34-announcements\.js\?v=20260907a/.test(html),
+ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/34-announcements\.js\?v=20260907a/.test(html),
   'N8 兩個 js 版本號已 bump');
+
+/* ══════════ O. v15.12 前線視覺：🆘 緊急掣＋部門頁統計沉底 ══════════ */
+ok(/v6\.1<\/span><button onclick="event\.stopPropagation\(\);app\.goEmergency\(\)"/.test(html) && html.includes('fa-phone-volume') && html.includes('animate-pulse'),
+  'O1 頂 BAR 版本號隔籬有醒目紅色緊急掣（任何頁見到，唔會觸發首頁跳轉）');
+ok(j26.includes('goEmergency(){') && j26.includes("this.openModule('exec_manual')") && j26.includes("this.switchExecManualTab('crisis')") && j26.includes("this.switchCrisisTab('contacts')") && j26.includes('scrollIntoView'),
+  'O2 緊急掣路線：執行手冊 → 危機處理 → 緊急聯絡 → 自動碌落去');
+const j10 = read('js/10-app-core.js');
+const iInfo=j10.indexOf('${this.groupInfoBoxesHTML(groupName)}'), iDetail=j10.indexOf('${this.groupDetailSectionHTML(groupName)}'), iStats=j10.indexOf('${this.groupStatsSectionHTML(groupName)}');
+ok(iInfo>0 && iInfo<iDetail && iDetail<iStats, 'O3 部門頁預設排版改為 資訊→詳細→統計數字沉底（前線優先）');
+ok(j10.includes('前線優先排序') && j10.includes('統計</b>（最下'), 'O4 部門頁簡介用返新次序');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907a/.test(html), 'O5 版本號 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

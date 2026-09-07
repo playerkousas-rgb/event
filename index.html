@@ -200,7 +200,7 @@ details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;
     <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <div class="flex items-center space-x-2.5 cursor-pointer min-w-0 w-full sm:w-auto sm:flex-1" onclick="app.goHome()">
         <div class="bg-sky-600 text-white p-2 sm:p-2.5 rounded-xl font-bold text-lg shadow flex-shrink-0"><i class="fa-solid fa-tent"></i></div>
-        <div class="min-w-0 flex-1"><div class="flex items-center space-x-2 flex-wrap"><h1 class="font-bold text-[15px] sm:text-lg leading-tight truncate">童軍活動管理系統</h1><span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold whitespace-nowrap">v6.1</span></div><p class="text-[11px] sm:text-xs text-slate-400 truncate" id="current-event-subtitle">選擇活動後即可查看該活動全部資料</p></div>
+        <div class="min-w-0 flex-1"><div class="flex items-center space-x-2 flex-wrap"><h1 class="font-bold text-[15px] sm:text-lg leading-tight truncate">童軍活動管理系統</h1><span class="bg-sky-500/20 text-sky-300 text-[10px] px-2 py-0.5 rounded border border-sky-500/30 font-semibold whitespace-nowrap">v6.1</span><button onclick="event.stopPropagation();app.goEmergency()" title="緊急聯絡（任何人可撳）" class="ml-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-[11px] px-2.5 py-1 rounded-full shadow border border-rose-400/60 flex items-center gap-1 flex-shrink-0 animate-pulse" style="animation-duration:2.5s"><i class="fa-solid fa-phone-volume"></i>緊急</button></div><p class="text-[11px] sm:text-xs text-slate-400 truncate" id="current-event-subtitle">選擇活動後即可查看該活動全部資料</p></div>
       </div>
       <div class="flex items-center gap-1.5 flex-wrap justify-end sm:ml-auto w-full sm:w-auto">
         <div id="user-badge" class="hidden text-xs bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700 items-center space-x-2" title="身份"><i class="fa-solid fa-user-shield text-sky-400"></i><span id="nav-username" class="truncate max-w-[72px]">-</span><span class="bg-sky-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold" id="nav-role">-</span></div>
@@ -608,7 +608,7 @@ details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
 <script src="js/00-config.js?v=20260906a"></script>
-<script src="js/10-app-core.js?v=20260906a"></script>
+<script src="js/10-app-core.js?v=20260907a"></script>
 <script src="js/11-news.js?v=20260901a"></script>
 <script src="js/20-accounts.js?v=20260905d"></script>
 <script src="js/21-activities.js?v=20260907a"></script>
@@ -616,7 +616,7 @@ details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;
 <script src="js/23-sync.js?v=20260905d"></script>
 <script src="js/24-supplies.js?v=20260905d"></script>
 <script src="js/25-vehicle.js?v=20260905d"></script>
-<script src="js/26-monitor-apply.js?v=20260907f"></script>
+<script src="js/26-monitor-apply.js?v=20260907g"></script>
 <script src="js/27-parking.js?v=20260831a"></script>
 <script src="js/28-oral-quotes.js?v=20260831a"></script>
 <script src="js/30-finance.js?v=20260905d"></script>

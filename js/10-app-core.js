@@ -1300,7 +1300,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed">
           <b>部門管理中心 - ${escapeHtml(groupName)}</b><br>
-          本頁分為 <b>3 大可收合卡片</b>：<b>① 本組統計</b>（最頂，只顯示數字，<b>點擊數字直接跳到詳細資料</b>）→ <b>② 本組資訊</b>（崗位／職務／文件／攤位預算）→ <b>③ 詳細統計資料</b>（最下，每段可獨立展開收合，每段右上角<b>「＋」</b>直接前往申請）。低於總主任提交的申請先由本組總主任以上確認，再按批核權限頁的多選路由交指定組別批核及執行。<br>
+          本頁分為 <b>3 大可收合卡片</b>（前線優先排序）：<b>① 本組資訊</b>（崗位／職務／文件／攤位預算）→ <b>② 詳細統計資料</b>（每段可獨立展開收合，每段右上角<b>「＋」</b>直接前往申請）→ <b>③ 本組統計</b>（最下，只留數字，<b>點擊數字可睇返詳細</b>）。低於總主任提交的申請先由本組總主任以上確認，再按批核權限頁的多選路由交指定組別批核及執行。<br>
           <b>💰 開支申報</b>及<b>📝 口頭報價</b>可直接在本部門提交——提交後<b>自動</b>加入財務紀錄（毋須重新輸入），即時反映在<b>行政組「財務匯總」</b>及結算總表；<b>📖 財務指引</b>全文內建，方便各組查看。<br>
           登入成員可查看，僅本組或管理層可修改。${canManage?'<b class="text-emerald-700">你可管理本組內容。</b>':''}
         </div>
@@ -1316,10 +1316,10 @@ Object.assign(ScoutEventApp.prototype,{
           ${groupTabList.map(t=>`<button onclick="app.switchGroupTab('${t.k}')" class="group-tab-btn ${tabCls(t.k)}">${t.label}</button>`).join('')}
         </div>`; })():''}
         <div id="group-tab-apps" class="space-y-4 ${this.groupBoothTab==='apps'?'':'hidden'}">
-        <!-- v13.2：3 大可收合卡片——① 本組統計（最頂，只留數字，點數字跳詳細）② 本組資訊（4 格）③ 詳細統計資料（最下，5 段每段獨立收合＋「＋」前往申請） -->
-        ${this.groupStatsSectionHTML(groupName)}
+        <!-- v15.12 前線優先：一大格一大格，預設排版改為 ① 本組資訊（4 格，開工先要知道嘅崗位/職務/文件/攤位）→ ② 詳細統計資料（段段可收合＋「＋」直申請）→ ③ 本組統計數字沉底（睇數係管理層嘅嘢，前線唔使一開就見佢）。之後或可畀組副主席自行調上調下。 -->
         ${this.groupInfoBoxesHTML(groupName)}
         ${this.groupDetailSectionHTML(groupName)}
+        ${this.groupStatsSectionHTML(groupName)}
         <!-- 快捷按鈕已移至組別介紹下方（正常組別：前往申請中心＋我的監察；個別組別另有專屬按鈕） -->
         ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
         </div>

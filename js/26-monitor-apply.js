@@ -331,6 +331,28 @@ Object.assign(ScoutEventApp.prototype,{
     });
   }
 ,
+  /* ══ v15.12 頂 BAR 緊急掣：任何頁一撳直去「危機處理 → 緊急聯絡」（公開、未登入都得）══
+     活動日十秒火警思路：唔使諗喺邊度，頂頭永遠有粒紅掣。版本號隔籬，醒目。
+     未入活動就自動入第一個活動先；入完手冊再切危機章、緊急聯絡節，碌埋落去。 */
+  goEmergency(){
+    if(!this.currentEvent){
+      const evs=this.eventsList||this.events||[];
+      if(evs.length){ this.currentEvent=evs[0]; }
+    }
+    const go=()=>{
+      this.openModule('exec_manual');
+      setTimeout(()=>{
+        this.switchExecManualTab('crisis');
+        setTimeout(()=>{
+          try{ this.switchCrisisTab('contacts'); }catch(e){}
+          const el=document.getElementById('crisis-tab-contacts');
+          if(el&&el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'start'});
+        },250);
+      },250);
+    };
+    go();
+  }
+,
   switchExecManualTab(tab){
     // v11：舊分頁已搬家（攤位總表／場地佈置總覽 → 場地與活動總覽；箱頭紙／許可證式樣 → 各類附加資料）。
     //      舊連結照樣行得：自動轉去新分頁並揀返對應嘅內部分頁。
