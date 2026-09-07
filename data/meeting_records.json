@@ -1,6 +1,6 @@
 {
   "event_id": "isd_2026",
-  "data_version": "2026-08-21",
+  "data_version": "2026-09-07",
   "title": "ISD 2026 籌備委員會會議 — 內建議程及會議紀錄",
   "note": "此檔案為 APP 內建（offline）的議程及會議紀錄文字版本，令成員唔使彈出 Google Drive / Drive APP 就可以喺卡片內直接閱讀。秘書處更新流程：直接修改本檔案 meetings[] 內容並上傳（或喺會議卡片按「編輯內建議程／紀錄」後匯出 JSON 覆蓋本檔案）。Drive PDF 仍然保留作正式存檔及下載。",
   "content_legend": {
@@ -19,10 +19,30 @@
       "recorder": "秘書處",
       "content_status": "summary",
       "agenda_items": [
-        { "no": "1", "topic": "活動背景簡介", "presenter": "主席 朱家聰", "notes": "介紹 ISD（國際童軍日）背景、歷屆規模及本屆定位。" },
-        { "no": "2", "topic": "上屆活動檢討", "presenter": "秘書處", "notes": "回顧 ISD 2025 檢討報告要點（見 Drive：ISD2025 籌備委員會檢討會議記錄）。" },
-        { "no": "3", "topic": "籌備委員會架構確認", "presenter": "主席 朱家聰", "notes": "確認顧問團、主席及執行副主席、秘書處及 7 個功能組別架構。" },
-        { "no": "4", "topic": "活動初步計劃與日期", "presenter": "全體", "notes": "訂定活動日期、場地及主軸方向。" }
+        {
+          "no": "1",
+          "topic": "活動背景簡介",
+          "presenter": "主席 朱家聰",
+          "notes": "介紹 ISD（國際童軍日）背景、歷屆規模及本屆定位。"
+        },
+        {
+          "no": "2",
+          "topic": "上屆活動檢討",
+          "presenter": "秘書處",
+          "notes": "回顧 ISD 2025 檢討報告要點（見 Drive：ISD2025 籌備委員會檢討會議記錄）。"
+        },
+        {
+          "no": "3",
+          "topic": "籌備委員會架構確認",
+          "presenter": "主席 朱家聰",
+          "notes": "確認顧問團、主席及執行副主席、秘書處及 7 個功能組別架構。"
+        },
+        {
+          "no": "4",
+          "topic": "活動初步計劃與日期",
+          "presenter": "全體",
+          "notes": "訂定活動日期、場地及主軸方向。"
+        }
       ],
       "minutes_sections": [
         {
@@ -47,8 +67,16 @@
         "籌備委員會架構按上屆基礎確認，稍後公布名單。"
       ],
       "action_items": [
-        { "item": "草擬籌委會架構名單及各組職務大綱", "owner": "秘書處", "due": "第1次會議前" },
-        { "item": "各組提交初步構思", "owner": "各功能組別總主任", "due": "第1次會議" }
+        {
+          "item": "草擬籌委會架構名單及各組職務大綱",
+          "owner": "秘書處",
+          "due": "第1次會議前"
+        },
+        {
+          "item": "各組提交初步構思",
+          "owner": "各功能組別總主任",
+          "due": "第1次會議"
+        }
       ],
       "source": {
         "agenda_file_name": "0_Pre-Meeting 議程.pdf",
@@ -69,11 +97,36 @@
       "recorder": "秘書處",
       "content_status": "summary",
       "agenda_items": [
-        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "0 Pre-Meeting 會議紀錄。" },
-        { "no": "2", "topic": "利益申報政策", "presenter": "主席 朱家聰", "notes": "所有籌委須就採購、報價及供應商關係作出申報。" },
-        { "no": "3", "topic": "保護個人私隱政策", "presenter": "秘書處", "notes": "參加者及工作人員個人資料的收集、使用及保存安排。" },
-        { "no": "4", "topic": "各功能組別初步構思", "presenter": "各組總主任", "notes": "會操及典禮組、主題節目組、品牌推廣組、嘉賓接待組、協調組、服務及發展組、行政組。" },
-        { "no": "5", "topic": "其他事項", "presenter": "全體", "notes": "" }
+        {
+          "no": "1",
+          "topic": "通過上次會議紀錄",
+          "presenter": "秘書處",
+          "notes": "0 Pre-Meeting 會議紀錄。"
+        },
+        {
+          "no": "2",
+          "topic": "利益申報政策",
+          "presenter": "主席 朱家聰",
+          "notes": "所有籌委須就採購、報價及供應商關係作出申報。"
+        },
+        {
+          "no": "3",
+          "topic": "保護個人私隱政策",
+          "presenter": "秘書處",
+          "notes": "參加者及工作人員個人資料的收集、使用及保存安排。"
+        },
+        {
+          "no": "4",
+          "topic": "各功能組別初步構思",
+          "presenter": "各組總主任",
+          "notes": "會操及典禮組、主題節目組、品牌推廣組、嘉賓接待組、協調組、服務及發展組、行政組。"
+        },
+        {
+          "no": "5",
+          "topic": "其他事項",
+          "presenter": "全體",
+          "notes": ""
+        }
       ],
       "minutes_sections": [
         {
@@ -103,8 +156,16 @@
         "通過步操檢閱流程方向。"
       ],
       "action_items": [
-        { "item": "各組提交初步預算", "owner": "各功能組別總主任", "due": "第2次會議" },
-        { "item": "整理利益申報表並派發", "owner": "秘書處", "due": "第2次會議前" }
+        {
+          "item": "各組提交初步預算",
+          "owner": "各功能組別總主任",
+          "due": "第2次會議"
+        },
+        {
+          "item": "整理利益申報表並派發",
+          "owner": "秘書處",
+          "due": "第2次會議前"
+        }
       ],
       "source": {
         "agenda_file_name": "1_Agenda 籌備委員會議程.pdf",
@@ -125,11 +186,36 @@
       "recorder": "秘書處",
       "content_status": "summary",
       "agenda_items": [
-        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "第1次籌備委員會議紀錄。" },
-        { "no": "2", "topic": "各功能組別進度匯報", "presenter": "各組總主任", "notes": "每組 5 分鐘進度匯報。" },
-        { "no": "3", "topic": "節目細節確認", "presenter": "主題節目組", "notes": "主題活動區、攤位及遊戲記錄冊。" },
-        { "no": "4", "topic": "嘉賓邀請進度", "presenter": "嘉賓接待組", "notes": "嘉賓名單、邀請函及接待流程。" },
-        { "no": "5", "topic": "其他事項", "presenter": "全體", "notes": "" }
+        {
+          "no": "1",
+          "topic": "通過上次會議紀錄",
+          "presenter": "秘書處",
+          "notes": "第1次籌備委員會議紀錄。"
+        },
+        {
+          "no": "2",
+          "topic": "各功能組別進度匯報",
+          "presenter": "各組總主任",
+          "notes": "每組 5 分鐘進度匯報。"
+        },
+        {
+          "no": "3",
+          "topic": "節目細節確認",
+          "presenter": "主題節目組",
+          "notes": "主題活動區、攤位及遊戲記錄冊。"
+        },
+        {
+          "no": "4",
+          "topic": "嘉賓邀請進度",
+          "presenter": "嘉賓接待組",
+          "notes": "嘉賓名單、邀請函及接待流程。"
+        },
+        {
+          "no": "5",
+          "topic": "其他事項",
+          "presenter": "全體",
+          "notes": ""
+        }
       ],
       "minutes_sections": [
         {
@@ -154,8 +240,16 @@
         "通過嘉賓邀請名單及邀請函格式。"
       ],
       "action_items": [
-        { "item": "提交攤位詳細設計及物資清單", "owner": "主題節目組", "due": "第3次會議" },
-        { "item": "跟進嘉賓回覆及座位安排", "owner": "嘉賓接待組", "due": "第3次會議" }
+        {
+          "item": "提交攤位詳細設計及物資清單",
+          "owner": "主題節目組",
+          "due": "第3次會議"
+        },
+        {
+          "item": "跟進嘉賓回覆及座位安排",
+          "owner": "嘉賓接待組",
+          "due": "第3次會議"
+        }
       ],
       "source": {
         "agenda_file_name": "2_Agenda 籌備委員會議程.pdf",
@@ -176,10 +270,30 @@
       "recorder": "秘書處",
       "content_status": "summary",
       "agenda_items": [
-        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "第2次籌備委員會議紀錄。" },
-        { "no": "2", "topic": "各功能組別進度匯報", "presenter": "各組總主任", "notes": "" },
-        { "no": "3", "topic": "財政預算審批", "presenter": "行政組", "notes": "各組預算表、報價門檻及結算安排。" },
-        { "no": "4", "topic": "其他事項", "presenter": "全體", "notes": "" }
+        {
+          "no": "1",
+          "topic": "通過上次會議紀錄",
+          "presenter": "秘書處",
+          "notes": "第2次籌備委員會議紀錄。"
+        },
+        {
+          "no": "2",
+          "topic": "各功能組別進度匯報",
+          "presenter": "各組總主任",
+          "notes": ""
+        },
+        {
+          "no": "3",
+          "topic": "財政預算審批",
+          "presenter": "行政組",
+          "notes": "各組預算表、報價門檻及結算安排。"
+        },
+        {
+          "no": "4",
+          "topic": "其他事項",
+          "presenter": "全體",
+          "notes": ""
+        }
       ],
       "minutes_sections": [
         {
@@ -203,8 +317,16 @@
         "通過使用附件5 結算總表作統一結算。"
       ],
       "action_items": [
-        { "item": "各組依批准預算執行並登記口頭報價", "owner": "各功能組別總主任", "due": "持續" },
-        { "item": "整理結算總表範本並派發", "owner": "行政組", "due": "第4次會議" }
+        {
+          "item": "各組依批准預算執行並登記口頭報價",
+          "owner": "各功能組別總主任",
+          "due": "持續"
+        },
+        {
+          "item": "整理結算總表範本並派發",
+          "owner": "行政組",
+          "due": "第4次會議"
+        }
       ],
       "source": {
         "agenda_file_name": "3_Agenda 籌備委員會議程.pdf",
@@ -217,7 +339,7 @@
     {
       "meeting_id": "m_4",
       "meeting_number": 4,
-      "title": "第4次籌備委員會議（下次會議）",
+      "title": "第4次籌備委員會議",
       "date": "2026-08-18",
       "time": "19:15",
       "location": "百周年紀念大樓 1704 室",
@@ -225,11 +347,36 @@
       "recorder": "秘書處",
       "content_status": "summary",
       "agenda_items": [
-        { "no": "1", "topic": "通過上次會議紀錄", "presenter": "秘書處", "notes": "第3次籌備委員會議紀錄。" },
-        { "no": "2", "topic": "各功能組別進度最後衝刺", "presenter": "各組總主任", "notes": "距活動日約 6 星期，逐組匯報未完成事項。" },
-        { "no": "3", "topic": "物資點算", "presenter": "協調組", "notes": "總物資清單、各組申請、租借及運送安排。" },
-        { "no": "4", "topic": "場地及交通安排", "presenter": "協調組／嘉賓接待組", "notes": "泊車證、車輛通行證及穿梭巴士。" },
-        { "no": "5", "topic": "其他事項", "presenter": "全體", "notes": "" }
+        {
+          "no": "1",
+          "topic": "通過上次會議紀錄",
+          "presenter": "秘書處",
+          "notes": "第3次籌備委員會議紀錄。"
+        },
+        {
+          "no": "2",
+          "topic": "各功能組別進度最後衝刺",
+          "presenter": "各組總主任",
+          "notes": "距活動日約 6 星期，逐組匯報未完成事項。"
+        },
+        {
+          "no": "3",
+          "topic": "物資點算",
+          "presenter": "協調組",
+          "notes": "總物資清單、各組申請、租借及運送安排。"
+        },
+        {
+          "no": "4",
+          "topic": "場地及交通安排",
+          "presenter": "協調組／嘉賓接待組",
+          "notes": "泊車證、車輛通行證及穿梭巴士。"
+        },
+        {
+          "no": "5",
+          "topic": "其他事項",
+          "presenter": "全體",
+          "notes": ""
+        }
       ],
       "minutes_sections": [
         {
@@ -243,13 +390,54 @@
       ],
       "decisions": [],
       "action_items": [
-        { "item": "會前提交物資申請及點算表", "owner": "各功能組別總主任", "due": "2026-08-18 前" }
+        {
+          "item": "會前提交物資申請及點算表",
+          "owner": "各功能組別總主任",
+          "due": "2026-08-18 前"
+        }
       ],
       "source": {
         "agenda_file_name": "4_Agenda 籌備委員會議程.pdf",
         "agenda_file_url": "",
         "minutes_file_name": "",
         "minutes_file_url": "",
+        "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      }
+    },
+    {
+      "meeting_id": "m_5",
+      "meeting_number": 5,
+      "title": "港島童軍繽紛日2026 - 第5次籌備會議（下次會議）",
+      "date": "2026-09-14",
+      "time": "19:15",
+      "location": "百周年紀念大樓 1704 室",
+      "chair": "主席 朱家聰",
+      "recorder": "秘書處",
+      "content_status": "summary",
+      "agenda_items": [
+        {
+          "no": "1",
+          "topic": "第5次籌備會議文件",
+          "presenter": "秘書處",
+          "notes": "會議文件稍後附上。"
+        }
+      ],
+      "minutes_sections": [
+        {
+          "heading": "溫馨提示",
+          "points": [
+            "敬請各位預留時間出席。",
+            "會議文件稍後附上。"
+          ]
+        }
+      ],
+      "decisions": [],
+      "action_items": [],
+      "source": {
+        "agenda_file_name": "",
+        "agenda_file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+        "minutes_file_name": "",
+        "minutes_file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
         "folder_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
       }
     }

@@ -1294,28 +1294,35 @@ Object.assign(ScoutEventApp.prototype,{
     this.eventData['documents']=normalized.docs;
   }
 ,
-  renderDocumentsModule(box){
+  // 只有上載者明確指定的特別文件才加入執行手冊；一般文件留在文件庫／部門中心。
+  // 各類名單及既有手冊章節由原有專屬分頁帶入，不需要在這裡逐份標記。
+  isOperationalDocument(d){
+    return d?.execution_manual===true || d?.day_of_use===true;
+  }
+,
+  renderDocumentsModule(box, operationalOnly=false){
     const container=box||document.getElementById('module-content');
     if(!container) return;
     const data=this.getDocumentsData();
+    const sourceDocs=operationalOnly?data.docs.filter(d=>this.isOperationalDocument(d)):data.docs;
     const q=(document.getElementById('document-search')?.value||'').toLowerCase();
     const cat=(document.getElementById('document-category-filter')?.value||'');
     const canUpload=this.canUploadDocument();
-    const categories=[...new Set(data.docs.map(d=>d.category).filter(Boolean))].sort();
-    const filtered=data.docs.filter(d=>{
-      const hit=!q || (d.title+d.category+d.description+d.uploaded_by).toLowerCase().includes(q);
+    const categories=[...new Set(sourceDocs.map(d=>d.category).filter(Boolean))].sort();
+    const filtered=sourceDocs.filter(d=>{
+      const hit=!q || (`${d.title||''}${d.category||''}${d.description||''}${d.uploaded_by||''}`).toLowerCase().includes(q);
       const catOk=!cat || d.category===cat;
       return hit && catOk;
     });
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-700">
-          <b>通告及文件：</b>通告、指引、表格，公開可查閱；上傳需權限。
+          ${operationalOnly?'<b>特別加入的文件：</b>只顯示上載時明確指定加入執行手冊的特別文件；一般前線文件留在所屬部門中心，各類名單則由手冊原有專屬分頁帶入。':'<b>完整文件庫：</b>通告、指引、表格及籌備文件，公開可查閱；上傳需權限。'}
         </div>
         <div class="flex gap-2 flex-wrap">
           ${canUpload?`<button onclick="app.openDocumentForm()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件</button>`:''}
-          <input id="document-search" value="${escapeHtml(q)}" placeholder="搜尋文件/分類" oninput="app.renderDocumentsModule()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
-          <select id="document-category-filter" onchange="app.renderDocumentsModule()" class="px-3 py-2 border rounded-xl text-xs bg-white"><option value="">全部分類</option>${categories.map(c=>`<option value="${escapeHtml(c)}" ${cat===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select>
+          <input id="document-search" value="${escapeHtml(q)}" placeholder="搜尋文件/分類" oninput="app.renderDocumentsModule(${operationalOnly?"document.getElementById('exec-manual-panel'),true":''})" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
+          <select id="document-category-filter" onchange="app.renderDocumentsModule(${operationalOnly?"document.getElementById('exec-manual-panel'),true":''})" class="px-3 py-2 border rounded-xl text-xs bg-white"><option value="">全部分類</option>${categories.map(c=>`<option value="${escapeHtml(c)}" ${cat===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select>
           <button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1354,6 +1361,10 @@ Object.assign(ScoutEventApp.prototype,{
         <div><label class="text-[11px] font-bold">擇要 (摘要：讓用戶一眼知道內容)</label><textarea id="doc-summary" rows="2" placeholder="簡短摘錄此文件重點…" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.summary||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">說明</label><textarea id="doc-desc" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">上傳檔案 (可選，儲存在瀏覽器)</label><input type="file" id="doc-file" class="w-full text-xs mt-1"><div class="text-[10px] text-slate-400 mt-1">${existing?.file_name?'現有檔案：'+escapeHtml(existing.file_name):'如不選擇檔案，可只填外部連結。'}</div></div>
+        <label class="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]">
+          <input type="checkbox" id="doc-exec-manual" class="mt-0.5 w-4 h-4" ${existing?.execution_manual?'checked':''}>
+          <span><b>特別加入執行手冊</b><br><span class="text-slate-500">只供活動當日必須隨整本手冊列印的特別文件；一般文件請留在文件庫／部門中心。</span></span>
+        </label>
       </div>`;
     document.getElementById('record-modal-title').textContent=existing?'編輯文件':'上傳文件';
     document.getElementById('record-form-fields').innerHTML=html;
@@ -1381,6 +1392,7 @@ Object.assign(ScoutEventApp.prototype,{
       category:document.getElementById('doc-category').value.trim()||'文件',
       summary:document.getElementById('doc-summary').value.trim(),
       description:document.getElementById('doc-desc').value.trim(),
+      execution_manual:document.getElementById('doc-exec-manual').checked,
       file_url:document.getElementById('doc-url').value.trim(),
       file_name:fileName,
       file_data:fileData,
