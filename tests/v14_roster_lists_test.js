@@ -380,10 +380,10 @@ ok(JSON.stringify(appCer.getRosterData()) === before, 'B50 未登入者上傳名
   ['車許可證', '水劵', '飯劵', '保險文件', '意外通報指引', '攤位設備清單'].forEach(banned => {
     ok(!rosterSrc.includes(banned), `C2 名單模組冇混入手冊其他章節「${banned}」`);
   });
-  // 執行手冊分頁：只有 meal_box 屬新增（participants 屬既有版位）
+  // 執行手冊分頁：toc（v15.8 目錄頁，手機預設）＋ meal_box 屬新增（participants 屬既有版位）
   const execTabs = (read('js/26-monitor-apply.js').match(/if\(!this\.execManualSubTab\)[\s\S]*?const tabs=\[([\s\S]*?)\];/) || ['', ''])[1];
   const execKeys = [...execTabs.matchAll(/\{k:'([a-z_]+)'/g)].map(m => m[1]);
-  ok(JSON.stringify(execKeys) === JSON.stringify(['staff', 'activities', 'ceremony', 'crisis', 'finance_guide', 'documents', 'participants', 'meal_box', 'misc']), 'C3 執行手冊分頁只多咗「代訂餐盒名單」');
+  ok(JSON.stringify(execKeys) === JSON.stringify(['toc', 'staff', 'activities', 'ceremony', 'crisis', 'finance_guide', 'documents', 'participants', 'meal_box', 'misc']), 'C3 執行手冊分頁＝目錄＋原九格（冇漏冇多）');
   ok((execTabs.match(/label:'[^']*名單'/g) || []).length === 2, 'C3b 執行手冊只有兩張名單分頁（參加旅團／代訂餐盒）');
   // 典禮儀式子分頁：保留優異旅團主頁籤，另有兩張獎勵名單
   const cerTabs = (read('js/35-ceremony.js').match(/\['rundown'[^\]]*\]/) || [''])[0];

@@ -198,7 +198,7 @@ ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-ta
 ['js/26-monitor-apply.js','js/21-activities.js','js/35-ceremony.js','js/36-crisis.js','js/10-app-core.js'].forEach(f =>
   ok(read(f).includes('m-tabbar'), 'H5 ' + f + ' 分頁條已掛 m-tabbar'));
 ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
-ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][ab]/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
+ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][a-c]/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
 
 /* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
 ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
@@ -230,7 +230,7 @@ ok(html.includes('details.exec-sec>summary.exec-sec-sum') && html.includes('.m-s
 ok(read('js/31-staff.js').includes('m-tabbar m-subtab') && j26.includes('m-tabbar m-subtab') &&
    read('js/21-activities.js').includes('m-subtab') && read('js/35-ceremony.js').includes('m-subtab') && read('js/36-crisis.js').includes('m-subtab'),
   'J7 五條章內分頁條全部掛 m-tabbar＋m-subtab（手機一排橫滑＋視覺分層）');
-ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907(a|b)/.test(html),
+ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907[a-c]/.test(html),
   'J8 今轉改動咗嘅 js 版本號已 bump');
 
 /* ══════════ K. v15.7 執行手冊路線列（執行手冊 › 章 › 節） ══════════ */
@@ -241,6 +241,18 @@ ok(j26.includes("'switchStaffTab','switchActivitiesTab','switchCeremonyTab','swi
   'K3 五個內部分頁切換函數已包更新；_crumbWrapped 防重複包');
 ok(j26.includes("btn.querySelector('.lbl-long')"), 'K4 路線列用全稱（.lbl-long 優先），手機短名唔會走樣');
 ok(html.includes('.exec-crumb-sec{color:#6d28d9'), 'K5 節名用主色突出（層次一眼可見）');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907b/.test(html), 'K6 js 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907[bc]/.test(html), 'K6 js 版本號 bump');
+
+/* ══════════ L. v15.8 執行手冊目錄頁（一入就知資料喺邊章） ══════════ */
+ok(j26.includes("{k:'toc',") && j26.includes("label:'目錄'"), 'L1 「目錄」係章列第一格');
+ok(j26.includes('renderExecManualTOC(panel)') && j26.includes("toc:()=>this.renderExecManualTOC(panel)"), 'L2 目錄頁 renderer 掛入章 map');
+ok(j26.includes('架構圖・全體名單及聯絡') && j26.includes('場地地圖・攤位列表・攤位總表') && j26.includes('箱頭紙・許可證式樣・失物認領'),
+  'L3 9 章每卡寫明「入面有咩」（白話，唔使估）');
+ok(j26.includes('我想搵') && j26.includes('我攤位喺邊？') && j26.includes('點樣報銷？') && j26.includes('急救／保險點做？'),
+  'L4 「我想搵…」常見需求捷徑：白話問句直去嗰章嗰節');
+ok(j26.includes("matchMedia('(max-width:768px)').matches)?'toc':'staff'"),
+  'L5 手機預設開目錄；電腦照舊直開第一章 staff（行為不變）');
+ok(html.includes('.exec-toc-q{') && html.includes('.exec-toc-card{'), 'L6 目錄頁 CSS（捷徑膠囊＋章卡）');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907c/.test(html), 'L7 js 版本號 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

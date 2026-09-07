@@ -262,8 +262,12 @@ Object.assign(ScoutEventApp.prototype,{
   renderExecManualModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
-    if(!this.execManualSubTab) this.execManualSubTab='staff';
+    // v15.8：手機預設開「目錄」（一入就知資料喺邊章）；電腦照舊直開第一章
+    if(!this.execManualSubTab){
+      this.execManualSubTab=(typeof window.matchMedia==='function'&&window.matchMedia('(max-width:768px)').matches)?'toc':'staff';
+    }
     const tabs=[
+      {k:'toc',       icon:'fa-solid fa-book-open',            label:'目錄'},
       {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
       {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
       {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
@@ -323,6 +327,49 @@ Object.assign(ScoutEventApp.prototype,{
     });
   }
 ,
+  /* ══ v15.8 執行手冊「目錄」頁：一入就知資料喺邊章 ════════════════════
+     每章一張大卡：章名＋「入面有咩」（白話），撳卡直去嗰章；
+     再上有一行「我想搵…」常見需求捷徑，直去該章該節。
+     目的：用戶唔使逐章撞，一版目錄答到「我要嘅嘢喺邊」。 */
+  execManualTOC(){
+    return [
+      {k:'staff',     icon:'fa-solid fa-sitemap',              tint:'bg-indigo-100 text-indigo-700', label:'組織架構與聯絡', has:'架構圖・全體名單及聯絡・職務大綱（2026）'},
+      {k:'activities',icon:'fa-solid fa-map-location-dot',     tint:'bg-emerald-100 text-emerald-700', label:'場地與活動總覽', has:'場地地圖・攤位列表・攤位總表・佈置圖・遊戲卡・活動列表'},
+      {k:'ceremony',  icon:'fa-solid fa-crown',               tint:'bg-amber-100 text-amber-700',    label:'典禮儀式', has:'RUNDOWN・司儀稿・嘉賓名單・座位表・致辭稿'},
+      {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', tint:'bg-rose-100 text-rose-700',      label:'危機處理', has:'應變指引（急救・保險）・意外事件報告表・手冊上傳・應變小組'},
+      {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', tint:'bg-teal-100 text-teal-700',   label:'財務指引', has:'報銷程序・報價要求・結算總表・範本文件'},
+      {k:'documents', icon:'fa-solid fa-file-shield',          tint:'bg-sky-100 text-sky-700',        label:'通告及文件', has:'大會通告・指引・表格（可搜尋）'},
+      {k:'participants', icon:'fa-solid fa-people-group',      tint:'bg-purple-100 text-purple-700',  label:'參加旅團名單', has:'旅團・支部・人數一覽＋附件'},
+      {k:'meal_box',  icon:'fa-solid fa-bowl-food',            tint:'bg-orange-100 text-orange-700',  label:'代訂餐盒名單', has:'代訂餐旅團名單・點名・附件'},
+      {k:'misc',      icon:'fa-solid fa-layer-group',          tint:'bg-slate-200 text-slate-700',    label:'各類附加資料', has:'箱頭紙・許可證式樣・失物認領'}
+    ];
+  }
+,
+  renderExecManualTOC(panel){
+    // 「我想搵…」常見需求：白話問句 → 直去嗰章嗰節（用返現有跳轉通道）
+    const quick=[
+      {q:'我攤位喺邊？',     go:"app.switchExecManualTab('activities'); setTimeout(()=>app.switchActivitiesTab&&app.switchActivitiesTab('booths'),200)"},
+      {q:'急救／保險點做？', go:"app.switchExecManualTab('crisis')"},
+      {q:'點樣報銷？',       go:"app.switchExecManualTab('finance_guide')"},
+      {q:'點名表',           go:"app.switchExecManualTab('participants')"},
+      {q:'失物認領',         go:"app.switchExecManualTab('misc'); setTimeout(()=>app.switchExecManualMiscTab&&app.switchExecManualMiscTab('lost_found'),200)"},
+      {q:'座位表',           go:"app.switchExecManualTab('ceremony'); setTimeout(()=>app.switchCeremonyTab&&app.switchCeremonyTab('seating'),200)"}
+    ];
+    panel.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900"><b>📑 執行手冊目錄：</b>唔使逐章撞 — 睇準撳入去就係。常見需求可以直撳下面「我想搵…」。</div>
+        <div><div class="text-[11px] font-bold text-slate-500 mb-1.5">我想搵…</div>
+          <div class="flex gap-2 flex-wrap">${quick.map(x=>`<button type="button" onclick="${x.go}" class="exec-toc-q">${escapeHtml(x.q)}</button>`).join('')}</div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          ${this.execManualTOC().map(c=>`<button type="button" onclick="app.switchExecManualTab('${c.k}')" class="exec-toc-card border rounded-2xl p-4 bg-white text-left hover:shadow-md transition">
+            <div class="flex items-center gap-2.5 mb-1.5"><span class="w-9 h-9 ${c.tint} rounded-xl flex items-center justify-center text-[15px] flex-shrink-0"><i class="${c.icon}"></i></span><b class="text-[13.5px]">${escapeHtml(c.label)}</b></div>
+            <div class="text-[11px] text-slate-500 leading-relaxed">${escapeHtml(c.has)}</div>
+          </button>`).join('')}
+        </div>
+      </div>`;
+  }
+,
   switchExecManualTab(tab){
     // v11：舊分頁已搬家（攤位總表／場地佈置總覽 → 場地與活動總覽；箱頭紙／許可證式樣 → 各類附加資料）。
     //      舊連結照樣行得：自動轉去新分頁並揀返對應嘅內部分頁。
@@ -350,6 +397,7 @@ Object.assign(ScoutEventApp.prototype,{
     const panel=document.getElementById('exec-manual-panel');
     if(!panel) return;
     const map={
+      toc:()=>this.renderExecManualTOC(panel),
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
