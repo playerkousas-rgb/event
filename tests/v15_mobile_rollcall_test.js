@@ -198,7 +198,7 @@ ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-ta
 ['js/26-monitor-apply.js','js/21-activities.js','js/35-ceremony.js','js/36-crisis.js','js/10-app-core.js'].forEach(f =>
   ok(read(f).includes('m-tabbar'), 'H5 ' + f + ' 分頁條已掛 m-tabbar'));
 ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
-ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][a-d]/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
+ok(/src="js\/26-monitor-apply\.js\?v=2026090[67][a-e]/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
 
 /* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
 ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
@@ -230,7 +230,7 @@ ok(html.includes('details.exec-sec>summary.exec-sec-sum') && html.includes('.m-s
 ok(read('js/31-staff.js').includes('m-tabbar m-subtab') && j26.includes('m-tabbar m-subtab') &&
    read('js/21-activities.js').includes('m-subtab') && read('js/35-ceremony.js').includes('m-subtab') && read('js/36-crisis.js').includes('m-subtab'),
   'J7 五條章內分頁條全部掛 m-tabbar＋m-subtab（手機一排橫滑＋視覺分層）');
-ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907[a-d]/.test(html),
+ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907[a-e]/.test(html),
   'J8 今轉改動咗嘅 js 版本號已 bump');
 
 /* ══════════ K. v15.7 執行手冊路線列（執行手冊 › 章 › 節） ══════════ */
@@ -241,7 +241,7 @@ ok(j26.includes("'switchStaffTab','switchActivitiesTab','switchCeremonyTab','swi
   'K3 五個內部分頁切換函數已包更新；_crumbWrapped 防重複包');
 ok(j26.includes("btn.querySelector('.lbl-long')"), 'K4 路線列用全稱（.lbl-long 優先），手機短名唔會走樣');
 ok(html.includes('.exec-crumb-sec{color:#6d28d9'), 'K5 節名用主色突出（層次一眼可見）');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907[b-d]/.test(html), 'K6 js 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907[b-e]/.test(html), 'K6 js 版本號 bump');
 
 /* ══════════ L. v15.8 執行手冊目錄頁（一入就知資料喺邊章） ══════════ */
 ok(j26.includes("{k:'toc',") && j26.includes("label:'目錄'"), 'L1 「目錄」係章列第一格');
@@ -253,7 +253,7 @@ ok(j26.includes('我想搵') && j26.includes('我攤位喺邊？') && j26.includ
 ok(j26.includes("matchMedia('(max-width:768px)').matches)?'toc':'staff'"),
   'L5 手機預設開目錄；電腦照舊直開第一章 staff（行為不變）');
 ok(html.includes('.exec-toc-q{') && html.includes('.exec-toc-card{'), 'L6 目錄頁 CSS（捷徑膠囊＋章卡）');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907[a-d]/.test(html), 'L7 js 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907[a-e]/.test(html), 'L7 js 版本號 bump');
 
 /* ══════════ M. v15.9 公告資訊內容併入執行手冊（掛原 renderer，零複製） ══════════ */
 ok(j26.includes("{k:'ann_list'") && j26.includes("{k:'schedule'") && j26.includes("{k:'unit_guide'") && j26.includes("{k:'theme_badges'"),
@@ -262,9 +262,23 @@ ok(j26.includes('this.renderAnnList(document.getElementById') && j26.includes("i
   'M2 公告章照用 renderAnnList，並以 ann-tab-list 包裝保佢內部搜尋重繪唔散');
 ok(j26.includes('this.renderScheduleModule(panel)') && j26.includes('this.renderUnitGuideModule(panel)') && j26.includes('this.renderThemeBadgesModule(panel)'),
   'M3 日程／須知／主題章掛原 renderer（資料得一份，零同步風險）');
-ok(j26.includes('大會公告存檔・組別溝通') && j26.includes('活動日流程・時間・地點一覽'),
+ok(j26.includes('大會公告存檔。最新一條永遠喺全站最頂橫幅') && j26.includes('活動日流程・時間・地點一覽'),
   'M4 目錄頁同步加新章卡＋白話說明；公告卡註明最新喺頂橫幅');
 ok(j26.includes("今日日程"), "M5「我想搵…」加今日日程捷徑");
 ok(html.includes("['活動主題章','主題章']"), 'M6 活動主題章短名對照（手機 3 字）');
+
+/* ══════════ N. v15.10 清走溝通推廣＋列印本章（紙版橋樑） ══════════ */
+const j34 = read('js/34-announcements.js');
+ok(!j34.includes('跨部門溝通') && !j34.includes('任務跟進') && !j34.includes('搜尋公告/協作'),
+  'N1 公告模組清走溝通功能宣傳/分類/字眼（用戶定案：組別溝通唔推）');
+ok(j34.includes("title:'使用貼士'") && j34.includes('最新一條「最新消息」會顯示喺全站最頂橫幅'),
+  'N2 種子公告改做「使用貼士」教路（替代原協作指引）');
+ok(j34.includes('執行手冊」內都搵到'), 'N3 公告卡簡介有指向執行手冊');
+ok(j26.includes('execPrintChapter()') && j26.includes('clone.querySelectorAll') && j26.includes('.roster-mobile-list'),
+  'N4 列印本章：clone → 剷走掣/輸入/手機版名單 → 節卡攤開變 h2 標題');
+ok(j26.includes('列印本章') && j26.includes("getElementById('exec-crumb')"),
+  'N5 module-actions 有「列印本章」掣；標題直接攞路線列文字');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907e/.test(html) && /src="js\/34-announcements\.js\?v=20260907a/.test(html),
+  'N6 兩個 js 版本號已 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

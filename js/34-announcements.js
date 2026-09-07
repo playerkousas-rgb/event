@@ -9,7 +9,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!this.isDemoEvent()) return {announcements:[]}; // 真實活動：預留版位
     return {announcements:[
       {id:'ann_1',title:'歡迎使用全新執行手冊 v7.0',content:'本系統已完全取代舊 Google Sites，所有資料公開可看，僅修改需登入，登入一次永久有效 (儲存於瀏覽器)。各部門間可在此發佈公告、溝通協作。',category:'系統公告',created_by:'系統',created_at:new Date().toISOString(),pinned:true},
-      {id:'ann_2',title:'跨部門溝通指引',content:'各組如有需要協調事項，請在此發佈公告並@相關組別，其他組會收到通知。主任以上可發佈公告。',category:'協作指引',created_by:'主席 何家聰',created_at:new Date().toISOString(),pinned:false}
+      {id:'ann_2',title:'使用貼士',content:'最新一條「最新消息」會顯示喺全站最頂橫幅，人人一開 APP 就見到。公告／日程表／旅團須知／活動主題章喺「執行手冊」內都搵到。主任以上可發佈公告。',category:'系統公告',created_by:'主席 何家聰',created_at:new Date().toISOString(),pinned:false}
     ]};
   }
 ,
@@ -31,7 +31,7 @@ Object.assign(ScoutEventApp.prototype,{
           <b>📢 公告及溝通 - 活動資訊總匯：</b><br>
           • 公告、日程表、旅團須知、活動主題章全部集中在此卡，公開可看，無需登入<br>
           • 僅修改需登入：發佈公告需主任以上登入，登入儲存於瀏覽器，一次登入永久有效<br>
-          • 跨部門溝通：可@組別，支援任務跟進、重要公告、問題回報<br>
+          • 💡 以上資訊喺「執行手冊」內都搵到（公告／日程表／旅團須知／活動主題章四章）<br>
           • 比舊 Google Sites 更易找到：置頂公告、分類篩選、搜尋
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
@@ -87,7 +87,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-3">
         <div class="flex gap-2 flex-wrap">
           ${canPost?`<button onclick="app.openAnnouncementForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>發佈公告 (主任以上)</button>`:''}
-          <input id="announcement-search" placeholder="搜尋公告/協作" oninput="app.renderAnnList(document.getElementById('ann-tab-list'))" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
+          <input id="announcement-search" placeholder="搜尋公告" oninput="app.renderAnnList(document.getElementById('ann-tab-list'))" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
           <button onclick="app.exportAnnouncements()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>
         </div>
         <div class="space-y-3">${data.announcements.filter(a=>{
@@ -113,12 +113,12 @@ Object.assign(ScoutEventApp.prototype,{
       <input type="hidden" id="ann-form-id" value="${existing?.id||''}">
       <div class="space-y-3">
         <div><label class="text-[11px] font-bold">標題 *</label><input id="ann-title" value="${escapeHtml(existing?.title||'')}" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
-        <div><label class="text-[11px] font-bold">分類</label><select id="ann-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="系統公告" ${existing?.category==='系統公告'?'selected':''}>系統公告</option><option value="跨部門協作" ${existing?.category==='跨部門協作'?'selected':''}>跨部門協作</option><option value="任務跟進" ${existing?.category==='任務跟進'?'selected':''}>任務跟進</option><option value="問題回報" ${existing?.category==='問題回報'?'selected':''}>問題回報</option><option value="一般公告" ${existing?.category==='一般公告'?'selected':''}>一般公告</option></select></div>
+        <div><label class="text-[11px] font-bold">分類</label><select id="ann-category" class="w-full px-3 py-2 border rounded-xl text-sm bg-white mt-1"><option value="系統公告" ${existing?.category==='系統公告'?'selected':''}>系統公告</option><option value="重要公告" ${existing?.category==='重要公告'?'selected':''}>重要公告</option><option value="一般公告" ${existing?.category==='一般公告'?'selected':''}>一般公告</option></select></div>
         <div><label class="text-[11px] font-bold">內容 *</label><textarea id="ann-content" rows="5" required class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.content||'')}</textarea></div>
         <div><label class="flex items-center gap-2 text-[11px]"><input type="checkbox" id="ann-pinned" ${existing?.pinned?'checked':''} class="w-4 h-4"> 置頂公告</label></div>
       </div>
     `;
-    document.getElementById('record-modal-title').textContent=existing?'編輯公告':'發佈公告 (主任以上，跨部門溝通)';
+    document.getElementById('record-modal-title').textContent=existing?'編輯公告':'發佈公告 (主任以上)';
     document.getElementById('record-form-fields').innerHTML=html;
     const form=document.getElementById('record-form');
     form.onsubmit=(e)=>{ e.preventDefault(); this.submitAnnouncementForm(); };
@@ -143,7 +143,7 @@ Object.assign(ScoutEventApp.prototype,{
     this.saveAnnouncementsData(data);
     this.closeModal('modal-record');
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
-    showToast(mode==='edit'?'已更新公告':'已發佈公告 (跨部門溝通)','success');
+    showToast(mode==='edit'?'已更新公告':'已發佈公告','success');
     this.renderAnnouncementsModule();
   }
 ,
