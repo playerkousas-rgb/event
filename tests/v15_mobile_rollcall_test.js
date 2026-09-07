@@ -282,6 +282,19 @@ const j10 = read('js/10-app-core.js');
 const iInfo=j10.indexOf('${this.groupInfoBoxesHTML(groupName)}'), iDetail=j10.indexOf('${this.groupDetailSectionHTML(groupName)}'), iStats=j10.indexOf('${this.groupStatsSectionHTML(groupName)}');
 ok(iInfo>0 && iInfo<iDetail && iDetail<iStats, 'O3 部門頁預設排版改為 資訊→詳細→統計數字沉底（前線優先）');
 ok(j10.includes('前線優先排序') && j10.includes('統計</b>（最下'), 'O4 部門頁簡介用返新次序');
-ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907a/.test(html), 'O5 版本號 bump');
+ok(/src="js\/26-monitor-apply\.js\?v=20260907g/.test(html) && /src="js\/10-app-core\.js\?v=20260907[a-b]/.test(html), 'O5 版本號 bump');
+
+/* ══════════ P. v15.13 部門頁 3 大卡自行調序（本組總主任以上） ══════════ */
+ok(j10.includes("groupCardOrder(groupName)") && j10.includes("const DEF=['info','detail','stats']") && j10.includes('grp_card_order_'),
+  'P1 卡次序存 localStorage（按活動＋組），預設 資訊→詳細→統計');
+ok(j10.includes("ROLE_HIERARCHY[this.currentUser?.role]||0") && j10.includes('>=40') && j10.includes('isAllGroupViewer()'),
+  'P2 調序權限＝管理員／執副以上／本組總主任以上');
+ok(j10.includes("applyGroupCardOrder(groupName)") && j10.includes('data-grp-card') && j10.includes('box.appendChild(el)'),
+  'P3 重排用 appendChild 搬節點（唔使全版重繪，慳電）');
+ok(j10.includes('moveGroupCard(groupName, key, dir)') && j10.includes('saveGroupCardOrder(groupName, order)') && j10.includes('呢部機'),
+  'P4 調序即存即用；文案講明只影響呢部機（將來全組統一要搬後端）');
+ok(j10.includes('id="group-apps-cards"') && j10.includes('querySelectorAll(\'.grp-card-ctl\').forEach(n=>n.remove())'),
+  'P5 卡區獨立容器＋調序欄重建防重複');
+ok(html.includes('.grp-card-ctl{') && /src="js\/10-app-core\.js\?v=20260907b/.test(html), 'P6 調序欄 CSS＋版本號 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

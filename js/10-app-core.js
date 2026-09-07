@@ -982,6 +982,61 @@ Object.assign(ScoutEventApp.prototype,{
   // 部門卡片共用的 4 格資訊：成員／職務大綱／文件／攤位·預算（逐項列明）。
   // v13：4 格算一個整體（同一個摺疊區塊）——默認收合，可「一鍵全展開／一鍵全收合」，每格亦可個別展開收合。
   // 協調組、行政組與其他組別的「部門管理中心」都用同一份，確保內容一致（預算逐項顯示，不是只寫「共 N 項」）。
+  /* ══ v15.13 部門頁 3 大卡自行調序（本組總主任以上／執副以上／管理員）══
+     預設：資訊 → 詳細 → 統計。管理權限者每卡右上角見 ▲▼，
+     調完即刻重排兼存 localStorage（按 活動＋組，同一部機生效；
+     想全組統一排版嘅話將來可以先搬上後端）。 */
+  groupCardOrder(groupName){
+    const KEY='grp_card_order_'+(this.currentEvent?.event_id||'isd_2026')+'_'+groupName;
+    let o=null;
+    try{ o=JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){}
+    const DEF=['info','detail','stats'];
+    if(Array.isArray(o) && o.length===3 && DEF.every(k=>o.includes(k))) return o;
+    return DEF.slice();
+  }
+,
+  saveGroupCardOrder(groupName, order){
+    const KEY='grp_card_order_'+(this.currentEvent?.event_id||'isd_2026')+'_'+groupName;
+    try{ localStorage.setItem(KEY, JSON.stringify(order)); }catch(e){}
+  }
+,
+  canOrderGroupCards(groupName){
+    const lvl=ROLE_HIERARCHY[this.currentUser?.role]||0;
+    return this.isAdmin() || this.isAllGroupViewer()
+      || (normalizeGroupName(this.currentUser?.group_name||'')===groupName && lvl>=40); // 總主任以上
+  }
+,
+  applyGroupCardOrder(groupName){
+    const box=document.getElementById('group-apps-cards'); if(!box) return;
+    const order=this.groupCardOrder(groupName);
+    const NAMES={info:'本組資訊',detail:'詳細統計資料',stats:'本組統計（數字）'};
+    // ① 依儲存次序重排（appendChild 搬節點，唔使重 render）
+    order.forEach(k=>{ const el=box.querySelector('[data-grp-card="'+k+'"]'); if(el) box.appendChild(el); });
+    const canOrder=this.canOrderGroupCards(groupName);
+    box.querySelectorAll('.grp-card-ctl').forEach(n=>n.remove());           // 重建（禁用態跟位）
+    if(!canOrder) return;
+    order.forEach((k,i)=>{
+      const el=box.querySelector('[data-grp-card="'+k+'"]'); if(!el) return;
+      const bar=document.createElement('div');
+      bar.className='grp-card-ctl';
+      bar.innerHTML='<span><i class="fa-solid fa-up-down mr-1"></i>'+NAMES[k]+'（可自行調序：只影響呢部機）</span>'
+        +'<span><button type="button" '+(i===0?'disabled ':'')+'onclick="app.moveGroupCard(\''+groupName.replace(/'/g,"\\'")+'\',\''+k+'\',-1)" title="調上">▲</button>'
+        +'<button type="button" '+(i===order.length-1?'disabled ':'')+'onclick="app.moveGroupCard(\''+groupName.replace(/'/g,"\\'")+'\',\''+k+'\',1)" title="調下">▼</button></span>';
+      el.insertBefore(bar, el.firstChild);
+    });
+  }
+,
+  moveGroupCard(groupName, key, dir){
+    if(!this.canOrderGroupCards(groupName)){ showToast('只有本組總主任以上先可以調序','error'); return; }
+    const order=this.groupCardOrder(groupName);
+    const i=order.indexOf(key); const j=i+dir;
+    if(i<0||j<0||j>=order.length) return;
+    const t=order[i]; order[i]=order[j]; order[j]=t;
+    this.saveGroupCardOrder(groupName, order);
+    this.applyGroupCardOrder(groupName);
+    showToast('本組頁面次序已更新（呢部機）','success');
+  }
+,
   groupInfoBoxKeys(){ return ['members','duties','docs','booths']; }
 ,
   groupInfoOpenState(){
@@ -1316,10 +1371,12 @@ Object.assign(ScoutEventApp.prototype,{
           ${groupTabList.map(t=>`<button onclick="app.switchGroupTab('${t.k}')" class="group-tab-btn ${tabCls(t.k)}">${t.label}</button>`).join('')}
         </div>`; })():''}
         <div id="group-tab-apps" class="space-y-4 ${this.groupBoothTab==='apps'?'':'hidden'}">
-        <!-- v15.12 前線優先：一大格一大格，預設排版改為 ① 本組資訊（4 格，開工先要知道嘅崗位/職務/文件/攤位）→ ② 詳細統計資料（段段可收合＋「＋」直申請）→ ③ 本組統計數字沉底（睇數係管理層嘅嘢，前線唔使一開就見佢）。之後或可畀組副主席自行調上調下。 -->
-        ${this.groupInfoBoxesHTML(groupName)}
-        ${this.groupDetailSectionHTML(groupName)}
-        ${this.groupStatsSectionHTML(groupName)}
+        <!-- v15.12 前線優先預設排版 資訊→詳細→統計沉底；v15.13 起本組總主任以上可自行調上調下（applyGroupCardOrder 依 localStorage 重排） -->
+        <div id="group-apps-cards">
+        <div data-grp-card="info">${this.groupInfoBoxesHTML(groupName)}</div>
+        <div data-grp-card="detail">${this.groupDetailSectionHTML(groupName)}</div>
+        <div data-grp-card="stats">${this.groupStatsSectionHTML(groupName)}</div>
+        </div>
         <!-- 快捷按鈕已移至組別介紹下方（正常組別：前往申請中心＋我的監察；個別組別另有專屬按鈕） -->
         ${groupName==='服務及發展組'&&this.canViewDonationsStats()?this.renderDonationSummaryForGroup():''}
         </div>
@@ -1327,6 +1384,8 @@ Object.assign(ScoutEventApp.prototype,{
         ${groupCommonTabs.map(t=>`<div id="group-tab-${t.k}" class="${this.groupBoothTab===t.k?'':'hidden'}"></div>`).join('')}
         ${groupExtraTabs.map(t=>`<div id="group-tab-${t.k}" class="${this.groupBoothTab===t.k?'':'hidden'}"></div>`).join('')}
       </div>`;
+    // v15.13：套用自訂卡次序＋畀管理權限者見到調序掣
+    try{ this.applyGroupCardOrder(groupName); }catch(e){}
     // v12.2：特色頁籤內容（全部喺頂部頁籤列；基本形態＝apps 本組申請）
     groupExtraTabs.forEach(t=>{
       const el=document.getElementById('group-tab-'+t.k);
