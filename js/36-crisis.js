@@ -288,7 +288,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] text-red-900 shadow-sm">
           <b>危機處理：</b>應變指引、急救、保險、危機手冊、應變小組及緊急聯絡，公開可看；僅修改需副主席以上登入。
         </div>
-        <div class="m-tabbar flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
+        <div class="m-tabbar flex gap-2 border-b pb-3 overflow-x-auto flex-wrap m-subtab">
           <button onclick="app.switchCrisisTab('docs')" class="tab-btn ${this.crisisSubTab==='docs'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 應變指引 (急救·保險)</button>
           <button onclick="app.switchCrisisTab('accident')" class="tab-btn ${this.crisisSubTab==='accident'?'active':''}"><i class="fa-solid fa-file-waveform mr-1"></i> 意外事件報告表 (${(data.accidents||[]).length})</button>
           <button onclick="app.switchCrisisTab('manual')" class="tab-btn ${this.crisisSubTab==='manual'?'active':''}"><i class="fa-solid fa-file-arrow-up mr-1"></i> 上傳危機處理手冊</button>

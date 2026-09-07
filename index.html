@@ -133,6 +133,20 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 /* v15.5 分頁短名：預設顯示全稱（電腦）；≤768px 換短名 */
 .lbl-short{display:none}
 @media(max-width:768px){.lbl-long{display:none}.lbl-short{display:inline}}
+/* v15.6 執行手冊「節」手風琴卡（章→節→內容；電腦預設全開、手機預設只開第一節，行為靠 JS matchMedia 定）*/
+details.exec-sec{border:1px solid #e2e8f0;border-radius:14px;background:#fff;overflow:hidden}
+details.exec-sec>summary.exec-sec-sum{list-style:none;display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;font-size:13.5px;font-weight:800;color:#0f172a;-webkit-tap-highlight-color:transparent}
+details.exec-sec>summary.exec-sec-sum::-webkit-details-marker{display:none}
+details.exec-sec .exec-sec-ico{font-size:11px;color:#94a3b8;transition:transform .15s;flex-shrink:0}
+details.exec-sec[open] .exec-sec-ico{transform:rotate(180deg)}
+details.exec-sec[open]>summary.exec-sec-sum{border-bottom:1px solid #f1f5f9}
+/* 節卡入面原本嗰件大卡去框去底，避免雙框 */
+details.exec-sec>*:not(summary){border:none!important;border-radius:0!important;background:transparent!important}
+.exec-sec-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 0}
+.exec-sec-tip{font-size:10.5px;color:#64748b;flex:1;min-width:130px}
+.exec-sec-btn{background:#0f172a;color:#fff;border:none;border-radius:10px;padding:6px 10px;font-size:10.5px;font-weight:700;cursor:pointer}
+/* 節列（章嘅內部分頁條）：灰底膠囊條，同黑色嘅章列分清層次 */
+.m-subtab{background:#f1f5f9!important;border-radius:12px;padding:5px;border-bottom:none!important;margin-top:2px}
 @media(max-width:768px){
   .nav-tab{font-size:11px;padding:10px 2px;border-radius:0}
   .header-chip{padding:6px 9px;font-size:10.5px;border-radius:10px} .header-chip i{margin-right:2px}
@@ -590,21 +604,21 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <script src="js/10-app-core.js?v=20260906a"></script>
 <script src="js/11-news.js?v=20260901a"></script>
 <script src="js/20-accounts.js?v=20260905d"></script>
-<script src="js/21-activities.js?v=20260906a"></script>
+<script src="js/21-activities.js?v=20260907a"></script>
 <script src="js/22-meals.js?v=20260831a"></script>
 <script src="js/23-sync.js?v=20260905d"></script>
 <script src="js/24-supplies.js?v=20260905d"></script>
 <script src="js/25-vehicle.js?v=20260905d"></script>
-<script src="js/26-monitor-apply.js?v=20260906a"></script>
+<script src="js/26-monitor-apply.js?v=20260907a"></script>
 <script src="js/27-parking.js?v=20260831a"></script>
 <script src="js/28-oral-quotes.js?v=20260831a"></script>
 <script src="js/30-finance.js?v=20260905d"></script>
-<script src="js/31-staff.js?v=20260905d"></script>
+<script src="js/31-staff.js?v=20260907a"></script>
 <script src="js/32-meetings.js?v=20260831a"></script>
 <script src="js/33-users.js?v=20260905d"></script>
 <script src="js/34-announcements.js?v=20260831a"></script>
-<script src="js/35-ceremony.js?v=20260906a"></script>
-<script src="js/36-crisis.js?v=20260906a"></script>
+<script src="js/35-ceremony.js?v=20260907a"></script>
+<script src="js/36-crisis.js?v=20260907a"></script>
 <script src="js/37-coordinator.js?v=20260905d"></script>
 <script src="js/38-donations.js?v=20260905d"></script>
 <script src="js/39-lost-found.js?v=20260905d"></script>

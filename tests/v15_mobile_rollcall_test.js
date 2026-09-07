@@ -198,7 +198,7 @@ ok(html.includes('.m-tabbar{flex-wrap:nowrap!important') && html.includes('.m-ta
 ['js/26-monitor-apply.js','js/21-activities.js','js/35-ceremony.js','js/36-crisis.js','js/10-app-core.js'].forEach(f =>
   ok(read(f).includes('m-tabbar'), 'H5 ' + f + ' 分頁條已掛 m-tabbar'));
 ok(html.includes('.table-responsive tbody td{flex-wrap:wrap'), 'H6 手機表格欄位可換行（多掣長文唔再擠爆）');
-ok(/src="js\/26-monitor-apply\.js\?v=20260906a/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
+ok(/src="js\/26-monitor-apply\.js\?v=2026090(6|7)a/.test(html) && /src="js\/10-app-core\.js\?v=20260906a/.test(html), 'H7 改動咗嘅 js 已更新版本號');
 
 /* ══════════ I. v15.5 分頁短名（電腦全稱／手機 2–4 字） ══════════ */
 ok(html.includes('SHORT_TAB_LABELS') && html.includes("['優異旅團獲獎名單','優異旅團']"), 'I1 長名→短名對照表存在');
@@ -213,5 +213,24 @@ ok(/\.lbl-short\{display:none\}/.test(html) && /@media\(max-width:768px\)\{\.lbl
 ok(html.includes("btn.title=lng"), 'I5 全稱保留喺 title（長撳／無障礙讀到）');
 ok(html.includes("createTreeWalker(btn,4)"), 'I6 用 TreeWalker 只動文字節點（icon／徽章元素唔會整爛）');
 ok(html.includes("data-st-done"), 'I7 每粒掣只縮一次，排序／換 class 唔會重複包 span');
+
+/* ══════════ J. v15.6 執行手冊「章→節」手風琴（大總管分類試點） ══════════ */
+const j26 = read('js/26-monitor-apply.js');
+ok(j26.includes('sectionizeExecPanel(panel, chapterKey)') && j26.includes("this.execManualSubTab==='participants'||this.execManualSubTab==='meal_box'"),
+  'J1 平面長章（參加旅團名單／代訂餐盒名單）掛手風琴；有內部分頁條嘅章唔加工');
+ok(j26.includes("matchMedia('(max-width:768px)')") && j26.includes("typeof window.matchMedia==='function'"),
+  'J2 電腦預設全開、手機預設只開第一節（matchMedia 有守衛，mock 環境唔炸）');
+ok(j26.includes("localStorage.setItem(this.execSecStoreKey()") && j26.includes("exec_sections_open_"),
+  'J3 每節開關有落盤（活動＋章＋節名），下次入嚟見返');
+ok(j26.includes("/緊急/.test(title)"), 'J4 標題含「緊急」嘅節永遠預設展開（救命資料唔收埋）');
+ok(j26.includes('execSecToggleAll') && j26.includes('全部展開') && j26.includes('全部收合'),
+  'J5 ≥2 節會出「全部展開／全部收合」工具列');
+ok(html.includes('details.exec-sec>summary.exec-sec-sum') && html.includes('.m-subtab{background:#f1f5f9'),
+  'J6 節卡＋節列（灰底膠囊條）CSS 齊');
+ok(read('js/31-staff.js').includes('m-tabbar m-subtab') && j26.includes('m-tabbar m-subtab') &&
+   read('js/21-activities.js').includes('m-subtab') && read('js/35-ceremony.js').includes('m-subtab') && read('js/36-crisis.js').includes('m-subtab'),
+  'J7 五條章內分頁條全部掛 m-tabbar＋m-subtab（手機一排橫滑＋視覺分層）');
+ok(/src="js\/31-staff\.js\?v=20260907a/.test(html) && /src="js\/26-monitor-apply\.js\?v=20260907a/.test(html),
+  'J8 今轉改動咗嘅 js 版本號已 bump');
 
 console.log('V15_MOBILE_ROLLCALL_OK (' + n + ' checks)');

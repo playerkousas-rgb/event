@@ -345,6 +345,77 @@ Object.assign(ScoutEventApp.prototype,{
       documents:()=>this.renderDocumentsModule(panel)
     };
     (map[this.execManualSubTab]||map.staff)();
+    // v15.6：平面長章包「節」手風琴（參加旅團名單／代訂餐盒名單）；其餘章本身有內部分頁條＝節列，唔加工
+    if(this.execManualSubTab==='participants'||this.execManualSubTab==='meal_box'){ try{ this.sectionizeExecPanel(panel,this.execManualSubTab); }catch(e){} }
+  }
+,
+  /* ══ v15.6 執行手冊「章→節→內容」手風琴（手機為主、電腦行為不變）══════════════
+     執行手冊係大總管，分類要明確：
+     · 章＝頂排分頁條；節＝章內可收合大標題卡；節內內容原樣照放
+     · 手機預設只開第一節（一入章頁就係大綱視圖）；電腦預設全部展開（行為不變）
+     · localStorage 按「活動＋章＋節名」記住開關，下次入嚟直接見返
+     · 標題含「緊急」嘅節永遠預設展開（救命資料唔收埋）
+     · 簡介橫幅（bg-*-50）／按鈕工具列唔收，保持一眼可見可撳 */
+  execSecSlug(t){ return encodeURIComponent(String(t||'').replace(/\s+/g,'')).slice(0,48); }
+,
+  execSecStoreKey(){ return 'exec_sections_open_'+(this.currentEvent?.event_id||'isd_2026'); }
+,
+  execSecPrefs(){ try{ return JSON.parse(localStorage.getItem(this.execSecStoreKey())||'{}'); }catch(e){ return {}; } }
+,
+  // 「全部展開／全部收合」掣：toggle 事件會自動落盤（見下面 listener），呢度唔使再寫
+  execSecToggleAll(chapter, open){
+    const panel=document.getElementById('exec-manual-panel'); if(!panel) return;
+    panel.querySelectorAll('details.exec-sec').forEach(d=>{ d.open=!!open; });
+  }
+,
+  sectionizeExecPanel(panel, chapterKey){
+    if(!panel || typeof document.createElement!=='function') return;
+    const box=panel.firstElementChild; if(!box) return;
+    const BANNER_RE=/bg-(indigo|sky|rose|emerald|amber|slate|purple|teal)-50/;
+    const prefs=this.execSecPrefs();
+    const isMobile=(typeof window.matchMedia==='function')?window.matchMedia('(max-width:768px)').matches:true;
+    let secIdx=0;
+    [...box.children].forEach(el=>{
+      if(el.tagName==='DETAILS') return;                          // 已包裝
+      const cls=String(el.className||'');
+      if(BANNER_RE.test(cls)) return;                             // 簡介橫幅／小提示保持原樣
+      const hasHeading=!!el.querySelector('h1,h2,h3,h4,h5');
+      const hasContent=!!el.querySelector('table,.roster-panel,iframe,img,[class*="grid"]');
+      if(!hasHeading&&!hasContent) return;                        // 工具掣列／一行小字唔收
+      // 節名＝入面第一個標題；無標題就攞第一個粗體字；都無就放過
+      let title=(el.querySelector('h1,h2,h3,h4,h5')?.textContent||'').trim();
+      if(!title){ const b=el.querySelector('b,strong,[class*="font-bold"]'); title=(b?.textContent||'').trim(); }
+      title=title.replace(/\s+/g,' ').slice(0,40);
+      if(!title) return;
+      const details=document.createElement('details');
+      details.className='exec-sec';
+      details.dataset.secKey=chapterKey+'::'+this.execSecSlug(title);
+      const sum=document.createElement('summary');
+      sum.className='exec-sec-sum';
+      sum.innerHTML='<i class="fa-solid fa-chevron-down exec-sec-ico" aria-hidden="true"></i><span class="exec-sec-title">'+escapeHtml(title)+'</span>';
+      details.appendChild(sum);
+      el.replaceWith(details);
+      details.appendChild(el);
+      details.addEventListener('toggle',()=>{                    // 開關自動落盤
+        const k=details.dataset.secKey; if(!k) return;
+        const p=this.execSecPrefs();
+        if(details.open) p[k]=1; else delete p[k];
+        try{ localStorage.setItem(this.execSecStoreKey(),JSON.stringify(p)); }catch(e){}
+      });
+      const pref=prefs[details.dataset.secKey];
+      const defOpen=/緊急/.test(title) || !isMobile || secIdx===0;
+      details.open=(pref!==undefined)?!!pref:defOpen;
+      secIdx++;
+    });
+    // 有 ≥2 節先值得放「全部展開／收合」工具列（插喺第一節前）
+    if(secIdx>=2 && !box.querySelector('.exec-sec-tools')){
+      const tools=document.createElement('div');
+      tools.className='exec-sec-tools';
+      tools.innerHTML='<span class="exec-sec-tip"><i class="fa-solid fa-layer-group mr-1"></i>本章大綱：撳一節展開內容</span>'
+        +'<button type="button" onclick="app.execSecToggleAll(0,true)" class="exec-sec-btn">全部展開</button>'
+        +'<button type="button" onclick="app.execSecToggleAll(0,false)" class="exec-sec-btn">全部收合</button>';
+      box.insertBefore(tools,box.querySelector('details.exec-sec'));
+    }
   }
 ,
 
@@ -485,7 +556,7 @@ Object.assign(ScoutEventApp.prototype,{
     box.innerHTML=`
       <div class="space-y-3">
         <div class="bg-slate-50 border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>📎 各類附加資料：</b>箱頭紙・許可證式樣・失物認領。<b>失物認領由行政組紀錄</b>，同一份紀錄亦設於「行政組 → 部門管理中心」。</div>
-        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
+        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap m-tabbar m-subtab">
           ${tabs.map(t=>`<button onclick="app.switchExecManualMiscTab('${t.k}')" class="exec-misc-tab-btn ${cls(t.k)}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('')}
         </div>
         <div id="exec-misc-tab-box_label" class="${this.execManualMiscTab==='box_label'?'':'hidden'}">${this.boxLabelPanelHTML()}</div>
