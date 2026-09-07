@@ -824,7 +824,7 @@
     },
     {
       "meeting_id": "m_4",
-      "title": "第4次籌備委員會議 (下次會議)",
+      "title": "第4次籌備委員會議",
       "date": "2026-08-18 19:15",
       "agenda": "各功能組別進度最後衝刺與物資點算",
       "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室。",
@@ -835,7 +835,7 @@
       "agenda_file_name": "4_Agenda 籌備委員會議程.pdf",
       "minutes_file_name": "App1-ISD2026-籌備委員會第3次會議記錄_Ver1.pdf",
       "visibility": "public",
-      "status": "upcoming",
+      "status": "completed",
       "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
       "attachments": [],
       "classified_files": [
@@ -870,6 +870,24 @@
           "file_url": "https://drive.google.com/file/d/1OrnF4mWDpYEQ04I-wN2t32pDeVJmfjbP/view"
         }
       ]
+    },
+    {
+      "meeting_id": "m_5",
+      "title": "港島童軍繽紛日2026 - 第5次籌備會議（下次會議）",
+      "date": "2026-09-14 19:15",
+      "agenda": "會議文件稍後附上。",
+      "minutes": "溫馨提示：敬請各位預留時間出席。",
+      "author": "秘書處",
+      "meeting_number": 5,
+      "agenda_file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+      "minutes_file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+      "agenda_file_name": "",
+      "minutes_file_name": "",
+      "visibility": "public",
+      "status": "upcoming",
+      "location": "百周年紀念大樓1704室",
+      "attachments": [],
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
     }
   ],
   "staff": {

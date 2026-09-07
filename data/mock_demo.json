@@ -65,7 +65,7 @@
     },
     {
       "meeting_id": "m_next",
-      "title": "第4次籌備委員會議 (下次會議)",
+      "title": "第4次籌備委員會議",
       "date": "2026-08-18 19:15",
       "agenda": "1. 通過上次會議紀錄\n2. 總綵排流程確認\n3. 各組物資與膳食最終統計\n4. 財務審批總結",
       "minutes": "主任或以上委員請準時出席百周年紀念大樓1704室。",
@@ -76,7 +76,25 @@
       "agenda_file_name": "第4次會議_議程.pdf",
       "minutes_file_name": "第4次會議_紀錄.pdf",
       "visibility": "public",
-      "status": "upcoming"
+      "status": "completed"
+    },
+    {
+      "meeting_id": "m_5",
+      "title": "港島童軍繽紛日2026 - 第5次籌備會議（下次會議）",
+      "date": "2026-09-14 19:15",
+      "agenda": "會議文件稍後附上。",
+      "minutes": "溫馨提示：敬請各位預留時間出席。",
+      "author": "秘書處",
+      "meeting_number": 5,
+      "agenda_file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+      "minutes_file_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+      "agenda_file_name": "",
+      "minutes_file_name": "",
+      "visibility": "public",
+      "status": "upcoming",
+      "location": "百周年紀念大樓1704室",
+      "attachments": [],
+      "drive_root_url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
     }
   ],
   "documents": [
