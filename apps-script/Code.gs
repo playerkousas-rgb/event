@@ -1072,6 +1072,7 @@ function doPost(e) {
     if (action === 'login') { const r = handleLogin(data); if (r && typeof r === 'object') r.version = GS_VERSION; return jsonResponse(r); }
     else if (action === 'verifyEventPassword') return jsonResponse(verifyEventPassword(data));
     else if (action === 'saveRecord') return jsonResponse(saveRecord(data));
+    else if (action === 'saveBatchRecords') return jsonResponse(saveBatchRecords(data));
     else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
     else if (action === 'changePassword') return jsonResponse(changePassword(data));
     else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
@@ -1359,11 +1360,32 @@ function getEventAllData(eventId) {
   return result;
 }
 
+// 批量置入正式 2026 資料：沿用各工作表第一欄 ID 及欄位，不改原始來源；已有 ID 更新，沒有 ID 新增。
+function saveBatchRecords(data) {
+  const records = Array.isArray(data.records) ? data.records : [];
+  const results = [];
+  records.forEach(function (item) {
+    if (!item || !item.module || !item.record) { results.push({success:false,error:'module and record required'}); return; }
+    results.push(saveRecord({module:item.module, record:item.record}));
+  });
+  return { success: results.every(function(r){return r.success;}), count: results.length, results: results };
+}
+
+function auditWrite(a) {
+  const ss=getSheet(); let sh=ss.getSheetByName('Audit_Log');
+  if(!sh) { sh=ss.insertSheet('Audit_Log'); sh.appendRow(['audit_id','module','record_id','action','updated_by','updated_at','record_snapshot']); }
+  sh.appendRow(['audit_'+Date.now()+'_'+Math.floor(Math.random()*1000),a.module||'',a.record_id||'',a.action||'',a.updated_by||'',a.updated_at||new Date().toISOString(),JSON.stringify(a.record_snapshot||{})]);
+}
+
 function saveRecord(data) {
   const moduleName = data.module;
   const record = data.record;
   const ss = getSheet();
-  const sheet = ss.getSheetByName(moduleName);
+  let sheet = ss.getSheetByName(moduleName);
+  if (!sheet && moduleName === 'Public_2027_Intake') {
+    sheet = ss.insertSheet(moduleName);
+    sheet.appendRow(['id','event_id','submission_type','unit_name','contact_name','contact','headcount','details','submitted_by','updated_by','updated_at','status','created_at']);
+  }
   if (!sheet) return { success: false, error: 'Module sheet not found' };
   
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
@@ -1403,7 +1425,7 @@ function saveRecord(data) {
   const rowValues = headers.map(h => record[h] !== undefined ? record[h] : '');
   if (rowIndex > 0) sheet.getRange(rowIndex, 1, 1, rowValues.length).setValues([rowValues]);
   else sheet.appendRow(rowValues);
-  
+  auditWrite({module:moduleName,record_id:recordId,action:rowIndex>0?'update':'create',updated_by:record.updated_by||data.updated_by||'',updated_at:record.updated_at||new Date().toISOString(),record_snapshot:record});
   return { success: true, id: recordId };
 }
 

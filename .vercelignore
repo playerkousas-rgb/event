@@ -1,0 +1,32 @@
+# Vercel only needs the static app, API functions, and runtime data.
+# Keep source files required by the browser; exclude repository/dev-only payloads.
+.git
+.git/**
+node_modules
+node_modules/**
+
+# Local uploads, exports and scratch files (never deploy user data)
+uploads
+uploads/**
+uploads-*/**
+tmp
+tmp/**
+temp
+temp/**
+.cache
+.cache/**
+*.bak
+*.tmp
+*.old
+*.log
+*.swp
+.DS_Store
+
+# Tests and local tooling are not runtime assets.
+tests
+tests/**
+
+# Deployment notes are not runtime assets. Keep docs/FEATURE_GUIDE.md because
+# the app links to it from the public help panel.
+DEPLOY_GUIDE.md
+VERCEL_ENV_SETUP.md

@@ -1,0 +1,11 @@
+{
+  "name": "event-admin-tool",
+  "private": true,
+  "version": "1.0.0",
+  "description": "大型活動行政管理工具（無建置步驟的靜態 Vercel APP）",
+  "scripts": {
+    "check": "node scripts/verify-project.js",
+    "lint": "node scripts/verify-project.js --lint",
+    "build": "node scripts/verify-project.js --build"
+  }
+}
