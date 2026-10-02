@@ -358,6 +358,14 @@ Object.assign(ScoutEventApp.prototype,{
   // v8.14c：會議卡片＝秘書處負責，行政組統管，執副以上（主席／顧問／執副主席／管理員）一律管到
   canManageMeetings(){ return this.isAdmin()||this.isExecViceOrChair()||this.isCardOwnerGroup('meetings'); }
 ,
+  // v15.1：活動前資料凍結——2026 正式資料已係最終版（活動前兩日鎖定），
+  // 只可下載／列印／點名，所有「上載新資料」按鈕隱藏兼封鎖（示範沙盒不受影響；2027 保留上載）。
+  isDataFrozen(){
+    if(this.isDemoEvent&&this.isDemoEvent()) return false;
+    const eid=(this.currentEvent&&this.currentEvent.event_id)||'';
+    return (typeof DATA_FROZEN_EVENT_IDS!=='undefined') && DATA_FROZEN_EVENT_IDS.includes(eid);
+  }
+,
   // 可以睇晒全部部門嘅人：執副以上 ＋ 行政組（統管全站）
   // v8.14d：可以睇晒全部部門嘅人＝ 執副以上 ＋ 副主席 ＋ 行政組總主任 ＋ 參事主任 ＋ 行政組（統管全站）
   // 其餘（包括各組總主任）一律淨係睇自己部門

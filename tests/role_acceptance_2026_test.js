@@ -117,7 +117,7 @@ ROLES.forEach(r => {
   const guests = call('(__app.eventData.guest_roster.guests||[]).length');
   const booths = call('(__app.eventData.activities.booths||[]).length');
   ok(guests === 103, `${r.label}：應讀到 103 位嘉賓`);
-  ok(booths === 31, `${r.label}：應讀到 31 個攤位`);
+  ok(booths === 33, `${r.label}：應讀到 33 個攤位`);
   ok(call('(__app.eventData.participants||[]).length') === 4, `${r.label}：應讀到 4 個受邀隊伍`);
   ok(call('(__app.eventData.schedule||[]).length') > 0, `${r.label}：應讀到 2026 日程`);
   ok(call('(__app.eventData.meals||[]).length') > 0, `${r.label}：應讀到工作人員膳食資料`);

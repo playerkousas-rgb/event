@@ -316,7 +316,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-4">
         <div class="flex gap-2 flex-wrap">
           <button onclick="app.syncBudgetFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新預算 (Drive)</button>
-          ${(this.isAdmin()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 預算<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBudgetExcelUpload(this.files[0])"></label>`:''}
+          ${((this.isAdmin()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)&&!(this.isDataFrozen&&this.isDataFrozen()))?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 預算<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBudgetExcelUpload(this.files[0])"></label>`:''}
           <button onclick="app.openExpenseForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ 新增開支申報</button>${(this.canApproveArea('finance')||this.canExecuteArea('finance'))?`<button onclick="app.exportFinanceData()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
         </div>
         ${(this.getFinanceData().budget_source)?this.driveSyncNotice():''}

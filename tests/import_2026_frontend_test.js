@@ -85,8 +85,8 @@ const run = expr => vm.runInContext(expr, context);
   ok(imports.every(c => c.api_key && c.updated_by === '主席'), '每批都要帶 api_key 及操作者（Audit_Log 用）');
   const sheets = new Set(imports.map(c => Object.keys(c.sections)[0]));
   ['Guests', 'Staff', 'Staff_Meals', 'Schedule', 'Activities', 'Roster_Lists'].forEach(s => ok(sheets.has(s), `必須寫入分頁 ${s}`));
-  ok(r1.counts.Guests === 103 && r1.counts.Activities === 31 && r1.counts.Roster_Lists === 4, '數量：103 嘉賓／31 攤位／4 受邀隊伍');
-  ok(r1.total.created === 103 + 31 + 4 + r1.counts.Staff + r1.counts.Staff_Meals + r1.counts.Schedule, '全部行都寫出');
+  ok(r1.counts.Guests === 103 && r1.counts.Activities === 33 && r1.counts.Roster_Lists === 4, '數量：103 嘉賓／33 攤位／4 受邀隊伍');
+  ok(r1.total.created === 103 + 33 + 4 + r1.counts.Staff + r1.counts.Staff_Meals + r1.counts.Schedule, '全部行都寫出');
   ok(r1.success === true, '新後端下應全部成功');
   // 逐欄寫入，不可把整份 JSON 塞一欄
   const guestRow = imports.find(c => c.sections.Guests).sections.Guests[0];
