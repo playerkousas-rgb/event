@@ -1428,8 +1428,12 @@ Object.assign(ScoutEventApp.prototype,{
     // localStorage 僅用於暫存未上傳的修改，上傳後 JSON 會更新
     // 會議議程／紀錄「內建 JSON」：data/meeting_records.json（+ 本機編輯覆蓋），令成員唔使彈出 Drive APP 都睇到全文
     await this.loadMeetingRecords();
+    // v15.0：先套用上次由 Google Sheet 下載的 2026 正式資料 snapshot（離線／網絡不穩仍睇到），
+    // 之後再背景更新。嘉賓／工作人員／膳食／日程／攤位一律以 Google Sheet 為準。
+    try{ if(typeof this.loadImported2026Snapshot==='function') this.loadImported2026Snapshot(); }catch(e){}
     // 正式活動（非示範沙盒）且已連後端：拉取 Meal_Orders 合併（組長確認/行政審批狀態跨裝置同步）
     this.syncApplicationsFromGas();
+    try{ if(typeof this.syncImported2026FromGas==='function') this.syncImported2026FromGas(); }catch(e){}
   }
 ,
   // ── 返回導航：「返回」＝返回上一頁（例如由申請中心進入子頁，返回就回到申請中心，而不是主控台）──
