@@ -272,7 +272,8 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
       {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
       {k:'meal_box',    icon:'fa-solid fa-bowl-food',          label:'代訂餐盒名單'},
-      {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'}
+      {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'},
+      {k:'data_2026', icon:'fa-solid fa-database',          label:'2026 資料總覽'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`
@@ -343,7 +344,11 @@ Object.assign(ScoutEventApp.prototype,{
         </div>`;
       },
       // 執行手冊只收活動當日真正會用到的文件；會議、籌備及活動教材仍留在完整文件庫。
-      documents:()=>this.renderDocumentsModule(panel,true)
+      documents:()=>this.renderDocumentsModule(panel,true),
+      data_2026:()=>{
+        const d=this.eventData||{}, rows=(d.schedule||[]).map(x=>`<tr><td class="px-2 py-1">${escapeHtml(x.time_slot||'')}</td><td class="px-2 py-1">${escapeHtml(x.title||'')}</td><td class="px-2 py-1">${escapeHtml(x.location||'')}</td></tr>`).join('');
+        panel.innerHTML=`<div class="space-y-4"><div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px]">2026 已置入資料總覽；原始來源及現場修訂分開保存。</div><div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center">${[['嘉賓',d.guest_roster?.guests?.length||0],['工作人員',d.staff?.event_staff_roster?.length||0],['攤位',d.activities?.booths?.length||0],['受邀隊伍',d.participants?.length||0],['餐膳資料',d.meals?.length||0]].map(x=>`<div class="bg-white border rounded-xl p-3"><b class="text-lg">${x[1]}</b><div class="text-[10px] text-slate-500">${x[0]}</div></div>`).join('')}</div><div class="bg-white border rounded-xl p-4"><h4 class="font-bold text-sm mb-2">2026 日程</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">時間</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">地點</th></tr></thead><tbody class="divide-y">${rows||'<tr><td colspan="3" class="p-3 text-center text-slate-400">暫無資料</td></tr>'}</tbody></table></div></div></div>`;
+      }
     };
     (map[this.execManualSubTab]||map.staff)();
   }

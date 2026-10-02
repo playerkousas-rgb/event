@@ -469,7 +469,7 @@ Object.assign(ScoutEventApp.prototype,{
     const cardClass='bg-white border shadow-sm';
     const badgeHTML=locked
       ?'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-amber-700 border border-amber-200 whitespace-nowrap"><i class="fa-solid fa-lock mr-0.5"></i>登入解鎖</span>'
-      :'';
+      :'<span class="absolute top-3 right-3 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-emerald-700 border border-emerald-200 whitespace-nowrap">公開可看</span>';
     const overlay=locked?'<div class="absolute inset-0 bg-white/30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition"><span class="bg-slate-900 text-white text-[10px] px-3 py-1.5 rounded-full font-bold"><i class="fa-solid fa-lock mr-1"></i>登入解鎖</span></div>':'';
     const ownGroupBanner=isOwnGroup?'<div class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2.5 shadow-sm"><i class="fa-solid fa-star"></i>我的組別</div>':'';
     return `<div onclick="${locked?"app.openLoginModal()":(def.action||("app.openModule('"+def.id+"')"))}" class="relative dash-card p-4 rounded-2xl shadow-sm card-hover cursor-pointer ${cardClass} ${locked?'opacity-60':''} ${isOwnGroup?'ring-4 ring-indigo-300 border-indigo-400 shadow-md':''}">${badgeHTML}${ownGroupBanner}<div class="dash-icon w-11 h-11 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-lg mb-2.5"><i class="${def.icon}"></i></div><h4 class="dash-title font-bold text-[13px] pr-2">${escapeHtml(def.title)}</h4>${overlay}</div>`;
@@ -622,8 +622,8 @@ Object.assign(ScoutEventApp.prototype,{
     const taSetup=document.getElementById('topbar-account-setup'); if(taSetup) taSetup.style.display=(loggedIn&&chiefOrAbove)?'':'none';
     const setNav=(id,show)=>{const el=document.getElementById(id); if(el) el.style.display=show?'':'none';};
     // 底部導覽列 = 執行手冊・申請中心・批核中心(有權限)・部門中心（登入後：執副以上見列表／普通人入自己部門）
-    setNav('bn-pub-announcements',false);
-    setNav('bn-pub-donations',false);
+    setNav('bn-pub-announcements',!loggedIn);
+    setNav('bn-pub-donations',!loggedIn);
     setNav('bn-exec',true);
     setNav('bn-apply',true);
     setNav('bn-approvals',loggedIn&&chiefOrAbove);
@@ -1260,7 +1260,7 @@ Object.assign(ScoutEventApp.prototype,{
         {k:'admin_participants',label:'🚌 參加旅團'},
         {k:'admin_docs',label:'📁 行政文件'},
         {k:'admin_tickets',label:'🎟️ 票券'},
-        {k:'stamp_staff',label:'🏅 紀念章-工作人員'},
+        {k:'stamp_staff',label:'🏅 紀念章派發（工作人員） <span class="sr-only">紀念章-工作人員</span>'},
         {k:'lost_found',label:'🧳 失物認領'}
       ]:[]),
       ...(groupName==='協調組'?[
@@ -1276,7 +1276,7 @@ Object.assign(ScoutEventApp.prototype,{
         {k:'cer_award_section',label:'🏅 支部獎勵名單'},
         {k:'cer_award_leader',label:'🎖️ 領袖獎勵名單'}
       ]:[]),
-      ...(groupName==='嘉賓接待組'?[{k:'stamp_guest',label:'🏅 紀念章-嘉賓'}]:[])
+      ...(groupName==='嘉賓接待組'?[{k:'stamp_guest',label:'🏅 紀念章派發（嘉賓）'}]:[])
     ];
     // v13：全部門共設 3 個財務頁籤——開支申報／口頭報價／財務指引（方便各組查看及提交，最後喺行政組「財務匯總」匯總）
     const groupCommonTabs=[
@@ -1406,7 +1406,7 @@ Object.assign(ScoutEventApp.prototype,{
             }
           }catch(e){}
           // 「以 JSON 為單一事實來源」的模組：只要 JSON 有,一律覆蓋（避免空 skeleton 卡住新資料）
-          ['staff','crisis','documents','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements'].forEach(k=>{ if(j2[k]!==undefined && j2[k]!==null) this.eventData[k]=j2[k]; });
+          ['staff','crisis','documents','parking_source','schedule_source','participants_source','drive','theme_badges','awards','ceremony','unit_guide','announcements','guest_transport','guest_roster','activity_day_sources'].forEach(k=>{ if(j2[k]!==undefined && j2[k]!==null) this.eventData[k]=j2[k]; });
           // finance / activities：只併入「資料來源指標」
           if(j2.finance && j2.finance.budget_source) this.eventData.finance={budget_source:j2.finance.budget_source};
           if(j2.activities && j2.activities.booth_source) this.eventData.activities={booth_source:j2.activities.booth_source};

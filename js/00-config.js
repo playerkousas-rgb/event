@@ -229,7 +229,8 @@ const CARD_OWNER_GROUPS={
   apply_hub:['行政組'],
   documents:['行政組'],
   activities:['行政組'],
-  ceremony:['行政組'],
+  // 典禮內容由行政組統管；嘉賓名單／嘉賓點名／接送由嘉賓接待組負責
+  ceremony:['行政組','嘉賓接待組'],
   crisis:['行政組'],
   schedule:['行政組'],
   unit_guide:['行政組'],
