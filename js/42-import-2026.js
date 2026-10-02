@@ -126,7 +126,12 @@
         section: S(p.section),
         headcount: S(p.headcount || p.attendance_count),
         leader: S(p.leader),
-        notes: [S(p.leader_role), S(p.source)].filter(Boolean).join('｜')
+        notes: [
+          S(p.status) === 'withdrawn' ? '❌ 已退出（不出席）' : '',
+          S(p.notes),
+          S(p.leader_role),
+          S(p.source)
+        ].filter(Boolean).join('｜')
       };
       sections.Roster_Lists.push({
         row_id: eid + '_participants_' + (participantsRowKey(row) || ('ug_' + String(i + 1))),
