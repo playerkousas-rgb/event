@@ -6,6 +6,9 @@
   "scripts": {
     "check": "node scripts/verify-project.js",
     "lint": "node scripts/verify-project.js --lint",
-    "build": "node scripts/verify-project.js --build"
+    "build": "node scripts/verify-project.js --build",
+    "test": "node scripts/run-tests.js",
+    "import:2026": "node scripts/import-2026.js",
+    "import:2026:dry": "node scripts/import-2026.js --dry-run"
   }
 }

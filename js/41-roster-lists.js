@@ -247,6 +247,7 @@ Object.assign(ScoutEventApp.prototype,{
         <th class="px-2 py-1 text-center w-14">${escapeHtml(this.rosterTickColLabel(def))}<br><span class="text-[9px] font-normal text-slate-400">TICK／修正</span></th>
         ${cols.map(c=>`<th class="px-2 py-1 text-left">${escapeHtml(c.label)}</th>`).join('')}
         ${hasMeritReply?'<th class="px-2 py-1 text-left">回條／出席</th>':''}
+        ${canTick&&def.attendee_field?`<th class="px-2 py-1 text-left">${escapeHtml(def.attendee_field)}</th>`:''}
         ${canTick?'<th class="px-2 py-1 text-left">點名紀錄</th>':''}
         ${canManage&&def.editable?'<th class="px-2 py-1 text-right">操作</th>':''}
       </tr></thead>
@@ -255,9 +256,10 @@ Object.assign(ScoutEventApp.prototype,{
           <td class="px-2 py-1 text-center roster-tick-cell" data-label="${escapeHtml(this.rosterTickColLabel(def))}"><input type="checkbox" ${r._checked?'checked':''} ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,false)" class="w-4 h-4 accent-emerald-600" title="${canTick?escapeHtml(def.tick_hint):'請登入『'+escapeHtml(def.owner_group)+'』後點名'}"><br><input type="checkbox" ${canTick?'':'disabled'} onchange="app.rosterTick('${key}','${encodeURIComponent(r._key||'')}',this,true)" class="w-3 h-3 accent-rose-600" title="修正：取消這一次 TICK（只在已 TICK 時生效；取消後可再 TICK）"> <span class="text-[9px] text-rose-600">修正</span></td>
           ${cols.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-medium':''}" data-label="${escapeHtml(c.label)}">${escapeHtml(String(r[c.k]??''))||'<span class="text-slate-300">—</span>'}</td>`).join('')}
           ${hasMeritReply?meritReplyCell(r):''}
-          ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`<span class="text-emerald-700 font-bold">✅ 已${escapeHtml(def.tick_label)}</span><span class="block">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:(r._correction||r._note?`<span class="text-rose-600">↩ 修正取消${r._note?'：'+escapeHtml(r._note):''}</span><span class="block text-slate-400">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:'—')}</td>`:''}
+          ${canTick&&def.attendee_field?`<td class="px-2 py-1" data-label="${escapeHtml(def.attendee_field)}"><input id="roster-attendee-${key}-${encodeURIComponent(r._key||'')}" value="${escapeHtml(r._note||'')}" placeholder="${escapeHtml(def.attendee_placeholder||'點名時填寫')}" onchange="app.rosterSetAttendee('${key}','${encodeURIComponent(r._key||'')}',this.value)" class="w-full px-2 py-1 border rounded-lg text-[11px]"></td>`:''}
+          ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`<span class="text-emerald-700 font-bold">✅ 已${escapeHtml(def.tick_label)}</span>${r._note?`<span class="block text-slate-700">到場：${escapeHtml(r._note)}</span>`:''}<span class="block">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:(r._correction||r._note?`<span class="text-rose-600">↩ 修正取消${r._note?'：'+escapeHtml(r._note):''}</span><span class="block text-slate-400">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:'—')}</td>`:''}
           ${canManage&&def.editable?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openRosterRowForm('${key}','${escapeHtml(r.id||'')}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteRosterRow('${key}','${escapeHtml(r.id||'')}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}
-        </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
+        </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canTick&&def.attendee_field?1:0)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
       </tbody>
     </table></div>`;
   },
@@ -326,12 +328,33 @@ Object.assign(ScoutEventApp.prototype,{
         return;
       }
       if(cur){ if(isEl) el.checked=true; return; }// 重覆 TICK 冪等：唔覆蓋原操作者／時間
-      rec=Object.assign({},ticks[rowKey]||{},{checked:true,by,by_id:byId,at:now,correction:false,note:''});
+      // 外間團體／沒有預定姓名的名單：報到時喺同一行「實際到場人士」欄填寫（不用彈窗），
+      // 內容會連同這一次點名寫入後端 checkin_note。
+      let attendeeNote=String((ticks[rowKey]&&ticks[rowKey].note)||'');
+      if(def.attendee_field&&typeof document!=='undefined'){
+        const input=document.getElementById('roster-attendee-'+key+'-'+encodeURIComponent(rowKey));
+        if(input&&typeof input.value==='string'&&String(input.value).trim()) attendeeNote=String(input.value).trim();
+      }
+      rec=Object.assign({},ticks[rowKey]||{},{checked:true,by,by_id:byId,at:now,correction:false,note:attendeeNote});
     }
     ticks[rowKey]=rec; d.ticks[key]=ticks; this.saveRosterData(d);
     if(def.source==='ceremony_merit') this.syncMeritAwardTick(row,rec);
     this.rosterSaveTickToGas(key,def,row,rec);
     this.rosterRefreshBody(key);                  // 修正後兩格清空；TICK 後顯示 ✅＋操作者／時間
+  },
+
+  /* 外間團體／沒有預定姓名的名單：填寫實際到場人士（存入同一條點名紀錄；已點名就即時寫後端） */
+  rosterSetAttendee(key,rowKey,value){
+    const def=this.rosterDef(key); if(!def||!def.attendee_field) return;
+    rowKey=decodeURIComponent(String(rowKey||''));
+    if(!this.rosterCanTick(key)){ showToast(`僅已登入嘅${def.owner_group}（${def.owner_note}）／管理層可填寫到場人士`,'error'); return; }
+    const d=this.getRosterData(); const ticks=d.ticks[key]||{};
+    const rec=Object.assign({},ticks[rowKey]||{},{note:String(value||'').trim()});
+    ticks[rowKey]=rec; d.ticks[key]=ticks; this.saveRosterData(d);
+    if(rec.checked){
+      const row=this.rosterRows(key).find(r=>r._key===rowKey);
+      if(row) this.rosterSaveTickToGas(key,def,row,rec);
+    }
   },
 
   // 保留優異旅團回條資料，同時把新點名結果寫回去，讓舊入口與部門中心永遠顯示同一狀態。

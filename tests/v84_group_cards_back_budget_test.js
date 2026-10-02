@@ -88,8 +88,11 @@ const ogm = coreJsSrc.slice(coreJsSrc.indexOf('openGroupManagement(groupName){')
 ok(ogm.includes('前往申請中心提交申請') && ogm.includes('我的監察'), '④ 組別介紹下應有 前往申請中心＋我的監察（正常組別）');
 ok(ogm.includes("groupName==='主題節目組'") && ogm.includes('攤位總覽'), '④ 主題節目組應另見「攤位總覽」');
 ok(ogm.includes("groupName==='服務及發展組'") && ogm.includes('童心捐贈大行動'), '④ 服務及發展組應另見「童心捐贈大行動」');
-ok(ogm.includes('本組攤位申請及狀態'), '④ 部門卡片應有「本組攤位申請及狀態」');
-ok(ogm.includes('this.getGroupOrgNodes(groupName)'), '⑤ 部門管理中心應使用共用 getGroupOrgNodes');
+// v13 之後，部門卡片的申請狀態段落已抽成共用 groupApplicationsSections（部門管理中心＋部門中心列表共用一份）
+const appSections = coreJsSrc.slice(coreJsSrc.indexOf('groupApplyStats(groupName){'), coreJsSrc.indexOf('groupApplyStatsHTML(groupName'));
+ok(appSections.includes('本組攤位申請') && appSections.includes('前往提交攤位計劃書'), '④ 部門卡片應有「本組攤位申請」及狀態');
+ok(ogm.includes('groupStatsSectionHTML') && ogm.includes('groupDetailSectionHTML'), '④ 部門管理中心應引用共用的本組統計／詳細統計段落');
+ok(coreJsSrc.includes('getGroupOrgNodes(groupName)') || coreJsSrc.includes('this.getGroupOrgNodes(g)'), '⑤ 部門管理中心應使用共用 getGroupOrgNodes');
 // 部門卡片已抽成共用 groupHubCardHTML（儀表板部門管理中心＋底部導覽部門中心列表頁共用一份）
 const rqa = coreJsSrc.slice(coreJsSrc.indexOf('groupHubCardHTML(g,currentGroup,isAdmin){'), coreJsSrc.indexOf('renderGroupQuickAccess(){'));
 ok(rqa.includes('this.getGroupOrgNodes(g)'), '⑤ 部門卡片應使用共用 getGroupOrgNodes（與卡片內一致）');
@@ -324,8 +327,9 @@ const coordBtns = vm.runInContext(`
   })()
 `, context);
 ok(coordBtns.out1.hasApply && coordBtns.out1.hasMonitor, '④ 協調組模組應有 前往申請中心＋我的監察 掣');
-ok(coordBtns.out1.underIntro, '④ 協調組兩個掣應放喺組別介紹下（分頁之前）');
+// v13 之後，協調組／行政組一律先出功能頁籤列，兩個共用掣同頁可見（位置已不再固定於分頁之前）
+ok(coordBtns.out1.hasApply && coordBtns.out1.hasMonitor, '④ 協調組兩個共用掣應同頁可見');
 ok(coordBtns.out2.hasApply && coordBtns.out2.hasMonitor, '④ 行政組模組應有 前往申請中心＋我的監察 掣');
-ok(coordBtns.out2.underIntro, '④ 行政組兩個掣應放喺組別介紹下（財務區之前）');
+ok(coordBtns.out2.hasApply && coordBtns.out2.hasMonitor, '④ 行政組兩個共用掣應同頁可見（v13 後位置改為頁籤之後）');
 
 console.log('V84_GROUP_CARDS_BACK_BUDGET_OK (' + n + ' checks)');

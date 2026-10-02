@@ -345,10 +345,7 @@ Object.assign(ScoutEventApp.prototype,{
       },
       // 執行手冊只收活動當日真正會用到的文件；會議、籌備及活動教材仍留在完整文件庫。
       documents:()=>this.renderDocumentsModule(panel,true),
-      data_2026:()=>{
-        const d=this.eventData||{}, rows=(d.schedule||[]).map(x=>`<tr><td class="px-2 py-1">${escapeHtml(x.time_slot||'')}</td><td class="px-2 py-1">${escapeHtml(x.title||'')}</td><td class="px-2 py-1">${escapeHtml(x.location||'')}</td></tr>`).join('');
-        panel.innerHTML=`<div class="space-y-4"><div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px]">2026 已置入資料總覽；原始來源及現場修訂分開保存。</div><div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center">${[['嘉賓',d.guest_roster?.guests?.length||0],['工作人員',d.staff?.event_staff_roster?.length||0],['攤位',d.activities?.booths?.length||0],['受邀隊伍',d.participants?.length||0],['餐膳資料',d.meals?.length||0]].map(x=>`<div class="bg-white border rounded-xl p-3"><b class="text-lg">${x[1]}</b><div class="text-[10px] text-slate-500">${x[0]}</div></div>`).join('')}</div><div class="bg-white border rounded-xl p-4"><h4 class="font-bold text-sm mb-2">2026 日程</h4><div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">時間</th><th class="px-2 py-1 text-left">項目</th><th class="px-2 py-1 text-left">地點</th></tr></thead><tbody class="divide-y">${rows||'<tr><td colspan="3" class="p-3 text-center text-slate-400">暫無資料</td></tr>'}</tbody></table></div></div></div>`;
-      }
+      data_2026:()=>{ this._execManual2026Panel=panel; this.renderExecManual2026Panel(panel); }
     };
     (map[this.execManualSubTab]||map.staff)();
   }

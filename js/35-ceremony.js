@@ -214,15 +214,55 @@ Object.assign(ScoutEventApp.prototype,{
     win.document.write(`<html><head><title>嘉賓地圖</title><link rel="stylesheet" href="${location.origin}/assets/tailwind.css"><style>body{font-family:sans-serif;padding:20px} @media print{button,a{display:none!important}}</style></head><body>${area.innerHTML}<div class="mt-6 text-center"><button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl">列印</button></div></body></html>`);
     win.document.close();
   },
+  /* 會操檢閱路線（2026：oscar hkir 修改版，加行地域旗隊）— 由 data/isd_2026.json 的 ceremony.inspection_route 讀取 */
+  ceremonyRouteHTML(){
+    const r=this.eventData?.ceremony?.inspection_route; if(!r) return '';
+    const img=r.image?`<img src="${escapeHtml(r.image)}" alt="會操檢閱路線圖" class="w-full rounded-xl border mt-2">`
+                     :`<p class="text-[11px] text-slate-500 mt-2"><i class="fa-regular fa-image mr-1"></i>${escapeHtml(r.image_hint||'路線圖待上傳')}</p>`;
+    return `<div class="border border-sky-200 bg-sky-50 rounded-2xl p-4">
+      <div class="font-bold text-sm text-sky-900"><i class="fa-solid fa-route mr-1"></i>${escapeHtml(r.title||'會操檢閱路線')}</div>
+      ${r.change_summary?`<div class="text-[11px] text-rose-700 font-bold mt-1">${escapeHtml(r.change_summary)}</div>`:''}
+      <div class="text-[11px] text-slate-600 mt-1">檢閱官：${escapeHtml(r.reviewing_officer||'')}${(r.party||[]).length?'｜陪同：'+escapeHtml((r.party||[]).join('、')):''}</div>
+      <ol class="list-decimal list-inside text-[12px] text-slate-700 mt-2 space-y-1">${(r.steps||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>
+      ${(r.inspection_questions||[]).length?`<div class="mt-2 text-[12px]"><div class="font-bold text-slate-700">檢閱官會問隊員：</div><ul class="list-disc list-inside text-slate-700">${r.inspection_questions.map(q=>`<li>${escapeHtml(q)}</li>`).join('')}</ul></div>`:''}
+      ${r.confirm_needed?`<div class="mt-2 text-[11px] text-amber-800 bg-amber-100 border border-amber-200 rounded-xl px-2 py-1">待確認：${escapeHtml(r.confirm_needed)}</div>`:''}
+      ${img}
+    </div>`;
+  },
+  /* 出席變動提示（例：民安隊 4/10 不出席） */
+  ceremonyAttendanceChangeHTML(){
+    const list=this.eventData?.ceremony?.attendance_changes||[]; if(!list.length) return '';
+    return `<div class="border border-rose-200 bg-rose-50 rounded-2xl p-3">
+      <div class="font-bold text-sm text-rose-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i>最新出席變動</div>
+      ${list.map(c=>`<div class="text-[12px] text-rose-900 mt-1">• <b>${escapeHtml(c.unit||'')}</b>：${escapeHtml(c.change||'')}（${escapeHtml(c.date||'')}）<br><span class="text-[11px] text-rose-700">${escapeHtml(c.impact||'')}</span></div>`).join('')}
+    </div>`;
+  },
   renderCeremonyRundown(){
     const container=document.getElementById('ceremony-tab-rundown'); if(!container) return;
     const data=this.getCeremonyData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
     container.innerHTML=`
       <div class="space-y-3">
+        ${this.ceremonyAttendanceChangeHTML()}
+        ${this.ceremonyRouteHTML()}
         <div class="flex gap-2 flex-wrap">${canEdit?`<button onclick="app.openCeremonyFileForm(null,'rundown')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳 RUNDOWN</button>`:''}</div>
         <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">時間</th><th class="px-2 py-1 text-left">節目</th><th class="px-2 py-1 text-left">位置</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.rundown.map(x=>`<tr><td class="px-2 py-1 font-mono font-bold" data-label="時間">${escapeHtml(x.time)}</td><td class="px-2 py-1" data-label="節目">${escapeHtml(x.program)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(x.location)}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openCeremonyItemForm('rundown','${x.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCeremonyItem('rundown','${x.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無RUNDOWN</td></tr>'}</tbody></table></div>
       </div>`;
+  },
+  /* 2026 官方司儀稿（3 份最新版本，來自 ISD Drive） */
+  ceremonyMcScriptsHTML(){
+    const list=this.eventData?.ceremony?.mc_scripts||[]; if(!list.length) return '';
+    return `<div class="border border-amber-200 bg-amber-50 rounded-2xl p-4">
+      <div class="font-bold text-sm text-amber-900"><i class="fa-solid fa-microphone-lines mr-1"></i>2026 官方司儀稿（最新版本）</div>
+      <div class="space-y-2 mt-2">${list.map(s=>`<div class="bg-white border rounded-xl p-3">
+        <div class="flex justify-between items-start gap-2 flex-wrap">
+          <div class="font-bold text-[12px] text-slate-800">${escapeHtml(s.part||'')}｜${escapeHtml(s.title||'')} <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full">${escapeHtml(s.version||'')}</span></div>
+          ${s.file_url?`<a href="${escapeHtml(s.file_url)}" target="_blank" rel="noopener" class="bg-amber-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold">開啟 PDF</a>`:''}
+        </div>
+        <div class="text-[11px] text-slate-600 mt-1">司儀：${escapeHtml(s.mc||'—')}${s.updated_at?'｜更新：'+escapeHtml(s.updated_at):''}</div>
+        ${s.note?`<div class="text-[12px] text-slate-700 mt-1 leading-relaxed">${escapeHtml(s.note)}</div>`:''}
+      </div>`).join('')}</div>
+    </div>`;
   },
   renderCeremonyMc(){
     const container=document.getElementById('ceremony-tab-mc'); if(!container) return;
@@ -230,6 +270,7 @@ Object.assign(ScoutEventApp.prototype,{
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
     container.innerHTML=`
       <div class="space-y-3">
+        ${this.ceremonyMcScriptsHTML()}
         <div class="flex gap-2 flex-wrap">${canEdit?`<button onclick="app.openCeremonyFileForm(null,'mc')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳司儀稿</button>`:''}</div>
         <div class="space-y-2">${data.mc_script.map(x=>`<div class="border rounded-xl p-3 bg-slate-50"><div class="flex justify-between items-start gap-2"><span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold">${x.seq}</span>${canEdit?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.openCeremonyItemForm('mc','${x.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteCeremonyItem('mc','${x.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}</div><div class="text-[12px] text-slate-700 mt-1 leading-relaxed">${escapeHtml(x.text)}</div></div>`).join('')||'<p class="text-xs text-slate-400 py-4 text-center">暫無司儀稿</p>'}</div>
       </div>`;
@@ -241,11 +282,22 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-3">
         ${this.eventData?.guest_roster?`<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>最新正式名單：</b>${escapeHtml(String(this.eventData.guest_roster.count||0))} 位・版本 ${escapeHtml(this.eventData.guest_roster.as_at||'')}<br><span class="text-rose-800">行政組提供；嘉賓接待／公關組只負責查看及點名，不修改正式名單。嘉賓名單不可改名；如有新增嘉賓，只能以「加名」方式建立新紀錄。</span></div>`:''}
-        <div class="flex gap-2 flex-wrap"><button onclick="app.openGuestCheckin()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-check-double mr-1"></i>嘉賓點名</button>${canEdit?`<button onclick="app.openCeremonyFileForm(null,'guests')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳正式名單</button>`:''}</div>
-        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">序號</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">職銜</th><th class="px-2 py-1 text-left">出席／交通</th><th class="px-2 py-1 text-left">車牌／備註</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.guests.map(g=>{const attendance=[g.ceremony_part_1?'第一部分':'',g.ceremony_part_2?'第二部分':'',g.guest_tea?'茶聚':'',g.event_bus?'大會車':''].filter(Boolean).join('、')||'—';return `<tr><td class="px-2 py-1 font-mono" data-label="序號">${escapeHtml(String(g.serial||''))}</td><td class="px-2 py-1 font-bold" data-label="姓名">${escapeHtml(g.name)}</td><td class="px-2 py-1 whitespace-pre-line" data-label="職銜">${escapeHtml(g.title)}</td><td class="px-2 py-1" data-label="出席／交通">${escapeHtml(attendance)}</td><td class="px-2 py-1 whitespace-pre-line" data-label="車牌／備註">${escapeHtml([g.car_plate,g.column_1,g.note].filter(Boolean).join(' · '))}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openCeremonyItemForm('guests','${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCeremonyItem('guests','${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`}).join('')||'<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無嘉賓</td></tr>'}</tbody></table></div>
+        <div class="flex gap-2 flex-wrap"><button onclick="app.openGuestCheckin()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-check-double mr-1"></i>嘉賓點名</button>${canEdit?`<button onclick="app.openCeremonyItemForm('guests')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-user-plus mr-1"></i>加名（新增嘉賓）</button>`:''}${canEdit?`<button onclick="app.openCeremonyFileForm(null,'guests')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳正式名單</button>`:''}</div>
+        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">序號</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">職銜</th><th class="px-2 py-1 text-left">出席／交通</th><th class="px-2 py-1 text-left">車牌／備註</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.guests.map(g=>{const attendance=[g.ceremony_part_1?'第一部分':'',g.ceremony_part_2?'第二部分':'',g.guest_tea?'茶聚':'',g.event_bus?'大會車':''].filter(Boolean).join('、')||'—';return `<tr><td class="px-2 py-1 font-mono" data-label="序號">${escapeHtml(String(g.serial||''))}</td><td class="px-2 py-1 font-bold" data-label="姓名">${escapeHtml(g.name)}</td><td class="px-2 py-1 whitespace-pre-line" data-label="職銜">${escapeHtml(g.title)}</td><td class="px-2 py-1" data-label="出席／交通">${escapeHtml(attendance)}</td><td class="px-2 py-1 whitespace-pre-line" data-label="車牌／備註">${escapeHtml([g.car_plate,g.column_1,g.note].filter(Boolean).join(' · '))}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作">${this.isOfficialGuest(g)?'<span class="text-[10px] text-slate-400">正式名單・只可點名</span>':`<button onclick="app.openCeremonyItemForm('guests','${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCeremonyItem('guests','${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`}</td>`:''}</tr>`}).join('')||'<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無嘉賓</td></tr>'}</tbody></table></div>
       </div>`;
   },
+  // 嘉賓點名權限：嘉賓接待組／行政組／典禮負責組／副主席以上（須登入）
+  canGuestCheckin(){
+    if(!this.currentUser) return false;
+    if(this.isAdmin&&this.isAdmin()) return true;
+    if((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60) return true;
+    const g=normalizeGroupName(this.currentUser.group_name||'');
+    if(g.includes('嘉賓接待')||g.includes('行政')) return true;
+    return !!(this.isCardOwnerGroup&&this.isCardOwnerGroup('ceremony'));
+  },
+
   openGuestCheckin(){
+    if(!this.canGuestCheckin()){ showToast('僅已登入嘅嘉賓接待組／行政組／典禮組及副主席以上可以嘉賓點名','error'); return; }
     const data=this.getCeremonyData(); const list=data.guests||[]; const key=LS.ceremony(this.currentEvent?.event_id||'isd_2026')+'_guest_checkin';
     let state={}; try{state=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
     const rows=list.map((g,i)=>{const id=g.id||('guest_'+i); const checked=!!state[id]; return `<label class="flex items-center gap-3 rounded-xl border bg-white p-3 min-h-[52px] cursor-pointer"><input type="checkbox" class="guest-check w-6 h-6 accent-rose-600" data-id="${escapeHtml(id)}" ${checked?'checked':''}><span class="min-w-0"><b class="block text-sm truncate">${escapeHtml(g.name||'')}</b><span class="block text-[11px] text-slate-500 truncate">${escapeHtml(g.title||'')}</span></span></label>`}).join('');
@@ -253,7 +305,53 @@ Object.assign(ScoutEventApp.prototype,{
     const modal=document.getElementById('modal-record'); const title=document.getElementById('record-modal-title'); const fields=document.getElementById('record-form-fields'); const form=document.getElementById('record-form'); if(!modal||!fields)return; title.textContent='嘉賓點名'; fields.innerHTML=`<div class="space-y-3"><div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-sm font-bold">已到 <span id="guest-check-count">${checked}</span> / ${total}</div><div class="space-y-2 max-h-[65vh] overflow-y-auto">${rows||'<div class="text-center text-sm text-slate-400 py-8">正式名單尚未轉入點名資料</div>'}</div></div>`; form.onsubmit=e=>{e.preventDefault();this.saveGuestCheckin(key);}; form.querySelector('button[type="submit"]')?.remove(); const save=document.createElement('button'); save.type='submit'; save.className='px-4 py-2 bg-rose-600 text-white rounded-xl text-sm'; save.textContent='儲存點名'; form.querySelector('.flex.justify-end')?.appendChild(save); modal.classList.remove('hidden');
     document.querySelectorAll('.guest-check').forEach(el=>el.addEventListener('change',()=>{const n=document.querySelectorAll('.guest-check:checked').length; const c=document.getElementById('guest-check-count'); if(c)c.textContent=n;}));
   },
-  saveGuestCheckin(key){ const state={}; document.querySelectorAll('.guest-check:checked').forEach(el=>state[el.dataset.id]=true); localStorage.setItem(key,JSON.stringify(state)); document.getElementById('modal-record')?.classList.add('hidden'); showToast('嘉賓點名已儲存','success'); },
+  saveGuestCheckin(key){
+    if(!this.canGuestCheckin()){ showToast('冇權限儲存嘉賓點名','error'); return; }
+    let before={}; try{ before=JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){}
+    const state={}; document.querySelectorAll('.guest-check:checked').forEach(el=>state[el.dataset.id]=true);
+    localStorage.setItem(key,JSON.stringify(state));
+    document.getElementById('modal-record')?.classList.add('hidden');
+    const added=Object.keys(state).filter(id=>!before[id]);
+    this.pushGuestCheckinToGas(added);
+    showToast(added.length?`嘉賓點名已儲存（新增 ${added.length} 位，正在寫入後端）`:'嘉賓點名已儲存','success');
+  },
+
+  /* 嘉賓點名留痕：寫入 Roster_Rollcall_Checkins（list_key=guests），後端 saveRecord 會自動寫 Audit_Log。
+     只加不減——取消請由嘉賓接待組在紀念章／名單頁以「修正」處理，與既有點名規則一致。 */
+  pushGuestCheckinToGas(ids){
+    if(!ids||!ids.length) return;
+    const url=this.gasUrl||localStorage.getItem(LS.gasUrl), ak=this.apiKey||localStorage.getItem(LS.apiKey);
+    if(!url||!ak||(this.isDemoEvent&&this.isDemoEvent())) return;
+    const eid=this.currentEvent?.event_id||'isd_2026';
+    const guests=this.getCeremonyData().guests||[];
+    const now=new Date().toISOString();
+    ids.forEach(id=>{
+      const g=guests.find((x,i)=>(x.id||('guest_'+i))===id)||{};
+      const rec={checkin_id:`${eid}_guests_${id}`,event_id:eid,list_key:'guests',list_title:'典禮嘉賓名單',row_key:id,
+        area:'',unit:String(g.section||''),name:String(g.name||''),section:String(g.section||''),award:'',
+        checked_in:'Y',correction_cancelled:'',checked_by:this.currentUser?.name||'未登入',
+        checked_by_id:this.currentUser?.user_id||this.currentUser?.id||'',checked_at:now,checkin_note:String(g.title||'')};
+      fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:ak,module:'Roster_Rollcall_Checkins',record:rec})})
+        .catch(()=>showToast('嘉賓點名已本機保存，後端同步失敗','warning'));
+    });
+  },
+
+  // 由 Google Sheet 取回嘉賓點名（跨裝置：其他同事已點名的嘉賓會一併顯示）
+  mergeGuestCheckinFromGas(all){
+    const eid=this.currentEvent?.event_id||'isd_2026';
+    const key=LS.ceremony(eid)+'_guest_checkin';
+    let state={}; try{ state=JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){}
+    let changed=false;
+    ((all&&all.Roster_Rollcall_Checkins)||[]).filter(r=>String(r.list_key||'')==='guests').forEach(r=>{
+      const id=String(r.row_key||''); if(!id) return;
+      const cancelled=/^(Y|y|true|1|是)$/.test(String(r.correction_cancelled||''));
+      const checked=!cancelled&&/^(Y|y|true|1|是)$/.test(String(r.checked_in||''));
+      if(checked&&!state[id]){ state[id]=true; changed=true; }
+      if(!checked&&state[id]&&cancelled){ delete state[id]; changed=true; }
+    });
+    if(changed) localStorage.setItem(key,JSON.stringify(state));
+    return changed;
+  },
   renderCeremonySeating(){
     const container=document.getElementById('ceremony-tab-seating'); if(!container) return;
     const data=this.getCeremonyData();
@@ -298,6 +396,10 @@ Object.assign(ScoutEventApp.prototype,{
   },
   openCeremonyItemForm(type,id=null){
     if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可編輯','error'); return; }
+    if(type==='guests'&&id){
+      const g0=(this.getCeremonyData().guests||[]).find(x=>x.id===id);
+      if(this.isOfficialGuest(g0)){ showToast('嘉賓正式名單不可改名或換名；如有新嘉賓請用「加名」','error'); return; }
+    }
     const data=this.getCeremonyData();
     const arr=data[type];
     const existing=id?arr.find(x=>x.id===id):null;
@@ -331,7 +433,19 @@ Object.assign(ScoutEventApp.prototype,{
     document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
     showToast('已保存','success'); this.renderCeremonyModule();
   },
+  // 2026 規則：嘉賓名單只可點名及加名，正式名單（有序號／由 Google Sheet 取回）不可改名或換名。
+  isOfficialGuest(g){
+    if(!g) return false;
+    if(g.official===true) return true;
+    if(String(g.serial||'').trim()) return true;
+    return /^guest_\d+$/.test(String(g.id||''));
+  },
+
   deleteCeremonyItem(type,id){
+    if(type==='guests'){
+      const g=(this.getCeremonyData().guests||[]).find(x=>x.id===id);
+      if(this.isOfficialGuest(g)){ showToast('嘉賓正式名單不可刪除／換名，只可點名及加名','error'); return; }
+    }
     if((ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isCardOwnerGroup('ceremony')){ showToast('僅管理員／副主席以上／行政組・總主任（負責組）可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getCeremonyData(); data[type]=data[type].filter(x=>x.id!==id);

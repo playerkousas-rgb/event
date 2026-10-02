@@ -26,7 +26,7 @@
 // v11.2：新增 saveEventNews —— 「最新消息」改為 APP 內可改（執行副主席以上＋秘書處），
 //        寫入 Events 表 news / news_updated_by / news_updated_at（欄位不存在會自動補建），
 //        getEvents 亦會一併回傳，前端 loadEvents 以後端值覆蓋 events.json 嘅預設消息。
-const GS_VERSION = 'v14.0-2026-09-05';
+const GS_VERSION = 'v15.0-2026-10-02';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -341,6 +341,12 @@ function initializeSheets() {
   ensureColumns(ss.getSheetByName('Finance_Expenses'), ['event_id', 'voucher', 'item_name', 'group_name', 'budget', 'actual', 'date', 'description', 'receipt_name', 'receipt_url', 'status', 'submitted_by', 'submitted_by_id', 'requester_role', 'group_confirmation_status', 'group_confirmed_by', 'group_confirmed_at', 'approved_by', 'approved_at', 'created_at']);
   // 膳食菜單：補回選項／截止／鎖定等欄
   ensureColumns(ss.getSheetByName('Meals'), ['options', 'price', 'deadline', 'locked', 'created_by']);
+  // v15.0：2026 正式資料遷移用分頁（嘉賓名單／工作人員膳食分配）——只新增，不影響既有資料
+  ensureSheet(ss, 'Guests', IMPORT_2026_SHEETS.Guests);
+  ensureSheet(ss, 'Staff_Meals', IMPORT_2026_SHEETS.Staff_Meals);
+  ensureColumns(ss.getSheetByName('Staff'), IMPORT_2026_EXTRA_COLUMNS.Staff);
+  ensureColumns(ss.getSheetByName('Schedule'), IMPORT_2026_EXTRA_COLUMNS.Schedule);
+  ensureColumns(ss.getSheetByName('Activities'), IMPORT_2026_EXTRA_COLUMNS.Activities);
   seedInitialData();
   formatSheetsByPurpose();
 }
@@ -377,6 +383,7 @@ function ensureSheet(ss, sheetName, headers) {
     sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#0c4a6e').setFontColor('#ffffff');
     sheet.setFrozenRows(1);
   }
+  return sheet;
 }
 
 // 非破壞性補欄位：只會把缺失的欄位加到最右側，不刪除/覆蓋既有資料
@@ -1045,6 +1052,8 @@ function doGet(e) {
     
     if (action === 'getEvents') {
       return jsonResponse({ success: true, version: GS_VERSION, data: getAllEvents() });
+    } else if (action === 'getImport2026Status') {
+      return jsonResponse(getImport2026Status());
     } else if (action === 'getEventData') {
       return jsonResponse({ success: true, version: GS_VERSION, data: getEventAllData(eventId) });
     } else {
@@ -1073,6 +1082,8 @@ function doPost(e) {
     else if (action === 'verifyEventPassword') return jsonResponse(verifyEventPassword(data));
     else if (action === 'saveRecord') return jsonResponse(saveRecord(data));
     else if (action === 'saveBatchRecords') return jsonResponse(saveBatchRecords(data));
+    else if (action === 'import2026Data') return jsonResponse(import2026Data(data));
+    else if (action === 'getImport2026Status') return jsonResponse(getImport2026Status());
     else if (action === 'saveBooths') return jsonResponse(saveBooths(data));
     else if (action === 'changePassword') return jsonResponse(changePassword(data));
     else if (action === 'getAllUsers') return jsonResponse(getAllUsers());
@@ -1324,7 +1335,7 @@ function getEventAllData(eventId) {
   // v8.9 補漏：加入 Booth_Requests——前端 saveSuppliesData 一直有把「攤位計劃書」寫出後端，但 getEventAllData 冇回傳，
   // 令其他裝置／重開後讀唔返攤位計劃書（攤位卡／總表／借用統計只睇到本機）。現正式回傳，前端 syncApplicationsFromGas 亦已合併。
   // v11：加入 Lost_Found（失物認領）及 Souvenir_Stamps（紀念章派發）——前端 23-sync.js 會合併
-  const modules = ['Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Ceremony_Merit_Checkins', 'Ceremony_Merit_Checkin_Batches', 'Users', 'Roster_Lists', 'Roster_Rollcall_Checkins', 'Roster_Rollcall_Batches'];
+  const modules = ['Guests', 'Staff_Meals', 'Meetings', 'Staff', 'Documents', 'Finance', 'Activities', 'Meals', 'Meal_Orders', 'Schedule', 'Supplies', 'Supply_Requests', 'Booth_Requests', 'Vehicle_Passes', 'Parking_Requests', 'Finance_Expenses', 'Oral_Quotes', 'Lost_Found', 'Souvenir_Stamps', 'Ceremony_Merit_Checkins', 'Ceremony_Merit_Checkin_Batches', 'Users', 'Roster_Lists', 'Roster_Rollcall_Checkins', 'Roster_Rollcall_Batches'];
   const result = {};
   
   modules.forEach(mod => {
@@ -1494,4 +1505,214 @@ function updateStatus(data) {
     }
   }
   return { success: false, error: 'Record not found' };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v15.0（2026-10-02）一次性 2026 資料遷移：import2026Data
+   ─────────────────────────────────────────────────────────────────────────
+   目的：把 data/isd_2026.json 的正式資料（103 位嘉賓／frozen 工作人員名單／
+   31 個攤位／4 個受邀隊伍／2026 日程／工作人員膳食）按既有分頁及欄位寫入
+   本 2026 Google Sheet。
+   規則：
+   ① 只限 2026：event_id 必須係 'isd_2026'，而且本試算表唔可以係 2027 表。
+   ② 按分頁欄位逐欄寫入，絕不把整份 JSON 塞入單一欄位
+      （Activities.details_json 係既有欄位設計，只載該攤位自身欄位）。
+   ③ 有相同 ID 就更新、冇就新增；內容完全相同就跳過（唔會重複寫入）。
+   ④ 每次寫入（新增／更新）都記錄到 Audit_Log，另加每個分頁一行匯總。
+   前端入口：執行手冊 → 2026 資料 →「一次性寫入 Google Sheet」（主席／管理員）
+   CLI 入口：node scripts/import-2026.js
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const IMPORT_2026_EVENT_ID = 'isd_2026';
+
+// 每個分頁的欄位定義（與 initializeSheets 一致；缺欄會自動於最右補上，非破壞性）
+const IMPORT_2026_SHEETS = {
+  Guests: ['guest_id', 'event_id', 'serial', 'section', 'name', 'title', 'ceremony_part_1', 'ceremony_part_2', 'guest_tea', 'event_bus', 'duty', 'car_plate', 'note', 'source', 'checked_in', 'created_at', 'updated_at'],
+  Staff: ['staff_id', 'event_id', 'name', 'role_title', 'group_name', 'contact', 'job_desc', 'created_at'],
+  Staff_Meals: ['meal_row_id', 'event_id', 'staff_id', 'name', 'group_name', 'meal', 'booth', 'source', 'created_at', 'updated_at'],
+  Schedule: ['schedule_id', 'event_id', 'time_slot', 'title', 'description', 'location', 'group_name', 'created_at'],
+  Activities: ['activity_id', 'event_id', 'title', 'type', 'location', 'description', 'details_json', 'created_at'],
+  Roster_Lists: ['row_id', 'event_id', 'list_key', 'list_title', 'row_json', 'ticked', 'tick_json', 'updated_by', 'updated_at', 'created_at']
+};
+// 匯入時需要補上的欄位（舊部署非破壞性補欄）
+const IMPORT_2026_EXTRA_COLUMNS = {
+  Staff: ['meal', 'booth', 'assignment_status', 'source', 'updated_by', 'updated_at'],
+  Schedule: ['source', 'updated_by', 'updated_at'],
+  Activities: ['updated_by', 'updated_at']
+};
+
+// 防止寫錯 2027：本試算表必須係 2026（Events 有 isd_2026，且唔可以係只得 2027 的表）
+function import2026GuardSpreadsheet() {
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Events');
+  if (!sheet || sheet.getLastRow() <= 1) return { ok: true, note: 'Events 表為空，按 event_id 判斷為 2026 表' };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const idIdx = headers.indexOf('event_id') === -1 ? 0 : headers.indexOf('event_id');
+  let has2026 = false, has2027 = false;
+  for (let i = 1; i < rows.length; i++) {
+    const id = String(rows[i][idIdx] || '');
+    if (id === IMPORT_2026_EVENT_ID) has2026 = true;
+    if (id.indexOf('2027') !== -1) has2027 = true;
+  }
+  if (has2027 && !has2026) return { ok: false, error: '拒絕寫入：本試算表係 2027 Sheet，import2026Data 只可寫 2026。' };
+  return { ok: true, note: has2026 ? '已確認本試算表包含 isd_2026' : 'Events 未見 isd_2026，但亦非 2027 表' };
+}
+
+function import2026Normalize(v) {
+  if (v === null || v === undefined) return '';
+  if (v === true) return 'Y';
+  if (v === false) return '';
+  if (v instanceof Date) return v.toISOString();
+  return String(v);
+}
+
+function import2026AppendAuditRows(auditRows) {
+  if (!auditRows.length) return;
+  const ss = getSheet();
+  let sh = ss.getSheetByName('Audit_Log');
+  if (!sh) {
+    sh = ss.insertSheet('Audit_Log');
+    sh.appendRow(['audit_id', 'module', 'record_id', 'action', 'updated_by', 'updated_at', 'record_snapshot']);
+  }
+  sh.getRange(sh.getLastRow() + 1, 1, auditRows.length, 7).setValues(auditRows);
+}
+
+/* 單一分頁的冪等批次寫入：同 ID 更新、冇就新增、內容相同就跳過。 */
+function import2026WriteSection(sheetName, records, updatedBy, auditRows) {
+  const headers = IMPORT_2026_SHEETS[sheetName];
+  if (!headers) return { sheet: sheetName, error: 'unknown section' };
+  const ss = getSheet();
+  const sheet = ensureSheet(ss, sheetName, headers);
+  const extra = IMPORT_2026_EXTRA_COLUMNS[sheetName];
+  if (extra) ensureColumns(sheet, extra);
+  ensureColumns(sheet, headers);
+  const liveHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(function (h) { return String(h); });
+  const idField = liveHeaders[0];
+
+  const existing = sheet.getLastRow() > 1 ? sheet.getRange(2, 1, sheet.getLastRow() - 1, liveHeaders.length).getValues() : [];
+  const indexById = {};
+  for (let i = 0; i < existing.length; i++) indexById[String(existing[i][0])] = i;
+
+  const nowIso = new Date().toISOString();
+  let created = 0, updated = 0, unchanged = 0;
+  const appended = [];
+
+  records.forEach(function (rec) {
+    const id = String(rec[idField] || '');
+    if (!id) return;
+    const rowValues = liveHeaders.map(function (h) {
+      if (Object.prototype.hasOwnProperty.call(rec, h)) return import2026Normalize(rec[h]);
+      return '';
+    });
+    const pos = indexById[id];
+    if (pos === undefined) {
+      if (liveHeaders.indexOf('created_at') !== -1 && !rec.created_at) rowValues[liveHeaders.indexOf('created_at')] = nowIso;
+      if (liveHeaders.indexOf('updated_at') !== -1) rowValues[liveHeaders.indexOf('updated_at')] = nowIso;
+      if (liveHeaders.indexOf('updated_by') !== -1 && !rec.updated_by) rowValues[liveHeaders.indexOf('updated_by')] = updatedBy;
+      appended.push(rowValues);
+      created++;
+      auditRows.push(['audit_' + Date.now() + '_' + Math.floor(Math.random() * 100000), sheetName, id, 'import2026:create', updatedBy, nowIso, JSON.stringify(rec)]);
+    } else {
+      const old = existing[pos];
+      // 保留既有 created_at 及現場已填的點名／備註欄，避免遷移覆蓋現場紀錄
+      const keep = ['created_at', 'checked_in', 'ticked', 'tick_json'];
+      keep.forEach(function (k) {
+        const idx = liveHeaders.indexOf(k);
+        if (idx !== -1 && !Object.prototype.hasOwnProperty.call(rec, k)) rowValues[idx] = old[idx];
+        if (idx !== -1 && k === 'created_at' && old[idx]) rowValues[idx] = import2026Normalize(old[idx]);
+        if (idx !== -1 && (k === 'checked_in' || k === 'ticked' || k === 'tick_json') && old[idx]) rowValues[idx] = import2026Normalize(old[idx]);
+      });
+      const compare = function (values) {
+        return values.map(function (v, i) {
+          const h = liveHeaders[i];
+          if (h === 'updated_at' || h === 'updated_by') return '';
+          return import2026Normalize(v);
+        }).join('\u0001');
+      };
+      if (compare(old) === compare(rowValues)) { unchanged++; return; }
+      if (liveHeaders.indexOf('updated_at') !== -1) rowValues[liveHeaders.indexOf('updated_at')] = nowIso;
+      if (liveHeaders.indexOf('updated_by') !== -1) rowValues[liveHeaders.indexOf('updated_by')] = updatedBy;
+      sheet.getRange(pos + 2, 1, 1, liveHeaders.length).setValues([rowValues]);
+      existing[pos] = rowValues;
+      updated++;
+      auditRows.push(['audit_' + Date.now() + '_' + Math.floor(Math.random() * 100000), sheetName, id, 'import2026:update', updatedBy, nowIso, JSON.stringify(rec)]);
+    }
+  });
+
+  if (appended.length) sheet.getRange(sheet.getLastRow() + 1, 1, appended.length, liveHeaders.length).setValues(appended);
+  auditRows.push(['audit_' + Date.now() + '_' + Math.floor(Math.random() * 100000), sheetName, 'section_summary', 'import2026:summary', updatedBy, nowIso,
+    JSON.stringify({ sheet: sheetName, received: records.length, created: created, updated: updated, unchanged: unchanged })]);
+  return { sheet: sheetName, received: records.length, created: created, updated: updated, unchanged: unchanged, total_rows: Math.max(sheet.getLastRow() - 1, 0) };
+}
+
+/* 入口：POST {action:'import2026Data', api_key, event_id:'isd_2026', updated_by, sections:{...}} */
+function import2026Data(data) {
+  data = data || {};
+  const eventId = String(data.event_id || IMPORT_2026_EVENT_ID);
+  if (eventId !== IMPORT_2026_EVENT_ID) {
+    return { success: false, error: '拒絕寫入：import2026Data 只接受 event_id = isd_2026（收到 ' + eventId + '）' };
+  }
+  const guard = import2026GuardSpreadsheet();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  const sections = data.sections || {};
+  const updatedBy = String(data.updated_by || 'import2026Data');
+  const auditRows = [];
+  const results = {};
+  let totalCreated = 0, totalUpdated = 0, totalUnchanged = 0;
+
+  Object.keys(IMPORT_2026_SHEETS).forEach(function (name) {
+    const rows = sections[name];
+    if (!Array.isArray(rows) || !rows.length) return;
+    // 每行都必須屬於 2026，否則整個分頁拒絕（避免寫錯年份）
+    for (let i = 0; i < rows.length; i++) {
+      const rid = String(rows[i].event_id || IMPORT_2026_EVENT_ID);
+      if (rid !== IMPORT_2026_EVENT_ID) {
+        results[name] = { sheet: name, error: '含有非 2026 的 event_id：' + rid };
+        return;
+      }
+      rows[i].event_id = IMPORT_2026_EVENT_ID;
+    }
+    const r = import2026WriteSection(name, rows, updatedBy, auditRows);
+    results[name] = r;
+    totalCreated += r.created || 0;
+    totalUpdated += r.updated || 0;
+    totalUnchanged += r.unchanged || 0;
+  });
+
+  auditRows.push(['audit_' + Date.now() + '_' + Math.floor(Math.random() * 100000), 'import2026Data', eventId, 'import2026:run', updatedBy, new Date().toISOString(),
+    JSON.stringify({ created: totalCreated, updated: totalUpdated, unchanged: totalUnchanged, sections: Object.keys(results), guard: guard.note || '', source: data.source || '' })]);
+  import2026AppendAuditRows(auditRows);
+
+  return {
+    success: true,
+    version: GS_VERSION,
+    event_id: eventId,
+    created: totalCreated,
+    updated: totalUpdated,
+    unchanged: totalUnchanged,
+    audit_rows: auditRows.length,
+    results: results
+  };
+}
+
+/* 查詢 2026 遷移狀態（前端顯示「已寫入 Google Sheet」）：各分頁行數＋最後一次 Audit_Log 紀錄 */
+function getImport2026Status() {
+  const ss = getSheet();
+  const counts = {};
+  Object.keys(IMPORT_2026_SHEETS).forEach(function (name) {
+    const sh = ss.getSheetByName(name);
+    counts[name] = sh ? Math.max(sh.getLastRow() - 1, 0) : 0;
+  });
+  let lastRun = null, auditRows = 0;
+  const log = ss.getSheetByName('Audit_Log');
+  if (log && log.getLastRow() > 1) {
+    auditRows = log.getLastRow() - 1;
+    const values = log.getRange(2, 1, log.getLastRow() - 1, 7).getValues();
+    for (let i = values.length - 1; i >= 0; i--) {
+      if (String(values[i][3]) === 'import2026:run') { lastRun = { at: String(values[i][5]), by: String(values[i][4]), detail: String(values[i][6]) }; break; }
+    }
+  }
+  return { success: true, version: GS_VERSION, counts: counts, audit_rows: auditRows, last_run: lastRun };
 }
