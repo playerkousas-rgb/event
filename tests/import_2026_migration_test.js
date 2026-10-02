@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* tests/import_2026_migration_test.js
    2026 一次性資料遷移（import2026Data）離線驗收：
-   ① data/isd_2026.json → 各分頁逐欄映射（103 嘉賓／frozen 工作人員／31 攤位／4 受邀隊伍／日程／膳食）
+   ① data/isd_2026.json → 各分頁逐欄映射（103 嘉賓／frozen 工作人員／33 攤位／4 受邀隊伍／日程／膳食）
    ② 第一次執行＝新增；第二次執行＝全部 unchanged（唔會重複寫入）
    ③ 改一行再執行＝只更新該行
    ④ 每次寫入都有 Audit_Log 紀錄（create／update／summary／run）
@@ -94,7 +94,7 @@ const ok = (cond, msg) => { if (!cond) throw new Error('✖ ' + msg); n++; };
 const sections = mapper.build2026ImportSections(sourceJson);
 const counts = mapper.import2026Counts(sections);
 ok(counts.Guests === 103, `嘉賓應 103 位（實際 ${counts.Guests}）`);
-ok(counts.Activities === 31, `攤位應 31 個（實際 ${counts.Activities}）`);
+ok(counts.Activities === 33, `攤位應 33 個（實際 ${counts.Activities}）`);
 ok(counts.Roster_Lists === 4, `受邀隊伍應 4 隊（實際 ${counts.Roster_Lists}）`);
 ok(counts.Schedule === (sourceJson.schedule || []).length && counts.Schedule > 0, '日程應全部映射');
 ok(counts.Staff === (sourceJson.staff.event_staff_roster || []).length && counts.Staff > 0, 'frozen 工作人員名單應全部映射');
@@ -125,7 +125,7 @@ const expectTotal = Object.values(counts).reduce((a, b) => a + b, 0);
 ok(run1.created === expectTotal, `第一次應全部新增 ${expectTotal}（實際 ${run1.created}）`);
 ok(run1.updated === 0 && run1.unchanged === 0, '第一次不應有更新／略過');
 ok(ss.getSheetByName('Guests')._data.length - 1 === 103, 'Guests 分頁應有 103 行');
-ok(ss.getSheetByName('Activities')._data.length - 1 === 31, 'Activities 分頁應有 31 行攤位');
+ok(ss.getSheetByName('Activities')._data.length - 1 === 33, 'Activities 分頁應有 33 行攤位');
 ok(ss.getSheetByName('Roster_Lists')._data.length - 1 === 4, 'Roster_Lists 應有 4 行受邀隊伍');
 ok(ss.getSheetByName('Staff_Meals')._data.length - 1 === counts.Staff_Meals, 'Staff_Meals 應有全部膳食資料');
 

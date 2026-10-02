@@ -584,7 +584,7 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div class="flex flex-wrap gap-2">
           <button onclick="app.syncScheduleFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新日程 (Drive)</button>
-          ${((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
+          ${(((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)&&!(this.isDataFrozen&&this.isDataFrozen()))?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
           <button onclick="app.downloadScheduleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">

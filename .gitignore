@@ -6,3 +6,6 @@
 ppt_build/
 
 tmp-import-2026-preview.json
+
+# 後端 Google Sheet 診斷用匯出（1.2MB，只留喺工作區作清理前備份，唔入 Git）
+google_drive/event_system.xlsx

@@ -10,6 +10,10 @@ const ROLE_HIERARCHY={'super_admin':100,'advisor':80,'admin':80,'chairperson':80
    就算 /api/config 死咗，後端連線都唔會斷。（可在「系統設定」自行覆寫，存 localStorage） */
 const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec';
 const DEFAULT_API_KEY='scout_e6451624b1f340078ec6a111';
+// v15.1（2026-10-02）：活動前資料凍結——列喺度嘅活動只可「下載／列印／點名」，
+// 所有「上載新資料」按鈕（上傳 Excel／匯入名單／新增攤位／貼上文字等）一律隱藏兼封鎖。
+// ISD 2027 唔喺名單內，上載功能全部保留，供未來籌備使用。
+const DATA_FROZEN_EVENT_IDS=['isd_2026'];
 // 統一清理組別名稱：移除「(Level X)」及多餘括號，並遷移舊稱「籌委會」。
 function normalizeGroupName(value){
   let group=String(value||'').trim();

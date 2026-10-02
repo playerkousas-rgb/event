@@ -167,8 +167,8 @@ Object.assign(ScoutEventApp.prototype,{
       </div>
       ${meritReplyStatus}
       <div class="flex flex-wrap gap-2 items-center">
-        ${canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''"></label>`:''}
-        ${canManage?`<button type="button" onclick="app.openRosterPasteForm('${def.key}')" class="${light}"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
+        ${(canManage&&!(this.isDataFrozen&&this.isDataFrozen()))?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''"></label>`:''}
+        ${(canManage&&!(this.isDataFrozen&&this.isDataFrozen()))?`<button type="button" onclick="app.openRosterPasteForm('${def.key}')" class="${light}"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
         ${canManage&&def.editable?`<button type="button" onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}
         ${def.source==='participants'?'':`<button type="button" onclick="app.rosterDownloadTemplate('${def.key}')" class="${light}"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`}
         <button type="button" onclick="app.rosterExportExcel('${def.key}')" class="${light}"><i class="fa-solid fa-file-excel mr-1"></i>匯出 Excel</button>
@@ -602,6 +602,7 @@ Object.assign(ScoutEventApp.prototype,{
 
   async rosterImportFile(key,file){
     const def=this.rosterDef(key); if(!def) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：名單只可下載、列印及點名，唔可以再整批上載','error'); return; }
     if(!this.rosterCanManage(key)){ showToast(`僅${def.owner_group}（${def.owner_note}）主任以上及管理層可上載名單`,'error'); return; }
     if(!file){ showToast('請選擇檔案','error'); return; }
     const name=String(file.name||'').toLowerCase();
@@ -737,6 +738,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   openRosterPasteForm(key){
     const def=this.rosterDef(key); if(!def) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：名單只可下載、列印及點名，唔可以再整批上載','error'); return; }
     if(!this.rosterCanManage(key)){ showToast(`僅${def.owner_group}（${def.owner_note}）主任以上及管理層可上載名單`,'error'); return; }
     const html=`
       <div class="text-[11px] text-slate-500 leading-relaxed mb-2">喺 PDF／Word／網頁選取名單（含表頭嗰行）複製後貼入呢度；每行一組，欄位用 Tab、兩格以上空白或「,」分隔。格式：${def.columns.map(c=>escapeHtml(c.label)).join(' → ')}</div>

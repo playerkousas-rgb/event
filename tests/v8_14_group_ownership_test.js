@@ -138,7 +138,8 @@ ok(editOf('apply_hub') === false, '②b2 總主任：申請中心仍然只可看
 as(U('director', '主題節目組', '節目主任'));
 ['exec_manual', 'documents', 'ceremony', 'crisis'].forEach(id =>
   ok(editOf(id) === false, `②b2 主任級（30）：${id} 只可看（未開畀主任）`));
-ok(editOf('activities') === true, '②b2 場地與活動總覽：原本就開畀主任以上（維持不變）');
+// v15.1：isd_2026 資料凍結——canUploadActivity 一律 false，主任級唔可以再改場地與活動資料（只可下載／列印）
+ok(editOf('activities') === false, '②b2 場地與活動總覽：v15.1 資料凍結後主任級只可看');
 // v8.14e：副主席（任何組）都可以改執行手冊系列
 as(U('vice_chairperson', '主題節目組', '副主席'));
 ['exec_manual', 'activities', 'documents', 'ceremony', 'crisis', 'meetings'].forEach(id =>

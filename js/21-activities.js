@@ -3,6 +3,8 @@ Object.assign(ScoutEventApp.prototype,{
 
   /* ===================== Activities Enhanced Module v6.8 ===================== */
   canUploadActivity(){
+    // v15.1：2026 資料凍結——活動資料係最終版，只可下載／列印，任何人都唔可以再上載／新增／修改
+    if(this.isDataFrozen&&this.isDataFrozen()) return false;
     const role=this.currentUser?.role||'';
     const lvl=ROLE_HIERARCHY[role]||0;
     // 相關主任、副主席或以上上傳；v8.14：行政組（負責組）亦可
@@ -13,6 +15,17 @@ Object.assign(ScoutEventApp.prototype,{
   getActivitiesData(){
     const key=LS.activities(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
+    // v15.1：2026 資料凍結——攤位一律以 Google Sheet 正式資料（syncImported2026FromGas snapshot）為準，
+    // 唔再俾舊 localStorage 快取（可能仲留住 2025 參考資料）蓋過正式 2026 名單。
+    if(this.isDataFrozen&&this.isDataFrozen()){
+      const official=this.eventData&&this.eventData.activities&&Array.isArray(this.eventData.activities.booths)?this.eventData.activities.booths:null;
+      if(official&&official.length){
+        const booths=official.map(b=>this.normalizeOfficialBooth(b));
+        if(local){ local.booths=booths; return local; }
+        const raw0=this.eventData['activities']||{};
+        return {activities:[], maps:raw0.maps||[], booths, gameCards:raw0.gameCards||raw0.game_cards||[], booth_source:raw0.booth_source||null, drive_folder_link:(raw0.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
+      }
+    }
     if(local) return local;
     const raw=this.eventData['activities']||[];
     // raw may be array of activities, convert to new structure
@@ -65,6 +78,10 @@ Object.assign(ScoutEventApp.prototype,{
     const key=LS.activities(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
     this.eventData['activities']=data;
+    // v15.1：2026 資料凍結——唔再逐個攤位 POST 去後端 Activities 表。
+    // （以前每部機每次開 APP 自動同步都會用全新隨機 id 寫一批 booth 紀錄入 Google Sheet，
+    //   令 Activities 表積落萬幾行 2025／2026 混雜嘅重複資料；正式 2026 攤位一律由 import2026Data 管理。）
+    if(this.isDataFrozen&&this.isDataFrozen()) return;
     if(!this.mockMode && this.gasUrl){
       // Save to GAS as Documents? For simplicity save to Activities sheet as JSON
       data.booths.forEach(b=>{
@@ -155,11 +172,12 @@ Object.assign(ScoutEventApp.prototype,{
           <br>• 由<b>節目組副主席</b>負責更新。若該檔為原生「Google 試算表」，點「同步最新」即直接在 APP 內讀取最新內容（各組在 Drive 一改，APP 即時同步）。
           <br>• 若仍是 .xlsx 檔：建議在 Drive「檔案 → 另存為 Google 試算表」後同步，或由副主席直接「上傳 Excel（同步到名單）」。
         </div>`:''}
+        ${this.dataFrozenNotice()}
         <div class="flex flex-wrap gap-2">
-          <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
+          ${(this.isDataFrozen&&this.isDataFrozen())?'':`<button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>`}
           ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
-          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
+          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>
+          <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`:''}
           <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印列表</button>
         </div>
         <div id="booths-print-area" class="bg-white border rounded-xl p-4">
@@ -190,11 +208,12 @@ Object.assign(ScoutEventApp.prototype,{
         ${groupFolder?` · <a href="https://drive.google.com/drive/folders/${escapeHtml(groupFolder)}" target="_blank" class="text-sky-700 underline">📁 節目組 Drive 資料夾</a>`:''}
         <br>• 由<b>節目組副主席</b>負責更新；若為原生「Google 試算表」，點「同步最新」即 APP 內讀取最新內容。
       </div>`:(groupFolder?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">攤位資料（DRIVE）：<a href="https://drive.google.com/drive/folders/${escapeHtml(groupFolder)}" target="_blank" class="text-sky-700 underline">📁 節目組 Drive 資料夾</a></div>`:'')}
+      ${this.dataFrozenNotice()}
       <div class="flex flex-wrap gap-2">
-        <button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>
+        ${(this.isDataFrozen&&this.isDataFrozen())?'':`<button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>`}
         ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
-        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>`:''}
-        <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
+        <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>
+        <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`:''}
         <button onclick="app.printCoordArea('group-booth-print','2026 攤位總表（DRIVE 攤位資料）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
       </div>
       <div id="group-booth-print" class="bg-white border rounded-xl p-4">
@@ -456,6 +475,26 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   rowsToBooths(rows){ return (rows||[]).map(r=>this.normalizeBoothRow(r)).filter(Boolean); }
 ,
+  // v15.1：Google Sheet 正式 2026 攤位（zone/booth_no/content/contact_person 欄位）→ 顯示用欄位
+  normalizeOfficialBooth(b){
+    b=b||{};
+    const zone=String(b.zone||'').trim();
+    return {
+      id:b.id||'',
+      booth_number:b.booth_number||b.booth_no||'',
+      booth_name:b.booth_name||b.group_name||'',
+      location:b.location||(zone?('主營地 '+zone+'區'):''),
+      group_name:b.group_name||'',
+      theme:b.theme||'',
+      game_type:b.game_type||'攤位',
+      responsible:b.responsible||b.contact_person||'',
+      contact:b.contact||'',
+      description:b.description||b.content||'',
+      created_by:b.created_by||'Google Sheet 正式資料',
+      created_at:b.created_at||''
+    };
+  }
+,
   applyBooths(booths, srcLabel, silent){
     const data=this.getActivitiesData();
     data.booths=booths;
@@ -596,14 +635,26 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   // 統一提示：各組只需在 Drive 更新 Google Sheet，APP 即自動同步
-  driveSyncNotice(){ return '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>自動同步：</b>各組只要在 Drive 內更新 Google Sheet 表單，APP 開啟即自動同步最新資料（也可手動點「同步最新」）。</div>'; }
+  driveSyncNotice(){
+    if(this.isDataFrozen&&this.isDataFrozen()) return '';
+    return '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>自動同步：</b>各組只要在 Drive 內更新 Google Sheet 表單，APP 開啟即自動同步最新資料（也可手動點「同步最新」）。</div>';
+  }
+,
+  // v15.1：資料凍結提示（2026 正式資料最終版）
+  dataFrozenNotice(){
+    if(!(this.isDataFrozen&&this.isDataFrozen())) return '';
+    return '<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-800"><i class="fa-solid fa-lock mr-1"></i><b>2026 資料已凍結（活動前最終版）：</b>所有資料以 Google Sheet 正式版為準，只供查閱、<b>下載</b>及<b>列印</b>；上載／修改功能已關閉，有更正請聯絡秘書處／管理員。</div>';
+  }
 ,
   // 開 APP 時自動從 Drive 讀取最新表格（靜默、拆解後內建顯示，不跳轉）
   async autoSyncDriveSources(){
     if(this.isDemoEvent()) return; // 模擬示範活動不使用 Drive 資料源
     try{
-      const act=this.getActivitiesData();
-      if(act.booth_source && (act.booth_source.sheet_id||act.booth_source.drive_file_id)) await this.syncBoothsFromDrive(true);
+      // v15.1：2026 資料凍結——攤位以 Google Sheet 正式資料為準，唔再由 Drive xlsx 自動同步蓋過
+      if(!(this.isDataFrozen&&this.isDataFrozen())){
+        const act=this.getActivitiesData();
+        if(act.booth_source && (act.booth_source.sheet_id||act.booth_source.drive_file_id)) await this.syncBoothsFromDrive(true);
+      }
     }catch(e){}
     try{
       const fin=this.getFinanceData();
@@ -639,6 +690,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async syncBoothsFromDrive(silent){
+    if(this.isDataFrozen&&this.isDataFrozen()){ if(!silent) showToast('2026 資料已凍結：攤位以 Google Sheet 正式資料為準，唔再由 Drive 同步','warning'); return; }
     const src=(this.getActivitiesData().booth_source)||{};
     const sheetId=src.sheet_id||src.drive_file_id;
     if(!sheetId){ if(!silent) showToast('尚未設定攤位資料來源 (booth_source)','warning'); return; }
@@ -740,6 +792,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleBudgetExcelUpload(file){
     if(!file) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：預算只可下載及列印，唔可以再上傳','error'); return; }
     if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳預算','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
@@ -949,6 +1002,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleStaffExcelUpload(file){
     if(!file) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：工作人員名單只可下載及列印，唔可以再上傳','error'); return; }
     if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅主任以上可上傳名單','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
@@ -1011,6 +1065,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleScheduleExcelUpload(file){
     if(!file) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳日程','error'); return; }
     if(!((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳日程','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
@@ -1066,6 +1121,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleParticipantsExcelUpload(file){
     if(!file) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳名單','error'); return; }
     // v14：權限口徑同「名單＋點名」引擎一致（行政組主任以上／副主席以上／管理層），唔再另設一套
     if(!(this.canUploadDocument()||this.isAdmin()) && !this.rosterCanManage('participants')){ showToast('僅行政組（參加旅團名單負責組別）主任以上及管理層可上傳','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
@@ -1083,6 +1139,7 @@ Object.assign(ScoutEventApp.prototype,{
   /* v14：參加旅團名單上傳統一入口 — EXCEL 走結構表；WORD（含表格）解析成行列；PDF 只作附件內嵌預覽（v14.1：不再接受 CSV） */
   async handleParticipantsUploadFile(file){
     if(!file) return;
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳名單','error'); return; }
     const name=String(file.name||'').toLowerCase();
     // EXCEL 一律行經「匯入預覽」（可揀取代／附加，TICK 唔會冇）；舊入口 handleParticipantsExcelUpload 保留俾其他模組用
     if(/\.csv$/.test(name)){ showToast('系統已不接受 CSV：請用 Excel 開啟後「另存新檔」為 .xlsx 再上傳','error'); return; }
@@ -1253,6 +1310,8 @@ Object.assign(ScoutEventApp.prototype,{
 
   /* ===================== Documents & Theme Badge Modules ===================== */
   canUploadDocument(){
+    // v15.1：2026 資料凍結——只可下載／列印
+    if(this.isDataFrozen&&this.isDataFrozen()) return false;
     const role=this.currentUser?.role||'';
     const group=this.currentUser?.group_name||'';
     const lvl=ROLE_HIERARCHY[role]||0;
@@ -1261,6 +1320,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   canUploadThemeBadge(){
+    if(this.isDataFrozen&&this.isDataFrozen()) return false;
     const lvl=ROLE_HIERARCHY[this.currentUser?.role]||0;
     return this.isAdmin() || lvl>=60;
   }

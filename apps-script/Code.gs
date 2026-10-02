@@ -26,7 +26,7 @@
 // v11.2：新增 saveEventNews —— 「最新消息」改為 APP 內可改（執行副主席以上＋秘書處），
 //        寫入 Events 表 news / news_updated_by / news_updated_at（欄位不存在會自動補建），
 //        getEvents 亦會一併回傳，前端 loadEvents 以後端值覆蓋 events.json 嘅預設消息。
-const GS_VERSION = 'v15.0-2026-10-02';
+const GS_VERSION = 'v15.1-2026-10-02';
 const SUPER_ADMIN_EMAIL = 'sheep';
 const SUPER_ADMIN_PASS = '1201';
 
@@ -1054,6 +1054,8 @@ function doGet(e) {
       return jsonResponse({ success: true, version: GS_VERSION, data: getAllEvents() });
     } else if (action === 'getImport2026Status') {
       return jsonResponse(getImport2026Status());
+    } else if (action === 'rebuildBooths2026') {
+      return jsonResponse(rebuildBooths2026());
     } else if (action === 'getEventData') {
       return jsonResponse({ success: true, version: GS_VERSION, data: getEventAllData(eventId) });
     } else {
@@ -1451,9 +1453,11 @@ function saveBooths(data) {
   const eventIdx = headers.indexOf('event_id');
   if (eventIdx === -1) return { success: false, error: 'event_id column missing' };
   // 刪除該活動既有攤位紀錄（type === 'booth' 的紀錄）
+  // v15.1 修正：只刪 type==='booth'（以前連「活動列表」紀錄都一併刪走）
+  const typeIdx = headers.indexOf('type');
   const rows = sheet.getDataRange().getValues();
   for (let i = rows.length - 1; i >= 1; i--) {
-    if (rows[i][eventIdx] === eventId) sheet.deleteRow(i + 1);
+    if (rows[i][eventIdx] === eventId && (typeIdx === -1 || String(rows[i][typeIdx]) === 'booth')) sheet.deleteRow(i + 1);
   }
   const now = new Date();
   booths.forEach(function (b, idx) {
@@ -1465,6 +1469,98 @@ function saveBooths(data) {
     sheet.appendRow(['booth_' + Date.now() + '_' + idx, eventId, title, type, location, description, detailsJson, now]);
   });
   return { success: true, count: booths.length };
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v15.1（2026-10-02）一次過清理攤位資料：rebuildBooths2026
+   ─────────────────────────────────────────────────────────────────────────
+   背景：舊版前端每次開 APP 自動同步都會用全新隨機 id 將攤位寫入 Activities 表，
+   由 8 月起積落 17,000+ 行 2025 參考／2026 混雜嘅重複 booth 紀錄，令「節目」
+   卡 2025 同 2026 資料混埋一齊、getEventData 回應極大極慢。
+   此函數【一次過】：
+     ① 刪走 Activities 表內所有 event_id=isd_2026、type=booth 嘅紀錄（唔逐行 deleteRow，
+        改用整表重寫，17,000 行都唔會超時）；
+     ② 寫入下面 BOOTHS_2026 內嘅 33 個 2026 正式攤位（來源：Drive「ISD2026 攤位資料.xlsx」
+        2026 分頁，2026-10-02 最終版）。
+   執行方法（重新部署新版本後）：瀏覽器開
+     <部署網址>/exec?action=rebuildBooths2026&api_key=<API_KEY>
+   亦可在 Apps Script 編輯器直接 Run rebuildBooths2026。
+   ═══════════════════════════════════════════════════════════════════════ */
+const BOOTHS_2026 = [
+  {"id": "booth_001", "zone": "A", "booth_no": "A01", "theme": "積極公民實踐", "group_name": "主題節目組總部", "booth_name": "主節目組總部", "content": "／", "contact": "CHOW Hang-chun\n6471 9696", "contact_person": "CHOW Hang-chun", "staff_count": "7", "lunch": "7", "confirmed": "Y"},
+  {"id": "booth_002", "zone": "A", "booth_no": "A02", "theme": "積極公民實踐", "group_name": "積極公民工作坊 - 機電1", "booth_name": "機電先鋒 - 綠能一級棒", "content": "1) 可再生能源\n2) 氣體安全條例 - GU標誌", "contact": "", "contact_person": "", "staff_count": "2", "lunch": "2", "confirmed": "Y"},
+  {"id": "booth_003", "zone": "A", "booth_no": "A03", "theme": "積極公民實踐", "group_name": "積極公民工作坊 - 機電2", "booth_name": "機電先鋒 - 一級省電王", "content": "1) 家用電器使用、常見危險\n2) 綠色能源標籤／級別標籤", "contact": "", "contact_person": "", "staff_count": "3", "lunch": "3", "confirmed": "Y"},
+  {"id": "booth_004", "zone": "A", "booth_no": "A04", "theme": "積極公民實踐", "group_name": "積極公民工作坊 - 機電3", "booth_name": "機電先鋒 - 乘搭安全指南", "content": "1) 升降機、自動梯安全裝置\n2) 升降機、自動梯及鐵路安全指示標誌", "contact": "", "contact_person": "", "staff_count": "6", "lunch": "5", "confirmed": "Y"},
+  {"id": "booth_005", "zone": "A", "booth_no": "A05", "theme": "積極公民實踐", "group_name": "積極公民工作坊 - 機電4", "booth_name": "機電先鋒 - 節約能源承諾樹", "content": "1) 節約能源承諾樹\n2) 派發工作紙", "contact": "", "contact_person": "", "staff_count": "5", "lunch": "5", "confirmed": "Y"},
+  {"id": "booth_006", "zone": "A", "booth_no": "A06", "theme": "積極公民實踐", "group_name": "香港警務處 - 跨部門反恐專責組(ICTU)\n11:00前完成setup", "booth_name": "香港警務處\n跨部門反恐專責組", "content": "1) 反恐小遊戲\n2) 派發紀念品及宣傳單張", "contact": "潘志民 警長\n9234 2620", "contact_person": "CHU Ka-chung, Casey\n/\nSandy TASNG (TO)\n/\nCHOW Hang-chun\n/\nAndy CHAU", "staff_count": "4", "lunch": "Nil", "confirmed": "Y"},
+  {"id": "booth_007", "zone": "A", "booth_no": "A07", "theme": "積極公民實踐", "group_name": "香港警務處 - 網絡安全及科技罪案調查科(CSTCB)\n13:00前完成setup", "booth_name": "香港警務處\n網絡安全及科技罪案調查科", "content": "1) 推廣「守網聯盟遊戲卡」", "contact": "余偉堅 警員\n6492 2559", "contact_person": "", "staff_count": "4", "lunch": "Nil", "confirmed": "Y"},
+  {"id": "booth_008", "zone": "A", "booth_no": "A08", "theme": "積極公民實踐", "group_name": "香港警務處 - 毒品調查科(NB)\n11:00-17:00", "booth_name": "Hong Kong Police Force\nNarcotics Bureau", "content": "1) 禁毒知識分享", "contact": "高級督察 HO Ho Ting Alan\n6050 3363\nK K 警員 9331 6837", "contact_person": "", "staff_count": "2", "lunch": "2", "confirmed": "Y"},
+  {"id": "booth_009", "zone": "A", "booth_no": "A09", "theme": "積極公民實踐", "group_name": "香港警務處 - 毒品調查科(NB)\n10:45-17:00", "booth_name": "香港警務處\n毒品調查科", "content": "1) 展示模擬毒品實物\n2) 模擬毒品氣味", "contact": "鄧警長\n9861 6391", "contact_person": "", "staff_count": "4", "lunch": "4", "confirmed": "Y"},
+  {"id": "booth_010", "zone": "A", "booth_no": "A10", "theme": "積極公民實踐", "group_name": "香港警務處 - 國家安全處(NSD)\n11:00前完成setup", "booth_name": "「NSpeed 國安號」宣傳車", "content": "1) 國安號", "contact": "SIP NS － Michael\n 9787 3086\nSarah Lui - 9805 5978", "contact_person": "", "staff_count": "5", "lunch": "=M11", "confirmed": "Y"},
+  {"id": "booth_011", "zone": "A", "booth_no": "A11", "theme": "積極公民實踐", "group_name": "香港警務處 - 港島總區交通部(T HKI)\n11:30-16:30", "booth_name": "香港警務處\n港島總區交通部", "content": "1) 提供小型警察電單車、小型警察私家車供兒童拍照\n2) 兒童警察服飾供兒童拍照", "contact": "林顯亮警署警長 36606871\n9281 5910\n林警員 9280 8624\n藍警長 3660 6873\n李警員 3660 6873", "contact_person": "", "staff_count": "3", "lunch": "=M12", "confirmed": "Y"},
+  {"id": "booth_012", "zone": "A", "booth_no": "A12", "theme": "積極公民實踐", "group_name": "香港警務處 - 鑑證科(IB / CSI)\n09:45-1700", "booth_name": "香港警務處\n鑑證科", "content": "1) 指紋書簽\n2)模擬法証光源燈展示\n3)播放介紹IB鑑証科片段", "contact": "李錦康 警署警長\n9833 4917", "contact_person": "", "staff_count": "5", "lunch": "5", "confirmed": "Y"},
+  {"id": "booth_013", "zone": "B", "booth_no": "B01", "theme": "五年規劃領航", "group_name": "香港島青年聯會", "booth_name": "十五五與我好有關", "content": "參加者先透過幾部iPad觀看有關十五五規劃的影片，然後以手機或掃描QR code以Kahoot測試參加者對十五五規劃的認識。\n記憶配對遊戲，讓參加者記得有關十五五規劃的辭彙。", "contact": "黃芯旋\n香港島青年聯會常務理事\n5696 8930", "contact_person": "Paul WONG 王偉傑", "staff_count": "4", "lunch": "=3", "confirmed": "Y"},
+  {"id": "booth_014", "zone": "B", "booth_no": "B02", "theme": "五年規劃領航", "group_name": "港島童軍射藝會", "booth_name": "港島童軍射藝會", "content": "箭藝", "contact": "張健卿\n9152 2204", "contact_person": "CHOW Hang-chun", "staff_count": "5", "lunch": "=M15", "confirmed": "Y"},
+  {"id": "booth_015", "zone": "B", "booth_no": "B03", "theme": "五年規劃領航", "group_name": "港島南區 / 港島地域 - 深資童軍議會", "booth_name": "第一個五年規劃", "content": "展覽 - 展板 ＋ 影片", "contact": "CHEUNG Wang Kong, Ivan\n6100 1525", "contact_person": "CHEUNG Wang Kong, Ivan\nHO Ling-kan, Lincoln", "staff_count": "6", "lunch": "=M16", "confirmed": "Y"},
+  {"id": "booth_016", "zone": "C", "booth_no": "C01", "theme": "創新科技探索", "group_name": "港島童軍氣槍射擊會", "booth_name": "Smokeless Range", "content": "虛擬靶場射擊", "contact": "CHOW Hang-chun\n6471 9696", "contact_person": "CHOW Hang-chun", "staff_count": "4", "lunch": "／", "confirmed": "Y"},
+  {"id": "booth_017", "zone": "C", "booth_no": "C02", "theme": "創新科技探索", "group_name": "港島地域 - 航空活動", "booth_name": "「童」你飛翔", "content": "Flight Sim x2 (Monitor + VR Mode)", "contact": "CHAN Angel Kei-kwan\n9711 3800", "contact_person": "CHAN Angel Kei-kwan", "staff_count": "7", "lunch": "=M18", "confirmed": "Y"},
+  {"id": "booth_018", "zone": "C", "booth_no": "C03", "theme": "創新科技探索", "group_name": "香港航天學會 - 航天、航空", "booth_name": "漫遊太空站", "content": "航天展覽、航天員造型照、飛行員造型照\n汽球直升機、氣壓小火箭、遙控飛機模擬飛行", "contact": "LUI Kin-chuen\n94653631", "contact_person": "LUI Kin-chuen", "staff_count": "14", "lunch": "=M19", "confirmed": "Y"},
+  {"id": "booth_019", "zone": "C", "booth_no": "C04", "theme": "創新科技探索", "group_name": "中國香港東區無人機協會\n青衣商會小學 - 青衣區第九旅", "booth_name": "無人機足球運動同樂", "content": "分享無人機足球運動", "contact": "LEE Tak-kuen\n9369 2225", "contact_person": "LEE Tak-kuen", "staff_count": "19", "lunch": "=M20", "confirmed": "Y"},
+  {"id": "booth_020", "zone": "D", "booth_no": "D01", "theme": "社區福祉童行", "group_name": "港島地域 - 發展部", "booth_name": "童軍招募及宣傳", "content": "童軍招募及宣傳", "contact": "LEE Kwok-man, Herman\n6893 4388", "contact_person": "LEE Kwok-man, Herman", "staff_count": "", "lunch": "Pannie", "confirmed": "Y"},
+  {"id": "booth_021", "zone": "D", "booth_no": "D02", "theme": "社區福祉童行", "group_name": "港島地域 - 社區參與及服務1", "booth_name": "食品捐贈", "content": "食品捐贈", "contact": "LAI Pei-ling\n96204146", "contact_person": "LAI Pei-ling", "staff_count": "", "lunch": "Pannie", "confirmed": "Y"},
+  {"id": "booth_022", "zone": "D", "booth_no": "D03", "theme": "社區福祉童行", "group_name": "港島地域 - 社區參與及服務2", "booth_name": "物品捐贈", "content": "物品捐贈", "contact": "", "contact_person": "", "staff_count": "", "lunch": "Pannie", "confirmed": "Y"},
+  {"id": "booth_023", "zone": "D", "booth_no": "D04", "theme": "社區福祉童行", "group_name": "港島地域 - 灣仔區 - 社區參與章1", "booth_name": "日日keep住食，\n藥箱都變成棺材箱", "content": "1) 展覽\n2)互動形式推行藥物教育", "contact": "14th Rover 李瑋晉\n98531461", "contact_person": "LAW Cheuk-wah, Andy", "staff_count": "🤷🏻‍♂️", "lunch": "6", "confirmed": "Y"},
+  {"id": "booth_024", "zone": "D", "booth_no": "D05", "theme": "社區福祉童行", "group_name": "港島地域 - 灣仔區 - 社區參與章2", "booth_name": "七彩人生，拒絕毒品", "content": "1) 扭蛋機\n2) 掉彩虹，Matching", "contact": "Venture 何思穎\nbernice971022@gmail.com", "contact_person": "", "staff_count": "🤷🏻‍♂️", "lunch": "6", "confirmed": "Y"},
+  {"id": "booth_025", "zone": "E", "booth_no": "E01", "theme": "生態文明建設", "group_name": "港島地域 - 維多利亞城區 - 精神健康章", "booth_name": "精神健康與你", "content": "待定", "contact": "CHIN Wing-hong, Alex\n9623 2521", "contact_person": "CHIN Wing-hong, Alex", "staff_count": "14", "lunch": "5", "confirmed": "Y"},
+  {"id": "booth_026", "zone": "E", "booth_no": "E02", "theme": "生態文明建設", "group_name": "港島地域 - 維多利亞城區 - 公共衞生章", "booth_name": "抗逆達人", "content": "待定", "contact": "", "contact_person": "", "staff_count": "14", "lunch": "5", "confirmed": "Y"},
+  {"id": "booth_027", "zone": "E", "booth_no": "E03", "theme": "生態文明建設", "group_name": "港島地域", "booth_name": "童心傾訴站\nListening Ear", "content": "/", "contact": "LEE Yuen-yee, Susan\n9476 8377", "contact_person": "", "staff_count": "2", "lunch": "2", "confirmed": "Y"},
+  {"id": "booth_028", "zone": "F", "booth_no": "F01", "theme": "童軍技能", "group_name": "港島童軍生態小組", "booth_name": "生態追擊", "content": "AI 識別生物(以活動認識香港本地生態)", "contact": "盧凱康\n9747 9414", "contact_person": "", "staff_count": "6", "lunch": "=M29", "confirmed": "Y"},
+  {"id": "booth_029", "zone": "F", "booth_no": "F02", "theme": "童軍技能", "group_name": "港島童軍章會", "booth_name": "「章」來會更好", "content": "1) 徽章展覽\n2) 換章角", "contact": "葉志光\n6191 3253", "contact_person": "葉志光", "staff_count": "6", "lunch": "=M30", "confirmed": "Y"},
+  {"id": "booth_030", "zone": "F", "booth_no": "F03", "theme": "童軍技能", "group_name": "港島童軍天文會", "booth_name": "追星精明眼", "content": "星座認知", "contact": "", "contact_person": "", "staff_count": "🤷🏻‍♂️", "lunch": "🤷🏻‍♂️", "confirmed": "Y"},
+  {"id": "booth_031", "zone": "F", "booth_no": "F04", "theme": "童軍技能", "group_name": "港島童軍先鋒工程會", "booth_name": "搖搖晃", "content": "鞦韆架（可遊玩）＋倒叉三腳瞭望台（觀賞）", "contact": "WONG Shek-cheung\n9231 0723", "contact_person": "WONG Shek-cheung", "staff_count": "6", "lunch": "=M32", "confirmed": "Y"},
+  {"id": "booth_032", "zone": "F", "booth_no": "F05", "theme": "童軍技能", "group_name": "港島地域童軍樂隊", "booth_name": "港島地域童軍樂隊", "content": "演奏表演", "contact": "", "contact_person": "", "staff_count": "30", "lunch": "30", "confirmed": "Y"},
+  {"id": "booth_033", "zone": "F", "booth_no": "F06", "theme": "童軍技能", "group_name": "港島童軍皮藝會", "booth_name": "「皮」趣小座", "content": "DIY 皮革電話座匙扣", "contact": "林倩雯\n6116 6297 \n9053 8685", "contact_person": "CHOW Hang-chun", "staff_count": "6", "lunch": "=M34", "confirmed": "Y"}
+];
+
+function rebuildBooths2026() {
+  const eventId = 'isd_2026';
+  const ss = getSheet();
+  const sheet = ss.getSheetByName('Activities');
+  if (!sheet) return { success: false, error: 'Activities sheet not found' };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const idx = {};
+  headers.forEach(function (h, i) { idx[h] = i; });
+  if (idx.event_id === undefined || idx.type === undefined) {
+    return { success: false, error: 'event_id / type column missing' };
+  }
+  const keep = [headers];
+  let removed = 0;
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (String(r[idx.event_id]) === eventId && String(r[idx.type]) === 'booth') { removed++; continue; }
+    keep.push(r);
+  }
+  const now = new Date();
+  BOOTHS_2026.forEach(function (b, j) {
+    const row = new Array(headers.length).fill('');
+    row[idx.activity_id !== undefined ? idx.activity_id : 0] = b.id;
+    row[idx.event_id] = eventId;
+    if (idx.title !== undefined) row[idx.title] = b.booth_name || b.group_name;
+    row[idx.type] = 'booth';
+    if (idx.location !== undefined) row[idx.location] = (b.zone ? b.zone + '區 ' : '') + '攤位 ' + b.booth_no;
+    if (idx.description !== undefined) row[idx.description] = [b.theme, b.content].filter(function (x) { return x; }).join('｜');
+    if (idx.details_json !== undefined) row[idx.details_json] = JSON.stringify(b);
+    if (idx.created_at !== undefined) row[idx.created_at] = now;
+    if (idx.updated_by !== undefined) row[idx.updated_by] = 'rebuildBooths2026';
+    if (idx.updated_at !== undefined) row[idx.updated_at] = now;
+    keep.push(row);
+  });
+  sheet.clearContents();
+  sheet.getRange(1, 1, keep.length, headers.length).setValues(keep);
+  auditWrite({ module: 'Activities', record_id: 'rebuildBooths2026', action: 'rebuild_booths', updated_by: 'rebuildBooths2026', record_snapshot: { removed: removed, written: BOOTHS_2026.length } });
+  return { success: true, removed: removed, written: BOOTHS_2026.length, remaining_rows: keep.length - 1, version: GS_VERSION };
 }
 
 function deleteRecord(data) {
