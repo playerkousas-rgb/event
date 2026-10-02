@@ -8937,7 +8937,7 @@
   ],
   "note": "行政組／協調組在 Google Sheet 更新泊車證申請總表，APP 開啟即自動內置讀取。"
  },
- "data_version": "2026-10-02T16:00:00Z-v9",
+ "data_version": "2026-10-02T17:00:00Z-v10",
  "guest_transport": {
   "title": "嘉賓車安排（2026-10-04）",
   "outbound": {
@@ -10726,8 +10726,7 @@
   ],
   "inspection_route": {
    "title": "會操檢閱路線（04.09.2026 版・oscar hkir 修改：行埋地域旗隊）",
-   "image": "",
-   "image_hint": "路線圖 PNG 請上傳到 ISD Drive 或用「典禮儀式 → 上傳附件」加入；APP 已預留顯示位置。",
+   "image": "assets/ceremony/inspection_route_2026.svg",
    "updated_at": "2026-09-04",
    "reviewing_officer": "香港警務處港島總區指揮官 區永樑先生",
    "party": [
@@ -10749,7 +10748,8 @@
     "今天辛吾辛苦啊？",
     "你係屬於童軍邊個單位？"
    ],
-   "confirm_needed": "旗隊一段嘅行走方向（先 Front Rank 定先繞 Rear Rank）請典禮組最後確認；其餘按圖已確定。"
+   "confirm_needed": "旗隊一段嘅行走方向（先 Front Rank 定先繞 Rear Rank）請典禮組最後確認；其餘按圖已確定。",
+   "image_note": "APP 內部重畫向量圖（可隨時修改），依 04.09.2026 修改版路線。"
   },
   "attendance_changes": [
    {

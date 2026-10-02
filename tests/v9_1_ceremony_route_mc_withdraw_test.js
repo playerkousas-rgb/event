@@ -28,6 +28,7 @@ ok(r && Array.isArray(r.steps) && r.steps.length >= 5, '檢閱路線有完整步
 ok(/旗隊/.test(JSON.stringify(r.steps)), '新路線包含地域旗隊一段');
 ok(Array.isArray(r.inspection_questions) && r.inspection_questions.length === 3, '檢閱官 3 條問題已記錄');
 ok(/區永樑/.test(r.reviewing_officer || ''), '檢閱官為區永樑先生');
+ok(r.image === 'assets/ceremony/inspection_route_2026.svg' && fs.existsSync(path.join(root, r.image)), '檢閱路線圖已存在於 APP');
 
 // ③ 民安隊退出
 const mas = (data.participants || []).find(p => /民眾安全服務隊/.test(p.unit || ''));
