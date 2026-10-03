@@ -31,6 +31,13 @@ Object.assign(ScoutEventApp.prototype,{
     return fields.map(k=>String(row[k]??'').trim().toLowerCase().replace(/\s+/g,'')).join('|');
   },
 
+  // 成年獎勵（領袖獎勵名單）種籽冇單位資料：對應典禮組正式名單時用放寬 key（姓名+獎項，忽略 unit）。
+  rosterAdultRelaxKey(def,row){
+    if(!row) return '';
+    const fields=(def.match_fields||['name','award']).filter(k=>k!=='unit');
+    return fields.map(k=>String(row[k]??'').trim().toLowerCase().replace(/\\s+/g,'')).join('|');
+  },
+
   // 優異旅團名單繼續讀取既有回條資料；尚未上傳正式名單時，已填回條的旅團仍可讓典禮組點名。
   rosterMeritRows(def){
     const ceremony=this.getCeremonyData?this.getCeremonyData():{};
@@ -52,6 +59,28 @@ Object.assign(ScoutEventApp.prototype,{
     return rows;
   },
 
+  // 2026 成年獎勵（委任書／長期服務獎／感謝狀）＝領袖獲獎名單種籽：
+  // 直接由 ceremony.adult_awards 生成點名行（獎項去括號後綴，委任書預設需覆誓）。
+  rosterAdultSeedRows(){
+    const list=this.eventData?.ceremony?.adult_awards||[];
+    const rows=[];
+    list.forEach(a=>{
+      const award=String(a.award||'').split('（')[0].split('(')[0].trim()||String(a.award||'').trim();
+      (a.recipients||[]).forEach((r,i)=>{
+        const name=String(r.name||'').trim(); if(!name) return;
+        rows.push({
+          id:'adw_'+rows.length,
+          no:`${award}-${i+1}`, area:'', unit:'', rank:'',
+          name, award,
+          oath:/委任書/.test(award)?'是':'',
+          notes:`主禮：${a.presenter||''}${r.status?`｜回覆：${r.status}`:''}`,
+          _adultSeed:true
+        });
+      });
+    });
+    return rows;
+  },
+
   rosterRows(key){
     const def=this.rosterDef(key); if(!def) return [];
     const d=this.getRosterData(), ticks=d.ticks[key]||{};
@@ -69,6 +98,22 @@ Object.assign(ScoutEventApp.prototype,{
       }));
     } else if(def.source==='ceremony_merit'){
       rows=this.rosterMeritRows(def);
+    } else if(def.source==='ceremony_adult'){
+      // 成年獎勵種籽為底；典禮組上傳／手動行：放寬 key（姓名+獎項，忽略單位）覆蓋種籽、新 key 附加、hidden tombstone 遮種籽
+      // 放寬原因：種籽冇 unit 資料；典禮組正式名單有單位時都應該頂替同一個人嘅同一獎項行。
+      const seed=this.rosterAdultSeedRows();
+      const local=(d.rows[key]||[]).map(r=>({...r}));
+      const isHide=r=>r.__hidden||r.hidden;
+      const relax=r=>this.rosterAdultRelaxKey(def,r);
+      const hiddenKeys=new Set(local.filter(isHide).map(relax));
+      const override=new Map();
+      local.filter(r=>!isHide(r)).forEach(r=>override.set(relax(r),r));
+      const seedKeys=new Set(seed.map(relax));
+      rows=seed.filter(r=>!hiddenKeys.has(relax(r))).map(r=>{
+        const k=relax(r);
+        return override.has(k)?Object.assign({_adultSeed:true},override.get(k)):r;
+      });
+      override.forEach((r,k)=>{ if(!seedKeys.has(k)) rows.push(r); });
     } else if(def.source==='staff_meals_2026'){
       // 2026 凍結工作人員名單（只讀）：走 GAS/JSON seed，唔經匯入
       const seed=Array.isArray(this.eventData?.staff_meals_2026)?this.eventData.staff_meals_2026:[];
@@ -189,6 +234,7 @@ Object.assign(ScoutEventApp.prototype,{
             <button onclick="app.rosterToggleSortDir('${def.key}')" class="bg-white border rounded-lg px-2 py-1 text-[11px]">↕ ${this['_rosterDesc_'+key]?'倒序':'順序'}</button>
             ${canTick?`<button onclick="app.openRosterCheckinModal&&app.openRosterCheckinModal('${def.key}')" class="bg-emerald-600 text-white rounded-lg px-3 py-1 text-[11px] font-extrabold"><i class="fa-solid fa-mobile-screen-button mr-1"></i>📱 快速點名（同嘉賓點名款）</button>`:''}
             ${canTick?`<button onclick="app.rosterTickAllVisible('${def.key}')" class="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg px-2 py-1 text-[11px] font-bold">全選本欄${escapeHtml(def.tick_label)}</button>`:''}
+            <button onclick="app.rosterToggleCompact('${def.key}')" class="bg-white border rounded-lg px-2 py-1 text-[11px] font-bold">${this.rosterIsCompact(key)?'📋 詳細表':'📱 1行模式'}</button>
           </div>
         </div>
         <div id="roster-print-${scope}-${key}" data-roster-body="${key}">${this.rosterBodyHTML(key)}</div>
@@ -198,7 +244,7 @@ Object.assign(ScoutEventApp.prototype,{
 
   rosterBodyHTML(key){
     const def=this.rosterDef(key); if(!def) return '';
-    return `${this.rosterStatusHTML(key)}${this.rosterTableHTML(key)}${this.rosterTotalsHTML(key)}`;
+    return `${this.rosterStatusHTML(key)}${this.rosterIsCompact(key)?this.rosterCompactListHTML(key):this.rosterTableHTML(key)}${this.rosterTotalsHTML(key)}`;
   },
 
   // 附件版位：參加旅團沿用執行手冊既有嘅「participants」區（兩邊入口見到同一組附件）；其餘另有 roster_ 區
@@ -301,6 +347,40 @@ Object.assign(ScoutEventApp.prototype,{
 
   rosterSetSort(key,val){ this['_rosterSort_'+key]=val; this.rosterRefreshBody(key); },
   rosterToggleSortDir(key){ this['_rosterDesc_'+key]=!this['_rosterDesc_'+key]; this.rosterRefreshBody(key); },
+
+  /* 手機緊湊模式：一行一項（優異旅團預設開；其餘名單可手動切），大 ✓ 掣點名、✎ 編輯、修正用文字掣 */
+  rosterIsCompact(key){ const s=this['_rosterCompact_'+key]; if(s!==undefined&&s!==null) return !!s; return key==='merit_award'; },
+  rosterToggleCompact(key){ this['_rosterCompact_'+key]=!this.rosterIsCompact(key); this.rosterRefreshBody(key); },
+  rosterCompactTick(key,rowEnc){ this.rosterTick(key,rowEnc,true,false); },
+  rosterCompactCorrect(key,rowEnc){ this.rosterTick(key,rowEnc,true,true); },
+
+  rosterCompactListHTML(key){
+    const def=this.rosterDef(key); if(!def) return '';
+    const rows=this.rosterViewRows(key);
+    const canTick=this.rosterCanTick(key);
+    const canManage=!(this.isDataFrozen&&this.isDataFrozen())&&this.rosterCanManage(key);
+    const g=def.group_field||'area';
+    const nameCell=r=>{
+      if(def.source==='ceremony_merit') return `<span class="font-bold text-[12px] truncate">${escapeHtml(r.unit||'')}</span><span class="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 font-bold whitespace-nowrap">${escapeHtml(r.section||'')}</span>`;
+      const sub=[r.award,r.headcount?r.headcount+' 人':'',r.meal_boxes?'餐 '+r.meal_boxes:'',r.job_title,r.booth].filter(Boolean).join('｜');
+      return `<span class="font-bold text-[12px] truncate">${escapeHtml(r.name||r.unit||'')}</span>${sub?`<span class="text-[10px] text-slate-500 truncate">${escapeHtml(sub)}</span>`:''}`;
+    };
+    const replyBadge=r=>{
+      if(def.source!=='ceremony_merit') return '';
+      const reply=r._meritReply;
+      if(!reply) return `<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-400 font-bold whitespace-nowrap">未回覆</span>`;
+      const att=String(reply.attendance||'')==='出席';
+      return `<span class="text-[9px] px-1.5 py-0.5 rounded-full ${att?'bg-emerald-100 text-emerald-700':'bg-sky-100 text-sky-700'} font-bold whitespace-nowrap">${escapeHtml(reply.attendance||reply.response||'已回覆')}</span>`;
+    };
+    const body=rows.length?rows.map(r=>{
+      return `<div class="flex items-center gap-2 border-b last:border-b-0 px-2 ${r._checked?'bg-emerald-50/70':''} ${r._correction?'bg-rose-50/40':''}" style="min-height:40px">
+        <button ${canTick?'':'disabled'} onclick="app.rosterCompactTick('${key}','${encodeURIComponent(r._key||'')}')" class="w-9 h-9 flex-shrink-0 rounded-xl border-2 text-center text-[16px] font-black leading-none ${r._checked?'bg-emerald-600 border-emerald-600 text-white':'bg-white border-slate-300 text-slate-200'}" title="${escapeHtml(def.tick_hint||def.tick_label)}">✓</button>
+        <div class="flex-1 min-w-0 flex items-center gap-1.5 py-1 flex-wrap">${r[g]?`<span class="text-[10px] text-slate-400 whitespace-nowrap">${escapeHtml(String(r[g]))}</span>`:''}${nameCell(r)}${replyBadge(r)}</div>
+        ${canTick&&r._checked?`<span class="text-[9px] text-emerald-700 whitespace-nowrap">${escapeHtml(String(r._at||'').slice(5,10))}</span><button onclick="app.rosterCompactCorrect('${key}','${encodeURIComponent(r._key||'')}')" class="text-[11px] text-rose-500 underline whitespace-nowrap">修正</button>`:(canManage&&def.editable?`<button onclick="app.openRosterRowForm('${key}','${escapeHtml(String(r.id||''))}')" class="text-[11px] text-slate-400 whitespace-nowrap">✏️</button>`:'')}
+      </div>`;
+    }).join(''):`<div class="px-2 py-6 text-center text-slate-400 text-[12px]">尚未有${escapeHtml(def.title)}</div>`;
+    return `<div class="text-[10px] text-slate-400 mb-1">📱 1行模式：${rows.length} 項，點左邊 ✓ ${escapeHtml(def.tick_label)}${canTick?'':'（請先登入負責組別）'}</div><div class="bg-white border rounded-xl divide-y-0">${body}</div>`;
+  },
 
   /* ══════════════ 點名（TICK）：本機即時＋後端留痕 ══════════════
      跟 docs/TICK_CONCURRENCY_RULES.md ＋ 紀念章派發（40-souvenir-stamps.js）同一套：
@@ -480,6 +560,33 @@ Object.assign(ScoutEventApp.prototype,{
       return;
     }
 
+    // 成年獎勵（ceremony_adult）：種籽行存喺 ceremony.adult_awards，本地行只做「覆蓋／新增／tombstone」
+    if(def.source==='ceremony_adult'){
+      const d=this.getRosterData(); let rows=(d.rows[key]||[]).map(r=>({...r}));
+      const isHide=r=>r.__hidden||r.hidden;
+      const keyOf=r=>this.rosterAdultRelaxKey(def,r);
+      const mark=keyOf(o);
+      if(mark) rows=rows.filter(r=>!isHide(r)||keyOf(r)!==mark);       // 同 key 如有 tombstone：重新顯示
+      if(mode==='edit'){
+        const i=rows.findIndex(r=>String(r.id)===String(id)&&!isHide(r));
+        if(i>=0){ rows[i]=Object.assign({},rows[i],o,{id,updated_at:new Date().toISOString()}); }
+        else {
+          const j=rows.findIndex(r=>!isHide(r)&&keyOf(r)===mark);
+          if(j>=0) rows[j]=Object.assign({},rows[j],o,{updated_at:new Date().toISOString()});
+          else rows.push(Object.assign({id:'rr_'+Date.now(),created_at:new Date().toISOString(),created_by:this.currentUser?.name||''},o));
+        }
+      } else {
+        const k2=keyOf(o);
+        const dup=rows.find(r=>!isHide(r)&&keyOf(r)===k2);
+        if(dup){ showToast('已存在同名同獎項同單位嘅行（如要修訂請用 ✏️）','warning'); return; }
+        rows.push(Object.assign({id:'rr_'+Date.now(),created_at:new Date().toISOString(),created_by:this.currentUser?.name||''},o));
+      }
+      d.rows[key]=rows; this.saveRosterData(d);
+      this.closeModal('modal-record'); document.getElementById('record-form').onsubmit=(e)=>this.submitRecordForm(e);
+      showToast('已保存','success'); this.rosterRefresh(key);
+      return;
+    }
+
     const d=this.getRosterData(); const rows=d.rows[key]||[];
     if(mode==='edit'){ const i=rows.findIndex(r=>r.id===id); if(i>=0) rows[i]=Object.assign({},rows[i],o,{id,updated_at:new Date().toISOString()}); }
     else rows.push(Object.assign({id:'rr_'+Date.now(),created_at:new Date().toISOString(),created_by:this.currentUser?.name||''},o));
@@ -505,6 +612,28 @@ Object.assign(ScoutEventApp.prototype,{
       }
       this.saveCeremonyData(ceremony);
       const d=this.getRosterData();
+      if(rowKey&&d.ticks[key]) delete d.ticks[key][rowKey];
+      this.saveRosterData(d); this.rosterRefresh(key); showToast('已刪除','warning');
+      return;
+    }
+
+    // 成年獎勵（ceremony_adult）：本地行直接刪；種籽行落 tombstone 遮起（點名紀錄一併清除）
+    if(def.source==='ceremony_adult'){
+      const rendered=this.rosterRows(key).find(r=>String(r.id)===String(id));
+      const rowKey=rendered?this.rosterRowKey(def,rendered):'';
+      const d=this.getRosterData();
+      let rows=(d.rows[key]||[]).map(r=>({...r}));
+      const relaxOf=r=>this.rosterAdultRelaxKey(def,r);
+      if(rows.some(r=>String(r.id)===String(id)&&!(r.__hidden||r.hidden))){
+        rows=rows.filter(r=>String(r.id)!==String(id));
+        // 刪除覆蓋行時同時 tombstone 對應種籽（按放寬 key），否則種籽會重新出現
+        if(rendered) rows.push({id:'tomb_'+Date.now(),__hidden:true,name:rendered.name||'',award:rendered.award||'',unit:rendered.unit||''});
+      }else if(rendered){
+        const tomb={id:'tomb_'+Date.now(),__hidden:true};
+        (def.match_fields||[]).forEach(k=>tomb[k]=rendered[k]||'');
+        rows.push(tomb);
+      }
+      d.rows[key]=rows;
       if(rowKey&&d.ticks[key]) delete d.ticks[key][rowKey];
       this.saveRosterData(d); this.rosterRefresh(key); showToast('已刪除','warning');
       return;

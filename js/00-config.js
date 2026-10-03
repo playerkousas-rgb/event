@@ -455,7 +455,7 @@ const ROSTER_SECTIONS=['小童軍','幼童軍','童軍','深資童軍','樂行�
 // 支部最高獎章（2026 執行手冊：頒發支部最高獎章嘉許信）
 const ROSTER_SECTION_AWARDS=['總領袖獎章','榮譽童軍獎章','貝登堡獎章'];
 // 領袖及委員獎勵（下拉建議值；唔限死——「5年／五年」等寫法並存做別名，方便任何版本嘅 Excel／Word 匯入）
-const ROSTER_LEADER_AWARDS=['總監委任書','副總監委任書','五年長期服務獎狀','長期服務獎章','5年長期服務獎狀','10年長期服務獎狀','15年長期服務獎狀','20年長期服務獎狀','長期服務一星獎章','長期服務二星獎章','長期服務三星獎章','長期服務四星獎章','優異服務獎章','嘉許信'];
+const ROSTER_LEADER_AWARDS=['總監委任書','副總監委任書','五年長期服務獎狀','長期服務獎章','5年長期服務獎狀','10年長期服務獎狀','15年長期服務獎狀','20年長期服務獎狀','長期服務一星獎章','長期服務二星獎章','長期服務三星獎章','長期服務四星獎章','優異服務獎章','嘉許信','感謝狀','致送協助單位紀念品'];
 const ROSTER_LIST_DEFS=[
   {
     key:'section_award', match_fields:['name','award'], title:'支部獎勵獲獎名單', tab_label:'支部獎勵名單', icon:'fa-solid fa-medal',
@@ -480,8 +480,8 @@ const ROSTER_LIST_DEFS=[
     accent:'indigo', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 領袖獎勵名單', dept_tab:'cer_award_leader',
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
-    intro:'第一部分典禮：頒發領袖及委員獎勵。',
-    source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
+    intro:'第一部分典禮：頒發領袖及委員獎勵。名單以「2026 成年獎勵」（委任書／長期服務獎／感謝狀）為種籽，典禮組可上傳正式版增補或修訂。',
+    source:'ceremony_adult', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
     columns:[
       {k:'no',label:'編號（唱名序）',type:'text',aliases:['編號','唱名編號','序號','序','call no','no','No.','No']},
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
