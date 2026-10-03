@@ -167,6 +167,19 @@ Object.assign(ScoutEventApp.prototype,{
       if(seen.has(k)) return; seen.add(k);
       out.push({key:k,name:n,group_name:normalizeGroupName(group||'')||'未分組',job_title:String(job||''),booth:(extra&&extra.booth)||'',remark:(extra&&extra.remark)||'',unit:(extra&&extra.unit)||''});
     };
+    // 2026 凍結版工作人員名單（ISD2026 staff list ver2 (FROZEN).xlsx）——全組別、連 42 個「人選待定」佔位；
+    // 有 booth／職務資料，放最前，同名時以凍結版為準
+    try{
+      const seed=(this.eventData&&this.eventData.souvenirs&&this.eventData.souvenirs.staff_roster_2026)||[];
+      seed.forEach(c=>{
+        if(!c) return;
+        if(c.placeholder){
+          const k=c.key||('seedph_'+normalizeOrgText((c.group||'')+(c.booth||'')+(c.name||'')));
+          if(seen.has(k)) return; seen.add(k);
+          out.push({key:k,name:c.name||'（人選待定）',group_name:normalizeGroupName(c.group||'')||'未分組',job_title:String(c.job_title||''),booth:c.booth||'',remark:c.remark||'',unit:c.unit||'',placeholder:true});
+        }else push(c.name,c.group,c.job_title,{booth:c.booth||'',remark:c.remark||'',unit:c.unit||''});
+      });
+    }catch(e){}
     let users=(this.usersList&&this.usersList.length)?this.usersList:[];
     if(!users.length){ try{ users=this.getLocalUsers()||[]; }catch(e){ users=[]; } }
     // v12.1：最高層系統帳戶（isSuperAdminUser 判定）唔係工作人員——不計入紀念章派發名單同統計
@@ -342,6 +355,7 @@ Object.assign(ScoutEventApp.prototype,{
         <select id="stamp-filter-${scope}" onchange="app.filterSouvenirStamps('${scope}')" class="px-3 py-2 border rounded-xl text-xs bg-white">
           <option value="all">全部</option><option value="pending">只睇未派發</option><option value="ticked">只睇已派發</option>
         </select>
+        ${canManage?`<button onclick="app.openStampCheckinModal('${scope}')" class="bg-emerald-50 border border-emerald-300 text-emerald-800 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-mobile-screen-button mr-1"></i>📱 快速點名（同執行手冊嘉賓點名款）</button>`:''}
         ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
         <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
         <span class="text-[10px] text-slate-400 py-2">💡 點 header（姓名／組別／攤位／派發狀態）可排序，方便現場派發</span>

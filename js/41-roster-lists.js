@@ -64,6 +64,10 @@ Object.assign(ScoutEventApp.prototype,{
       }));
     } else if(def.source==='ceremony_merit'){
       rows=this.rosterMeritRows(def);
+    } else if(def.source==='staff_meals_2026'){
+      // 2026 凍結工作人員名單（只讀）：走 GAS/JSON seed，唔經匯入
+      const seed=Array.isArray(this.eventData?.staff_meals_2026)?this.eventData.staff_meals_2026:[];
+      rows=seed.map((e,i)=>({id:e.key||('sm'+i),key:e.key||('sm'+i),group:e.group||'',name:e.name||'',job_title:e.job_title||'',booth:e.booth||'',unit:e.unit||'',meal:e.meal||'',placeholder:!!e.placeholder}));
     } else {
       rows=(d.rows[key]||[]).map(r=>({...r}));
     }
@@ -186,6 +190,7 @@ Object.assign(ScoutEventApp.prototype,{
               <option value="tick" ${(this['_rosterSort_'+key]||'')==='tick'?'selected':''}>未${escapeHtml(def.tick_label)}優先</option>
             </select>
             <button onclick="app.rosterToggleSortDir('${def.key}')" class="bg-white border rounded-lg px-2 py-1 text-[11px]">↕ ${this['_rosterDesc_'+key]?'倒序':'順序'}</button>
+            ${canTick?`<button onclick="app.openRosterCheckinModal&&app.openRosterCheckinModal('${def.key}')" class="bg-emerald-600 text-white rounded-lg px-3 py-1 text-[11px] font-extrabold"><i class="fa-solid fa-mobile-screen-button mr-1"></i>📱 快速點名（同嘉賓點名款）</button>`:''}
             ${canTick?`<button onclick="app.rosterTickAllVisible('${def.key}')" class="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg px-2 py-1 text-[11px] font-bold">全選本欄${escapeHtml(def.tick_label)}</button>`:''}
           </div>
         </div>

@@ -888,86 +888,65 @@ Object.assign(ScoutEventApp.prototype,{
   /* —— 2026 攤位總表（完整版：含已聯絡/已回覆/確認出席；供「執行手冊」及主題節目組卡片）——
      由程式內嵌 BOOTH_ZONES_2026（品牌推廣組 2026 攤位總表）＋「攤位計劃書」提交自動填入。 */
   renderBoothMasterTableHTML(agg,isPublic){
-    const t=agg.totals;
-    const usedKeys=new Set();
+    // 2026 凍結：總表以 BOOTH_ZONES_2026 內建資料為準（含攤位名稱／內容／十五五／物資）；
+    // 如本機另有攤位計劃書紀錄（agg.rows），以計劃書資料覆蓋對應攤位。
+    const num=v=>{ const n=parseFloat(String(v??'').replace(/[^0-9.\-]/g,'')); return isNaN(n)?0:n; };
+    const T={booths:0,tent:0,table:0,chair:0,skirting:0};
+    const pwr=[];
     const contactCell=v=>`<td class="border px-2 py-1 text-center font-bold ${v==='Y'?'text-emerald-700':(v==='N'?'text-rose-600':(v==='?'?'text-amber-600':'text-slate-300'))}">${boothContactMark(v)}</td>`;
     let html=`<div class="table-responsive"><table class="min-w-full text-xs border bg-white"><thead class="bg-slate-800 text-white"><tr>
       <th class="border px-2 py-1.5 text-left whitespace-nowrap">分區</th><th class="border px-2 py-1.5 text-left">編號</th><th class="border px-2 py-1.5 text-left">主題範疇</th>
       <th class="border px-2 py-1.5 text-center">已聯絡</th><th class="border px-2 py-1.5 text-center">已回覆</th><th class="border px-2 py-1.5 text-center">確認出席</th>
-      <th class="border px-2 py-1.5 text-left">負責單位</th><th class="border px-2 py-1.5 text-left">聯絡人</th><th class="border px-2 py-1.5 text-left">攤位名稱（招牌）</th><th class="border px-2 py-1.5 text-left">預計攤位內容</th><th class="border px-2 py-1.5 text-left">「十五五」元素</th>
+      <th class="border px-2 py-1.5 text-left">負責單位</th><th class="border px-2 py-1.5 text-left">攤位名稱（招牌）</th><th class="border px-2 py-1.5 text-left">預計攤位內容</th><th class="border px-2 py-1.5 text-left">「十五五」元素</th>
+      <th class="border px-2 py-1.5 text-left">攤位負責人及電話</th>
       <th class="border px-2 py-1.5 text-center">帳篷(頂)</th><th class="border px-2 py-1.5 text-center">摺枱(張)</th><th class="border px-2 py-1.5 text-center">摺椅(張)</th><th class="border px-2 py-1.5 text-center">圍布(塊)</th><th class="border px-2 py-1.5 text-center">電源(W)</th>
       <th class="border px-2 py-1.5 text-left">其他場地及物資需求</th><th class="border px-2 py-1.5 text-left">運送物資需求</th><th class="border px-2 py-1.5 text-center">狀態</th>
     </tr></thead><tbody>`;
+    const rowFor=(zone,no)=>(agg.rows||{})[zone+no]||null;
     BOOTH_ZONES_2026.forEach(z=>{
-      html+=`<tr class="bg-amber-50"><td colspan="19" class="border px-2 py-1 text-[11px] font-extrabold text-amber-900">分區 ${z.zone} · ${escapeHtml(z.theme)}${(z.units||[]).length?`（${z.units.length} 攤位）`:'（編號待定）'}</td></tr>`;
-      if(!(z.units||[]).length){
-        html+=`<tr><td colspan="19" class="border px-2 py-1 text-slate-400 text-center">總表暫未設單位</td></tr>`;
-        return;
-      }
-      z.units.forEach(u=>{
-        const key=z.zone+u.no;
-        if(agg.rows[key]) usedKeys.add(key);
-        const row=agg.rows[key];
-        let contactHTML='<span class="text-slate-300">—</span>';
-        if(row){
-          if(row.owner_name){
-            contactHTML=`<b>${escapeHtml(row.owner_name)}</b>`;
-            if(!isPublic&&(row.owner_phone||row.owner_email)) contactHTML+=`<div class="text-slate-500">${escapeHtml([row.owner_phone,row.owner_email].filter(Boolean).join(' / '))}</div>`;
-            else if(isPublic&&(row.owner_phone||row.owner_email)) contactHTML+=` <span class="text-slate-300">🔒</span>`;
-          } else if(row.contact&&!isPublic){
-            contactHTML=escapeHtml(row.contact);
-          }
-        }
+      const us=(z.units||[]).filter(u=>u&&u.no);
+      html+=`<tr class="bg-amber-50"><td colspan="19" class="border px-2 py-1 text-[11px] font-extrabold text-amber-900">分區 ${z.zone} · ${escapeHtml(z.theme)}${us.length?`（${us.length} 攤位）`:''}</td></tr>`;
+      us.forEach(u=>{
+        const row=rowFor(z.zone,u.no);
+        const bn=(row&&row.booth_name)||u.bn||'';
+        const ct=(row&&row.activity_desc)||u.ct||'';
+        const fif=(row&&row.fif15_content)||u.fif15||'';
+        const eq=row?row.equip:(u.eq||{});
+        const p=row?(row.equip.power_w||''):(eq.e||'');
+        if(p) pwr.push(String(p));
+        const cp=(row&&row.owner_name)?row.owner_name+((row.owner_phone||row.owner_email)?' '+[row.owner_phone,row.owner_email].filter(Boolean).join(' / '):''):(u.cp||'');
+        const oth=(row&&row.other_req)||u.oth||'';
+        const del=(row&&row.delivery)||u.del||'';
+        const cpDisp=isPublic?(cp?'🔒 登入後可見':'—'):(cp?escapeHtml(cp):'<span class="text-slate-300">—</span>');
+        const dev=u.dev?`<div class="text-[9px] text-slate-500 leading-snug mt-0.5 whitespace-pre-line">${escapeHtml(u.dev)}</div>`:'';
+        const dash='<span class="text-slate-300">—</span>';
+        const ctDisp=ct&&ct!=='／'?escapeHtml(String(ct).replace(/\s+/g,' ')):dash;
+        const fifDisp=fif&&fif!=='／'&&fif!=='N/A'&&fif!=='Nil'?escapeHtml(String(fif).replace(/\s+/g,' ')):dash;
+        const othDisp=oth&&oth!=='／'?escapeHtml(oth):dash;
+        const delDisp=del&&del!=='／'?escapeHtml(del):dash;
+        const mark=v=>v?`<b>${v}</b>`:dash;
+        const st=row?this.boothStatusBadge(row.status||'pending'):(u.cf==='Y'?'<span class="text-[10px] text-emerald-700 font-extrabold">確認出席</span>':(u.cf==='N'?'<span class="text-[10px] text-rose-600 font-bold">未能出席</span>':'<span class="text-[10px] text-slate-300">—</span>'));
+        T.booths++; T.tent+=num(eq.t); T.table+=num(eq.f); T.chair+=num(eq.c); T.skirting+=num(eq.s);
         html+=`<tr class="${row?'bg-amber-50/40':''}">
           <td class="border px-2 py-1.5 font-mono font-extrabold">${z.zone}</td><td class="border px-2 py-1.5 font-mono font-bold">${u.no}</td><td class="border px-2 py-1.5 text-[10px] text-slate-500">${escapeHtml(z.theme)}</td>
           ${contactCell(u.c)}${contactCell(u.r)}${contactCell(u.cf)}
           <td class="border px-2 py-1.5">${escapeHtml(u.name)}</td>
-          <td class="border px-2 py-1.5 text-[10px]">${contactHTML}</td>
-          <td class="border px-2 py-1.5 font-bold">${row?escapeHtml(row.booth_name||'-'):'<span class="text-slate-400">未提交</span>'}</td>
-          <td class="border px-2 py-1.5" title="${row?escapeHtml(row.activity_desc||''):''}">${row&&row.activity_desc?escapeHtml(String(row.activity_desc).replace(/\s+/g,' ').slice(0,40)):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5" title="${row?escapeHtml(row.fif15_content||''):''}">${row&&row.fif15_content?escapeHtml(String(row.fif15_content).replace(/\s+/g,' ').slice(0,30)):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row&&row.equip.tent?`<b>${row.equip.tent}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row&&row.equip.table?`<b>${row.equip.table}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row&&row.equip.chair?`<b>${row.equip.chair}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row&&row.equip.skirting?`<b>${row.equip.skirting}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row&&row.equip.power_w?`<b>${row.equip.power_w}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-[10px]">${row&&row.other_req?escapeHtml(row.other_req):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-[10px]">${row&&row.delivery?escapeHtml(row.delivery):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row?this.boothStatusBadge(row.status||'pending'):'<span class="text-[10px] text-slate-300">未提交</span>'}</td>
+          <td class="border px-2 py-1.5 font-bold">${bn?escapeHtml(bn):'<span class="text-slate-400">未提交</span>'}</td>
+          <td class="border px-2 py-1.5" title="${escapeHtml(ct)}">${ctDisp}</td>
+          <td class="border px-2 py-1.5" title="${escapeHtml(fif)}">${fifDisp}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${cpDisp}</td>
+          <td class="border px-2 py-1.5 text-center">${mark(eq.t)}</td>
+          <td class="border px-2 py-1.5 text-center">${mark(eq.f)}</td>
+          <td class="border px-2 py-1.5 text-center">${mark(eq.c)}</td>
+          <td class="border px-2 py-1.5 text-center">${mark(eq.s)}</td>
+          <td class="border px-2 py-1.5 text-center">${p?`<b>${escapeHtml(String(p))}</b>`:dash}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${othDisp}</td>
+          <td class="border px-2 py-1.5 text-[10px]">${delDisp}</td>
+          <td class="border px-2 py-1.5 text-center">${st}${dev}</td>
         </tr>`;
       });
     });
-    Object.values(agg.rows).forEach(row=>{
-      if(row.key.startsWith('__custom__')||!usedKeys.has(row.key)){
-        const other=[];
-        (row.equip.other||[]).forEach(x=>other.push(x));
-        let contactHTML2='<span class="text-slate-300">—</span>';
-        if(row.owner_name){
-          contactHTML2=`<b>${escapeHtml(row.owner_name)}</b>`;
-          if(!isPublic&&(row.owner_phone||row.owner_email)) contactHTML2+=`<div class="text-slate-500">${escapeHtml([row.owner_phone,row.owner_email].filter(Boolean).join(' / '))}</div>`;
-          else if(isPublic&&(row.owner_phone||row.owner_email)) contactHTML2+=` <span class="text-slate-300">🔒</span>`;
-        }
-        html+=`<tr class="bg-sky-50/50">
-          <td class="border px-2 py-1.5 font-mono font-extrabold">${row.zone||'?'}</td><td class="border px-2 py-1.5 font-mono font-bold">${row.booth_no||'-'}</td><td class="border px-2 py-1.5 text-[10px] text-slate-500">${escapeHtml(row.zone?boothZoneLabel(row.zone):'（總表以外）')}</td>
-          <td class="border px-2 py-1.5 text-center text-slate-300">—</td><td class="border px-2 py-1.5 text-center text-slate-300">—</td><td class="border px-2 py-1.5 text-center text-slate-300">—</td>
-          <td class="border px-2 py-1.5">${escapeHtml(row.unit_name||'（自行填寫）')}</td>
-          <td class="border px-2 py-1.5 text-[10px]">${contactHTML2}</td>
-          <td class="border px-2 py-1.5 font-bold">${escapeHtml(row.booth_name||'-')}</td>
-          <td class="border px-2 py-1.5">${row.activity_desc?escapeHtml(String(row.activity_desc).replace(/\s+/g,' ').slice(0,40)):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5">${row.fif15_content?escapeHtml(String(row.fif15_content).replace(/\s+/g,' ').slice(0,30)):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row.equip.tent?`<b>${row.equip.tent}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row.equip.table?`<b>${row.equip.table}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row.equip.chair?`<b>${row.equip.chair}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row.equip.skirting?`<b>${row.equip.skirting}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${row.equip.power_w?`<b>${row.equip.power_w}</b>`:'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-[10px]">${row.other_req?escapeHtml(row.other_req):(other.length?escapeHtml(other.join('；')):'<span class="text-slate-300">—</span>')}</td>
-          <td class="border px-2 py-1.5 text-[10px]">${row.delivery?escapeHtml(row.delivery):'<span class="text-slate-300">—</span>'}</td>
-          <td class="border px-2 py-1.5 text-center">${this.boothStatusBadge(row.status||'pending')}</td>
-        </tr>`;
-      }
-    });
-    html+=`<tr class="bg-slate-900 text-white font-extrabold"><td colspan="11" class="border px-2 py-1.5">TOTAL（全部分區總數）· ${t.booths} 攤位有計劃書</td><td class="border px-2 py-1.5 text-center">${t.tent}</td><td class="border px-2 py-1.5 text-center">${t.table}</td><td class="border px-2 py-1.5 text-center">${t.chair}</td><td class="border px-2 py-1.5 text-center">${t.skirting}</td><td class="border px-2 py-1.5 text-center">${t.power_w}</td><td colspan="3" class="border px-2 py-1.5 text-[10px]">已批核 ${Object.values(agg.rows).filter(r=>['approved','modified'].includes(r.status)).length} · 待批核 ${Object.values(agg.rows).filter(r=>r.status==='pending').length}</td></tr></tbody></table></div>`;
-    html+=`<p class="text-[10px] text-slate-400">攤位總表按「2026 攤位總表」（品牌推廣組）分區＋編號，<b>已聯絡／已回覆／確認出席</b>為品牌推廣組聯絡進度（🤷＝待確認）；攤位名稱／內容／「十五五」元素／物資需求由「攤位計劃書」提交自動填入，<b>TOTAL</b> 行為所有攤位總數。${isPublic?' 為保障私隱，聯絡人電話／電郵需登入先可見。':''}</p>`;
+    html+=`<tr class="bg-slate-900 text-white font-extrabold"><td colspan="11" class="border px-2 py-1.5">TOTAL（全部分區總數）· ${T.booths} 攤位</td><td class="border px-2 py-1.5 text-center">${T.tent}</td><td class="border px-2 py-1.5 text-center">${T.table}</td><td class="border px-2 py-1.5 text-center">${T.chair}</td><td class="border px-2 py-1.5 text-center">${T.skirting}</td><td class="border px-2 py-1.5 text-center">${pwr.length?escapeHtml(pwr.join(' / ')):'—'}</td><td colspan="3"></td></tr></tbody></table></div>`;
     return html;
   },
   /* —— 計劃書明細：全部提交紀錄（完整負責人資料）＋本組確認／批核動作 —— */

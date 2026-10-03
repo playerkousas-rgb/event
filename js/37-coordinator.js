@@ -268,6 +268,7 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getMealsData();
     const canRouteApprove=this.canApproveArea('meals'),canRouteExecute=this.canExecuteArea('meals');
     const menus=data.menus||[],orders=(data.orders||[]).filter(o=>canRouteApprove||o.status==='approved');
+    const logisticsBar=this.mealLogistics2026HTML?this.mealLogistics2026HTML():'';
     const canManageMenu=this.canManageMealMenu()||this.isAdmin();
     const canConfirm=!!this.currentUser && (this.isAdmin()||this.isExecViceOrChair()||this.roleLevel(this.currentUser.role)>=40);
     const canFinal=this.canFinalApproveMealOrder();
@@ -302,6 +303,7 @@ Object.assign(ScoutEventApp.prototype,{
     }).join('');
     box.innerHTML=`
       <div class="space-y-4">
+        ${logisticsBar}
         <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>🍱 膳食動態分工：</b>目前由 <b>${escapeHtml(this.approvalRouteLabel('meals','approver_groups'))}</b> 批核，<b>${escapeHtml(this.approvalRouteLabel('meals','executor_groups'))}</b> 執行並持有最後名單。流程為待本組確認 → 指定組別審批 → 執行組統計、列印及派發。</div>
         <div class="flex flex-wrap gap-2 items-center">
           ${canManageMenu?`<button onclick="app.openMealMenuForm()" class="bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>加入菜單</button>`:''}

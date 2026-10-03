@@ -551,28 +551,25 @@ Object.assign(ScoutEventApp.prototype,{
     if(!container) return;
     const data=this.getStaffData();
     const duties=data.job_duties||[];
-    const isAdmin=this.isAdmin();
-    const canEdit=isAdmin||this.isExecViceOrChair()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60; // 副主席以上可改
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const isAdmin=!frozen&&this.isAdmin();
+    const canEdit=!frozen&&(isAdmin||this.isExecViceOrChair()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60); // 副主席以上可改
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="flex flex-wrap gap-2">
+        ${canEdit||!frozen?`<div class="flex flex-wrap gap-2">
           ${canEdit?`<button onclick="app.openJobDutyFormModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增職務大綱</button>`:''}
           <button onclick="app.downloadStaffTemplate('duties')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-word mr-1"></i>上傳 Word 轉 JSON<input type="file" accept=".docx,.doc" class="hidden" onchange="app.handleWordUpload(this.files[0])"></label>
           <label class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 Excel／JSON<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'job_duties');this.value=''"></label>
           <button onclick="app.exportStaffData('job_duties')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
-        </div>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">
-          <b>Word 上傳轉 JSON 說明：</b><br>
-          管理員可上傳 .docx 檔 (例如各組職務大綱 Word)，系統用 mammoth.js 自動解析文字，再轉成 JSON 寫入後端，所有人前端可觀看。行政副主席、執行副主席或主席以上可在前端直接修改，完成後儲存同步後端。
-        </div>
+        </div>`:''}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${duties.map(d=>`
           <div class="border rounded-xl p-4 bg-white space-y-2">
             <div class="flex justify-between items-start"><div class="font-bold text-[13px] flex items-center"><i class="fa-solid fa-people-group text-indigo-600 mr-2"></i>${escapeHtml(d.group)}</div><div class="flex gap-1">${canEdit?`<button onclick="app.openJobDutyFormModal('${d.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️ 編輯</button>`:''}${isAdmin?`<button onclick="app.deleteJobDuty('${d.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></div>
             <div class="text-[11px] text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50 border rounded-xl p-2.5">${escapeHtml(d.duty)}</div>
             ${d.file_name?`<div class="text-[10px] text-slate-500"><i class="fa-solid fa-file-word text-sky-600 mr-1"></i>${escapeHtml(d.file_name)} ${d.updated_by?`· ${escapeHtml(d.updated_by)}`:''}</div>`:''}${d.file_url?`<a href="${escapeHtml(d.file_url)}" target="_blank" class="text-[10px] text-sky-700 underline">開啟工作大綱原文 ↗</a>`:''}
           </div>
-        `).join('') || '<p class="text-xs text-slate-400 py-4 text-center col-span-2">暫無職務大綱，請上傳 Word 或新增</p>'}</div>
+        `).join('') || '<p class="text-xs text-slate-400 py-4 text-center col-span-2">暫無職務大綱</p>'}</div>
       </div>
     `;
   }

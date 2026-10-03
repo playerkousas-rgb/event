@@ -291,7 +291,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchCrisisTab('docs')" class="tab-btn ${this.crisisSubTab==='docs'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 應變指引 (急救·保險)</button>
           <button onclick="app.switchCrisisTab('accident')" class="tab-btn ${this.crisisSubTab==='accident'?'active':''}"><i class="fa-solid fa-file-waveform mr-1"></i> 意外事件報告表 (${(data.accidents||[]).length})</button>
-          <button onclick="app.switchCrisisTab('manual')" class="tab-btn ${this.crisisSubTab==='manual'?'active':''}"><i class="fa-solid fa-file-arrow-up mr-1"></i> 上傳危機處理手冊</button>
+          <button onclick="app.switchCrisisTab('manual')" class="tab-btn ${this.crisisSubTab==='manual'?'active':''}"><i class="fa-solid fa-book-medical mr-1"></i> 危機處理手冊 (${(data.manuals||[]).length})</button>
           <button onclick="app.switchCrisisTab('team')" class="tab-btn ${this.crisisSubTab==='team'?'active':''}"><i class="fa-solid fa-people-group mr-1"></i> 危機應變小組</button>
           <button onclick="app.switchCrisisTab('contacts')" class="tab-btn ${this.crisisSubTab==='contacts'?'active':''}"><i class="fa-solid fa-phone mr-1"></i> 緊急聯絡</button>
         </div>
@@ -827,25 +827,22 @@ Object.assign(ScoutEventApp.prototype,{
     if(!container) return;
     const data=this.getCrisisData();
     const manuals=Array.isArray(data.manuals)?data.manuals:[];
-    const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60 || this.isAdmin() || this.isExecViceOrChair();
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const canEdit=!frozen&&((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60 || this.isAdmin() || this.isExecViceOrChair());
     let html=`<div class="space-y-4">
-      <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] leading-relaxed text-red-900">
-        <b><i class="fa-solid fa-file-arrow-up mr-1"></i>危機處理手冊（上傳與查閱專頁）：</b><br>
-        • 本分頁預留用作上傳及公開查閱《港島童軍繽紛日危機處理計劃手冊》（組織、職責、緊急應變、急救保險及運作指引）<br>
-        • 管理員／副主席以上可點擊「上傳手冊檔案」新增或更新手冊檔案（支援 PDF、Word、圖片或 Google Drive 連結）<br>
-        • 所有工作人員及公眾均可公開查閱、預覽及下載手冊檔案
-      </div>
       <div class="flex gap-2 flex-wrap items-center">
         ${canEdit?`<button onclick="app.openCrisisManualForm()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳手冊檔案</button>`:''}
-        <button onclick="app.exportCrisisManuals()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出手冊清單</button>
+        <a href="https://drive.google.com/file/d/1BNM0C-mOXEIRel-qJCZgb0RGOXWxw0N6/preview" target="_blank" class="bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>手冊 PDF ↗</a>
+        <a href="https://drive.google.com/file/d/1Phtigx-WNI21rA2FcgtAxp_AnKSp-iCp/preview" target="_blank" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>手冊 Word ↗</a>
+        <a href="https://drive.google.com/drive/folders/1d-197mc3FIrNoMCBpNwyo4U6e9GAmcS_" target="_blank" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-folder-open mr-1"></i>危機手冊 Drive 資料夾 ↗</a>
       </div>`;
 
     if(!manuals.length){
       html+=`
       <div class="border-2 border-dashed border-red-200 rounded-2xl p-8 text-center bg-red-50/40 space-y-3">
         <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-book-medical"></i></div>
-        <h4 class="font-bold text-sm text-red-900">已預留分頁用作上傳危機處理手冊</h4>
-        <p class="text-xs text-slate-500 max-w-md mx-auto">尚未上傳手冊檔案。管理員／副主席以上可點擊上方「上傳手冊檔案」按鈕上傳手冊（支援 PDF、Word、圖片或 Google Drive 連結）。所有人公開可查閱。</p>
+        <h4 class="font-bold text-sm text-red-900">危機處理手冊</h4>
+        <p class="text-xs text-slate-500 max-w-md mx-auto">請使用上方 PDF／Word 連結開啟 2026 年版本。</p>
         ${canEdit?`<button onclick="app.openCrisisManualForm()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold mt-2"><i class="fa-solid fa-file-arrow-up mr-1"></i>立即上傳手冊</button>`:''}
       </div>`;
     } else {

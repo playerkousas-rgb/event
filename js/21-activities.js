@@ -93,34 +93,26 @@ Object.assign(ScoutEventApp.prototype,{
   renderActivitiesModule(box){
     const container=box||document.getElementById('module-content');
     if(!this.activitiesSubTab) this.activitiesSubTab='maps';
+    if(!['maps','booths','booth_master','gamecards'].includes(this.activitiesSubTab)) this.activitiesSubTab='maps';
     const data=this.getActivitiesData();
     const canUpload=this.canUploadActivity();
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] text-rose-900">
-          <b>場地與活動總覽：</b>地圖、攤位列表（Drive 攤位資料）、攤位總表（2026 總表）、場地佈置總覽、遊戲卡、活動列表；上傳需主任／副主席以上。
-        </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchActivitiesTab('maps')" class="tab-btn ${this.activitiesSubTab==='maps'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 地圖 (${data.maps.length})</button>
           <button onclick="app.switchActivitiesTab('booths')" class="tab-btn ${this.activitiesSubTab==='booths'?'active':''}"><i class="fa-solid fa-table mr-1"></i> 攤位列表 (${data.booths.length})</button>
           <button onclick="app.switchActivitiesTab('booth_master')" class="tab-btn ${this.activitiesSubTab==='booth_master'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位總表</button>
-          <button onclick="app.switchActivitiesTab('venue_setup')" class="tab-btn ${this.activitiesSubTab==='venue_setup'?'active':''}"><i class="fa-solid fa-map-pin mr-1"></i> 場地佈置總覽</button>
           <button onclick="app.switchActivitiesTab('gamecards')" class="tab-btn ${this.activitiesSubTab==='gamecards'?'active':''}"><i class="fa-solid fa-id-card mr-1"></i> 遊戲卡 (${data.gameCards.length})</button>
-          <button onclick="app.switchActivitiesTab('activities')" class="tab-btn ${this.activitiesSubTab==='activities'?'active':''}"><i class="fa-solid fa-list mr-1"></i> 活動列表 (${data.activities.length})</button>
         </div>
         <div id="activities-tab-maps" class="${this.activitiesSubTab==='maps'?'':'hidden'}"></div>
         <div id="activities-tab-booths" class="${this.activitiesSubTab==='booths'?'':'hidden'}"></div>
         <div id="activities-tab-booth_master" class="${this.activitiesSubTab==='booth_master'?'':'hidden'}">${this.boothMasterPanelHTML()}</div>
-        <div id="activities-tab-venue_setup" class="${this.activitiesSubTab==='venue_setup'?'':'hidden'}"></div>
         <div id="activities-tab-gamecards" class="${this.activitiesSubTab==='gamecards'?'':'hidden'}"></div>
-        <div id="activities-tab-activities" class="${this.activitiesSubTab==='activities'?'':'hidden'}"></div>
       </div>
     `;
     this.renderActivitiesMaps();
     this.renderActivitiesBooths();
-    this.renderActivitiesVenueSetupPanel();   // v11：場地佈置總覽（上傳式）已移入本頁
     this.renderActivitiesGameCards();
-    this.renderActivitiesList();
   }
 ,
   switchActivitiesTab(tab){
@@ -137,21 +129,17 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('activities-tab-maps');
     if(!container) return;
     const data=this.getActivitiesData();
-    const canUpload=this.canUploadActivity();
+    const canUpload=!(this.isDataFrozen&&this.isDataFrozen())&&this.canUploadActivity();
     container.innerHTML=`
       <div class="space-y-3">
-        <div class="flex flex-wrap gap-2">
-          ${canUpload?`<button onclick="app.openActivityMapForm()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-map mr-1"></i>上傳地圖 (主任/副主席以上)</button>`:''}
-          <button onclick="app.downloadActivityTemplate('map')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載地圖範本</button>
-        </div>
-        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900 leading-relaxed">可上傳 <b>PDF／Word／圖片</b>，或貼上 <b>Drive 連結</b>；Word 會自動解析成文字內嵌，PDF 會整份內嵌預覽。</div>
+        ${this.builtin2026MapCards()}
         ${data.maps.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.maps.map(m=>`
           <div class="border rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between items-start"><div><b class="text-[13px]">${escapeHtml(m.title||'場地地圖')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(m.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(m.created_by||'')} | ${m.created_at?new Date(m.created_at).toLocaleString():''} | 版本: ${escapeHtml(m.version||'v1')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openActivityMapForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteActivityMap('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
+            <div class="flex justify-between items-start"><div><b class="text-[13px]">${escapeHtml(m.title||'場地地圖')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(m.description||'')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openActivityMapForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteActivityMap('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
             ${this.activityFilePreviewHTML(m,'map')}
-            <div class="flex gap-2">${m.file_url?`<a href="${m.file_url}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟地圖</a>`:''}${m.file_data||m.file_name?`<button onclick="app.downloadActivityFile('${m.id}','map')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
+            <div class="flex gap-2">${m.file_url?`<a href="${m.file_url}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-map mr-1"></i>開啟地圖</a>`:''}${m.file_data||m.file_name?`<button onclick="app.downloadActivityFile('${m.id}','map')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
           </div>
-        `).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">暫無地圖，相關主任、副主席或以上可上傳場地分佈圖 (參考舊手冊有地圖)</p>`}
+        `).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">暫無地圖</p>`}
       </div>
     `;
   }
@@ -160,32 +148,21 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('activities-tab-booths');
     if(!container) return;
     const data=this.getActivitiesData();
-    const canUpload=this.canUploadActivity();
-    const src=data.booth_source||null;
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const canUpload=!frozen&&this.canUploadActivity();
     container.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-slate-50 border rounded-xl p-2.5 text-[10.5px] text-slate-600 leading-relaxed"><b>「攤位列表」＝攤位基本資料一覽</b>（編號／名稱／位置／負責單位／負責人，由 Drive「ISD2026 攤位資料」同步）。<br>要有<b>已聯絡／已回覆／確認出席</b>聯絡進度及「攤位計劃書」自動填入內容嘅 <b>「2026 攤位總表」</b>，請按上方「攤位總表」分頁。</div>
-        ${src?this.driveSyncNotice():''}
-        ${src?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
-          <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（內建式，不用跳轉 Drive）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
-          <a href="https://drive.google.com/file/d/${escapeHtml(src.drive_file_id)}/view" target="_blank" class="text-sky-700 underline">📂 開啟 Drive 檔案</a>
-          <br>• 由<b>節目組副主席</b>負責更新。若該檔為原生「Google 試算表」，點「同步最新」即直接在 APP 內讀取最新內容（各組在 Drive 一改，APP 即時同步）。
-          <br>• 若仍是 .xlsx 檔：建議在 Drive「檔案 → 另存為 Google 試算表」後同步，或由副主席直接「上傳 Excel（同步到名單）」。
-        </div>`:''}
-        ${this.dataFrozenNotice()}
         <div class="flex flex-wrap gap-2">
-          ${(this.isDataFrozen&&this.isDataFrozen())?'':`<button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>`}
           ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
           <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>
           <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`:''}
           <button onclick="app.printBooths()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold">列印列表</button>
         </div>
         <div id="booths-print-area" class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-sm mb-3">攤位列表 (共 ${data.booths.length} 個攤位 · 由節目組負責更新)</h4>
-          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th><th class="px-2 py-1 text-right">操作</th></tr></thead><tbody class="divide-y">${data.booths.map(b=>`
-            <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number)}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name)}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td><td class="px-2 py-1 text-right" data-label="操作"><div class="flex gap-1 justify-end">${canUpload?`<button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`:''}</div></td></tr>
-          `).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請上傳攤位列表或新增</td></tr>'}</tbody></table></div>
-          <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。節目組副主席可在 Drive 更新 Google 試算表後點「同步最新」，或直接上傳 Excel 同步。</div>
+          <h4 class="font-bold text-sm mb-3">攤位列表 (共 ${data.booths.length} 個攤位)</h4>
+          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th>${canUpload?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.booths.map(b=>`
+            <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number)}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location)}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name)}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td>${canUpload?`<td class="px-2 py-1 text-right" data-label="操作"><div class="flex gap-1 justify-end"><button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div></td>`:''}</tr>
+          `).join('') || `<tr><td colspan="${canUpload?'7':'6'}" class="px-2 py-4 text-center text-slate-400">暫無攤位資料</td></tr>`}</tbody></table></div>
         </div>
       </div>
     `;
@@ -201,14 +178,6 @@ Object.assign(ScoutEventApp.prototype,{
     const rows=(data.booths||[]).map(b=>`
       <tr><td class="px-2 py-1 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number||'')}</td><td class="px-2 py-1 font-medium" data-label="名稱">${escapeHtml(b.booth_name||'')}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(b.location||'')}</td><td class="px-2 py-1" data-label="組別">${escapeHtml(b.group_name||'')}</td><td class="px-2 py-1" data-label="主題">${escapeHtml(b.theme||'')}<br><span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full">${escapeHtml(b.game_type||'')}</span></td><td class="px-2 py-1" data-label="負責人">${escapeHtml(b.responsible||'')}<br><span class="text-[10px] text-slate-500">${escapeHtml(b.contact||'')}</span></td>${b.description?`<td class="px-2 py-1 text-[10px]" data-label="描述">${escapeHtml(b.description)}</td>`:''}${canUpload?`<td class="px-2 py-1 text-right"><div class="flex gap-1 justify-end"><button onclick="app.openBoothForm('${b.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteBooth('${b.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div></td>`:''}</tr>`).join('');
     return `<div class="space-y-3">
-      ${src?this.driveSyncNotice():''}
-      ${src?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
-        <b><i class="fa-solid fa-cloud-arrow-down mr-1"></i>攤位資料來源（DRIVE 內，內建式不用跳轉）：</b>「${escapeHtml(src.name||'ISD2026 攤位資料')}」
-        <a href="https://drive.google.com/file/d/${escapeHtml(src.drive_file_id)}/view" target="_blank" class="text-sky-700 underline">📂 開啟 Drive 檔案</a>
-        ${groupFolder?` · <a href="https://drive.google.com/drive/folders/${escapeHtml(groupFolder)}" target="_blank" class="text-sky-700 underline">📁 節目組 Drive 資料夾</a>`:''}
-        <br>• 由<b>節目組副主席</b>負責更新；若為原生「Google 試算表」，點「同步最新」即 APP 內讀取最新內容。
-      </div>`:(groupFolder?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">攤位資料（DRIVE）：<a href="https://drive.google.com/drive/folders/${escapeHtml(groupFolder)}" target="_blank" class="text-sky-700 underline">📁 節目組 Drive 資料夾</a></div>`:'')}
-      ${this.dataFrozenNotice()}
       <div class="flex flex-wrap gap-2">
         ${(this.isDataFrozen&&this.isDataFrozen())?'':`<button onclick="app.syncBoothsFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新 (Drive 直接讀)</button>`}
         ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
@@ -228,7 +197,7 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('activities-tab-gamecards');
     if(!container) return;
     const data=this.getActivitiesData();
-    const canUpload=this.canUploadActivity();
+    const canUpload=!(this.isDataFrozen&&this.isDataFrozen())&&this.canUploadActivity();
     const themes=[
       {en:'Active Citizenship',cn:'積極公民',icon:'fa-solid fa-handshake',color:'from-rose-500 to-pink-500',desc:'認識社會議題（防騙、禁毒、保護兒童等），鼓勵同儕參與，成為推動社會進步的關鍵力量'},
       {en:'Innovative Advancement',cn:'創新變革',icon:'fa-solid fa-lightbulb',color:'from-amber-500 to-orange-500',desc:'以傳統童軍技能配以創新思維，在挑戰中尋找新機會，創新地認識問題及提出解決方案'},
@@ -239,6 +208,7 @@ Object.assign(ScoutEventApp.prototype,{
     ];
     container.innerHTML=`
       <div class="space-y-3">
+        ${this.builtin2026GameCards()}
         <!-- 主題節目六大範疇 (資料來源: 舊執行手冊「主題節目活動」頁) -->
         <div class="bg-gradient-to-r from-brand-700 to-fuchsia-600 text-white rounded-2xl p-4 relative overflow-hidden">
           <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4 text-6xl pointer-events-none"><i class="fa-solid fa-star"></i></div>
@@ -254,27 +224,56 @@ Object.assign(ScoutEventApp.prototype,{
             <div class="mt-2 text-[10px] text-white/70">參加者可在每個範疇完成活動後，於各攤位收集「領袖能力值」印章，集齊後到換領處領取紀念章。</div>
           </div>
         </div>
-        <div class="flex flex-wrap gap-2">
-          ${canUpload?`<button onclick="app.openGameCardForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-id-card mr-1"></i>上傳遊戲卡 (主任/副主席以上)</button>`:''}
+        ${canUpload?`<div class="flex flex-wrap gap-2">
+          <button onclick="app.openGameCardForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-id-card mr-1"></i>上傳遊戲卡 (主任/副主席以上)</button>
           <button onclick="app.downloadActivityTemplate('gamecard')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載遊戲卡範本</button>
-        </div>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">舊手冊有 <b>ISD2025_passport_v696_outline.pdf</b> 遊戲記錄冊 (集印章換禮物)。攤位按六大範疇分 A–F 區，各區攤位可參閱「攤位總表」，完成每個範疇最少兩個活動即可到換領處換取紀念章。新版可在 APP 內上傳遊戲卡設計，支援 <b>PDF／Word／圖片／Drive 連結</b>，Word 自動解析文字內嵌、PDF 整份內嵌，全部工作人員可查閱下載，手機友善</div>
+        </div>`:''}
         ${data.gameCards.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.gameCards.map(g=>`
           <div class="border rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(g.title||'遊戲卡')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(g.description||'')}</div><div class="text-[10px] text-slate-400 mt-1">上傳: ${escapeHtml(g.created_by||'')} | ${g.created_at?new Date(g.created_at).toLocaleString():''} | 版本: ${escapeHtml(g.version||'v1')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openGameCardForm('${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteGameCard('${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
+            <div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(g.title||'遊戲卡')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(g.description||'')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openGameCardForm('${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteGameCard('${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
             ${this.activityFilePreviewHTML(g,'gamecard')}
-            <div class="flex gap-2">${g.file_url?`<a href="${g.file_url}" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">開啟遊戲卡</a>`:''}${g.file_data||g.file_name?`<button onclick="app.downloadActivityFile('${g.id}','gamecard')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
+            <div class="flex gap-2">${g.file_url?`<a href="${g.file_url}" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>開啟遊戲卡 PDF</a>`:''}${g.file_data||g.file_name?`<button onclick="app.downloadActivityFile('${g.id}','gamecard')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
           </div>
-        `).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">暫無遊戲卡，相關主任、副主席或以上可上傳 (參考舊版 ISD2025_passport_v696_outline.pdf)</p>`}
+        `).join('')}</div>`:'<p class="text-xs text-slate-400 py-8 text-center">暫無遊戲卡</p>'}
       </div>
     `;
   }
 ,
-  renderActivitiesList(){
-    const container=document.getElementById('activities-tab-activities');
-    if(!container) return;
-    const data=this.getActivitiesData();
-    container.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${data.activities.map(a=>`<div class="border rounded-xl p-3 bg-white"><b class="text-[13px]">${escapeHtml(a.title)}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(a.type||'')} | ${escapeHtml(a.location||'')} | ${escapeHtml(a.description||'')}</div></div>`).join('') || '<p class="text-xs text-slate-400">暫無活動項目</p>'}</div></div>`;
+  /* 2026 內建場地圖／遊戲卡：來自 Drive 官方清單（凍結版），唔經上傳 */
+  builtin2026MapCards(){
+    const V='https://drive.google.com/file/d/';
+    const cards=[
+      {t:'附件2 — 參加旅團場地指示圖 2026 v2', d:'參加旅團入場、報到、攤位及典禮位置指示（最終版）', id:'1cDfA0sP0efL4KslEENXSXkUs5N8hTQb4'},
+      {t:'ISD2026 Site Setup Plan R10（SETUP PLAN-1）', d:'場地佈置平面圖（協調組最終版：帳篷／台位／攤位劃位）', id:'1iXCjSbaJsOnOhRtxJYtJ_wOiccZkyckt'},
+      {t:'Maps — 優異旅團 2026', d:'優異旅團檢閱及頒獎位置圖', id:'109fuzjSP_BzaB1LNrAuakijfcnkfuTSw'},
+      {t:'261003 Scout Marquee', d:'合作社／攤銷位', id:'1FAEATuZ2mYijhepXYb6cpS2l4EydF2SS'},
+    ];
+    return `<div class="space-y-2">
+      ${cards.map(c=>`<div class="border border-sky-200 rounded-xl p-3 bg-sky-50/40 space-y-2">
+        <div><b class="text-[13px]"><i class="fa-solid fa-file-pdf text-rose-600 mr-1"></i>${escapeHtml(c.t)}</b><div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(c.d)}</div></div>
+        <div class="flex gap-2 flex-wrap"><a href="${V}${c.id}/view" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-map mr-1"></i>開啟 PDF</a><a href="${V}${c.id}/view" target="_blank" onclick="event.preventDefault();app.mapPreview('${c.id}')" class="bg-white border border-sky-300 text-sky-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-eye mr-1"></i>內嵌預覽</a></div>
+        <div id="map-preview-${c.id}" class="hidden"><iframe src="${V}${c.id}/preview" class="w-full h-[420px] border rounded-xl" allow="autoplay"></iframe></div>
+      </div>`).join('')}
+      <div class="text-right"><a href="https://drive.google.com/drive/folders/1hyzzIuRGxEh9iya4YvcIsKyfCAZ3sVlG" target="_blank" class="text-sky-700 underline text-[11px] font-bold"><i class="fa-solid fa-folder-open mr-1"></i>場地圖 Drive 資料夾 ↗</a></div>
+    </div>`;
+  }
+,
+  mapPreview(id){ const el=document.getElementById('map-preview-'+id); if(el) el.classList.toggle('hidden'); }
+,
+  builtin2026GameCards(){
+    const V='https://drive.google.com/file/d/';
+    const cards=[
+      {t:'Game card-P（遊戲卡 2026 正式版）', d:'參加者攤位集點卡（印刷版式 A4）', id:'1mpkBkjpusBjQNOl-wafKRrhn-1KuB-di'},
+      {t:'攤位招牌（牌面 PDF）', d:'攤位門面招牌', id:'1Qn9ZzkU6dYgJp4yP-C1N_sNn4vNvHdsw'},
+    ];
+    return `<div class="space-y-2">
+      ${cards.map(c=>`<div class="border border-amber-200 rounded-xl p-3 bg-amber-50/40 space-y-2">
+        <div><b class="text-[13px]"><i class="fa-solid fa-file-pdf text-rose-600 mr-1"></i>${escapeHtml(c.t)}</b><div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(c.d)}</div></div>
+        <div class="flex gap-2 flex-wrap"><a href="${V}${c.id}/view" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>開啟 PDF</a><a href="${V}${c.id}/view" target="_blank" onclick="event.preventDefault();app.mapPreview('${c.id}')" class="bg-white border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-eye mr-1"></i>內嵌預覽</a></div>
+        <div id="map-preview-${c.id}" class="hidden"><iframe src="${V}${c.id}/preview" class="w-full h-[420px] border rounded-xl" allow="autoplay"></iframe></div>
+      </div>`).join('')}
+      <div class="text-right"><a href="https://drive.google.com/drive/folders/1GwVrZmGmjxy3riZwZvoErqS-WBDUJhEW" target="_blank" class="text-amber-800 underline text-[11px] font-bold"><i class="fa-solid fa-folder-open mr-1"></i>遊戲卡／招牌 Drive 資料夾 ↗</a></div>
+    </div>`;
   }
 ,
   /* ── 檔案預覽（地圖及遊戲卡共用）：Drive 連結→iframe 預覽；圖片→img；PDF→整份內嵌；Word/JSON→解析文字內嵌 ── */
@@ -640,10 +639,9 @@ Object.assign(ScoutEventApp.prototype,{
     return '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>自動同步：</b>各組只要在 Drive 內更新 Google Sheet 表單，APP 開啟即自動同步最新資料（也可手動點「同步最新」）。</div>';
   }
 ,
-  // v15.1：資料凍結提示（2026 正式資料最終版）
+  // v15.1→v15.3：資料凍結提示已按用戶要求移除（唔再顯示說明字眼）
   dataFrozenNotice(){
-    if(!(this.isDataFrozen&&this.isDataFrozen())) return '';
-    return '<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-800"><i class="fa-solid fa-lock mr-1"></i><b>2026 資料已凍結（活動前最終版）：</b>所有資料以 Google Sheet 正式版為準，只供查閱、<b>下載</b>及<b>列印</b>；上載／修改功能已關閉，有更正請聯絡秘書處／管理員。</div>';
+    return '';
   }
 ,
   // 開 APP 時自動從 Drive 讀取最新表格（靜默、拆解後內建顯示，不跳轉）
@@ -1367,7 +1365,26 @@ Object.assign(ScoutEventApp.prototype,{
     const sourceDocs=operationalOnly?data.docs.filter(d=>this.isOperationalDocument(d)):data.docs;
     const q=(document.getElementById('document-search')?.value||'').toLowerCase();
     const cat=(document.getElementById('document-category-filter')?.value||'');
-    const canUpload=this.canUploadDocument();
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const canUpload=!frozen&&this.canUploadDocument();
+    const notices=Array.isArray(this.eventData?.notices)?this.eventData.notices:[];
+    const noticesHTML=(!q&&!cat&&notices.length)?`
+        <div class="space-y-2">
+          <h4 class="font-extrabold text-[13px]"><i class="fa-solid fa-bullhorn mr-1 text-rose-600"></i>通告（2026 官方版・內建全文）</h4>
+          ${notices.map(n=>`
+          <div class="border border-rose-200 rounded-xl bg-rose-50/40 p-4 space-y-2">
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <div class="min-w-0"><b class="text-[13px]">${escapeHtml(n.title)}</b>
+                <div class="text-[10px] text-slate-500 mt-0.5">${n.date?escapeHtml(n.date):''}</div></div>
+              <div class="flex gap-1.5 flex-wrap flex-shrink-0">
+                <button onclick="app.toggleNoticeDetail('${n.id}')" class="bg-white border border-rose-300 text-rose-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-align-left mr-1"></i>內建全文</button>
+                <a href="${escapeHtml(n.drive_url)}" target="_blank" class="bg-rose-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟原檔</a>
+              </div>
+            </div>
+            ${n.summary?`<div class="text-[11px] text-slate-600 leading-relaxed">${escapeHtml(n.summary)}</div>`:''}
+            <div id="notice-detail-${n.id}" class="hidden whitespace-pre-line text-[11.5px] leading-relaxed bg-white border rounded-xl p-3 max-h-[420px] overflow-y-auto">${escapeHtml(n.text||'')}</div>
+          </div>`).join('')}
+        </div>`:'';
     const categories=[...new Set(sourceDocs.map(d=>d.category).filter(Boolean))].sort();
     const filtered=sourceDocs.filter(d=>{
       const hit=!q || (`${d.title||''}${d.category||''}${d.description||''}${d.uploaded_by||''}`).toLowerCase().includes(q);
@@ -1376,14 +1393,12 @@ Object.assign(ScoutEventApp.prototype,{
     });
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-700">
-          ${operationalOnly?'<b>特別加入的文件：</b>只顯示上載時明確指定加入執行手冊的特別文件；一般前線文件留在所屬部門中心，各類名單則由手冊原有專屬分頁帶入。':'<b>完整文件庫：</b>通告、指引、表格及籌備文件，公開可查閱；上傳需權限。'}
-        </div>
+        ${noticesHTML}
         <div class="flex gap-2 flex-wrap">
           ${canUpload?`<button onclick="app.openDocumentForm()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件</button>`:''}
           <input id="document-search" value="${escapeHtml(q)}" placeholder="搜尋文件/分類" oninput="app.renderDocumentsModule(${operationalOnly?"document.getElementById('exec-manual-panel'),true":''})" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
           <select id="document-category-filter" onchange="app.renderDocumentsModule(${operationalOnly?"document.getElementById('exec-manual-panel'),true":''})" class="px-3 py-2 border rounded-xl text-xs bg-white"><option value="">全部分類</option>${categories.map(c=>`<option value="${escapeHtml(c)}" ${cat===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select>
-          <button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>
+          ${canUpload?`<button onclick="app.downloadDocumentTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button>`:''}
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           ${filtered.map(d=>{
@@ -1505,6 +1520,11 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   toggleDocumentDetail(id){
     const area=document.getElementById('doc-detail-'+id);
+    if(area) area.classList.toggle('hidden');
+  }
+,
+  toggleNoticeDetail(id){
+    const area=document.getElementById('notice-detail-'+id);
     if(area) area.classList.toggle('hidden');
   }
 ,
