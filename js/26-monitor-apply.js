@@ -252,53 +252,31 @@ Object.assign(ScoutEventApp.prototype,{
   /* ===================== 申請中心 (Apply Hub) =====================
      集中所有申請表，一頁睇晒；各表仍保留於原卡片（物資/財務等）
      公開/登入/權限 標示清楚，一鍵直達該申請表 */
-  /* ===================== 執行手冊 (集中一卡，內部分頁) =====================
-     組織架構與聯絡、場地與活動總覽、典禮儀式、危機處理、通告及文件
-     全部收埋入「執行手冊」卡，進入後分頁切換（同申請中心一樣）。
-     v11（用戶定案 2026-08-31）：
-     · 「攤位總表」及「場地佈置總覽」已移入「場地與活動總覽」（內部分頁）
-     · 「箱頭紙」「許可證式樣」＋新增「失物認領」收埋入新分頁「各類附加資料」
-     · 舊連結（其他卡片嘅跳轉按鈕）一律自動轉到新位置，見 switchExecManualTab() 內嘅 moved 對照表 */
+  /* ===================== 執行手冊 ===================== */
   renderExecManualModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
-    if(!this.execManualSubTab) this.execManualSubTab='staff';
+    if(!this.execManualSubTab) this.execManualSubTab='activities';
     const tabs=[
-      {k:'staff',     icon:'fa-solid fa-sitemap',              label:'組織架構與聯絡'},
-      {k:'activities',icon:'fa-solid fa-map-location-dot',     label:'場地與活動總覽'},
-      {k:'ceremony',  icon:'fa-solid fa-crown',                label:'典禮儀式'},
-      {k:'crisis',    icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
+      {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地圖、攤位總表及遊戲卡'},
+      {k:'ceremony', icon:'fa-solid fa-crown', label:'典禮儀式'},
+      {k:'adult_awards', icon:'fa-solid fa-user-shield', label:'成年獎勵及 RUNDOWN'},
+      {k:'merit_award', icon:'fa-solid fa-trophy', label:'優異旅團獲獎'},
+      {k:'participants', icon:'fa-solid fa-people-group', label:'參加旅團名單'},
+      {k:'meal_box', icon:'fa-solid fa-bowl-food', label:'代訂餐盒'},
+      {k:'staff', icon:'fa-solid fa-sitemap', label:'組織架構與聯絡'},
+      {k:'crisis', icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
       {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
-      {k:'documents', icon:'fa-solid fa-file-shield',          label:'通告及文件'},
-      {k:'participants', icon:'fa-solid fa-people-group',      label:'參加旅團名單'},
-      {k:'meal_box',    icon:'fa-solid fa-bowl-food',          label:'代訂餐盒名單'},
-      {k:'misc',      icon:'fa-solid fa-layer-group',          label:'各類附加資料'},
-      {k:'data_2026', icon:'fa-solid fa-database',          label:'2026 資料總覽'}
+      {k:'documents', icon:'fa-solid fa-file-shield', label:'通告及文件'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
-    container.innerHTML=`
-      <div class="space-y-4">
-        <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div>
-        <div id="exec-manual-panel"></div>
-      </div>`;
+    container.innerHTML=`<div class="space-y-4"><div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div><div id="exec-manual-panel"></div></div>`;
     this.renderExecManualTab();
   }
 ,
   switchExecManualTab(tab){
-    // v11：舊分頁已搬家（攤位總表／場地佈置總覽 → 場地與活動總覽；箱頭紙／許可證式樣 → 各類附加資料）。
-    //      舊連結照樣行得：自動轉去新分頁並揀返對應嘅內部分頁。
-    const moved={
-      booth_master:{tab:'activities',activitiesSubTab:'booth_master'},
-      venue_setup:{tab:'activities',activitiesSubTab:'maps'},
-      box_label:{tab:'misc',miscSubTab:'box_label'},
-      permit:{tab:'misc',miscSubTab:'permit'}
-    };
-    if(moved[tab]){
-      const m=moved[tab];
-      if(m.activitiesSubTab) this.activitiesSubTab=m.activitiesSubTab;
-      if(m.miscSubTab) this.execManualMiscTab=m.miscSubTab;
-      tab=m.tab;
-    }
+    const moved={booth_master:{tab:'activities',activitiesSubTab:'booth_master'},venue_setup:{tab:'activities',activitiesSubTab:'maps'}};
+    if(moved[tab]){ const m=moved[tab]; this.activitiesSubTab=m.activitiesSubTab; tab=m.tab; }
     this.execManualSubTab=tab;
     document.querySelectorAll('[onclick^="app.switchExecManualTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
@@ -314,10 +292,11 @@ Object.assign(ScoutEventApp.prototype,{
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
+      adult_awards:()=>{ panel.innerHTML=`<div class="space-y-3">${this.ceremonyPart1RundownV5HTML()}${this.adultAwards2026HTML()}</div>`; },
+      merit_award:()=>{ panel.innerHTML=`<div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('merit_award',{scope:'exec'})}</div>`; },
       crisis:()=>this.renderCrisisModule(panel),
       participants:()=>this.renderExecManualParticipants(panel),
       meal_box:()=>{ this.renderExecManualMealBox(panel); },
-      misc:()=>this.renderExecManualMisc(panel),
       finance_guide:()=>{
         const fin=this.getFinanceData();
         const driveFiles=[
@@ -345,7 +324,6 @@ Object.assign(ScoutEventApp.prototype,{
       },
       // 執行手冊只收活動當日真正會用到的文件；會議、籌備及活動教材仍留在完整文件庫。
       documents:()=>this.renderDocumentsModule(panel,true),
-      data_2026:()=>{ this._execManual2026Panel=panel; this.renderExecManual2026Panel(panel); }
     };
     (map[this.execManualSubTab]||map.staff)();
   }
@@ -403,7 +381,6 @@ Object.assign(ScoutEventApp.prototype,{
 ,
 
   /* ===================== 執行手冊新分頁：上傳式＋箱頭紙 ＝====================
-     v10：依 2025 執行手冊對標，加入「參加旅團名單／場地佈置總覽／許可證式樣」三個上傳式分頁
      （PDF／Word／圖片／Drive 連結，Word→文字內嵌、PDF→整份內嵌、JSON→美化顯示），
      「箱頭紙」則係互動填寫＋一頁列印兩張。 */
   execManualAccentCls(accent){
@@ -429,6 +406,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   canManageExecManualUpload(section){
+    if(this.isDataFrozen&&this.isDataFrozen()) return false;
     if(!this.currentUser) return false;
     if(this.currentUser.mock_admin||this.isAdmin()) return true;
     const g=normalizeGroupName(this.currentUser.group_name||'');
@@ -453,14 +431,14 @@ Object.assign(ScoutEventApp.prototype,{
     </div>`;
   }
 ,
-  /* 上傳式分頁內容（回傳 HTML 字串）——v11：可以由「執行手冊」或「場地與活動總覽」等任何容器內嵌 */
+  /* 附件分頁內容（回傳 HTML 字串）——可內嵌於執行手冊或部門頁面。 */
   execManualUploadTabHTML(key, opts){
     const files=this.getExecManualFiles(key);
     const canUp=this.canManageExecManualUpload(key);
     const a=this.execManualAccentCls(opts.accent||'indigo');
     return `
       <div class="space-y-3">
-        <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>${escapeHtml(opts.title)}：</b>${escapeHtml(opts.intro||'')} 可上傳 <b>PDF／Word／圖片</b> 或貼 <b>Drive 連結</b>；Word 自動解析成文字內嵌、PDF 整份內嵌、JSON 檔會美化顯示。${canUp?'<b class="text-emerald-700">你可上傳／編輯。</b>':'<span class="text-slate-400">（只讀）</span>'}</div>
+        <div class="${a.box} border rounded-xl p-3 text-[11px] leading-relaxed text-slate-700"><b>${escapeHtml(opts.title)}</b>${opts.intro?`：${escapeHtml(opts.intro)}`:''}</div>
         <div class="flex flex-wrap gap-2">
           ${canUp?`<button onclick="app.openExecManualFileForm('${key}')" class="${a.btn} text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案 (${escapeHtml(opts.title)})</button>`:''}
           <button onclick="app.exportExecManualFiles('${key}')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 ${escapeHtml(opts.title)} JSON</button>
@@ -495,7 +473,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="exec-misc-tab-permit" class="${this.execManualMiscTab==='permit'?'':'hidden'}"></div>
         <div id="exec-misc-tab-lost_found" class="${this.execManualMiscTab==='lost_found'?'':'hidden'}">${this.renderLostFoundHTML()}</div>
       </div>`;
-    this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣 — 由協調組／行政組上載（PDF／Word／圖片／Drive 連結）'},document.getElementById('exec-misc-tab-permit'));
+    this.renderExecManualUploadTab('permit',{title:'許可證式樣',accent:'rose',empty:'暫無許可證式樣'},document.getElementById('exec-misc-tab-permit'));
   }
 ,
   switchExecManualMiscTab(tab){
@@ -512,15 +490,15 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   /* —— 攤位總表（2026 總表）內容：v11 由「場地與活動總覽」內部分頁顯示 —— */
   boothMasterPanelHTML(){
-    const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
-    const isPublic=!this.currentUser;
+    const booths=(this.getActivitiesData().booths||[]);
+    const rows=booths.slice().sort((a,b)=>String(a.booth_number||'').localeCompare(String(b.booth_number||''),undefined,{numeric:true}));
+    const ref2025=[
+      ['A01','主題節目組','主題節目攤位'],['A02','港島航空組','飛行模擬體驗'],['A03','港島手工藝坊','童軍繩結挑戰'],['B02','港島童軍總會','童軍技能創新'],['B03','灣仔區','AR 解碼謎團'],['C01','膳食回收組','衣物回收'],['D02','港島第6旅','海洋探險 2.0'],['E03','港島第243旅','正向價值大轉盤'],['F01','香港青少年服務中心','情緒急救站'],['F08','港島童軍聯會','快問快答']
+    ];
     return `<div class="space-y-3">
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>2026 攤位總表</b>（品牌推廣組分區＋編號；攤位名稱／預計內容／「十五五」元素／場地物資需求由「攤位計劃書」提交自動填入；已聯絡／已回覆／確認出席為聯絡進度）。${isPublic?'<b class="text-emerald-700">全公開可看</b>（聯絡人電話／電郵需登入先見）。':''}</div>
-      <div class="flex gap-2 flex-wrap">
-        <button onclick="app.openModule('booth')" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>提交／查看攤位計劃書（借用統計）</button>
-        ${this.isAdmin()||this.isCoordinatorViceChair()?`<button onclick="app.exportBoothExcel()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出總表 Excel</button><button onclick="app.exportBoothWord()" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出總表 Word</button><button onclick="app.printCoordArea('booth-master-print','2026 攤位總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印總表</button>`:''}
-      </div>
-      <div id="booth-master-print">${this.renderBoothMasterTableHTML(agg,isPublic)}</div>
+      <div class="flex items-center justify-between flex-wrap gap-2"><b class="text-[13px]"><i class="fa-solid fa-store mr-1 text-amber-600"></i>攤位總表</b><span class="text-[11px] text-slate-500">${rows.length} 個攤位</span></div>
+      <div class="table-responsive bg-white border rounded-xl"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-2 text-left">編號</th><th class="px-2 py-2 text-left">負責單位</th><th class="px-2 py-2 text-left">攤位名稱／內容</th><th class="px-2 py-2 text-left">聯絡人</th><th class="px-2 py-2 text-center">人手</th><th class="px-2 py-2 text-center">確認</th></tr></thead><tbody class="divide-y">${rows.map(b=>`<tr><td class="px-2 py-1.5 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number||'')}</td><td class="px-2 py-1.5" data-label="負責單位">${escapeHtml(b.group_name||'')}</td><td class="px-2 py-1.5" data-label="攤位名稱／內容"><b>${escapeHtml(b.booth_name||'')}</b>${b.description?`<span class="block text-[10px] text-slate-500">${escapeHtml(b.description)}</span>`:''}</td><td class="px-2 py-1.5" data-label="聯絡人">${escapeHtml(b.responsible||b.contact||'')}</td><td class="px-2 py-1.5 text-center" data-label="人手">${escapeHtml(String(b.staff_count||b.staff||'—'))}</td><td class="px-2 py-1.5 text-center" data-label="確認">${String(b.confirmed||'').toUpperCase()==='Y'?'<span class="text-emerald-700 font-bold">✓</span>':'—'}</td></tr>`).join('')||'<tr><td colspan="6" class="px-2 py-6 text-center text-slate-400">暫無攤位資料</td></tr>'}</tbody></table></div>
+      <details class="bg-slate-50 border rounded-xl p-3"><summary class="cursor-pointer text-[12px] font-bold text-slate-700">2025 攤位資料（參考）</summary><div class="table-responsive mt-3"><table class="min-w-full text-[11px]"><thead class="bg-white"><tr><th class="px-2 py-1 text-left">編號</th><th class="px-2 py-1 text-left">單位</th><th class="px-2 py-1 text-left">攤位</th></tr></thead><tbody class="divide-y">${ref2025.map(r=>`<tr>${r.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-mono':''}">${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>
     </div>`;
   }
 ,
@@ -603,34 +581,11 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   // ── 參加旅團名單分頁：結構表（同步／上傳 Excel）＋ 上傳檔案──
   renderExecManualParticipants(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
     const participants=this.getParticipantsData();
-    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
-    const canUpload=!frozen&&(this.canUploadDocument()||this.isAdmin()||this.rosterCanManage('participants'));
-    const canUp=!frozen&&this.canManageExecManualUpload('participants');
-    const showingCheckin=(this.participantsSub==='checkin');
-    panel.innerHTML=`
-      <div class="space-y-3">
-        <div class="flex gap-2 border-b pb-2 overflow-x-auto flex-wrap">
-          <button onclick="app.participantsSub='list';app.renderExecManualTab();" class="tab-btn ${!showingCheckin?'active':''}"><i class="fa-solid fa-people-group mr-1"></i> 參加旅團名單 (${participants.length})</button>
-          <button onclick="app.participantsSub='checkin';app.renderExecManualTab();" class="tab-btn ${showingCheckin?'active':''}"><i class="fa-solid fa-clipboard-check mr-1"></i> 旅團點名簽收</button>
-        </div>
-        ${!showingCheckin?`
-        <div class="flex flex-wrap gap-2">
-          ${canUpload?`<button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳名單（EXCEL／WORD／PDF）<input type="file" accept=".xlsx,.xls,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>
-          <button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`:''}
-          ${canUp?`<button onclick="app.openExecManualFileForm('participants')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳檔案</button>`:''}
-          <button onclick="app.exportExecManualFiles('participants')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出 JSON</button>
-        </div>
-        <div class="bg-white border rounded-xl p-4">
-          <h4 class="font-bold text-[13px] mb-2 flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>參加旅團名單 (共 ${participants.length} 旅團)</h4>
-          <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">編號</th><th class="px-2 py-1 text-left">區</th><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">總人數</th><th class="px-2 py-1 text-left">代訂餐盒</th><th class="px-2 py-1 text-left">領隊</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map((p,i)=>`<tr><td class="px-2 py-1 font-mono" data-label="編號">${escapeHtml(String(p.no||i+1))}</td><td class="px-2 py-1" data-label="區">${escapeHtml(p.area||'')}</td><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name||p.unit||'')}</td><td class="px-2 py-1" data-label="總人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="代訂餐盒">${p.meal_boxes?escapeHtml(String(p.meal_boxes)):'<span class="text-slate-300">—</span>'}</td><td class="px-2 py-1" data-label="領隊">${escapeHtml(p.leader||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
-        </div>
-        `:`
-        ${this.renderTroopCheckinHTML()}
-        `}
-      </div>`;
+    box.innerHTML=`<div class="space-y-3"><div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] text-emerald-950"><b><i class="fa-solid fa-people-group mr-1"></i>參加旅團名單</b><span class="ml-2">共 ${participants.length} 旅團</span></div><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('participants',{scope:'exec'})}</div></div>`;
   },
+
   /* 2026-10-04 各類餐食領取地點及供應時間（已定稿） */
   mealLogistics2026HTML(){
     const items=(this.eventData?.meal_logistics_2026)||[
@@ -655,29 +610,7 @@ Object.assign(ScoutEventApp.prototype,{
      名單來源：Excel／Word 上載（或「貼上文字」）；PDF 只可作附件內嵌預覽。 */
   renderExecManualMealBox(panel){
     const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
-    if(!this.mealBoxSub) this.mealBoxSub='troop';
-    const sub=this.mealBoxSub;
-    const btn=(k,icon,label)=>`<button onclick="app.mealBoxSub='${k}';app.renderExecManualMealBox();" class="tab-btn ${sub===k?'active':''}"><i class="${icon} mr-1"></i>${label}</button>`;
-    let body='';
-    if(sub==='troop'){
-      body=`<div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('meal_box',{scope:'exec'})}</div>
-        ${this.mealBoxDigestHTML()}`;
-    }else if(sub==='staff'){
-      body=`<div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('staff_meals',{scope:'exec'})}</div>
-        ${this.staffMealDigestHTML()}`;
-    }else{
-      body=this.mealMenuHTML();
-    }
-    box.innerHTML=`
-      <div class="space-y-3">
-        ${this.mealLogistics2026HTML()}
-        <div class="flex gap-2 flex-wrap">
-          ${btn('troop','fa-solid fa-bowl-food','旅團代訂餐盒')}
-          ${btn('staff','fa-solid fa-utensils','工作人員膳食點名')}
-          ${btn('menu','fa-solid fa-book-open','餐單')}
-        </div>
-        ${body}
-      </div>`;
+    box.innerHTML=`<div class="space-y-3"><div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[12px] text-rose-950"><b><i class="fa-solid fa-bowl-food mr-1"></i>旅團代訂餐盒</b></div><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('meal_box',{scope:'exec'})}</div></div>`;
   },
 
   staffMealDigestHTML(){
@@ -689,7 +622,7 @@ Object.assign(ScoutEventApp.prototype,{
     return `<div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-700 space-y-1">
       <b><i class="fa-solid fa-clipboard-check mr-1"></i>派發進度：</b>${done}/${rows.length} 已派
       <div class="flex gap-1.5 flex-wrap pt-1">${chips}</div>
-      <div class="text-[10px] text-slate-500">資料：ISD2026 staff list ver2 (FROZEN)・290 個名額（連 42 個人選待定佔位）。工作人員 A/B/C/D 飯餐及小食餐盒均由此名單核對。</div>
+      <div class="text-[10px] text-slate-500">工作人員餐膳名單。</div>
     </div>`;
   },
 
@@ -700,7 +633,7 @@ Object.assign(ScoutEventApp.prototype,{
     return `
       ${this.mealLogistics2026HTML()}
       <div class="bg-white border rounded-xl p-4 space-y-3">
-        <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open mr-1 text-rose-600"></i>餐單（2026 凍結版）</h4>
+        <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open mr-1 text-rose-600"></i>餐單</h4>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
           ${menu.map(m=>`<li class="bg-slate-50 border rounded-lg px-2.5 py-1.5">${escapeHtml(m)}</li>`).join('')}
         </ul>
@@ -788,7 +721,6 @@ Object.assign(ScoutEventApp.prototype,{
             <option value="leader" ${sort==='leader'?'selected':''}>按領隊</option>
             <option value="pending" ${sort==='pending'?'selected':''}>未簽收優先</option>
           </select>
-          <button onclick="app.exportTroopCheckinCSV()" class="bg-white border px-2 py-1 rounded-lg text-[11px] font-bold"><i class="fa-solid fa-file-csv mr-1"></i>匯出</button>
           <button onclick="app.printTroopCheckin()" class="bg-slate-900 text-white px-2 py-1 rounded-lg text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
         </div>
       </div>
@@ -812,15 +744,6 @@ Object.assign(ScoutEventApp.prototype,{
       const parts=key.split('|');
       fetch(this.gasUrl||localStorage.getItem(LS.gasUrl),{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey||localStorage.getItem(LS.apiKey),module:'Troop_Checkin',record:{row_key:key,no:parts[0]||'',unit:parts[1]||'',signed:r.signed?'Y':'',time:r.time||'',signed_by:r.signed_by||'',items:(r.items||[]).map((b,j)=>b?['紀念品袋','襟章','禮物袋','遊戲卡','期票/單據','簽到表/抽籤令'][j]:'').filter(Boolean).join('、'),prepared:r.prepared?'Y':'',receipt:r.receipt||'',updated_at:new Date().toISOString()}})}).catch(()=>{});
     }
-  },
-  exportTroopCheckinCSV(){
-    const troops=(this.eventData?.troop_checkin&&this.eventData.troop_checkin.length?this.eventData.troop_checkin:(this.eventData.participants||[])).filter(t=>t.unit_name||t.unit);
-    const st=this.getTroopCheckin();
-    const CHECK_ITEMS=['紀念品袋','襟章','禮物袋','遊戲卡','期票/單據','簽到表/抽籤令'];
-    const rows=[['編號','區','旅團','總人數','代訂餐盒','領隊','簽收','領取時間','簽收人','領取組件','預備','收據(簽名)']];
-    troops.forEach(t=>{ const r=st[this.troopCheckinRowKey(t)]||{}; rows.push([t.no||'',t.area||'',t.unit_name||t.unit||'',t.headcount||'',t.meal_boxes||'',t.leader||'',r.signed?'已簽收':'未簽收',r.time||'',r.signed_by||'',(r.items||[]).map((b,j)=>b?CHECK_ITEMS[j]:'').filter(Boolean).join('、'),r.prepared?'是':'',r.receipt||'']); });
-    const csv='\ufeff'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='troop_checkin.csv'; a.click();
   },
   printTroopCheckin(){ if(this.printCoordArea) this.printCoordArea('troop-checkin-print','旅團點名簽收'); },
 

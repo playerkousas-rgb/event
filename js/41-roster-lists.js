@@ -58,9 +58,14 @@ Object.assign(ScoutEventApp.prototype,{
     let rows;
     if(def.source==='participants'){
       rows=(this.getParticipantsData()||[]).map(p=>({
-        id:'pt_'+[p.area,p.unit_name||p.unit,p.section].map(x=>String(x||'').trim()).join('|'),
-        area:p.area||'', unit:p.unit_name||p.unit||'', section:p.section||'',
-        headcount:p.headcount||'', leader:p.leader||'', notes:p.notes||''
+        id:'pt_'+[p.no,p.area,p.unit_name||p.unit].map(x=>String(x||'').trim()).join('|'),
+        no:p.no||'', area:p.area||'', unit:p.unit_name||p.unit||'', section:p.section||'',
+        headcount:p.headcount||'', meal_boxes:p.meal_boxes||0, leader:p.leader||'', notes:p.notes||''
+      }));
+    } else if(def.source==='participants_meal_boxes'){
+      rows=(this.getParticipantsData()||[]).map(p=>({
+        id:'meal_'+[p.no,p.unit_name||p.unit].join('|'), no:p.no||'', area:p.area||'', unit:p.unit_name||p.unit||'',
+        qty_total:p.meal_boxes||0, headcount:p.headcount||'', leader:p.leader||'', notes:p.notes||''
       }));
     } else if(def.source==='ceremony_merit'){
       rows=this.rosterMeritRows(def);
@@ -130,7 +135,7 @@ Object.assign(ScoutEventApp.prototype,{
 
   rosterNeedsLogin(key){
     const def=this.rosterDef(key)||{};
-    return `名單內容<b>公開可查閱</b>；<b>上傳及${escapeHtml(def.tick_label||'點名')}須登入</b>，並由<b>${escapeHtml(def.owner_group||'')}</b>（${escapeHtml(def.owner_note||'')}）負責——請按右上角「登入」。`;
+    return `名單內容公開可查閱；${escapeHtml(def.tick_label||'點名')}由${escapeHtml(def.owner_group||'')}現場負責。`;
   },
 
   /* ══════════════ 渲染（可掛喺任何容器：典禮儀式分頁／執行手冊分頁／部門中心） ══════════════ */
@@ -150,10 +155,8 @@ Object.assign(ScoutEventApp.prototype,{
     scope=scope||'main';
     const canManage=this.rosterCanManage(key), canTick=this.rosterCanTick(key);
     const a=this.execManualAccentCls(def.accent||'indigo');
-    const attachKey=this.rosterAttachSection(key);
-    const files=this.getExecManualFiles(attachKey);
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
     const cols=def.columns||[];
-    const uploadLabel=def.upload_label||'上傳名單（EXCEL／WORD／PDF）';
     // 淺色按鈕一律寫明深色字（v14.1 修正：以前 <label> 嘅 onchange 屬性漏咗收尾引號，後面幾粒掣被吞入 text-white 嘅 label 內 → 白底白字睇唔到）
     const light='bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-bold';
     const meritReplyStatus=def.source==='ceremony_merit'&&typeof this.meritAwardReplyStatusHTML==='function'
@@ -164,22 +167,16 @@ Object.assign(ScoutEventApp.prototype,{
           <b class="text-[13px]"><i class="${def.icon} mr-1"></i>${escapeHtml(def.title)}</b>
           <span class="bg-white/70 border px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">負責組別：${escapeHtml(def.owner_group)}（${escapeHtml(def.owner_note)}）</span>
         </div>
-        <div>${escapeHtml(def.intro)}</div>
-        <div class="text-[10px] text-slate-500">位置：${escapeHtml(def.exec_location)}｜格式（${cols.length} 欄）：${cols.map(c=>escapeHtml(c.label)).join(' / ')}＋<b>${escapeHtml(def.tick_label)} TICK</b></div>
+        ${def.intro?`<div>${escapeHtml(def.intro)}</div>`:''}
         ${this.currentUser?'':'<div class=\"text-[10px] text-slate-500\">'+this.rosterNeedsLogin(key)+'</div>'}
-        ${canTick?`<div class="text-[10px] text-slate-600"><b>TICK 只加不減</b>（同紀念章派發一樣）：剔綠色格＝${escapeHtml(def.tick_label)}；要取消請喺同一行<b>同時剔紅色「修正」格</b>（TICK=Y＋修正=Y 先會取消），取消後兩格清空，之後如真係到場可再 TICK。直接剔走 TICK 唔會當取消。</div>`:''}
       </div>
       ${meritReplyStatus}
       <div class="flex flex-wrap gap-2 items-center">
-        ${(canManage&&!(this.isDataFrozen&&this.isDataFrozen()))?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>${escapeHtml(uploadLabel)}<input type="file" accept=".xlsx,.xls,.xlsm,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''"></label>`:''}
-        ${(canManage&&!(this.isDataFrozen&&this.isDataFrozen()))?`<button type="button" onclick="app.openRosterPasteForm('${def.key}')" class="${light}"><i class="fa-solid fa-paste mr-1"></i>貼上文字（由 PDF／網頁複製）</button>`:''}
-        ${canManage&&def.editable?`<button type="button" onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}
-        ${def.source==='participants'?'':`<button type="button" onclick="app.rosterDownloadTemplate('${def.key}')" class="${light}"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`}
+        ${!frozen&&canManage?`<label class="${a.btn} text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-arrow-up mr-1"></i>更新名單<input type="file" accept=".xlsx,.xls,.xlsm,.docx,.doc,.pdf" class="hidden" onchange="app.rosterImportFile('${def.key}',this.files[0]);this.value=''"></label><button type="button" onclick="app.openRosterPasteForm('${def.key}')" class="${light}"><i class="fa-solid fa-paste mr-1"></i>貼上資料</button>${def.editable?`<button type="button" onclick="app.openRosterRowForm('${def.key}')" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增一行</button>`:''}`:''}
         <button type="button" onclick="app.rosterExportExcel('${def.key}')" class="${light}"><i class="fa-solid fa-file-excel mr-1"></i>匯出 Excel</button>
         <button type="button" onclick="app.rosterExportWord('${def.key}')" class="${light}"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
         <button type="button" onclick="app.printRosterList('${def.key}','${scope}')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印／PDF ${escapeHtml(def.tick_label)}表</button>
-        ${canManage?`<button type="button" onclick="app.openExecManualFileForm('${attachKey}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paperclip mr-1"></i>上傳附件（PDF／Word／圖片／Drive 連結）</button>`:''}
-        ${this.rosterBackendReady()?`<button type="button" onclick="app.rosterPushToGas('${def.key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>同步名單至後端</button><button type="button" onclick="app.rosterPullFromGas('${def.key}')" class="${light}"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>由後端取回</button>`:''}
+        ${!frozen&&this.rosterBackendReady()?`<button type="button" onclick="app.rosterPushToGas('${def.key}')" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>儲存至後端</button><button type="button" onclick="app.rosterPullFromGas('${def.key}')" class="${light}"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>由後端取回</button>`:''}
       </div>
       <div class="bg-white border rounded-xl p-3 space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -196,8 +193,6 @@ Object.assign(ScoutEventApp.prototype,{
         </div>
         <div id="roster-print-${scope}-${key}" data-roster-body="${key}">${this.rosterBodyHTML(key)}</div>
       </div>
-      ${canManage&&!this.rosterRows(key).length?`<div class="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-4 text-[11px] leading-relaxed text-amber-900"><b>版位已預留、內容待上載：</b>① 按「下載 Excel 範本」取得欄位樣板 → ② 用 Excel 填入名單 → ③ 按「上傳名單（EXCEL／WORD／PDF）」匯入；若只有 PDF 檔，可直接「上傳附件」作內嵌預覽，或用「貼上文字」把 PDF 內嘅表格複製入來即時生成點名表。</div>`:''}
-      ${files.length?`<div class="space-y-2"><b class="text-[12px]"><i class="fa-solid fa-paperclip mr-1"></i>${escapeHtml(def.title)}附件（${files.length}）</b><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${files.map(f=>this.execManualFileCardHTML(f,attachKey,canManage)).join('')}</div></div>`:''}
     `;
   },
 
@@ -237,7 +232,8 @@ Object.assign(ScoutEventApp.prototype,{
   rosterTableHTML(key){
     const def=this.rosterDef(key);
     const rows=this.rosterViewRows(key);
-    const canManage=this.rosterCanManage(key), canTick=this.rosterCanTick(key);
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const canManage=!frozen&&this.rosterCanManage(key), canTick=this.rosterCanTick(key);
     const cols=def.columns||[];
     const hasMeritReply=def.source==='ceremony_merit';
     const meritReplyCell=r=>{
@@ -264,7 +260,7 @@ Object.assign(ScoutEventApp.prototype,{
           ${canTick&&def.attendee_field?`<td class="px-2 py-1" data-label="${escapeHtml(def.attendee_field)}"><input id="roster-attendee-${key}-${encodeURIComponent(r._key||'')}" value="${escapeHtml(r._note||'')}" placeholder="${escapeHtml(def.attendee_placeholder||'點名時填寫')}" onchange="app.rosterSetAttendee('${key}','${encodeURIComponent(r._key||'')}',this.value)" class="w-full px-2 py-1 border rounded-lg text-[11px]"></td>`:''}
           ${canTick?`<td class="px-2 py-1 text-[10px] text-slate-500" data-label="點名紀錄">${r._checked?`<span class="text-emerald-700 font-bold">✅ 已${escapeHtml(def.tick_label)}</span>${r._note?`<span class="block text-slate-700">到場：${escapeHtml(r._note)}</span>`:''}<span class="block">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:(r._correction||r._note?`<span class="text-rose-600">↩ 修正取消${r._note?'：'+escapeHtml(r._note):''}</span><span class="block text-slate-400">${escapeHtml(r._by||'—')} · ${escapeHtml(String(r._at||'').slice(0,16).replace('T',' '))}</span>`:'—')}</td>`:''}
           ${canManage&&def.editable?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openRosterRowForm('${key}','${escapeHtml(r.id||'')}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteRosterRow('${key}','${escapeHtml(r.id||'')}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}
-        </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canTick&&def.attendee_field?1:0)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}（版位已預留，可上傳 Excel／Word 或逐行新增）</td></tr>`}
+        </tr>`).join(''):`<tr><td colspan="${cols.length+(hasMeritReply?1:0)+(canTick?2:1)+(canTick&&def.attendee_field?1:0)+(canManage&&def.editable?1:0)}" class="px-2 py-6 text-center text-slate-400">尚未有${escapeHtml(def.title)}</td></tr>`}
       </tbody>
     </table></div>`;
   },
@@ -607,7 +603,7 @@ Object.assign(ScoutEventApp.prototype,{
 
   async rosterImportFile(key,file){
     const def=this.rosterDef(key); if(!def) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：名單只可下載、列印及點名，唔可以再整批上載','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     if(!this.rosterCanManage(key)){ showToast(`僅${def.owner_group}（${def.owner_note}）主任以上及管理層可上載名單`,'error'); return; }
     if(!file){ showToast('請選擇檔案','error'); return; }
     const name=String(file.name||'').toLowerCase();
@@ -743,7 +739,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   openRosterPasteForm(key){
     const def=this.rosterDef(key); if(!def) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：名單只可下載、列印及點名，唔可以再整批上載','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     if(!this.rosterCanManage(key)){ showToast(`僅${def.owner_group}（${def.owner_note}）主任以上及管理層可上載名單`,'error'); return; }
     const html=`
       <div class="text-[11px] text-slate-500 leading-relaxed mb-2">喺 PDF／Word／網頁選取名單（含表頭嗰行）複製後貼入呢度；每行一組，欄位用 Tab、兩格以上空白或「,」分隔。格式：${def.columns.map(c=>escapeHtml(c.label)).join(' → ')}</div>

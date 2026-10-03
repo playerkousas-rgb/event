@@ -40,41 +40,11 @@ Object.assign(ScoutEventApp.prototype,{
       booth_source=raw.booth_source||null;
     }
     // 模擬示範活動才加入示範預設資料；真實活動(ISD等)為預留版位(空白)
-    if(this.isDemoEvent()){
-    // 場地分佈圖預設：依攤位 A-F 主題分區 (黃竹坑香港警察學院)
-    if(maps.length===0){
-      maps=[
-        {id:'map_zone',title:'場地分佈圖 - 攤位 A-F 主題分區',description:'主營地按六大主題範疇分區：A 積極公民 · B 創新變革 · C 服務社群 · D 持續發展 · E 品格價值 · F 身心全健。正門入場後沿主營地中軸兩側設置攤位；大操場為典禮及檢閱場地；有蓋操場為拍照及午膳區；莫榮大樓為嘉賓茶聚地點。',file_url:'',file_data:'',file_name:'',created_by:'系統',created_at:''},
-        {id:'map_site',title:'場地指示圖（舊手冊）',description:'港島童軍繽紛日場地指示圖，可開啟查看實際場地分佈及出入口／報到處位置。',file_url:'https://sites.google.com/hkirscout.org.hk/isd/%E5%A0%B4%E5%9C%B0%E6%8C%87%E7%A4%BA%E5%9C%96?authuser=0',file_data:'',file_name:'場地指示圖',created_by:'系統',created_at:''}
-      ];
-    }
-    // 遊戲卡默認：六大範疇主題節目記錄冊 (集印章換紀念章)
-    if(gameCards.length===0){
-      gameCards=[{id:'gc_passport',title:'主題節目遊戲記錄冊（集印章換紀念章）',description:'「領袖能力值」蓋章記錄冊：完成六大範疇（積極公民／創新變革／服務社群／持續發展／品格價值／身心全健）每個範疇最少兩個活動，到換領處領取主題節目紀念章。可開啟查看設計。',file_name:'遊戲記錄冊',file_url:'https://drive.google.com/file/d/1SlQaC2XDyj6ZP6FH1edu7Xy1y6ct-5PW/view',file_data:'',created_by:'主題節目組',created_at:''}];
-    }
-    // 2025 真實攤位總表 (Copy of ISD2025 攤位資料)：攤位編號 + 負責單位真實，負責人用自創代號
-    if(booths.length===0){
-      const ZONE={A:'積極公民',B:'創新變革',C:'服務社群',D:'持續發展',E:'品格價值',F:'身心全健'};
-      const MOCKP=['蔡永康','陳美琪','區志豪','石嘉欣','盧振邦','何詠詩','高俊傑','潘凱琳','蘇文軒','羅芷晴','黃嘉玲','吳天佑','林曉彤','鄭啟明','梁志豪','謝詠詩','張子軒','楊家俊','黎芷珊','麥健豪','袁可欣','鄧偉強','傅美玲','戴文傑','葉俊朗','譚嘉儀','曾俊熙','沈潔瑩','廖啟光','郭詠珊','崔志明','陸文靜','馬國輝','汪凱晴','朱敬軒','伍雅雯','阮俊龍','董家欣'];
-      // [攤位號, 負責單位, 攤位名稱]
-      const raw=[
-        ['A01','主題節目組','積極公民·印章收集站'],['A02','港島航空組','飛行模擬體驗'],['A03','港島手工藝坊','童軍繩結挑戰'],['A04','港島手工藝坊','防騙小偵探'],['A05','港島手工藝坊','禁毒問答站'],['A06','港島地域步行宣傳委員會','步行宣傳互動站'],['A07','主題節目組','認識社會議題'],['A08','香港資助機構','資助機構資訊站'],
-        ['B01','港島航空組','飛行模擬挑戰'],['B02','港島童軍總會','童軍技能創新'],['B03','灣仔區','AR解碼謎團'],['B04','港島地域海童軍保安委員會','海上拯救大作戰'],['B05','港島海童軍小組','消失的密碼'],
-        ['C01','膳食回收組','衣物回收'],['C02','環境保護社會服務處','社區食物銀行'],['C03','食物回收站','食物回收行動'],['C04','港島地域發展部','直屬旅團招募'],['C05','港島地域發展部','直屬旅團宣傳'],['C07','港島童軍保安委員會','舊衣物回收'],['C08','港島童軍保安委員會','義工宣傳站'],
-        ['D01','港島西區','環保回收站'],['D02','港島第6旅','海洋探險2.0'],['D03','港島童軍總會','永續生活展'],['D04','港島地域海童軍保安委員會','永續生活展'],['D05','港島海童軍小組','永續生活展'],
-        ['E01','港島地域海童軍保安委員會','海上歷險'],['E02','港島地域國際及外交事務部','榮譽之路·光榮之旅'],['E03','港島第243旅','正向價值大轉盤'],['E04','港島第98旅','重視正向·無偏見'],['E05','港島第108旅','重視正向·無偏見'],
-        ['F01','香港青少年服務中心','情緒急救站'],['F02','港島童軍總會發展部','青少年精神健康展'],['F03','港島童軍總會發展部','守護三步曲'],['F04','中國基建及教育','升旗體驗站'],['F05','香港中華基督教青少年教育中心','身心特訓'],['F06','港島童軍總部','DIY專章工作坊'],['F07','港島第186旅','精神大作戰'],['F08','港島童軍聯會','快問快答']
-      ];
-      booths=raw.map((r,i)=>{
-        const zone=r[0].charAt(0);
-        return {id:'booth_'+(i+1),booth_number:r[0],booth_name:r[2],location:'主營地 '+zone+'區',group_name:r[1],theme:ZONE[zone]||'',game_type:'攤位',responsible:MOCKP[i%MOCKP.length],contact:'9'+String(50000000+i*137).slice(-7),description:'『'+ZONE[zone]+'』主題攤位，完成遊戲可獲「領袖能力值」印章',file_name:'',file_data:'',file_url:'',created_by:'系統',created_at:''};
-      });
-    }
-    }
     return {activities, maps, booths, gameCards, booth_source, drive_folder_link: (this.eventData['activities']?.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
   }
 ,
   saveActivitiesData(data){
+    if(this.isDataFrozen&&this.isDataFrozen()) return;
     const key=LS.activities(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
     this.eventData['activities']=data;
@@ -92,26 +62,20 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderActivitiesModule(box){
     const container=box||document.getElementById('module-content');
-    if(!this.activitiesSubTab) this.activitiesSubTab='maps';
-    if(!['maps','booths','booth_master','gamecards'].includes(this.activitiesSubTab)) this.activitiesSubTab='maps';
+    if(!['maps','booth_master','gamecards'].includes(this.activitiesSubTab)) this.activitiesSubTab='maps';
     const data=this.getActivitiesData();
-    const canUpload=this.canUploadActivity();
     container.innerHTML=`
       <div class="space-y-4">
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
-          <button onclick="app.switchActivitiesTab('maps')" class="tab-btn ${this.activitiesSubTab==='maps'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 地圖 (${data.maps.length})</button>
-          <button onclick="app.switchActivitiesTab('booths')" class="tab-btn ${this.activitiesSubTab==='booths'?'active':''}"><i class="fa-solid fa-table mr-1"></i> 攤位列表 (${data.booths.length})</button>
-          <button onclick="app.switchActivitiesTab('booth_master')" class="tab-btn ${this.activitiesSubTab==='booth_master'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位總表</button>
-          <button onclick="app.switchActivitiesTab('gamecards')" class="tab-btn ${this.activitiesSubTab==='gamecards'?'active':''}"><i class="fa-solid fa-id-card mr-1"></i> 遊戲卡 (${data.gameCards.length})</button>
+          <button onclick="app.switchActivitiesTab('maps')" class="tab-btn ${this.activitiesSubTab==='maps'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 場地圖</button>
+          <button onclick="app.switchActivitiesTab('booth_master')" class="tab-btn ${this.activitiesSubTab==='booth_master'?'active':''}"><i class="fa-solid fa-store mr-1"></i> 攤位總表（${data.booths.length}）</button>
+          <button onclick="app.switchActivitiesTab('gamecards')" class="tab-btn ${this.activitiesSubTab==='gamecards'?'active':''}"><i class="fa-solid fa-id-card mr-1"></i> 遊戲卡</button>
         </div>
         <div id="activities-tab-maps" class="${this.activitiesSubTab==='maps'?'':'hidden'}"></div>
-        <div id="activities-tab-booths" class="${this.activitiesSubTab==='booths'?'':'hidden'}"></div>
         <div id="activities-tab-booth_master" class="${this.activitiesSubTab==='booth_master'?'':'hidden'}">${this.boothMasterPanelHTML()}</div>
         <div id="activities-tab-gamecards" class="${this.activitiesSubTab==='gamecards'?'':'hidden'}"></div>
-      </div>
-    `;
+      </div>`;
     this.renderActivitiesMaps();
-    this.renderActivitiesBooths();
     this.renderActivitiesGameCards();
   }
 ,
@@ -128,20 +92,14 @@ Object.assign(ScoutEventApp.prototype,{
   renderActivitiesMaps(){
     const container=document.getElementById('activities-tab-maps');
     if(!container) return;
-    const data=this.getActivitiesData();
-    const canUpload=!(this.isDataFrozen&&this.isDataFrozen())&&this.canUploadActivity();
     container.innerHTML=`
       <div class="space-y-3">
-        ${this.builtin2026MapCards()}
-        ${data.maps.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.maps.map(m=>`
-          <div class="border rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between items-start"><div><b class="text-[13px]">${escapeHtml(m.title||'場地地圖')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(m.description||'')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openActivityMapForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteActivityMap('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
-            ${this.activityFilePreviewHTML(m,'map')}
-            <div class="flex gap-2">${m.file_url?`<a href="${m.file_url}" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-map mr-1"></i>開啟地圖</a>`:''}${m.file_data||m.file_name?`<button onclick="app.downloadActivityFile('${m.id}','map')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
-          </div>
-        `).join('')}</div>`:`<p class="text-xs text-slate-400 py-8 text-center">暫無地圖</p>`}
-      </div>
-    `;
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[12px] text-sky-950"><b><i class="fa-solid fa-map-location-dot mr-1"></i>ISD2026 Site Setup Plan R10-SETUP PLAN-1</b></div>
+        <div class="bg-white border rounded-2xl overflow-hidden">
+          <iframe src="assets/event-day/site-setup-plan-2026.pdf#view=FitH" title="ISD2026 Site Setup Plan R10-SETUP PLAN-1" class="w-full h-[72vh] min-h-[520px] border-0"></iframe>
+        </div>
+        <div class="flex gap-2 flex-wrap"><a href="assets/event-day/site-setup-plan-2026.pdf" target="_blank" rel="noopener" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>新分頁開啟</a><a href="assets/event-day/site-setup-plan-2026.pdf" download class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 PDF</a></div>
+      </div>`;
   }
 ,
   renderActivitiesBooths(){
@@ -183,12 +141,11 @@ Object.assign(ScoutEventApp.prototype,{
         ${canUpload?`<button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增攤位</button>
         <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel（同步到名單）<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleBoothExcelUpload(this.files[0])"></label>
         <button onclick="app.downloadActivityTemplate('booth')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>`:''}
-        <button onclick="app.printCoordArea('group-booth-print','2026 攤位總表（DRIVE 攤位資料）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
+        <button onclick="app.printCoordArea('group-booth-print','攤位資料總表')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
       </div>
       <div id="group-booth-print" class="bg-white border rounded-xl p-4">
-        <h4 class="font-bold text-sm mb-3">攤位資料總表 (共 ${(data.booths||[]).length} 個攤位 · 由節目組負責更新)</h4>
-        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th>${(data.booths||[]).some(b=>b.description)?'<th class="px-2 py-1 text-left">描述</th>':''}${canUpload?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${rows||'<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料，請同步 Drive 或上傳總表</td></tr>'}</tbody></table></div>
-        <div class="mt-3 text-[10px] text-slate-500">攤位欄位格式：攤位編號 · 攤位名稱 · 位置 · 組別/負責旅團 · 主題 · 遊戲類型 · 負責人 · 聯絡 · 描述。</div>
+        <h4 class="font-bold text-sm mb-3">攤位資料總表（共 ${(data.booths||[]).length} 個攤位）</h4>
+        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">攤位編號</th><th class="px-2 py-1 text-left">攤位名稱</th><th class="px-2 py-1 text-left">位置</th><th class="px-2 py-1 text-left">組別/負責旅團</th><th class="px-2 py-1 text-left">主題/遊戲類型</th><th class="px-2 py-1 text-left">負責人/聯絡</th>${(data.booths||[]).some(b=>b.description)?'<th class="px-2 py-1 text-left">描述</th>':''}${canUpload?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${rows||'<tr><td colspan="7" class="px-2 py-4 text-center text-slate-400">暫無攤位資料</td></tr>'}</tbody></table></div>
       </div>
     </div>`;
   }
@@ -196,100 +153,23 @@ Object.assign(ScoutEventApp.prototype,{
   renderActivitiesGameCards(){
     const container=document.getElementById('activities-tab-gamecards');
     if(!container) return;
-    const data=this.getActivitiesData();
-    const canUpload=!(this.isDataFrozen&&this.isDataFrozen())&&this.canUploadActivity();
-    const themes=[
-      {en:'Active Citizenship',cn:'積極公民',icon:'fa-solid fa-handshake',color:'from-rose-500 to-pink-500',desc:'認識社會議題（防騙、禁毒、保護兒童等），鼓勵同儕參與，成為推動社會進步的關鍵力量'},
-      {en:'Innovative Advancement',cn:'創新變革',icon:'fa-solid fa-lightbulb',color:'from-amber-500 to-orange-500',desc:'以傳統童軍技能配以創新思維，在挑戰中尋找新機會，創新地認識問題及提出解決方案'},
-      {en:'Serving Our Community',cn:'服務社群',icon:'fa-solid fa-hand-holding-heart',color:'from-emerald-500 to-teal-500',desc:'以同理心服務他人，學習觀察社會需要，關懷社區內有需要人士，成為能支持他人的領袖'},
-      {en:'Sustainable Development',cn:'持續發展',icon:'fa-solid fa-leaf',color:'from-green-500 to-lime-500',desc:'推動可持續生活模式，探索環境保護及聯合國可持續發展目標（UNSDGs）'},
-      {en:'Valuable Traits',cn:'品格價值',icon:'fa-solid fa-medal',color:'from-indigo-500 to-blue-500',desc:'培養正向價值觀及國民身份認同，建立良好品格，以身作則影響他人'},
-      {en:'Whole-Person Wellness',cn:'身心全健',icon:'fa-solid fa-heart-pulse',color:'from-violet-500 to-purple-500',desc:'強調身心平衡，涵蓋生理及心理健康管理，透過遊戲、身體覺察保持良好狀態'}
-    ];
-    container.innerHTML=`
-      <div class="space-y-3">
-        ${this.builtin2026GameCards()}
-        <!-- 主題節目六大範疇 (資料來源: 舊執行手冊「主題節目活動」頁) -->
-        <div class="bg-gradient-to-r from-brand-700 to-fuchsia-600 text-white rounded-2xl p-4 relative overflow-hidden">
-          <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4 text-6xl pointer-events-none"><i class="fa-solid fa-star"></i></div>
-          <div class="relative z-10">
-            <div class="flex items-center gap-2"><i class="fa-solid fa-star-of-life"></i><b class="text-[14px]">主題節目活動 — 六大範疇</b></div>
-            <p class="text-[11px] text-white/85 mt-1 leading-relaxed">「港島童軍繽紛日」以「童心傳承、明日領袖；發展潛能、服務社群」為主軸，參加者於不同攤位遊戲或指定活動後，可獲「領袖能力值」蓋章記錄。在<b>每個範疇完成最少兩個活動</b>後，可到「換領處」領取「主題節目紀念章」乙個。</p>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mt-3">
-              ${themes.map((t,i)=>`<div class="bg-white/15 backdrop-blur border border-white/25 rounded-xl p-2.5 flex flex-col gap-1.5">
-                <div class="w-8 h-8 bg-white/25 rounded-lg flex items-center justify-center text-sm"><i class="${t.icon}"></i></div>
-                <div class="font-bold text-[11px] leading-tight">${t.cn}<div class="text-[9px] text-white/70 font-normal">${t.en}</div></div>
-              </div>`).join('')}
-            </div>
-            <div class="mt-2 text-[10px] text-white/70">參加者可在每個範疇完成活動後，於各攤位收集「領袖能力值」印章，集齊後到換領處領取紀念章。</div>
-          </div>
-        </div>
-        ${canUpload?`<div class="flex flex-wrap gap-2">
-          <button onclick="app.openGameCardForm()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-id-card mr-1"></i>上傳遊戲卡 (主任/副主席以上)</button>
-          <button onclick="app.downloadActivityTemplate('gamecard')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載遊戲卡範本</button>
-        </div>`:''}
-        ${data.gameCards.length?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${data.gameCards.map(g=>`
-          <div class="border rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between"><div><b class="text-[13px]">${escapeHtml(g.title||'遊戲卡')}</b><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(g.description||'')}</div></div><div class="flex flex-col gap-1">${canUpload?`<button onclick="app.openGameCardForm('${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteGameCard('${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️ 刪除</button>`:''}</div></div>
-            ${this.activityFilePreviewHTML(g,'gamecard')}
-            <div class="flex gap-2">${g.file_url?`<a href="${g.file_url}" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>開啟遊戲卡 PDF</a>`:''}${g.file_data||g.file_name?`<button onclick="app.downloadActivityFile('${g.id}','gamecard')" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold">下載</button>`:''}</div>
-          </div>
-        `).join('')}</div>`:'<p class="text-xs text-slate-400 py-8 text-center">暫無遊戲卡</p>'}
-      </div>
-    `;
-  }
-,
-  /* 2026 內建場地圖／遊戲卡：來自 Drive 官方清單（凍結版），唔經上傳 */
-  builtin2026MapCards(){
-    const V='https://drive.google.com/file/d/';
     const cards=[
-      {t:'附件2 — 參加旅團場地指示圖 2026 v2', d:'參加旅團入場、報到、攤位及典禮位置指示（最終版）', id:'1cDfA0sP0efL4KslEENXSXkUs5N8hTQb4'},
-      {t:'ISD2026 Site Setup Plan R10（SETUP PLAN-1）', d:'場地佈置平面圖（協調組最終版：帳篷／台位／攤位劃位）', id:'1iXCjSbaJsOnOhRtxJYtJ_wOiccZkyckt'},
-      {t:'Maps — 優異旅團 2026', d:'優異旅團檢閱及頒獎位置圖', id:'109fuzjSP_BzaB1LNrAuakijfcnkfuTSw'},
-      {t:'261003 Scout Marquee', d:'合作社／攤銷位', id:'1FAEATuZ2mYijhepXYb6cpS2l4EydF2SS'},
+      {title:'Game card',file:'assets/event-day/game-card-2026.pdf'},
+      {title:'Game card-P',file:'assets/event-day/game-card-p-2026.pdf'}
     ];
-    return `<div class="space-y-2">
-      ${cards.map(c=>`<div class="border border-sky-200 rounded-xl p-3 bg-sky-50/40 space-y-2">
-        <div><b class="text-[13px]"><i class="fa-solid fa-file-pdf text-rose-600 mr-1"></i>${escapeHtml(c.t)}</b><div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(c.d)}</div></div>
-        <div class="flex gap-2 flex-wrap"><a href="${V}${c.id}/view" target="_blank" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-map mr-1"></i>開啟 PDF</a><a href="${V}${c.id}/view" target="_blank" onclick="event.preventDefault();app.mapPreview('${c.id}')" class="bg-white border border-sky-300 text-sky-700 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-eye mr-1"></i>內嵌預覽</a></div>
-        <div id="map-preview-${c.id}" class="hidden"><iframe src="${V}${c.id}/preview" class="w-full h-[420px] border rounded-xl" allow="autoplay"></iframe></div>
-      </div>`).join('')}
-      <div class="text-right"><a href="https://drive.google.com/drive/folders/1hyzzIuRGxEh9iya4YvcIsKyfCAZ3sVlG" target="_blank" class="text-sky-700 underline text-[11px] font-bold"><i class="fa-solid fa-folder-open mr-1"></i>場地圖 Drive 資料夾 ↗</a></div>
-    </div>`;
+    container.innerHTML=`<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">${cards.map(c=>`
+      <section class="bg-white border rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b flex items-center justify-between gap-2"><b class="text-[13px]"><i class="fa-solid fa-id-card text-amber-600 mr-1"></i>${c.title}</b><a href="${c.file}" target="_blank" rel="noopener" class="text-[11px] text-sky-700 font-bold underline">開啟 PDF</a></div>
+        <iframe src="${c.file}#view=FitH" title="${c.title}" class="w-full h-[62vh] min-h-[460px] border-0"></iframe>
+      </section>`).join('')}</div>`;
   }
 ,
-  mapPreview(id){ const el=document.getElementById('map-preview-'+id); if(el) el.classList.toggle('hidden'); }
+  builtin2026MapCards(){ return ''; }
 ,
-  builtin2026GameCards(){
-    const V='https://drive.google.com/file/d/';
-    const cards=[
-      {t:'Game card-P（遊戲卡 2026 正式版）', d:'參加者攤位集點卡（印刷版式 A4）', id:'1mpkBkjpusBjQNOl-wafKRrhn-1KuB-di'},
-      {t:'攤位招牌（牌面 PDF）', d:'攤位門面招牌', id:'1Qn9ZzkU6dYgJp4yP-C1N_sNn4vNvHdsw'},
-    ];
-    return `<div class="space-y-2">
-      ${cards.map(c=>`<div class="border border-amber-200 rounded-xl p-3 bg-amber-50/40 space-y-2">
-        <div><b class="text-[13px]"><i class="fa-solid fa-file-pdf text-rose-600 mr-1"></i>${escapeHtml(c.t)}</b><div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(c.d)}</div></div>
-        <div class="flex gap-2 flex-wrap"><a href="${V}${c.id}/view" target="_blank" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>開啟 PDF</a><a href="${V}${c.id}/view" target="_blank" onclick="event.preventDefault();app.mapPreview('${c.id}')" class="bg-white border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-eye mr-1"></i>內嵌預覽</a></div>
-        <div id="map-preview-${c.id}" class="hidden"><iframe src="${V}${c.id}/preview" class="w-full h-[420px] border rounded-xl" allow="autoplay"></iframe></div>
-      </div>`).join('')}
-      <div class="text-right"><a href="https://drive.google.com/drive/folders/1GwVrZmGmjxy3riZwZvoErqS-WBDUJhEW" target="_blank" class="text-amber-800 underline text-[11px] font-bold"><i class="fa-solid fa-folder-open mr-1"></i>遊戲卡／招牌 Drive 資料夾 ↗</a></div>
-    </div>`;
-  }
+  builtin2026GameCards(){ return ''; }
 ,
-  /* ── 檔案預覽（地圖及遊戲卡共用）：Drive 連結→iframe 預覽；圖片→img；PDF→整份內嵌；Word/JSON→解析文字內嵌 ── */
-  activityFilePreviewHTML(f,type){
-    if(!f) return '';
-    const isSiteUrl=!!f.file_url&&String(f.file_url).includes('sites.google');
-    const isImage=/^data:image\//.test(f.file_data||'');
-    const isPdf=/^data:application\/pdf/.test(f.file_data||'');
-    let out='';
-    if(isSiteUrl){ out+=`<div class="bg-slate-50 border rounded-xl p-3 text-[11px] text-slate-600"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>${escapeHtml(type==='map'?'場地指示圖為網頁，請按下方「開啟地圖」查看':'此項為網頁，請按下方「開啟」查看')}</div>`; }
-    if(f.file_url&&!isSiteUrl){ const src=String(f.file_url).includes('/preview')?f.file_url:String(f.file_url).replace('/view','/preview'); out+=`<iframe src="${escapeHtml(src)}" class="w-full h-[320px] border rounded-xl"></iframe>`; }
-    if(isImage){ out+=`<img src="${f.file_data}" class="w-full max-h-[400px] object-contain border rounded-xl">`; }
-    if(isPdf){ out+=`<iframe src="${f.file_data}" class="w-full h-[520px] border rounded-xl" title="完整PDF內嵌預覽"></iframe>`; }
-    if(f.file_text){ out+=`<details class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-900"><summary class="cursor-pointer font-bold"><i class="fa-solid fa-file-lines mr-1"></i>解析文字（JSON/Word 內嵌）</summary><div class="mt-2 whitespace-pre-line max-h-[240px] overflow-y-auto">${escapeHtml(f.file_text)}</div></details>`; }
-    return out;
-  }
+  mapPreview(){ }
+
 ,
   openActivityMapForm(editId=null){
     if(!this.canUploadActivity()){ showToast('僅相關主任、副主席或以上可上傳','error'); return; }
@@ -489,6 +369,7 @@ Object.assign(ScoutEventApp.prototype,{
       responsible:b.responsible||b.contact_person||'',
       contact:b.contact||'',
       description:b.description||b.content||'',
+      staff_count:b.staff_count||b.staff||'', confirmed:b.confirmed||'',
       created_by:b.created_by||'Google Sheet 正式資料',
       created_at:b.created_at||''
     };
@@ -688,7 +569,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async syncBoothsFromDrive(silent){
-    if(this.isDataFrozen&&this.isDataFrozen()){ if(!silent) showToast('2026 資料已凍結：攤位以 Google Sheet 正式資料為準，唔再由 Drive 同步','warning'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ if(!silent) showToast('活動資料目前不可更新','warning'); return; }
     const src=(this.getActivitiesData().booth_source)||{};
     const sheetId=src.sheet_id||src.drive_file_id;
     if(!sheetId){ if(!silent) showToast('尚未設定攤位資料來源 (booth_source)','warning'); return; }
@@ -790,7 +671,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleBudgetExcelUpload(file){
     if(!file) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：預算只可下載及列印，唔可以再上傳','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳預算','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
@@ -1000,7 +881,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleStaffExcelUpload(file){
     if(!file) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：工作人員名單只可下載及列印，唔可以再上傳','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     if(!(this.isAdmin() || (ROLE_HIERARCHY[this.currentUser?.role]||0)>=40)){ showToast('僅主任以上可上傳名單','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
@@ -1063,7 +944,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleScheduleExcelUpload(file){
     if(!file) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳日程','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     if(!((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅副主席以上可上傳日程','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
     try{
@@ -1081,13 +962,14 @@ Object.assign(ScoutEventApp.prototype,{
   getParticipantsData(){
     const key=LS.participants(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
-    if(local) return local;
     const raw=this.eventData['participants']||[];
+    if(this.isDataFrozen&&this.isDataFrozen()) return Array.isArray(raw)?raw:[];
+    if(local) return local;
     if(Array.isArray(raw)) return raw;
     return [];
   }
 ,
-  saveParticipantsData(data){ localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
+  saveParticipantsData(data){ if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
 ,
   participantHeaderMap(){ return { unit_name:['旅團','旅團名稱','單位','unit','unit_name','group','名稱'], section:['支部','section','支部名稱','組別'], headcount:['人數','headcount','count','參加人數'], notes:['備註','notes','說明','remark'], area:['區會','區','所屬區會','area','District'], leader:['領隊','旅長','負責人','领袖','leader','unit_leader'] }; }
 ,
@@ -1119,7 +1001,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async handleParticipantsExcelUpload(file){
     if(!file) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳名單','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     // v14：權限口徑同「名單＋點名」引擎一致（行政組主任以上／副主席以上／管理層），唔再另設一套
     if(!(this.canUploadDocument()||this.isAdmin()) && !this.rosterCanManage('participants')){ showToast('僅行政組（參加旅團名單負責組別）主任以上及管理層可上傳','error'); return; }
     const overlay=document.getElementById('savingOverlay'); if(overlay) overlay.classList.add('active');
@@ -1137,7 +1019,7 @@ Object.assign(ScoutEventApp.prototype,{
   /* v14：參加旅團名單上傳統一入口 — EXCEL 走結構表；WORD（含表格）解析成行列；PDF 只作附件內嵌預覽（v14.1：不再接受 CSV） */
   async handleParticipantsUploadFile(file){
     if(!file) return;
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳名單','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     const name=String(file.name||'').toLowerCase();
     // EXCEL 一律行經「匯入預覽」（可揀取代／附加，TICK 唔會冇）；舊入口 handleParticipantsExcelUpload 保留俾其他模組用
     if(/\.csv$/.test(name)){ showToast('系統已不接受 CSV：請用 Excel 開啟後「另存新檔」為 .xlsx 再上傳','error'); return; }
@@ -1188,7 +1070,7 @@ Object.assign(ScoutEventApp.prototype,{
       <input type="hidden" id="gamecard-form-mode" value="${existing?'edit':'create'}">
       <input type="hidden" id="gamecard-form-id" value="${existing?.id||''}">
       <div class="space-y-3">
-        <div><label class="text-[11px] font-bold">遊戲卡標題 *</label><input id="gamecard-title" value="${escapeHtml(existing?.title||'')}" required placeholder="例如 遊戲記錄冊 / 集印卡" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
+        <div><label class="text-[11px] font-bold">遊戲卡標題 *</label><input id="gamecard-title" value="${escapeHtml(existing?.title||'')}" required placeholder="例如 活動遊戲卡" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">描述</label><textarea id="gamecard-desc" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm mt-1">${escapeHtml(existing?.description||'')}</textarea></div>
         <div><label class="text-[11px] font-bold">版本</label><input id="gamecard-version" value="${escapeHtml(existing?.version||'v1')}" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div>
         <div><label class="text-[11px] font-bold">上傳遊戲卡文件 (PDF/Word/圖片)</label><input type="file" id="gamecard-file" accept=".jpg,.jpeg,.png,.pdf,.docx,.doc" class="w-full text-xs mt-1"></div>
@@ -1294,7 +1176,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   // v14.1：範本一律 Excel（冇 CSV）
   downloadActivityTemplate(type){
-    const T={booth:{name:'攤位範本.xlsx',grid:[['booth_number','booth_name','location','group_name','theme','game_type','responsible','contact','description'],['A01','童軍技能挑戰','主營地 A區','港島第1旅','繩結','挑戰','負責人','91234567','繩結挑戰'],['A02','定向追蹤','主營地 A區','港島第2旅','定向','定向','負責人','92345678','定向追蹤遊戲']]},map:{name:'地圖範本.xlsx',grid:[['title','description','file_url'],['場地分佈圖','主營地及警察學院分佈','https://drive.google.com/file/d/.../view'],['泊車位置圖','停車場及車輛進出路線','']]},gamecard:{name:'遊戲卡範本.xlsx',grid:[['title','description','version','file_url'],['遊戲記錄冊','集印章換禮物，含10個攤位印章','v1','https://drive.google.com/file/d/.../view'],['積極公民獎章回條','幼童軍支部回條','v1','']]}};
+    const T={booth:{name:'攤位範本.xlsx',grid:[['booth_number','booth_name','location','group_name','theme','game_type','responsible','contact','description'],['A01','童軍技能挑戰','主營地 A區','港島第1旅','繩結','挑戰','負責人','91234567','繩結挑戰'],['A02','定向追蹤','主營地 A區','港島第2旅','定向','定向','負責人','92345678','定向追蹤遊戲']]},map:{name:'地圖範本.xlsx',grid:[['title','description','file_url'],['場地分佈圖','主營地及警察學院分佈','https://drive.google.com/file/d/.../view'],['泊車位置圖','停車場及車輛進出路線','']]},gamecard:{name:'遊戲卡範本.xlsx',grid:[['title','description','version','file_url'],['活動遊戲卡','活動用卡','v1','https://drive.google.com/file/d/.../view']]}};
     const d=T[type]; if(!d) return;
     downloadExcel(d.name,d.grid,{sheet:'範本'});
   }
@@ -1370,7 +1252,7 @@ Object.assign(ScoutEventApp.prototype,{
     const notices=Array.isArray(this.eventData?.notices)?this.eventData.notices:[];
     const noticesHTML=(!q&&!cat&&notices.length)?`
         <div class="space-y-2">
-          <h4 class="font-extrabold text-[13px]"><i class="fa-solid fa-bullhorn mr-1 text-rose-600"></i>通告（2026 官方版・內建全文）</h4>
+          <h4 class="font-extrabold text-[13px]"><i class="fa-solid fa-bullhorn mr-1 text-rose-600"></i>通告</h4>
           ${notices.map(n=>`
           <div class="border border-rose-200 rounded-xl bg-rose-50/40 p-4 space-y-2">
             <div class="flex justify-between items-start gap-2 flex-wrap">
@@ -1568,8 +1450,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(local) return normalize(local);
     if(!this.isDemoEvent()) return normalize([]); // 真實活動：預留版位
     return normalize(this.eventData['theme_badges']||[
-      {id:'badge_1',title:'Scout for SDGs 活動主題章',branch:'小童軍 / 幼童軍 / 童軍 / 深資童軍 / 樂行童軍',requirements:'完成指定攤位任務及集印，認識可持續發展目標。',description:'主題章資料公開可看；詳細參加條件可由副主席以上上傳更新。',created_by:'主題節目組',created_at:todayISO()},
-      {id:'badge_2',title:'積極公民獎章活動記錄',branch:'幼童軍及童軍',requirements:'參與活動並完成指定服務/學習紀錄。',description:'可下載或查閱回條、記錄冊及參與條件。',created_by:'行政組',created_at:todayISO()}
+
     ]);
   }
 ,

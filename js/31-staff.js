@@ -6,7 +6,8 @@ Object.assign(ScoutEventApp.prototype,{
     // v8.2：JSON 為單一事實來源。localStorage 只允許保留帶 _userEdited 標記的項目
     // （防止過往 localStorage 快取住舊的排序 / 舊聯絡表，強制刷新也沒用的問題）。
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
-    const local=JSON.parse(localStorage.getItem(key)||'null');
+    let local=JSON.parse(localStorage.getItem(key)||'null');
+    if(this.isDataFrozen&&this.isDataFrozen()) local=null;
     const jsonStaff=this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
     let raw;
     if(this.isDemoEvent()){
@@ -130,6 +131,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveStaffData(data){
+    if(this.isDataFrozen&&this.isDataFrozen()) return;
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
     // v8.2：正式活動中把即將寫入 localStorage 的項目全部打上 _userEdited，
     // 這樣 getStaffData() 才會保留這些改動（其他項目仍以 JSON 為準）。
@@ -190,10 +192,11 @@ Object.assign(ScoutEventApp.prototype,{
     if(!container) return;
     const data=this.getStaffData();
     const org=data.org_chart||[];
-    const isAdmin=this.isAdmin();
-    const isExec=this.isExecViceOrChair();
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const isAdmin=!frozen&&this.isAdmin();
+    const isExec=!frozen&&this.isExecViceOrChair();
     const myLvl=(ROLE_HIERARCHY[this.currentUser?.role]||0);
-    const canAddNode=myLvl>=60 || isAdmin || isExec; // vice_chair or above
+    const canAddNode=!frozen&&(myLvl>=60 || isAdmin || isExec); // vice_chair or above
     // Build groups
     const groups={};
     org.forEach(node=>{
@@ -210,15 +213,9 @@ Object.assign(ScoutEventApp.prototype,{
         <button onclick="app.exportStaffData('org_chart')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
         ${(canAddNode||isAdmin||isExec)?`<button onclick="app.downloadStaffTemplate('org')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
         ${(this.isDataFrozen&&this.isDataFrozen())?'':`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 Excel／組織圖檔案<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'org_chart');this.value=''"></label>`}`:''}
-        ${(data.staff_source)?`<button onclick="app.syncOrgChartFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新架構 (Google Sheet)</button>`:''}
+        ${(!(this.isDataFrozen&&this.isDataFrozen())&&data.staff_source)?`<button onclick="app.syncOrgChartFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步架構</button>`:''}
       </div>
-      ${(data.staff_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-800 leading-relaxed"><i class="fa-solid fa-sync mr-1"></i><b>內置讀取：</b>組織架構直接讀取「${escapeHtml(data.staff_source.name||'Google Sheet')}」（行政組在該試算表更新職位／人名），APP 開啟即自動同步最新資料，也可按上方「同步最新架構」手動更新。</div>`:''}
-      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3.5 text-[11px] leading-relaxed text-indigo-950 shadow-sm">
-        <div class="font-bold text-[13px] text-indigo-900 mb-1.5 flex items-center"><i class="fa-solid fa-sitemap mr-2 text-indigo-600"></i>組織架構樹形圖 (各副主席可新增下屬)</div>
-        • <b>顧問團是兩人、兩行：黃偉安；何家騏</b>（審核活動目的、政策指導與主禮嘉賓確認）<br>
-        • <b>樹形圖層級（已更新）：</b> L1=顧問／主席／秘書處, L2=執行副主席, L3=副主席層 (各副主席可新增下屬崗位及人名), L4=總主任, L5=主任, L6=工作人員<br>
-        • <b>副主席權限：</b>各副主席可於自己組別下點擊「+ 新增下屬」或「+ 新增崗位」，為所屬組別新增下屬崗位及人名；行政副主席、執行副主席或主席可修改全部
-      </div>
+
       <div class="bg-white border rounded-2xl p-4">
         <h4 class="font-bold text-sm mb-3"><i class="fa-solid fa-sitemap text-indigo-600 mr-2"></i>組織架構樹形圖 (各副主席可新增下屬)</h4>
         <div class="space-y-6">`;
@@ -259,9 +256,7 @@ Object.assign(ScoutEventApp.prototype,{
       });
       html+=`</div></div>`;
     });
-    html+=`</div></div>
-      <div class="bg-white border rounded-xl p-3 text-[11px] text-slate-500"><b>樹形圖說明（已更新編號）：</b> L1=顧問（黃偉安／何家騏 各佔一行）／主席／秘書處, L2=執行副主席, L3=副主席層 (可新增下屬), L4=總主任, L5=主任, L6=工作人員。行政副主席、執行副主席、主席可修改全部；各副主席可新增自己組別下的崗位及人名。點擊「新增下屬」可自動關聯上級崗位。</div>
-    </div>`;
+    html+=`</div></div></div>`;
     container.innerHTML=html;
   }
 ,
@@ -382,22 +377,17 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getStaffData();
     const contacts=(data.contacts||[]).slice().sort((a,b)=>this.staffSortKey(a)-this.staffSortKey(b));
     const loggedIn=!!this.currentUser;
-    const canManage=this.canManageStaffContacts();
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
+    const canManage=!frozen&&this.canManageStaffContacts();
     container.innerHTML=`
       <div class="space-y-4">
         ${!loggedIn?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center gap-2 justify-between"><span><i class="fa-solid fa-lock mr-1"></i><b>聯絡資料受保護：</b>姓名、職銜、組別公開可看；電話及 Email 需登入後才顯示（請按右上角「登入」）。</span></div>`:''}
         <div class="flex flex-wrap gap-2">
-          ${canManage?`<button onclick="app.syncOrgChartFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新架構 (Google Sheet)</button>
-          ${(this.isDataFrozen&&this.isDataFrozen())?'':`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleStaffExcelUpload(this.files[0])"></label>`}
-          <button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>單欄新增</button>
-          <button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
-          ${(this.isDataFrozen&&this.isDataFrozen())?'':`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 Excel／JSON<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts');this.value=''"></label>`}`:''}
+          ${canManage?`<button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增聯絡資料</button>`:''}
           ${loggedIn?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
           <input id="staff-search" placeholder="${loggedIn?'搜尋姓名/組別/電話':'搜尋姓名/組別/職務'}" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
-        ${(data.staff_source)?this.driveSyncNotice():''}
-        ${(data.contact_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900">📞 聯絡表已連通：「${escapeHtml(data.contact_source.name||'聯絡表 2026')}」（gid ${escapeHtml(String(data.contact_source.gid||''))}）。行政組在該分頁更新電話／電郵後，APP 開啟即自動同步。 ${canManage?`<button onclick="app.syncContactListFromDrive()" class="ml-1 underline font-bold">立即同步</button>`:''}</div>`:''}
-        ${(data.staff_source && loggedIn && !data.contact_source)?`<div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] text-sky-900">👥 名單來源：「${escapeHtml(data.staff_source.name||'Org Chart')}」由行政組在 Google Sheet 更新。</div>`:''}
+        ${(data.contact_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900">📞 聯絡資料</div>`:''}
         <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">級別</th><th class="px-3 py-2 text-left">職位</th><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">電郵</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
         <div id="staff-contacts-cards" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:hidden"></div>
       </div>
@@ -409,7 +399,7 @@ Object.assign(ScoutEventApp.prototype,{
     const q=(document.getElementById('staff-search')?.value||'').toLowerCase();
     const data=this.getStaffData();
     const loggedIn=!!this.currentUser;
-    const canManage=this.canManageStaffContacts();
+    const canManage=!(this.isDataFrozen&&this.isDataFrozen())&&this.canManageStaffContacts();
     // 未登入：不以電話欄位搜尋（避免藉搜尋反查電話）
     let list=data.contacts||[];
     if(q) list=list.filter(c=> (loggedIn?(c.name+c.role_title+c.group_name+(c.level||'')+c.contact+(c.email||'')+c.job_desc):(c.name+c.role_title+c.group_name+(c.level||'')+c.job_desc)).toLowerCase().includes(q));
@@ -494,7 +484,7 @@ Object.assign(ScoutEventApp.prototype,{
   // v14.1：名單／架構／職務檔案只收 Excel（.xlsx／.xls）或 JSON，唔再收 CSV
   async handleStaffFileUpload(file, type){
     if(!file){ showToast('請選擇檔案','warning'); return; }
-    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('2026 資料已凍結（活動前最終版）：只可下載及列印，唔可以再上傳','error'); return; }
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','error'); return; }
     // 名單(含聯絡資料)上傳需管理權；架構圖上傳需副主席以上（與介面按鈕一致）
     if(type==='contacts' && !this.canManageStaffContacts()){ showToast('無權限上傳名單','error'); return; }
     if(type==='org_chart' && (ROLE_HIERARCHY[this.currentUser?.role]||0)<60 && !this.isAdmin() && !this.isExecViceOrChair()){ showToast('僅副主席以上/管理員可上傳架構','error'); return; }
@@ -556,11 +546,10 @@ Object.assign(ScoutEventApp.prototype,{
     const canEdit=!frozen&&(isAdmin||this.isExecViceOrChair()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60); // 副主席以上可改
     container.innerHTML=`
       <div class="space-y-4">
-        ${canEdit||!frozen?`<div class="flex flex-wrap gap-2">
+        ${canEdit?`<div class="flex flex-wrap gap-2">
           ${canEdit?`<button onclick="app.openJobDutyFormModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增職務大綱</button>`:''}
           <button onclick="app.downloadStaffTemplate('duties')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
-          <label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-word mr-1"></i>上傳 Word 轉 JSON<input type="file" accept=".docx,.doc" class="hidden" onchange="app.handleWordUpload(this.files[0])"></label>
-          <label class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>上傳 Excel／JSON<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'job_duties');this.value=''"></label>
+
           <button onclick="app.exportStaffData('job_duties')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>
         </div>`:''}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${duties.map(d=>`
@@ -575,6 +564,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openJobDutyFormModal(id=null){
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','warning'); return; }
     if(!(this.isAdmin()||this.isExecViceOrChair()||(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)){ showToast('僅行政副主席/執行副主席/主席或副主席以上可修改','error'); return; }
     const data=this.getStaffData();
     const existing=id?data.job_duties.find(d=>d.id===id):null;
