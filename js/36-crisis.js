@@ -287,7 +287,7 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-[11px] text-red-900 shadow-sm">
-          <b>危機處理：</b>應變指引、急救、保險、危機手冊、應變小組及緊急聯絡，公開可看；僅修改需副主席以上登入。
+          <b>危機處理：</b>應變指引、急救、保險、危機手冊、應變小組及緊急聯絡，公開可看；<b>危機應變小組成員電話只限副主席及以上查閱</b>；僅修改需副主席以上登入。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchCrisisTab('docs')" class="tab-btn ${this.crisisSubTab==='docs'?'active':''}"><i class="fa-solid fa-book mr-1"></i> 應變指引 (急救·保險)</button>
@@ -325,6 +325,7 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getCrisisData();
     const accidents=Array.isArray(data.accidents)?data.accidents:[];
     const canEdit=!!this.currentUser; // 任何已登入領袖/工作人員均可填報意外
+    const canExportAcc=this.canSeeContactInfo(null,'crisis'); // v15.3：匯出只限行政組／副主席以上
     let html=`<div class="space-y-4">
       <div class="bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-[11px] leading-relaxed text-rose-950 shadow-sm">
         <div class="font-bold text-[13px] text-rose-900 mb-1 flex items-center"><i class="fa-solid fa-file-waveform mr-1.5 text-rose-600"></i>香港童軍總會 意外事件報告表 (Accident Report Form - AR-1)</div>
@@ -334,7 +335,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>
       <div class="flex gap-2 flex-wrap items-center">
         <button onclick="app.openAccidentReportForm()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow"><i class="fa-solid fa-plus mr-1"></i>填寫新意外事件報告表</button>
-        <button onclick="app.exportAccidentReports()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出所有意外紀錄 (JSON)</button>
+        ${canExportAcc?`<button onclick="app.exportAccidentReports()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>匯出所有意外紀錄 (JSON)</button>`:''}
         <span class="text-xs text-slate-500 ml-auto">共 <b>${accidents.length}</b> 宗意外紀錄</span>
       </div>`;
 
@@ -348,6 +349,9 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
     } else {
       html+=`<div class="space-y-3">`;
+      // v15.3：意外報告內的個人電話（傷者／家長／領袖／證人）＝行政組／副主席以上先睇到
+      const showAccPhone=this.canSeeContactInfo(null,'crisis');
+      const accPhone=v=>showAccPhone?escapeHtml(v||''):this.contactLockHTML('副主席以上可見','意外報告聯絡電話只限行政組／副主席及以上查閱');
       accidents.forEach((acc, idx)=>{
         html+=`
         <div class="border border-slate-200 rounded-2xl p-4 sm:p-5 bg-white shadow-sm space-y-3">
@@ -390,9 +394,9 @@ Object.assign(ScoutEventApp.prototype,{
                 • 性別/年齡：${escapeHtml(acc.victim_gender||'')} / ${escapeHtml(acc.victim_age||'')}歲 (出生日期: ${escapeHtml(acc.victim_dob||'')})<br>
                 • 身分證：${escapeHtml(acc.victim_hkid||'')}<br>
                 • 旅團/身份：${escapeHtml(acc.victim_group_no||'')} (${escapeHtml(acc.victim_member_type||'')})<br>
-                • 電話：${escapeHtml(acc.victim_phone||'')}<br>
+                • 電話：${accPhone(acc.victim_phone)}<br>
                 • 地址：${escapeHtml(acc.victim_address||'')}<br>
-                • 家長/緊急聯絡人：${escapeHtml(acc.parent_name||'')} (${escapeHtml(acc.parent_phone||'')})
+                • 家長/緊急聯絡人：${escapeHtml(acc.parent_name||'')} (${accPhone(acc.parent_phone)})
               </div>
               <div>
                 <b class="text-slate-900 text-xs block mb-1">【活動與主辦資料】</b>
@@ -400,7 +404,7 @@ Object.assign(ScoutEventApp.prototype,{
                 • 活動日期時間：${escapeHtml(acc.event_date||'')} ${escapeHtml(acc.event_time||'')}<br>
                 • 活動地點：${escapeHtml(acc.event_location||'')}<br>
                 • 所屬地域/區：${escapeHtml(acc.region||'')} / ${escapeHtml(acc.district||'')}<br>
-                • 負責領袖：${escapeHtml(acc.leader_name||'')} (${escapeHtml(acc.leader_role||'')}, 電話: ${escapeHtml(acc.leader_phone||'')})<br>
+                • 負責領袖：${escapeHtml(acc.leader_name||'')} (${escapeHtml(acc.leader_role||'')}, 電話: ${accPhone(acc.leader_phone)})<br>
                 • 填報人：${escapeHtml(acc.reporter_name||'')} (${escapeHtml(acc.reporter_role||'')}, 報告日期: ${escapeHtml(acc.reporter_date||'')})
               </div>
             </div>
@@ -415,7 +419,7 @@ Object.assign(ScoutEventApp.prototype,{
               <div>• <b>救護車/送院：</b>召喚救護車: ${escapeHtml(acc.ambulance_called||'')} ｜ 醫院: ${escapeHtml(acc.hospital_name||'')} ｜ 陪同領袖: ${escapeHtml(acc.escort_leader||'')}</div>
               <div>• <b>醫生診斷：</b>${escapeHtml(acc.diagnosis_result||'')}</div>
               <div>• <b>通知紀錄：</b>已通知家長: ${escapeHtml(acc.parent_notified||'')} ｜ 已通報地域: ${escapeHtml(acc.region_notified||'')}</div>
-              <div>• <b>目擊證人：</b>1. ${escapeHtml(acc.witness1_name||'無')} (${escapeHtml(acc.witness1_phone||'')}) ｜ 2. ${escapeHtml(acc.witness2_name||'無')} (${escapeHtml(acc.witness2_phone||'')})</div>
+              <div>• <b>目擊證人：</b>1. ${escapeHtml(acc.witness1_name||'無')} (${accPhone(acc.witness1_phone)}) ｜ 2. ${escapeHtml(acc.witness2_name||'無')} (${accPhone(acc.witness2_phone)})</div>
               <div>• <b>備註說明：</b>${escapeHtml(acc.remarks||'')}</div>
             </div>
           </div>
@@ -666,6 +670,8 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   exportAccidentReports(){
+    // v15.3：匯出檔案含全部個人聯絡 → 只限行政組／副主席及以上
+    if(!this.canSeeContactInfo(null,'crisis')){ showToast('匯出意外紀錄只限行政組／副主席及以上','warning'); return; }
     const data=this.getCrisisData();
     const blob=new Blob([JSON.stringify(data.accidents||[],null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`accident_reports_${todayISO()}.json`; a.click();
@@ -676,6 +682,9 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getCrisisData();
     const acc=(data.accidents||[]).find(a=>a.id===id);
     if(!acc){ showToast('找不到意外報告','error'); return; }
+    // v15.3：列印本一樣受聯絡私隱規則限制——無權者列印出嚟電話會被遮蓋
+    const showPhone=this.canSeeContactInfo(null,'crisis');
+    const ph=v=>showPhone?escapeHtml(v||''):'(只限副主席以上／行政組查閱)';
 
     const printHtml=`<!DOCTYPE html>
 <html lang="zh-HK">
@@ -727,7 +736,7 @@ Object.assign(ScoutEventApp.prototype,{
   </tr>
   <tr>
     <th>活動地點</th><td>${escapeHtml(acc.event_location||'')}</td>
-    <th>負責領袖及電話</th><td>${escapeHtml(acc.leader_name||'')} (${escapeHtml(acc.leader_role||'')})<br>電話：${escapeHtml(acc.leader_phone||'')}</td>
+    <th>負責領袖及電話</th><td>${escapeHtml(acc.leader_name||'')} (${escapeHtml(acc.leader_role||'')})<br>電話：${ph(acc.leader_phone)}</td>
   </tr>
 
   <tr><td colspan="4" class="section-hdr">乙、傷者資料 (Particulars of Injured Person)</td></tr>
@@ -740,12 +749,12 @@ Object.assign(ScoutEventApp.prototype,{
     <th>童軍身份及旅團</th><td>${escapeHtml(acc.victim_member_type||'')} ｜ 旅團：${escapeHtml(acc.victim_group_no||'')}</td>
   </tr>
   <tr>
-    <th>聯絡電話</th><td>${escapeHtml(acc.victim_phone||'')}</td>
+    <th>聯絡電話</th><td>${ph(acc.victim_phone)}</td>
     <th>住宅地址</th><td>${escapeHtml(acc.victim_address||'')}</td>
   </tr>
   <tr>
     <th>家長 / 監護人姓名</th><td>${escapeHtml(acc.parent_name||'')}</td>
-    <th>家長緊急聯絡電話</th><td><b>${escapeHtml(acc.parent_phone||'')}</b></td>
+    <th>家長緊急聯絡電話</th><td><b>${ph(acc.parent_phone)}</b></td>
   </tr>
 
   <tr><td colspan="4" class="section-hdr">丙、意外發生詳情 (Details of Accident / Incident)</td></tr>
@@ -782,8 +791,8 @@ Object.assign(ScoutEventApp.prototype,{
 
   <tr><td colspan="4" class="section-hdr">戊、目擊證人資料 (Particulars of Witnesses)</td></tr>
   <tr>
-    <th>目擊證人 1</th><td>姓名：${escapeHtml(acc.witness1_name||'無')}<br>電話：${escapeHtml(acc.witness1_phone||'')}</td>
-    <th>目擊證人 2</th><td>姓名：${escapeHtml(acc.witness2_name||'無')}<br>電話：${escapeHtml(acc.witness2_phone||'')}</td>
+    <th>目擊證人 1</th><td>姓名：${escapeHtml(acc.witness1_name||'無')}<br>電話：${ph(acc.witness1_phone)}</td>
+    <th>目擊證人 2</th><td>姓名：${escapeHtml(acc.witness2_name||'無')}<br>電話：${ph(acc.witness2_phone)}</td>
   </tr>
 </table>
 
@@ -1024,14 +1033,16 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('crisis-tab-team'); if(!container) return;
     const data=this.resolveCrisisTeam(this.getCrisisData());
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
+    const canSeePhone=this.canSeeCrisisTeamPhone(); // v15.3：小組成員電話只限副主席及以上查閱（角色＋姓名維持公開）
+    const phoneCell=m=>canSeePhone?(escapeHtml(m.phone)||'<span class="text-slate-300">—</span>'):this.contactLockHTML('副主席以上可見','危機應變小組成員電話只限副主席及以上查閱');
     container.innerHTML=`
       <div class="space-y-3">
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">危機應變小組以職位預設，登入後會自動對應到籌委成員（按職稱／組別），姓名電話自動帶入。如自動對應不正確，管理員／副主席以上可按 ✏️ 手動修改。</div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">危機應變小組以職位預設，登入後會自動對應到籌委成員（按職稱／組別），姓名電話自動帶入。如自動對應不正確，管理員／副主席以上可按 ✏️ 手動修改。<b>成員電話只限副主席及以上查閱。</b></div>
         <div class="flex gap-2 flex-wrap">
           ${canEdit?`<button onclick="app.openCrisisTeamForm()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增成員</button>`:''}
           <button onclick="app.exportCrisis()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>
         </div>
-        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">角色</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">電話</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.team.map(m=>`<tr><td class="px-2 py-1" data-label="角色">${escapeHtml(m.role)}${m.auto?'<span class="ml-1 bg-sky-100 text-sky-700 text-[9px] px-1.5 py-0.5 rounded-full border border-sky-200">自動</span>':''}</td><td class="px-2 py-1 font-bold" data-label="姓名">${escapeHtml(m.name)||'—'}${m._resolvedBy?`<div class="text-[9px] text-sky-600">自動對應：${escapeHtml(m._resolvedBy)}</div>`:''}</td><td class="px-2 py-1 font-mono" data-label="電話">${escapeHtml(m.phone)||'—'}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openCrisisTeamForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCrisisTeam('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無成員</td></tr>'}</tbody></table></div>
+        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">角色</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">電話</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.team.map(m=>`<tr><td class="px-2 py-1" data-label="角色">${escapeHtml(m.role)}${m.auto?'<span class="ml-1 bg-sky-100 text-sky-700 text-[9px] px-1.5 py-0.5 rounded-full border border-sky-200">自動</span>':''}</td><td class="px-2 py-1 font-bold" data-label="姓名">${escapeHtml(m.name)||'—'}${m._resolvedBy?`<div class="text-[9px] text-sky-600">自動對應：${escapeHtml(m._resolvedBy)}</div>`:''}</td><td class="px-2 py-1 font-mono" data-label="電話">${phoneCell(m)}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openCrisisTeamForm('${m.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCrisisTeam('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無成員</td></tr>'}</tbody></table></div>
       </div>
     `;
   }

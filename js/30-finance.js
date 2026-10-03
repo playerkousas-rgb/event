@@ -141,7 +141,7 @@ Object.assign(ScoutEventApp.prototype,{
               <div class="text-[10px] text-slate-400">${escapeHtml(q.quote_date||'')} | 登記人: ${escapeHtml(q.quoted_by||'-')}</div>
             </div>
             <div class="text-[11px] text-slate-600">項目: ${escapeHtml(q.item_desc||'-')}</div>
-            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?`| ${escapeHtml(q.contact_phone)}`:''}</div>
+            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?(this.canSeeContactInfo(q.group_name)?`| ${escapeHtml(q.contact_phone)}`:this.contactLockHTML()):''}</div>
             ${q.notes?`<div class="text-[10px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(q.notes)}</div>`:''}
           </div>`).join(''):'<p class="text-xs text-slate-400 py-8 text-center">暫無口頭報價登記</p>'}</div>
       </div>`;

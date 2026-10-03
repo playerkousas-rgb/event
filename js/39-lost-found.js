@@ -79,9 +79,9 @@ Object.assign(ScoutEventApp.prototype,{
         <td class="border px-2 py-1 whitespace-nowrap" data-label="${seeking?'遺失日期':'拾獲日期'}">${escapeHtml(r.found_date||'-')}${r.found_time?`<br><span class="text-[10px] text-slate-500">${escapeHtml(r.found_time)}</span>`:''}</td>
         <td class="border px-2 py-1 font-medium" data-label="物品">${escapeHtml(r.item_name||'-')}${r.description?`<div class="text-[10px] text-slate-500">${escapeHtml(r.description)}</div>`:''}</td>
         <td class="border px-2 py-1" data-label="${seeking?'遺失地點':'拾獲地點'}">${escapeHtml(r.found_location||'-')}</td>
-        <td class="border px-2 py-1" data-label="${seeking?'尋物者':'拾獲/交來者'}">${escapeHtml(r.found_by||'-')}${r.contact?`<br><span class="text-[10px] text-slate-500">${isPublic?'🔒 需登入查看':escapeHtml(r.contact)}</span>`:''}</td>
+        <td class="border px-2 py-1" data-label="${seeking?'尋物者':'拾獲/交來者'}">${escapeHtml(r.found_by||'-')}${r.contact?`<br><span class="text-[10px] text-slate-500">${this.canSeeContactInfo(null)?escapeHtml(r.contact):(isPublic?'🔒 需登入查看':this.contactLockHTML())}</span>`:''}</td>
         <td class="border px-2 py-1 text-center" data-label="狀態"><span class="text-[10px] px-2 py-0.5 rounded-full border ${done?'bg-emerald-100 text-emerald-700 border-emerald-300':'bg-amber-100 text-amber-700 border-amber-300'}">${escapeHtml(r.status||this.lostFoundOpenLabel(r.type))}</span></td>
-        <td class="border px-2 py-1" data-label="${seeking?'交還／尋回':'認領人'}">${escapeHtml(r.claimed_by||'-')}${r.claimed_contact?`<br><span class="text-[10px] text-slate-500">${isPublic?'🔒 需登入查看':escapeHtml(r.claimed_contact)}</span>`:''}${r.claimed_at?`<br><span class="text-[10px] text-emerald-600">⏱ ${escapeHtml(r.claimed_at)}${r.closed_by?`（${escapeHtml(r.closed_by)}）`:''}</span>`:''}</td>
+        <td class="border px-2 py-1" data-label="${seeking?'交還／尋回':'認領人'}">${escapeHtml(r.claimed_by||'-')}${r.claimed_contact?`<br><span class="text-[10px] text-slate-500">${this.canSeeContactInfo(null)?escapeHtml(r.claimed_contact):(isPublic?'🔒 需登入查看':this.contactLockHTML())}</span>`:''}${r.claimed_at?`<br><span class="text-[10px] text-emerald-600">⏱ ${escapeHtml(r.claimed_at)}${r.closed_by?`（${escapeHtml(r.closed_by)}）`:''}</span>`:''}</td>
         <td class="border px-2 py-1 text-[10px]" data-label="備註">${escapeHtml(r.notes||'')}</td>
         <td class="border px-2 py-1 text-[10px] whitespace-nowrap" data-label="登記時間／紀錄人">${escapeHtml((r.created_at||'').replace('T',' ').slice(0,16)||'-')}<br><span class="text-slate-500">${escapeHtml(r.recorded_by||'-')}</span></td>
         ${canManage?`<td class="border px-2 py-1 text-right whitespace-nowrap" data-label="操作" onclick="event.stopPropagation()">
@@ -154,7 +154,7 @@ Object.assign(ScoutEventApp.prototype,{
     const st=this.lostFoundStats(all);
     const chip=(v,l,cls)=>`<div class="${cls} rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${v}</div><div class="text-[10px]">${l}</div></div>`;
     return `<div class="space-y-3">
-      <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900"><b>🧳 失物認領：</b>兩種登記情況 —— <b>①有失物登記</b>（拾獲物品交來）及 <b>②有人要尋找物品</b>（失主報失）。兩者都會在下方列表出現，<b>點入該筆紀錄即可處理認領</b>（失物找到物主＝已認領／尋物者尋回失物＝已尋回），確認時<b>系統自動紀錄時間</b>。<b>由行政組紀錄</b>（同時設於「行政組 → 部門管理中心」）；其他組別及公眾只可查閱${isPublic?'（聯絡電話需登入先可見）':''}。</div>
+      <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed text-teal-900"><b>🧳 失物認領：</b>兩種登記情況 —— <b>①有失物登記</b>（拾獲物品交來）及 <b>②有人要尋找物品</b>（失主報失）。兩者都會在下方列表出現，<b>點入該筆紀錄即可處理認領</b>（失物找到物主＝已認領／尋物者尋回失物＝已尋回），確認時<b>系統自動紀錄時間</b>。<b>由行政組紀錄</b>（同時設於「行政組 → 部門管理中心」）；其他組別及公眾只可查閱${isPublic?'（聯絡電話需登入先可見，且只限行政組／副主席以上）':'（聯絡電話只限行政組／副主席以上顯示）'}。</div>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-2 max-w-3xl" data-lost-found-stats>
         ${chip(found.length,'失物登記','bg-slate-100 text-slate-700 border')}
         ${chip(seeking.length,'尋物登記','bg-slate-100 text-slate-700 border')}

@@ -372,7 +372,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!pending.length){ container.innerHTML='<p class="text-xs text-slate-400 py-8 text-center">暫無待批核申請</p>'; return; }
     container.innerHTML=`<div class="space-y-3"><div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-[11px] text-orange-900">待處理 ${pending.length} 筆；已完成本組確認的申請，${escapeHtml(this.approvalRouteLabel('supplies','approver_groups'))} 可批核／修改數量，批准後交 ${escapeHtml(this.approvalRouteLabel('supplies','executor_groups'))} 執行。</div>${pending.map(r=>`
       <div class="border rounded-xl p-3 bg-white space-y-2">
-        <div class="flex justify-between gap-2"><div><div class="flex flex-wrap gap-1.5"><b class="text-[13px]">${escapeHtml(r.item_name)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name)}</span>${this.applicationStageHTML(r)}</div><div class="text-[11px] text-slate-500 mt-1">申請: ${r.qty_requested} ${r.unit} | 申請人: ${escapeHtml(r.requested_by)} | 需用: ${escapeHtml(r.date_needed||'-')} | 聯絡: ${escapeHtml(r.contact||'-')}</div><div class="text-[11px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(r.reason||'無原因')}</div></div>${this.applicationReadyForApproval(r)?`<div class="flex flex-col gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准 (原數量)</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">修改數量批核</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">等待本組確認</span>'}</div>
+        <div class="flex justify-between gap-2"><div><div class="flex flex-wrap gap-1.5"><b class="text-[13px]">${escapeHtml(r.item_name)}</b><span class="bg-slate-100 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(r.group_name)}</span>${this.applicationStageHTML(r)}</div><div class="text-[11px] text-slate-500 mt-1">申請: ${r.qty_requested} ${r.unit} | 申請人: ${escapeHtml(r.requested_by)} | 需用: ${escapeHtml(r.date_needed||'-')} | 聯絡: ${this.canSeeContactInfo(r.group_name,'supplies')?escapeHtml(r.contact||'-'):this.contactLockHTML()}</div><div class="text-[11px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(r.reason||'無原因')}</div></div>${this.applicationReadyForApproval(r)?`<div class="flex flex-col gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">批准 (原數量)</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold">修改數量批核</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-xl text-[11px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">等待本組確認</span>'}</div>
       </div>
     `).join('')}</div>`;
   }
@@ -760,7 +760,7 @@ Object.assign(ScoutEventApp.prototype,{
     const t=agg.totals;
     const tabBtn=(id,label)=>`<button onclick="app.switchBoothTab('${id}')" class="px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap ${this.boothSubTab===id?'bg-white shadow text-slate-900':'text-slate-500'}">${label}</button>`;
     container.innerHTML=`<div class="space-y-4">
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>攤位計劃書（取代 Google Form——未登入嘅負責人直接喺呢度填寫）</b>：提交後籌辦方即得<b>兩種資料</b>——① 本卡＝<b>借用統計</b>（要借什麼：帳篷／摺枱／摺椅等＋招牌統計，像物資卡）；② <b>「執行手冊 → 攤位總表」</b>（自動填入嘅完整總表，含已聯絡／已回覆／確認出席及計劃內容；主題節目組卡片亦有）。分區／編號／負責單位按總表選擇；攤位名稱、活動內容、「十五五」主題及負責人資料由申請人填寫；帳篷（3mW x 3mD）、摺枱、摺椅只需填數量，不設庫存。<b class="text-emerald-700">全公開：任何人無需登入都可填寫</b>。${isPublic?'負責人電話／電郵需登入先見到。':''}</div>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed text-amber-900"><b>攤位計劃書（取代 Google Form——未登入嘅負責人直接喺呢度填寫）</b>：提交後籌辦方即得<b>兩種資料</b>——① 本卡＝<b>借用統計</b>（要借什麼：帳篷／摺枱／摺椅等＋招牌統計，像物資卡）；② <b>「執行手冊 → 攤位總表」</b>（自動填入嘅完整總表，含已聯絡／已回覆／確認出席及計劃內容；主題節目組卡片亦有）。分區／編號／負責單位按總表選擇；攤位名稱、活動內容、「十五五」主題及負責人資料由申請人填寫；帳篷（3mW x 3mD）、摺枱、摺椅只需填數量，不設庫存。<b class="text-emerald-700">全公開：任何人無需登入都可填寫</b>。${isPublic?'負責人電話／電郵需登入，且只限本組／行政組／副主席以上查閱。':''}</div>
       <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 max-w-2xl">${chip(t.booths,'有計劃書攤位','bg-slate-100 text-slate-700 border')}${chip(t.tent,'TOTAL 帳篷(頂)','bg-orange-50 text-orange-700 border border-orange-200')}${chip(t.table,'TOTAL 摺枱(張)','bg-sky-50 text-sky-700 border border-sky-200')}${chip(t.chair,'TOTAL 摺椅(張)','bg-emerald-50 text-emerald-700 border border-emerald-200')}${chip(t.skirting,'TOTAL 帳篷圍布(塊)','bg-violet-50 text-violet-700 border border-violet-200')}${chip(t.power_w,'TOTAL 電源(W)','bg-rose-50 text-rose-700 border border-rose-200')}</div>
       <div class="flex gap-2 flex-wrap items-center">
         <div class="inline-flex bg-slate-100 rounded-xl p-1 overflow-x-auto max-w-full">${tabBtn('borrow','📊 借用統計（要借什麼）')}${tabBtn('sign','🪧 招牌統計')}${tabBtn('list',`📄 計劃書明細（${plans.length}）`)}</div>
@@ -878,7 +878,7 @@ Object.assign(ScoutEventApp.prototype,{
     const rows=Object.values(agg.rows).filter(r=>r.booth_name).sort((a,b)=>String(a.key).localeCompare(String(b.key)));
     if(!rows.length){ return '<p class="text-xs text-slate-400 py-8 text-center">暫無招牌 — 計劃書填咗「攤位名稱（招牌用）」後自動列入</p>'; }
     const codeOf=r=>[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||r.unit_name||r.key;
-    const rowsHTML=rows.map(r=>`<tr><td class="border px-2 py-1 font-mono font-extrabold whitespace-nowrap">${escapeHtml(codeOf(r))}</td><td class="border px-2 py-1 font-bold text-[13px]">${escapeHtml(r.booth_name)}</td><td class="border px-2 py-1">${escapeHtml(r.unit_name||'-')}</td><td class="border px-2 py-1">${r.owner_name?`<b>${escapeHtml(r.owner_name)}</b>${r.owner_position?' <span class="text-[10px] text-slate-400">'+escapeHtml(r.owner_position)+'</span>':''}`:'<span class="text-slate-300">—</span>'}</td><td class="border px-2 py-1 text-[10px] text-slate-500">${isPublic?'🔒 聯絡資料登入後可見':escapeHtml([r.owner_phone,r.owner_email].filter(Boolean).join(' / ')||r.contact||'-')}</td><td class="border px-2 py-1 text-center">${this.boothStatusBadge(r.status||'pending')}</td></tr>`).join('');
+    const rowsHTML=rows.map(r=>`<tr><td class="border px-2 py-1 font-mono font-extrabold whitespace-nowrap">${escapeHtml(codeOf(r))}</td><td class="border px-2 py-1 font-bold text-[13px]">${escapeHtml(r.booth_name)}</td><td class="border px-2 py-1">${escapeHtml(r.unit_name||'-')}</td><td class="border px-2 py-1">${r.owner_name?`<b>${escapeHtml(r.owner_name)}</b>${r.owner_position?' <span class="text-[10px] text-slate-400">'+escapeHtml(r.owner_position)+'</span>':''}`:'<span class="text-slate-300">—</span>'}</td><td class="border px-2 py-1 text-[10px] text-slate-500">${this.canSeeContactInfo(r.group_name,'booth')?escapeHtml([r.owner_phone,r.owner_email].filter(Boolean).join(' / ')||r.contact||'-'):this.contactLockHTML()}</td><td class="border px-2 py-1 text-center">${this.boothStatusBadge(r.status||'pending')}</td></tr>`).join('');
     return `<div class="bg-white border rounded-xl p-3">
       <b class="text-[12px]"><i class="fa-solid fa-sign-hanging text-amber-600 mr-1"></i>招牌製作清單（${rows.length} 個招牌）</b>
       <div class="text-[10px] text-slate-500 mt-1">大會據計劃書「攤位名稱（招牌用）」製作招牌；計劃書提交／更新後此清單即時反映。</div>
@@ -917,7 +917,9 @@ Object.assign(ScoutEventApp.prototype,{
         const cp=(row&&row.owner_name)?row.owner_name+((row.owner_phone||row.owner_email)?' '+[row.owner_phone,row.owner_email].filter(Boolean).join(' / '):''):(u.cp||'');
         const oth=(row&&row.other_req)||u.oth||'';
         const del=(row&&row.delivery)||u.del||'';
-        const cpDisp=isPublic?(cp?'🔒 登入後可見':'—'):(cp?escapeHtml(cp):'<span class="text-slate-300">—</span>');
+        // v15.3：負責人及電話＝本組＋副主席以上／行政組／主題節目組（攤位負責組）先見到
+        const seeCp=this.canSeeContactInfo(row?row.group_name:'','booth');
+        const cpDisp=seeCp?(cp?escapeHtml(cp):'<span class="text-slate-300">—</span>'):(cp?this.contactLockHTML():'—');
         const dev=u.dev?`<div class="text-[9px] text-slate-500 leading-snug mt-0.5 whitespace-pre-line">${escapeHtml(u.dev)}</div>`:'';
         const dash='<span class="text-slate-300">—</span>';
         const ctDisp=ct&&ct!=='／'?escapeHtml(String(ct).replace(/\s+/g,' ')):dash;
@@ -961,9 +963,10 @@ Object.assign(ScoutEventApp.prototype,{
       const code=[r.zone,r.booth_no].filter(Boolean).join('')||r.booth_code||'-';
       const isMine=this.currentUser&&(r.requested_by_id===this.currentUser.user_id||r.requested_by===this.currentUser.name);
       const canEdit=isAdmin||this.isCoordinatorViceChair()||isMine;
+      const seeContact=this.canSeeContactInfo(r.group_name,'booth'); // v15.3：負責人／提交人聯絡限本組＋副主席以上（攤位＝主題節目組負責）
       const ownerLine=r.owner_name
-        ?`<b>${escapeHtml(r.owner_name)}</b>（${escapeHtml(r.owner_age_group||'年齡組別未填')}${r.owner_unit?' · '+escapeHtml(r.owner_unit):''}${r.owner_position?' · '+escapeHtml(r.owner_position):''}）${isPublic?'':((r.owner_phone||r.owner_email)?` · ${escapeHtml([r.owner_phone,r.owner_email].filter(Boolean).join(' / '))}`:'')}`
-        :(isPublic?'<span class="text-slate-300">—</span>':escapeHtml(r.contact||'-'));
+        ?`<b>${escapeHtml(r.owner_name)}</b>（${escapeHtml(r.owner_age_group||'年齡組別未填')}${r.owner_unit?' · '+escapeHtml(r.owner_unit):''}${r.owner_position?' · '+escapeHtml(r.owner_position):''}）${seeContact?((r.owner_phone||r.owner_email)?` · ${escapeHtml([r.owner_phone,r.owner_email].filter(Boolean).join(' / '))}`:''):((r.owner_phone||r.owner_email)?` · ${this.contactLockHTML()}`:'')}`
+        :(seeContact?escapeHtml(r.contact||'-'):'<span class="text-slate-300">—</span>');
       return `<div class="border rounded-xl p-3 bg-white space-y-1.5">
         <div class="flex justify-between items-start gap-2">
           <div class="min-w-0">
@@ -974,7 +977,7 @@ Object.assign(ScoutEventApp.prototype,{
             <div class="text-[11px] text-slate-700 mt-1">物資：${eq}</div>
             ${(r.other_req||r.delivery)?`<div class="text-[11px] text-slate-500 mt-0.5">${r.other_req?'其他要求：'+escapeHtml(r.other_req):''}${r.other_req&&r.delivery?' · ':''}${r.delivery?'運送：'+escapeHtml(r.delivery):''}</div>`:''}
             <div class="text-[11px] text-slate-500 mt-0.5">負責人：${ownerLine}</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">提交人：${escapeHtml(r.requested_by||'-')}${isPublic?'':` | 聯絡：${escapeHtml(r.contact||'-')}`}${r.created_at?' | '+new Date(r.created_at).toLocaleDateString():''}${r.approved_by?' | 批核：'+escapeHtml(r.approved_by)+(r.approved_at?'（'+new Date(r.approved_at).toLocaleDateString()+'）':''):''}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">提交人：${escapeHtml(r.requested_by||'-')}${seeContact?` | 聯絡：${escapeHtml(r.contact||'-')}`:(r.contact?` | 聯絡：${this.contactLockHTML()}`:'')}${r.created_at?' | '+new Date(r.created_at).toLocaleDateString():''}${r.approved_by?' | 批核：'+escapeHtml(r.approved_by)+(r.approved_at?'（'+new Date(r.approved_at).toLocaleDateString()+'）':''):''}</div>
             ${r.notes?`<div class="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2 mt-1">備註：${escapeHtml(r.notes)}</div>`:''}
           </div>
           <div class="flex flex-col gap-1 flex-shrink-0 items-end">

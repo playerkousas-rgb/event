@@ -184,7 +184,7 @@ Object.assign(ScoutEventApp.prototype,{
         <td class="border px-2 py-1 text-center">${r.qty_requested||0} ${escapeHtml(r.unit||'')}</td>
         <td class="border px-2 py-1 text-center">${r.qty_approved!==null&&r.qty_approved!==undefined?r.qty_approved:'-'}</td>
         <td class="border px-2 py-1">${escapeHtml(r.date_needed||'-')}</td>
-        <td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}<div class="text-[10px] text-slate-400">${escapeHtml(r.contact||'')}</div></td>
+        <td class="border px-2 py-1">${escapeHtml(r.requested_by||'')}<div class="text-[10px] text-slate-400">${this.canSeeContactInfo(r.group_name,'supplies')?escapeHtml(r.contact||''):this.contactLockHTML()}</div></td>
         <td class="border px-2 py-1">${escapeHtml(r.reason||'')}</td>
         <td class="border px-2 py-1 text-center">${this.coordStatusChip(r.status)}<div class="text-[10px] text-slate-400">${escapeHtml(r.approved_by||'')}</div></td>
         <td class="border px-2 py-1 no-print">${canApprove&&r.status==='pending'&&this.applicationReadyForApproval(r)?`<div class="flex flex-wrap gap-1"><button onclick="app.approveSupplyRequest('${r.request_id}')" class="bg-emerald-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold">批准</button><button onclick="app.openSupplyApproveModifyModal('${r.request_id}')" class="bg-sky-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold">改量</button><button onclick="app.rejectSupplyRequest('${r.request_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-lg text-[10px] font-bold">拒絕</button></div>`:'<span class="text-[10px] text-slate-400">-</span>'}</td>
@@ -231,7 +231,7 @@ Object.assign(ScoutEventApp.prototype,{
       <tr>
         <td class="border px-2 py-1">${escapeHtml(v.group_name||'-')}</td>
         <td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td>
-        <td class="border px-2 py-1">${escapeHtml(v.driver_name||'')}<div class="text-[10px] text-slate-400">${escapeHtml(v.driver_contact||'')}</div></td>
+        <td class="border px-2 py-1">${escapeHtml(v.driver_name||'')}<div class="text-[10px] text-slate-400">${this.canSeeContactInfo(v.group_name,'vehicle')?escapeHtml(v.driver_contact||''):this.contactLockHTML()}</div></td>
         <td class="border px-2 py-1">${escapeHtml(v.vehicle_type||'')}</td>
         <td class="border px-2 py-1">${escapeHtml(v.purpose||'')}</td>
         <td class="border px-2 py-1">${escapeHtml(v.entry_date||'')} → ${escapeHtml(v.exit_date||'')}</td>
@@ -256,7 +256,7 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="bg-white border rounded-xl p-3">
             <b class="text-[12px]"><i class="fa-solid fa-clipboard-check text-emerald-600 mr-1"></i>入口檢查清單（已批核 ${approved.length}）</b>
             <div class="table-responsive mt-2"><table class="min-w-full text-[11px] border"><thead class="bg-slate-100"><tr><th class="border px-2 py-1">車牌</th><th class="border px-2 py-1">司機</th><th class="border px-2 py-1">組別</th><th class="border px-2 py-1">進出日期</th><th class="border px-2 py-1">停泊位置</th><th class="border px-2 py-1">入口核對 ✓</th></tr></thead>
-            <tbody>${approved.map(v=>`<tr><td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td><td class="border px-2 py-1">${escapeHtml(v.driver_name||'')} ${escapeHtml(v.driver_contact||'')}</td><td class="border px-2 py-1">${escapeHtml(v.group_name||'')}</td><td class="border px-2 py-1">${escapeHtml(v.entry_date||'')} → ${escapeHtml(v.exit_date||'')}</td><td class="border px-2 py-1">${escapeHtml(v.parking_location||'待定')}</td><td class="border px-2 py-1"></td></tr>`).join('')||'<tr><td colspan="6" class="border px-2 py-6 text-center text-slate-400">尚未有已批核車輛</td></tr>'}</tbody></table></div>
+            <tbody>${approved.map(v=>`<tr><td class="border px-2 py-1 font-bold">${escapeHtml(v.plate||'')}</td><td class="border px-2 py-1">${escapeHtml(v.driver_name||'')} ${this.canSeeContactInfo(v.group_name,'vehicle')?escapeHtml(v.driver_contact||''):this.contactLockHTML()}</td><td class="border px-2 py-1">${escapeHtml(v.group_name||'')}</td><td class="border px-2 py-1">${escapeHtml(v.entry_date||'')} → ${escapeHtml(v.exit_date||'')}</td><td class="border px-2 py-1">${escapeHtml(v.parking_location||'待定')}</td><td class="border px-2 py-1"></td></tr>`).join('')||'<tr><td colspan="6" class="border px-2 py-6 text-center text-slate-400">尚未有已批核車輛</td></tr>'}</tbody></table></div>
           </div>
         </div>
       </div>`;

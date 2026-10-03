@@ -72,7 +72,7 @@ Object.assign(ScoutEventApp.prototype,{
               <div class="text-[10px] text-slate-400">${escapeHtml(q.quote_date||'')} | 登記人: ${escapeHtml(q.quoted_by||'-')}</div>
             </div>
             <div class="text-[11px] text-slate-600">項目: ${escapeHtml(q.item_desc||'-')}</div>
-            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?`| ${escapeHtml(q.contact_phone)}`:''}</div>
+            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?(this.canSeeContactInfo(q.group_name)?`| ${escapeHtml(q.contact_phone)}`:this.contactLockHTML()):''}</div>
             ${q.notes?`<div class="text-[10px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(q.notes)}</div>`:''}
           </div>`).join(''):`<p class="text-xs text-slate-400 py-8 text-center">暫無本組口頭報價登記</p>`}</div>
       </div>`;
@@ -104,7 +104,7 @@ Object.assign(ScoutEventApp.prototype,{
               <div class="text-[10px] text-slate-400">${escapeHtml(q.quote_date||'')} | 登記人: ${escapeHtml(q.quoted_by||'-')}</div>
             </div>
             <div class="text-[11px] text-slate-600">項目: ${escapeHtml(q.item_desc||'-')}</div>
-            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?`| ${escapeHtml(q.contact_phone)}`:''}</div>
+            <div class="text-[11px] text-slate-500">聯絡: ${escapeHtml(q.contact_person||'-')} ${q.contact_phone?(this.canSeeContactInfo(q.group_name)?`| ${escapeHtml(q.contact_phone)}`:this.contactLockHTML()):''}</div>
             ${q.notes?`<div class="text-[10px] bg-slate-50 border rounded-xl p-2 mt-1">${escapeHtml(q.notes)}</div>`:''}
             ${(q.quoted_by_id===this.currentUser?.user_id||this.canViewOralQuotesAll())?`<div class="flex gap-1 mt-1"><button onclick="app.openOralQuoteForm('${q.oral_id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button><button onclick="app.deleteOralQuote('${q.oral_id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></div>`:''}
           </div>`;
@@ -184,9 +184,12 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   exportOralQuotes(){
     const data=this.getOralQuotesData();
-    const blob=new Blob([JSON.stringify(data.quotes||[],null,2)],{type:'application/json'});
+    // v15.3：匯出同畫面一致——只匯出你可查看嘅紀錄；無權查閱嘅聯絡電話會遮蓋
+    const quotes=(data.quotes||[]).filter(q=>this.canViewOralQuote(q)).map(q=>({...q, contact_phone:this.canSeeContactInfo(q.group_name)?q.contact_phone:''}));
+    if(!quotes.length){ showToast('沒有你可匯出的口頭報價紀錄','warning'); return; }
+    const blob=new Blob([JSON.stringify(quotes,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`oral_quotes_${todayISO()}.json`; a.click();
-    showToast('已匯出口頭報價 JSON','success');
+    showToast(`已匯出 ${quotes.length} 筆口頭報價 JSON`,'success');
   }
 ,
 });
