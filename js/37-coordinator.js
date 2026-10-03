@@ -564,7 +564,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!container) return;
     if(!this.scheduleSubTab) this.scheduleSubTab='overall';
     const data=this.getScheduleData();
-    const schSrc=this.eventData['schedule_source']||{};
+    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
     // ISD typical run down - 上午攤位、下午儀式 (2025 實際流程)；僅模擬示範活動顯示
     const isdRunDown=this.isDemoEvent()||this.currentEvent?.event_id==='isd_2026'?[
       {time:'07:45 - 08:30', location:'大操場 / 有蓋操場', program:'會操及頒獎禮場地設置劃位，各功能組別場地佈置', groups:{'協調組':'場地佈置、物資運送','步操及典禮組':'步操報到處 set up, 樂隊報到','節目組':'到達會場及拿物資','服務組':'到達會場及拿物資','行政組':'行政組 set up、運作'}},
@@ -573,22 +573,20 @@ Object.assign(ScoutEventApp.prototype,{
       {time:'11:00 - 12:00', location:'大操場', program:'第一部分典禮：優異旅團及各項獎勵頒發儀式（吳家麗會長主禮）— 頒發彩帶及證書、支部最高獎章嘉許信、領袖及委員獎勵、致送紀念品', groups:{'步操及典禮組':'典禮主持、頒獎流程','協調組':'秩序及交通','行政組':'運作'}},
       {time:'12:00 - 13:00', location:'大操場', program:'第二部分典禮：會操檢閱及頒獎儀式（港島總區指揮官區永樑先生主禮）— 主禮嘉賓進場、檢閱步操隊伍、致辭、頒發升旗／步操／隊列比賽獎項及區際錦標', groups:{'步操及典禮組':'檢閱、頒獎流程','協調組':'秩序及交通','行政組':'運作'}},
       {time:'13:00 - 14:00', location:'莫榮大樓地下', program:'嘉賓茶聚（莫榮大樓地下）；工作人員午膳', groups:{'行政組':'接待嘉賓','協調組':'派發工作人員膳食','節目組':'攤位午間休息/輪換'}},
-      {time:'14:00 - 17:00', location:'營地全區', program:'主題攤位節目／參觀主題活動區（公眾）：攤位博覽、積極公民工作坊、禮物換領', groups:{'節目組':'攤位遊戲、積極公民工作坊','協調組':'物資運送、攤位支援','行政組':'領袖聯誼閣運作、禮物換領','服務組':'支援'}},
+      {time:'14:00 - 17:00', location:'營地全區', program:'攤位活動／參觀活動區（公眾）', groups:{'節目組':'攤位活動','協調組':'物資運送、攤位支援','行政組':'領袖聯誼閣運作','服務組':'支援'}},
       {time:'17:00 - 18:00', location:'全區', program:'所有節目完結、拆卸設施、清潔、運送物資、對數', groups:{'協調組':'承建商清理場地、運送物資回地域','節目組':'收拾物資+裝箱','行政組':'攤位負責人提交財政報告及收據','常務組':'對數'}}
     ]:[];
     const isAdmin=this.isAdmin();
     container.innerHTML=`
       <div class="space-y-4">
-        ${(schSrc.sheet_id||schSrc.drive_file_id)?this.driveSyncNotice():''}
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] leading-relaxed">
           <b>📅 ISD Run Down：</b>下方為詳細工作人員日程交叉表 (時間 x 組別)，方便各組一目了然。
-          ${(schSrc.sheet_id||schSrc.drive_file_id)?`<div class="mt-1 text-teal-800">資料來源：「${escapeHtml(schSrc.name||'日程表')}」（由秘書處更新），可一鍵同步或自動同步。</div>`:''}
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button onclick="app.syncScheduleFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步最新日程 (Drive)</button>
-          ${(((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)&&!(this.isDataFrozen&&this.isDataFrozen()))?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
+        ${!frozen?`<div class="flex flex-wrap gap-2">
+          <button onclick="app.syncScheduleFromDrive()" class="bg-sky-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步日程</button>
+          ${((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60)?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">⬆️ 上傳 Excel 日程<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleScheduleExcelUpload(this.files[0])"></label>`:''}
           <button onclick="app.downloadScheduleTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button>
-        </div>
+        </div>`:''}
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchScheduleTab('overall')" class="tab-btn ${this.scheduleSubTab==='overall'?'active':''}">總表 (參加者)</button>
           <button onclick="app.switchScheduleTab('staff')" class="tab-btn ${this.scheduleSubTab==='staff'?'active':''}">工作人員日程 (時間×組別)</button>

@@ -14,7 +14,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!rowsAll.length){ showToast('名單暫時為空','warning'); return; }
     const accent=opts.accent||'rose';
     this._ckState=Object.fromEntries(rowsAll.map(r=>[r.key,!!r.checked]));
-    this._ckSort=(opts.sortOptions&&opts.sortOptions[0]&&opts.sortOptions[0].k)||'group';
+    this._ckSort=opts.initialSort||(opts.sortOptions&&opts.sortOptions[0]&&opts.sortOptions[0].k)||'group';
     this._ckQ='';
     this._ckOpts=opts;
     this._ckRows=rowsAll;
@@ -47,7 +47,7 @@ Object.assign(ScoutEventApp.prototype,{
     ]).map(o=>`<option value="${o.k}" ${this._ckSort===o.k?'selected':''}>${escapeHtml(o.label)}</option>`).join('');
     return `<div class="space-y-3">
       <div class="flex flex-wrap items-center gap-2">
-        <input id="ck-search" value="${escapeHtml(this._ckQ||'')}" placeholder="🔍 搜尋姓名／職銜／攤位／組別" oninput="app._ckQ=this.value;app.renderCheckinRows();" class="flex-1 min-w-[160px] px-3 py-2 border rounded-xl text-sm">
+        <input id="ck-search" value="${escapeHtml(this._ckQ||'')}" placeholder="${escapeHtml(opts.searchPlaceholder||'🔍 搜尋姓名／職銜／攤位／組別')}" oninput="app._ckQ=this.value;app.renderCheckinRows();" class="flex-1 min-w-[160px] px-3 py-2 border rounded-xl text-sm">
         <select id="ck-sort" onchange="app._ckSort=this.value;app.renderCheckinRows();" class="border rounded-lg px-2 py-2 text-sm bg-white">${sortOpts}</select>
       </div>
       <div class="bg-slate-50 border rounded-xl px-3 py-2 text-sm font-bold flex items-center justify-between flex-wrap gap-2">
@@ -76,8 +76,12 @@ Object.assign(ScoutEventApp.prototype,{
       if(this._ckSort==='name') return String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
       if(this._ckSort==='sub') return String(a.sub||'').localeCompare(String(b.sub||''),'zh-Hant');
       if(this._ckSort==='pending'){ const ka=checked[a.key]?1:0, kb=checked[b.key]?1:0; if(ka!==kb) return ka-kb; return String(a.group||a.booth||'').localeCompare(String(b.group||b.booth||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant'); }
+      if(this._ckSort==='booth'){
+        const boothA=String(a.booth||'未編攤位'), boothB=String(b.booth||'未編攤位');
+        return boothA.localeCompare(boothB,'zh-Hant',{numeric:true})||String(a.group||'').localeCompare(String(b.group||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
+      }
       // 其他自訂欄位（如 section／unit）：按該欄位後按名稱
-      if(this._ckSort!=='group'&&this._ckSort!=='booth'){
+      if(this._ckSort!=='group'){
         const av=String(a[this._ckSort]??''), bv=String(b[this._ckSort]??'');
         const v=av.localeCompare(bv,'zh-Hant',{numeric:true});
         if(v) return v;
@@ -87,11 +91,14 @@ Object.assign(ScoutEventApp.prototype,{
       return String(a.group||a.booth||'').localeCompare(String(b.group||b.booth||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
     };
     rows.sort(cmp);
+    const rowMeta=r=>typeof opts.rowMeta==='function'
+      ?opts.rowMeta(r)
+      :[r.sub,r.group,r.booth,r.unit].filter(Boolean).join(' ｜ ');
     box.innerHTML=rows.map(r=>`<label class="flex items-center gap-3 rounded-xl border bg-white p-3 min-h-[52px] cursor-pointer ${checked[r.key]?'border-emerald-300 bg-emerald-50/50':''}">
       <input type="checkbox" class="ck-check w-6 h-6 accent-emerald-600" data-key="${escapeHtml(r.key)}" ${checked[r.key]?'checked':''}>
       <span class="min-w-0">
         <b class="block text-sm truncate">${escapeHtml(r.name||'')}</b>
-        <span class="block text-[11px] text-slate-500 truncate">${escapeHtml([r.sub,r.group,r.booth,r.unit].filter(Boolean).join(' ｜ '))}</span>
+        <span class="block text-[11px] text-slate-500 truncate">${escapeHtml(rowMeta(r)||'')}</span>
       </span>
     </label>`).join('');
     box.querySelectorAll('.ck-check').forEach(el=>el.addEventListener('change',()=>{
@@ -105,8 +112,8 @@ Object.assign(ScoutEventApp.prototype,{
     const tot=document.getElementById('ck-total'); if(tot) tot.textContent=(this._ckRows||[]).length;
   },
 
-  // 由紀念章點名（staff/guests）快速開啟
-  openStampCheckinModal(scope){
+  // 由紀念章派發開啟嘉賓同款快速點名；工作人員只顯示「組別／攤位 + 姓名」。
+  openStampCheckinModal(scope, initialSort=''){
     if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); return; }
     const roster=this.souvenirRoster(scope);
     const store=this.getSouvenirStampData();
@@ -114,13 +121,21 @@ Object.assign(ScoutEventApp.prototype,{
     const isStaff=scope==='staff';
     const rows=roster.map(p=>({key:p.key,name:p.name,sub:p.job_title||p.title||'',group:p.group_name||'',booth:p.booth||'',unit:p.unit||'',checked:!!(map[p.key]&&map[p.key].ticked)}));
     this.openCheckinModal(rows,{
-      title:isStaff?'📱 快速點名 — 紀念章派發（工作人員）':'📱 快速點名 — 紀念章派發（嘉賓）',
+      title:isStaff?'紀念章派發點名 — 工作人員':'紀念章派發點名 — 嘉賓',
       saveLabel:`儲存（共 ${rows.length} 位）`,
-      hint:'剔＝已派發；撳「儲存」一次過入賬，之後再撳頁面「💾 儲存」寫入後端',
-      sortOptions:[
-        {k:'group',label:isStaff?'按組別':'按單位'},
+      hint:isStaff?'剔＝已派發；只顯示組別／攤位及姓名':'剔＝已派發；撳「儲存」一次過入賬，之後再撳頁面「💾 儲存」寫入後端',
+      initialSort:initialSort||(isStaff?'group':'group'),
+      searchPlaceholder:isStaff?'🔍 搜尋姓名／組別／攤位':'🔍 搜尋姓名／職銜／單位',
+      rowMeta:isStaff?(r=>`組別／攤位：${r.booth||r.group||'未分組'}`):null,
+      sortOptions:isStaff?[
+        {k:'group',label:'按全組成員'},
+        {k:'booth',label:'按全攤位成員'},
         {k:'name',label:'按姓名'},
-        {k:'sub',label:isStaff?'按身份':'按職銜'},
+        {k:'pending',label:'未派優先'}
+      ]:[
+        {k:'group',label:'按單位'},
+        {k:'name',label:'按姓名'},
+        {k:'sub',label:'按職銜'},
         {k:'pending',label:'未派優先'}
       ],
       onSave:(checked)=>{
@@ -142,6 +157,8 @@ Object.assign(ScoutEventApp.prototype,{
         });
         this.saveSouvenirStampData(data);
         this.closeModal('modal-record');
+        this.refreshSouvenirStampsPanel&&this.refreshSouvenirStampsPanel(scope);
+        this.updateStampSyncUI&&this.updateStampSyncUI();
         showToast(`點名已暫存（變更 ${nChanged} 項）——記得喺頁面撳「💾 儲存」寫入後端`, nChanged?'success':'warning');
       }
     });

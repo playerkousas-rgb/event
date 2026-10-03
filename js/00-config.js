@@ -151,7 +151,6 @@ const PERM_CARDS=[
   {id:'schedule',label:'日程表',icon:'fa-solid fa-calendar-days'},
   {id:'activities',label:'場地與活動總覽',icon:'fa-solid fa-map-location-dot'},
   {id:'staff',label:'組織架構與聯絡',icon:'fa-solid fa-sitemap'},
-  {id:'theme_badges',label:'活動主題章',icon:'fa-solid fa-award'},
   {id:'meals',label:'膳食管理',icon:'fa-solid fa-utensils'},
   {id:'documents',label:'通告及文件',icon:'fa-solid fa-file-shield'},
   {id:'unit_guide',label:'旅團須知',icon:'fa-solid fa-book-open'},
@@ -280,7 +279,6 @@ const DASH_CARD_DEFS=[
   {id:'schedule',title:'日程表',desc:'',icon:'fa-solid fa-calendar-days',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
   {id:'activities',title:'場地與活動總覽',desc:'',icon:'fa-solid fa-map-location-dot',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:30,hideOnDashboard:true},
   {id:'staff',title:'組織架構與聯絡',desc:'',icon:'fa-solid fa-sitemap',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:40,editGroups:['行政組'],hideOnDashboard:true},
-  {id:'theme_badges',title:'活動主題章',desc:'',icon:'fa-solid fa-award',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
   {id:'meals',title:'膳食管理',desc:'',icon:'fa-solid fa-utensils',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['膳食','協調','行政'],hideOnDashboard:true},
   {id:'crisis',title:'危機處理',desc:'',icon:'fa-solid fa-triangle-exclamation',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,hideOnDashboard:true},
   {id:'documents',title:'通告及文件',desc:'',icon:'fa-solid fa-file-shield',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:60,editGroups:['行政'],hideOnDashboard:true},
@@ -464,7 +462,7 @@ const ROSTER_LIST_DEFS=[
     accent:'amber', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 支部獎勵名單', dept_tab:'cer_award_section',
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎人上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
-    intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發支部最高獎章嘉許信』。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    intro:'第一部分典禮：頒發支部最高獎章嘉許信。',
     source:'roster', editable:true, required:'name', group_field:'section', sort_fields:['area','section','unit','name'],
     columns:[
       {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
@@ -482,7 +480,7 @@ const ROSTER_LIST_DEFS=[
     accent:'indigo', owner_group:'會操及典禮組', owner_note:'典禮組',
     exec_location:'執行手冊 → 典禮儀式 → 領袖獎勵名單', dept_tab:'cer_award_leader',
     tick_label:'點名', tick_col_label:'出席', tick_hint:'獲獎領袖／委員上台前由典禮組逐一點名；取消請同時剔「修正」格（TICK 只加不減）。',
-    intro:'對應執行手冊「第一部分典禮——優異旅團及各項獎勵頒發儀式」內之『頒發領袖及委員獎勵』（長期服務獎狀／獎章、優異服務獎章、總監委任書等；獲頒總監委任書者需進行覆誓）。名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+    intro:'第一部分典禮：頒發領袖及委員獎勵。',
     source:'roster', editable:true, required:'name', group_field:'award', sort_fields:['area','unit','award','name'],
     columns:[
       {k:'no',label:'編號（唱名序）',type:'text',aliases:['編號','唱名編號','序號','序','call no','no','No.','No']},
@@ -497,45 +495,24 @@ const ROSTER_LIST_DEFS=[
     sample_rows:[['LS5-1','VIC 維多利亞城區','港島第16旅','團高級指導員','張三','10年長期服務獎狀','',''],['LM-1','HKN 港島北區','地域執行委員會','總監','李四','總監委任書','是','10:55 前排練覆誓']]
   },
   {
-    // 參加旅團名單：既有執行手冊分頁（結構表＝Drive 同步／Excel 上傳）——v14 只加「點名」，名單本身仍跟 participants
-    key:'participants', match_fields:['unit','section'], title:'參加旅團名單', tab_label:'參加旅團名單', icon:'fa-solid fa-people-group',
-    accent:'emerald', owner_group:'行政組', owner_note:'行政組',
-    exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
-    tick_label:'報到', tick_hint:'旅團報到處逐團 TICK（已報到）；外間團體沒有預定姓名，報到時請填寫實際到場人士；取消請同時剔「修正」格（TICK 只加不減）。',
-    attendee_field:'實際到場人士', attendee_placeholder:'外間團體沒有預定姓名，報到時填寫',
-    intro:'對應執行手冊行政組「參加旅團名單」（2025 版為「旅團報名人數」PDF）。名單本身沿用行政組維護之結構表（Drive 同步／Excel 上傳），v14 於同一頁加入報到點名。',
-    source:'participants', editable:false, required:'unit', group_field:'section', sort_fields:['area','section','unit'],
-    total_fields:[{k:'headcount',label:'人數'}],
+    key:'participants', match_fields:['unit'], title:'參加旅團名單', tab_label:'參加旅團名單', icon:'fa-solid fa-people-group',
+    accent:'emerald', owner_group:'行政組', owner_note:'行政組', exec_location:'執行手冊 → 參加旅團名單', dept_tab:'admin_participants',
+    tick_label:'報到', tick_hint:'旅團報到', source:'participants', editable:false, required:'unit', group_field:'area', sort_fields:['no','area','unit'],
+    total_fields:[{k:'headcount',label:'人數'},{k:'meal_boxes',label:'代訂餐盒'}], intro:'',
     columns:[
-      {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
-      {k:'unit',label:'旅團',type:'text',aliases:['旅團','旅號','單位','童軍旅','unit_name','unit','Group','旅團名稱']},
-      {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']},
-      {k:'headcount',label:'人數',type:'number',aliases:['人數','參加人數','_headcount','count','headcount','Participants']},
-      {k:'leader',label:'領隊／旅長',type:'text',aliases:['領隊','旅長','負責人','领袖','leader']},
-      {k:'notes',label:'備註',type:'text',aliases:['備註','說明','note','notes','Remarks']}
-    ],
-    sample_rows:[['CHW 柴灣區','港島第6旅','幼童軍','42','陳旅長',''],['HKS 港島南區','港島第175旅','小童軍','25','','延至 10/10']]
+      {k:'no',label:'編號',type:'number'}, {k:'area',label:'區會',type:'text',list:'areas'}, {k:'unit',label:'旅團',type:'text'},
+      {k:'headcount',label:'人數',type:'number'}, {k:'meal_boxes',label:'代訂餐盒',type:'number'}, {k:'leader',label:'領隊／旅長',type:'text'}, {k:'notes',label:'備註',type:'text'}
+    ], sample_rows:[]
   },
   {
-    key:'meal_box', match_fields:['unit'], title:'代訂餐盒旅團名單', tab_label:'代訂餐盒名單', icon:'fa-solid fa-bowl-food',
-    accent:'rose', owner_group:'協調組', owner_note:'協調組',
-    exec_location:'執行手冊 → 代訂餐盒名單', dept_tab:'coord_mealbox',
-    tick_label:'派發', tick_hint:'領取餐盒時由協調組逐團 TICK（已派發）；取消請同時剔「修正」格（TICK 只加不減）。',
-    intro:'對應執行手冊「代訂餐盒」名單（2025 版列於行政組膳食安排內）。名單由協調組上載及點名，用以向判單對數及派發時核對；各組仍可在「膳食管理」自行訂餐，兩邊數字如有出入以本名單為準並註明備註。',
-    source:'roster', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
-    total_fields:[{k:'qty_a',label:'A餐'},{k:'qty_b',label:'B餐'},{k:'qty_c',label:'C餐'},{k:'qty_total',label:'總數'}],
+    key:'meal_box', match_fields:['unit'], title:'旅團代訂餐盒', tab_label:'代訂餐盒名單', icon:'fa-solid fa-bowl-food',
+    accent:'rose', owner_group:'協調組', owner_note:'協調組', exec_location:'執行手冊 → 代訂餐盒', dept_tab:'coord_mealbox',
+    tick_label:'派發', tick_hint:'餐盒派發', intro:'', source:'participants_meal_boxes', editable:false, required:'unit', group_field:'area', sort_fields:['no','area','unit'],
+    total_fields:[{k:'qty_total',label:'餐盒總數'}],
     columns:[
-      {k:'area',label:'區會',type:'text',list:'areas',aliases:['區會','area','區','所屬區會','District']},
-      {k:'unit',label:'旅團',type:'text',aliases:['旅團','旅號','單位','童軍旅','unit_name','unit','Group','旅團名稱']},
-      {k:'section',label:'支部',type:'text',list:'sections',aliases:['支部','所屬支部','section','組別','Branch']},
-      {k:'qty_a',label:'A餐',type:'number',aliases:['A餐','A','A飯','Qty A','qty_a']},
-      {k:'qty_b',label:'B餐',type:'number',aliases:['B餐','B','B飯','Qty B','qty_b']},
-      {k:'qty_c',label:'C餐',type:'number',aliases:['C餐','C','C飯','素','素食','Qty C','qty_c']},
-      {k:'qty_total',label:'餐盒總數',type:'number',aliases:['總數','餐盒總數','合共','合計','人數','total','Total','qty']},
-      {k:'pickup',label:'取餐時間／地點',type:'text',aliases:['取餐時間','派發時間','取餐地點','領取','pickup','time']},
-      {k:'notes',label:'備註（走辣／額外）',type:'text',aliases:['備註','要求','特殊要求','說明','note','notes','Remarks']}
-    ],
-    sample_rows:[['HKS 港島南區','港島第175旅','小童軍','20','15','5','40','11:45／有蓋操場側','走辣 x3'],['CHW 柴灣區','港島第6旅','幼童軍','25','20','0','45','11:45／有蓋操場側','']]
+      {k:'no',label:'編號',type:'number'}, {k:'area',label:'區會',type:'text'}, {k:'unit',label:'旅團',type:'text'},
+      {k:'qty_total',label:'代訂餐盒',type:'number'}, {k:'headcount',label:'總人數',type:'number'}, {k:'leader',label:'領隊',type:'text'}, {k:'notes',label:'備註',type:'text'}
+    ], sample_rows:[]
   },
   {
     // 工作人員膳食／派章名單：2026 凍結版（ISD2026 staff list ver2 (FROZEN).xlsx），只讀，點名由協調組派飯／行政組派章用
@@ -566,7 +543,7 @@ const MERIT_AWARD_ROSTER_DEF={
   accent:'sky', owner_group:'會操及典禮組', owner_note:'典禮組',
   exec_location:'執行手冊 → 典禮儀式 → 優異旅團獲獎名單', dept_tab:'cer_award_merit',
   tick_label:'點名', tick_col_label:'出席', tick_hint:'優異旅團代表上台前由典禮組逐團點名；取消請同時剔「修正」格（TICK 只加不減）。',
-  intro:'優異旅團獲獎名單由會操及典禮組（典禮組）負責上載及點名，公眾可查閱。',
+  intro:'優異旅團獲獎名單。',
   source:'ceremony_merit', editable:true, required:'unit', group_field:'area', sort_fields:['area','section','unit'],
   upload_label:'上傳獲獎名單',
   columns:[

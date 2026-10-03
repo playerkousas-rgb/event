@@ -5,7 +5,7 @@ Object.assign(ScoutEventApp.prototype,{
   getCeremonyData(){
     const key=LS.ceremony(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
-    if(local) return local;
+    if(local && !(this.isDataFrozen&&this.isDataFrozen())) return local;
     // 內建官方典禮程序（2026-10-04 定稿，不會再改）——所有活動一併內建，可於 APP 內編輯覆蓋
     const officialRundown=[
       {id:'rd_o0',time:'10:45',program:'嘉賓接待（典禮嘉賓接待處）',location:'莫榮大樓地下'},
@@ -43,7 +43,7 @@ Object.assign(ScoutEventApp.prototype,{
         {id:'mc8',seq:19,text:'司儀（陳梓衡）：現在恭請主禮嘉賓香港警察學院院長盧詠儀檢閱會操隊伍，並由副地域總監陳子明及潘志強陪同。'},
         {id:'mc9',seq:20,text:'司儀（蔡小晴）：步操係童軍運動中一個非常重要嘅訓練項目。各位可以看到在場嘅比賽隊伍精神奕奕，的確十分神氣，相信佢哋下過唔少苦功。（檢閱完畢）'},
         {id:'mc10',seq:21,text:'司儀（陳梓衡）：會操隊伍即將進行分列式步操，並請盧院長接受會操隊伍致敬。（P.C. Parade will March Past in Quick Time）'},
-        {id:'mc11',seq:22,text:'司儀（蔡小晴）：香港童軍總會港島地域旗隊即將經過檢閱台，請各位嘉賓起立。隨後係各支青少年制服團體嘅隊伍（民眾安全服務隊少年團、聖約翰救傷隊少青團）及步操比賽隊伍。'},
+        {id:'mc11',seq:22,text:'司儀（蔡小晴）：香港童軍總會港島地域旗隊即將經過檢閱台，請各位嘉賓起立。隨後係各支青少年制服團體嘅隊伍（香港女童軍總會、香港紅十字會、香港聖約翰救傷隊少青團）及步操比賽隊伍。'},
         {id:'mc12',seq:23,text:'司儀（蔡小晴）：現在有請主禮嘉賓接受會操隊伍最高致敬，請各位起立。（P.C. Parade will Advance, In Review Order, By the Centre, Quick March 16 paces）'},
         {id:'mc13',seq:24,text:'司儀（蔡小晴）：現在恭請香港警察學院院長盧詠儀致辭。（致辭完畢）司儀（陳梓衡）：多謝盧院長。'},
         {id:'mc14',seq:25,text:'司儀（蔡小晴）：現在頒發「港島地域步操比賽2025」嘅獎項，比賽分為升旗比賽、步操比賽及隊列比賽。有請盧院長到台前為我們頒發獎項。'},
@@ -77,7 +77,7 @@ Object.assign(ScoutEventApp.prototype,{
       ]
     };
   },
-  saveCeremonyData(data){ localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
+  saveCeremonyData(data){ if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
   renderCeremonyModule(box){
     const container=box||document.getElementById('module-content');
     const ceremonyTabs=['rundown','route','mc','guests','ug','seating','speech','awards','section_award','leader_award','map'];
@@ -146,7 +146,7 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
-          <b>🗺️ 嘉賓地圖及交通（內建·官方 2026 地圖資料，已定稿）：</b>香港警察學院場地及嘉賓安排總覽已內建於本卡，毋須另開連結。
+          <b>🗺️ 嘉賓地圖及交通：</b>香港警察學院場地及嘉賓安排總覽。
         </div>
         <div class="bg-white border rounded-xl p-4">
           <h4 class="font-bold text-[13px] mb-2 flex items-center gap-2"><i class="fa-solid fa-map text-rose-600"></i>官方原圖（Police College Maps – Guest V2）</h4>
@@ -213,29 +213,18 @@ Object.assign(ScoutEventApp.prototype,{
   /* 會操檢閱路線 — 由 data/isd_2026.json 的 ceremony.inspection_route 讀取 */
   ceremonyRouteHTML(){
     const r=this.eventData?.ceremony?.inspection_route; if(!r) return '';
-    const img=r.image?`<img src="${escapeHtml(r.image)}" alt="會操檢閱路線圖" class="w-full rounded-xl border mt-2">`
-                     :`<p class="text-[11px] text-slate-500 mt-2"><i class="fa-regular fa-image mr-1"></i>${escapeHtml(r.image_hint||'路線圖待上傳')}</p>`;
+    const img=r.image?`<img src="${escapeHtml(r.image)}" alt="會操檢閱路線圖" class="w-full rounded-xl border mt-3">`:'';
     return `<div class="border border-sky-200 bg-sky-50 rounded-2xl p-4">
       <div class="font-bold text-sm text-sky-900"><i class="fa-solid fa-route mr-1"></i>${escapeHtml(r.title||'會操檢閱路線')}</div>
-      ${r.change_summary?`<div class="text-[11px] text-rose-700 font-bold mt-1">${escapeHtml(r.change_summary)}</div>`:''}
       <div class="text-[11px] text-slate-600 mt-1">檢閱官：${escapeHtml(r.reviewing_officer||'')}${(r.party||[]).length?'｜陪同：'+escapeHtml((r.party||[]).join('、')):''}</div>
       <ol class="list-decimal list-inside text-[12px] text-slate-700 mt-2 space-y-1">${(r.steps||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>
       ${(r.inspection_questions||[]).length?`<div class="mt-2 text-[12px]"><div class="font-bold text-slate-700">檢閱官會問隊員：</div><ul class="list-disc list-inside text-slate-700">${r.inspection_questions.map(q=>`<li>${escapeHtml(q)}</li>`).join('')}</ul></div>`:''}
-      ${r.confirm_needed?`<div class="mt-2 text-[11px] text-amber-800 bg-amber-100 border border-amber-200 rounded-xl px-2 py-1">待確認：${escapeHtml(r.confirm_needed)}</div>`:''}
       ${img}
     </div>`;
   },
   renderCeremonyRundown(){
     const container=document.getElementById('ceremony-tab-rundown'); if(!container) return;
-    const data=this.getCeremonyData();
-    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
-    const canEdit=!frozen&&(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
-    container.innerHTML=`
-      <div class="space-y-3">
-        ${!frozen?`<div class="flex gap-2 flex-wrap">${canEdit?`<button onclick="app.openCeremonyFileForm(null,'rundown')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳 RUNDOWN</button>`:''}</div>`:''}
-        <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">時間</th><th class="px-2 py-1 text-left">節目</th><th class="px-2 py-1 text-left">位置</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.rundown.map(x=>`<tr><td class="px-2 py-1 font-mono font-bold" data-label="時間">${escapeHtml(x.time)}</td><td class="px-2 py-1" data-label="節目">${escapeHtml(x.program)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(x.location)}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openCeremonyItemForm('rundown','${x.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCeremonyItem('rundown','${x.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無RUNDOWN</td></tr>'}</tbody></table></div>
-        ${this.ceremonyPart1RundownV5HTML()}
-      </div>`;
+    container.innerHTML=`<div class="space-y-3">${this.ceremonyPart1RundownV5HTML()}${this.adultAwards2026HTML()}</div>`;
   },
   /* 第一部分 RUNDOWN（官方 Rundown_All 2026 連獎項 Part 1 V５）：逐項含主禮人，內容已定稿改為只讀顯示 */
   ceremonyPart1RundownV5HTML(){
@@ -259,18 +248,16 @@ Object.assign(ScoutEventApp.prototype,{
     const src=this.eventData?.ceremony?.rundown_part1_v5||{};
     return `<div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 space-y-3">
       <div class="flex justify-between items-start gap-2 flex-wrap">
-        <b class="text-[13px] text-fuchsia-900"><i class="fa-solid fa-user-shield mr-1"></i>2026 成年獎勵 — 委任書／長期服務獎／感謝狀（官方定稿）</b>
+        <b class="text-[13px] text-fuchsia-900"><i class="fa-solid fa-user-shield mr-1"></i>2026 成年獎勵 — 委任書／長期服務獎／感謝狀</b>
         ${src.file_url?`<a href="${escapeHtml(src.file_url)}" target="_blank" rel="noopener" class="bg-fuchsia-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-word mr-1"></i>開啟原檔 Word</a>`:''}
       </div>
       ${list.map(a=>{
-        const attending=(a.recipients||[]).filter(r=>r.status==='出席').length;
-        const absent=(a.recipients||[]).filter(r=>r.status==='未能出席').length;
         return `<div class="bg-white border rounded-xl p-3">
           <div class="flex justify-between items-start gap-2 flex-wrap">
             <b class="text-[12px]">${escapeHtml(a.award||'')}</b>
-            <span class="text-[10px] text-slate-500 font-bold">主禮：${escapeHtml(a.presenter||'')}${a.recipients.some(r=>r.status)?`　｜出席 ${attending}・未能出席 ${absent}`:''}</span>
+            <span class="text-[10px] text-slate-500 font-bold">主禮：${escapeHtml(a.presenter||'')}</span>
           </div>
-          <div class="flex flex-wrap gap-1.5 mt-2">${(a.recipients||[]).map(r=>`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] border ${r.status==='出席'?'bg-emerald-50 border-emerald-200 text-emerald-800':(r.status==='未能出席'?'bg-slate-50 border-slate-200 text-slate-400':'bg-indigo-50 border-indigo-200 text-indigo-800')}" ><b>${escapeHtml(r.name)}</b>${r.status?`<span class="text-[9px]">${r.status==='出席'?'✔出席':'✗未能出席'}</span>`:''}</span>`).join('')}</div>
+          <div class="flex flex-wrap gap-1.5 mt-2">${(a.recipients||[]).map(r=>`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] border ${r.status==='出席'?'bg-emerald-50 border-emerald-200 text-emerald-800':(r.status==='未能出席'?'bg-slate-50 border-slate-200 text-slate-400':'bg-indigo-50 border-indigo-200 text-indigo-800')}" ><b>${escapeHtml(r.name)}</b></span>`).join('')}</div>
         </div>`;
       }).join('')}
     </div>`;
@@ -315,7 +302,6 @@ Object.assign(ScoutEventApp.prototype,{
     const canEdit=!frozen&&(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
     container.innerHTML=`
       <div class="space-y-3">
-        ${this.eventData?.guest_roster?`<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>最新正式名單：</b>${escapeHtml(String(this.eventData.guest_roster.count||0))} 位・版本 ${escapeHtml(this.eventData.guest_roster.as_at||'')}</div>`:''}
         <div class="flex gap-2 flex-wrap"><button onclick="app.openGuestCheckin()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-check-double mr-1"></i>嘉賓點名</button>${canEdit?`<button onclick="app.openCeremonyItemForm('guests')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-user-plus mr-1"></i>加名（新增嘉賓）</button>`:''}${canEdit?`<button onclick="app.openCeremonyFileForm(null,'guests')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳正式名單</button>`:''}</div>
         <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">序號</th><th class="px-2 py-1 text-left">姓名</th><th class="px-2 py-1 text-left">職銜</th><th class="px-2 py-1 text-left">出席／交通</th><th class="px-2 py-1 text-left">車牌／備註</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.guests.map(g=>{const attendance=[g.ceremony_part_1?'第一部分':'',g.ceremony_part_2?'第二部分':'',g.guest_tea?'茶聚':'',g.event_bus?'大會車':''].filter(Boolean).join('、')||'—';return `<tr><td class="px-2 py-1 font-mono" data-label="序號">${escapeHtml(String(g.serial||''))}</td><td class="px-2 py-1 font-bold" data-label="姓名">${escapeHtml(g.name)}</td><td class="px-2 py-1 whitespace-pre-line" data-label="職銜">${escapeHtml(g.title)}</td><td class="px-2 py-1" data-label="出席／交通">${escapeHtml(attendance)}</td><td class="px-2 py-1 whitespace-pre-line" data-label="車牌／備註">${escapeHtml([g.car_plate,g.column_1,g.note].filter(Boolean).join(' · '))}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作">${this.isOfficialGuest(g)?'<span class="text-[10px] text-slate-400">正式名單・只可點名</span>':`<button onclick="app.openCeremonyItemForm('guests','${g.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCeremonyItem('guests','${g.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button>`}</td>`:''}</tr>`}).join('')||'<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無嘉賓</td></tr>'}</tbody></table></div>
       </div>`;
@@ -326,33 +312,13 @@ Object.assign(ScoutEventApp.prototype,{
     const cer=this.eventData?.ceremony||{};
     const groups=cer.ug_guests||[];
     const units=cer.ug_units||[];
-    const src=cer.ug_source||{};
     container.innerHTML=`
       <div class="space-y-4">
-        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
-          <b class="text-[12px] text-rose-900"><i class="fa-solid fa-flag mr-1"></i>其他制服團體 — 出席嘉賓及派隊清單（更新至 2026-09-29）</b>
-          ${src.file_url?`<a href="${escapeHtml(src.file_url)}" target="_blank" class="bg-rose-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>開啟原檔 PDF ↗</a>`:''}
-        </div>
-        <div class="bg-white border rounded-xl p-3">
-          <b class="text-[12px]"><i class="fa-solid fa-user-tie mr-1"></i>出席嘉賓（按制服團體）</b>
-          <div class="table-responsive mt-2"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">制服團體</th><th class="px-2 py-1 text-left">派隊參與</th><th class="px-2 py-1 text-left">出席嘉賓姓名</th><th class="px-2 py-1 text-left">職位</th><th class="px-2 py-1 text-left">茶聚</th></tr></thead><tbody class="divide-y">
-            ${groups.map(g=>(g.guests||[]).map((p,i)=>`<tr>
-              <td class="px-2 py-1 font-mono" data-label="#">${i===0?g.no:''}</td>
-              <td class="px-2 py-1 font-bold" data-label="制服團體">${i===0?escapeHtml(g.org||''):''}</td>
-              <td class="px-2 py-1" data-label="派隊參與">${i===0?(g.march_unit==='Y'?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">有派隊</span>':'—'):''}</td>
-              <td class="px-2 py-1" data-label="姓名">${escapeHtml(p.name||'')}</td>
-              <td class="px-2 py-1" data-label="職位">${escapeHtml(p.title||'')}</td>
-              <td class="px-2 py-1" data-label="茶聚">${escapeHtml(p.tea||'')}</td>
-            </tr>`).join('')).join('') || '<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無資料</td></tr>'}
-          </tbody></table></div>
-        </div>
-        <div class="bg-white border rounded-xl p-3">
-          <b class="text-[12px]"><i class="fa-solid fa-people-group mr-1"></i>派隊隊伍聯絡資料</b>
-          <div class="table-responsive mt-2"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">隊伍</th><th class="px-2 py-1 text-left">領隊姓名</th><th class="px-2 py-1 text-left">所屬職位</th><th class="px-2 py-1 text-left">出席人數</th></tr></thead><tbody class="divide-y">
-            ${units.map(u=>`<tr><td class="px-2 py-1 font-mono" data-label="#">${u.no}</td><td class="px-2 py-1 font-bold" data-label="隊伍">${escapeHtml(u.unit||'')}</td><td class="px-2 py-1" data-label="領隊">${escapeHtml(u.leader||'')}</td><td class="px-2 py-1" data-label="職位">${escapeHtml(u.position||'')}</td><td class="px-2 py-1" data-label="出席人數">${escapeHtml(String(u.headcount||0))}</td></tr>`).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無資料</td></tr>'}
-          </tbody></table></div>
-          <div class="text-[10px] text-slate-500 mt-2">派隊出席總人數：${units.reduce((n,u)=>n+(Number(u.headcount)||0),0)} 人</div>
-        </div>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3"><b class="text-[12px] text-rose-900"><i class="fa-solid fa-flag mr-1"></i>其他制服團體</b></div>
+        <div class="bg-white border rounded-xl p-3"><b class="text-[12px]"><i class="fa-solid fa-user-tie mr-1"></i>出席嘉賓</b><div class="table-responsive mt-2"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">制服團體</th><th class="px-2 py-1 text-left">派隊參與</th><th class="px-2 py-1 text-left">出席嘉賓姓名</th><th class="px-2 py-1 text-left">職位</th><th class="px-2 py-1 text-left">茶聚</th></tr></thead><tbody class="divide-y">
+          ${groups.map(g=>(g.guests||[]).map((p,i)=>`<tr><td class="px-2 py-1 font-mono" data-label="#">${i===0?g.no:''}</td><td class="px-2 py-1 font-bold" data-label="制服團體">${i===0?escapeHtml(g.org||''):''}</td><td class="px-2 py-1" data-label="派隊參與">${i===0?(g.march_unit==='Y'?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">有派隊</span>':'—'):''}</td><td class="px-2 py-1" data-label="姓名">${escapeHtml(p.name||'')}</td><td class="px-2 py-1" data-label="職位">${escapeHtml(p.title||'')}</td><td class="px-2 py-1" data-label="茶聚">${escapeHtml(p.tea||'')}</td></tr>`).join('')).join('') || '<tr><td colspan="6" class="px-2 py-4 text-center text-slate-400">暫無資料</td></tr>'}
+        </tbody></table></div></div>
+        <div class="bg-white border rounded-xl p-3"><b class="text-[12px]"><i class="fa-solid fa-people-group mr-1"></i>派隊隊伍聯絡資料</b><div class="table-responsive mt-2"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">隊伍</th><th class="px-2 py-1 text-left">領隊姓名</th><th class="px-2 py-1 text-left">所屬職位</th><th class="px-2 py-1 text-left">出席人數</th></tr></thead><tbody class="divide-y">${units.map(u=>`<tr><td class="px-2 py-1 font-mono" data-label="#">${u.no}</td><td class="px-2 py-1 font-bold" data-label="隊伍">${escapeHtml(u.unit||'')}</td><td class="px-2 py-1" data-label="領隊">${escapeHtml(u.leader||'')}</td><td class="px-2 py-1" data-label="職位">${escapeHtml(u.position||'')}</td><td class="px-2 py-1" data-label="出席人數">${escapeHtml(String(u.headcount||0))}</td></tr>`).join('') || '<tr><td colspan="5" class="px-2 py-4 text-center text-slate-400">暫無資料</td></tr>'}</tbody></table></div><div class="text-[10px] text-slate-500 mt-2">派隊出席總人數：${units.reduce((n,u)=>n+(Number(u.headcount)||0),0)} 人</div></div>
       </div>`;
   },
   // 嘉賓點名權限：嘉賓接待組／行政組／典禮負責組／副主席以上（須登入）
@@ -369,10 +335,11 @@ Object.assign(ScoutEventApp.prototype,{
     if(!this.canGuestCheckin()){ showToast('僅已登入嘅嘉賓接待組／行政組／典禮組及副主席以上可以嘉賓點名','error'); return; }
     const data=this.getCeremonyData(); const list=data.guests||[]; const key=LS.ceremony(this.currentEvent?.event_id||'isd_2026')+'_guest_checkin';
     let state={}; try{state=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
-    const rows=list.map((g,i)=>{const id=g.id||('guest_'+i); const checked=!!state[id]; return `<label class="flex items-center gap-3 rounded-xl border bg-white p-3 min-h-[52px] cursor-pointer"><input type="checkbox" class="guest-check w-6 h-6 accent-rose-600" data-id="${escapeHtml(id)}" ${checked?'checked':''}><span class="min-w-0"><b class="block text-sm truncate">${escapeHtml(g.name||'')}</b><span class="block text-[11px] text-slate-500 truncate">${escapeHtml(g.title||'')}</span></span></label>`}).join('');
-    const total=list.length, checked=Object.keys(state).filter(id=>list.some((g,i)=>(g.id||('guest_'+i))===id)&&state[id]).length;
-    const modal=document.getElementById('modal-record'); const title=document.getElementById('record-modal-title'); const fields=document.getElementById('record-form-fields'); const form=document.getElementById('record-form'); if(!modal||!fields)return; title.textContent='嘉賓點名'; fields.innerHTML=`<div class="space-y-3"><div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-sm font-bold">已到 <span id="guest-check-count">${checked}</span> / ${total}</div><div class="space-y-2 max-h-[65vh] overflow-y-auto">${rows||'<div class="text-center text-sm text-slate-400 py-8">正式名單尚未轉入點名資料</div>'}</div></div>`; form.onsubmit=e=>{e.preventDefault();this.saveGuestCheckin(key);}; form.querySelector('button[type="submit"]')?.remove(); const save=document.createElement('button'); save.type='submit'; save.className='px-4 py-2 bg-rose-600 text-white rounded-xl text-sm'; save.textContent='儲存點名'; form.querySelector('.flex.justify-end')?.appendChild(save); modal.classList.remove('hidden');
-    document.querySelectorAll('.guest-check').forEach(el=>el.addEventListener('change',()=>{const n=document.querySelectorAll('.guest-check:checked').length; const c=document.getElementById('guest-check-count'); if(c)c.textContent=n;}));
+    const rows=list.map((g,i)=>({key:g.id||('guest_'+i),name:g.name||'',sub:g.title||'',group:g.section||g.org||'嘉賓',unit:g.section||'',checked:!!state[g.id||('guest_'+i)]}));
+    this.openCheckinModal(rows,{title:'嘉賓點名',accent:'rose',saveLabel:`儲存（共 ${rows.length} 位）`,hint:'剔＝已到場',sortOptions:[{k:'group',label:'按組別'},{k:'name',label:'按姓名'},{k:'sub',label:'按職銜'},{k:'pending',label:'未點名優先'}],onSave:(checked)=>{
+      const before={...state}; const next={}; checked.forEach(id=>next[id]=true); localStorage.setItem(key,JSON.stringify(next)); this.closeModal('modal-record');
+      const added=Object.keys(next).filter(id=>!before[id]); this.pushGuestCheckinToGas(added); showToast(added.length?`嘉賓點名已儲存（新增 ${added.length} 位）`:'嘉賓點名已儲存','success');
+    }});
   },
   saveGuestCheckin(key){
     if(!this.canGuestCheckin()){ showToast('冇權限儲存嘉賓點名','error'); return; }
@@ -686,10 +653,7 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-[11px] leading-relaxed text-yellow-900">
-          <b>🏆 優異旅團獲獎名單：</b>優異旅團、步操比賽及支部／領袖獎勵名單，公眾可查閱。管理員／副主席以上可編輯。<br>
-          <span class="text-[10px]">v14 起「支部獎勵」及「領袖獎勵」另有<b>專屬分頁（含點名 TICK＋Excel／Word／PDF 上傳）</b>：
-          <button onclick="app.switchCeremonyTab('section_award')" class="underline font-bold">→ 支部獎勵名單</button>　
-          <button onclick="app.switchCeremonyTab('leader_award')" class="underline font-bold">→ 領袖獎勵名單</button></span>
+          <b>🏆 優異旅團獲獎名單：</b>優異旅團、步操比賽及支部／領袖獎勵名單。
         </div>
 
         <div class="bg-sky-50 border border-sky-200 rounded-xl p-3">${this.rosterPanelHTML('merit_award',{scope:'merit'})}</div>

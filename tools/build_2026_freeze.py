@@ -213,7 +213,7 @@ d['activities']['maps'] = [{
     'created_by': '行政組', 'created_at': '2026-10-02'}]
 d['activities']['gameCards'] = [{
     'id': 'gc_2026', 'title': '港島童軍繽紛日 2026 遊戲卡',
-    'description': 'Game card-P：參加者攞 ACTIVE／HEALTHY 遊戲卡到各攤位集印花。', 'file_name': 'Game card-P.pdf',
+    'description': 'Game card-P：活動遊戲卡。', 'file_name': 'Game card-P.pdf',
     'file_url': 'https://drive.google.com/file/d/1mpkBkjpusBjQNOl-wafKRrhn-1KuB-di/view', 'file_data': '',
     'created_by': '主題節目組', 'created_at': '2026-10-02'}]
 

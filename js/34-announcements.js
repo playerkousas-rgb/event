@@ -29,7 +29,7 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-4">
         <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed">
           <b>📢 公告及溝通 - 活動資訊總匯：</b><br>
-          • 公告、日程表、旅團須知、活動主題章全部集中在此卡，公開可看，無需登入<br>
+          • 公告、日程表、旅團須知及場地地圖集中在此卡，公開可看，無需登入<br>
           • 僅修改需登入：發佈公告需主任以上登入，登入儲存於瀏覽器，一次登入永久有效<br>
           • 跨部門溝通：可@組別，支援任務跟進、重要公告、問題回報<br>
           • 比舊 Google Sites 更易找到：置頂公告、分類篩選、搜尋
@@ -38,45 +38,40 @@ Object.assign(ScoutEventApp.prototype,{
           <button onclick="app.switchAnnTab('list')" class="tab-btn ${this.annSubTab==='list'?'active':''}"><i class="fa-solid fa-bullhorn mr-1"></i> 公告</button>
           <button onclick="app.switchAnnTab('schedule')" class="tab-btn ${this.annSubTab==='schedule'?'active':''}"><i class="fa-solid fa-calendar-days mr-1"></i> 日程表</button>
           <button onclick="app.switchAnnTab('guide')" class="tab-btn ${this.annSubTab==='guide'?'active':''}"><i class="fa-solid fa-book-open mr-1"></i> 旅團須知</button>
-          <button onclick="app.switchAnnTab('theme')" class="tab-btn ${this.annSubTab==='theme'?'active':''}"><i class="fa-solid fa-award mr-1"></i> 活動主題章</button>
           <button onclick="app.switchAnnTab('map')" class="tab-btn ${this.annSubTab==='map'?'active':''}"><i class="fa-solid fa-map mr-1"></i> 場地地圖</button>
         </div>
         <div id="ann-tab-list" class="${this.annSubTab==='list'?'':'hidden'}"></div>
         <div id="ann-tab-schedule" class="${this.annSubTab==='schedule'?'':'hidden'}"></div>
         <div id="ann-tab-guide" class="${this.annSubTab==='guide'?'':'hidden'}"></div>
-        <div id="ann-tab-theme" class="${this.annSubTab==='theme'?'':'hidden'}"></div>
         <div id="ann-tab-map" class="${this.annSubTab==='map'?'':'hidden'}"></div>
       </div>
     `;
     this.renderAnnList(document.getElementById('ann-tab-list'));
     if(this.annSubTab==='schedule') this.renderScheduleModule(document.getElementById('ann-tab-schedule'));
     if(this.annSubTab==='guide') this.renderUnitGuideModule(document.getElementById('ann-tab-guide'));
-    if(this.annSubTab==='theme') this.renderThemeBadgesModule(document.getElementById('ann-tab-theme'));
   }
 ,
   switchAnnTab(tab){
     this.annSubTab=tab;
-    ['list','schedule','guide','theme','map'].forEach(t=>{const el=document.getElementById('ann-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
+    ['list','schedule','guide','map'].forEach(t=>{const el=document.getElementById('ann-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab);});
     document.querySelectorAll('[onclick^="app.switchAnnTab"]').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className=t===tab?'tab-btn active':'tab-btn';
     });
     if(tab==='schedule') this.renderScheduleModule(document.getElementById('ann-tab-schedule'));
     else if(tab==='guide') this.renderUnitGuideModule(document.getElementById('ann-tab-guide'));
-    else if(tab==='theme') this.renderThemeBadgesModule(document.getElementById('ann-tab-theme'));
     else if(tab==='map') this.renderAnnMapTab(document.getElementById('ann-tab-map'));
     else if(tab==='list') this.renderAnnList(document.getElementById('ann-tab-list'));
   }
 ,
   renderAnnMapTab(container){
     if(!container) return;
-    container.innerHTML='<div class="space-y-4">'
-      +'<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] leading-relaxed text-emerald-900"><b><i class="fa-solid fa-map mr-1"></i>場地地圖：</b>香港黃竹坑香港警察學院活動場地地圖。</div>'
-      +'<div class="bg-white border rounded-xl p-4 space-y-3">'
-      +'<div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl"><i class="fa-solid fa-map"></i></div><div><b class="text-[14px]">香港警察學院場地地圖</b><div class="text-[11px] text-slate-500 mt-0.5">活動場地地圖 PDF</div></div></div>'
-      +'<div class="mt-3"><iframe src="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/preview" class="w-full h-[500px] border rounded-xl" allow="autoplay"></iframe></div>'
-      +'<a href="https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 mt-2"><i class="fa-solid fa-download mr-1"></i>下載場地地圖 PDF</a>'
-      +'</div></div>';
+    const file='assets/event-day/site-setup-plan-2026.pdf';
+    container.innerHTML=`<div class="space-y-3">
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] text-emerald-950"><b><i class="fa-solid fa-map mr-1"></i>ISD2026 Site Setup Plan R10-SETUP PLAN-1</b></div>
+      <div class="bg-white border rounded-2xl overflow-hidden"><iframe src="${file}#view=FitH" title="ISD2026 Site Setup Plan R10-SETUP PLAN-1" class="w-full h-[72vh] min-h-[520px] border-0"></iframe></div>
+      <div><a href="${file}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>新分頁開啟</a></div>
+    </div>`;
   }
 ,
   renderAnnList(container){

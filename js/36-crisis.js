@@ -5,6 +5,7 @@ Object.assign(ScoutEventApp.prototype,{
   getCrisisData(){
     const key=LS.crisis(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
+    const locked=!!(this.isDataFrozen&&this.isDataFrozen());
     const stripMockAcc=arr=>{
       if(!Array.isArray(arr)) return this.isDemoEvent()?arr:[];
       if(this.isDemoEvent()) return arr;
@@ -34,9 +35,9 @@ Object.assign(ScoutEventApp.prototype,{
       // 只保留 accidents，其他清空以走 JSON path
       const kept={ accidents: Array.isArray(local.accidents)?stripMockAcc(local.accidents):[] };
       // 若 user 曾經編輯 team/contacts/docs 並打上 _userEdited 標記，才保留其對應項目
-      if(Array.isArray(local.team) && local.team.some(x=>x&&x._userEdited)) kept._userTeam=local.team.filter(x=>x&&x._userEdited);
-      if(Array.isArray(local.contacts) && local.contacts.some(x=>x&&x._userEdited)) kept._userContacts=local.contacts.filter(x=>x&&x._userEdited);
-      if(Array.isArray(local.docs) && local.docs.some(x=>x&&x._userEdited)) kept._userDocs=local.docs.filter(x=>x&&x._userEdited);
+      if(!locked && Array.isArray(local.team) && local.team.some(x=>x&&x._userEdited)) kept._userTeam=local.team.filter(x=>x&&x._userEdited);
+      if(!locked && Array.isArray(local.contacts) && local.contacts.some(x=>x&&x._userEdited)) kept._userContacts=local.contacts.filter(x=>x&&x._userEdited);
+      if(!locked && Array.isArray(local.docs) && local.docs.some(x=>x&&x._userEdited)) kept._userDocs=local.docs.filter(x=>x&&x._userEdited);
       // 覆寫 localStorage 為精簡版
       localStorage.setItem(key, JSON.stringify(kept));
       // 讓下面 JSON 分支處理（把 accidents 合併回去）
@@ -280,7 +281,7 @@ Object.assign(ScoutEventApp.prototype,{
   renderCrisisModule(box){
     this.migrateLegacySafety(); // 舊「安全及醫療」資料自動併入
     const container=box||document.getElementById('module-content');
-    if(!this.crisisSubTab) this.crisisSubTab='docs';
+    if(!this.crisisSubTab) this.crisisSubTab='manual';
     const data=this.getCrisisData();
     const canEdit=(ROLE_HIERARCHY[this.currentUser?.role]||0)>=60;
     container.innerHTML=`
@@ -825,64 +826,9 @@ Object.assign(ScoutEventApp.prototype,{
   renderCrisisManual(){
     const container=document.getElementById('crisis-tab-manual');
     if(!container) return;
-    const data=this.getCrisisData();
-    const manuals=Array.isArray(data.manuals)?data.manuals:[];
-    const frozen=!!(this.isDataFrozen&&this.isDataFrozen());
-    const canEdit=!frozen&&((ROLE_HIERARCHY[this.currentUser?.role]||0)>=60 || this.isAdmin() || this.isExecViceOrChair());
-    let html=`<div class="space-y-4">
-      <div class="flex gap-2 flex-wrap items-center">
-        ${canEdit?`<button onclick="app.openCrisisManualForm()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳手冊檔案</button>`:''}
-        <a href="https://drive.google.com/file/d/1BNM0C-mOXEIRel-qJCZgb0RGOXWxw0N6/preview" target="_blank" class="bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>手冊 PDF ↗</a>
-        <a href="https://drive.google.com/file/d/1Phtigx-WNI21rA2FcgtAxp_AnKSp-iCp/preview" target="_blank" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>手冊 Word ↗</a>
-        <a href="https://drive.google.com/drive/folders/1d-197mc3FIrNoMCBpNwyo4U6e9GAmcS_" target="_blank" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-folder-open mr-1"></i>危機手冊 Drive 資料夾 ↗</a>
-      </div>`;
-
-    if(!manuals.length){
-      html+=`
-      <div class="border-2 border-dashed border-red-200 rounded-2xl p-8 text-center bg-red-50/40 space-y-3">
-        <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-book-medical"></i></div>
-        <h4 class="font-bold text-sm text-red-900">危機處理手冊</h4>
-        <p class="text-xs text-slate-500 max-w-md mx-auto">請使用上方 PDF／Word 連結開啟 2026 年版本。</p>
-        ${canEdit?`<button onclick="app.openCrisisManualForm()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold mt-2"><i class="fa-solid fa-file-arrow-up mr-1"></i>立即上傳手冊</button>`:''}
-      </div>`;
-    } else {
-      html+=`<div class="grid grid-cols-1 gap-4">`;
-      manuals.forEach(m=>{
-        const driveId=this.docDriveId(m);
-        html+=`
-        <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-3 flex flex-col">
-          <div class="flex justify-between items-start gap-2 flex-wrap">
-            <div class="flex items-start gap-3 min-w-0">
-              <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
-              <div>
-                <b class="text-[14px] text-slate-800">${escapeHtml(m.title)}</b>
-                <div class="mt-1 flex gap-2 flex-wrap items-center">
-                  <span class="bg-red-100 text-red-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold border border-red-200">${escapeHtml(m.version||'2026年版')}</span>
-                  <span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full border">${escapeHtml(m.category||'危機手冊')}</span>
-                  ${m.file_name?`<span class="bg-sky-50 text-sky-700 text-[10px] px-2 py-0.5 rounded-full border border-sky-200 font-mono">${escapeHtml(m.file_name)}</span>`:''}
-                </div>
-              </div>
-            </div>
-            ${canEdit?`<div class="flex gap-1 flex-shrink-0"><button onclick="app.openCrisisManualForm('${m.id}')" class="bg-white border px-2.5 py-1 rounded-xl text-[11px] font-bold hover:bg-slate-50">✏️ 編輯</button><button onclick="app.deleteCrisisManual('${m.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2.5 py-1 rounded-xl text-[11px] font-bold hover:bg-rose-100">🗑️ 刪除</button></div>`:''}
-          </div>
-          ${m.summary?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-950 leading-relaxed"><b class="text-amber-800"><i class="fa-solid fa-align-left mr-1"></i>手冊擇要：</b>${escapeHtml(m.summary)}</div>`:''}
-          <div class="text-[10px] text-slate-400">發佈／上載：${escapeHtml(m.uploaded_by||'秘書處')} ${m.date?` | ${escapeHtml(m.date)}`:''}</div>
-          <div class="flex gap-2 flex-wrap pt-1">
-            <button onclick="app.openCrisisManualInApp('${m.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-sm"><i class="fa-solid fa-book-open mr-1"></i>在 APP 內開啟 PDF</button>
-            <button onclick="app.downloadCrisisManual('${m.id}')" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-sm"><i class="fa-solid fa-download mr-1"></i>下載手冊</button>
-            <button onclick="app.toggleCrisisManualDetail('${m.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border px-3.5 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-circle-info mr-1"></i>詳細內容 / 章節</button>
-            ${m.file_url?`<a href="${escapeHtml(m.file_url)}" target="_blank" class="bg-sky-50 text-sky-700 border border-sky-200 px-3.5 py-1.5 rounded-xl text-[11px] font-bold inline-flex items-center"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟外部連結</a>`:''}
-          </div>
-          <div id="cman-detail-${m.id}" class="hidden space-y-2 border-t pt-3 mt-1">
-            ${m.description?`<div class="text-[11px] text-slate-700 whitespace-pre-line leading-relaxed bg-slate-50 border rounded-xl p-3.5">${escapeHtml(m.description)}</div>`:''}
-            ${driveId?`<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="w-full h-[360px] border rounded-xl" allow="autoplay"></iframe>`:''}
-          </div>
-        </div>`;
-      });
-      html+=`</div>`;
-    }
-    html+=`</div>`;
-    container.innerHTML=html;
+    const manual=(this.getCrisisData().manuals||[])[0]||{};
+    const file=manual.file_url||'assets/event-day/crisis-manual-2026.pdf';
+    container.innerHTML=`<div class="space-y-3"><div class="flex items-center justify-between gap-2 flex-wrap"><div><b class="text-[14px]"><i class="fa-solid fa-book-medical text-red-600 mr-1"></i>${escapeHtml(manual.title||'ISD2026 Risk Management Manual')}</b>${manual.version?`<div class="text-[11px] text-slate-500 mt-1">${escapeHtml(manual.version)}</div>`:''}</div><a href="${escapeHtml(file)}" target="_blank" rel="noopener" class="bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟 PDF</a></div><div class="bg-white border rounded-2xl overflow-hidden"><iframe src="${escapeHtml(file)}#view=FitH" title="危機處理手冊" class="w-full h-[72vh] min-h-[520px] border-0"></iframe></div></div>`;
   }
 ,
   openCrisisManualForm(id=null){
@@ -1267,7 +1213,7 @@ Object.assign(ScoutEventApp.prototype,{
       {id:'admin_3',title:'參加旅團名單 20251012',category:'名單',description:'旅團報名人數延期舉行版',file_url:'',created_at:''},
       {id:'admin_4',title:'膳食安排',category:'膳食',description:'膳食安排圖片 (舊手冊行政組)',file_url:'',created_at:''}
     ], tickets:[
-      {id:'tk_1',name:'遊戲券',desc:'攤位遊戲用，參加者集印花換紀念品'},
+      {id:'tk_1',name:'遊戲券',desc:'攤位遊戲用'},
       {id:'tk_2',name:'水券',desc:'憑券到飲水站換取飲用水'},
       {id:'tk_3',name:'飯券',desc:'工作人員午膳憑券領取飯盒'}
     ]};
@@ -1364,19 +1310,12 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   renderAdminParticipantsTabHTML(){
-    const canUpload=this.canUploadDocument()||this.isAdmin();
-    const participants=this.getParticipantsData();
-    const pSrc=this.eventData['participants_source']||{};
-    return `<div class="bg-white border rounded-xl p-4 space-y-2">
-      <div class="flex justify-between items-center mb-1 flex-wrap gap-2"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-people-group text-emerald-700"></i>參加旅團名單 (${participants.length})</h4><div class="flex gap-2 flex-wrap"><button onclick="app.syncParticipantsFromDrive()" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-rotate mr-1"></i>同步</button>${canUpload?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer">上傳 Excel／Word／PDF<input type="file" accept=".xlsx,.xls,.docx,.doc,.pdf" class="hidden" onchange="app.handleParticipantsUploadFile(this.files[0]);this.value=''"></label>`:''}<button onclick="app.downloadParticipantsTemplate()" class="bg-white border px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-excel mr-1"></i>下載 Excel 範本</button></div></div>
-      ${(pSrc.sheet_id||pSrc.drive_file_id)?`<div class="text-[10px] text-slate-500">來源：「${escapeHtml(pSrc.name||'參加旅團名單')}」由行政組更新，可一鍵／自動同步。</div>`:'<div class="text-[10px] text-slate-400">尚未設定名單來源（participants_source）。行政組提供 Google Sheet 後即可同步；冇 Sheet 時可直接上傳 Excel／Word 名單。</div>'}
-      <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">旅團</th><th class="px-2 py-1 text-left">支部</th><th class="px-2 py-1 text-left">人數</th><th class="px-2 py-1 text-left">備註</th></tr></thead><tbody class="divide-y">${participants.map(p=>`<tr><td class="px-2 py-1 font-medium" data-label="旅團">${escapeHtml(p.unit_name)}</td><td class="px-2 py-1" data-label="支部">${escapeHtml(p.section||'')}</td><td class="px-2 py-1" data-label="人數">${escapeHtml(p.headcount||'')}</td><td class="px-2 py-1" data-label="備註">${escapeHtml(p.notes||'')}</td></tr>`).join('') || '<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無參加旅團資料</td></tr>'}</tbody></table></div>
-      ${this.rosterPanelHTML('participants',{scope:'admin'})}
-    </div>`;
+    const count=(this.getParticipantsData()||[]).length;
+    return `<div class="space-y-3"><div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] text-emerald-950"><b><i class="fa-solid fa-people-group mr-1"></i>參加旅團名單</b><span class="ml-2">共 ${count} 旅團</span></div>${this.rosterPanelHTML('participants',{scope:'admin'})}</div>`;
   }
 ,
   renderAdminDocsTabHTML(){
-    const canUpload=this.canUploadDocument()||this.isAdmin();
+    const canUpload=!(this.isDataFrozen&&this.isDataFrozen())&&(this.canUploadDocument()||this.isAdmin());
     const data=this.getAdminGroupData();
     return `<div class="space-y-3">
       <div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openAdminDocForm()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳文件（檔案／連結）</button>`:''}<button onclick="app.exportAdminGroup()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>
@@ -1395,7 +1334,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   renderAdminTicketsTabHTML(){
-    const canUpload=this.canUploadDocument()||this.isAdmin();
+    const canUpload=!(this.isDataFrozen&&this.isDataFrozen())&&(this.canUploadDocument()||this.isAdmin());
     const data=this.getAdminGroupData();
     return `<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 space-y-3">
       <div class="flex justify-between items-center"><h4 class="font-bold text-[13px] flex items-center gap-2"><i class="fa-solid fa-ticket text-indigo-600"></i>票券（行政組專用）</h4>${canUpload?`<button onclick="app.openAdminTicketForm()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-plus mr-1"></i>新增票券</button>`:''}</div>
@@ -1414,6 +1353,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openAdminTicketForm(id=null){
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','warning'); return; }
     if(!(this.canUploadDocument()||this.isAdmin())){ showToast('僅管理員/行政總主任以上可編輯','error'); return; }
     const data=this.getAdminGroupData();
     const existing=id?data.tickets.find(t=>t.id===id):null;
@@ -1438,6 +1378,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   deleteAdminTicket(id){
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','warning'); return; }
     if(!(this.canUploadDocument()||this.isAdmin())){ showToast('僅管理員/行政總主任以上可刪除','error'); return; }
     if(!confirm('確定刪除？')) return;
     const data=this.getAdminGroupData(); data.tickets=data.tickets.filter(t=>t.id!==id);
@@ -1445,6 +1386,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openAdminDocForm(id=null){
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','warning'); return; }
     if(!this.canUploadDocument() && !this.isAdmin()){ showToast('僅管理員/行政組總主任以上可上傳','error'); return; }
     const data=this.getAdminGroupData();
     const existing=id?data.docs.find(d=>d.id===id):null;

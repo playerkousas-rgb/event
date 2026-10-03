@@ -303,12 +303,50 @@ Object.assign(ScoutEventApp.prototype,{
     this.filterSouvenirStamps(scope);
   }
 ,
+  renderStaffStampCheckinHTML(){
+    const scope='staff';
+    const roster=this.souvenirRoster(scope);
+    const st=this.souvenirStampStats(scope);
+    const canManage=this.canManageSouvenirStamps(scope);
+    const boothCount=roster.filter(p=>String(p.booth||'').trim()).length;
+    return `<div class="space-y-4">
+      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-4 text-fuchsia-950">
+        <b class="text-[14px]"><i class="fa-solid fa-award mr-1"></i>紀念章派發 — 工作人員</b>
+        <p class="mt-1 text-[12px]">以嘉賓點名方式派發：清單只顯示<b>姓名</b>及<b>組別／攤位</b>，方便快速剔選。</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        ${canManage?`<button onclick="app.openStampCheckinModal('staff','group')" class="bg-fuchsia-600 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-users mr-1"></i>按全組成員點名</button>
+        <button onclick="app.openStampCheckinModal('staff','booth')" class="bg-white border border-fuchsia-300 text-fuchsia-800 px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-store mr-1"></i>按全攤位成員點名</button>
+        <button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('staff')" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-floppy-disk mr-1"></i>儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
+        <span data-stamp-sync-status class="text-[10px] text-slate-500"></span>
+      </div>
+      <div class="grid grid-cols-3 gap-2 max-w-md text-center">
+        <div class="bg-white border rounded-xl p-2"><b class="block text-lg">${st.total}</b><span class="text-[10px] text-slate-500">工作人員</span></div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2"><b class="block text-lg text-emerald-700" id="stamp-count-staff">${st.ticked}</b><span class="text-[10px] text-emerald-800">已派</span></div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-2"><b class="block text-lg text-amber-700" id="stamp-pending-staff">${st.pending}</b><span class="text-[10px] text-amber-800">未派</span></div>
+      </div>
+      <p class="text-[10px] text-slate-500">共 ${roster.length} 位工作人員，其中 ${boothCount} 位附有攤位資料。完成點名後請按「儲存」。</p>
+    </div>`;
+  }
+,
+  refreshSouvenirStampsPanel(scope){
+    const tabId=scope==='staff'?'stamp_staff':'stamp_guest';
+    const candidates=[`group-tab-${tabId}`,`admin-tab-${tabId}`];
+    for(const id of candidates){
+      const el=document.getElementById(id);
+      if(el){ el.innerHTML=this.renderSouvenirStampsHTML(scope); return true; }
+    }
+    return false;
+  }
+,
   renderSouvenirStampsHTML(scope){
+    if(scope==='staff') return this.renderStaffStampCheckinHTML();
     const def=this.souvenirStampScopeDef(scope);
     const roster=this.souvenirRoster(scope);
     const store=this.getSouvenirStampData();
     const map=store[scope]||{};
     const canManage=this.canManageSouvenirStamps(scope);
+    const canImport=canManage&&!(this.isDataFrozen&&this.isDataFrozen());
     const st=this.souvenirStampStats(scope);
     const pct=st.total?Math.round(st.ticked/st.total*100):0;
     const sortState=this.stampSortState(scope);
@@ -342,7 +380,7 @@ Object.assign(ScoutEventApp.prototype,{
     const headerStaff=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('group','組別')}${sortTh('booth','攤位(如有)')}<th class="border px-2 py-1 text-left">身份</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註(改名)</th>`;
     const headerGuest=`<th class="border px-2 py-1">派發<br>(TICK)</th>${sortTh('name','姓名')}${sortTh('unit','單位')}<th class="border px-2 py-1 text-left">職銜</th>${sortTh('ticked','派發狀態')}<th class="border px-2 py-1 text-left">備註</th>`;
     return `<div class="space-y-3">
-      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（你可以 TICK 派發 + 匯入 EXCEL）':'（你只可以查閱）'}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>（支援 EXCEL 匯入，備註欄紀錄改名／替假）':'欄位：<b>姓名 單位 職銜 TICK</b>（支援 EXCEL 匯入，不設改名；嘉賓名單不可改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先暫存，可以一口氣 TICK 完整個組別，完成後撳「💾 儲存」一次過記錄。</b>':''}</div>
+      <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 text-[11px] leading-relaxed text-fuchsia-900"><b>🏅 紀念章派發（${escapeHtml(def.label)}）：</b>${escapeHtml(def.hint)}<br>管理：<b>${escapeHtml((SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・'))}</b>${canManage?'（可點名派發）':'（你只可以查閱）'}${canImport?'；可匯入 EXCEL 名單':''}<br>${isStaff?'欄位：<b>姓名 組別 攤位(如有) 身份 備註(改名) TICK</b>':'欄位：<b>姓名 單位 職銜 TICK</b>（嘉賓名單不可改名）'}${canManage?'<br><b class="text-fuchsia-700">💡 TICK 同備註會先暫存，完成後撳「💾 儲存」一次過記錄。</b>':''}</div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
         <div class="bg-white border rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold">${st.total}</div><div class="text-[10px]">${escapeHtml(def.label)}總人數</div></div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center"><div class="text-[17px] font-extrabold text-emerald-700" id="stamp-count-${scope}">${st.ticked}</div><div class="text-[10px]">已派發</div></div>
@@ -359,7 +397,7 @@ Object.assign(ScoutEventApp.prototype,{
         ${canManage?`<button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('${scope}')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm hover:bg-emerald-700"><i class="fa-solid fa-floppy-disk mr-1"></i>💾 儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
         <span data-stamp-sync-status class="text-[10px] text-slate-400 py-2 whitespace-nowrap"></span>
         <span class="text-[10px] text-slate-400 py-2">💡 點 header（姓名／組別／攤位／派發狀態）可排序，方便現場派發</span>
-        ${canManage?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
+        ${canImport?`<label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-file-excel mr-1"></i>匯入 EXCEL 名單<input type="file" accept=".xlsx,.xls" class="hidden" onchange="app.handleSouvenirStampsExcelUpload('${scope}',this.files[0])"></label>`:''}
         <button onclick="app.exportSouvenirStampsExcel('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出派發紀錄 Excel</button>
         <button onclick="app.exportSouvenirStampsWord('${scope}')" class="bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
         <button onclick="app.printCoordArea('stamp-print-${scope}','紀念章派發紀錄（${escapeHtml(def.label)}）')" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印名單</button>
@@ -502,6 +540,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async handleSouvenirStampsExcelUpload(scope, file){
+    if(this.isDataFrozen&&this.isDataFrozen()){ showToast('活動資料目前不可更新','warning'); return; }
     if(!this.canManageSouvenirStamps(scope)){ showToast('紀念章派發由'+(SOUVENIR_STAMP_MANAGERS[scope]||[]).join('・')+'管理','error'); return; }
     if(!file){ showToast('請選擇 EXCEL 檔案','warning'); return; }
     const overlay=document.getElementById('savingOverlay');
