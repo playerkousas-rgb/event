@@ -157,7 +157,7 @@ Object.assign(ScoutEventApp.prototype,{
     container.innerHTML=`
       <div class="space-y-4">
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] text-indigo-900">
-          組織架構公開可看；電話／Email 需登入；名單及職務大綱由有權限者管理。
+          組織架構公開可看；電話／Email 只限本組成員、行政組或副主席及以上查閱；名單及職務大綱由有權限者管理。
         </div>
         <div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">
           <button onclick="app.switchStaffTab('org_chart')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.staffSubTab==='org_chart'?'bg-indigo-600 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="fa-solid fa-sitemap mr-1"></i> 組織架構圖 (樹形)</button>
@@ -381,11 +381,11 @@ Object.assign(ScoutEventApp.prototype,{
     const canManage=!frozen&&this.canManageStaffContacts();
     container.innerHTML=`
       <div class="space-y-4">
-        ${!loggedIn?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center gap-2 justify-between"><span><i class="fa-solid fa-lock mr-1"></i><b>聯絡資料受保護：</b>姓名、職銜、組別公開可看；電話及 Email 需登入後才顯示（請按右上角「登入」）。</span></div>`:''}
+        ${!loggedIn?`<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex flex-wrap items-center gap-2 justify-between"><span><i class="fa-solid fa-lock mr-1"></i><b>聯絡資料受保護：</b>姓名、職銜、組別公開可看；電話及 Email 需登入，且只限<b>本組成員、行政組或副主席及以上</b>查閱（請按右上角「登入」）。</span></div>`:''}
         <div class="flex flex-wrap gap-2">
           ${canManage?`<button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>新增聯絡資料</button>`:''}
           ${loggedIn?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出 JSON</button>`:''}
-          <input id="staff-search" placeholder="${loggedIn?'搜尋姓名/組別/電話':'搜尋姓名/組別/職務'}" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
+          <input id="staff-search" placeholder="${this.canSeeAllContacts()?'搜尋姓名/組別/電話':'搜尋姓名/組別/職務'}" oninput="app.filterStaffContacts()" class="px-3 py-2 border rounded-xl text-xs flex-1 min-w-[180px]">
         </div>
         ${(data.contact_source)?`<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900">📞 聯絡資料</div>`:''}
         <div class="bg-white border rounded-xl overflow-hidden"><div class="table-responsive"><table class="min-w-full text-sm"><thead class="bg-slate-100 font-bold"><tr><th class="px-3 py-2 text-left">組別</th><th class="px-3 py-2 text-left">級別</th><th class="px-3 py-2 text-left">職位</th><th class="px-3 py-2 text-left">姓名</th><th class="px-3 py-2 text-left">電話</th><th class="px-3 py-2 text-left">電郵</th>${canManage?'<th class="px-3 py-2 text-right">操作</th>':''}</tr></thead><tbody id="staff-contacts-tbody" class="divide-y bg-white"></tbody></table></div></div>
@@ -398,13 +398,17 @@ Object.assign(ScoutEventApp.prototype,{
   filterStaffContacts(){
     const q=(document.getElementById('staff-search')?.value||'').toLowerCase();
     const data=this.getStaffData();
-    const loggedIn=!!this.currentUser;
     const canManage=!(this.isDataFrozen&&this.isDataFrozen())&&this.canManageStaffContacts();
-    // 未登入：不以電話欄位搜尋（避免藉搜尋反查電話）
+    // v15.3：電話／Email 逐行判斷——只限本組成員／行政組／副主席及以上可見（未登入全部鎖起）
     let list=data.contacts||[];
-    if(q) list=list.filter(c=> (loggedIn?(c.name+c.role_title+c.group_name+(c.level||'')+c.contact+(c.email||'')+c.job_desc):(c.name+c.role_title+c.group_name+(c.level||'')+c.job_desc)).toLowerCase().includes(q));
-    const phoneCell=(c,cls)=>loggedIn?`<span class="${cls||''}">${escapeHtml(c.contact||'—')}</span>`:`<span class="bg-slate-100 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="登入後可見"><i class="fa-solid fa-lock mr-0.5"></i>登入可見</span>`;
-    const emailCell=(c)=>loggedIn?`<span class="font-mono text-[11px]">${escapeHtml(c.email||'—')}</span>`:`<span class="bg-slate-100 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="登入後可見"><i class="fa-solid fa-lock mr-0.5"></i>登入可見</span>`;
+    if(q) list=list.filter(c=>{
+      const see=this.canSeeContactInfo(c.group_name);
+      const base=c.name+c.role_title+c.group_name+(c.level||'')+c.job_desc;
+      // 無權睇嘅聯絡，唔可以用電話／Email 搜尋（避免藉搜尋反查）
+      return (see?base+c.contact+(c.email||''):base).toLowerCase().includes(q);
+    });
+    const phoneCell=(c,cls)=>this.canSeeContactInfo(c.group_name)?`<span class="${cls||''}">${escapeHtml(c.contact||'—')}</span>`:this.contactLockHTML(this.currentUser?'本組＋副主席以上可見':'登入可見');
+    const emailCell=(c)=>this.canSeeContactInfo(c.group_name)?`<span class="font-mono text-[11px]">${escapeHtml(c.email||'—')}</span>`:this.contactLockHTML(this.currentUser?'本組＋副主席以上可見':'登入可見');
     const tbody=document.getElementById('staff-contacts-tbody');
     const cards=document.getElementById('staff-contacts-cards');
     if(tbody) tbody.innerHTML=list.map(c=>`<tr class="hover:bg-slate-50"><td class="px-3 py-2" data-label="組別">${escapeHtml(c.group_name||'')}</td><td class="px-3 py-2" data-label="級別">${escapeHtml(c.level||'')}</td><td class="px-3 py-2" data-label="職位">${escapeHtml(c.role_title||'')}</td><td class="px-3 py-2 font-bold" data-label="姓名">${escapeHtml(c.name||'（待定）')}</td><td class="px-3 py-2 font-mono text-sky-700" data-label="電話">${phoneCell(c)}</td><td class="px-3 py-2" data-label="電郵">${emailCell(c)}</td>${canManage?`<td class="px-3 py-2 text-right" data-label="操作"><div class="flex gap-1 justify-end"><button onclick="app.openStaffFormModal('${c.id}')" class="bg-white border px-2 py-1 rounded-xl text-[11px]">✏️</button><button onclick="app.deleteStaffContact('${c.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[11px]">🗑️</button></div></td>`:''}</tr>`).join('') || `<tr><td colspan="${canManage?7:6}" class="px-3 py-4 text-center text-slate-400">無符合條件</td></tr>`;
@@ -533,7 +537,13 @@ Object.assign(ScoutEventApp.prototype,{
     if(type==='contacts' && !this.currentUser){ showToast('聯絡資料需登入後才能匯出','warning'); this.openLoginModal(); return; }
     const data=this.getStaffData();
     let exportData=data[type]||data.contacts;
-    const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`staff_${type}_${todayISO()}.json`; a.click(); showToast('已匯出 JSON','success');
+    // v15.3：匯出一樣受「本組＋副主席以上」限制——只匯出你有權睇到聯絡嘅行
+    if(type==='contacts' && !this.canSeeAllContacts()){
+      exportData=(exportData||[]).filter(c=>this.canSeeContactInfo(c.group_name));
+      if(!exportData.length){ showToast('你只可以匯出本組嘅聯絡資料（暫無本組名單）','warning'); return; }
+      showToast(`已匯出你可查閱範圍內嘅 ${exportData.length} 行聯絡（本組）`,'success');
+    } else showToast('已匯出 JSON','success');
+    const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`staff_${type}_${todayISO()}.json`; a.click();
   }
 ,
   renderStaffJobDuties(){

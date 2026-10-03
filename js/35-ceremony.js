@@ -248,7 +248,7 @@ Object.assign(ScoutEventApp.prototype,{
     const src=this.eventData?.ceremony?.rundown_part1_v5||{};
     return `<div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 space-y-3">
       <div class="flex justify-between items-start gap-2 flex-wrap">
-        <b class="text-[13px] text-fuchsia-900"><i class="fa-solid fa-user-shield mr-1"></i>2026 成年獎勵 — 委任書／長期服務獎／感謝狀</b>
+        <b class="text-[13px] text-fuchsia-900"><i class="fa-solid fa-user-shield mr-1"></i>2026 成年獎勵 — 委任書／長期服務獎／感謝狀<span class="ml-2 text-[10px] font-normal text-fuchsia-700 bg-white/70 border border-fuchsia-200 rounded-full px-2 py-0.5">點名請用下面「領袖獎勵獲獎名單」✓ 表</span></b>
         ${src.file_url?`<a href="${escapeHtml(src.file_url)}" target="_blank" rel="noopener" class="bg-fuchsia-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-word mr-1"></i>開啟原檔 Word</a>`:''}
       </div>
       ${list.map(a=>{

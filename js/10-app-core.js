@@ -358,6 +358,55 @@ Object.assign(ScoutEventApp.prototype,{
   // v8.14c：會議卡片＝秘書處負責，行政組統管，執副以上（主席／顧問／執副主席／管理員）一律管到
   canManageMeetings(){ return this.isAdmin()||this.isExecViceOrChair()||this.isCardOwnerGroup('meetings'); }
 ,
+  /* ── v15.3 聯絡資料私隱（2026-10-03 用戶定案）────────────────────────────
+     個人聯絡（電話／Email）唔再「登入即全見」：
+     ① 危機應變小組成員電話 → 只限「副主席及以上」(L60+) 可見（角色＋姓名維持公開）；
+     ② 其他版位嘅聯絡資料 → 「本組成員 ＋ 副主席以上」先見到；
+        ‧ 行政組統管全站＝全部見到；
+        ‧ 模組負責組可見該模組全部聯絡（車輛／物資／泊車→協調組；攤位→主題節目組；捐贈→服務及發展組），
+          呢度淨係「睇」資料，唔同「改」資料（改資料仍然要主任以上，見 CARD_OWNER_MIN_LEVEL）。 */
+  // 邊個唔使對組、直接見晒全部聯絡：副主席及以上（L60+）／行政組
+  canSeeAllContacts(){
+    if(!this.currentUser) return false;
+    if(this.currentUser.mock_admin) return true;
+    if(this.roleLevel(this.currentUser.role)>=60) return true;          // 副主席及以上
+    const g=normalizeGroupName(this.currentUser.group_name||'');
+    return g==='行政組'||g.includes('行政');                            // 行政組統管全站
+  }
+,
+  // 我個組係咪某模組嘅負責組（淨睇組別，唔限職級——「睇聯絡」唔同「改資料」）
+  isModuleContactOwner(cardId){
+    if(!this.currentUser||!cardId) return false;
+    if(this.isAdmin()||this.currentUser.mock_admin) return true;
+    const g=normalizeGroupName(this.currentUser.group_name||'');
+    if(!g) return false;
+    if(g==='行政組'||g.includes('行政')) return true;                   // 行政組統管全站
+    const owners=CARD_OWNER_GROUPS[cardId]||[];
+    return owners.some(x=>{const ox=normalizeGroupName(x); return ox===g||g.includes(ox)||ox.includes(g);});
+  }
+,
+  // 我可唔可以見呢筆聯絡？（本組 OR 副主席以上／行政組 OR 該模組負責組）
+  canSeeContactInfo(groupName, ownerCardId){
+    if(this.canSeeAllContacts()) return true;
+    if(!this.currentUser) return false;
+    const my=normalizeGroupName(this.currentUser.group_name||'');
+    const g=normalizeGroupName(groupName||'');
+    if(my&&g&&(my===g||my.includes(g)||g.includes(my))) return true;    // 本組
+    return this.isModuleContactOwner(ownerCardId);
+  }
+,
+  // 危機應變小組成員電話＝只限副主席及以上（用戶定案：唔設本組例外）
+  canSeeCrisisTeamPhone(){
+    if(!this.currentUser) return false;
+    if(this.currentUser.mock_admin) return true;
+    return this.roleLevel(this.currentUser.role)>=60;
+  }
+,
+  // 無權見到時嘅鎖定 badge（配合列表／表格直接嵌入）
+  contactLockHTML(label,tip){
+    return `<span class="bg-slate-100 border text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap" title="${escapeHtml(tip||'聯絡資料只限本組成員／行政組／副主席及以上查閱')}"><i class="fa-solid fa-lock mr-0.5"></i>${escapeHtml(label||'本組＋副主席以上可見')}</span>`;
+  }
+,
   // v15.1：活動前資料凍結——2026 正式資料已係最終版（活動前兩日鎖定），
   // 只可下載／列印／點名，所有「上載新資料」按鈕隱藏兼封鎖（示範沙盒不受影響；2027 保留上載）。
   isDataFrozen(){
@@ -1525,7 +1574,7 @@ Object.assign(ScoutEventApp.prototype,{
       const canManageStaff=!(this.isDataFrozen&&this.isDataFrozen())&&this.canManageStaffContacts();
       document.getElementById('module-actions').innerHTML=canManageStaff
         ?`<div class="flex gap-2 flex-wrap"><button onclick="app.openStaffFormModal()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+ 單欄新增</button><button onclick="app.downloadStaffTemplate('contacts')" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載 Excel 範本</button><label class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">上傳 Excel／名單檔案<input type="file" accept=".xlsx,.xls,.json" class="hidden" onchange="app.handleStaffFileUpload(this.files[0],'contacts');this.value=''"></label>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`
-        :`<div class="flex gap-2 flex-wrap items-center"><span class="text-[11px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200"><i class="fa-solid fa-globe mr-1"></i>組織架構公開可看；聯絡資料 (電話/Email) 需登入</span>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`;
+        :`<div class="flex gap-2 flex-wrap items-center"><span class="text-[11px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-full border border-indigo-200"><i class="fa-solid fa-globe mr-1"></i>組織架構公開可看；聯絡資料 (電話/Email) 限本組＋副主席以上查閱</span>${this.currentUser?`<button onclick="app.exportStaffData('contacts')" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button>`:''}</div>`;
     } else if(key==='activities'){
       const canUpload=this.canUploadActivity();
       document.getElementById('module-actions').innerHTML=`<div class="flex gap-2 flex-wrap">${canUpload?`<button onclick="app.openActivityMapForm()" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-map mr-1"></i>上傳地圖</button><button onclick="app.openBoothForm()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-store mr-1"></i>新增攤位</button><button onclick="app.openGameCardForm()" class="bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-id-card mr-1"></i>上傳遊戲卡</button>`:''}<button onclick="app.downloadActivityTemplate()" class="bg-white border px-3 py-2 rounded-xl text-xs font-bold">下載範本</button><button onclick="app.exportActivitiesData()" class="bg-slate-100 border px-3 py-2 rounded-xl text-xs font-bold">匯出</button></div>`;
