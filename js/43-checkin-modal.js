@@ -76,6 +76,13 @@ Object.assign(ScoutEventApp.prototype,{
       if(this._ckSort==='name') return String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
       if(this._ckSort==='sub') return String(a.sub||'').localeCompare(String(b.sub||''),'zh-Hant');
       if(this._ckSort==='pending'){ const ka=checked[a.key]?1:0, kb=checked[b.key]?1:0; if(ka!==kb) return ka-kb; return String(a.group||a.booth||'').localeCompare(String(b.group||b.booth||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant'); }
+      // 其他自訂欄位（如 section／unit）：按該欄位後按名稱
+      if(this._ckSort!=='group'&&this._ckSort!=='booth'){
+        const av=String(a[this._ckSort]??''), bv=String(b[this._ckSort]??'');
+        const v=av.localeCompare(bv,'zh-Hant',{numeric:true});
+        if(v) return v;
+        return String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
+      }
       // group
       return String(a.group||a.booth||'').localeCompare(String(b.group||b.booth||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
     };
@@ -157,13 +164,19 @@ Object.assign(ScoutEventApp.prototype,{
       group:String(r[gk]||''),
       booth:String(r.booth||r.station||''),
       unit:String(r.unit||''),
+      section:String(r.section||''),
       checked:!!r._checked
     }));
+    // 排序選項：按其餘 sort_fields（如支部／單位）；分組欄（如區）用 row.group 排列
+    const extraFields=(def.sort_fields||[]).filter(f=>f!==gk&&f!=='group');
+    const fieldOpts=[{k:'group',label:`按${def.columns.find(c=>c.k===gk)?.label||'組別'}`}]
+      .concat(extraFields.filter(f=>rows.some(r=>String(r[f]||''))).map(f=>{const c=def.columns.find(x=>x.k===f);return {k:f,label:`按${c?c.label:f}`};}));
+    const sortOpts=[...fieldOpts,{k:'name',label:'按名稱'},{k:'sub',label:'按內容'},{k:'pending',label:`未${def.tick_label}優先`}];
     this.openCheckinModal(rows,{
       title:`📱 快速點名 — ${def.title}`,
       saveLabel:`儲存（共 ${rows.length} 項）`,
       hint:`剔＝已${def.tick_label}；同頁面 TICK 完全同步（只加不減，取消請用頁面「修正」格）`,
-      sortOptions:[{k:'group',label:`按${def.columns.find(c=>c.k===gk)?.label||'組別'}`},{k:'name',label:'按名稱'},{k:'sub',label:'按內容'},{k:'pending',label:`未${def.tick_label}優先`}],
+      sortOptions:sortOpts,
       onSave:(checked)=>{
         const d=this.getRosterData(); const ticks=d.ticks[rosterKey]=d.ticks[rosterKey]||{};
         let n=0;

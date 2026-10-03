@@ -9975,7 +9975,7 @@
   ],
   "note": "行政組／協調組在 Google Sheet 更新泊車證申請總表，APP 開啟即自動內置讀取。"
  },
- "data_version": "2026-10-03T12:30:00Z-v13-ceremony-ug",
+ "data_version": "2026-10-03T13:30:00Z-v14-awards",
  "guest_transport": {
   "title": "嘉賓車安排（2026-10-04）",
   "outbound": {
@@ -11956,7 +11956,1337 @@
      }
     ]
    }
-  ]
+  ],
+  "meritRoster": [
+   {
+    "id": "dga001",
+    "area": "CHW 柴灣區",
+    "unit": "港島第六旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga002",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二四三旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga003",
+    "area": "CHW 柴灣區",
+    "unit": "港島第六旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga004",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二四三旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga005",
+    "area": "CHW 柴灣區",
+    "unit": "港島第六旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga006",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二六三旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga007",
+    "area": "CHW 柴灣區",
+    "unit": "港島第六旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga008",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二六三旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga009",
+    "area": "CHW 柴灣區",
+    "unit": "港島第六旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga010",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二六八旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga011",
+    "area": "CHW 柴灣區",
+    "unit": "港島第九十旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga012",
+    "area": "CHW 柴灣區",
+    "unit": "港島第一二五七旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga013",
+    "area": "CHW 柴灣區",
+    "unit": "港島第一四九旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga014",
+    "area": "CHW 柴灣區",
+    "unit": "港島第一二七五旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga015",
+    "area": "CHW 柴灣區",
+    "unit": "港島第一四九旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga016",
+    "area": "CHW 柴灣區",
+    "unit": "港島第一三一六旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga017",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二四三旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga018",
+    "area": "CHW 柴灣區",
+    "unit": "港島第一三八四旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga019",
+    "area": "CHW 柴灣區",
+    "unit": "港島第二四三旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga020",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga021",
+    "area": "HKN 港島北區",
+    "unit": "港島第一三九旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga022",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga023",
+    "area": "HKN 港島北區",
+    "unit": "港島第一三九旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga024",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga025",
+    "area": "HKN 港島北區",
+    "unit": "港島第一三九旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga026",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "幼童軍 C 團"
+   },
+   {
+    "id": "dga027",
+    "area": "HKN 港島北區",
+    "unit": "港島第一七五旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga028",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "童軍 A 團"
+   },
+   {
+    "id": "dga029",
+    "area": "HKN 港島北區",
+    "unit": "港島第一七五旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga030",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "童軍 B 團"
+   },
+   {
+    "id": "dga031",
+    "area": "HKN 港島北區",
+    "unit": "港島第一七五旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga032",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga033",
+    "area": "HKN 港島北區",
+    "unit": "港島第一七五旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga034",
+    "area": "HKN 港島北區",
+    "unit": "港島第七旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga035",
+    "area": "HKN 港島北區",
+    "unit": "港島第一七五旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga036",
+    "area": "HKN 港島北區",
+    "unit": "港島第十海童軍旅",
+    "section": "海童軍團"
+   },
+   {
+    "id": "dga037",
+    "area": "HKN 港島北區",
+    "unit": "港島第一八七旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga038",
+    "area": "HKN 港島北區",
+    "unit": "港島第十海童軍旅",
+    "section": "深資海童軍團"
+   },
+   {
+    "id": "dga039",
+    "area": "HKN 港島北區",
+    "unit": "港島第二三 O 旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga040",
+    "area": "HKN 港島北區",
+    "unit": "港島第四十八旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga041",
+    "area": "HKN 港島北區",
+    "unit": "港島第一二二七旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga042",
+    "area": "HKN 港島北區",
+    "unit": "港島第四十八旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga043",
+    "area": "HKN 港島北區",
+    "unit": "港島第一二二七旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga044",
+    "area": "HKN 港島北區",
+    "unit": "港島第七十六旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga045",
+    "area": "HKN 港島北區",
+    "unit": "港島第一二二七旅",
+    "section": "小童軍 C 團"
+   },
+   {
+    "id": "dga046",
+    "area": "HKN 港島北區",
+    "unit": "港島第一一八旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga047",
+    "area": "HKS 港島南區",
+    "unit": "港島第五十五旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga048",
+    "area": "HKS 港島南區",
+    "unit": "港島第一五九旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga049",
+    "area": "HKS 港島南區",
+    "unit": "港島第七十旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga050",
+    "area": "HKS 港島南區",
+    "unit": "港島第二Ｏ四旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga051",
+    "area": "HKS 港島南區",
+    "unit": "港島第七十旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga052",
+    "area": "HKS 港島南區",
+    "unit": "港島第二Ｏ四旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga053",
+    "area": "HKS 港島南區",
+    "unit": "港島第七十旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga054",
+    "area": "HKS 港島南區",
+    "unit": "港島第二Ｏ四旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga055",
+    "area": "HKS 港島南區",
+    "unit": "港島第一四六旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga056",
+    "area": "HKS 港島南區",
+    "unit": "港島第二Ｏ四旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga057",
+    "area": "HKS 港島南區",
+    "unit": "港島第一五九旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga058",
+    "area": "HKS 港島南區",
+    "unit": "港島第二二四旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga059",
+    "area": "HKS 港島南區",
+    "unit": "港島第一五九旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga060",
+    "area": "HKS 港島南區",
+    "unit": "港島第二四一旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga061",
+    "area": "HKW 港島西區",
+    "unit": "港島第五旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga062",
+    "area": "HKW 港島西區",
+    "unit": "港島第二十三旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga063",
+    "area": "HKW 港島西區",
+    "unit": "港島第五旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga064",
+    "area": "HKW 港島西區",
+    "unit": "港島第一五三旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga065",
+    "area": "HKW 港島西區",
+    "unit": "港島第十旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga066",
+    "area": "HKW 港島西區",
+    "unit": "港島第一五三旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga067",
+    "area": "HKW 港島西區",
+    "unit": "港島第十旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga068",
+    "area": "HKW 港島西區",
+    "unit": "港島第一五三旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga069",
+    "area": "HKW 港島西區",
+    "unit": "港島第十旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga070",
+    "area": "HKW 港島西區",
+    "unit": "港島第一五三旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga071",
+    "area": "HKW 港島西區",
+    "unit": "港島第十旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga072",
+    "area": "HKW 港島西區",
+    "unit": "港島第一六一旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga073",
+    "area": "HKW 港島西區",
+    "unit": "港島第十旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga074",
+    "area": "HKW 港島西區",
+    "unit": "港島第一六一旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga075",
+    "area": "HKW 港島西區",
+    "unit": "港島第十六旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga076",
+    "area": "HKW 港島西區",
+    "unit": "港島第一六一旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga077",
+    "area": "HKW 港島西區",
+    "unit": "港島第十六旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga078",
+    "area": "HKW 港島西區",
+    "unit": "港島第二四四旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga079",
+    "area": "HKW 港島西區",
+    "unit": "港島第十六旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga080",
+    "area": "HKW 港島西區",
+    "unit": "港島第一五二七旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga081",
+    "area": "HKW 港島西區",
+    "unit": "港島第二十二旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga082",
+    "area": "HKW 港島西區",
+    "unit": "港島第一五六三旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga083",
+    "area": "HKW 港島西區",
+    "unit": "港島第二十三旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga084",
+    "area": "HKW 港島西區",
+    "unit": "港島第一六一四旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga085",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第八十一旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga086",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二Ｏ六旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga087",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第八十二旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga088",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二Ｏ六旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga089",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第八十二旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga090",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二四二旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga091",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第八十二旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga092",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二四二旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga093",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第一Ｏ一旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga094",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二四二旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga095",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第一Ｏ一旅",
+    "section": "深資空童軍團"
+   },
+   {
+    "id": "dga096",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二五五旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga097",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第一Ｏ一旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga098",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二五五旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga099",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第一Ｏ一旅",
+    "section": "樂行空童軍團"
+   },
+   {
+    "id": "dga100",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第一七四五旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga101",
+    "area": "SKW 筲箕灣區",
+    "unit": "港島第二Ｏ六旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga102",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga103",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十四旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga104",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga105",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十四旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga106",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga107",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga108",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga109",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga110",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "空童軍團"
+   },
+   {
+    "id": "dga111",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga112",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga113",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga114",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga115",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga116",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第二旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga117",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "空童軍團"
+   },
+   {
+    "id": "dga118",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第二旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga119",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga120",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第十二海童軍旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga121",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "深資空童軍團"
+   },
+   {
+    "id": "dga122",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第十二海童軍旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga123",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第九十九旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga124",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第十二海童軍旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga125",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一一五五旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga126",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第十二海童軍旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga127",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一一五五旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga128",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第十二海童軍旅",
+    "section": "海童軍團"
+   },
+   {
+    "id": "dga129",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一一五五旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga130",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第二十一旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga131",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一一五五旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga132",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第二十一旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga133",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一一五七旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga134",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第六十六旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga135",
+    "area": "VIC 維多利亞城區",
+    "unit": "港島第一四六二旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga136",
+    "area": "WCH 灣仔區",
+    "unit": "港島第五海童軍旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga137",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga138",
+    "area": "WCH 灣仔區",
+    "unit": "港島第五海童軍旅",
+    "section": "海童軍團"
+   },
+   {
+    "id": "dga139",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga140",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十二旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga141",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga142",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十二旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga143",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga144",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十四旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga145",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二Ｏ八旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga146",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十四旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga147",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二Ｏ八旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga148",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十四旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga149",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二Ｏ八旅",
+    "section": "小童軍 C 團"
+   },
+   {
+    "id": "dga150",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十四旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga151",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二Ｏ八旅",
+    "section": "小童軍 D 團"
+   },
+   {
+    "id": "dga152",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十四旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga153",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二Ｏ八旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga154",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十四旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga155",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二Ｏ八旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga156",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十五旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga157",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二一二旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga158",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十五旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga159",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二一旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga160",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十五旅",
+    "section": "深資海童軍團"
+   },
+   {
+    "id": "dga161",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二一旅",
+    "section": "深資童軍 A 團"
+   },
+   {
+    "id": "dga162",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十五旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga163",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二一旅",
+    "section": "深資童軍 B 團"
+   },
+   {
+    "id": "dga164",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十八旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga165",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二一旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga166",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十八旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga167",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二九旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga168",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十八旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga169",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二九旅",
+    "section": "幼童軍 A 團"
+   },
+   {
+    "id": "dga170",
+    "area": "WCH 灣仔區",
+    "unit": "港島第十八旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga171",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二九旅",
+    "section": "幼童軍 B 團"
+   },
+   {
+    "id": "dga172",
+    "area": "WCH 灣仔區",
+    "unit": "港島第三十五旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga173",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二九旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga174",
+    "area": "WCH 灣仔區",
+    "unit": "港島第三十五旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga175",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二九旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga176",
+    "area": "WCH 灣仔區",
+    "unit": "港島第三十五旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga177",
+    "area": "WCH 灣仔區",
+    "unit": "港島第二二九旅",
+    "section": "樂行童軍團"
+   },
+   {
+    "id": "dga178",
+    "area": "WCH 灣仔區",
+    "unit": "港島第六十旅",
+    "section": "童軍團"
+   },
+   {
+    "id": "dga179",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一一二八旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga180",
+    "area": "WCH 灣仔區",
+    "unit": "港島第六十旅",
+    "section": "深資童軍團"
+   },
+   {
+    "id": "dga181",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一一二八旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga182",
+    "area": "WCH 灣仔區",
+    "unit": "港島第六十一旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga183",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一三六Ｏ旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga184",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "小童軍 A 團"
+   },
+   {
+    "id": "dga185",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一六六五旅",
+    "section": "幼童軍團"
+   },
+   {
+    "id": "dga186",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "小童軍 B 團"
+   },
+   {
+    "id": "dga187",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八Ｏ九旅",
+    "section": "小童軍團"
+   },
+   {
+    "id": "dga188",
+    "area": "WCH 灣仔區",
+    "unit": "港島第一八六旅",
+    "section": "幼童軍 A 團"
+   }
+  ],
+  "merit_source": {
+   "name": "特別通告第17/26號 — 2026 年優異旅團獎勵計劃獲獎名單 (sp17_26_hkir_dga_list_final)",
+   "as_at": "2026-09-01",
+   "file_url": "https://drive.google.com/file/d/1V3Xv-lIT1qxvoVmKW-ZF3gszimd2krQC/preview"
+  },
+  "adult_awards": [
+   {
+    "award": "總監委任書（覆誓 + 委任書）",
+    "presenter": "楊國光總監",
+    "recipients": [
+     {
+      "name": "黃凱威",
+      "status": "出席"
+     },
+     {
+      "name": "鍾兆生",
+      "status": "未能出席"
+     },
+     {
+      "name": "何倩羚",
+      "status": "未能出席"
+     },
+     {
+      "name": "陳志雄",
+      "status": "未能出席"
+     },
+     {
+      "name": "陳紀君",
+      "status": "出席"
+     },
+     {
+      "name": "張惠敏",
+      "status": "出席"
+     },
+     {
+      "name": "聶嘉威",
+      "status": "出席"
+     }
+    ]
+   },
+   {
+    "award": "10 年長期服務獎狀（獎狀）",
+    "presenter": "吳家麗會長",
+    "recipients": [
+     {
+      "name": "梁梓健",
+      "status": "未能出席"
+     },
+     {
+      "name": "譚麗",
+      "status": "未能出席"
+     },
+     {
+      "name": "關嘉聰",
+      "status": "出席"
+     },
+     {
+      "name": "鄧志浩",
+      "status": "未能出席"
+     },
+     {
+      "name": "程桂珍",
+      "status": "出席"
+     },
+     {
+      "name": "郭榮忠",
+      "status": "未能出席"
+     },
+     {
+      "name": "周永光",
+      "status": "出席"
+     }
+    ]
+   },
+   {
+    "award": "長期服務獎章（獎章）",
+    "presenter": "吳家麗會長",
+    "recipients": [
+     {
+      "name": "林斯初",
+      "status": "未能出席"
+     },
+     {
+      "name": "邱淑瑜",
+      "status": "出席"
+     },
+     {
+      "name": "何家騏",
+      "status": "出席"
+     }
+    ]
+   },
+   {
+    "award": "長期服務一星獎章（獎章）",
+    "presenter": "總會副會長 葉永成太平紳士",
+    "recipients": [
+     {
+      "name": "陸偉權",
+      "status": "出席"
+     }
+    ]
+   },
+   {
+    "award": "長期服務三星獎章（獎章）",
+    "presenter": "總會副會長 葉永成太平紳士",
+    "recipients": [
+     {
+      "name": "卓建立",
+      "status": "出席"
+     }
+    ]
+   },
+   {
+    "award": "致送協助單位紀念品（感謝狀）",
+    "presenter": "李傑之主席",
+    "recipients": [
+     {
+      "name": "香港警察學院",
+      "status": ""
+     },
+     {
+      "name": "香港聖約翰救傷隊",
+      "status": ""
+     }
+    ]
+   }
+  ],
+  "rundown_part1_v5": {
+   "title": "優異旅團及各項獎勵頒發儀式（第一部分—官方 V5）",
+   "meta": "日期：2026 年 10 月 4 日（星期日）｜時間：上午 11 時正（請於上午 10 時 45 分到達）｜地點：香港黃竹坑香港警察學院大操場｜服裝：制服編號 3（常規制服）／西式常服 及佩戴勳章｜主禮：港島地域會長吳家麗女士，OStJ",
+   "version": "Rundown_All 2026 連獎項 Part 1 V５",
+   "file_url": "https://drive.google.com/file/d/179Z6h-gkijUnCnwcGZX0d2_jhGZjaw4p/preview",
+   "rows": [
+    {
+     "time": "11:00",
+     "program": "優異旅團及各項獎勵頒發儀式開始",
+     "presenter": ""
+    },
+    {
+     "time": "11:00",
+     "program": "風笛手引領嘉賓團進場",
+     "presenter": "吳家亮總監、葉永成副會長、楊國光總監、李傑之主席、各副地域總監及朱家聰總監陪同"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發優異旅團彩帶及證書—小童軍（證書）／幼童軍（彩帶）／童軍（彩帶）／深資童軍（彩帶）",
+     "presenter": "楊國光總監（伍尚國總監陪同）"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發優異旅團彩帶—樂行童軍（彩帶）",
+     "presenter": "楊國光總監（伍尚國總監陪同）"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發支部最高獎章嘉許信—總領袖獎章（嘉許信 x 3 組）／榮譽童軍獎章（嘉許信）／貝登堡獎章（嘉許信）",
+     "presenter": "吳家麗會長（黃偉安總監陪同）"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發總監委任書（覆誓 + 委任書）—黃凱威、陳紀君、張惠敏、聶嘉威（出席）；鍾兆生、何倩羚、陳志雄（未能出席）",
+     "presenter": "楊國光總監"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發領袖及委員獎勵",
+     "presenter": ""
+    },
+    {
+     "time": "11:00",
+     "program": "頒發 10 年長期服務獎狀—關嘉聰、程桂珍、周永光（出席）；梁梓健、譚麗、鄧志浩、郭榮忠（未能出席）",
+     "presenter": "吳家麗會長"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發長期服務獎章—邱淑瑜、何家騏（出席）；林斯初（未能出席）",
+     "presenter": "吳家麗會長"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發長期服務一星獎章—陸偉權（出席）",
+     "presenter": "總會副會長葉永成太平紳士"
+    },
+    {
+     "time": "11:00",
+     "program": "頒發長期服務三星獎章—卓建立（出席）",
+     "presenter": "總會副會長葉永成太平紳士"
+    },
+    {
+     "time": "11:00",
+     "program": "致送協助單位紀念品—香港警察學院（感謝狀）／香港聖約翰救傷隊（感謝狀）",
+     "presenter": "李傑之主席"
+    },
+    {
+     "time": "11:55",
+     "program": "頒獎典禮完畢",
+     "presenter": ""
+    }
+   ]
+  }
  },
  "troop_checkin": [
   {

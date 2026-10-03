@@ -1361,7 +1361,7 @@ Object.assign(ScoutEventApp.prototype,{
           break;
         case 'cer_award_merit': el.innerHTML=this.rosterPanelHTML('merit_award',{scope:'dept'}); break;
         case 'cer_award_section': el.innerHTML=this.rosterPanelHTML('section_award',{scope:'dept'}); break;
-        case 'cer_award_leader': el.innerHTML=this.rosterPanelHTML('leader_award',{scope:'dept'}); break;
+        case 'cer_award_leader': el.innerHTML=this.adultAwards2026HTML()+this.rosterPanelHTML('leader_award',{scope:'dept'}); break;
       }
     });
     // v13：全部門共設財務頁籤（開支申報／口頭報價／財務指引）內容

@@ -112,7 +112,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="ceremony-tab-speech" class="${this.ceremonySubTab==='speech'?'':'hidden'}"></div>
         <div id="ceremony-tab-awards" class="${this.ceremonySubTab==='awards'?'':'hidden'}"></div>
         <div id="ceremony-tab-section_award" class="${this.ceremonySubTab==='section_award'?'':'hidden'}">${this.ceremonySubTab==='section_award'?this.rosterPanelHTML('section_award',{scope:'cer'}):''}</div>
-        <div id="ceremony-tab-leader_award" class="${this.ceremonySubTab==='leader_award'?'':'hidden'}">${this.ceremonySubTab==='leader_award'?this.rosterPanelHTML('leader_award',{scope:'cer'}):''}</div>
+        <div id="ceremony-tab-leader_award" class="${this.ceremonySubTab==='leader_award'?'':'hidden'}">${this.ceremonySubTab==='leader_award'?(this.adultAwards2026HTML()+this.rosterPanelHTML('leader_award',{scope:'cer'})):''}</div>
         <div id="ceremony-tab-map" class="${this.ceremonySubTab==='map'?'':'hidden'}"></div>
       </div>
     `;
@@ -234,8 +234,48 @@ Object.assign(ScoutEventApp.prototype,{
       <div class="space-y-3">
         ${!frozen?`<div class="flex gap-2 flex-wrap">${canEdit?`<button onclick="app.openCeremonyFileForm(null,'rundown')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-up mr-1"></i>上傳 RUNDOWN</button>`:''}</div>`:''}
         <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-1 text-left">時間</th><th class="px-2 py-1 text-left">節目</th><th class="px-2 py-1 text-left">位置</th>${canEdit?'<th class="px-2 py-1 text-right">操作</th>':''}</tr></thead><tbody class="divide-y">${data.rundown.map(x=>`<tr><td class="px-2 py-1 font-mono font-bold" data-label="時間">${escapeHtml(x.time)}</td><td class="px-2 py-1" data-label="節目">${escapeHtml(x.program)}</td><td class="px-2 py-1" data-label="位置">${escapeHtml(x.location)}</td>${canEdit?`<td class="px-2 py-1 text-right" data-label="操作"><button onclick="app.openCeremonyItemForm('rundown','${x.id}')" class="bg-white border px-2 py-1 rounded-xl text-[10px]">✏️</button> <button onclick="app.deleteCeremonyItem('rundown','${x.id}')" class="bg-rose-50 border border-rose-200 text-rose-600 px-2 py-1 rounded-xl text-[10px]">🗑️</button></td>`:''}</tr>`).join('')||'<tr><td colspan="4" class="px-2 py-4 text-center text-slate-400">暫無RUNDOWN</td></tr>'}</tbody></table></div>
+        ${this.ceremonyPart1RundownV5HTML()}
       </div>`;
   },
+  /* 第一部分 RUNDOWN（官方 Rundown_All 2026 連獎項 Part 1 V５）：逐項含主禮人，內容已定稿改為只讀顯示 */
+  ceremonyPart1RundownV5HTML(){
+    if(this.isDemoEvent&&this.isDemoEvent()) return '';
+    const p1=this.eventData?.ceremony?.rundown_part1_v5; if(!p1||!(p1.rows||[]).length) return '';
+    return `<div class="bg-white border rounded-xl p-3">
+      <div class="flex justify-between items-start gap-2 flex-wrap mb-2">
+        <div><b class="text-[13px]"><i class="fa-solid fa-list-ol mr-1 text-amber-600"></i>${escapeHtml(p1.title||'第一部分 RUNDOWN')}</b>
+          <div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(p1.version||'')}｜${escapeHtml(p1.meta||'')}</div></div>
+        ${p1.file_url?`<a href="${escapeHtml(p1.file_url)}" target="_blank" rel="noopener" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold flex-shrink-0"><i class="fa-solid fa-file-word mr-1"></i>開啟原檔 Word</a>`:''}
+      </div>
+      <div class="table-responsive"><table class="min-w-full text-xs"><thead class="bg-amber-50"><tr><th class="px-2 py-1 text-left">時間</th><th class="px-2 py-1 text-left">程序</th><th class="px-2 py-1 text-left">主禮／陪同</th></tr></thead><tbody class="divide-y">
+        ${p1.rows.map(r=>`<tr><td class="px-2 py-1 font-mono font-bold whitespace-nowrap" data-label="時間">${escapeHtml(r.time||'')}</td><td class="px-2 py-1" data-label="程序">${escapeHtml(r.program||'')}</td><td class="px-2 py-1" data-label="主禮／陪同">${escapeHtml(r.presenter||'')}</td></tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
+  },
+  /* 2026 成年獎勵（委任書／長期服務獎／感謝狀）— 取自 Rundown_All 2026 連獎項 Part 1 V５ 定稿 */
+  adultAwards2026HTML(){
+    if(this.isDemoEvent&&this.isDemoEvent()) return '';
+    const list=this.eventData?.ceremony?.adult_awards||[]; if(!list.length) return '';
+    const src=this.eventData?.ceremony?.rundown_part1_v5||{};
+    return `<div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 space-y-3">
+      <div class="flex justify-between items-start gap-2 flex-wrap">
+        <b class="text-[13px] text-fuchsia-900"><i class="fa-solid fa-user-shield mr-1"></i>2026 成年獎勵 — 委任書／長期服務獎／感謝狀（官方定稿）</b>
+        ${src.file_url?`<a href="${escapeHtml(src.file_url)}" target="_blank" rel="noopener" class="bg-fuchsia-700 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-word mr-1"></i>開啟原檔 Word</a>`:''}
+      </div>
+      ${list.map(a=>{
+        const attending=(a.recipients||[]).filter(r=>r.status==='出席').length;
+        const absent=(a.recipients||[]).filter(r=>r.status==='未能出席').length;
+        return `<div class="bg-white border rounded-xl p-3">
+          <div class="flex justify-between items-start gap-2 flex-wrap">
+            <b class="text-[12px]">${escapeHtml(a.award||'')}</b>
+            <span class="text-[10px] text-slate-500 font-bold">主禮：${escapeHtml(a.presenter||'')}${a.recipients.some(r=>r.status)?`　｜出席 ${attending}・未能出席 ${absent}`:''}</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mt-2">${(a.recipients||[]).map(r=>`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] border ${r.status==='出席'?'bg-emerald-50 border-emerald-200 text-emerald-800':(r.status==='未能出席'?'bg-slate-50 border-slate-200 text-slate-400':'bg-indigo-50 border-indigo-200 text-indigo-800')}" ><b>${escapeHtml(r.name)}</b>${r.status?`<span class="text-[9px]">${r.status==='出席'?'✔出席':'✗未能出席'}</span>`:''}</span>`).join('')}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  },
+
   /* 2026 官方司儀稿（3 份最新版本，內建全文 + 開啟原 PDF） */
   ceremonyMcScriptsHTML(){
     const list=this.eventData?.ceremony?.mc_scripts||[]; if(!list.length) return '';
@@ -631,8 +671,9 @@ Object.assign(ScoutEventApp.prototype,{
     const attended=submitted.filter(r=>r.attendance==='出席').length;
     const notAttending=submitted.filter(r=>r.attendance==='不出席').length;
     const pending=Math.max(0,master.length-submitted.length);
-    if(!master.length&&!replies.length) return '';
-    return `<div class="bg-sky-50 border border-sky-200 rounded-xl px-3 py-2 text-[11px] leading-relaxed text-sky-900"><b><i class="fa-solid fa-file-circle-check mr-1"></i>優異旅團回條：</b>正式名單 ${master.length} 個旅團　｜　已回覆出席 ${attended}　｜　不出席 ${notAttending}${master.length?`　｜　待回覆 ${pending}`:''}</div>`;
+    const msrc=this.eventData?.ceremony?.merit_source||null;
+    if(!master.length&&!replies.length) return msrc&&msrc.file_url?`<div class="bg-sky-50 border border-sky-200 rounded-xl px-3 py-2 text-[11px]"><a href="${escapeHtml(msrc.file_url)}" target="_blank" rel="noopener" class="font-bold underline">來源：${escapeHtml(msrc.name||'獲獎名單')} ↗</a></div>`:'';
+    return `<div class="bg-sky-50 border border-sky-200 rounded-xl px-3 py-2 text-[11px] leading-relaxed text-sky-900"><b><i class="fa-solid fa-file-circle-check mr-1"></i>優異旅團回條：</b>正式名單 ${master.length} 個獲獎單位（區會＋支部）　｜　已回覆出席 ${attended}　｜　不出席 ${notAttending}${master.length?`　｜　待回覆 ${pending}`:''}${msrc&&msrc.file_url?`　｜　<a href="${escapeHtml(msrc.file_url)}" target="_blank" rel="noopener" class="underline font-bold">來源：${escapeHtml(msrc.name||'原檔')} ↗</a>`:''}</div>`;
   },
 
   renderAwardsModule(c){
