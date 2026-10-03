@@ -631,6 +631,25 @@ Object.assign(ScoutEventApp.prototype,{
         `}
       </div>`;
   },
+  /* 2026-10-04 各類餐食領取地點及供應時間（已定稿） */
+  mealLogistics2026HTML(){
+    const items=(this.eventData?.meal_logistics_2026)||[
+      {label:'飯盒',place:'JPO 餐廳',time:'11:00',note:'旅團代訂餐盒（A/C 飯 + B/D 小食互通）'},
+      {label:'小食餐盒',place:'JPO 餐廳',time:'12:00',note:'工作人員小食餐盒'},
+      {label:'自助餐',place:'莫榮大樓',time:'12:30',note:'嘉賓／工作人員自助餐（莫榮大樓自助餐 司儀稿 V2）'}
+    ];
+    return `<div class="bg-rose-50 border-2 border-rose-200 rounded-xl p-3">
+      <b class="text-[13px] text-rose-900"><i class="fa-solid fa-utensils mr-1"></i>10 月 4 日餐食領取地點及供應時間</b>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2 text-[12px]">
+        ${items.map(i=>`<div class="bg-white border border-rose-100 rounded-xl p-2.5">
+          <div class="font-bold text-rose-800">${escapeHtml(i.label||'')}</div>
+          <div class="mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-rose-400"></i>${escapeHtml(i.place||'')}　<i class="fa-regular fa-clock ml-1 mr-1 text-rose-400"></i>${escapeHtml(i.time||'')}</div>
+          ${i.note?`<div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(i.note)}</div>`:''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  },
+
   /* ══ v14 執行手冊新分頁「代訂餐盒名單」（協調組負責）══════════════════════════
      預定位置：執行手冊 → 代訂餐盒名單；提供結構表、點名及附件。
      名單來源：Excel／Word 上載（或「貼上文字」）；PDF 只可作附件內嵌預覽。 */
@@ -651,6 +670,7 @@ Object.assign(ScoutEventApp.prototype,{
     }
     box.innerHTML=`
       <div class="space-y-3">
+        ${this.mealLogistics2026HTML()}
         <div class="flex gap-2 flex-wrap">
           ${btn('troop','fa-solid fa-bowl-food','旅團代訂餐盒')}
           ${btn('staff','fa-solid fa-utensils','工作人員膳食點名')}
@@ -678,6 +698,7 @@ Object.assign(ScoutEventApp.prototype,{
     const dist=this.eventData?.meal_distribution_2026||{};
     const line=(i)=>`${i.headcount!=null?i.headcount+' 人':''}${i.rice!=null?'｜飯 '+i.rice:''}${i.snack!=null?'｜小食 '+i.snack:''}`;
     return `
+      ${this.mealLogistics2026HTML()}
       <div class="bg-white border rounded-xl p-4 space-y-3">
         <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open mr-1 text-rose-600"></i>餐單（2026 凍結版）</h4>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">

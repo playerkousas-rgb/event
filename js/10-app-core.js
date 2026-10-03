@@ -1355,7 +1355,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'coord_meals': this.renderCoordMeals(el); break;
         case 'coord_docs': this.renderCoordDocs(el); break;
         // 名單與點名資料在各入口共用；此處提供負責組的操作入口。
-        case 'coord_mealbox': el.innerHTML=this.rosterPanelHTML('meal_box',{scope:'coord'}); break;
+        case 'coord_mealbox': el.innerHTML=`<div class="space-y-3">${this.mealLogistics2026HTML?this.mealLogistics2026HTML():''}${this.rosterPanelHTML('meal_box',{scope:'coord'})}</div>`; break;
         case 'coord_meal_staff':
           el.innerHTML=`<div class="space-y-3"><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('staff_meals',{scope:'coord'})}</div>${this.staffMealDigestHTML?this.staffMealDigestHTML():''}${this.mealMenuHTML?this.mealMenuHTML():''}</div>`;
           break;

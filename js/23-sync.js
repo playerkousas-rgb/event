@@ -252,6 +252,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(!canViewRecords&&(this.mealsSubTab==='orders'||this.mealsSubTab==='print')) this.mealsSubTab='menus';
     container.innerHTML=`
       <div class="space-y-4">
+        ${this.mealLogistics2026HTML?this.mealLogistics2026HTML():''}
         <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-[11px] leading-relaxed text-purple-900">
           <b>🍱 膳食流程（公開訂餐 · 兩級把關防浪費）：</b><br>
           ① 提供菜單（列明截止，可選不吃）→ ② <b>所有人無需登入</b>到此頁揀飯 → ③ 低於總主任提交的訂餐由<b>本組總主任以上</b>確認 → ④ <b>${escapeHtml(this.approvalRouteLabel('meals','approver_groups'))}</b>審批 → ⑤ <b>${escapeHtml(this.approvalRouteLabel('meals','executor_groups'))}</b>按已審批最後名單落單及派飯<br>
