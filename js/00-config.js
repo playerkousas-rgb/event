@@ -174,7 +174,7 @@ const PERM_CARDS=[
   {id:'group_leadership',label:'主席及執行副主席',icon:'fa-solid fa-crown'}
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
-const PUBLIC_CARD_ORDER=['announcements','exec_manual','apply_hub','donations'];
+const PUBLIC_CARD_ORDER=['public_channel_demo','announcements','exec_manual','apply_hub','donations'];
 const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secretariat','group_ceremony','group_theme','group_brand','group_reception','coordinator_group','group_service','admin_group']);
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
@@ -301,6 +301,9 @@ const DASH_CARD_DEFS=[
   {id:'group_service',title:'服務及發展組',desc:'',icon:'fa-solid fa-hands-holding-child',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,groups:['服務及發展組'],editLevel:40,editGroups:['服務及發展組'],action:"app.openGroupManagement('服務及發展組')"},
   {id:'group_secretariat',title:'秘書處',desc:'',icon:'fa-solid fa-landmark',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,groups:['秘書處'],editLevel:40,editGroups:['秘書處'],action:"app.openGroupManagement('秘書處')"},
   {id:'donations',title:'童心捐贈大行動',desc:'',icon:'fa-solid fa-hand-holding-heart',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:40,editGroups:['服務及發展組','行政組'],action:"app.openModule('donations')"},
+  // 公眾頻道 2027 形態示範（階段 1）：requiresData＝只喺活動 JSON 有 public_channel_2027 時先顯示
+  // （目前只有 mock_demo 有）→ 2026（凍結）／2027（範本）完全不受影響。
+  {id:'public_channel_demo',title:'公眾頻道 2027（示範）',desc:'',icon:'fa-solid fa-tower-broadcast',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,requiresData:'public_channel_2027',action:"app.openModule('public_channel_demo')"},
   {id:'my_monitor',title:'我的監察 (全部申請批核)',desc:'',icon:'fa-solid fa-eye',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,readOnly:true,action:"app.openModule('my_monitor')"},
   {id:'approvals',title:'批核中心',desc:'',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,editLevel:40,action:"app.switchTopTab('approvals')"},
   {id:'account_setup',title:'開戶',desc:'',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,editLevel:40},
