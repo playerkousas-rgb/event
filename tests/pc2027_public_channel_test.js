@@ -2,7 +2,7 @@
 'use strict';
 /**
  * 階段 1（2026-10-04）：「公眾頻道 2027 形態示範」卡片回歸測試
- *  ① data/mock_demo.json 有 public_channel_2027：六類受眾入口＋八個分頁數據齊全
+ *  ① data/mock_demo.json 有 public_channel_2027：公眾入口＝須知分眾七類＋八個分頁數據齊全
  *  ② DASH_CARD_DEFS 有 public_channel_demo 卡：公開（minLevel 0）＋ requiresData
  *  ③ 委員「一頁睇晒」（tabs 模式）：8 個分頁全部 render 到，含關鍵內容
  *  ④ requiresData 過濾＋app-core 接線：冇 public_channel_2027 嘅活動（isd_2026／isd_2027）→ 卡片不顯示
@@ -22,9 +22,10 @@ function ok(cond, msg) { if (!cond) throw new Error('FAIL: ' + msg); n++; }
 const mock = JSON.parse(read('data/mock_demo.json'));
 const pc = mock.public_channel_2027;
 ok(pc, '① mock_demo.json 有 public_channel_2027');
-ok(pc.audiences && pc.audiences.length === 6, '① 六類受眾入口');
-ok(['visitor', 'troop', 'merit', 'awardee', 'guest', 'ug'].every(id => pc.audiences.some(a => a.id === id)), '① 受眾 id 齊：visitor/troop/merit/awardee/guest/ug');
+ok(pc.audiences && pc.audiences.length === 7, '① 公眾入口＝須知分眾七類');
+ok(['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => pc.audiences.some(a => a.id === id)), '① 七類 id 齊：嘉賓/旅團/優異旅團獲獎/步操隊伍/其他制服團體/支部最高獎勵/成人獎勵');
 ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
+ok(pc.audiences.filter(a => a.guide).every(a => a.guide.every(k => pc.guides[k])), '① 每類嘅須知都喺七類須知數據入面');
 ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
 ok(pc.section_labels && Object.keys(pc.section_labels).length === 8, '① 分節標籤 8 個');
 ok(pc.banner && pc.banner.event_name === '2027 港島童軍繽紛日', '① banner：2027 港島童軍繽紛日');
@@ -79,39 +80,47 @@ ok(order[0] === 'public_channel_demo', '② 排公開資料第一位（mock_demo
 /* ── ⑤ 身份入口選擇頁（預設第一屏） ── */
 let html = render();
 ok(html.includes('你係邊類人'), '⑤ 入口頁有「你係邊類人」');
-ok(html.includes('旅團領袖') && html.includes('嘉賓') && html.includes('家長'), '⑤ 入口卡：旅團領袖・嘉賓・家長');
-ok((html.match(/\?pub=/g) || []).length >= 6, '⑤ 每個入口有專屬連結提示（?pub=）');
+ok(['嘉賓', '旅團', '優異旅團獲獎', '步操隊伍', '其他制服團體', '支部最高獎勵獲獎人士', '成人獎勵獲獎人士'].every(n => html.includes(n)), '⑤ 入口卡：七類齊晒（須知分眾七類）');
+ok((html.match(/\?pub=/g) || []).length >= 7, '⑤ 每個入口有專屬連結提示（?pub=）');
 ok(html.includes('一頁睇晒'), '⑤ 底部有委員預覽入口');
 
-/* ── ⑥ 分眾版面：各有各嘅嘢 ── */
-app.pcDemoPickAudience('visitor'); html = render();
-ok(html.includes('攤位與地圖') && html.includes('A01'), '⑥ 訪客：見攤位');
-ok(html.includes('童心捐贈'), '⑥ 訪客：見捐贈');
-ok(!html.includes('立即報名'), '⑥ 訪客：冇報名表（佢唔使報名）');
-
-app.pcDemoPickAudience('troop'); html = render();
-ok(html.includes('旅團報名') && html.includes('立即報名'), '⑥ 旅團領袖：報名表做主角');
-ok(html.includes('PT/46'), '⑥ 旅團領袖：家長同意書須知');
-ok(html.includes('東閘'), '⑥ 旅團領袖：交通須知');
-ok(!html.includes('名額（先到先得）'), '⑥ 旅團領袖：唔重複基本盤（報名詳情喺表內）');
-
-app.pcDemoPickAudience('merit'); html = render();
-ok(html.includes('優異旅團報名'), '⑥ 優異旅團：專屬報名');
-ok(html.includes('彩帶'), '⑥ 優異旅團：彩帶／證書須知');
-ok(!html.includes('攤位與地圖'), '⑥ 優異旅團：唔顯示攤位節（佢嘅重點唔喺度）');
-
-app.pcDemoPickAudience('awardee'); html = render();
-ok(html.includes('貝登堡獎章') && html.includes('總領袖獎章'), '⑥ 獎項得主：兩份須知（支部＋成人）');
-ok(html.includes('支部最高獎勵得主報名') && html.includes('成人獎勵得主報名'), '⑥ 獎項得主：兩張報名表');
-
+/* ── ⑥ 分眾版面：七類各有各嘅須知＋報名 ── */
 app.pcDemoPickAudience('guest'); html = render();
 ok(html.includes('嘉賓專屬安排') && html.includes('莫榮大樓'), '⑥ 嘉賓：接待安排做基本盤');
-ok(!html.includes('名額（先到先得）') && !html.includes('立即報名'), '⑥ 嘉賓：冇名額／費用／報名（獲邀人士）');
+ok(html.includes('嘉賓報名') && html.includes('立即報名'), '⑥ 嘉賓：嘉賓報名做主角');
 ok(html.includes('大會車'), '⑥ 嘉賓：大會車安排');
+ok(!html.includes('名額（先到先得）'), '⑥ 嘉賓：唔講名額費用（獲邀人士）');
+
+app.pcDemoPickAudience('troop'); html = render();
+ok(html.includes('旅團報名') && html.includes('立即報名'), '⑥ 旅團：報名表做主角');
+ok(html.includes('PT/46'), '⑥ 旅團：家長同意書須知');
+ok(html.includes('東閘'), '⑥ 旅團：交通須知');
+ok(html.includes('普通旅團・須知'), '⑥ 旅團：普通旅團版須知');
+
+app.pcDemoPickAudience('merit'); html = render();
+ok(html.includes('優異旅團報名'), '⑥ 優異旅團獲獎：專屬報名');
+ok(html.includes('彩帶'), '⑥ 優異旅團獲獎：彩帶／證書須知');
+ok(html.includes('優異旅團・須知') && !html.includes('普通旅團・須知'), '⑥ 優異旅團獲獎：只見自己版須知');
+
+app.pcDemoPickAudience('march'); html = render();
+ok(html.includes('07:45–08:30（綵排）'), '⑥ 步操隊伍：綵排時間須知');
+ok(html.includes('指揮官檢閱'), '⑥ 步操隊伍：檢閱安排');
+ok(html.includes('旅團報名'), '⑥ 步操隊伍：經旅團報名登記');
+ok(!html.includes('彩帶'), '⑥ 步操隊伍：唔會見到優異旅團須知');
 
 app.pcDemoPickAudience('ug'); html = render();
-ok(html.includes('其他制服團體報名') && html.includes('NGO 報名'), '⑥ UG／NGO：兩個入口');
-ok(html.includes('UG 專櫃'), '⑥ UG：專櫃報到須知');
+ok(html.includes('其他制服團體報名') && html.includes('NGO 報名'), '⑥ 其他制服團體：兩個報名入口');
+ok(html.includes('UG 專櫃'), '⑥ 其他制服團體：專櫃報到須知');
+
+app.pcDemoPickAudience('awardee_section'); html = render();
+ok(html.includes('支部最高獎勵得主報名'), '⑥ 支部最高獎勵：專屬報名');
+ok(html.includes('貝登堡獎章') && html.includes('總領袖獎章'), '⑥ 支部最高獎勵：頒獎次序須知');
+ok(!html.includes('長期服務獎章'), '⑥ 支部最高獎勵：唔會見到成人獎勵須知');
+
+app.pcDemoPickAudience('awardee_adult'); html = render();
+ok(html.includes('成人獎勵得主報名'), '⑥ 成人獎勵：專屬報名');
+ok(html.includes('長期服務獎章') && html.includes('覆誓'), '⑥ 成人獎勵：頒獎＋覆誓須知');
+ok(!html.includes('貝登堡獎章'), '⑥ 成人獎勵：唔會見到支部獎章須知');
 ok(html.includes('切換身份'), '⑥ 各版面有「切換身份」');
 
 /* ── ⑦ ?pub= 深連結（生產版專屬 QR 機制） ── */
@@ -130,6 +139,7 @@ ok(app.pcPublicLandingActive() === true, '⑧ mock_demo 未登入 → 公眾 lan
 app.renderPublicLanding();
 let land = containers['public-landing'].innerHTML;
 ok(land.includes('你係邊類人'), '⑧ landing：身份入口選擇');
+ok(land.includes('步操隊伍') && land.includes('支部最高獎勵獲獎人士') && land.includes('成人獎勵獲獎人士'), '⑧ landing：七類入口齊晒');
 ok(land.includes('2027 港島童軍繽紛日'), '⑧ landing：活動名＋日期時間地點');
 ok(land.includes('工作人員入口'), '⑧ landing：頁尾隱藏工作人員入口');
 ok(!land.includes('一頁睇晒'), '⑧ landing：公眾見唔到委員預覽連結');
@@ -196,4 +206,4 @@ ok(coreSrc.includes('pcPublicLandingActive') && coreSrc.includes('renderPublicLa
 const idxSrc = read('index.html');
 ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-gate"') && idxSrc.includes('id="dash-hero"'), '④ index.html：landing 容器＋工作人員閘口 modal＋dash-hero');
 
-console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜audiences 6・booths 33・participants 31・merit ${meritTotal}`);
+console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜audiences 7・booths 33・participants 31・merit ${meritTotal}`);

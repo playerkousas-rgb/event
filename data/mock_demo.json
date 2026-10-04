@@ -2650,24 +2650,30 @@
     },
     "audiences": [
       {
-        "id": "visitor",
-        "icon": "👨‍👩‍👧",
-        "name": "家長・親友・訪客",
-        "desc": "參觀繽紛日：攤位・典禮・主題活動",
+        "id": "guest",
+        "icon": "🎩",
+        "name": "嘉賓",
+        "desc": "獲邀出席典禮及茶聚：接待・座位・大會車",
         "sections": [
           "banner",
+          "apply",
+          "guide",
           "program",
-          "booths",
-          "transport",
-          "help",
-          "donate"
+          "help"
+        ],
+        "guide": [
+          "嘉賓"
+        ],
+        "banner": "guest",
+        "featured": [
+          "嘉賓報名"
         ]
       },
       {
         "id": "troop",
         "icon": "🏃",
-        "name": "旅團領袖",
-        "desc": "帶隊參加：報名・餐盒・旅遊巴",
+        "name": "旅團",
+        "desc": "帶隊參加：報名・餐盒・旅遊巴・報到",
         "sections": [
           "apply",
           "guide",
@@ -2685,7 +2691,7 @@
       {
         "id": "merit",
         "icon": "🏆",
-        "name": "優異旅團領袖",
+        "name": "優異旅團獲獎",
         "desc": "出席頒獎禮：排位・彩帶・派隊",
         "sections": [
           "apply",
@@ -2701,46 +2707,29 @@
         ]
       },
       {
-        "id": "awardee",
-        "icon": "🎖️",
-        "name": "獎項得主",
-        "desc": "支部最高獎勵・成人獎勵：上台領獎",
+        "id": "march",
+        "icon": "🥁",
+        "name": "步操隊伍",
+        "desc": "參與步操：綵排・集結・檢閱・退場",
         "sections": [
           "apply",
           "guide",
           "program",
+          "transport",
           "help"
         ],
         "guide": [
-          "支部最高獎勵得主",
-          "成人獎勵得主"
+          "步操隊伍"
         ],
         "featured": [
-          "支部最高獎勵得主報名",
-          "成人獎勵得主報名"
+          "旅團報名"
         ]
-      },
-      {
-        "id": "guest",
-        "icon": "🎩",
-        "name": "嘉賓",
-        "desc": "獲邀出席典禮及茶聚",
-        "sections": [
-          "banner",
-          "guide",
-          "program",
-          "help"
-        ],
-        "guide": [
-          "嘉賓"
-        ],
-        "banner": "guest"
       },
       {
         "id": "ug",
         "icon": "🧢",
-        "name": "制服團體・NGO",
-        "desc": "隊伍參加或設攤位",
+        "name": "其他制服團體",
+        "desc": "制服團體／NGO：隊伍參加或設攤位",
         "sections": [
           "apply",
           "guide",
@@ -2753,6 +2742,42 @@
         "featured": [
           "其他制服團體報名",
           "NGO 報名"
+        ]
+      },
+      {
+        "id": "awardee_section",
+        "icon": "🎖️",
+        "name": "支部最高獎勵獲獎人士",
+        "desc": "總領袖獎章・榮譽童軍獎章・貝登堡獎章",
+        "sections": [
+          "apply",
+          "guide",
+          "program",
+          "help"
+        ],
+        "guide": [
+          "支部最高獎勵得主"
+        ],
+        "featured": [
+          "支部最高獎勵得主報名"
+        ]
+      },
+      {
+        "id": "awardee_adult",
+        "icon": "🎗️",
+        "name": "成人獎勵獲獎人士",
+        "desc": "長期服務獎狀・長期服務獎章・一星／三星服務獎章",
+        "sections": [
+          "apply",
+          "guide",
+          "program",
+          "help"
+        ],
+        "guide": [
+          "成人獎勵得主"
+        ],
+        "featured": [
+          "成人獎勵得主報名"
         ]
       }
     ],
