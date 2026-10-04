@@ -94,6 +94,26 @@ const pc = {
     { icon: '❤️', name: '童心捐贈', target: '任何人', desc: '物品／食品・QR' }
   ],
   apply_note: '全部免登入、填完即有申請編號可查進度。費用（$10／人・餐盒 $60／份）於確認後一併通知繳付。',
+  /* ── 報到 QR（階段1）：每個報名單位／個人一個專屬 token（QR 內容＝PC2027:token）
+     公眾端：自己版面見自己嘅 QR；工作人員端：「報到站」輸入／掃描 token 即見旅團・人數・餐盒等 ── */
+  checkin_demo: {
+    audience_kinds: { troop: '旅團', merit: '優異旅團', march: '步操隊伍', ug: '其他制服團體', guest: '嘉賓', awardee_section: '支部最高獎勵得主', awardee_adult: '成人獎勵得主' },
+    entries: [].concat(
+      participants.map(p => ({ token: 'T' + String(p[0]).padStart(3, '0'), kind: '旅團', name: p[1], area: p[2], headcount: p[3], meal_boxes: p[4], note: '領隊：' + p[5] })),
+      Object.values(meritByArea).flat().slice(0, 3).map((u, i) => ({ token: 'M' + String(i + 1).padStart(3, '0'), kind: '優異旅團', name: u.split('・')[0], area: u.split('・')[1] || '', headcount: 12, meal_boxes: 0, note: '出席頒獎：派隊上台領彩帶＋獎狀' })),
+      participants.slice(0, 3).map((p, i) => ({ token: 'W' + String(i + 1).padStart(3, '0'), kind: '步操隊伍', name: p[1], area: p[2], headcount: 24, meal_boxes: p[4], note: '旗幟：有｜綵排 08:00 報到' })),
+      [
+        { token: 'U001', kind: '其他制服團體', name: '香港聖約翰救傷隊（示範）', area: '—', headcount: 18, meal_boxes: 6, note: 'UG 專櫃報到' },
+        { token: 'U002', kind: '其他制服團體', name: '香港海事青年團（示範）', area: '—', headcount: 15, meal_boxes: 5, note: 'UG 專櫃報到' },
+        { token: 'G001', kind: '嘉賓', name: '李偉明先生 BBS, MH（示範）', area: '—', headcount: 1, meal_boxes: 0, note: '茶聚：是｜大會車：是' },
+        { token: 'G002', kind: '嘉賓', name: '王秀蘭女士 MH（示範）', area: '—', headcount: 1, meal_boxes: 0, note: '茶聚：是｜大會車：否' },
+        { token: 'A001', kind: '支部最高獎勵得主', name: '貝登堡獎章得主（示範）', area: '—', headcount: 1, meal_boxes: 0, note: '親友觀禮：2 位' },
+        { token: 'A002', kind: '支部最高獎勵得主', name: '榮譽童軍獎章得主（示範）', area: '—', headcount: 1, meal_boxes: 0, note: '親友觀禮：3 位' },
+        { token: 'A003', kind: '成人獎勵得主', name: '長期服務獎章得主（示範）', area: '—', headcount: 1, meal_boxes: 0, note: '需覆誓：是' },
+        { token: 'A004', kind: '成人獎勵得主', name: '一星服務獎章得主（示範）', area: '—', headcount: 1, meal_boxes: 0, note: '需覆誓：否' }
+      ]
+    )
+  },
   /* ── 工作人員閘口：公眾 landing 頁尾有一個隱藏入口，工作人員打 4 位密碼即入；
      籌委就用帳號密碼（一個登入口分流）。示範版 login_as＝內置示範帳戶「陳子明」（工作人員） ── */
   staff_gate: { pin: '2027', login_as: '陳子明' },
@@ -120,7 +140,8 @@ const pc = {
       { time: '17:00', title: '回程', detail: '請依指示由東閘離場（旅遊巴依指示上客）' }
     ] },
     merit: { now: '11:00', now_label: '典禮開始・準備上台', items: [
-      { time: '10:15', title: '到達・排位', detail: '大操場後方排位區（按區會）' },
+      { time: '10:00', title: '報到', detail: '有蓋操場報到處・優異旅團櫃位（核對名單・領取彩帶）' },
+      { time: '10:15', title: '排位', detail: '大操場後方排位區（按區會）' },
       { time: '10:30', title: '等候進場', detail: '依工作人員指示' },
       { time: '11:00', title: '第一部分典禮', detail: '優異旅團頒獎：派隊上台領取彩帶＋獎狀（按區會序）' },
       { time: '12:00', title: '第二部分典禮・會操檢閱', detail: '於所属位置觀禮' },
@@ -128,7 +149,7 @@ const pc = {
       { time: '15:00', title: '回程', detail: '東閘離場' }
     ] },
     march: { now: '08:30', now_label: '綵排中（依司儀及總指揮指示）', items: [
-      { time: '07:45', title: '綵排報到', detail: '大操場指定位置（依旗幟集結）' },
+      { time: '08:00', title: '綵排報到', detail: '大操場指定位置（依旗幟集結）' },
       { time: '08:30', title: '綵排開始', detail: '08:30–10:30 依司儀及總指揮指示' },
       { time: '10:30', title: '整裝待命', detail: '原地休息（大會飲水點・雨具自備）' },
       { time: '11:00', title: '第一部分典禮', detail: '列隊參與' },
@@ -166,14 +187,14 @@ const pc = {
   arrivals: {
     guest:       { checkin: ['10:45', '莫榮大樓地下接待處（專人接待）'], points: ['灣仔伊利沙伯體育館（大會車上車）', '莫榮大樓地下接待處', '大操場嘉賓席', '莫榮大樓地下（茶聚）'], transport: ['大會車：去程 10:15 灣仔開出；回程 15:00 學院門口', '查詢：2835 7712（助理執行幹事何家耀先生）'] },
     troop:       { checkin: ['按報名時段（08:00 起）', '有蓋操場報到處（東閘入）'], points: ['東閘（警校道）落客', '有蓋操場報到處（領物資・餐盒）', '攤位活動區（A–F）', '大操場（典禮）'], transport: ['旅遊巴：報名時申報嘅旅遊巴前往指定落客點，司機依警衛指示停泊', '公共交通：港鐵海洋公園站步行約 10 分鐘；多條巴士路線直達黃竹坑'] },
-    merit:       { checkin: ['10:15 前', '大操場後方排位區（按區會）'], points: ['東閘入場', '大操場後方排位區（按區會）', '頒獎台前（頒獎時）'], transport: ['公共交通：港鐵海洋公園站步行約 10 分鐘'] },
-    march:       { checkin: ['07:45–08:30', '大操場指定位置（依旗幟）'], points: ['東閘（07:45 前到達）', '有蓋操場報到處', '大操場（依旗幟集結）'], transport: ['請預早出發：07:45 綵排前必須到位', '大會飲水點：大操場側；雨具自備'] },
+    merit:       { checkin: ['10:00–10:15', '有蓋操場報到處・優異旅團櫃位（核對名單・領取彩帶）'], points: ['東閘入場', '有蓋操場 優異旅團櫃位（報到＋領彩帶）', '大操場後方排位區（按區會）', '頒獎台前（頒獎時）'], transport: ['公共交通：港鐵海洋公園站步行約 10 分鐘', '報到後先去排位區按區會排位，頒獎時依指示上台'] },
+    march:       { checkin: ['08:00–08:30', '大操場指定位置（依旗幟）'], points: ['東閘（08:00 起到達）', '有蓋操場報到處', '大操場（依旗幟集結）'], transport: ['請預早出發：08:30 綵排前必須到位', '大會飲水點：大操場側；雨具自備'] },
     ug:          { checkin: ['按大會通知時段', '有蓋操場報到處・UG 專櫃'], points: ['東閘（領隊帶隊）', '有蓋操場 UG 專櫃', '攤位／活動區'], transport: ['穿梭巴士：海洋公園停車場 ↔ 東閘，10:00 起每 15 分鐘一班'] },
     awardee_section: { checkin: ['10:15–10:30', '大操場左側後台排位（依獎章分組）'], points: ['東閘入場', '大操場左側後台排位區', '頒獎台（上台路線）'], transport: ['親友觀禮區：大操場預留（報名時申報人數）'] },
     awardee_adult:   { checkin: ['10:15–10:30', '大操場左側後台排位（依獎項分組）'], points: ['東閘入場', '大操場左側後台排位區', '頒獎台（上台路線）'], transport: ['服裝：制服編號 3 或常服＋佩戴原有勳章'] }
   },
   section_labels: {
-    banner: '活動基本盤', schedule: '你的時間表', arrival: '報到與地圖', apply: '參與／報名',
+    banner: '活動基本盤', schedule: '你的時間表', arrival: '報到與地圖', qr: '你的報到 QR', apply: '參與／報名',
     guide: '你的須知', program: '全日程序', booths: '攤位與地圖', transport: '交通與入場',
     help: '活動日求助', donate: '童心捐贈'
   },
@@ -190,25 +211,25 @@ const pc = {
   audiences: [
     /* 公眾入口＝須知分眾七類（每類須知有少許不同）：嘉賓／旅團／優異旅團獲獎／步操隊伍／其他制服團體／支部最高獎勵獲獎人士／成人獎勵獲獎人士 */
     { id: 'guest', icon: '🎩', name: '嘉賓', desc: '獲邀出席典禮及茶聚：接待・座位・大會車',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['嘉賓'], banner: 'guest', featured: ['嘉賓報名'] },
     { id: 'troop', icon: '🏃', name: '旅團', desc: '帶隊參加：報名・餐盒・旅遊巴・報到',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['普通旅團'], featured: ['旅團報名'] },
     { id: 'merit', icon: '🏆', name: '優異旅團獲獎', desc: '出席頒獎禮：排位・彩帶・派隊',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['優異旅團'], featured: ['優異旅團報名'] },
     { id: 'march', icon: '🥁', name: '步操隊伍', desc: '參與步操：綵排・集結・檢閱・退場',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['步操隊伍'], featured: ['旅團報名'] },
     { id: 'ug', icon: '🧢', name: '其他制服團體', desc: '制服團體／NGO：隊伍參加或設攤位',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['其他制服團體'], featured: ['其他制服團體報名', 'NGO 報名'] },
     { id: 'awardee_section', icon: '🎖️', name: '支部最高獎勵獲獎人士', desc: '總領袖獎章・榮譽童軍獎章・貝登堡獎章',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['支部最高獎勵得主'], featured: ['支部最高獎勵得主報名'] },
     { id: 'awardee_adult', icon: '🎗️', name: '成人獎勵獲獎人士', desc: '長期服務獎狀・長期服務獎章・一星／三星服務獎章',
-      sections: ['banner', 'schedule', 'arrival', 'guide', 'apply', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'qr', 'guide', 'apply', 'help'],
       guide: ['成人獎勵得主'], featured: ['成人獎勵得主報名'] }
   ],
   guides: {
@@ -229,7 +250,7 @@ const pc = {
       ['活動', '13:00 起攤位博覽・主題活動區（紀念章每位乙枚）']
     ],
     '優異旅團': [
-      ['到達', '10:15 前（大操場後方排位）'],
+      ['到達', '10:00–10:15 先到優異旅團櫃位報到（領彩帶），10:15 前排位'],
       ['集合', '大操場指定排位區（按區會）'],
       ['服裝', '制服編號 3（常規制服）'],
       ['頒獎', '11:00 第一部分典禮：小童軍＝證書；幼童軍／童軍／深資／樂行＝彩帶'],
@@ -237,7 +258,7 @@ const pc = {
       ['解散', '12:00 檢閱後隨旅團自由參觀']
     ],
     '步操隊伍': [
-      ['到達', '07:45–08:30（綵排）'],
+      ['到達', '08:00–08:30（綵排）'],
       ['集合', '大操場指定位置（依旗幟）'],
       ['服裝', '制服編號 3（常規制服）'],
       ['綵排', '08:30–10:30 依司儀及總指揮指示'],

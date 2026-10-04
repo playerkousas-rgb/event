@@ -2609,6 +2609,424 @@
       }
     ],
     "apply_note": "全部免登入、填完即有申請編號可查進度。費用（$10／人・餐盒 $60／份）於確認後一併通知繳付。",
+    "checkin_demo": {
+      "audience_kinds": {
+        "troop": "旅團",
+        "merit": "優異旅團",
+        "march": "步操隊伍",
+        "ug": "其他制服團體",
+        "guest": "嘉賓",
+        "awardee_section": "支部最高獎勵得主",
+        "awardee_adult": "成人獎勵得主"
+      },
+      "entries": [
+        {
+          "token": "T001",
+          "kind": "旅團",
+          "name": "港島第175旅",
+          "area": "HKN 港島北區",
+          "headcount": 28,
+          "meal_boxes": 0,
+          "note": "領隊：朱耀文"
+        },
+        {
+          "token": "T002",
+          "kind": "旅團",
+          "name": "港島第242旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 17,
+          "meal_boxes": 0,
+          "note": "領隊：楊頌賢"
+        },
+        {
+          "token": "T003",
+          "kind": "旅團",
+          "name": "港島第5海童軍旅",
+          "area": "WCH 灣仔區",
+          "headcount": 17,
+          "meal_boxes": 17,
+          "note": "領隊：黎智成"
+        },
+        {
+          "token": "T004",
+          "kind": "旅團",
+          "name": "港島第212旅",
+          "area": "WCH 灣仔區",
+          "headcount": 90,
+          "meal_boxes": 0,
+          "note": "領隊：周浩恩"
+        },
+        {
+          "token": "T005",
+          "kind": "旅團",
+          "name": "港島第1316旅",
+          "area": "CHW 柴灣區",
+          "headcount": 20,
+          "meal_boxes": 0,
+          "note": "領隊：陳炳競"
+        },
+        {
+          "token": "T006",
+          "kind": "旅團",
+          "name": "港島第255旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 45,
+          "meal_boxes": 0,
+          "note": "領隊：郭軒"
+        },
+        {
+          "token": "T007",
+          "kind": "旅團",
+          "name": "港島第263旅",
+          "area": "CHW 柴灣區",
+          "headcount": 28,
+          "meal_boxes": 0,
+          "note": "領隊：張小玲"
+        },
+        {
+          "token": "T008",
+          "kind": "旅團",
+          "name": "港島第6旅",
+          "area": "CHW 柴灣區",
+          "headcount": 58,
+          "meal_boxes": 25,
+          "note": "領隊：孫嘉謙"
+        },
+        {
+          "token": "T009",
+          "kind": "旅團",
+          "name": "港島第186旅",
+          "area": "WCH 灣仔區",
+          "headcount": 103,
+          "meal_boxes": 38,
+          "note": "領隊：盧國怡 / 胡芷菱"
+        },
+        {
+          "token": "T010",
+          "kind": "旅團",
+          "name": "港島第99旅",
+          "area": "VIC 維多利亞城區",
+          "headcount": 55,
+          "meal_boxes": 0,
+          "note": "領隊：何文朗"
+        },
+        {
+          "token": "T011",
+          "kind": "旅團",
+          "name": "港島第224旅",
+          "area": "HKS 港島南區",
+          "headcount": 10,
+          "meal_boxes": 10,
+          "note": "領隊：姜健龍"
+        },
+        {
+          "token": "T012",
+          "kind": "旅團",
+          "name": "港島第241旅",
+          "area": "HKS 港島南區",
+          "headcount": 45,
+          "meal_boxes": 0,
+          "note": "領隊：梁麗群"
+        },
+        {
+          "token": "T013",
+          "kind": "旅團",
+          "name": "港島第1275旅",
+          "area": "CHW 柴灣區",
+          "headcount": 47,
+          "meal_boxes": 0,
+          "note": "領隊：譚正銀"
+        },
+        {
+          "token": "T014",
+          "kind": "旅團",
+          "name": "港島第15旅",
+          "area": "WCH 灣仔區",
+          "headcount": 41,
+          "meal_boxes": 0,
+          "note": "領隊：岑卓俊"
+        },
+        {
+          "token": "T015",
+          "kind": "旅團",
+          "name": "港島第18旅",
+          "area": "WCH 灣仔區",
+          "headcount": 12,
+          "meal_boxes": 0,
+          "note": "領隊：黃禮和"
+        },
+        {
+          "token": "T016",
+          "kind": "旅團",
+          "name": "港島第1旅",
+          "area": "VIC 維多利亞城區",
+          "headcount": 72,
+          "meal_boxes": 0,
+          "note": "領隊：黃月明"
+        },
+        {
+          "token": "T017",
+          "kind": "旅團",
+          "name": "港島第268旅",
+          "area": "CHW 柴灣區",
+          "headcount": 18,
+          "meal_boxes": 10,
+          "note": "領隊：陳嘉豪"
+        },
+        {
+          "token": "T018",
+          "kind": "旅團",
+          "name": "港島第14旅",
+          "area": "WCH 灣仔區",
+          "headcount": 52,
+          "meal_boxes": 0,
+          "note": "領隊：麥銳文"
+        },
+        {
+          "token": "T019",
+          "kind": "旅團",
+          "name": "港島第250旅",
+          "area": "HKW 港島西區",
+          "headcount": 9,
+          "meal_boxes": 0,
+          "note": "領隊：何家恒"
+        },
+        {
+          "token": "T020",
+          "kind": "旅團",
+          "name": "港島第175旅",
+          "area": "HKN 港島北區",
+          "headcount": 7,
+          "meal_boxes": 0,
+          "note": "領隊：黃泳珊"
+        },
+        {
+          "token": "T021",
+          "kind": "旅團",
+          "name": "港島第142旅",
+          "area": "HKW 港島西區",
+          "headcount": 30,
+          "meal_boxes": 30,
+          "note": "領隊：鄭海芝"
+        },
+        {
+          "token": "T022",
+          "kind": "旅團",
+          "name": "港島第206旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 55,
+          "meal_boxes": 2,
+          "note": "領隊：葉永全"
+        },
+        {
+          "token": "T023",
+          "kind": "旅團",
+          "name": "港島第7旅",
+          "area": "HKN 港島北區",
+          "headcount": 40,
+          "meal_boxes": 0,
+          "note": "領隊：張少聰"
+        },
+        {
+          "token": "T024",
+          "kind": "旅團",
+          "name": "港島第230旅",
+          "area": "HKN 港島北區",
+          "headcount": 15,
+          "meal_boxes": 0,
+          "note": "領隊：施銘銓"
+        },
+        {
+          "token": "T025",
+          "kind": "旅團",
+          "name": "港島第22旅",
+          "area": "HKW 港島西區",
+          "headcount": 16,
+          "meal_boxes": 0,
+          "note": "領隊：鄺崇恩"
+        },
+        {
+          "token": "T026",
+          "kind": "旅團",
+          "name": "港島第70旅",
+          "area": "HKS 港島南區",
+          "headcount": 3,
+          "meal_boxes": 0,
+          "note": "領隊：郭子僖"
+        },
+        {
+          "token": "T027",
+          "kind": "旅團",
+          "name": "港島第5旅",
+          "area": "HKW 港島西區",
+          "headcount": 29,
+          "meal_boxes": 0,
+          "note": "領隊：錢永康"
+        },
+        {
+          "token": "T028",
+          "kind": "旅團",
+          "name": "港島第2旅",
+          "area": "VIC 維多利亞城區",
+          "headcount": 20,
+          "meal_boxes": 0,
+          "note": "領隊：楊羨婷"
+        },
+        {
+          "token": "T029",
+          "kind": "旅團",
+          "name": "港島地域（鄧靄兒）",
+          "area": "HKIR 港島地域",
+          "headcount": 5,
+          "meal_boxes": 5,
+          "note": "領隊：鄧靄兒"
+        },
+        {
+          "token": "T030",
+          "kind": "旅團",
+          "name": "港島第1665旅",
+          "area": "WCH 灣仔區",
+          "headcount": 23,
+          "meal_boxes": 0,
+          "note": "領隊：曾港興"
+        },
+        {
+          "token": "T031",
+          "kind": "旅團",
+          "name": "港島第16旅",
+          "area": "HKW 港島西區",
+          "headcount": 6,
+          "meal_boxes": 0,
+          "note": "領隊：黎禮勳"
+        },
+        {
+          "token": "M001",
+          "kind": "優異旅團",
+          "name": "港島第六旅",
+          "area": "小童軍團",
+          "headcount": 12,
+          "meal_boxes": 0,
+          "note": "出席頒獎：派隊上台領彩帶＋獎狀"
+        },
+        {
+          "token": "M002",
+          "kind": "優異旅團",
+          "name": "港島第二四三旅",
+          "area": "童軍團",
+          "headcount": 12,
+          "meal_boxes": 0,
+          "note": "出席頒獎：派隊上台領彩帶＋獎狀"
+        },
+        {
+          "token": "M003",
+          "kind": "優異旅團",
+          "name": "港島第六旅",
+          "area": "幼童軍團",
+          "headcount": 12,
+          "meal_boxes": 0,
+          "note": "出席頒獎：派隊上台領彩帶＋獎狀"
+        },
+        {
+          "token": "W001",
+          "kind": "步操隊伍",
+          "name": "港島第175旅",
+          "area": "HKN 港島北區",
+          "headcount": 24,
+          "meal_boxes": 0,
+          "note": "旗幟：有｜綵排 08:00 報到"
+        },
+        {
+          "token": "W002",
+          "kind": "步操隊伍",
+          "name": "港島第242旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 24,
+          "meal_boxes": 0,
+          "note": "旗幟：有｜綵排 08:00 報到"
+        },
+        {
+          "token": "W003",
+          "kind": "步操隊伍",
+          "name": "港島第5海童軍旅",
+          "area": "WCH 灣仔區",
+          "headcount": 24,
+          "meal_boxes": 17,
+          "note": "旗幟：有｜綵排 08:00 報到"
+        },
+        {
+          "token": "U001",
+          "kind": "其他制服團體",
+          "name": "香港聖約翰救傷隊（示範）",
+          "area": "—",
+          "headcount": 18,
+          "meal_boxes": 6,
+          "note": "UG 專櫃報到"
+        },
+        {
+          "token": "U002",
+          "kind": "其他制服團體",
+          "name": "香港海事青年團（示範）",
+          "area": "—",
+          "headcount": 15,
+          "meal_boxes": 5,
+          "note": "UG 專櫃報到"
+        },
+        {
+          "token": "G001",
+          "kind": "嘉賓",
+          "name": "李偉明先生 BBS, MH（示範）",
+          "area": "—",
+          "headcount": 1,
+          "meal_boxes": 0,
+          "note": "茶聚：是｜大會車：是"
+        },
+        {
+          "token": "G002",
+          "kind": "嘉賓",
+          "name": "王秀蘭女士 MH（示範）",
+          "area": "—",
+          "headcount": 1,
+          "meal_boxes": 0,
+          "note": "茶聚：是｜大會車：否"
+        },
+        {
+          "token": "A001",
+          "kind": "支部最高獎勵得主",
+          "name": "貝登堡獎章得主（示範）",
+          "area": "—",
+          "headcount": 1,
+          "meal_boxes": 0,
+          "note": "親友觀禮：2 位"
+        },
+        {
+          "token": "A002",
+          "kind": "支部最高獎勵得主",
+          "name": "榮譽童軍獎章得主（示範）",
+          "area": "—",
+          "headcount": 1,
+          "meal_boxes": 0,
+          "note": "親友觀禮：3 位"
+        },
+        {
+          "token": "A003",
+          "kind": "成人獎勵得主",
+          "name": "長期服務獎章得主（示範）",
+          "area": "—",
+          "headcount": 1,
+          "meal_boxes": 0,
+          "note": "需覆誓：是"
+        },
+        {
+          "token": "A004",
+          "kind": "成人獎勵得主",
+          "name": "一星服務獎章得主（示範）",
+          "area": "—",
+          "headcount": 1,
+          "meal_boxes": 0,
+          "note": "需覆誓：否"
+        }
+      ]
+    },
     "staff_gate": {
       "pin": "2027",
       "login_as": "陳子明"
@@ -2701,8 +3119,13 @@
         "now_label": "典禮開始・準備上台",
         "items": [
           {
+            "time": "10:00",
+            "title": "報到",
+            "detail": "有蓋操場報到處・優異旅團櫃位（核對名單・領取彩帶）"
+          },
+          {
             "time": "10:15",
-            "title": "到達・排位",
+            "title": "排位",
             "detail": "大操場後方排位區（按區會）"
           },
           {
@@ -2737,7 +3160,7 @@
         "now_label": "綵排中（依司儀及總指揮指示）",
         "items": [
           {
-            "time": "07:45",
+            "time": "08:00",
             "title": "綵排報到",
             "detail": "大操場指定位置（依旗幟集結）"
           },
@@ -2922,30 +3345,32 @@
       },
       "merit": {
         "checkin": [
-          "10:15 前",
-          "大操場後方排位區（按區會）"
+          "10:00–10:15",
+          "有蓋操場報到處・優異旅團櫃位（核對名單・領取彩帶）"
         ],
         "points": [
           "東閘入場",
+          "有蓋操場 優異旅團櫃位（報到＋領彩帶）",
           "大操場後方排位區（按區會）",
           "頒獎台前（頒獎時）"
         ],
         "transport": [
-          "公共交通：港鐵海洋公園站步行約 10 分鐘"
+          "公共交通：港鐵海洋公園站步行約 10 分鐘",
+          "報到後先去排位區按區會排位，頒獎時依指示上台"
         ]
       },
       "march": {
         "checkin": [
-          "07:45–08:30",
+          "08:00–08:30",
           "大操場指定位置（依旗幟）"
         ],
         "points": [
-          "東閘（07:45 前到達）",
+          "東閘（08:00 起到達）",
           "有蓋操場報到處",
           "大操場（依旗幟集結）"
         ],
         "transport": [
-          "請預早出發：07:45 綵排前必須到位",
+          "請預早出發：08:30 綵排前必須到位",
           "大會飲水點：大操場側；雨具自備"
         ]
       },
@@ -2996,6 +3421,7 @@
       "banner": "活動基本盤",
       "schedule": "你的時間表",
       "arrival": "報到與地圖",
+      "qr": "你的報到 QR",
       "apply": "參與／報名",
       "guide": "你的須知",
       "program": "全日程序",
@@ -3039,6 +3465,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3060,6 +3487,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3080,6 +3508,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3100,6 +3529,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3120,6 +3550,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3141,6 +3572,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3161,6 +3593,7 @@
           "banner",
           "schedule",
           "arrival",
+          "qr",
           "guide",
           "apply",
           "help"
@@ -3229,7 +3662,7 @@
       "優異旅團": [
         [
           "到達",
-          "10:15 前（大操場後方排位）"
+          "10:00–10:15 先到優異旅團櫃位報到（領彩帶），10:15 前排位"
         ],
         [
           "集合",
@@ -3255,7 +3688,7 @@
       "步操隊伍": [
         [
           "到達",
-          "07:45–08:30（綵排）"
+          "08:00–08:30（綵排）"
         ],
         [
           "集合",

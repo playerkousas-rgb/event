@@ -304,6 +304,7 @@ const DASH_CARD_DEFS=[
   // 公眾頻道 2027 形態示範（階段 1）：requiresData＝只喺活動 JSON 有 public_channel_2027 時先顯示
   // （目前只有 mock_demo 有）→ 2026（凍結）／2027（範本）完全不受影響。
   {id:'public_channel_demo',title:'公眾頻道 2027（示範）',desc:'',icon:'fa-solid fa-tower-broadcast',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:0,editLevel:0,readOnly:true,requiresData:'public_channel_2027',action:"app.openModule('public_channel_demo')"},
+    {id:'checkin_station',title:'報到站（示範）',icon:'fa-solid fa-qrcode',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,editLevel:20,readOnly:true,requiresData:'public_channel_2027',action:"app.openModule('checkin_station')"},
   {id:'my_monitor',title:'我的監察 (全部申請批核)',desc:'',icon:'fa-solid fa-eye',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:20,readOnly:true,action:"app.openModule('my_monitor')"},
   {id:'approvals',title:'批核中心',desc:'',icon:'fa-solid fa-user-check',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,editLevel:40,action:"app.switchTopTab('approvals')"},
   {id:'account_setup',title:'開戶',desc:'',icon:'fa-solid fa-user-plus',cardClass:'bg-white border shadow-sm',iconClass:'bg-slate-100 text-slate-700',minLevel:40,editLevel:40},

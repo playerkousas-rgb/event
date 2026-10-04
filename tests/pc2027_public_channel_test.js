@@ -11,6 +11,8 @@
  *  ⑦ ?pub= 深連結：帶參數開啟即入該受眾版面（生產版專屬 QR 機制）
  *  ⑧ 公眾 landing：mock_demo 未登入 → 一進APP就是公眾頻道（儀表板組件／底部導覽收起；登入後回復正常）
  *  ⑨ 工作人員閘口：頁尾隱藏入口 → 4位密碼（錯=拒絕、啱=登入工作人員）＋籌委帳密分流
+ *  ⑩ 報到 QR（公眾端）：每個報名一個獨有 token，自己版面見自己 QR＋人數餐盒
+ *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.resolve(__dirname, '..');
@@ -25,9 +27,10 @@ ok(pc, '① mock_demo.json 有 public_channel_2027');
 ok(pc.audiences && pc.audiences.length === 7, '① 公眾入口＝須知分眾七類');
 ok(['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => pc.audiences.some(a => a.id === id)), '① 七類 id 齊：嘉賓/旅團/優異旅團獲獎/步操隊伍/其他制服團體/支部最高獎勵/成人獎勵');
 ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
+ok(pc.audiences.every(a => ['schedule', 'arrival', 'qr'].every(x => a.sections.includes(x))), '① 每類都有：時間表＋報到地圖＋報到 QR');
 ok(pc.audiences.filter(a => a.guide).every(a => a.guide.every(k => pc.guides[k])), '① 每類嘅須知都喺七類須知數據入面');
 ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
-ok(pc.section_labels && Object.keys(pc.section_labels).length === 10, '① 分節標籤 10 個');
+ok(pc.section_labels && Object.keys(pc.section_labels).length === 11, '① 分節標籤 11 個');
 ok(Object.keys(pc.schedules).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.schedules[id].items || []).length >= 6), '① 每類有專屬時間表（7 份・各至少 6 項）');
 ok(Object.keys(pc.arrivals).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.arrivals[id].checkin || []).length === 2), '① 每類有專屬報到地點＋時間（7 份）');
 ok(pc.banner && pc.banner.event_name === '2027 港島童軍繽紛日', '① banner：2027 港島童軍繽紛日');
@@ -70,6 +73,8 @@ const app = new ScoutEventApp();
 app.eventData = { public_channel_2027: pc };
 const render = () => { containers['module-content'] = mkEl(); app.renderPublicChannelDemo(); return containers['module-content'].innerHTML; };
 
+const visible = ev => defs.filter(d => d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || (ev && ev[d.requiresData])));
+
 /* ── ② 卡片定義 ── */
 const defs = vm.runInNewContext('DASH_CARD_DEFS', ctx);
 const card = defs.find(d => d.id === 'public_channel_demo');
@@ -102,11 +107,12 @@ ok(html.includes('PT/46') && html.includes('普通旅團・須知'), '⑥ 旅團
 
 app.pcDemoPickAudience('merit'); html = render();
 ok(html.includes('10:15') && html.includes('排位'), '⑥ 優異旅團獲獎：自己時間表（10:15 排位）');
-ok(html.includes('大操場後方排位區（按區會）'), '⑥ 優異旅團獲獎：報到＝後方排位區');
+ok(html.includes('優異旅團櫃位（核對名單・領取彩帶）'), '⑥ 優異旅團獲獎：報到＝優異旅團櫃位（核對名單・領彩帶）');
+ok(html.includes('大操場後方排位區（按區會）'), '⑥ 優異旅團獲獎：報到後排位（後方排位區）');
 ok(html.includes('彩帶') && html.includes('優異旅團・須知') && !html.includes('普通旅團・須知'), '⑥ 優異旅團獲獎：只見自己版須知');
 
 app.pcDemoPickAudience('march'); html = render();
-ok(html.includes('07:45') && html.includes('綵排'), '⑥ 步操隊伍：自己時間表（07:45 綵排）');
+ok(html.includes('08:00') && html.includes('綵排') && !html.includes('07:45'), '⑥ 步操隊伍：自己時間表（08:00 綵排，唔係 07:45）');
 ok(html.includes('大操場指定位置（依旗幟）'), '⑥ 步操隊伍：報到＝大操場依旗幟');
 ok(html.includes('指揮官檢閱'), '⑥ 步操隊伍：檢閱安排');
 ok(!html.includes('彩帶'), '⑥ 步操隊伍：唔會見到優異旅團須知');
@@ -138,6 +144,52 @@ containers['module-content'] = mkEl();
 app2.renderPublicChannelDemo();
 ok(app2.pcDemoMode === 'audience' && app2.pcDemoAudience === 'merit', '⑦ ?pub=merit 開啟即入優異旅團版面');
 ok(containers['module-content'].innerHTML.includes('彩帶'), '⑦ 深連結內容正確');
+
+/* ── ⑩ 報到 QR（公眾端：自己版面見自己 QR） ── */
+const cd = pc.checkin_demo || {};
+ok(cd.entries && cd.entries.length >= 40, '⑩ checkin_demo：31 旅團＋各類示範＝' + (cd.entries || []).length + ' 個報到 token');
+ok(new Set((cd.entries || []).map(e => e.token)).size === (cd.entries || []).length, '⑩ token 全部唯一');
+ok(Object.keys(cd.audience_kinds || {}).length === 7, '⑩ 七類各自對應一種報到 token');
+const troopEntries = cd.entries.filter(e => e.kind === '旅團');
+ok(troopEntries.length === 31, '⑩ 31 個旅團 token（T001–T031，2026 真實名單）');
+app.pcDemoPickAudience('troop'); html = render();
+ok(html.includes('你的報到 QR') && html.includes('報名編號') && html.includes('代訂餐盒'), '⑩ 旅團版面：報到 QR＋人數＋餐盒');
+ok(html.includes(troopEntries[0].token) && html.includes(troopEntries[0].name), '⑩ 顯示第一個旅團（' + troopEntries[0].token + ' ' + troopEntries[0].name + '）');
+ok((html.match(/data-pcqr-fallback|<svg/g) || []).length >= 1, '⑩ QR 圖有渲染（VM 環境＝佔位，瀏覽器＝真 QR）');
+app.pcQrCycle('troop'); html = render();
+ok(html.includes(troopEntries[1].token), '⑩ 切換示範旅團 → 第二個 token');
+app.pcDemoPickAudience('guest'); html = render();
+ok(html.includes('你的報到 QR') && html.includes('G001'), '⑩ 嘉賓版面：個人報到 QR（G001）');
+app.pcDemoPickAudience('awardee_adult'); html = render();
+ok(html.includes('你的報到 QR') && html.includes('需覆誓'), '⑩ 成人獎勵版面：個人 QR＋覆誓備註');
+
+/* ── ⑪ 報到站（工作人員端：一 DO 即知咩旅團・幾多人・有無訂飯盒） ── */
+const csCard = defs.find(d => d.id === 'checkin_station');
+ok(csCard && csCard.minLevel === 20 && csCard.requiresData === 'public_channel_2027', '⑪ 報到站卡：工作人員等級（minLevel 20）＋requiresData 隔離');
+ok(!visible({ public_channel_2027: pc }).some(d => d.id === 'checkin_station'), '⑪ 報到站唔會喺公眾卡片區出現');
+ok(!visible({}).some(d => d.id === 'checkin_station'), '⑪ 2026／2027 完全冇報到站（requiresData）');
+app.currentUser = { user_id: '陳子明', role: 'staff', mock_admin: true };
+app.pcCheckinFound = null; app.pcCheckinArrivals = [];
+containers['module-content'] = mkEl();
+app.renderCheckinStation();
+let st = containers['module-content'].innerHTML;
+ok(st.includes('掃描／輸入報到編號') && st.includes('模擬掃描'), '⑪ 報到站：掃描／輸入＋模擬掃描');
+ok(st.includes('今日報到紀錄') && st.includes('0/' + cd.entries.length + ' 已報到'), '⑪ 報到站：報到紀錄（0/' + cd.entries.length + '）');
+app.pcCheckinLookup('PC2027:T001');
+st = containers['module-content'].innerHTML;
+ok(app.pcCheckinFound && app.pcCheckinFound.token === 'T001', '⑪ 輸入 QR 內容（PC2027:T001）→ 揾到 T001');
+ok(st.includes(troopEntries[0].name) && st.includes('確認報到'), '⑪ 即見旅團名＋確認報到掣');
+ok(st.includes('人數') && st.includes('代訂餐盒'), '⑪ 即見人數＋餐盒');
+app.pcCheckinConfirm();
+st = containers['module-content'].innerHTML;
+ok((app.pcCheckinArrivals || []).length === 1 && st.includes('1/' + cd.entries.length + ' 已報到'), '⑪ 確認報到 → 紀錄 1/' + cd.entries.length);
+ok(st.includes('✓'), '⑪ 報到紀錄有 ✓ 標記');
+const toastsBefore = toasts.length;
+app.pcCheckinLookup('ZZZ999');
+ok(toasts.length > toastsBefore && toasts[toasts.length - 1][1] === 'error', '⑪ 搵唔到編號 → 錯誤提示（唔會靜靜地失敗）');
+app.pcCheckinSimulate();
+ok(app.pcCheckinFound && !(app.pcCheckinArrivals || []).some(a => a.token === app.pcCheckinFound.token), '⑪ 模擬掃描 → 抽中一個未報到單位');
+app.currentUser = null;
 
 /* ── ⑧ 公眾 landing：一進APP就是公眾頻道（mock_demo・未登入） ── */
 app.currentUser = null; app.pcLandAudience = '';
@@ -200,7 +252,6 @@ ok(containers['module-content'].innerHTML.includes('1,016'), '③ 總人數 1,01
 ok(!containers['module-content'].innerHTML.includes('9722 9989'), '③ 公眾版冇領隊電話');
 
 /* ── ④ requiresData 過濾＋接線 ── */
-const visible = ev => defs.filter(d => d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || (ev && ev[d.requiresData])));
 ok(visible({ public_channel_2027: pc }).some(d => d.id === 'public_channel_demo'), '④ mock_demo（有數據）→ 卡片顯示');
 ok(!visible({}).some(d => d.id === 'public_channel_demo'), '④ isd_2026／isd_2027（冇 public_channel_2027）→ 卡片不顯示');
 ok(visible({}).filter(d => !d.requiresData).length === 4, '④ 其餘 4 張公開卡不受影響');
@@ -208,6 +259,8 @@ const coreSrc = read('js/10-app-core.js');
 ok(coreSrc.includes("(!d.requiresData||(this.eventData&&this.eventData[d.requiresData]))"), '④ renderRoleCards 過濾器已接入 requiresData');
 ok(coreSrc.includes("if(mod==='public_channel_demo'){this.renderPublicChannelDemo(); return;}"), '④ renderModuleContent 已接入示範模組');
 ok(coreSrc.includes("public_channel_demo:'公眾頻道 2027（示範）'"), '④ openModule 標題已接入');
+ok(coreSrc.includes("checkin_station:'報到站（示範）'") && coreSrc.includes('renderCheckinStation(); return') && coreSrc.includes("||key==='checkin_station'"), '④ 報到站：標題＋dispatch＋actions 三個接線位');
+ok(read('index.html').includes('js/vendor/qrcode.min.js?v='), '④ QR 庫（本地 vendor）已掛載');
 ok(coreSrc.includes('pcPublicLandingActive') && coreSrc.includes('renderPublicLanding'), '④ applyDashboardMode 已接入公眾 landing 分流');
 const idxSrc = read('index.html');
 ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-gate"') && idxSrc.includes('id="dash-hero"'), '④ index.html：landing 容器＋工作人員閘口 modal＋dash-hero');

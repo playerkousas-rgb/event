@@ -9,6 +9,8 @@
    ・ 數據由 tools/build_pc2027_demo.js 產生（攤位／旅團／優異旅團直接抽自 isd_2026.json）。
    ・ 公眾 landing（mock_demo・未登入）：一進APP＝公眾頻道（applyDashboardMode 分流）；工作人員入口收埋喺頁尾
      —— 工作人員打 4 位密碼（staff_gate.pin）、籌委用帳號密碼（一個登入口分流）。
+   ・ 報到 QR：每個報名一個獨有 token（checkin_demo）——公眾版面見自己 QR；工作人員「報到站」卡
+     （minLevel 20・requiresData 同樣 gated）掃描／輸入即見旅團・人數・餐盒，一撳確認報到。
    ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版 8 個分頁（含手冊）全部開放。
    回歸測試：tests/pc2027_public_channel_test.js */
 Object.assign(ScoutEventApp.prototype,{
@@ -114,6 +116,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       case 'banner': return aud.banner==='guest'?this.pcDemoGuestBannerHTML(d):this.pcDemoHomeHTML(d);
       case 'schedule': return this.pcDemoScheduleForHTML(d,aud);
       case 'arrival': return this.pcDemoArrivalHTML(d,aud);
+      case 'qr': return this.pcDemoQrHTML(d,aud);
       case 'apply': return this.pcDemoApplyForHTML(d,aud.featured||[]);
       case 'guide': return this.pcDemoGuideForHTML(d,aud.guide||[]);
       case 'program': return this.pcDemoProgramHTML(d);
@@ -181,6 +184,136 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
   /* ── 求助卡：電話號碼變可撥 tel: 連結（手機直接撳打） ── */
   pcTelHTML(text){
     return escapeHtml(text||'').replace(/(\d{4})\s?(\d{4})/g,(m,a,b)=>`<a href="tel:${a}${b}" class="text-sky-700 font-bold underline">${a} ${b}</a>`);
+  },
+
+  /* ── 你的報到 QR（每個報名一個獨有 token；工作人員一撳即見旅團・人數・餐盒） ── */
+  pcQrIdx:{},
+  pcQrSvg(text){
+    try{
+      if(typeof qrcode!=='undefined'){
+        const qr=qrcode(0,'M'); qr.addData(text); qr.make();
+        return qr.createSvgTag({cellSize:5,margin:2}); // 本地 vendor：js/vendor/qrcode.min.js（MIT・Kazuhiko Arase）
+      }
+    }catch(e){}
+    return '<div data-pcqr-fallback style="width:130px;height:130px;border:2px dashed #94a3b8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b">QR Code</div>';
+  },
+  pcDemoQrHTML(d,aud){
+    const cd=d.checkin_demo||{};
+    const entries=(cd.entries||[]).filter(e=>e.kind===(cd.audience_kinds||{})[aud.id]);
+    if(!entries.length) return '';
+    this.pcQrIdx=this.pcQrIdx||{};
+    const idx=(this.pcQrIdx[aud.id]||0)%entries.length;
+    this.pcQrIdx[aud.id]=idx;
+    const e=entries[idx];
+    return `
+      <div class="bg-white border-2 border-slate-800 rounded-2xl p-4 text-center">
+        <div class="text-[10.5px] font-bold text-slate-500">📲 你的報到 QR Code（報到時出示）</div>
+        <div class="flex justify-center my-3">${this.pcQrSvg('PC2027:'+e.token)}</div>
+        <div class="font-black text-[15px] text-slate-900 leading-snug">${escapeHtml(e.name)}</div>
+        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(e.area||'')}｜報名編號 <b>${escapeHtml(e.token)}</b></div>
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400">人數</div><b class="text-[15px]">${escapeHtml(String(e.headcount))}</b></div>
+          <div class="bg-rose-50 border border-rose-200 rounded-xl p-2"><div class="text-[10px] font-bold text-rose-400">代訂餐盒</div><b class="text-[15px] text-rose-700">${escapeHtml(String(e.meal_boxes))}</b></div>
+        </div>
+        ${e.note?`<div class="text-[11px] text-slate-500 mt-2 leading-relaxed">${escapeHtml(e.note)}</div>`:''}
+        ${entries.length>1?`<button onclick="app.pcQrCycle('${escapeHtml(aud.id)}')" class="mt-3 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[11.5px] font-bold rounded-xl py-2">🔄 切換示範${escapeHtml(e.kind)}（第 ${idx+1}/${entries.length} 個）</button>`:''}
+        <div class="text-[10px] text-slate-400 mt-2 leading-relaxed">工作人員掃描此 QR → 即見你嘅旅團・人數・餐盒等資料。每個報名一個獨有 QR（以上為示範資料）。</div>
+      </div>`;
+  },
+  pcQrCycle(audId){
+    this.pcQrIdx=this.pcQrIdx||{};
+    this.pcQrIdx[audId]=(this.pcQrIdx[audId]||0)+1;
+    const land=document.getElementById('public-landing');
+    if(land && this.pcLandAudience===audId && !land.classList.contains('hidden')) this.renderPublicLanding();
+    else this.renderPublicChannelDemo();
+  },
+
+  /* ═══════════ 報到站（工作人員端）：掃描／輸入 token → 即見單位資料 → 確認報到 ═══════════ */
+  pcCheckinFound:null, pcCheckinArrivals:[],
+  renderCheckinStation(){
+    const container=document.getElementById('module-content');
+    const d=this.pcDemoData();
+    if(!d){ container.innerHTML='<p class="text-sm text-slate-400">此活動未有報到站示範資料</p>'; return; }
+    const entries=((d.checkin_demo||{}).entries)||[];
+    const arrivals=this.pcCheckinArrivals||[];
+    const arrivedSet=new Set(arrivals.map(a=>a.token));
+    container.innerHTML=`
+      <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
+        <b>🧪 階段 1 成品示範</b> — 工作人員報到工具：對方喺手機出示報到 QR（公眾頻道「你的報到 QR」）→ 呢度掃描／輸入編號 → 即見旅團・人數・餐盒 → 一撳確認。生產版＝掃描器直接讀 QR，報到紀錄自動寫入執行手冊名冊。
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="font-black text-[14px] mb-2">📱 掃描／輸入報到編號</div>
+        <form onsubmit="app.pcCheckinLookupSubmit(event)" class="flex gap-2">
+          <input id="pc-checkin-input" placeholder="掃描 QR 或輸入編號（例：T001）" class="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-[13px]">
+          <button type="submit" class="bg-sky-600 text-white text-[12.5px] font-bold rounded-xl px-4">查找</button>
+        </form>
+        <button onclick="app.pcCheckinSimulate()" class="mt-2 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[12px] font-bold rounded-xl py-2">🎲 模擬掃描（隨機抽一個未報到單位）</button>
+      </div>
+      <div id="pc-checkin-result" class="mt-3">${this.pcCheckinResultHTML()}</div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="font-black text-[13px]">📋 今日報到紀錄</div>
+          <span class="text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-2.5 py-0.5">${arrivals.length}/${entries.length} 已報到</span>
+        </div>
+        ${arrivals.length?arrivals.map(a=>`
+          <div class="flex items-center gap-2.5 py-2 border-t border-slate-100 text-[13px]">
+            <span class="text-emerald-600 font-black">✓</span>
+            <span class="font-bold text-slate-400 text-[11.5px]" style="min-width:46px">${escapeHtml(a.at)}</span>
+            <span class="rounded-lg px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600">${escapeHtml(a.token)}</span>
+            <span class="font-bold min-w-0 truncate">${escapeHtml(a.name)}</span>
+            <span class="ml-auto text-[10.5px] text-slate-400 whitespace-nowrap">${escapeHtml(a.kind)}</span>
+          </div>`).join(''):'<div class="text-center text-[12px] text-slate-400 py-4">未有報到紀錄——試撳「模擬掃描」</div>'}
+      </div>`;
+  },
+  pcCheckinLookupSubmit(ev){ ev.preventDefault(); const el=document.getElementById('pc-checkin-input'); this.pcCheckinLookup(el?(el.value||''):''); },
+  pcCheckinLookup(v){
+    const d=this.pcDemoData(); const entries=((d&&d.checkin_demo||{}).entries)||[];
+    const tok=String(v||'').trim().toUpperCase().replace(/^PC2027:/,'');
+    this.pcCheckinFound=entries.find(en=>en.token.toUpperCase()===tok)||null;
+    if(!this.pcCheckinFound){ showToast('搵唔到編號「'+tok+'」——請對方重新出示 QR','error'); }
+    this.renderCheckinStation();
+  },
+  pcCheckinSimulate(){
+    const d=this.pcDemoData(); const entries=((d&&d.checkin_demo||{}).entries)||[];
+    const arrived=new Set((this.pcCheckinArrivals||[]).map(a=>a.token));
+    const pending=entries.filter(en=>!arrived.has(en.token));
+    if(!pending.length){ showToast('全部單位已報到 🎉','success'); return; }
+    this.pcCheckinFound=pending[Math.floor(Math.random()*pending.length)];
+    this.renderCheckinStation();
+  },
+  pcCheckinResultHTML(){
+    const e=this.pcCheckinFound;
+    if(!e) return '<div class="bg-white border border-dashed border-slate-200 rounded-2xl p-6 text-center text-[12px] text-slate-400">掃描後即顯示單位資料</div>';
+    const arrived=(this.pcCheckinArrivals||[]).some(a=>a.token===e.token);
+    return `
+      <div class="bg-white border-2 ${arrived?'border-emerald-400':'border-sky-500'} rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <span class="rounded-lg px-2 py-0.5 text-[10.5px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">${escapeHtml(e.kind)}</span>
+          <span class="rounded-lg px-2 py-0.5 text-[10.5px] font-bold bg-slate-100 text-slate-600">${escapeHtml(e.token)}</span>
+          ${arrived?'<span class="rounded-lg px-2 py-0.5 text-[10.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">✓ 已報到</span>':''}
+        </div>
+        <div class="font-black text-[17px] text-slate-900 leading-snug">${escapeHtml(e.name)}</div>
+        ${e.area&&e.area!=='—'?`<div class="text-[12px] text-slate-500 mt-0.5">${escapeHtml(e.area)}</div>`:''}
+        <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400">人數</div><b class="text-[16px]">${escapeHtml(String(e.headcount))}</b></div>
+          <div class="bg-rose-50 border border-rose-200 rounded-xl p-2"><div class="text-[10px] font-bold text-rose-400">代訂餐盒</div><b class="text-[16px] text-rose-700">${escapeHtml(String(e.meal_boxes))}</b></div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-2"><div class="text-[10px] font-bold text-amber-500">備註</div><div class="text-[10.5px] font-bold text-amber-900 leading-tight mt-1">${escapeHtml((e.note||'—').slice(0,30))}</div></div>
+        </div>
+        ${arrived
+          ? '<div class="mt-3 text-center text-[12px] font-bold text-emerald-600">此單位已於今日報到</div>'
+          : `<button onclick="app.pcCheckinConfirm()" class="mt-3 w-full bg-emerald-600 text-white text-[14px] font-black rounded-xl py-3">✓ 確認報到</button>`}
+      </div>`;
+  },
+  pcCheckinConfirm(){
+    const e=this.pcCheckinFound; if(!e) return;
+    const arr=this.pcCheckinArrivals=this.pcCheckinArrivals||[];
+    if(!arr.some(a=>a.token===e.token)){
+      const t=new Date();
+      const hh=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+      arr.unshift({token:e.token,kind:e.kind,name:e.name,at:hh});
+    }
+    showToast('✓ 已確認報到：'+e.name+'（'+e.headcount+' 人'+(e.meal_boxes?'・餐盒 '+e.meal_boxes:'')+'）','success');
+    this.renderCheckinStation();
   },
 
   /* ── 嘉賓版基本盤（唔講名額／費用，講接待安排） ── */
