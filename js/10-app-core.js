@@ -673,7 +673,7 @@ Object.assign(ScoutEventApp.prototype,{
     const loggedIn=!!this.currentUser;
     const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
     const noEvent=!this.currentEvent;
-    const hLogin=document.getElementById('login-toggle-btn'); if(hLogin){ hLogin.style.display=(loggedIn||noEvent)?'none':''; if(noEvent&&!loggedIn) hLogin.title='請先選擇並進入活動，再按登入'; }
+    const hLogin=document.getElementById('login-toggle-btn'); if(hLogin){ hLogin.style.display=(loggedIn||noEvent||(typeof this.pcPublicLandingActive==='function'&&this.pcPublicLandingActive()))?'none':''; if(noEvent&&!loggedIn) hLogin.title='請先選擇並進入活動，再按登入'; }
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
     const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
     const taSetup=document.getElementById('topbar-account-setup'); if(taSetup) taSetup.style.display=(loggedIn&&chiefOrAbove)?'':'none';
@@ -716,6 +716,16 @@ Object.assign(ScoutEventApp.prototype,{
     // 一律用卡片檢視（公開資料 → 工作卡片 → 管理工具 → 部門管理中心）；
     // 舊版「認識/參與/協作」彩色分組已於 2026-08-27 整段刪除，不再需要隱藏
     const simplePanel=document.getElementById('simple-card-panel');
+    const heroEl=document.getElementById('dash-hero'); if(heroEl) heroEl.classList.remove('hidden');
+    const landEl=document.getElementById('public-landing');
+    // 階段1：mock_demo（有 public_channel_2027）＋未登入 → 一進APP＝公眾頻道；工作人員入口收埋喺頁尾
+    if(typeof this.pcPublicLandingActive==='function' && this.pcPublicLandingActive()){
+      if(landEl) landEl.classList.remove('hidden');
+      this.updateAdminNav();
+      this.renderPublicLanding();
+      return;
+    }
+    if(landEl){ landEl.classList.add('hidden'); landEl.innerHTML=''; }
     this.renderRoleCards();
     if(simplePanel) simplePanel.classList.remove('hidden');
     this.updateAdminNav();

@@ -9,6 +9,8 @@
  *  ⑤ 身份入口選擇頁：6 個入口＋專屬連結（?pub=xxx）提示
  *  ⑥ 分眾版面：每類受眾見到唔同內容（旅團=報名+PT/46、嘉賓=接待安排冇名額費用、訪客=攤位+捐贈、優異旅團=彩帶、得主=貝登堡、UG=專櫃）
  *  ⑦ ?pub= 深連結：帶參數開啟即入該受眾版面（生產版專屬 QR 機制）
+ *  ⑧ 公眾 landing：mock_demo 未登入 → 一進APP就是公眾頻道（儀表板組件／底部導覽收起；登入後回復正常）
+ *  ⑨ 工作人員閘口：頁尾隱藏入口 → 4位密碼（錯=拒絕、啱=登入工作人員）＋籌委帳密分流
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.resolve(__dirname, '..');
@@ -45,10 +47,12 @@ const pcSrc = read('js/44-public-channel.js');
 const inner = pcSrc.slice(pcSrc.indexOf('Object.assign(ScoutEventApp.prototype,{') + 'Object.assign(ScoutEventApp.prototype,{'.length, pcSrc.lastIndexOf('});'));
 const stripCommaLines = s => s.replace(/^[ \t]*,[ \t]*$/gm, '');
 const containers = {};
-const mkEl = () => ({ innerHTML: '', textContent: '', classList: { add() {}, remove() {}, toggle() {} } });
+const mkEl = () => ({ innerHTML: '', textContent: '', style: {}, classList: { _s: new Set(), add(c) { this._s.add(c); }, remove(c) { this._s.delete(c); }, toggle(c, f) { f ? this._s.add(c) : this._s.delete(c); }, contains(c) { return this._s.has(c); } } });
+const toasts = [];
 const ctx = {
   console,
-  showToast: () => {},
+  setTimeout: () => 0,
+  showToast: (m, t) => toasts.push([m, t]),
   document: { getElementById: id => containers[id] || (containers[id] = mkEl()) }
 };
 const ScoutEventApp = vm.runInNewContext(`
@@ -120,6 +124,45 @@ app2.renderPublicChannelDemo();
 ok(app2.pcDemoMode === 'audience' && app2.pcDemoAudience === 'merit', '⑦ ?pub=merit 開啟即入優異旅團版面');
 ok(containers['module-content'].innerHTML.includes('彩帶'), '⑦ 深連結內容正確');
 
+/* ── ⑧ 公眾 landing：一進APP就是公眾頻道（mock_demo・未登入） ── */
+app.currentUser = null; app.pcLandAudience = '';
+ok(app.pcPublicLandingActive() === true, '⑧ mock_demo 未登入 → 公眾 landing 生效');
+app.renderPublicLanding();
+let land = containers['public-landing'].innerHTML;
+ok(land.includes('你係邊類人'), '⑧ landing：身份入口選擇');
+ok(land.includes('2027 港島童軍繽紛日'), '⑧ landing：活動名＋日期時間地點');
+ok(land.includes('工作人員入口'), '⑧ landing：頁尾隱藏工作人員入口');
+ok(!land.includes('一頁睇晒'), '⑧ landing：公眾見唔到委員預覽連結');
+ok(containers['dash-hero'].classList.contains('hidden') && containers['simple-card-panel'].classList.contains('hidden'), '⑧ landing：儀表板組件（含會議預告）收起');
+ok(containers['bottom-nav'].style.display === 'none', '⑧ landing：底部導覽（工作人員功能）隱藏');
+app.pcLandPick('guest'); land = containers['public-landing'].innerHTML;
+ok(land.includes('嘉賓專屬安排') && land.includes('切換身份'), '⑧ landing：揀嘉賓 → 專屬版面');
+app.pcLandBack();
+ok(containers['public-landing'].innerHTML.includes('你係邊類人'), '⑧ landing：切換身份返入口選擇');
+app.currentUser = { user_id: '陳子明', name: '陳子明', role: 'staff' };
+ok(app.pcPublicLandingActive() === false, '⑧ 已登入 → landing 唔生效（正常儀表板）');
+app.currentUser = null;
+
+/* ── ⑨ 工作人員閘口：4位密碼＋籌委帳密（同一入口分流） ── */
+app.pcStaffGate();
+ok(!containers['modal-staff-gate'].classList.contains('hidden'), '⑨ 閘口 modal 打開');
+ok((containers['pc-pin-dots'].innerHTML.match(/rounded-full/g) || []).length === 4, '⑨ PIN 4 點顯示');
+'9999'.split('').forEach(d => app.pcPinPress(d));
+app.pcPinCheck();
+ok(toasts.length >= 1 && toasts[toasts.length - 1][1] === 'error', '⑨ 錯密碼 → 錯誤提示');
+ok(!app.currentUser, '⑨ 錯密碼 → 唔會登入');
+ok(app.pcPinBuf === '', '⑨ 錯密碼 → 輸入清空');
+app.demoLogin = uid => { app.currentUser = { user_id: uid, name: uid, role: 'staff', mock_admin: true }; };
+'2027'.split('').forEach(d => app.pcPinPress(d));
+app.pcPinCheck();
+ok(app.currentUser && app.currentUser.user_id === '陳子明', '⑨ 正確 PIN（2027）→ 登入工作人員（陳子明）');
+ok(containers['modal-staff-gate'].classList.contains('hidden'), '⑨ 登入後閘口自動關閉');
+app.currentUser = null;
+let loginOpened = false;
+app.openLoginModal = () => { loginOpened = true; };
+app.pcCommitteeLogin();
+ok(loginOpened && containers['modal-staff-gate'].classList.contains('hidden'), '⑨ 「籌委登入（帳號密碼）」→ 開現有帳密登入');
+
 /* ── ③ 委員一頁睇晒（tabs 模式） ── */
 app.pcDemoOpenTabs();
 for (const t of ['home', 'transport', 'program', 'booths', 'apply', 'guide', 'help', 'manual']) {
@@ -149,5 +192,8 @@ const coreSrc = read('js/10-app-core.js');
 ok(coreSrc.includes("(!d.requiresData||(this.eventData&&this.eventData[d.requiresData]))"), '④ renderRoleCards 過濾器已接入 requiresData');
 ok(coreSrc.includes("if(mod==='public_channel_demo'){this.renderPublicChannelDemo(); return;}"), '④ renderModuleContent 已接入示範模組');
 ok(coreSrc.includes("public_channel_demo:'公眾頻道 2027（示範）'"), '④ openModule 標題已接入');
+ok(coreSrc.includes('pcPublicLandingActive') && coreSrc.includes('renderPublicLanding'), '④ applyDashboardMode 已接入公眾 landing 分流');
+const idxSrc = read('index.html');
+ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-gate"') && idxSrc.includes('id="dash-hero"'), '④ index.html：landing 容器＋工作人員閘口 modal＋dash-hero');
 
-console.log(`公眾頻道 2027 分眾入口測試通過（${n} 項）｜audiences 6・booths 33・participants 31・merit ${meritTotal}`);
+console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜audiences 6・booths 33・participants 31・merit ${meritTotal}`);

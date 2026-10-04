@@ -7,6 +7,8 @@
    ・ 卡片只喺 eventData.public_channel_2027 存在時顯示（requiresData，只有 mock_demo 有）
      → 2026（凍結）／2027（範本）完全不受影響。
    ・ 數據由 tools/build_pc2027_demo.js 產生（攤位／旅團／優異旅團直接抽自 isd_2026.json）。
+   ・ 公眾 landing（mock_demo・未登入）：一進APP＝公眾頻道（applyDashboardMode 分流）；工作人員入口收埋喺頁尾
+     —— 工作人員打 4 位密碼（staff_gate.pin）、籌委用帳號密碼（一個登入口分流）。
    ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版 8 個分頁（含手冊）全部開放。
    回歸測試：tests/pc2027_public_channel_test.js */
 Object.assign(ScoutEventApp.prototype,{
@@ -25,7 +27,7 @@ Object.assign(ScoutEventApp.prototype,{
     try{
       if(typeof location!=='undefined' && location.search){
         const p=new URLSearchParams(location.search).get('pub');
-        if(p && this.pcDemoAudienceDef(p)){ this.pcDemoMode='audience'; this.pcDemoAudience=p; return p; }
+        if(p && this.pcDemoAudienceDef(p)) return p;
       }
     }catch(e){}
     return null;
@@ -43,7 +45,7 @@ Object.assign(ScoutEventApp.prototype,{
     const d=this.pcDemoData();
     if(!d){ container.innerHTML='<p class="text-sm text-slate-400">此活動未有公眾頻道示範資料</p>'; return; }
     if(!this.pcDemoGuideKey){ const g=Object.keys(d.guides||{})[0]; if(g) this.pcDemoGuideKey=g; }
-    if(this.pcDemoMode==='pick') this.pcDemoUrlAudience();
+    if(this.pcDemoMode==='pick'){ const u=this.pcDemoUrlAudience(); if(u){ this.pcDemoMode='audience'; this.pcDemoAudience=u; } }
     const aud=this.pcDemoAudienceDef(this.pcDemoAudience);
     let body;
     if(this.pcDemoMode==='tabs'){ body=this.pcDemoTabsBody(d); }
@@ -57,7 +59,7 @@ Object.assign(ScoutEventApp.prototype,{
   },
 
   /* ═══════════ 入口選擇頁 ═══════════ */
-  pcDemoPickerBody(d){
+  pcDemoPickerBody(d,pickFn='pcDemoPickAudience',opts={}){
     const auds=d.audiences||[];
     const labels=d.section_labels||{};
     return `
@@ -75,17 +77,17 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="flex flex-wrap gap-1 mt-2">
             ${(a.sections||[]).map(s=>`<span class="text-[9.5px] bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-1.5 py-0.5">${escapeHtml(labels[s]||s)}</span>`).join('')}
           </div>
-          <button onclick="app.pcDemoPickAudience('${escapeHtml(a.id)}')" class="mt-3 bg-sky-600 text-white text-[12px] font-bold rounded-lg py-2">進入 →</button>
+          <button onclick="app.${pickFn}('${escapeHtml(a.id)}')" class="mt-3 bg-sky-600 text-white text-[12px] font-bold rounded-lg py-2">進入 →</button>
           <div class="text-[9.5px] text-slate-400 mt-1.5 text-center">🔗 專屬入口：?pub=${escapeHtml(a.id)}</div>
         </div>`).join('')}
       </div>
-      <div class="text-center mt-4">
+${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容（8 個分頁）</button>
-      </div>`;
+      </div>`:''}`;
   },
 
   /* ═══════════ 受眾專屬版面 ═══════════ */
-  pcDemoAudienceBody(d,aud){
+  pcDemoAudienceBody(d,aud,backFn='pcDemoBackToPick'){
     const labels=d.section_labels||{};
     return `
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-1">
@@ -96,7 +98,7 @@ Object.assign(ScoutEventApp.prototype,{
             <div class="text-[15px] font-black text-indigo-800 leading-tight">2027 港島童軍繽紛日</div>
             <div class="text-[11.5px] text-slate-500">${escapeHtml(aud.desc)}</div>
           </div>
-          <button onclick="app.pcDemoBackToPick()" class="ml-auto shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-lg px-3 py-2">切換身份</button>
+          <button onclick="app.${backFn}()" class="ml-auto shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-lg px-3 py-2">切換身份</button>
         </div>
       </div>
       ${(aud.sections||[]).map((s,i)=>`
@@ -448,5 +450,86 @@ Object.assign(ScoutEventApp.prototype,{
           </details>`).join('')}
         </div>
       </div>`;
+  },
+
+  /* ═══════════ 公眾頻道 landing（一進APP就是公眾頻道・mock_demo 未登入） ═══════════ */
+  pcLandAudience:'',
+  pcPinBuf:'',
+
+  pcPublicLandingActive(){ return !!(this.eventData && this.eventData.public_channel_2027 && !this.currentUser); },
+
+  renderPublicLanding(){
+    const el=document.getElementById('public-landing'); if(!el) return;
+    const d=this.pcDemoData(); if(!d) return;
+    // 收起儀表板組件（活動橫幅含會議預告＝內部資訊，公眾唔見）
+    ['dash-hero','simple-card-panel','group-management-section'].forEach(id=>{const x=document.getElementById(id); if(x) x.classList.add('hidden');});
+    const bn=document.getElementById('bottom-nav'); if(bn) bn.style.display='none';
+    if(!this.pcLandAudience){ const u=this.pcDemoUrlAudience(); if(u) this.pcLandAudience=u; }
+    const aud=this.pcDemoAudienceDef(this.pcLandAudience);
+    const b=d.banner||{};
+    el.classList.remove('hidden');
+    el.innerHTML=`
+      <div class="text-center text-[10.5px] text-slate-400 pt-1">🧪 階段 1 形態示範（模擬示範版）</div>
+      ${!aud?`
+      <div class="hero-gradient text-white rounded-[20px] p-4 sm:p-5 mt-2 shadow-2xl relative overflow-hidden">
+        <div class="absolute right-0 bottom-0 opacity-10 translate-x-6 translate-y-6 text-7xl pointer-events-none"><i class="fa-solid fa-tower-broadcast"></i></div>
+        <div class="relative z-10">
+          <h2 class="text-2xl font-black leading-tight">${escapeHtml(b.event_name||'')}</h2>
+          <div class="mt-1 text-[13px] font-semibold" style="color:#ddd6fe">${escapeHtml(b.en_name||'')}</div>
+          <div class="mt-3 flex flex-wrap gap-2 text-[12px]">
+            <span class="rounded-xl px-3 py-1.5" style="background:rgba(255,255,255,.15)"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(b.date||'')}</span>
+            <span class="rounded-xl px-3 py-1.5" style="background:rgba(255,255,255,.15)"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(b.time||'')}</span>
+            <span class="rounded-xl px-3 py-1.5" style="background:rgba(255,255,255,.15)"><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(b.location||'')}</span>
+          </div>
+        </div>
+      </div>
+      ${b.news&&b.news.text?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-3 flex items-start gap-2.5">
+        <span class="bg-amber-100 text-amber-800 text-[10.5px] font-bold px-2 py-1 rounded-lg shrink-0 mt-0.5"><i class="fa-solid fa-bullhorn mr-0.5"></i>最新</span>
+        <div class="text-[12.5px] leading-relaxed text-slate-700">${escapeHtml(b.news.text)}<span class="block text-[10px] text-slate-400 mt-0.5">${escapeHtml(b.news.updated_at||'')}・${escapeHtml(b.news.updated_by||'')}</span></div>
+      </div>`:''}
+      <div class="mt-5">${this.pcDemoPickerBody(d,'pcLandPick',{tabsLink:false})}</div>`:''}
+      ${aud?this.pcDemoAudienceBody(d,aud,'pcLandBack'):''}
+      <div class="text-center mt-10 pb-4">
+        <button onclick="app.pcStaffGate()" class="text-[10px] text-slate-300 font-bold" style="letter-spacing:.25em;color:#cbd5e1" onmouseover="this.style.color=''#64748b''" onmouseout="this.style.color=''#cbd5e1''">工作人員入口</button>
+      </div>`;
+  },
+
+  pcLandPick(id){ this.pcLandAudience=id; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
+  pcLandBack(){ this.pcLandAudience=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
+
+  /* ═══════════ 工作人員閘口（頁尾隱藏入口）：4位密碼／籌委帳密 ═══════════ */
+  pcStaffGate(){
+    this.pcPinBuf='';
+    const m=document.getElementById('modal-staff-gate');
+    if(m){ this.pcPinRender(); m.classList.remove('hidden'); }
+  },
+  pcPinPress(k){
+    if(k==='clr'){ this.pcPinBuf=''; }
+    else if(k==='del'){ this.pcPinBuf=this.pcPinBuf.slice(0,-1); }
+    else if(this.pcPinBuf.length<4 && /^[0-9]$/.test(k)){ this.pcPinBuf+=k; }
+    this.pcPinRender();
+    if(this.pcPinBuf.length===4) setTimeout(()=>this.pcPinCheck(),120);
+  },
+  pcPinRender(){
+    const dots=document.getElementById('pc-pin-dots'); if(!dots) return;
+    let html='';
+    for(let i=0;i<4;i++){ html+=`<span class="rounded-full" style="width:14px;height:14px;${i<this.pcPinBuf.length?'background:#1e293b':'background:#e2e8f0'}"></span>`; }
+    dots.innerHTML=html;
+  },
+  pcPinCheck(){
+    const d=this.pcDemoData(); const sg=(d&&d.staff_gate)||{};
+    if(sg.pin && this.pcPinBuf===String(sg.pin)){ this.pcStaffLogin(sg); }
+    else{ showToast('密碼不正確，請重試','error'); this.pcPinBuf=''; this.pcPinRender(); }
+  },
+  pcStaffLogin(sg){
+    const m=document.getElementById('modal-staff-gate'); if(m) m.classList.add('hidden');
+    const target=(sg&&sg.login_as)||'';
+    if(typeof this.demoLogin==='function' && target){ this.demoLogin(target); } // 示範版：對應本地示範帳戶（工作人員）
+    else if(target){ this.currentUser={user_id:target,name:target,role:'staff',group_name:'未分組',mock_admin:true}; if(this.currentEvent) this.showDashboard(); }
+  },
+  pcCommitteeLogin(){
+    const m=document.getElementById('modal-staff-gate'); if(m) m.classList.add('hidden');
+    if(typeof this.openLoginModal==='function') this.openLoginModal(); // 籌委＝帳號密碼（同一入口分流）
   },
 });
