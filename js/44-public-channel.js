@@ -1,18 +1,40 @@
 /* 44-public-channel.js — 公眾頻道 2027 形態示範（階段 1・2026-10-04）
    ═══════════════════════════════════════════════════════════════════════════
-   呢個模組＝「成品預覽」：用 2026 真實資料示範 2027 公眾頻道最終形態。
-   ・ 卡片只喺 eventData.public_channel_2027 存在時顯示（DASH_CARD_DEFS requiresData），
-     目前只有 mock_demo 有 → 2026（凍結）／2027（範本）完全不受影響。
+   公眾（非工作人員・免登入）嘅入口體驗：一入嚟先揀「你係邊類人」，唔同類型見到唔同版面。
+   ・ 六類入口：家長訪客／旅團領袖／優異旅團／獎項得主／嘉賓／制服團體・NGO
+     ——各有專屬內容組合（基本盤・報名・須知・程序・攤位・交通・求助・捐贈），
+     生產版每類受眾一條專屬連結／QR（?pub=troop 等），開門即見自己版本。
+   ・ 卡片只喺 eventData.public_channel_2027 存在時顯示（requiresData，只有 mock_demo 有）
+     → 2026（凍結）／2027（範本）完全不受影響。
    ・ 數據由 tools/build_pc2027_demo.js 產生（攤位／旅團／優異旅團直接抽自 isd_2026.json）。
-   ・ 八個分頁：基本盤・交通・程序・攤位・報名・須知（分眾）・求助・手冊。
-   ・ 階段 2–4：八大報名表接入後，呢套分頁改由報名紀錄自動生成，升格為 2027 正式公開頁。
+   ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版 8 個分頁（含手冊）全部開放。
    回歸測試：tests/pc2027_public_channel_test.js */
 Object.assign(ScoutEventApp.prototype,{
+  pcDemoMode:'pick',        // pick=身份入口選擇 | audience=某受眾專屬版面 | tabs=委員一頁睇晒
+  pcDemoAudience:'',        // 當前受眾 id（visitor/troop/merit/awardee/guest/ug）
   pcDemoTab:'home', pcDemoZone:'all', pcDemoGuideKey:'',
+  _pcPubChecked:false,
 
   pcDemoData(){ return (this.eventData && this.eventData.public_channel_2027) || null; },
+  pcDemoAudienceDef(id){ const d=this.pcDemoData(); return (d && (d.audiences||[]).find(a=>a.id===id)) || null; },
 
-  openPublicChannelTab(t){ this.pcDemoTab=t; this.renderPublicChannelDemo(); },
+  /* ?pub=xxx 深連結：生產版每類受眾專屬入口（示範版模擬同一機制） */
+  pcDemoUrlAudience(){
+    if(this._pcPubChecked) return null;
+    this._pcPubChecked=true;
+    try{
+      if(typeof location!=='undefined' && location.search){
+        const p=new URLSearchParams(location.search).get('pub');
+        if(p && this.pcDemoAudienceDef(p)){ this.pcDemoMode='audience'; this.pcDemoAudience=p; return p; }
+      }
+    }catch(e){}
+    return null;
+  },
+
+  openPublicChannelTab(t){ this.pcDemoMode='tabs'; this.pcDemoTab=t; this.renderPublicChannelDemo(); },
+  pcDemoOpenTabs(){ this.pcDemoMode='tabs'; this.pcDemoTab='home'; this.renderPublicChannelDemo(); },
+  pcDemoPickAudience(id){ this.pcDemoMode='audience'; this.pcDemoAudience=id; this.renderPublicChannelDemo(); },
+  pcDemoBackToPick(){ this.pcDemoMode='pick'; this.pcDemoAudience=''; this.renderPublicChannelDemo(); },
   pcDemoSetZone(z){ this.pcDemoZone=z; this.renderPublicChannelDemo(); },
   pcDemoSetGuide(g){ this.pcDemoGuideKey=g; this.renderPublicChannelDemo(); },
 
@@ -21,32 +43,189 @@ Object.assign(ScoutEventApp.prototype,{
     const d=this.pcDemoData();
     if(!d){ container.innerHTML='<p class="text-sm text-slate-400">此活動未有公眾頻道示範資料</p>'; return; }
     if(!this.pcDemoGuideKey){ const g=Object.keys(d.guides||{})[0]; if(g) this.pcDemoGuideKey=g; }
-    if(!this.pcDemoZone) this.pcDemoZone='all';
-    const tabs=[['home','基本盤','fa-solid fa-circle-info'],['transport','交通','fa-solid fa-bus'],['program','程序','fa-regular fa-calendar-check'],['booths','攤位','fa-solid fa-store'],['apply','報名','fa-solid fa-file-pen'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
+    if(this.pcDemoMode==='pick') this.pcDemoUrlAudience();
+    const aud=this.pcDemoAudienceDef(this.pcDemoAudience);
+    let body;
+    if(this.pcDemoMode==='tabs'){ body=this.pcDemoTabsBody(d); }
+    else if(this.pcDemoMode==='audience' && aud){ body=this.pcDemoAudienceBody(d,aud); }
+    else { body=this.pcDemoPickerBody(d); }
     container.innerHTML=`
       <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
-        <b>🧪 階段 1 成品示範</b> — 以 2026 真實資料示範 2027 公眾頻道最終形態；確認後呢套分頁將升格為 2027 正式公開頁，資料由八大報名表自動生成（詳見 docs/2027_FIELD_CONTRACT.md）。
+        <b>🧪 階段 1 成品示範</b> — 公眾（非工作人員）嘅分眾入口：唔同類型訪客見到唔同版面；生產版每類入口有專屬連結／QR（?pub=xxx）。數據＝2026 真實資料（docs/2027_FIELD_CONTRACT.md）。
+      </div>
+      ${body}`;
+  },
+
+  /* ═══════════ 入口選擇頁 ═══════════ */
+  pcDemoPickerBody(d){
+    const auds=d.audiences||[];
+    const labels=d.section_labels||{};
+    return `
+      <div class="text-center py-3">
+        <div class="text-[13px] font-bold text-slate-500">歡迎嚟到</div>
+        <div class="text-xl font-black text-indigo-800">2027 港島童軍繽紛日</div>
+        <div class="text-[13px] font-bold text-indigo-700 mt-2">你係邊類人？揀你嘅入口 👇</div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        ${auds.map(a=>`
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col" style="border-top:4px solid #6d28d9">
+          <div class="text-2xl mb-1">${a.icon}</div>
+          <b class="text-[13.5px] leading-tight">${escapeHtml(a.name)}</b>
+          <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">${escapeHtml(a.desc)}</div>
+          <div class="flex flex-wrap gap-1 mt-2">
+            ${(a.sections||[]).map(s=>`<span class="text-[9.5px] bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-1.5 py-0.5">${escapeHtml(labels[s]||s)}</span>`).join('')}
+          </div>
+          <button onclick="app.pcDemoPickAudience('${escapeHtml(a.id)}')" class="mt-3 bg-sky-600 text-white text-[12px] font-bold rounded-lg py-2">進入 →</button>
+          <div class="text-[9.5px] text-slate-400 mt-1.5 text-center">🔗 專屬入口：?pub=${escapeHtml(a.id)}</div>
+        </div>`).join('')}
+      </div>
+      <div class="text-center mt-4">
+        <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容（8 個分頁）</button>
+      </div>`;
+  },
+
+  /* ═══════════ 受眾專屬版面 ═══════════ */
+  pcDemoAudienceBody(d,aud){
+    const labels=d.section_labels||{};
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-1">
+        <div class="flex items-center gap-3">
+          <div class="text-3xl">${aud.icon}</div>
+          <div class="min-w-0">
+            <div class="text-[10.5px] font-bold text-slate-400">你的入口・${escapeHtml(aud.name)}</div>
+            <div class="text-[15px] font-black text-indigo-800 leading-tight">2027 港島童軍繽紛日</div>
+            <div class="text-[11.5px] text-slate-500">${escapeHtml(aud.desc)}</div>
+          </div>
+          <button onclick="app.pcDemoBackToPick()" class="ml-auto shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-lg px-3 py-2">切換身份</button>
+        </div>
+      </div>
+      ${(aud.sections||[]).map((s,i)=>`
+        <div class="flex items-center gap-2 font-black text-[14.5px] text-slate-800 mt-4 mb-2">
+          <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 text-[12px] flex items-center justify-center shrink-0">${i+1}</span>${escapeHtml(labels[s]||s)}
+        </div>
+        ${this.pcDemoSectionFor(d,aud,s)}`).join('')}
+      <div class="text-center text-[10.5px] text-slate-400 mt-5">生產版：呢個版面有專屬連結／QR（?pub=${escapeHtml(aud.id)}），唔使揀身份直接入</div>`;
+  },
+
+  pcDemoSectionFor(d,aud,s){
+    switch(s){
+      case 'banner': return aud.banner==='guest'?this.pcDemoGuestBannerHTML(d):this.pcDemoHomeHTML(d);
+      case 'apply': return this.pcDemoApplyForHTML(d,aud.featured||[]);
+      case 'guide': return this.pcDemoGuideForHTML(d,aud.guide||[]);
+      case 'program': return this.pcDemoProgramHTML(d);
+      case 'booths': return this.pcDemoBoothsHTML(d);
+      case 'transport': return this.pcDemoTransportHTML(d);
+      case 'help': return this.pcDemoHelpHTML(d);
+      case 'donate': return this.pcDemoDonateHTML(d);
+      default: return '';
+    }
+  },
+
+  /* ── 嘉賓版基本盤（唔講名額／費用，講接待安排） ── */
+  pcDemoGuestBannerHTML(d){
+    const g=(d.banner_guest||{});
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="hero-gradient text-white p-4">
+          <div class="text-[15px] font-black">${escapeHtml(g.title||'嘉賓專屬安排')}</div>
+          <div class="text-[11px] mt-0.5" style="color:#ddd6fe">香港黃竹坑海洋公園道18號 香港警察學院・2027年10月3日（星期日）</div>
+        </div>
+        <div class="p-2">
+          ${(g.rows||[]).map(r=>`<div class="flex gap-2.5 px-2 py-2.5 border-t border-slate-100 text-[13px]" style="border-top:none"><div class="w-16 shrink-0 font-bold text-slate-500 text-[12px]">${escapeHtml(r[0])}</div><div>${escapeHtml(r[1])}</div></div>`).join('')}
+        </div>
+      </div>`;
+  },
+
+  /* ── 報名：該受眾嘅表特大，其他收埋 ── */
+  pcDemoApplyForHTML(d,featured){
+    const forms=d.apply_forms||[];
+    const big=forms.filter(f=>featured.includes(f.name));
+    const rest=forms.filter(f=>!featured.includes(f.name));
+    return `
+      ${big.map(f=>`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-2" style="border-left:4px solid #6d28d9">
+        <div class="flex items-center gap-3">
+          <div class="text-2xl">${f.icon}</div>
+          <div class="min-w-0">
+            <b class="text-[14px]">${escapeHtml(f.name)}</b>
+            <div class="text-[11.5px] text-slate-500">${escapeHtml(f.target)}｜${escapeHtml(f.desc)}</div>
+          </div>
+        </div>
+        <button onclick="showToast('示範版：報名表將於階段 2 接入 — 提交即入系統、自動出名單','warning')" class="mt-3 w-full bg-sky-600 text-white text-[13px] font-bold rounded-xl py-2.5">立即報名 →</button>
+        <div class="text-[10.5px] text-slate-400 mt-1.5 text-center">免登入・提交即有申請編號可查進度</div>
+      </div>`).join('')}
+      ${rest.length?`
+      <details class="bg-white border border-slate-200 rounded-2xl p-3">
+        <summary class="font-bold text-[12px] text-slate-500 cursor-pointer">其他參與方式（${rest.length} 個）</summary>
+        <div class="grid grid-cols-2 gap-2 mt-2">
+          ${rest.map(f=>`
+          <div class="border border-slate-200 rounded-xl p-2.5">
+            <div class="text-lg">${f.icon}</div>
+            <b class="text-[11.5px] leading-tight">${escapeHtml(f.name)}</b>
+            <div class="text-[10.5px] text-slate-500">${escapeHtml(f.target)}</div>
+          </div>`).join('')}
+        </div>
+      </details>`:''}`;
+  },
+
+  /* ── 須知：該受眾身份嘅版本（唔使再揀 tab） ── */
+  pcDemoGuideForHTML(d,keys){
+    const guides=d.guides||{};
+    return keys.filter(k=>guides[k]).map(k=>`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 ${keys.length>1?'mb-2':''}">
+        <div class="font-black text-[14px] text-indigo-800 mb-2">👤 ${escapeHtml(k)}・須知</div>
+        ${(guides[k]||[]).map(r=>`<div class="flex gap-2.5 py-2 border-t border-slate-100 text-[13px]"><div class="w-24 shrink-0 font-bold text-slate-500 text-[12px]">${escapeHtml(r[0])}</div><div>${escapeHtml(r[1])}</div></div>`).join('')}
+      </div>`).join('')+
+      `<details class="bg-slate-50 border border-slate-200 rounded-xl p-3 mt-2">
+        <summary class="font-bold text-[12.5px] text-slate-600 cursor-pointer">📖 共用須知（日期・天氣・熱線・同意書）</summary>
+        <ul class="mt-2 space-y-1.5 text-[12.5px] text-slate-700 list-disc pl-5">
+          ${(d.guide_common||[]).map(c=>`<li><b>${escapeHtml(c[0])}</b>：${escapeHtml(c[1])}</li>`).join('')}
+        </ul>
+      </details>`;
+  },
+
+  /* ── 捐贈（訪客版） ── */
+  pcDemoDonateHTML(d){
+    const f=(d.apply_forms||[]).find(x=>x.name==='童心捐贈');
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+        <div class="text-2xl mb-1">${f?f.icon:'❤️'}</div>
+        <b class="text-[13.5px] text-rose-700">童心捐贈大行動</b>
+        <p class="text-[12px] text-slate-500 mt-1">物品／食品捐贈・現場掃 QR Code 登記</p>
+        <button onclick="showToast('示範版：捐贈表將於階段 2 接入','warning')" class="mt-2.5 bg-rose-600 text-white text-[12px] font-bold rounded-lg px-4 py-2">我要捐贈 ❤</button>
+      </div>`;
+  },
+
+  /* ═══════════ 委員一頁睇晒（8 分頁，含手冊） ═══════════ */
+  pcDemoTabsBody(d){
+    const tabs=[['home','基本盤','fa-solid fa-circle-info'],['transport','交通','fa-solid fa-bus'],['program','程序','fa-regular fa-calendar-check'],['booths','攤位','fa-solid fa-store'],['apply','報名','fa-solid fa-file-pen'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
+    return `
+      <div class="flex justify-between items-center mb-2">
+        <div class="text-[11.5px] font-bold text-slate-500">📊 委員預覽・一頁睇晒（公眾實際會按身份見到唔同組合，見「切換身份」）</div>
+        <button onclick="app.pcDemoBackToPick()" class="shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-lg px-3 py-1.5">返入口選擇</button>
       </div>
       <div class="flex border-b border-slate-200 overflow-x-auto mb-4">
         ${tabs.map(([k,l,i])=>`<button class="nav-tab ${this.pcDemoTab===k?'active':''}" onclick="app.openPublicChannelTab('${k}')"><i class="${i} mr-1"></i>${l}</button>`).join('')}
       </div>
-      <div id="pc-demo-body">${this.pcDemoSectionHTML(d)}</div>`;
+      <div>${this.pcDemoTabSectionHTML(d)}</div>`;
   },
 
-  pcDemoSectionHTML(d){
+  pcDemoTabSectionHTML(d){
     switch(this.pcDemoTab){
       case 'transport': return this.pcDemoTransportHTML(d);
       case 'program': return this.pcDemoProgramHTML(d);
       case 'booths': return this.pcDemoBoothsHTML(d);
       case 'apply': return this.pcDemoApplyHTML(d);
-      case 'guide': return this.pcDemoGuideHTML(d);
+      case 'guide': return this.pcDemoGuideTabsHTML(d);
       case 'help': return this.pcDemoHelpHTML(d);
       case 'manual': return this.pcDemoManualHTML(d);
       default: return this.pcDemoHomeHTML(d);
     }
   },
 
-  /* ── 1. 基本盤 ── */
+  /* ═══════════ 共用分頁渲染 ═══════════ */
+
+  /* 基本盤 */
   pcDemoHomeHTML(d){
     const b=d.banner||{};
     return `
@@ -79,7 +258,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   },
 
-  /* ── 2. 交通與入場 ── */
+  /* 交通與入場 */
   pcDemoTransportHTML(d){
     const t=d.transport||{};
     return `
@@ -102,7 +281,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   },
 
-  /* ── 3. 當日程序 ── */
+  /* 當日程序 */
   pcDemoProgramHTML(d){
     const p=d.program||{};
     const nowTime=p.now_time||'';
@@ -124,7 +303,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   },
 
-  /* ── 4. 攤位與地圖 ── */
+  /* 攤位與地圖 */
   pcDemoBoothsHTML(d){
     const bd=d.booths||{};
     const list=bd.list||[];
@@ -158,7 +337,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   },
 
-  /* ── 5. 八大報名 ── */
+  /* 八大報名（一頁睇晒版） */
   pcDemoApplyHTML(d){
     return `
       <div class="text-[12px] text-slate-500 mb-2 px-1">${escapeHtml(d.apply_note||'')}</div>
@@ -168,13 +347,13 @@ Object.assign(ScoutEventApp.prototype,{
           <div class="text-xl mb-1">${f.icon}</div>
           <b class="text-[12.5px] leading-tight">${escapeHtml(f.name)}</b>
           <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(f.target)}<br>${escapeHtml(f.desc)}</div>
-          <button onclick="showToast('示範版：八大報名表將於階段 2 接入 — 提交即入系統、自動出名單','warning')" class="mt-2.5 bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
+          <button onclick="showToast('示範版：報名表將於階段 2 接入 — 提交即入系統、自動出名單','warning')" class="mt-2.5 bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
         </div>`).join('')}
       </div>`;
   },
 
-  /* ── 6. 須知分眾 ── */
-  pcDemoGuideHTML(d){
+  /* 須知分眾 tabs（一頁睇晒版） */
+  pcDemoGuideTabsHTML(d){
     const keys=Object.keys(d.guides||{});
     const shortLabels={'嘉賓':'嘉賓','普通旅團':'旅團','優異旅團':'優異旅團','步操隊伍':'步操','其他制服團體':'制服團體','支部最高獎勵得主':'支部獎勵','成人獎勵得主':'成人獎勵'};
     const rows=(d.guides||{})[this.pcDemoGuideKey]||[];
@@ -194,7 +373,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   },
 
-  /* ── 7. 活動日求助 ── */
+  /* 活動日求助 */
   pcDemoHelpHTML(d){
     const h=d.help||{};
     const cards=[['🔍','失物認領',h.lost_found],['☎️','查詢窗口',h.hotline],['⛑️','急救站',h.first_aid]];
@@ -209,7 +388,7 @@ Object.assign(ScoutEventApp.prototype,{
       </div>`;
   },
 
-  /* ── 8. 執行手冊（公眾版預覽） ── */
+  /* 執行手冊（一頁睇晒版） */
   pcDemoManualHTML(d){
     const m=d.manual||{};
     const pt=m.participants||{};

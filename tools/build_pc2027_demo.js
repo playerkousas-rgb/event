@@ -94,6 +94,40 @@ const pc = {
     { icon: '❤️', name: '童心捐贈', target: '任何人', desc: '物品／食品・QR' }
   ],
   apply_note: '全部免登入、填完即有申請編號可查進度。費用（$10／人・餐盒 $60／份）於確認後一併通知繳付。',
+  /* ── 分眾入口：公眾（非工作人員）揀身份入嚟，各有各嘅版面組合（階段 1 形態） ──
+     生產版：每類受眾一條專屬連結／QR（index.html?pub=troop 等），開門即見自己嘅版本 */
+  section_labels: {
+    banner: '活動基本盤', apply: '參與／報名', guide: '你的須知', program: '當日程序',
+    booths: '攤位與地圖', transport: '交通與入場', help: '活動日求助', donate: '童心捐贈'
+  },
+  banner_guest: {
+    title: '嘉賓專屬安排',
+    rows: [
+      ['到達', '10:45 莫榮大樓地下接待處（專人接待）'],
+      ['座位', '大操場嘉賓席（10:55 就座）'],
+      ['茶聚', '13:00 莫榮大樓地下自助餐'],
+      ['大會車', '去程 10:15 灣仔愛群道伊利沙伯體育館門口開出；回程 15:00 學院門口'],
+      ['查詢', '大會熱線 2835 7712（助理執行幹事何家耀先生）']
+    ]
+  },
+  audiences: [
+    { id: 'visitor', icon: '👨‍👩‍👧', name: '家長・親友・訪客', desc: '參觀繽紛日：攤位・典禮・主題活動',
+      sections: ['banner', 'program', 'booths', 'transport', 'help', 'donate'] },
+    { id: 'troop', icon: '🏃', name: '旅團領袖', desc: '帶隊參加：報名・餐盒・旅遊巴',
+      sections: ['apply', 'guide', 'program', 'transport', 'help'],
+      guide: ['普通旅團'], featured: ['旅團報名'] },
+    { id: 'merit', icon: '🏆', name: '優異旅團領袖', desc: '出席頒獎禮：排位・彩帶・派隊',
+      sections: ['apply', 'guide', 'program', 'help'],
+      guide: ['優異旅團'], featured: ['優異旅團報名'] },
+    { id: 'awardee', icon: '🎖️', name: '獎項得主', desc: '支部最高獎勵・成人獎勵：上台領獎',
+      sections: ['apply', 'guide', 'program', 'help'],
+      guide: ['支部最高獎勵得主', '成人獎勵得主'], featured: ['支部最高獎勵得主報名', '成人獎勵得主報名'] },
+    { id: 'guest', icon: '🎩', name: '嘉賓', desc: '獲邀出席典禮及茶聚',
+      sections: ['banner', 'guide', 'program', 'help'], guide: ['嘉賓'], banner: 'guest' },
+    { id: 'ug', icon: '🧢', name: '制服團體・NGO', desc: '隊伍參加或設攤位',
+      sections: ['apply', 'guide', 'program', 'help'],
+      guide: ['其他制服團體'], featured: ['其他制服團體報名', 'NGO 報名'] }
+  ],
   guides: {
     '嘉賓': [
       ['到達', '10:45'],

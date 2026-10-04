@@ -2,13 +2,15 @@
 'use strict';
 /**
  * 階段 1（2026-10-04）：「公眾頻道 2027 形態示範」卡片回歸測試
- *  ① data/mock_demo.json 有 public_channel_2027，八個分頁所需數據齊全
- *     （booths 33・participants 31・merit 188・guides 7 類・manual tabs 15）
+ *  ① data/mock_demo.json 有 public_channel_2027：六類受眾入口＋八個分頁數據齊全
  *  ② DASH_CARD_DEFS 有 public_channel_demo 卡：公開（minLevel 0）＋ requiresData
- *  ③ renderPublicChannelDemo 喺 stub DOM 下 8 個分頁全部 render 到，含關鍵內容
- *  ④ requiresData 過濾：活動 JSON 冇 public_channel_2027（如 isd_2026／isd_2027）→ 卡片不顯示
+ *  ③ 委員「一頁睇晒」（tabs 模式）：8 個分頁全部 render 到，含關鍵內容
+ *  ④ requiresData 過濾＋app-core 接線：冇 public_channel_2027 嘅活動（isd_2026／isd_2027）→ 卡片不顯示
+ *  ⑤ 身份入口選擇頁：6 個入口＋專屬連結（?pub=xxx）提示
+ *  ⑥ 分眾版面：每類受眾見到唔同內容（旅團=報名+PT/46、嘉賓=接待安排冇名額費用、訪客=攤位+捐贈、優異旅團=彩帶、得主=貝登堡、UG=專櫃）
+ *  ⑦ ?pub= 深連結：帶參數開啟即入該受眾版面（生產版專屬 QR 機制）
  */
-const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
+const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.resolve(__dirname, '..');
 const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 let n = 0;
@@ -18,6 +20,11 @@ function ok(cond, msg) { if (!cond) throw new Error('FAIL: ' + msg); n++; }
 const mock = JSON.parse(read('data/mock_demo.json'));
 const pc = mock.public_channel_2027;
 ok(pc, '① mock_demo.json 有 public_channel_2027');
+ok(pc.audiences && pc.audiences.length === 6, '① 六類受眾入口');
+ok(['visitor', 'troop', 'merit', 'awardee', 'guest', 'ug'].every(id => pc.audiences.some(a => a.id === id)), '① 受眾 id 齊：visitor/troop/merit/awardee/guest/ug');
+ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
+ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
+ok(pc.section_labels && Object.keys(pc.section_labels).length === 8, '① 分節標籤 8 個');
 ok(pc.banner && pc.banner.event_name === '2027 港島童軍繽紛日', '① banner：2027 港島童軍繽紛日');
 ok(pc.transport && pc.transport.items.length === 5, '① 交通與入場 5 項');
 ok(pc.program && pc.program.items.length >= 6, '① 當日程序 6 項');
@@ -29,7 +36,7 @@ ok(pc.manual.participants.rows.length === 31, '① 參加旅團 31 旅');
 const meritTotal = Object.values(pc.manual.merit.byArea).reduce((a, b) => a + b.length, 0);
 ok(meritTotal === 188, '① 優異旅團 188 團次');
 
-/* ── 卡片定義 + 渲染方法（由 config／新模組抽源碼，stub DOM 跑） ── */
+/* ── 環境：config 定義＋新模組方法＋stub DOM ── */
 const cfgSrc = read('js/00-config.js');
 const orderSrc = cfgSrc.match(/const PUBLIC_CARD_ORDER=\[[^\]]+\];/)[0];
 const defsSrc = cfgSrc.match(/const DASH_CARD_DEFS=\[[\s\S]*?\n\];/)[0];
@@ -37,7 +44,6 @@ const escSrc = cfgSrc.match(/function escapeHtml\(s\)\{.*?\}\n/s)[0].split('\n')
 const pcSrc = read('js/44-public-channel.js');
 const inner = pcSrc.slice(pcSrc.indexOf('Object.assign(ScoutEventApp.prototype,{') + 'Object.assign(ScoutEventApp.prototype,{'.length, pcSrc.lastIndexOf('});'));
 const stripCommaLines = s => s.replace(/^[ \t]*,[ \t]*$/gm, '');
-
 const containers = {};
 const mkEl = () => ({ innerHTML: '', textContent: '', classList: { add() {}, remove() {}, toggle() {} } });
 const ctx = {
@@ -53,24 +59,74 @@ class ScoutEventApp{}
 Object.assign(ScoutEventApp.prototype,{ ${stripCommaLines(inner)} });
 ScoutEventApp;
 `, ctx);
+const app = new ScoutEventApp();
+app.eventData = { public_channel_2027: pc };
+const render = () => { containers['module-content'] = mkEl(); app.renderPublicChannelDemo(); return containers['module-content'].innerHTML; };
 
 /* ── ② 卡片定義 ── */
-const def = (0, eval) ? null : null; // (no-op 保持 lint 安靜)
 const defs = vm.runInNewContext('DASH_CARD_DEFS', ctx);
 const card = defs.find(d => d.id === 'public_channel_demo');
 ok(card, '② DASH_CARD_DEFS 有 public_channel_demo');
 ok(card.minLevel === 0, '② 卡片公開（minLevel 0）');
 ok(card.requiresData === 'public_channel_2027', '② requiresData＝public_channel_2027');
-ok(String(card.action).includes("app.openModule('public_channel_demo')"), '② action 指向模組');
 const order = vm.runInNewContext('PUBLIC_CARD_ORDER', ctx);
 ok(order[0] === 'public_channel_demo', '② 排公開資料第一位（mock_demo 內）');
 
-/* ── ③ 八個分頁 render ── */
-const app = new ScoutEventApp();
-app.eventData = { public_channel_2027: pc };
-const TABS = ['home', 'transport', 'program', 'booths', 'apply', 'guide', 'help', 'manual'];
-for (const t of TABS) { app.openPublicChannelTab(t); ok(containers['module-content'].innerHTML.length > 400, `③ 分頁 ${t} render 有內容`); }
-app.pcDemoTab = 'home'; app.renderPublicChannelDemo();
+/* ── ⑤ 身份入口選擇頁（預設第一屏） ── */
+let html = render();
+ok(html.includes('你係邊類人'), '⑤ 入口頁有「你係邊類人」');
+ok(html.includes('旅團領袖') && html.includes('嘉賓') && html.includes('家長'), '⑤ 入口卡：旅團領袖・嘉賓・家長');
+ok((html.match(/\?pub=/g) || []).length >= 6, '⑤ 每個入口有專屬連結提示（?pub=）');
+ok(html.includes('一頁睇晒'), '⑤ 底部有委員預覽入口');
+
+/* ── ⑥ 分眾版面：各有各嘅嘢 ── */
+app.pcDemoPickAudience('visitor'); html = render();
+ok(html.includes('攤位與地圖') && html.includes('A01'), '⑥ 訪客：見攤位');
+ok(html.includes('童心捐贈'), '⑥ 訪客：見捐贈');
+ok(!html.includes('立即報名'), '⑥ 訪客：冇報名表（佢唔使報名）');
+
+app.pcDemoPickAudience('troop'); html = render();
+ok(html.includes('旅團報名') && html.includes('立即報名'), '⑥ 旅團領袖：報名表做主角');
+ok(html.includes('PT/46'), '⑥ 旅團領袖：家長同意書須知');
+ok(html.includes('東閘'), '⑥ 旅團領袖：交通須知');
+ok(!html.includes('名額（先到先得）'), '⑥ 旅團領袖：唔重複基本盤（報名詳情喺表內）');
+
+app.pcDemoPickAudience('merit'); html = render();
+ok(html.includes('優異旅團報名'), '⑥ 優異旅團：專屬報名');
+ok(html.includes('彩帶'), '⑥ 優異旅團：彩帶／證書須知');
+ok(!html.includes('攤位與地圖'), '⑥ 優異旅團：唔顯示攤位節（佢嘅重點唔喺度）');
+
+app.pcDemoPickAudience('awardee'); html = render();
+ok(html.includes('貝登堡獎章') && html.includes('總領袖獎章'), '⑥ 獎項得主：兩份須知（支部＋成人）');
+ok(html.includes('支部最高獎勵得主報名') && html.includes('成人獎勵得主報名'), '⑥ 獎項得主：兩張報名表');
+
+app.pcDemoPickAudience('guest'); html = render();
+ok(html.includes('嘉賓專屬安排') && html.includes('莫榮大樓'), '⑥ 嘉賓：接待安排做基本盤');
+ok(!html.includes('名額（先到先得）') && !html.includes('立即報名'), '⑥ 嘉賓：冇名額／費用／報名（獲邀人士）');
+ok(html.includes('大會車'), '⑥ 嘉賓：大會車安排');
+
+app.pcDemoPickAudience('ug'); html = render();
+ok(html.includes('其他制服團體報名') && html.includes('NGO 報名'), '⑥ UG／NGO：兩個入口');
+ok(html.includes('UG 專櫃'), '⑥ UG：專櫃報到須知');
+ok(html.includes('切換身份'), '⑥ 各版面有「切換身份」');
+
+/* ── ⑦ ?pub= 深連結（生產版專屬 QR 機制） ── */
+ctx.location = { search: '?pub=merit' };
+ctx.URLSearchParams = URLSearchParams;
+const app2 = new ScoutEventApp();
+app2.eventData = { public_channel_2027: pc };
+containers['module-content'] = mkEl();
+app2.renderPublicChannelDemo();
+ok(app2.pcDemoMode === 'audience' && app2.pcDemoAudience === 'merit', '⑦ ?pub=merit 開啟即入優異旅團版面');
+ok(containers['module-content'].innerHTML.includes('彩帶'), '⑦ 深連結內容正確');
+
+/* ── ③ 委員一頁睇晒（tabs 模式） ── */
+app.pcDemoOpenTabs();
+for (const t of ['home', 'transport', 'program', 'booths', 'apply', 'guide', 'help', 'manual']) {
+  app.openPublicChannelTab(t);
+  ok(containers['module-content'].innerHTML.length > 400, `③ 分頁 ${t} render 有內容`);
+}
+app.openPublicChannelTab('home');
 ok(containers['module-content'].innerHTML.includes('2027 港島童軍繽紛日'), '③ 基本盤有活動名');
 ok(containers['module-content'].innerHTML.includes('惡劣天氣安排'), '③ 基本盤有惡劣天氣安排');
 app.openPublicChannelTab('booths');
@@ -78,17 +134,13 @@ ok(containers['module-content'].innerHTML.includes('A01'), '③ 攤位列表有 
 app.pcDemoZone = 'F'; app.renderPublicChannelDemo();
 ok(containers['module-content'].innerHTML.includes('F06') && !containers['module-content'].innerHTML.includes('>A01<'), '③ 攤位 F 區篩選生效');
 app.pcDemoZone = 'all';
-app.openPublicChannelTab('guide');
-ok(containers['module-content'].innerHTML.includes('莫榮大樓'), '③ 嘉賓須知有莫榮大樓');
-app.pcDemoGuideKey = '支部最高獎勵得主'; app.renderPublicChannelDemo();
-ok(containers['module-content'].innerHTML.includes('貝登堡獎章'), '③ 支部獎勵須知有頒獎次序');
 app.openPublicChannelTab('manual');
 ok(containers['module-content'].innerHTML.includes('合共 31 團'), '③ 參加旅團名單合計');
 ok(containers['module-content'].innerHTML.includes('188 團次'), '③ 優異旅團名單總數');
 ok(containers['module-content'].innerHTML.includes('1,016'), '③ 總人數 1,016');
 ok(!containers['module-content'].innerHTML.includes('9722 9989'), '③ 公眾版冇領隊電話');
 
-/* ── ④ requiresData 過濾（照 renderRoleCards 同一套條件） ── */
+/* ── ④ requiresData 過濾＋接線 ── */
 const visible = ev => defs.filter(d => d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || (ev && ev[d.requiresData])));
 ok(visible({ public_channel_2027: pc }).some(d => d.id === 'public_channel_demo'), '④ mock_demo（有數據）→ 卡片顯示');
 ok(!visible({}).some(d => d.id === 'public_channel_demo'), '④ isd_2026／isd_2027（冇 public_channel_2027）→ 卡片不顯示');
@@ -98,4 +150,4 @@ ok(coreSrc.includes("(!d.requiresData||(this.eventData&&this.eventData[d.require
 ok(coreSrc.includes("if(mod==='public_channel_demo'){this.renderPublicChannelDemo(); return;}"), '④ renderModuleContent 已接入示範模組');
 ok(coreSrc.includes("public_channel_demo:'公眾頻道 2027（示範）'"), '④ openModule 標題已接入');
 
-console.log(`公眾頻道 2027 形態示範測試通過（${n} 項）｜booths 33・participants 31・merit ${meritTotal}・guides 7・manual tabs 15`);
+console.log(`公眾頻道 2027 分眾入口測試通過（${n} 項）｜audiences 6・booths 33・participants 31・merit ${meritTotal}`);
