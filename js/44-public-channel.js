@@ -1,8 +1,8 @@
 /* 44-public-channel.js — 公眾頻道 2027 形態示範（階段 1・2026-10-04）
    ═══════════════════════════════════════════════════════════════════════════
    公眾（非工作人員・免登入）嘅入口體驗：一入嚟先揀「你係邊類人」，唔同類型見到唔同版面。
-   ・ 六類入口：家長訪客／旅團領袖／優異旅團／獎項得主／嘉賓／制服團體・NGO
-     ——各有專屬內容組合（基本盤・報名・須知・程序・攤位・交通・求助・捐贈），
+   ・ 七類入口（須知分眾七類）：嘉賓／旅團／優異旅團獲獎／步操隊伍／其他制服團體／支部最高獎勵／成人獎勵
+     ——每類各有自己嘅時間表（schedules）＋報到地點／路線／地圖重點（arrivals），手機直排優先、電話可撳打。
      生產版每類受眾一條專屬連結／QR（?pub=troop 等），開門即見自己版本。
    ・ 卡片只喺 eventData.public_channel_2027 存在時顯示（requiresData，只有 mock_demo 有）
      → 2026（凍結）／2027（範本）完全不受影響。
@@ -68,7 +68,7 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="text-xl font-black text-indigo-800">2027 港島童軍繽紛日</div>
         <div class="text-[13px] font-bold text-indigo-700 mt-2">你係邊類人？揀你嘅入口 👇</div>
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
         ${auds.map(a=>`
         <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col" style="border-top:4px solid #6d28d9">
           <div class="text-2xl mb-1">${a.icon}</div>
@@ -112,6 +112,8 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
   pcDemoSectionFor(d,aud,s){
     switch(s){
       case 'banner': return aud.banner==='guest'?this.pcDemoGuestBannerHTML(d):this.pcDemoHomeHTML(d);
+      case 'schedule': return this.pcDemoScheduleForHTML(d,aud);
+      case 'arrival': return this.pcDemoArrivalHTML(d,aud);
       case 'apply': return this.pcDemoApplyForHTML(d,aud.featured||[]);
       case 'guide': return this.pcDemoGuideForHTML(d,aud.guide||[]);
       case 'program': return this.pcDemoProgramHTML(d);
@@ -121,6 +123,64 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       case 'donate': return this.pcDemoDonateHTML(d);
       default: return '';
     }
+  },
+
+  /* ── 你的時間表（每類各有各嗰條線；手機直排大字） ── */
+  pcDemoScheduleForHTML(d,aud){
+    const sc=(d.schedules||{})[aud.id]||{items:[]};
+    const nowTime=sc.now||'';
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-3 py-1 inline-block font-bold mb-3">
+          <span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;margin-right:6px"></span>而家：${escapeHtml(sc.now_label||'')}
+        </div>
+        <div class="space-y-3">
+          ${(sc.items||[]).map(x=>{
+            const isNow=x.time===nowTime;
+            return `<div class="flex gap-3 ${isNow?'rounded-xl bg-indigo-50 border border-indigo-200 p-2.5':''}">
+              <div class="font-black text-indigo-700 text-[13px]" style="min-width:72px">${escapeHtml(x.time)}</div>
+              <div class="text-[13.5px] pt-0.5 min-w-0"><b>${escapeHtml(x.title)}</b><br><span class="text-slate-500 text-[12px]">${escapeHtml(x.detail||'')}</span></div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  },
+
+  /* ── 報到與地圖（每類唔同報到點＋路線重點＋專屬交通提示） ── */
+  pcDemoArrivalHTML(d,aud){
+    const ar=(d.arrivals||{})[aud.id]||{};
+    const t=d.transport||{};
+    return `
+      <div class="bg-white border-2 border-indigo-500 rounded-2xl p-4 text-center">
+        <div class="text-[10.5px] font-bold text-indigo-600">📍 你的報到地點</div>
+        <div class="text-[16px] font-black text-indigo-900 leading-snug mt-1">${escapeHtml((ar.checkin||[])[1]||'')}</div>
+        <div class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 rounded-full px-3 py-1 mt-2 text-[12px] font-bold text-indigo-700"><i class="fa-regular fa-clock"></i>${escapeHtml((ar.checkin||[])[0]||'')}</div>
+      </div>
+      ${(ar.points||[]).length?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2.5">🚶 你的路線重點</div>
+        <div class="space-y-2">
+          ${(ar.points||[]).map((pt,i)=>`
+          <div class="flex items-center gap-2.5 text-[13.5px]">
+            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">${i+1}</span><span class="min-w-0">${escapeHtml(pt)}</span>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
+      ${(ar.transport||[]).length?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2 space-y-2">
+        ${(ar.transport||[]).map(x=>`<div class="flex gap-2 text-[12.5px] text-slate-700 leading-relaxed"><i class="fa-solid fa-circle-info text-slate-400 mt-1"></i><span>${escapeHtml(x)}</span></div>`).join('')}
+      </div>`:''}
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 場地指示圖</div>
+        ${t.map_url?`<img src="${escapeHtml(t.map_url)}" alt="場地指示圖" class="w-full rounded-xl border border-slate-200">`:''}
+        ${t.map_pdf?`<a href="${escapeHtml(t.map_pdf)}" target="_blank" class="mt-2 inline-block text-[12px] font-bold text-indigo-700">📎 下載完整場地指示圖（PDF）↗</a>`:''}
+        <div class="text-[10px] text-slate-400 mt-1.5">生產版：每類入口會有標註你自己位置嘅專屬地圖</div>
+      </div>`;
+  },
+
+  /* ── 求助卡：電話號碼變可撥 tel: 連結（手機直接撳打） ── */
+  pcTelHTML(text){
+    return escapeHtml(text||'').replace(/(\d{4})\s?(\d{4})/g,(m,a,b)=>`<a href="tel:${a}${b}" class="text-sky-700 font-bold underline">${a} ${b}</a>`);
   },
 
   /* ── 嘉賓版基本盤（唔講名額／費用，講接待安排） ── */
@@ -200,7 +260,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
 
   /* ═══════════ 委員一頁睇晒（8 分頁，含手冊） ═══════════ */
   pcDemoTabsBody(d){
-    const tabs=[['home','基本盤','fa-solid fa-circle-info'],['transport','交通','fa-solid fa-bus'],['program','程序','fa-regular fa-calendar-check'],['booths','攤位','fa-solid fa-store'],['apply','報名','fa-solid fa-file-pen'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
+    const tabs=[['home','基本盤','fa-solid fa-circle-info'],['transport','交通','fa-solid fa-bus'],['program','全日程序','fa-regular fa-calendar-check'],['booths','攤位','fa-solid fa-store'],['apply','報名','fa-solid fa-file-pen'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
     return `
       <div class="flex justify-between items-center mb-2">
         <div class="text-[11.5px] font-bold text-slate-500">📊 委員預覽・一頁睇晒（公眾實際會按身份見到唔同組合，見「切換身份」）</div>
@@ -385,7 +445,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <div class="bg-white border border-slate-200 rounded-2xl p-3">
           <div class="text-xl mb-1">${c[0]}</div>
           <b class="text-[12px]">${escapeHtml(c[1])}</b>
-          <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">${escapeHtml(c[2]||'')}</div>
+          <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">${this.pcTelHTML(c[2])}</div>
         </div>`).join('')}
       </div>`;
   },

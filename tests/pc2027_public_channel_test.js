@@ -27,7 +27,9 @@ ok(['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'
 ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
 ok(pc.audiences.filter(a => a.guide).every(a => a.guide.every(k => pc.guides[k])), '① 每類嘅須知都喺七類須知數據入面');
 ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
-ok(pc.section_labels && Object.keys(pc.section_labels).length === 8, '① 分節標籤 8 個');
+ok(pc.section_labels && Object.keys(pc.section_labels).length === 10, '① 分節標籤 10 個');
+ok(Object.keys(pc.schedules).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.schedules[id].items || []).length >= 6), '① 每類有專屬時間表（7 份・各至少 6 項）');
+ok(Object.keys(pc.arrivals).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.arrivals[id].checkin || []).length === 2), '① 每類有專屬報到地點＋時間（7 份）');
 ok(pc.banner && pc.banner.event_name === '2027 港島童軍繽紛日', '① banner：2027 港島童軍繽紛日');
 ok(pc.transport && pc.transport.items.length === 5, '① 交通與入場 5 項');
 ok(pc.program && pc.program.items.length >= 6, '① 當日程序 6 項');
@@ -84,43 +86,47 @@ ok(['嘉賓', '旅團', '優異旅團獲獎', '步操隊伍', '其他制服團�
 ok((html.match(/\?pub=/g) || []).length >= 7, '⑤ 每個入口有專屬連結提示（?pub=）');
 ok(html.includes('一頁睇晒'), '⑤ 底部有委員預覽入口');
 
-/* ── ⑥ 分眾版面：七類各有各嘅須知＋報名 ── */
+/* ── ⑥ 分眾版面：七類各有各嘅時間表＋報到地點＋須知＋報名 ── */
 app.pcDemoPickAudience('guest'); html = render();
-ok(html.includes('嘉賓專屬安排') && html.includes('莫榮大樓'), '⑥ 嘉賓：接待安排做基本盤');
+ok(html.includes('你的時間表') && html.includes('大會車開出') && html.includes('15:00'), '⑥ 嘉賓：自己時間表（大會車去回程）');
+ok(html.includes('你的報到地點') && html.includes('莫榮大樓地下接待處'), '⑥ 嘉賓：報到＝莫榮大樓接待處');
+ok(html.includes('嘉賓專屬安排'), '⑥ 嘉賓：接待安排做基本盤');
 ok(html.includes('嘉賓報名') && html.includes('立即報名'), '⑥ 嘉賓：嘉賓報名做主角');
-ok(html.includes('大會車'), '⑥ 嘉賓：大會車安排');
 ok(!html.includes('名額（先到先得）'), '⑥ 嘉賓：唔講名額費用（獲邀人士）');
 
 app.pcDemoPickAudience('troop'); html = render();
-ok(html.includes('旅團報名') && html.includes('立即報名'), '⑥ 旅團：報名表做主角');
-ok(html.includes('PT/46'), '⑥ 旅團：家長同意書須知');
-ok(html.includes('東閘'), '⑥ 旅團：交通須知');
-ok(html.includes('普通旅團・須知'), '⑥ 旅團：普通旅團版須知');
+ok(html.includes('按報名時段報到') && html.includes('集印換紀念章'), '⑥ 旅團：自己時間表（報到時段＋集印）');
+ok(html.includes('有蓋操場報到處（東閘入）'), '⑥ 旅團：報到＝有蓋操場（東閘入）');
+ok(html.includes('旅遊巴'), '⑥ 旅團：專屬交通提示（旅遊巴）');
+ok(html.includes('PT/46') && html.includes('普通旅團・須知'), '⑥ 旅團：普通旅團版須知');
 
 app.pcDemoPickAudience('merit'); html = render();
-ok(html.includes('優異旅團報名'), '⑥ 優異旅團獲獎：專屬報名');
-ok(html.includes('彩帶'), '⑥ 優異旅團獲獎：彩帶／證書須知');
-ok(html.includes('優異旅團・須知') && !html.includes('普通旅團・須知'), '⑥ 優異旅團獲獎：只見自己版須知');
+ok(html.includes('10:15') && html.includes('排位'), '⑥ 優異旅團獲獎：自己時間表（10:15 排位）');
+ok(html.includes('大操場後方排位區（按區會）'), '⑥ 優異旅團獲獎：報到＝後方排位區');
+ok(html.includes('彩帶') && html.includes('優異旅團・須知') && !html.includes('普通旅團・須知'), '⑥ 優異旅團獲獎：只見自己版須知');
 
 app.pcDemoPickAudience('march'); html = render();
-ok(html.includes('07:45–08:30（綵排）'), '⑥ 步操隊伍：綵排時間須知');
+ok(html.includes('07:45') && html.includes('綵排'), '⑥ 步操隊伍：自己時間表（07:45 綵排）');
+ok(html.includes('大操場指定位置（依旗幟）'), '⑥ 步操隊伍：報到＝大操場依旗幟');
 ok(html.includes('指揮官檢閱'), '⑥ 步操隊伍：檢閱安排');
-ok(html.includes('旅團報名'), '⑥ 步操隊伍：經旅團報名登記');
 ok(!html.includes('彩帶'), '⑥ 步操隊伍：唔會見到優異旅團須知');
 
 app.pcDemoPickAudience('ug'); html = render();
+ok(html.includes('有蓋操場報到處・UG 專櫃'), '⑥ 其他制服團體：報到＝UG 專櫃');
+ok(html.includes('穿梭巴士'), '⑥ 其他制服團體：專屬交通提示（穿梭巴士）');
 ok(html.includes('其他制服團體報名') && html.includes('NGO 報名'), '⑥ 其他制服團體：兩個報名入口');
-ok(html.includes('UG 專櫃'), '⑥ 其他制服團體：專櫃報到須知');
 
 app.pcDemoPickAudience('awardee_section'); html = render();
-ok(html.includes('支部最高獎勵得主報名'), '⑥ 支部最高獎勵：專屬報名');
-ok(html.includes('貝登堡獎章') && html.includes('總領袖獎章'), '⑥ 支部最高獎勵：頒獎次序須知');
-ok(!html.includes('長期服務獎章'), '⑥ 支部最高獎勵：唔會見到成人獎勵須知');
+ok(html.includes('總領袖獎章 → 榮譽童軍獎章 → 貝登堡獎章'), '⑥ 支部最高獎勵：頒獎次序時間表');
+ok(html.includes('大操場左側後台排位（依獎章分組）'), '⑥ 支部最高獎勵：報到＝後台（依獎章分組）');
+ok(html.includes('親友觀禮區'), '⑥ 支部最高獎勵：親友觀禮提示');
+ok(!html.includes('長期服務獎章'), '⑥ 支部最高獎勵：唔會見到成人獎勵內容');
 
 app.pcDemoPickAudience('awardee_adult'); html = render();
-ok(html.includes('成人獎勵得主報名'), '⑥ 成人獎勵：專屬報名');
-ok(html.includes('長期服務獎章') && html.includes('覆誓'), '⑥ 成人獎勵：頒獎＋覆誓須知');
-ok(!html.includes('貝登堡獎章'), '⑥ 成人獎勵：唔會見到支部獎章須知');
+ok(html.includes('覆誓') && html.includes('唱名序'), '⑥ 成人獎勵：覆誓＋唱名時間表');
+ok(html.includes('大操場左側後台排位（依獎項分組）'), '⑥ 成人獎勵：報到＝後台（依獎項分組）');
+ok(html.includes('副會長'), '⑥ 成人獎勵：一星／三星由副會長頒發');
+ok(!html.includes('貝登堡獎章'), '⑥ 成人獎勵：唔會見到支部獎章內容');
 ok(html.includes('切換身份'), '⑥ 各版面有「切換身份」');
 
 /* ── ⑦ ?pub= 深連結（生產版專屬 QR 機制） ── */
