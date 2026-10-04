@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027 公眾頻道・成品預覽（2026 資料示範）</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root{--brand:#6d28d9}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang HK","Microsoft JhengHei",sans-serif;background:#F1F5F9}
+  html{scroll-behavior:smooth}
+  .navchip{white-space:nowrap;padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:700;background:#fff;border:1px solid #e2e8f0;color:#475569;cursor:pointer}
+  .navchip.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+  .sec-title{display:flex;align-items:center;gap:10px;font-weight:900;font-size:17px;color:#1e293b}
+  .sec-badge{font-size:10.5px;font-weight:800;background:#ede9fe;color:#6d28d9;padding:3px 9px;border-radius:999px;border:1px solid #ddd6fe}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+  .idtab{flex:1 1 0;min-width:0;padding:9px 4px;text-align:center;font-size:12px;font-weight:700;border:1px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer}
+  .idtab.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{background:#f5f3ff;color:#4c1d95;font-size:11.5px;padding:7px 6px;text-align:left;white-space:nowrap}
+  td{padding:6.5px 6px;border-top:1px solid #f1f5f9;vertical-align:top}
+  .tl-time{font-weight:900;color:#6d28d9;font-size:13.5px;min-width:64px}
+  .now-dot{width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .merit-unit{display:inline-block;background:#f5f3ff;border:1px solid #ddd6fe;color:#4c1d95;border-radius:8px;padding:3px 8px;font-size:12px;margin:2.5px}
+</style>
+</head>
+<body class="text-slate-800">
+
+<!-- ═══ 示範聲明 ═══ -->
+<div class="bg-amber-400 text-slate-900 text-center text-xs font-bold py-2 px-3">
+  🧪 階段 1 成品預覽 — 以 2026 真實資料示範「2027 公眾頻道」最終形態（純展示，未接後台）
+</div>
+
+<!-- ═══ 頂 BAR ═══ -->
+<div class="bg-[#4c1d95] text-white sticky top-0 z-40 shadow-lg">
+  <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2 font-black text-sm">🎪 童軍活動管理系統</div>
+    <div class="text-[11px] bg-white/20 rounded-full px-3 py-1 font-bold">2027 港島童軍繽紛日</div>
+  </div>
+  <!-- 分區導覽 -->
+  <div class="max-w-md mx-auto px-3 pb-2.5 flex gap-1.5 overflow-x-auto">
+    <a class="navchip active" href="#home">基本盤</a>
+    <a class="navchip" href="#transport">交通</a>
+    <a class="navchip" href="#program">程序</a>
+    <a class="navchip" href="#booths">攤位</a>
+    <a class="navchip" href="#apply">報名</a>
+    <a class="navchip" href="#guide">須知</a>
+    <a class="navchip" href="#help">求助</a>
+    <a class="navchip" href="#manual">執行手冊</a>
+  </div>
+</div>
+
+<main class="max-w-md mx-auto px-3 pb-16 pt-4 space-y-6">
+
+<!-- ═══ 1. 基本盤 ═══ -->
+<section id="home" class="space-y-3">
+  <div class="card overflow-hidden">
+    <div class="bg-gradient-to-br from-[#4c1d95] via-[#6d28d9] to-[#8b5cf6] text-white p-5">
+      <div class="text-[11px] font-bold bg-white/20 inline-block rounded-full px-3 py-1 mb-2">香港童軍總會港島地域・周年認可慶祝活動</div>
+      <h1 class="text-2xl font-black leading-tight">2027 港島童軍繽紛日</h1>
+      <div class="mt-1 text-sm text-violet-100 font-semibold">Island Scout Day 2027</div>
+      <div class="mt-4 grid grid-cols-2 gap-2 text-[12.5px]">
+        <div class="bg-white/15 rounded-xl p-3"><div class="text-violet-200 text-[10.5px] font-bold mb-1"><i class="fa-regular fa-calendar"></i> 日期</div><b>2027年10月3日（星期日）</b></div>
+        <div class="bg-white/15 rounded-xl p-3"><div class="text-violet-200 text-[10.5px] font-bold mb-1"><i class="fa-regular fa-clock"></i> 時間</div><b>典禮 11:00–13:00<br>主題活動 13:00–17:00</b></div>
+        <div class="bg-white/15 rounded-xl p-3 col-span-2"><div class="text-violet-200 text-[10.5px] font-bold mb-1"><i class="fa-solid fa-location-dot"></i> 地點</div><b>香港黃竹坑海洋公園道18號 香港警察學院</b></div>
+      </div>
+    </div>
+    <div class="p-4 grid grid-cols-2 gap-2 text-center">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-[10.5px] font-bold text-amber-700">名額（先到先得）</div><div class="text-lg font-black text-amber-900">2,000 人</div></div>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[10.5px] font-bold text-emerald-700">費用（連紀念章）</div><div class="text-lg font-black text-emerald-900">HK$10／人</div></div>
+    </div>
+  </div>
+
+  <!-- 最新消息 -->
+  <div class="card p-4 border-l-4 !border-l-violet-600">
+    <div class="flex items-center justify-between mb-1.5">
+      <div class="font-black text-sm text-violet-800"><i class="fa-solid fa-bullhorn"></i> 最新消息</div>
+      <div class="text-[10.5px] text-slate-400">更新：2027-10-03 07:00・行政組</div>
+    </div>
+    <p class="text-[13px] leading-relaxed">活動<b class="text-emerald-600">如期舉行</b>。各旅團請依報名時段由<b>東閘</b>入場，前往<b>有蓋操場報到處</b>報到。惡劣天氣安排請見下方 ⚠️。</p>
+  </div>
+
+  <!-- 惡劣天氣 -->
+  <div class="card p-4 border-l-4 !border-l-rose-500 bg-rose-50/50">
+    <div class="font-black text-sm text-rose-700 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> 惡劣天氣安排</div>
+    <p class="text-[12.5px] leading-relaxed text-rose-900">如天文台於<b>活動前 3 小時</b>發出<b>紅色暴雨警告</b>或<b>3 號強風信號或以上</b>，活動將延期至 <b>2027年10月10日（星期日）</b>同一地點舉行；大會保留因應天氣預測提前公佈延期之權利。公佈渠道＝本 APP 最新消息。</p>
+  </div>
+</section>
+
+<!-- ═══ 2. 交通與入場 ═══ -->
+<section id="transport" class="space-y-3">
+  <div class="sec-title"><i class="fa-solid fa-bus text-violet-600"></i> 交通與入場 <span class="sec-badge">2/8</span></div>
+  <div class="card p-4 space-y-3 text-[13px]">
+    <div class="flex gap-3"><div class="w-9 h-9 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-door-open"></i></div>
+      <div><b>入口：東閘（警校道）</b>— 唯一公眾入口，請依指示排隊入場。</div></div>
+    <div class="flex gap-3"><div class="w-9 h-9 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-train-subway"></i></div>
+      <div><b>公共交通</b>：港鐵海洋公園站步行約 10 分鐘；多條巴士路線直達黃竹坑。</div></div>
+    <div class="flex gap-3"><div class="w-9 h-9 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-van-shuttle"></i></div>
+      <div><b>穿梭巴士</b>：海洋公園停車場 ↔ 學院東閘，10:00 起每 15 分鐘一班。</div></div>
+    <div class="flex gap-3"><div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-ban"></i></div>
+      <div><b>不設公眾泊車</b> — 場內車位只限持證車輛（泊車證須經所屬單位申請）。</div></div>
+    <div class="flex gap-3"><div class="w-9 h-9 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-bus"></i></div>
+      <div><b>旅遊巴</b>：報名時已申報之旅遊巴請前往<b>指定落客點</b>，司機依警衛指示停泊。</div></div>
+    <hr class="border-slate-100">
+    <div class="font-black text-violet-800 text-[12.5px]">📍 報到位置分流</div>
+    <div class="grid grid-cols-2 gap-2 text-center text-[12px]">
+      <div class="bg-violet-50 border border-violet-200 rounded-xl p-2.5"><b>旅團／UG 隊伍</b><br>有蓋操場報到處</div>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5"><b>嘉賓</b><br>莫榮大樓接待處</div>
+    </div>
+  </div>
+  <div class="card p-3">
+    <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-violet-600"></i> 場地指示圖</div>
+    <img src="../assets/ceremony/guest_map.png" alt="場地指示圖" class="w-full rounded-xl border border-slate-200">
+    <a href="../google_drive/附件2_參加旅團場地指示圖2026 v2.pdf" target="_blank" class="mt-2 inline-block text-[12px] font-bold text-violet-700">📎 下載完整場地指示圖（PDF）↗</a>
+  </div>
+</section>
+
+<!-- ═══ 3. 當日程序 ═══ -->
+<section id="program" class="space-y-3">
+  <div class="sec-title"><i class="fa-regular fa-calendar-check text-violet-600"></i> 當日程序 <span class="sec-badge">3/8</span></div>
+  <div class="card p-4">
+    <div class="text-[11px] bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1 inline-block font-bold mb-3"><span class="now-dot mr-1"></span>而家進行緊：第一部分典禮（示範・活動日會按實際時間自動浮動）</div>
+    <div class="space-y-3.5">
+      <div class="flex gap-3"><div class="tl-time">08:00</div><div class="text-[13px] pt-0.5"><b>旅團報到開始</b><br><span class="text-slate-500 text-[12px]">東閘入場 → 有蓋操場報到處</span></div></div>
+      <div class="flex gap-3"><div class="tl-time">10:45</div><div class="text-[13px] pt-0.5"><b>嘉賓到達</b><br><span class="text-slate-500 text-[12px]">莫榮大樓地下接待處（專人接待）</span></div></div>
+      <div class="flex gap-3 rounded-xl bg-violet-50 border border-violet-200 p-2.5 -mx-1"><div class="tl-time">11:00</div><div class="text-[13px]"><b>第一部分典禮：優異旅團及各項獎勵頒發儀式</b><br><span class="text-slate-500 text-[12px]">大操場（至 11:55）・風笛手引領嘉賓進場</span></div></div>
+      <div class="flex gap-3"><div class="tl-time">12:00</div><div class="text-[13px] pt-0.5"><b>第二部分典禮：會操檢閱</b><br><span class="text-slate-500 text-[12px]">大操場・港島總區指揮官主禮</span></div></div>
+      <div class="flex gap-3"><div class="tl-time">13:00</div><div class="text-[13px] pt-0.5"><b>主題活動區開始・攤位博覽</b><br><span class="text-slate-500 text-[12px]">六大主題 33 攤位（A–F 區）｜嘉賓茶聚（莫榮大樓）</span></div></div>
+      <div class="flex gap-3"><div class="tl-time">17:00</div><div class="text-[13px] pt-0.5"><b>活動結束</b><br><span class="text-slate-500 text-[12px]">請依指示由東閘離場</span></div></div>
+    </div>
+    <div class="mt-3 text-[11px] text-slate-400">※ 只列公眾須知時段；內部綵排及後台時間不公開。</div>
+  </div>
+</section>
+
+<!-- ═══ 4. 攤位與地圖 ═══ -->
+<section id="booths" class="space-y-3">
+  <div class="sec-title"><i class="fa-solid fa-store text-violet-600"></i> 攤位與地圖 <span class="sec-badge">4/8</span></div>
+  <div class="card p-4">
+    <div class="flex flex-wrap gap-1.5 mb-3" id="zoneFilter"></div>
+    <div class="grid grid-cols-2 gap-2 text-center text-[12px] mb-3">
+      <div class="bg-violet-50 border border-violet-200 rounded-xl p-2"><b class="text-violet-800">六大主題</b><br><span class="text-slate-600">積極公民・五年規劃・創新科技<br>社區福祉・生態文明・童軍技能</span></div>
+      <div class="bg-violet-50 border border-violet-200 rounded-xl p-2"><b class="text-violet-800">33 個攤位</b><br><span class="text-slate-600">A12・B3・C4・D5・E3・F6</span></div>
+    </div>
+    <div id="boothList" class="space-y-2"></div>
+    <div class="mt-2 text-[11px] text-slate-400">※ 公眾版隱藏攤位負責人聯絡（登記負責人可見）。</div>
+    <div class="mt-3 flex gap-2 text-[12px]">
+      <a href="../assets/event-day/game-card-2026.pdf" target="_blank" class="flex-1 text-center bg-amber-100 border border-amber-300 text-amber-900 rounded-xl py-2 font-bold">🎮 遊戲卡</a>
+      <a href="../assets/event-day/site-setup-plan-2026.pdf" target="_blank" class="flex-1 text-center bg-violet-100 border border-violet-300 text-violet-900 rounded-xl py-2 font-bold">🗺️ 場地佈置圖</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. 參與渠道（八大報名） ═══ -->
+<section id="apply" class="space-y-3">
+  <div class="sec-title"><i class="fa-solid fa-file-pen text-violet-600"></i> 參與渠道・八大報名 <span class="sec-badge">5/8</span></div>
+  <div class="text-[12px] text-slate-500 px-1">全部免登入、填完即有申請編號可查進度。費用（$10／人・餐盒 $60）於確認後一併通知繳付。</div>
+  <div class="grid grid-cols-2 gap-2" id="applyGrid"></div>
+</section>
+
+<!-- ═══ 6. 須知分眾（7 類） ═══ -->
+<section id="guide" class="space-y-3">
+  <div class="sec-title"><i class="fa-solid fa-book-open text-violet-600"></i> 須知・揀你嘅身份 <span class="sec-badge">6/8</span></div>
+  <div class="card p-4">
+    <div class="grid grid-cols-4 gap-1.5 mb-4" id="guideTabs"></div>
+    <div id="guidePanel"></div>
+    <details class="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-3">
+      <summary class="font-bold text-[12.5px] text-slate-600 cursor-pointer">📖 共用須知（各身份通用）</summary>
+      <ul class="mt-2 space-y-1.5 text-[12.5px] text-slate-700 list-disc pl-5">
+        <li>日期：2027年10月3日（星期日）；延期後備日：10月10日</li>
+        <li>惡劣天氣：活動前 3 小時紅雨／3 號波 → 延期（公佈於最新消息）</li>
+        <li>查詢熱線：2835 7712（助理執行幹事何家耀先生）</li>
+        <li>未滿 18 歲參加者須填妥家長同意書 PT/46，由隨隊領袖保存至活動結束</li>
+        <li>每位參加者獲大會紀念章乙枚</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ 7. 活動日求助 ═══ -->
+<section id="help" class="space-y-3">
+  <div class="sec-title"><i class="fa-solid fa-life-ring text-violet-600"></i> 活動日求助 <span class="sec-badge">7/8</span></div>
+  <div class="grid grid-cols-3 gap-2 text-center">
+    <div class="card p-3"><div class="text-xl mb-1">🔍</div><b class="text-[12px]">失物認領</b><div class="text-[11px] text-slate-500 mt-1">拾獲／遺失<br>兩向登記＋認領</div></div>
+    <div class="card p-3"><div class="text-xl mb-1">☎️</div><b class="text-[12px]">查詢窗口</b><div class="text-[11px] text-slate-500 mt-1">2835 7712<br>何家耀先生</div></div>
+    <div class="card p-3"><div class="text-xl mb-1">⛑️</div><b class="text-[12px]">急救站</b><div class="text-[11px] text-slate-500 mt-1">聖約翰救傷隊<br>有蓋操場側</div></div>
+  </div>
+</section>
+
+<!-- ═══ 8. 執行手冊（公眾版預覽） ═══ -->
+<section id="manual" class="space-y-3">
+  <div class="sec-title"><i class="fa-solid fa-book text-violet-600"></i> 執行手冊 <span class="sec-badge">8/8</span></div>
+  <div class="text-[12px] text-slate-500 px-1">15 個分頁・自動由資料渲染（下面示範其中兩頁）：</div>
+  <div class="card p-3">
+    <div class="flex flex-wrap gap-1.5" id="manualTabs"></div>
+  </div>
+
+  <!-- 示範頁 1：參加旅團名單 -->
+  <div class="card p-4">
+    <div class="font-black text-[14px] text-emerald-700 mb-1">🧾 參加旅團名單 <span class="text-[10.5px] font-bold text-slate-400">（示範・2026 資料）</span></div>
+    <div class="grid grid-cols-3 gap-2 text-center my-3 text-[12px]">
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2"><b class="text-emerald-800">31 旅團</b></div>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2"><b class="text-emerald-800">1,016 人</b></div>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2"><b class="text-emerald-800">137 餐盒</b></div>
+    </div>
+    <div class="overflow-auto max-h-[320px] rounded-xl border border-slate-200">
+      <table><thead><tr><th>#</th><th>旅團</th><th>區會</th><th class="text-right">人數</th><th class="text-right">餐盒</th><th>領隊</th></tr></thead>
+      <tbody id="ptBody"></tbody></table>
+    </div>
+    <div class="mt-1.5 text-[11px] text-slate-400">※ 名單結果公開；領隊電話／電郵須登入後才可見。活動日此頁加「報到 ✓」點名欄。</div>
+  </div>
+
+  <!-- 示範頁 2：優異旅團獲獎名單 -->
+  <div class="card p-4">
+    <div class="font-black text-[14px] text-violet-700 mb-1">🏆 優異旅團獲獎名單 <span class="text-[10.5px] font-bold text-slate-400">（示範・2026 資料・188 團次）</span></div>
+    <div id="meritArea" class="space-y-2"></div>
+  </div>
+</section>
+
+<div class="text-center text-[11px] text-slate-400 leading-relaxed pt-2">
+  階段 1 成品預覽・以 2026 真實資料示範 2027 公眾頻道形態<br>
+  確認形態後 → 階段 2 接入八大報名表 → 階段 3 名單自動生成 → 階段 4 連通各部門
+</div>
+</main>
+
+<script>
+/* ── 2026 真實資料 ── */
+const P=[[1,"港島第175旅","HKN 港島北區",28,0,"朱耀文"],[2,"港島第242旅","SKW 筲箕灣區",17,0,"楊頌賢"],[3,"港島第5海童軍旅","WCH 灣仔區",17,17,"黎智成"],[4,"港島第212旅","WCH 灣仔區",90,0,"周浩恩"],[5,"港島第1316旅","CHW 柴灣區",20,0,"陳炳競"],[6,"港島第255旅","SKW 筲箕灣區",45,0,"郭軒"],[7,"港島第263旅","CHW 柴灣區",28,0,"張小玲"],[8,"港島第6旅","CHW 柴灣區",58,25,"孫嘉謙"],[9,"港島第186旅","WCH 灣仔區",103,38,"盧國怡／胡芷菱"],[10,"港島第99旅","VIC 維多利亞城區",55,0,"何文朗"],[11,"港島第224旅","HKS 港島南區",10,10,"姜健龍"],[12,"港島第241旅","HKS 港島南區",45,0,"梁麗群"],[13,"港島第1275旅","CHW 柴灣區",47,0,"譚正銀"],[14,"港島第15旅","WCH 灣仔區",41,0,"岑卓俊"],[15,"港島第18旅","WCH 灣仔區",12,0,"黃禮和"],[16,"港島第1旅","VIC 維多利亞城區",72,0,"黃月明"],[17,"港島第268旅","CHW 柴灣區",18,10,"陳嘉豪"],[18,"港島第14旅","WCH 灣仔區",52,0,"麥銳文"],[19,"港島第250旅","HKW 港島西區",9,0,"何家恒"],[20,"港島第175旅","HKN 港島北區",7,0,"黃泳珊"],[21,"港島第142旅","HKW 港島西區",30,30,"鄭海芝"],[22,"港島第206旅","SKW 筲箕灣區",55,2,"葉永全"],[23,"港島第7旅","HKN 港島北區",40,0,"張少聰"],[24,"港島第230旅","HKN 港島北區",15,0,"施銘銓"],[25,"港島第22旅","HKW 港島西區",16,0,"鄺崇恩"],[26,"港島第70旅","HKS 港島南區",3,0,"郭子僖"],[27,"港島第5旅","HKW 港島西區",29,0,"錢永康"],[28,"港島第2旅","VIC 維多利亞城區",20,0,"楊羨婷"],[29,"港島地域（鄧靄兒）","HKIR 港島地域",5,5,"鄧靄兒"],[30,"港島第1665旅","WCH 灣仔區",23,0,"曾港興"],[31,"港島第16旅","HKW 港島西區",6,0,"黎禮勳"]];
+
+const B=[["A","A01","","主題節目組總部","主節目組總部","／"],["A","A02","積極公民實踐","積極公民工作坊－機電1","機電先鋒・綠能一級棒","可再生能源／氣體安全 GU標誌"],["A","A03","積極公民實踐","積極公民工作坊－機電2","機電先鋒・一級省電王","電器安全／能源標籤"],["A","A04","積極公民實踐","積極公民工作坊－機電3","機電先鋒・乘搭安全指南","升降機及自動梯安全"],["A","A05","積極公民實踐","積極公民工作坊－機電4","機電先鋒・節能承諾樹","節約能源承諾樹"],["A","A06","積極公民實踐","警務處跨部門反恐專責組","反恐小遊戲・紀念品","ICTU"],["A","A07","積極公民實踐","警務處網絡安全及科技罪案調查科","守網聯盟遊戲卡","CSTCB"],["A","A08","積極公民實踐","警務處毒品調查科","禁毒知識分享","NB"],["A","A09","積極公民實踐","警務處毒品調查科","模擬毒品展示","NB"],["A","A10","積極公民實踐","警務處國家安全處","「NSpeed 國安號」宣傳車","NSD"],["A","A11","積極公民實踐","警務處港島總區交通部","小型警察電單車拍照","交通部"],["A","A12","積極公民實踐","警務處鑑證科","指紋書簽・法證光源","IB"],["B","B01","五年規劃領航","香港島青年聯會","十五五與我好有關","影片＋Kahoot 問答"],["B","B02","五年規劃領航","港島童軍射藝會","射藝","箭藝體驗"],["B","B03","五年規劃領航","港島南區深資童軍議會","第一個五年規劃","展板＋影片"],["C","C01","創新科技探索","港島童軍氣槍射擊會","Smokeless Range","虛擬靶場射擊"],["C","C02","創新科技探索","港島地域航空活動","「童」你飛翔","Flight Sim（螢幕＋VR）"],["C","C03","創新科技探索","香港航天學會","漫遊太空站","航天展覽・火箭製作"],["C","C04","創新科技探索","中國香港東區無人機協會","無人機足球運動同樂","無人機足球"],["D","D01","社區福祉童行","港島地域發展部","童軍招募及宣傳","招募"],["D","D02","社區福祉童行","港島地域社區參與及服務","食品捐贈","童心捐贈"],["D","D03","社區福祉童行","港島地域社區參與及服務","物品捐贈","童心捐贈"],["D","D04","社區福祉童行","灣仔區社區參與章1","藥物教育","展覽＋互動"],["D","D05","社區福祉童行","灣仔區社區參與章2","七彩人生拒絕毒品","扭蛋機遊戲"],["E","E01","生態文明建設","維多利亞城區精神健康章","精神健康與你","—"],["E","E02","生態文明建設","維多利亞城區公共衞生章","抗逆達人","—"],["E","E03","生態文明建設","港島地域","童心傾訴站 Listening Ear","傾訴站"],["F","F01","童軍技能","港島童軍生態小組","生態追擊","AI 識別生物"],["F","F02","童軍技能","港島童軍章會","「章」來會更好","徽章展覽＋換章角"],["F","F03","童軍技能","港島童軍天文會","追星精明眼","星座認知"],["F","F04","童軍技能","港島童軍先鋒工程會","搖搖晃","韆韆架＋瞭望台"],["F","F05","童軍技能","港島地域童軍樂隊","樂隊演奏","演奏表演"],["F","F06","童軍技能","港島童軍皮藝會","「皮」趣小座","DIY 皮革匙扣"]];
+
+const M={"CHW 柴灣區":["港島第六旅・小童軍團","港島第六旅・幼童軍團","港島第六旅・童軍團","港島第六旅・深資童軍團","港島第六旅・樂行童軍團","港島第九十旅・童軍團","港島第一四九旅・童軍團","港島第一四九旅・深資童軍團","港島第二四三旅・小童軍團","港島第二四三旅・幼童軍團","港島第二四三旅・童軍團","港島第二四三旅・深資童軍團","港島第二六三旅・小童軍團","港島第二六三旅・幼童軍團","港島第二六八旅・幼童軍團","港島第一二五七旅・童軍團","港島第一二七五旅・幼童軍團","港島第一三一六旅・幼童軍團","港島第一三八四旅・幼童軍團"],"HKN 港島北區":["港島第七旅・小童軍團","港島第七旅・幼童軍A團","港島第七旅・幼童軍B團","港島第七旅・幼童軍C團","港島第七旅・童軍A團","港島第七旅・童軍B團","港島第七旅・深資童軍團","港島第七旅・樂行童軍團","港島第十海童軍旅・海童軍團","港島第十海童軍旅・深資海童軍團","港島第四十八旅・童軍團","港島第四十八旅・深資童軍團","港島第七十六旅・童軍團","港島第一一八旅・幼童軍團","港島第一三九旅・小童軍團","港島第一三九旅・幼童軍團","港島第一三九旅・童軍團","港島第一七五旅・小童軍A團","港島第一七五旅・小童軍B團","港島第一七五旅・幼童軍A團","港島第一七五旅・幼童軍B團","港島第一七五旅・深資童軍團","港島第一八七旅・童軍團","港島第二三O旅・童軍團","港島第一二二七旅・小童軍A團","港島第一二二七旅・小童軍B團","港島第一二二七旅・小童軍C團"],"HKS 港島南區":["港島第五十五旅・童軍團","港島第七十旅・幼童軍團","港島第七十旅・童軍團","港島第七十旅・深資童軍團","港島第一四六旅・幼童軍團","港島第一五九旅・童軍團","港島第一五九旅・深資童軍團","港島第一五九旅・樂行童軍團","港島第二O四旅・小童軍A團","港島第二O四旅・小童軍B團","港島第二O四旅・幼童軍A團","港島第二O四旅・幼童軍B團","港島第二二四旅・幼童軍團","港島第二四一旅・小童軍團"],"HKW 港島西區":["港島第五旅・童軍團","港島第五旅・深資童軍團","港島第十旅・小童軍團","港島第十旅・幼童軍團","港島第十旅・童軍團","港島第十旅・深資童軍團","港島第十旅・樂行童軍團","港島第十六旅・幼童軍團","港島第十六旅・童軍團","港島第十六旅・深資童軍團","港島第二十二旅・深資童軍團","港島第二十三旅・小童軍團","港島第二十三旅・幼童軍團","港島第一五三旅・小童軍團","港島第一五三旅・幼童軍團","港島第一五三旅・童軍團","港島第一五三旅・深資童軍團","港島第一六一旅・幼童軍團","港島第一六一旅・童軍團","港島第一六一旅・深資童軍團","港島第二四四旅・幼童軍團","港島第一五二七旅・幼童軍團","港島第一五六三旅・幼童軍團","港島第一六一四旅・樂行童軍團"],"SKW 筲箕灣區":["港島第八十一旅・童軍團","港島第八十二旅・幼童軍團","港島第八十二旅・童軍團","港島第八十二旅・深資童軍團","港島第一O一旅・深資童軍團","港島第一O一旅・深資空童軍團","港島第一O一旅・樂行童軍團","港島第一O一旅・樂行空童軍團","港島第二O六旅・小童軍團","港島第二O六旅・幼童軍團","港島第二O六旅・童軍團","港島第二四二旅・幼童軍A團","港島第二四二旅・幼童軍B團","港島第二四二旅・童軍團","港島第二五五旅・幼童軍團","港島第二五五旅・童軍團","港島第一七四五旅・童軍團"],"VIC 維多利亞城區":["港島第一旅・小童軍團","港島第一旅・幼童軍A團","港島第一旅・幼童軍B團","港島第一旅・童軍團","港島第一旅・空童軍團","港島第一旅・深資童軍團","港島第一旅・樂行童軍團","港島第二旅・幼童軍團","港島第二旅・童軍團","港島第十二海童軍旅・小童軍A團","港島第十二海童軍旅・小童軍B團","港島第十二海童軍旅・幼童軍A團","港島第十二海童軍旅・幼童軍B團","港島第十二海童軍旅・海童軍團","港島第二十一旅・幼童軍團","港島第二十一旅・童軍團","港島第六十六旅・深資童軍團","港島第九十四旅・童軍團","港島第九十四旅・深資童軍團","港島第九十九旅・小童軍A團","港島第九十九旅・小童軍B團","港島第九十九旅・幼童軍A團","港島第九十九旅・幼童軍B團","港島第九十九旅・童軍團","港島第九十九旅・空童軍團","港島第九十九旅・深資童軍團","港島第九十九旅・深資空童軍團","港島第九十九旅・樂行童軍團","港島第一一五五旅・小童軍A團","港島第一一五五旅・小童軍B團","港島第一一五五旅・幼童軍A團","港島第一一五五旅・幼童軍B團","港島第一一五七旅・小童軍團","港島第一四六二旅・幼童軍團"],"WCH 灣仔區":["港島第五海童軍旅・幼童軍團","港島第五海童軍旅・海童軍團","港島第十二旅・童軍團","港島第十二旅・深資童軍團","港島第十四旅・小童軍團","港島第十四旅・幼童軍A團","港島第十四旅・幼童軍B團","港島第十四旅・童軍團","港島第十八旅・幼童軍團","港島第十八旅・童軍團","港島第一八六旅・幼童軍B團","港島第一八六旅・童軍團","港島第一八六旅・深資童軍團","港島第一八六旅・樂行童軍團","港島第二O八旅・小童軍A團","港島第二O八旅・小童軍B團","港島第二O八旅・小童軍C團","港島第二一二旅・小童軍團","港島第二一二旅・幼童軍團","港島第二一二旅・童軍團","港島第二一二旅・深資童軍團","港島第二一二旅・樂行童軍團","港島第一六六五旅・小童軍團","港島第一六六五旅・幼童軍團","港島第一六六五旅・童軍團","港島第二二三旅・幼童軍團","港島第二二三旅・深資童軍團","港島第二二三旅・樂行童軍團"]};
+
+/* ── 攤位渲染 ── */
+const THEME_COLOR={"積極公民實踐":"bg-blue-100 text-blue-800 border-blue-300","五年規劃領航":"bg-rose-100 text-rose-800 border-rose-300","創新科技探索":"bg-cyan-100 text-cyan-800 border-cyan-300","社區福祉童行":"bg-emerald-100 text-emerald-800 border-emerald-300","生態文明建設":"bg-lime-100 text-lime-800 border-lime-300","童軍技能":"bg-amber-100 text-amber-800 border-amber-300"};
+function renderBooths(zone){
+  const list = zone==='all'? B : B.filter(x=>x[0]===zone);
+  document.getElementById('boothList').innerHTML = list.map(b=>`
+    <div class="border border-slate-200 rounded-xl p-2.5">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="bg-violet-600 text-white font-black text-[11px] rounded-lg px-2 py-1">${b[1]}</span>
+        <b class="text-[13px]">${b[4]}</b>
+        ${b[2]?`<span class="ml-auto text-[10px] font-bold rounded-full px-2 py-0.5 border ${THEME_COLOR[b[2]]||''}">${b[2]}</span>`:''}
+      </div>
+      <div class="text-[11.5px] text-slate-500">${b[3]}｜${b[5]}</div>
+    </div>`).join('');
+}
+(function(){
+  const zones=['all','A','B','C','D','E','F'];
+  document.getElementById('zoneFilter').innerHTML = zones.map(z=>`<button class="navchip ${z==='all'?'active':''}" data-z="${z}" onclick="pickZone('${z}')">${z==='all'?'全部 33':z+' 區'}</button>`).join('');
+  window.pickZone=function(z){document.querySelectorAll('#zoneFilter .navchip').forEach(b=>b.classList.toggle('active',b.dataset.z===z));renderBooths(z);};
+  renderBooths('all');
+})();
+
+/* ── 八大報名 ── */
+const FORMS=[
+["🏃","旅團報名","旅領袖","人數・餐盒・旅遊巴・PT/46","bg-emerald-50 border-emerald-300 text-emerald-900"],
+["🏆","優異旅團報名","獲獎旅團領袖","出席／派隊人數","bg-violet-50 border-violet-300 text-violet-900"],
+["🎩","嘉賓報名","獲邀人士／秘書處","典禮・茶聚・車牌","bg-amber-50 border-amber-300 text-amber-900"],
+["🧢","其他制服團體報名","UG 領隊","隊伍＋嘉賓代表","bg-sky-50 border-sky-300 text-sky-900"],
+["🤝","NGO 報名","機構代表","攤位／服務／觀禮","bg-teal-50 border-teal-300 text-teal-900"],
+["🎖️","支部最高獎勵得主報名","總領袖／榮譽童軍／貝登堡","出席・親友人數","bg-fuchsia-50 border-fuchsia-300 text-fuchsia-900"],
+["🏅","成人獎勵得主報名","長期服務獎等","出席・覆誓","bg-indigo-50 border-indigo-300 text-indigo-900"],
+["❤️","童心捐贈","任何人","物品／食品・QR","bg-rose-50 border-rose-300 text-rose-900"]];
+document.getElementById('applyGrid').innerHTML=FORMS.map(f=>`
+  <div class="card p-3.5 flex flex-col ${f[4]} !border">
+    <div class="text-xl mb-1">${f[0]}</div>
+    <b class="text-[12.5px] leading-tight">${f[1]}</b>
+    <div class="text-[11px] opacity-75 mt-0.5">${f[2]}<br>${f[3]}</div>
+    <button onclick="alert('示範版：報名表於階段 2 接入（提交即入系統→自動出名單）')" class="mt-2.5 bg-[#6d28d9] text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
+  </div>`).join('');
+
+/* ── 須知分眾 ── */
+const G={
+"嘉賓":[["到達","10:45"],["接待","莫榮大樓地下接待處（專人接待）"],["服裝","西式常服／制服＋勳章"],["典禮","第一部分 11:00（頒獎）＋第二部分 12:00（檢閱）·大操場座位預留"],["茶聚","13:00 莫榮大樓自助餐"],["交通","車牌已預登記可直接入場；大會車 10:15 灣仔伊利沙伯體育館門口開出"]],
+"普通旅團":[["到達","按報名時段（08:00 起）"],["報到","東閘 → 有蓋操場報到處"],["服裝","成員整齊童軍制服・親友便服"],["帶隊","每旅最少 1 名領袖；未滿 18 歲家長同意書 PT/46 由領袖保存"],["餐盒","代訂餐盒（$60/份）於報到處領取餐券"],["活動","13:00 起攤位博覽・主題活動區（紀念章每位乙枚）"]],
+"優異旅團":[["到達","10:15 前（提早於大操場後方排位）"],["集合","大操場指定排位區（按區會）"],["服裝","制服編號 3（常規制服）"],["頒獎","11:00 第一部分典禮：小童軍＝證書；幼童軍／童軍／深資／樂行＝彩帶，由楊國光總監頒發"],["影相","頒獎後於大操場指定位置合影"],["解散","12:00 檢閱後隨旅團自由參觀"]],
+"步操隊伍":[["到達","07:45–08:30（綵排）"],["集合","大操場指定位置（依旗幟）"],["服裝","制服編號 3（常規制服）"],["綵排","08:30–10:30 依司儀及總指揮指示綵排"],["檢閱","12:00 第二部分典禮：港島總區指揮官檢閱"],["支援","大會提供飲水點；雨具自備"]],
+"其他制服團體":[["到達","領隊帶隊按大會通知時段"],["報到","有蓋操場報到處（UG 專櫃）"],["服裝","自家整齊制服"],["人數","領隊於報到時核對出席人數"],["出席隊伍（2026）","女童軍總會 17 人・紅十字會 17 人・聖約翰少青團 18 人"],["觀禮","大操場 UG 觀禮區"]],
+"支部最高獎勵得主":[["到達","10:15–10:30 集合"],["集合","大操場左側後台排位（依獎章分組）"],["服裝","整齊童軍制服／正裝"],["頒獎","11:00 吳家麗會長頒發嘉許信；次序：總領袖獎章 → 榮譽童軍獎章 → 貝登堡獎章"],["親友","觀禮區預留（報名時申報人數）"]],
+"成人獎勵得主":[["到達","10:15–10:30 集合"],["集合","大操場左側後台排位（依獎項分組）"],["服裝","制服編號 3／常服＋佩戴原有勳章"],["頒獎","10 年長期服務獎狀・長期服務獎章（會長頒）；一星／三星（副會長頒）；委任書得主須覆誓（10:55 前綵排）"],["唱名","按名單唱名序上台，得獎通知有編號"]]};
+const GKEYS=Object.keys(G);
+document.getElementById('guideTabs').innerHTML=GKEYS.map((k,i)=>`<button class="idtab ${i===0?'active':''}" data-g="${k}" onclick="pickGuide('${k}')">${k.replace('支部最高獎勵得主','支部獎勵').replace('成人獎勵得主','成人獎勵').replace('其他制服團體','制服團體').replace('普通旅團','旅團')}</button>`).join('');
+window.pickGuide=function(k){
+  document.querySelectorAll('.idtab').forEach(b=>b.classList.toggle('active',b.dataset.g===k));
+  document.getElementById('guidePanel').innerHTML=`<div class="font-black text-[15px] text-violet-800 mb-2.5">👤 ${k}・須知</div>`+
+    G[k].map(r=>`<div class="flex gap-2.5 py-2 border-t border-slate-100 text-[13px]"><div class="w-20 shrink-0 font-bold text-slate-500 text-[12px]">${r[0]}</div><div>${r[1]}</div></div>`).join('');
+};
+pickGuide('嘉賓');
+
+/* ── 手冊 tabs ── */
+const MT=[["組織架構與聯絡","✅ 資料"],["場地與活動總覽","✅ 資料"],["攤位列表","✅ 自動生成"],["日程表","✅ 資料"],["典禮儀式","✅ 資料"],["優異旅團獲獎名單","✅ 由報名生成","demo"],["支部獎勵名單","✅ 由報名生成"],["領袖獎勵名單","✅ 由報名生成"],["嘉賓名單","🔐 權限內部"],["參加旅團名單","✅ 由報名生成","demo"],["代訂餐盒名單","✅ 由報名生成"],["危機處理","📄 文件"],["通告及文件","📄 文件"],["財務指引","📄 文件"],["各類附加資料","✅ 資料"]];
+document.getElementById('manualTabs').innerHTML=MT.map(t=>`<span class="text-[11px] font-bold rounded-full px-2.5 py-1 border ${t[2]==='demo'?'bg-violet-600 text-white border-violet-600':'bg-white border-slate-200 text-slate-600'}">${t[0]} <span class="opacity-70">·${t[1]}</span></span>`).join('');
+
+/* ── 名單渲染 ── */
+document.getElementById('ptBody').innerHTML=P.map(r=>`<tr><td class="text-slate-400">${r[0]}</td><td><b>${r[1]}</b></td><td class="text-[11.5px] text-slate-500">${r[2]}</td><td class="text-right font-bold">${r[3]}</td><td class="text-right ${r[4]?'font-bold text-rose-600':'text-slate-300'}">${r[4]||'–'}</td><td class="text-[11.5px]">${r[5]}</td></tr>`).join('')+
+`<tr class="bg-violet-50 font-black"><td></td><td>合共 31 團</td><td></td><td class="text-right">1,016</td><td class="text-right text-rose-600">137</td><td></td></tr>`;
+document.getElementById('meritArea').innerHTML=Object.entries(M).map(([a,arr])=>`
+  <details class="border border-violet-200 rounded-xl overflow-hidden">
+    <summary class="bg-violet-50 px-3 py-2 cursor-pointer flex justify-between items-center"><b class="text-[13px] text-violet-800">${a}</b><span class="text-[11px] font-bold text-violet-600">${arr.length} 團次 ▾</span></summary>
+    <div class="p-2.5">${arr.map(u=>`<span class="merit-unit">🏆 ${u}</span>`).join('')}</div>
+  </details>`).join('');
+</script>
+</body>
+</html>
