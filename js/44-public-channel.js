@@ -103,7 +103,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
           </div>
           <button onclick="app.${backFn}()" class="ml-auto shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-lg px-3 py-2">切換身份</button>
         </div>
-        ${d.notices&&d.notices[aud.id]?`<button onclick="showToast('📄 通知書（PDF）將連至 Drive 固定檔：ISD2027/${escapeHtml(d.notices[aud.id])}——檔名鎖死・覆蓋新版即全站自動更新（示範版）','info')" class="mt-2.5 w-full bg-white border border-indigo-200 text-indigo-700 text-[11.5px] font-bold rounded-lg py-2.5">📄 下載你的通知書（PDF）</button>`:''}
+        ${d.notices&&d.notices[aud.id]?`<button onclick="showToast('📄 正式通知書（地域格式）＝秘書出嗰封：掉入 ISD2027/${escapeHtml(d.notices[aud.id])} 就得——原名原檔唔使改名，系統自動攞最新嗰份（示範版）','info')" class="mt-2.5 w-full bg-white border border-indigo-200 text-indigo-700 text-[11.5px] font-bold rounded-lg py-2.5">📄 你的正式通知書（PDF）</button>`:''}
       </div>
       ${(aud.sections||[]).map((s,i)=>`
         <div class="flex items-center gap-2 font-black text-[14.5px] text-slate-800 mt-4 mb-2">
