@@ -14,6 +14,7 @@
  *  ⑩ 報到 QR（公眾端）：只有旅團（團體單位）有 token；個人／隊伍＝工作人員按名單點名
  *  ⑫ 場地示意圖：每類人嘅路線（虛線①②③）＋報到點（📍脈衝）標喺圖上（生產版＝每類一張標註地圖）
  *  ⑬ 七類通知書＝秘書正式信做源頭（資料夾制：原名原檔掉入、系統攞最新）＋每類入口有下載掣
+ *  ⑭ 源頭上傳中心（工作人員前端）：7 通知書＋7 地圖上傳掣——撳掣揀檔案，直入後端指定位置
  *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -226,6 +227,29 @@ app.currentUser = null;
 });
 app.pcDemoPickAudience('guest'); html = render();
 ok(html.includes('原名原檔唔使改名') && html.includes('攞最新'), '⑬ 講明機制：原名原檔掉入・系統攞最新（唔生成 PDF，讀秘書出嗰封）');
+
+/* ── ⑭ 源頭上傳中心：見掣→揀檔案→完成（連 Drive 都唔使入） ── */
+const ucCard = defs.find(d => d.id === 'upload_center');
+ok(ucCard && ucCard.minLevel === 20 && ucCard.requiresData === 'public_channel_2027', '⑭ 源頭上傳中心卡：工作人員等級＋requiresData 隔離');
+ok(!visible({ public_channel_2027: pc }).some(d => d.id === 'upload_center') && !visible({}).some(d => d.id === 'upload_center'), '⑭ 上傳中心唔會喺公眾／2026／2027 出現');
+ok((pc.upload_slots || []).length === 2 && pc.upload_slots.every(g => (g.items || []).length === 7), '⑭ 上傳入口：7 通知書＋7 地圖＝14 個掣');
+app.currentUser = { user_id: '陳子明', role: 'staff', mock_admin: true };
+containers['module-content'] = mkEl();
+app.renderUploadCenter();
+let uc = containers['module-content'].innerHTML;
+ok(uc.includes('七類通知書') && uc.includes('七類場地指示圖'), '⑭ 兩組入口（通知書＋地圖）');
+ok((uc.match(/📤 上傳檔案/g) || []).length === 14, '⑭ 14 個上傳掣');
+ok(uc.includes('ISD2027/02_通知書/02_旅團/') && uc.includes('ISD2027/04_場地/場地指示圖（公眾版）/01_嘉賓/'), '⑭ 每個掣標明後端 Drive 指定位置');
+ok(uc.includes('未上傳'), '⑭ 未上傳狀態顯示');
+ok(app.pcUploadSlot('notices', 'troop').path === '02_通知書/02_旅團', '⑭ slot 對應後端路徑');
+app.pcUploadFile('notices', 'troop', { files: [{ name: '旅團通知書_final.pdf', size: 12345 }], value: '' });
+uc = containers['module-content'].innerHTML;
+ok((app.pcUploadState || {})['notices:troop'] && app.pcUploadState['notices:troop'].file === '旅團通知書_final.pdf', '⑭ 上傳 → 記錄檔名＋時間（原名原檔照收）');
+ok(toasts[toasts.length - 1][1] === 'success' && toasts[toasts.length - 1][0].includes('ISD2027/02_通知書/02_旅團'), '⑭ 上傳成功提示含後端位置');
+ok(uc.includes('✓ 已上傳') && uc.includes('旅團通知書_final.pdf'), '⑭ 該掣變「✓ 已上傳」＋顯示最新檔案');
+app.pcDemoPickAudience('troop'); html = render();
+ok(html.includes('最新版本：旅團通知書_final.pdf'), '⑭ 連動出口：公眾旅團入口即時顯示最新通知書版本');
+app.currentUser = null;
 
 /* ── ⑧ 公眾 landing：一進APP就是公眾頻道（mock_demo・未登入） ── */
 app.currentUser = null; app.pcLandAudience = '';

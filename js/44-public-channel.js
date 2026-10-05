@@ -103,7 +103,8 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
           </div>
           <button onclick="app.${backFn}()" class="ml-auto shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-lg px-3 py-2">切換身份</button>
         </div>
-        ${d.notices&&d.notices[aud.id]?`<button onclick="showToast('📄 正式通知書（地域格式）＝秘書出嗰封：掉入 ISD2027/${escapeHtml(d.notices[aud.id])} 就得——原名原檔唔使改名，系統自動攞最新嗰份（示範版）','info')" class="mt-2.5 w-full bg-white border border-indigo-200 text-indigo-700 text-[11.5px] font-bold rounded-lg py-2.5">📄 你的正式通知書（PDF）</button>`:''}
+        ${d.notices&&d.notices[aud.id]?`<button onclick="showToast('📄 正式通知書（地域格式）＝秘書出嗰封：掉入 ISD2027/${escapeHtml(d.notices[aud.id])} 就得——原名原檔唔使改名，系統自動攞最新嗰份（示範版）','info')" class="mt-2.5 w-full bg-white border border-indigo-200 text-indigo-700 text-[11.5px] font-bold rounded-lg py-2.5">📄 你的正式通知書（PDF）</button>
+        ${(this.pcUploadState&&this.pcUploadState['notices:'+aud.id])?`<div class="mt-1.5 text-[10px] text-emerald-600 font-bold text-center truncate">✓ 最新版本：${escapeHtml(this.pcUploadState['notices:'+aud.id].file)}（${escapeHtml(this.pcUploadState['notices:'+aud.id].at)}・經源頭上傳中心）</div>`:''}`:''}
       </div>
       ${(aud.sections||[]).map((s,i)=>`
         <div class="flex items-center gap-2 font-black text-[14.5px] text-slate-800 mt-4 mb-2">
@@ -272,6 +273,62 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     const land=document.getElementById('public-landing');
     if(land && this.pcLandAudience===audId && !land.classList.contains('hidden')) this.renderPublicLanding();
     else this.renderPublicChannelDemo();
+  },
+
+  /* ═══════════ 源頭上傳中心（工作人員前端）：7 通知書＋7 地圖上傳入口 ═══════════
+     見到自己負責嘅掣 → 揀檔案 → 完成。系統自動存入後端 Drive 指定資料夾＋記錄上傳時間
+     （攞最新 100% 可靠）；上傳者永遠唔使入 Drive、唔使搵 folder、唔使改名。 */
+  pcUploadState:{},
+  pcUploadSlot(group,id){
+    const d=this.pcDemoData(); if(!d) return null;
+    for(const g of (d.upload_slots||[])){ if(g.group!==group) continue;
+      const it=(g.items||[]).find(x=>x.id===id); if(it) return {path:it.path,label:it.label,groupTitle:g.title};
+    }
+    return null;
+  },
+  renderUploadCenter(){
+    const container=document.getElementById('module-content');
+    const d=this.pcDemoData();
+    if(!d){ container.innerHTML='<p class="text-sm text-slate-400">此活動未有上傳中心示範資料</p>'; return; }
+    const st=this.pcUploadState||{};
+    container.innerHTML=`
+      <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
+        <b>🧪 階段 1 成品示範</b> — 每類嘢一個上傳掣：撳掣・揀檔案・完成。檔案自動存入後端 Drive 指定位置（路徑喺每個掣下面），上傳時間由系統記錄——「攞最新」100% 可靠。上傳者唔使入 Drive、唔使搵 folder、唔使改名（原檔名照用）。生產版＝GAS DriveApp 寫入對應資料夾（直入後端）。
+      </div>
+      ${(d.upload_slots||[]).map(g=>`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3">
+        <div class="font-black text-[14px] mb-3">${g.group==='notices'?'📄':'🗺️'} ${escapeHtml(g.title)}</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          ${(g.items||[]).map(it=>{
+            const rec=st[g.group+':'+it.id];
+            return `
+            <div class="border ${rec?'border-emerald-300 bg-emerald-50/40':'border-slate-200'} rounded-xl p-3">
+              <div class="flex items-center gap-2">
+                <b class="text-[12.5px] min-w-0 truncate">${escapeHtml(it.label)}</b>
+                ${rec?'<span class="ml-auto shrink-0 text-[9.5px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-full px-2 py-0.5">✓ 已上傳</span>':''}
+              </div>
+              <div class="text-[9.5px] text-slate-400 mt-0.5 truncate">→ Drive：ISD2027/${escapeHtml(it.path)}/</div>
+              ${rec?`<div class="text-[10.5px] text-emerald-700 font-bold mt-1.5 truncate">📄 ${escapeHtml(rec.file)}（${escapeHtml(rec.at)}）</div>`:'<div class="text-[10.5px] text-slate-400 mt-1.5">未上傳</div>'}
+              <label class="mt-2 block bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-2 text-center cursor-pointer">📤 上傳檔案<input type="file" class="hidden" accept=".pdf,.doc,.docx,.xlsx,.xls,.png,.jpg" onchange="app.pcUploadFile('${escapeHtml(g.group)}','${escapeHtml(it.id)}',this)"></label>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`).join('')}
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-[11px] text-slate-500 leading-relaxed">
+        💡 公眾頻道各入口會即時讀取「最新」嗰份：通知書掣顯示最新檔案；場地圖顯示該類專屬版本。上傳後唔使做任何嘢。
+      </div>`;
+  },
+  pcUploadFile(group,id,input){
+    const f=input&&input.files&&input.files[0];
+    if(!f){ return; }
+    const t=new Date();
+    const at=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    this.pcUploadState=this.pcUploadState||{};
+    this.pcUploadState[group+':'+id]={file:f.name,at:at,size:f.size};
+    const slot=this.pcUploadSlot(group,id);
+    showToast('✓ 已上傳「'+f.name+'」→ Drive：ISD2027/'+((slot&&slot.path)||'')+'／（系統自動歸位・記錄時間・攞最新）（示範版）','success');
+    this.renderUploadCenter();
+    if(input) input.value='';
   },
 
   /* ═══════════ 報到站（工作人員端）：掃描／輸入 token → 即見單位資料 → 確認報到 ═══════════ */
