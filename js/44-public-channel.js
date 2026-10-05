@@ -1282,38 +1282,141 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
   pcLandPick(id){ this.pcLandAudience=id; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
   pcLandBack(){ this.pcLandAudience=''; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
 
-  /* ═══════════ 工作人員閘口（頁尾隱藏入口）：4位密碼／籌委帳密 ═══════════ */
+  /* ═══════════ 工作人員入口（頁尾隱藏入口）：一個入口分流 ═══════════
+     ① 普通工作人員＝4 位活動密碼 → 只見「工作人員公開資料」
+     ② 籌委／職員＝帳號＋密碼 → 公開資料＋部門中心嗰啲（同 2026 設計一樣）
+  */
+  pcStaffGateDef(){
+    const d=this.pcDemoData(); const sg=(d&&d.staff_gate)||{};
+    const lanes=Array.isArray(sg.lanes)&&sg.lanes.length?sg.lanes:[
+      {id:'staff',icon:'🦺',name:'普通工作人員',badge:'只需活動密碼',desc:'打一次 4 位活動密碼，即可查看工作人員公開資料。',cta:'打密碼入 →',can:[],cannot:[]},
+      {id:'committee',icon:'🎖️',name:'籌委／職員（有帳戶）',badge:'帳號＋密碼',desc:'用管理員開設嘅帳戶登入，額外有部門中心嗰啲。',cta:'帳號密碼登入 →',can:[],cannot:[]}
+    ];
+    return Object.assign({},sg,{lanes});
+  },
+  pcStaffLaneDef(id){ return (this.pcStaffGateDef().lanes||[]).find(l=>l.id===id)||null; },
+
   pcStaffGate(){
     this.pcPinBuf='';
     const m=document.getElementById('modal-staff-gate');
-    if(m){ this.pcPinRender(); m.classList.remove('hidden'); }
+    this.pcGateRender();
+    this.pcGateSetMode('choose');
+    if(m) m.classList.remove('hidden');
   },
+
+  // 分流畫面（由 data.staff_gate 砌，唔使改 HTML 都改得到文案）
+  pcGateRender(){
+    const sg=this.pcStaffGateDef();
+    const t=document.getElementById('pc-gate-title'); if(t) t.textContent=sg.title||'工作人員入口';
+    const rm=document.getElementById('pc-gate-remember'); if(rm) rm.textContent=sg.remember_note||'';
+    const pl=document.getElementById('pc-pin-label'); if(pl) pl.textContent=sg.pin_label||'普通工作人員・請輸入 4 位活動密碼';
+    const ph=document.getElementById('pc-pin-hint'); if(ph) ph.textContent=sg.pin_hint||'';
+    const list=(items,ok)=>!items||!items.length?'':`<ul class="mt-1.5 space-y-0.5">${items.map(x=>`<li class="flex gap-1.5 items-start"><span class="${ok?'text-emerald-600':'text-rose-400'} shrink-0">${ok?'✓':'✕'}</span><span class="${ok?'text-slate-600':'text-slate-400'}">${escapeHtml(x)}</span></li>`).join('')}</ul>`;
+    const box=document.getElementById('pc-gate-choose');
+    if(box){
+      box.innerHTML=`
+      ${sg.intro?`<p class="text-[11.5px] text-slate-500 leading-relaxed">${escapeHtml(sg.intro)}</p>`:''}
+      ${(sg.lanes||[]).map(l=>`
+        <button type="button" onclick="app.pcGatePick('${l.id}')" data-lane="${l.id}" class="w-full text-left border-2 border-slate-200 hover:border-slate-900 rounded-2xl p-3.5 btn-mobile transition">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[18px]">${escapeHtml(l.icon||'')}</span>
+            <span class="font-bold text-[13.5px] text-slate-800">${escapeHtml(l.name||'')}</span>
+            <span class="bg-slate-900 text-white text-[9.5px] font-bold px-2 py-0.5 rounded-full">${escapeHtml(l.badge||'')}</span>
+          </div>
+          <div class="text-[11px] text-slate-500 leading-relaxed mt-1.5">${escapeHtml(l.desc||'')}</div>
+          <div class="text-[10.5px] leading-relaxed mt-2">${list(l.can,true)}${list(l.cannot,false)}</div>
+          <div class="text-[11.5px] font-bold text-slate-900 mt-2.5">${escapeHtml(l.cta||'入 →')}</div>
+        </button>`).join('')}
+      ${sg.account_hint?`<div class="text-[10px] text-slate-400 text-center leading-relaxed">${escapeHtml(sg.account_hint)}</div>`:''}`;
+    }
+    const scope=document.getElementById('pc-pin-scope');
+    const lane=this.pcStaffLaneDef('staff');
+    if(scope&&lane){
+      scope.innerHTML=`<div class="font-bold text-slate-600 mb-1">入咗之後睇到／睇唔到</div>${list(lane.can,true)}${list(lane.cannot,false)}`;
+    }
+  },
+
+  pcGateSetMode(mode){
+    this.pcGateMode=mode||'choose';
+    const c=document.getElementById('pc-gate-choose'); const p=document.getElementById('pc-gate-pin');
+    if(c) c.classList.toggle('hidden',this.pcGateMode!=='choose');
+    if(p) p.classList.toggle('hidden',this.pcGateMode!=='pin');
+    if(this.pcGateMode==='pin'){ this.pcPinBuf=''; this.pcPinRender(); }
+  },
+
+  pcGatePick(id){
+    if(id==='committee'){ this.pcCommitteeLogin(); return; }
+    this.pcGateSetMode('pin');
+  },
+
   pcPinPress(k){
     if(k==='clr'){ this.pcPinBuf=''; }
-    else if(k==='del'){ this.pcPinBuf=this.pcPinBuf.slice(0,-1); }
-    else if(this.pcPinBuf.length<4 && /^[0-9]$/.test(k)){ this.pcPinBuf+=k; }
+    else if(k==='del'){ this.pcPinBuf=(this.pcPinBuf||'').slice(0,-1); }
+    else if((this.pcPinBuf||'').length<4 && /^[0-9]$/.test(k)){ this.pcPinBuf=(this.pcPinBuf||'')+k; }
     this.pcPinRender();
-    if(this.pcPinBuf.length===4) setTimeout(()=>this.pcPinCheck(),120);
+    if((this.pcPinBuf||'').length===4) setTimeout(()=>this.pcPinCheck(),120);
   },
   pcPinRender(){
     const dots=document.getElementById('pc-pin-dots'); if(!dots) return;
     let html='';
-    for(let i=0;i<4;i++){ html+=`<span class="rounded-full" style="width:14px;height:14px;${i<this.pcPinBuf.length?'background:#1e293b':'background:#e2e8f0'}"></span>`; }
+    for(let i=0;i<4;i++){ html+=`<span class="rounded-full" style="width:14px;height:14px;${i<(this.pcPinBuf||'').length?'background:#1e293b':'background:#e2e8f0'}"></span>`; }
     dots.innerHTML=html;
   },
   pcPinCheck(){
-    const d=this.pcDemoData(); const sg=(d&&d.staff_gate)||{};
+    const sg=this.pcStaffGateDef();
     if(sg.pin && this.pcPinBuf===String(sg.pin)){ this.pcStaffLogin(sg); }
     else{ showToast('密碼不正確，請重試','error'); this.pcPinBuf=''; this.pcPinRender(); }
   },
+
+  // ① 普通工作人員：密碼過咗 → 受限身份（role=staff，無 mock_admin，staff_pin=true）
   pcStaffLogin(sg){
     const m=document.getElementById('modal-staff-gate'); if(m) m.classList.add('hidden');
-    const target=(sg&&sg.login_as)||'';
-    if(typeof this.demoLogin==='function' && target){ this.demoLogin(target); } // 示範版：對應本地示範帳戶（工作人員）
-    else if(target){ this.currentUser={user_id:target,name:target,role:'staff',group_name:'未分組',mock_admin:true}; if(this.currentEvent) this.showDashboard(); }
+    const def=(sg&&sg.pin_user)||{};
+    const lane=this.pcStaffLaneDef('staff')||{};
+    this.currentUser={
+      user_id: def.user_id||'staff_pin',
+      name: def.name||'工作人員',
+      role: def.role||'staff',
+      group_name: def.group_name||'未分組',
+      staff_pin: true   // ← 關鍵旗標：只開「工作人員公開資料」，唔開部門中心／工作卡片／批核／管理工具
+    };
+    try{ localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); }catch(e){}
+    this.pcLandAudience=''; this.pcAudTab='';
+    if(typeof this.updateUserUI==='function') this.updateUserUI();
+    if(typeof this.updateAdminNav==='function') this.updateAdminNav();
+    showToast('已以「'+(lane.name||'普通工作人員')+'」身份入咗（只睇工作人員公開資料）','success');
+    if(this.currentEvent && typeof this.showDashboard==='function') this.showDashboard();
+    if(typeof window!=='undefined'&&window.scrollTo) window.scrollTo(0,0);
   },
+
+  // ② 籌委／職員：帳號＋密碼（沿用 2026 既有登入視窗）
   pcCommitteeLogin(){
     const m=document.getElementById('modal-staff-gate'); if(m) m.classList.add('hidden');
-    if(typeof this.openLoginModal==='function') this.openLoginModal(); // 籌委＝帳號密碼（同一入口分流）
+    if(typeof this.openLoginModal==='function') this.openLoginModal();
+  },
+
+  // 普通工作人員想升做籌委：由儀表板橫額直接叫出帳密登入
+  pcUpgradeToCommittee(){
+    if(typeof this.openLoginModal==='function') this.openLoginModal();
+    else this.pcStaffGate();
+  },
+
+  // 受限身份判斷（俾 10-app-core 用）
+  isPinStaff(){ return !!(this.currentUser && this.currentUser.staff_pin); },
+
+  // 儀表板頂部提示條（只喺普通工作人員身份顯示）
+  pcPinStaffNoticeHTML(){
+    const lane=this.pcStaffLaneDef('staff')||{};
+    const cannot=(lane.cannot||[]).slice(0,3).join('、');
+    return `<div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 mb-4">
+      <div class="flex items-start gap-2.5 flex-wrap">
+        <span class="text-[16px] leading-none mt-0.5">🦺</span>
+        <div class="flex-1 min-w-[180px]">
+          <div class="font-bold text-[12.5px] text-amber-900">普通工作人員模式（活動密碼登入）</div>
+          <div class="text-[11px] text-amber-800 leading-relaxed mt-0.5">你而家睇到嘅係<b>工作人員公開資料</b>。${cannot?`<br>未開放：${escapeHtml(cannot)}等——需要籌委帳戶。`:''}</div>
+        </div>
+        <button type="button" onclick="app.pcUpgradeToCommittee()" class="bg-amber-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl btn-mobile whitespace-nowrap"><i class="fa-solid fa-id-card mr-1"></i>我係籌委・帳號登入</button>
+      </div>
+    </div>`;
   },
 });

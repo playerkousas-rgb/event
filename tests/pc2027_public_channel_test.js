@@ -384,25 +384,82 @@ app.currentUser = { user_id: '陳子明', name: '陳子明', role: 'staff' };
 ok(app.pcPublicLandingActive() === false, '⑧ 已登入 → landing 唔生效（正常儀表板）');
 app.currentUser = null;
 
-/* ── ⑨ 工作人員閘口：4位密碼＋籌委帳密（同一入口分流） ── */
+/* ── ⑨ 工作人員入口：分流選擇 → ①普通工作人員(PIN) ②籌委(帳密) ── */
+app.currentUser = null;
 app.pcStaffGate();
 ok(!containers['modal-staff-gate'].classList.contains('hidden'), '⑨ 閘口 modal 打開');
-ok((containers['pc-pin-dots'].innerHTML.match(/rounded-full/g) || []).length === 4, '⑨ PIN 4 點顯示');
+ok(app.pcGateMode === 'choose', '⑨ 入口預設＝分流選擇（唔係直接彈 PIN）');
+ok(containers['pc-gate-pin'].classList.contains('hidden'), '⑨ 分流時 PIN 鍵盤收起');
+const gateHTML = containers['pc-gate-choose'].innerHTML;
+ok(gateHTML.includes('普通工作人員') && gateHTML.includes('籌委'), '⑨ 分流：兩條路都列出');
+ok(gateHTML.includes('只需活動密碼') && gateHTML.includes('帳號＋密碼'), '⑨ 分流：標明各自登入方式');
+ok(gateHTML.includes('部門中心'), '⑨ 分流：明寫部門中心屬籌委');
+ok(gateHTML.includes("pcGatePick('staff')") && gateHTML.includes("pcGatePick('committee')"), '⑨ 分流：兩個掣各自接線');
+ok(containers['pc-gate-remember'].textContent.includes('記住'), '⑨ 分流：有「瀏覽器會記住登入」說明');
+
+// ① 普通工作人員：揀咗先見 PIN 鍵盤
+app.pcGatePick('staff');
+ok(app.pcGateMode === 'pin' && containers['pc-gate-choose'].classList.contains('hidden'), '⑨A 揀普通工作人員 → 轉 PIN 畫面');
+ok((containers['pc-pin-dots'].innerHTML.match(/rounded-full/g) || []).length === 4, '⑨A PIN 4 點顯示');
+ok(containers['pc-pin-scope'].innerHTML.includes('睇到') && containers['pc-pin-scope'].innerHTML.includes('部門中心'), '⑨A PIN 畫面列明睇到／睇唔到');
 '9999'.split('').forEach(d => app.pcPinPress(d));
 app.pcPinCheck();
-ok(toasts.length >= 1 && toasts[toasts.length - 1][1] === 'error', '⑨ 錯密碼 → 錯誤提示');
-ok(!app.currentUser, '⑨ 錯密碼 → 唔會登入');
-ok(app.pcPinBuf === '', '⑨ 錯密碼 → 輸入清空');
-app.demoLogin = uid => { app.currentUser = { user_id: uid, name: uid, role: 'staff', mock_admin: true }; };
+ok(toasts.length >= 1 && toasts[toasts.length - 1][1] === 'error', '⑨A 錯密碼 → 錯誤提示');
+ok(!app.currentUser, '⑨A 錯密碼 → 唔會登入');
+ok(app.pcPinBuf === '', '⑨A 錯密碼 → 輸入清空');
 '2027'.split('').forEach(d => app.pcPinPress(d));
 app.pcPinCheck();
-ok(app.currentUser && app.currentUser.user_id === '陳子明', '⑨ 正確 PIN（2027）→ 登入工作人員（陳子明）');
-ok(containers['modal-staff-gate'].classList.contains('hidden'), '⑨ 登入後閘口自動關閉');
+ok(!!app.currentUser, '⑨A 正確 PIN（2027）→ 入到');
+ok(app.currentUser.staff_pin === true, '⑨A PIN 身份帶 staff_pin 旗標');
+ok(app.currentUser.role === 'staff' && !app.currentUser.mock_admin, '⑨A PIN 身份＝staff，唔會攞到 mock_admin 全開權限');
+ok(app.isPinStaff() === true, '⑨A isPinStaff() 認得出');
+ok(containers['modal-staff-gate'].classList.contains('hidden'), '⑨A 入咗之後閘口自動關閉');
+ok(app.pcPublicLandingActive() === false, '⑨A 入咗之後唔再停喺公眾 landing');
+const pinNotice = app.pcPinStaffNoticeHTML();
+ok(pinNotice.includes('普通工作人員') && pinNotice.includes('pcUpgradeToCommittee'), '⑨A 儀表板提示條有「升級做籌委登入」掣');
 app.currentUser = null;
+
+// ② 籌委：帳號＋密碼（沿用既有登入視窗）
 let loginOpened = false;
 app.openLoginModal = () => { loginOpened = true; };
-app.pcCommitteeLogin();
-ok(loginOpened && containers['modal-staff-gate'].classList.contains('hidden'), '⑨ 「籌委登入（帳號密碼）」→ 開現有帳密登入');
+app.pcStaffGate();
+app.pcGatePick('committee');
+ok(loginOpened && containers['modal-staff-gate'].classList.contains('hidden'), '⑨B 揀籌委 → 開帳號密碼登入視窗');
+loginOpened = false; app.pcUpgradeToCommittee();
+ok(loginOpened, '⑨B 普通工作人員可由提示條升級做籌委登入');
+app.currentUser = null;
+
+/* ── ⑱ 權限分流：普通工作人員只開「工作人員公開資料」 ── */
+{
+  const coreSrc = read('js/10-app-core.js');
+  const grab = (name) => {
+    const i = coreSrc.indexOf('\n  ' + name + '(');
+    if (i < 0) return '';
+    const j = coreSrc.indexOf('\n,\n', i);
+    return coreSrc.slice(i, j < 0 ? coreSrc.length : j);
+  };
+  const seeSrc = grab('canSeeRoleCard');
+  ok(/staff_pin.*minLevel\s*<=\s*0/s.test(seeSrc), '⑱ canSeeRoleCard：staff_pin → 只開 minLevel 0');
+  const navSrc = grab('updateAdminNav');
+  ok(/pinStaff/.test(navSrc) && /setNav\('bn-dept',\s*loggedIn&&!pinStaff\)/.test(navSrc), '⑱ 底部導覽：普通工作人員冇部門中心');
+  ok(/chiefOrAbove=!pinStaff/.test(navSrc), '⑱ 底部導覽：普通工作人員冇批核中心／開戶');
+  ok(/topbar-changepwd[\s\S]{0,120}loggedIn&&!pinStaff/.test(navSrc), '⑱ 頂部：普通工作人員冇改密碼（冇帳戶）');
+  const cardsSrc = grab('renderRoleCards');
+  ok(/user\.staff_pin/.test(cardsSrc) && /pin-staff-notice/.test(cardsSrc), '⑱ 儀表板：staff_pin 分支＋提示條');
+  ok(/identitySection\.classList\.add\('hidden'\)/.test(cardsSrc.slice(cardsSrc.indexOf('user.staff_pin'))), '⑱ 儀表板：工作卡片區隱藏');
+  ok(/staff_pin[\s\S]{0,500}要籌委帳戶/.test(grab('openModule')), '⑱ openModule：非公開模組擋住普通工作人員');
+  ok(/grpSec[\s\S]{0,120}staff_pin/.test(coreSrc), '⑱ 部門管理中心區塊對普通工作人員隱藏');
+  ok(/user\.staff_pin[\s\S]{0,140}heroMon/.test(grab('renderIdentityBar')), '⑱ 普通工作人員冇「我的監察」');
+  // 實際用卡片定義行一次：模擬 canSeeRoleCard 嘅 staff_pin 規則
+  const pinVisible = defs.filter(d => d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || pc));
+  ok(pinVisible.some(d => d.id === 'exec_manual') && pinVisible.some(d => d.id === 'announcements'), '⑱ 公開資料含執行手冊／公告');
+  ok(!pinVisible.some(d => String(d.id).startsWith('group_')) && !pinVisible.some(d => d.id === 'dept_hub'), '⑱ 公開資料唔含部門卡');
+  const sg = app.pcStaffGateDef();
+  ok(sg.lanes.length === 2 && sg.lanes[0].id === 'staff' && sg.lanes[1].id === 'committee', '⑱ staff_gate 資料：兩條路');
+  ok(sg.pin_user && sg.pin_user.role === 'staff', '⑱ staff_gate 資料：PIN 身份＝staff');
+  ok((sg.lanes[0].cannot || []).some(x => x.includes('部門中心')), '⑱ 文案：普通工作人員明寫冇部門中心');
+  ok((sg.lanes[1].can || []).some(x => x.includes('部門中心')), '⑱ 文案：籌委明寫有部門中心');
+}
 
 /* ── ③ 委員一頁睇晒（tabs 模式） ── */
 app.pcDemoOpenTabs();
