@@ -20,7 +20,14 @@ Object.assign(ScoutEventApp.prototype,{
   pcDemoTab:'home', pcDemoZone:'all', pcDemoGuideKey:'',
   _pcPubChecked:false,
 
-  pcDemoData(){ return (this.eventData && this.eventData.public_channel_2027) || null; },
+  pcDemoData(){
+    const base=(this.eventData && this.eventData.public_channel_2027) || null;
+    if(!base) return null;
+    // v21：各組喺 APP 入面改過嘅內容，喺呢度一次性疊返上去（唔郁 data/mock_demo.json）
+    const eid=(this.currentEvent&&this.currentEvent.event_id)||'mock_demo';
+    if(this._pcOverlayFor!==eid && this.pcApplyContentOverrides){ try{ this.pcApplyContentOverrides(base); }catch(e){} this._pcOverlayFor=eid; }
+    return base;
+  },
   pcDemoAudienceDef(id){ const d=this.pcDemoData(); return (d && (d.audiences||[]).find(a=>a.id===id)) || null; },
 
   /* ?pub=xxx 深連結：生產版每類受眾專屬入口（示範版模擬同一機制） */

@@ -1388,7 +1388,9 @@ Object.assign(ScoutEventApp.prototype,{
     const groupCommonTabs=[
       {k:'group_expense',label:'💰 開支申報'},
       {k:'group_quotes',label:'📝 口頭報價'},
-      {k:'group_finance_guide',label:'📖 財務指引'}
+      {k:'group_finance_guide',label:'📖 財務指引'},
+      // v21：公眾頻道內容——邊格屬邊組寫死喺 PC_CONTENT_SCHEMA，本組有份先出呢個頁籤
+      ...((this.pcEditSectionsForGroup&&this.pcEditSectionsForGroup(groupName).length)?[{k:'group_pc_content',label:'🌐 公眾頻道內容（本組負責）'}]:[])
     ];
     const groupTabList=[
       {k:'apps',label:'📋 本組申請'},
@@ -1468,6 +1470,7 @@ Object.assign(ScoutEventApp.prototype,{
       if(t.k==='group_expense') el.innerHTML=this.renderGroupExpenseTabHTML(groupName);
       else if(t.k==='group_quotes') el.innerHTML=this.renderGroupQuotesTabHTML(groupName);
       else if(t.k==='group_finance_guide') el.innerHTML=this.renderGroupFinanceGuideTabHTML(groupName);
+      else if(t.k==='group_pc_content') this.renderPcContentEditor(el);
     });
     if(isThemeGroup){
       const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
