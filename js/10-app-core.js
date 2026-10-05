@@ -1370,6 +1370,7 @@ Object.assign(ScoutEventApp.prototype,{
       ...(groupName==='協調組'?[
         {k:'coord_supplies',label:'📦 物資批核'},
         {k:'coord_vehicle',label:'🚗 車輛批核'},
+        {k:'coord_plate',label:'🔢 點車牌（交警校／閘口查冊）'},
         {k:'coord_meals',label:'🍱 膳食批核'},
         {k:'coord_mealbox',label:'🍱 代訂餐盒名單'},
         {k:'coord_meal_staff',label:'🍚 工作人員膳食點名'},
@@ -1447,6 +1448,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'admin_tickets': el.innerHTML=this.renderAdminTicketsTabHTML(); break;
         case 'coord_supplies': this.renderCoordSupplies(el); break;
         case 'coord_vehicle': this.renderCoordVehicles(el); break;
+        case 'coord_plate': this.renderPlateRoll(el); break;
         case 'coord_meals': this.renderCoordMeals(el); break;
         case 'coord_docs': this.renderCoordDocs(el); break;
         // 名單與點名資料在各入口共用；此處提供負責組的操作入口。

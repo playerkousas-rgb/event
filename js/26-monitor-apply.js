@@ -260,6 +260,7 @@ Object.assign(ScoutEventApp.prototype,{
     const tabs=[
       {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地圖、攤位總表及遊戲卡'},
       {k:'ceremony', icon:'fa-solid fa-crown', label:'典禮儀式'},
+      {k:'mc_scripts', icon:'fa-solid fa-microphone-lines', label:'司儀稿'},
       {k:'adult_awards', icon:'fa-solid fa-user-shield', label:'成年獎勵及 RUNDOWN'},
       {k:'merit_award', icon:'fa-solid fa-trophy', label:'優異旅團獲獎'},
       {k:'participants', icon:'fa-solid fa-people-group', label:'參加旅團名單'},
@@ -292,6 +293,7 @@ Object.assign(ScoutEventApp.prototype,{
       staff:()=>this.renderStaffModule(panel),
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
+      mc_scripts:()=>{ panel.innerHTML=this.execManualMcScriptsHTML(); },
       adult_awards:()=>{ panel.innerHTML=`<div class="space-y-3">${this.ceremonyPart1RundownV5HTML()}${this.adultAwards2026HTML()}</div>`; },
       merit_award:()=>{ panel.innerHTML=`<div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('merit_award',{scope:'exec'})}</div>`; },
       crisis:()=>this.renderCrisisModule(panel),
