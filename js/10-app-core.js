@@ -58,6 +58,22 @@ Object.assign(ScoutEventApp.prototype,{
     this.updateSaveBar();
     // QR Code hash routing：掃碼後自動開啟捐贈表
     this.handleHashRoute();
+    // v15（UI 示範階段）：一入 APP 直接進入「模擬示範版」嘅公眾頻道 2027（示範）頁面，
+    // 唔使先喺首頁揀活動。想返活動選擇頁＝按最頂 BAR 嘅營帳圖示。
+    await this.autoEnterPublicDemo();
+  }
+,
+  // 自動進入示範活動（公眾頻道 2027）：只喺未揀活動、未登入、冇掃碼 hash 時觸發
+  AUTO_DEMO_EVENT_ID:'mock_demo',
+  async autoEnterPublicDemo(){
+    try{
+      if(this.currentEvent) return;
+      if(typeof location!=='undefined' && String(location.hash||'').trim()) return;
+      if(!this.eventsList || !this.eventsList.length) await this.loadEvents();
+      const ev=(this.eventsList||[]).find(e=>e.event_id===this.AUTO_DEMO_EVENT_ID);
+      if(!ev) return;
+      this.accessEvent(ev.event_id);
+    }catch(e){ console.warn('[autoEnterPublicDemo]', e); }
   }
 ,
   closeModal(id){document.getElementById(id).classList.add('hidden');}

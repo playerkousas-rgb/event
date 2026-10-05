@@ -12,7 +12,7 @@
    ・ 報到 QR：只有旅團（團體單位）有 token（T001–T031）；個人／隊伍＝工作人員按名單點名（checkin_note）。
    ・ 場地示意圖（venue_map 數據驅動）：每類人嘅路線＋報到點📍直接標喺圖上——生產版由籌委提供源點，為不同人士製作幾張唔同嘅圖。
      （minLevel 20・requiresData 同樣 gated）掃描／輸入即見旅團・人數・餐盒，一撳確認報到。
-   ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版 8 個分頁（含手冊）全部開放。
+   ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版全部分頁（含手冊）全部開放。
    回歸測試：tests/pc2027_public_channel_test.js */
 Object.assign(ScoutEventApp.prototype,{
   pcDemoMode:'pick',        // pick=身份入口選擇 | audience=某受眾專屬版面 | tabs=委員一頁睇晒
@@ -38,8 +38,8 @@ Object.assign(ScoutEventApp.prototype,{
 
   openPublicChannelTab(t){ this.pcDemoMode='tabs'; this.pcDemoTab=t; this.renderPublicChannelDemo(); },
   pcDemoOpenTabs(){ this.pcDemoMode='tabs'; this.pcDemoTab='home'; this.renderPublicChannelDemo(); },
-  pcDemoPickAudience(id){ this.pcDemoMode='audience'; this.pcDemoAudience=id; this.renderPublicChannelDemo(); },
-  pcDemoBackToPick(){ this.pcDemoMode='pick'; this.pcDemoAudience=''; this.renderPublicChannelDemo(); },
+  pcDemoPickAudience(id){ this.pcDemoMode='audience'; this.pcDemoAudience=id; this.pcAudTab=''; this.renderPublicChannelDemo(); },
+  pcDemoBackToPick(){ this.pcDemoMode='pick'; this.pcDemoAudience=''; this.pcAudTab=''; this.renderPublicChannelDemo(); },
   pcDemoSetZone(z){ this.pcDemoZone=z; this.renderPublicChannelDemo(); },
   pcDemoSetGuide(g){ this.pcDemoGuideKey=g; this.renderPublicChannelDemo(); },
 
@@ -60,6 +60,7 @@ Object.assign(ScoutEventApp.prototype,{
         <b>🧪 階段 1 成品示範</b> — 公眾（非工作人員）嘅分眾入口：唔同類型訪客見到唔同版面；生產版每類入口有專屬連結／QR（?pub=xxx）。數據＝2026 真實資料（docs/2027_FIELD_CONTRACT.md）。
       </div>
       ${body}`;
+    if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);
   },
 
   /* ═══════════ 入口選擇頁 ═══════════ */
@@ -86,15 +87,46 @@ Object.assign(ScoutEventApp.prototype,{
         </div>`).join('')}
       </div>
 ${opts.tabsLink!==false?`      <div class="text-center mt-4">
-        <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容（8 個分頁）</button>
+        <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容</button>
       </div>`:''}`;
   },
 
   /* ═══════════ 受眾專屬版面 ═══════════ */
+  /* ── 受眾專屬版面（v2・活動日版）：改為「頁簽」——唔再長長一版要不停拖拉 ──
+       pcAudTab 記住目前頁簽；切換身份會重設返第一個頁簽。 */
+  pcAudTab:'',
+  pcSectionIcon(s){
+    return ({banner:'fa-solid fa-circle-info',schedule:'fa-regular fa-clock',arrival:'fa-solid fa-location-dot',
+      venue:'fa-solid fa-map',ceremony:'fa-solid fa-award',seating:'fa-solid fa-chair',lunch:'fa-solid fa-utensils',
+      mess:'fa-solid fa-champagne-glasses',guide:'fa-solid fa-book-open',help:'fa-solid fa-life-ring',
+      program:'fa-regular fa-calendar-check',booths:'fa-solid fa-store',transport:'fa-solid fa-bus',donate:'fa-solid fa-heart'})[s]||'fa-solid fa-circle';
+  },
+  /* 頁簽列黐頂：避開最頂 BAR（高度會因手機分行而變，所以實時量度） */
+  pcSyncTabbarOffset(){
+    try{
+      const bar=document.getElementById('pc-aud-tabs'); if(!bar||!bar.style) return;
+      const hd=document.querySelector&&document.querySelector('header');
+      bar.style.top=((hd&&hd.offsetHeight)||56)+'px';
+    }catch(e){}
+  },
+  pcRerenderAudience(){
+    const land=document.getElementById('public-landing');
+    if(land && !land.classList.contains('hidden')) this.renderPublicLanding();
+    else this.renderPublicChannelDemo();
+  },
+  pcSetAudTab(k){
+    this.pcAudTab=k;
+    this.pcRerenderAudience();
+    try{ const el=document.getElementById('pc-aud-tabs'); if(el&&el.scrollIntoView) el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); }catch(e){ }
+  },
+
   pcDemoAudienceBody(d,aud,backFn='pcDemoBackToPick'){
     const labels=d.section_labels||{};
+    const secs=(aud.sections||[]);
+    if(!secs.includes(this.pcAudTab)) this.pcAudTab=secs[0]||'';
+    const cur=this.pcAudTab;
     return `
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-1">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-2">
         <div class="flex items-center gap-3">
           <div class="text-3xl">${aud.icon}</div>
           <div class="min-w-0">
@@ -107,11 +139,21 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         ${d.notices&&d.notices[aud.id]?`<button onclick="showToast('📄 正式通知書（地域格式）＝秘書出嗰封：掉入 ISD2027/${escapeHtml(d.notices[aud.id])} 就得——原名原檔唔使改名，系統自動攞最新嗰份（示範版）','info')" class="mt-2.5 w-full bg-white border border-indigo-200 text-indigo-700 text-[11.5px] font-bold rounded-lg py-2.5">📄 你的正式通知書（PDF）</button>
         ${(this.pcUploadState&&this.pcUploadState['notices:'+aud.id])?`<div class="mt-1.5 text-[10px] text-emerald-600 font-bold text-center truncate">✓ 最新版本：${escapeHtml(this.pcUploadState['notices:'+aud.id].file)}（${escapeHtml(this.pcUploadState['notices:'+aud.id].at)}・經源頭上傳中心）</div>`:''}`:''}
       </div>
-      ${(aud.sections||[]).map((s,i)=>`
-        <div class="flex items-center gap-2 font-black text-[14.5px] text-slate-800 mt-4 mb-2">
-          <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 text-[12px] flex items-center justify-center shrink-0">${i+1}</span>${escapeHtml(labels[s]||s)}
+      <div id="pc-aud-tabs" class="pc-tabbar sticky top-0 z-20 -mx-1 px-1 py-2 bg-slate-50/95 backdrop-blur border-b border-slate-200 mb-3">
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar" style="scrollbar-width:none">
+          ${secs.map(sx=>`<button onclick="app.pcSetAudTab('${escapeHtml(sx)}')" class="shrink-0 whitespace-nowrap text-[12px] font-bold rounded-full px-3 py-2 border ${cur===sx?'bg-indigo-600 text-white border-indigo-600 shadow-sm':'bg-white text-slate-600 border-slate-200'}"><i class="${this.pcSectionIcon(sx)} mr-1"></i>${escapeHtml(labels[sx]||sx)}</button>`).join('')}
         </div>
-        ${this.pcDemoSectionFor(d,aud,s)}`).join('')}
+      </div>
+      <div class="flex items-center gap-2 font-black text-[15px] text-slate-800 mb-2">
+        <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 text-[11px] flex items-center justify-center shrink-0"><i class="${this.pcSectionIcon(cur)}"></i></span>${escapeHtml(labels[cur]||cur)}
+        <span class="ml-auto text-[10.5px] font-bold text-slate-400">${secs.indexOf(cur)+1} / ${secs.length}</span>
+      </div>
+      <div id="pc-aud-panel">${this.pcDemoSectionFor(d,aud,cur)}</div>
+      ${secs.length>1?`
+      <div class="flex gap-2 mt-4">
+        ${secs.indexOf(cur)>0?`<button onclick="app.pcSetAudTab('${escapeHtml(secs[secs.indexOf(cur)-1])}')" class="flex-1 bg-white border border-slate-200 text-slate-600 text-[12px] font-bold rounded-xl py-2.5">← ${escapeHtml(labels[secs[secs.indexOf(cur)-1]]||'')}</button>`:''}
+        ${secs.indexOf(cur)<secs.length-1?`<button onclick="app.pcSetAudTab('${escapeHtml(secs[secs.indexOf(cur)+1])}')" class="flex-1 bg-indigo-600 text-white text-[12px] font-bold rounded-xl py-2.5">${escapeHtml(labels[secs[secs.indexOf(cur)+1]]||'')} →</button>`:''}
+      </div>`:''}
       <div class="text-center text-[10.5px] text-slate-400 mt-5">生產版：呢個版面有專屬連結／QR（?pub=${escapeHtml(aud.id)}），唔使揀身份直接入</div>`;
   },
 
@@ -120,8 +162,11 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       case 'banner': return aud.banner==='guest'?this.pcDemoGuestBannerHTML(d):this.pcDemoHomeHTML(d);
       case 'schedule': return this.pcDemoScheduleForHTML(d,aud);
       case 'arrival': return this.pcDemoArrivalHTML(d,aud);
-      case 'qr': return this.pcDemoQrHTML(d,aud);
-      case 'apply': return this.pcDemoApplyForHTML(d,aud.featured||[]);
+      case 'venue': return this.pcDemoVenueFullHTML(d);
+      case 'ceremony': return this.pcDemoCeremonyFlowHTML(d,aud);
+      case 'seating': return this.pcDemoSeatingHTML(d);
+      case 'lunch': return this.pcDemoLunchHTML(d);
+      case 'mess': return this.pcDemoMessCeremonyHTML(d);
       case 'guide': return this.pcDemoGuideForHTML(d,aud.guide||[]);
       case 'program': return this.pcDemoProgramHTML(d);
       case 'booths': return this.pcDemoBoothsHTML(d);
@@ -195,38 +240,271 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* ── 報到與地圖（每類唔同報到點＋路線重點＋專屬交通提示） ── */
+  /* ── 報到資訊（v2）：每個參加者有自己嘅地圖——清楚知道去邊報到、路線點走。
+       報到 QR 唔會喺呢度顯示（公開頁、唔使登入）：QR 以電郵發俾負責領袖，當日由佢出示作登記。 ── */
   pcDemoArrivalHTML(d,aud){
     const ar=(d.arrivals||{})[aud.id]||{};
-    const t=d.transport||{};
+    const qr=ar.qr_email||null;
+    const rule=d.checkin_qr_rule||{};
     return `
       <div class="bg-white border-2 border-indigo-500 rounded-2xl p-4 text-center">
         <div class="text-[10.5px] font-bold text-indigo-600">📍 你的報到地點</div>
-        <div class="text-[16px] font-black text-indigo-900 leading-snug mt-1">${escapeHtml((ar.checkin||[])[1]||'')}</div>
+        <div class="text-[17px] font-black text-indigo-900 leading-snug mt-1">${escapeHtml((ar.checkin||[])[1]||'')}</div>
         <div class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 rounded-full px-3 py-1 mt-2 text-[12px] font-bold text-indigo-700"><i class="fa-regular fa-clock"></i>${escapeHtml((ar.checkin||[])[0]||'')}</div>
         ${ar.checkin_note?`<div class="mt-2.5 text-[11.5px] text-slate-500 leading-relaxed border-t border-slate-100 pt-2"><i class="fa-solid fa-clipboard-check text-slate-400 mr-1"></i>${escapeHtml(ar.checkin_note)}</div>`:''}
       </div>
       ${this.pcDemoVenueMapHTML(d,aud)}
       ${(ar.points||[]).length?`
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
-        <div class="font-black text-[13px] mb-2.5">🚶 你的路線重點</div>
-        <div class="space-y-2">
-          ${(ar.points||[]).map((pt,i)=>`
-          <div class="flex items-center gap-2.5 text-[13.5px]">
-            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">${i+1}</span><span class="min-w-0">${escapeHtml(pt)}</span>
+        <div class="font-black text-[13px] mb-2.5">🚶 你的路線（由入口行到報到點）</div>
+        <div class="space-y-0">
+          ${(ar.points||[]).map((pt,i,all)=>`
+          <div class="flex gap-2.5 text-[13.5px]">
+            <div class="flex flex-col items-center shrink-0">
+              <span class="w-6 h-6 rounded-full ${i===all.length-1?'bg-rose-500':'bg-indigo-600'} text-white text-[11px] font-black flex items-center justify-center">${i+1}</span>
+              ${i<all.length-1?'<span style="width:2px;flex:1;min-height:14px;background:#c7d2fe"></span>':''}
+            </div>
+            <div class="min-w-0 pb-3 pt-0.5">${escapeHtml(pt)}</div>
           </div>`).join('')}
         </div>
       </div>`:''}
       ${(ar.transport||[]).length?`
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2 space-y-2">
+        <div class="font-black text-[13px]">🚍 你的交通提示</div>
         ${(ar.transport||[]).map(x=>`<div class="flex gap-2 text-[12.5px] text-slate-700 leading-relaxed"><i class="fa-solid fa-circle-info text-slate-400 mt-1"></i><span>${escapeHtml(x)}</span></div>`).join('')}
       </div>`:''}
+      <div class="bg-white border-2 border-amber-300 rounded-2xl p-4 mt-2">
+        <div class="flex items-start gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-envelope-circle-check"></i></div>
+          <div class="min-w-0">
+            <b class="text-[13.5px] text-amber-900">${escapeHtml(rule.headline||'報到 QR Code 已電郵給負責領袖')}</b>
+            <div class="text-[11.5px] text-slate-600 leading-relaxed mt-1">${escapeHtml(rule.detail||'')}</div>
+          </div>
+        </div>
+        ${qr?`
+        <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <div class="text-[10px] font-bold text-slate-400 mb-1.5">📧 已發出的電郵（示範）</div>
+          <div class="text-[12px]"><b>收件人：</b>${escapeHtml(qr.to||'')}</div>
+          <div class="text-[12px]"><b>主旨：</b>${escapeHtml(qr.subject||'')}</div>
+          <div class="text-[12px]"><b>發送時間：</b>${escapeHtml(qr.sent_at||'')}</div>
+          ${(qr.shows||[]).length?`<div class="text-[11.5px] text-slate-500 mt-1.5">登記 BOOTH 掃描後會見到：${(qr.shows||[]).map(x=>`<span class="inline-block bg-white border border-slate-200 rounded-full px-2 py-0.5 text-[10.5px] mr-1 mb-1">${escapeHtml(x)}</span>`).join('')}</div>`:''}
+        </div>`:''}
+        ${(rule.points||[]).length?`
+        <ul class="mt-2.5 space-y-1 text-[11.5px] text-slate-600 list-disc pl-5">
+          ${(rule.points||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+        </ul>`:''}
+      </div>`;
+  },
+
+  /* ── 活動地圖（所有人都要睇到）：全場地圖＋設施位置＋圖例＋官方地圖下載 ── */
+  pcDemoVenueFullHTML(d){
+    const vm=d.venue_map||{}; const nodes=vm.nodes||[]; const t=d.transport||{};
+    const cx=n=>n.x+n.w/2, cy=n=>n.y+n.h/2;
+    const accent=id=>({parade:'#ede9fe',booths:'#ecfdf5',east_gate:'#fef3c7',morrison:'#e0f2fe',checkin:'#fff1f2'})[id]||'#ffffff';
+    const stroke=id=>({parade:'#8b5cf6',booths:'#10b981',east_gate:'#f59e0b',morrison:'#0ea5e9',checkin:'#f43f5e'})[id]||'#cbd5e1';
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-3">
+        <div class="font-black text-[13.5px] mb-1"><i class="fa-solid fa-map text-indigo-600"></i> 全場活動地圖（示意圖）</div>
+        <div class="text-[11px] text-slate-500 mb-2">香港警察學院・2027年10月3日（星期日）</div>
+        <svg viewBox="0 0 380 520" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="380" height="520" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+          ${nodes.map(n=>`<g>
+            <rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="8" fill="${accent(n.id)}" stroke="${stroke(n.id)}" stroke-width="2"/>
+            <text x="${cx(n)}" y="${cy(n)-(n.sub?3:0)}" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">${escapeHtml(n.label)}</text>
+            ${n.sub?`<text x="${cx(n)}" y="${cy(n)+11}" text-anchor="middle" font-size="8.5" fill="#94a3b8">${escapeHtml(n.sub)}</text>`:''}
+          </g>`).join('')}
+        </svg>
+        ${vm.zones_note?`<div class="text-[11px] text-slate-500 mt-2 leading-relaxed">${escapeHtml(vm.zones_note)}</div>`:''}
+      </div>
+      ${(vm.facilities||[]).length?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2.5">🏥 場內設施位置</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+          ${(vm.facilities||[]).map(f=>`
+          <div class="flex items-start gap-2 border border-slate-100 rounded-xl p-2.5">
+            <span class="text-base shrink-0">${f.icon}</span>
+            <div class="min-w-0"><b class="text-[12.5px]">${escapeHtml(f.name)}</b><div class="text-[11px] text-slate-500 leading-snug">${escapeHtml(f.where)}</div></div>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
+      ${(vm.legend||[]).length?`
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-bold text-[12px] text-slate-600 mb-1.5">圖例</div>
+        ${(vm.legend||[]).map(l=>`<div class="text-[11.5px] text-slate-600 leading-relaxed">${escapeHtml(l[0])}　＝　${escapeHtml(l[1])}</div>`).join('')}
+      </div>`:''}
       <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
-        <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 場地指示圖</div>
+        <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 官方場地指示圖</div>
         ${t.map_url?`<img src="${escapeHtml(t.map_url)}" alt="場地指示圖" class="w-full rounded-xl border border-slate-200">`:''}
         ${t.map_pdf?`<a href="${escapeHtml(t.map_pdf)}" target="_blank" class="mt-2 inline-block text-[12px] font-bold text-indigo-700">📎 下載完整場地指示圖（PDF）↗</a>`:''}
-        <div class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">生產版：籌委按呢個方式提供源點（各類嘅報到點＋路線節點），為不同人士製作幾張唔同嘅標註地圖——上面示意圖就係結果形態。</div>
       </div>`;
+  },
+
+  /* ── 典禮儀式流程（所有人）：三部分，可逐部分開合 ── */
+  pcDemoCeremonyFlowHTML(d,aud){
+    const cf=d.ceremony_flow||{};
+    const isGuest=!!(aud&&aud.id==='guest');
+    const parts=(cf.parts||[]).filter(p=>!p.guest_only||isGuest);
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="font-black text-[15px] text-indigo-900">👑 ${escapeHtml(cf.title||'典禮儀式流程')}</div>
+        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(cf.venue||'')}</div>
+        <div class="grid grid-cols-1 gap-1.5 mt-2.5 text-[12px]">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"><b class="text-slate-500">服裝：</b>${escapeHtml(cf.dress||'')}</div>
+          ${cf.salute_note?`<div class="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-amber-900"><b>敬禮提示：</b>${escapeHtml(cf.salute_note)}</div>`:''}
+        </div>
+      </div>
+      ${parts.map((p,i)=>`
+      <details class="bg-white border border-slate-200 rounded-2xl overflow-hidden mt-2" ${i===0?'open':''}>
+        <summary class="cursor-pointer px-4 py-3 flex items-center gap-2.5" style="background:${p.guest_only?'#fff7ed':'#eef2ff'}">
+          <span class="text-[10px] font-black rounded-full px-2 py-1 ${p.guest_only?'bg-amber-500':'bg-indigo-600'} text-white shrink-0">${escapeHtml(p.badge||'')}</span>
+          <div class="min-w-0 flex-1">
+            <b class="text-[13.5px] leading-tight">${escapeHtml(p.name||'')}</b>
+            <div class="text-[11px] text-slate-500">${escapeHtml(p.time||'')}｜${escapeHtml(p.place||'')}</div>
+          </div>
+          <i class="fa-solid fa-chevron-down text-slate-400 text-[11px]"></i>
+        </summary>
+        <div class="p-3">
+          <div class="text-[11.5px] text-slate-500 mb-2">${escapeHtml(p.officiant||'')}${p.mc?'｜'+escapeHtml(p.mc):''}</div>
+          ${p.guest_only?'<div class="bg-amber-50 border border-amber-200 text-amber-900 text-[11.5px] rounded-xl px-3 py-2 mb-2">⚠️ 此部分只限獲邀嘉賓出席。</div>':''}
+          <div class="space-y-0">
+            ${(p.rows||[]).map((r,j,all)=>`
+            <div class="flex gap-2.5">
+              <div class="flex flex-col items-center shrink-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 mt-1.5"></span>
+                ${j<all.length-1?'<span style="width:2px;flex:1;background:#e0e7ff"></span>':''}
+              </div>
+              <div class="pb-3 min-w-0">
+                <div class="font-black text-[12.5px] text-indigo-700">${escapeHtml(r.time||'')}</div>
+                <div class="text-[13px] leading-snug">${escapeHtml(r.item||'')}</div>
+                ${r.who?`<div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(r.who)}</div>`:''}
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </details>`).join('')}
+      ${cf.public_note?`<div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-2 text-[11.5px] text-slate-600 leading-relaxed">${escapeHtml(cf.public_note)}</div>`:''}
+      ${cf.note?`<div class="text-[10.5px] text-slate-400 mt-2 text-center">${escapeHtml(cf.note)}</div>`:''}`;
+  },
+
+  /* ── 嘉賓座位表 ── */
+  pcDemoSeatingHTML(d){
+    const st=d.seating||{};
+    const blocks=st.blocks||[];
+    const my=st.my_seat||null;
+    const bw=300, bx=40;
+    let y=52;
+    const rects=blocks.map((b,i)=>{ const h=34+(i<4?4:0); const r={b,x:bx,y,w:bw,h}; y+=h+7; return r; });
+    const vh=y+14;
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="font-black text-[15px] text-indigo-900">🪑 ${escapeHtml(st.title||'座位表')}</div>
+        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(st.subtitle||'')}</div>
+        ${my?`
+        <div class="mt-3 bg-rose-50 border-2 border-rose-300 rounded-xl p-3 text-center">
+          <div class="text-[10.5px] font-bold text-rose-500">你的座位</div>
+          <div class="text-2xl font-black text-rose-700 tracking-wider">${escapeHtml(my.seat||'')}</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml((blocks.find(b=>b.id===my.block)||{}).label||'')}</div>
+          ${my.note?`<div class="text-[10px] text-slate-400 mt-1">${escapeHtml(my.note)}</div>`:''}
+        </div>`:''}
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
+        <svg viewBox="0 0 380 ${vh}" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">
+          <rect x="${bx}" y="10" width="${bw}" height="30" rx="8" fill="#1e293b"/>
+          <text x="${bx+bw/2}" y="29" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">${escapeHtml(st.stage_label||'主禮台')}</text>
+          ${rects.map(r=>{
+            const mine=my&&my.block===r.b.id;
+            return `<g>
+              <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="7" fill="${r.b.color||'#64748b'}1a" stroke="${mine?'#e11d48':(r.b.color||'#94a3b8')}" stroke-width="${mine?3:1.6}"/>
+              <text x="${r.x+10}" y="${r.y+r.h/2+4}" font-size="11" font-weight="800" fill="${r.b.color||'#475569'}">${escapeHtml(r.b.label)}</text>
+              <text x="${r.x+r.w-10}" y="${r.y+r.h/2+4}" text-anchor="end" font-size="9.5" fill="#64748b">${escapeHtml(r.b.seats)}</text>
+            </g>`;
+          }).join('')}
+        </svg>
+        <div class="text-[10px] text-slate-400 mt-1 text-center">↑ 面向主禮台方向（示意圖）</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-black text-[13px] mb-2">分區安排</div>
+        ${blocks.map(b=>`
+        <div class="border-t border-slate-100 py-2.5 first:border-t-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-white text-[10.5px] font-black rounded-lg px-2 py-0.5" style="background:${b.color||'#64748b'}">${escapeHtml(b.id)}</span>
+            <b class="text-[12.5px]">${escapeHtml(b.label)}</b>
+            <span class="text-[10.5px] text-slate-400">${escapeHtml(b.rows)}・${escapeHtml(b.seats)}</span>
+          </div>
+          <div class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">${escapeHtml(b.who)}</div>
+        </div>`).join('')}
+      </div>
+      ${(st.rules||[]).length?`
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-bold text-[12px] text-slate-600 mb-1.5">就座須知</div>
+        <ul class="space-y-1 text-[11.5px] text-slate-600 list-disc pl-5">
+          ${(st.rules||[]).map(r=>`<li>${escapeHtml(r)}</li>`).join('')}
+        </ul>
+      </div>`:''}`;
+  },
+
+  /* ── 午膳安排（嘉賓） ── */
+  pcDemoLunchHTML(d){
+    const l=d.lunch||{};
+    const hd=l.headline||[];
+    return `
+      <div class="bg-white border-2 border-emerald-400 rounded-2xl p-4 text-center">
+        <div class="text-2xl">🍽️</div>
+        <div class="text-[18px] font-black text-emerald-800 mt-1">${escapeHtml(hd[0]||'')}</div>
+        <div class="text-[13px] font-bold text-slate-700 mt-0.5">${escapeHtml(hd[1]||'')}</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-2 mt-2">
+        ${(l.rows||[]).map(r=>`
+        <div class="flex gap-2.5 px-2 py-2.5 border-t border-slate-100 first:border-t-0 text-[13px]">
+          <div class="w-[72px] shrink-0 font-bold text-slate-500 text-[12px]">${escapeHtml(r[0])}</div>
+          <div class="min-w-0 leading-relaxed">${escapeHtml(r[1])}</div>
+        </div>`).join('')}
+      </div>
+      ${l.note?`<div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 mt-2 text-[11.5px] leading-relaxed">${escapeHtml(l.note)}</div>`:''}`;
+  },
+
+  /* ── 午膳儀式（Officer Mess・只限嘉賓） ── */
+  pcDemoMessCeremonyHTML(d){
+    const m=d.mess_ceremony||{};
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="p-4" style="background:linear-gradient(135deg,#7c2d12,#b45309);color:#fff">
+          <div class="text-[10.5px] font-bold" style="color:#fed7aa">只限嘉賓・第三部分典禮</div>
+          <div class="text-[16px] font-black leading-tight mt-0.5">🥂 ${escapeHtml(m.title||'午膳儀式')}</div>
+          <div class="text-[11.5px] mt-1" style="color:#fed7aa">${escapeHtml(m.subtitle||'')}</div>
+          <div class="inline-block mt-2 rounded-full px-3 py-1 text-[12px] font-bold" style="background:rgba(255,255,255,.2)"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(m.time||'')}</div>
+        </div>
+        <div class="p-4 text-[12.5px] text-slate-600 leading-relaxed">${escapeHtml(m.intro||'')}${m.mc?`<div class="text-[11px] text-slate-400 mt-1.5">${escapeHtml(m.mc)}</div>`:''}</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2.5">儀式流程</div>
+        <div class="space-y-0">
+          ${(m.rows||[]).map((r,i,all)=>`
+          <div class="flex gap-2.5">
+            <div class="flex flex-col items-center shrink-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1.5"></span>
+              ${i<all.length-1?'<span style="width:2px;flex:1;background:#fde68a"></span>':''}
+            </div>
+            <div class="pb-3 min-w-0">
+              <div class="font-black text-[12.5px] text-amber-700">${escapeHtml(r.time||'')}</div>
+              <div class="text-[13px] leading-snug">${escapeHtml(r.item||'')}</div>
+              ${r.who?`<div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(r.who)}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      ${(m.recipients||[]).length?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2">致送名單</div>
+        ${(m.recipients||[]).map(r=>`<div class="flex gap-2.5 py-2 border-t border-slate-100 first:border-t-0 text-[12.5px]"><div class="w-[70px] shrink-0 font-bold text-slate-500 text-[11.5px]">${escapeHtml(r[0])}</div><div class="min-w-0">${escapeHtml(r[1])}</div></div>`).join('')}
+      </div>`:''}
+      ${(m.reminders||[]).length?`
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mt-2">
+        <div class="font-bold text-[12px] text-amber-800 mb-1.5">注意事項</div>
+        <ul class="space-y-1 text-[11.5px] text-amber-900 list-disc pl-5">
+          ${(m.reminders||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+        </ul>
+      </div>`:''}`;
   },
 
   /* ── 求助卡：電話號碼變可撥 tel: 連結（手機直接撳打） ── */
@@ -234,8 +512,9 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     return escapeHtml(text||'').replace(/(\d{4})\s?(\d{4})/g,(m,a,b)=>`<a href="tel:${a}${b}" class="text-sky-700 font-bold underline">${a} ${b}</a>`);
   },
 
-  /* ── 你的報到 QR（每個報名一個獨有 token；工作人員一撳即見旅團・人數・餐盒） ── */
-  pcQrIdx:{},
+  /* ── QR 產生器（共用）：報到站（工作人員端）及報名回條仍會用到。
+       ⚠️ v2：公開頁（分眾入口）唔再顯示報到 QR——QR 以電郵發俾負責領袖，
+       由佢當日出示作登記，登記 BOOTH 掃描即見該單位資料（見「報到資訊」頁簽）。 ── */
   pcQrSvg(text){
     try{
       if(typeof qrcode!=='undefined'){
@@ -244,36 +523,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       }
     }catch(e){}
     return '<div data-pcqr-fallback style="width:130px;height:130px;border:2px dashed #94a3b8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b">QR Code</div>';
-  },
-  pcDemoQrHTML(d,aud){
-    const cd=d.checkin_demo||{};
-    const entries=(cd.entries||[]).filter(e=>e.kind==='旅團');
-    if(!entries.length) return '';
-    this.pcQrIdx=this.pcQrIdx||{};
-    const idx=(this.pcQrIdx[aud.id]||0)%entries.length;
-    this.pcQrIdx[aud.id]=idx;
-    const e=entries[idx];
-    return `
-      <div class="bg-white border-2 border-slate-800 rounded-2xl p-4 text-center">
-        <div class="text-[10.5px] font-bold text-slate-500">📲 你的報到 QR Code（報到時出示）</div>
-        <div class="flex justify-center my-3">${this.pcQrSvg('PC2027:'+e.token)}</div>
-        <div class="font-black text-[15px] text-slate-900 leading-snug">${escapeHtml(e.name)}</div>
-        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(e.area||'')}｜報名編號 <b>${escapeHtml(e.token)}</b></div>
-        <div class="grid grid-cols-2 gap-2 mt-3">
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400">人數</div><b class="text-[15px]">${escapeHtml(String(e.headcount))}</b></div>
-          <div class="bg-rose-50 border border-rose-200 rounded-xl p-2"><div class="text-[10px] font-bold text-rose-400">代訂餐盒</div><b class="text-[15px] text-rose-700">${escapeHtml(String(e.meal_boxes))}</b></div>
-        </div>
-        ${e.note?`<div class="text-[11px] text-slate-500 mt-2 leading-relaxed">${escapeHtml(e.note)}</div>`:''}
-        ${entries.length>1?`<button onclick="app.pcQrCycle('${escapeHtml(aud.id)}')" class="mt-3 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[11.5px] font-bold rounded-xl py-2">🔄 切換示範${escapeHtml(e.kind)}（第 ${idx+1}/${entries.length} 個）</button>`:''}
-        <div class="text-[10px] text-slate-400 mt-2 leading-relaxed">工作人員掃描此 QR → 即見你嘅旅團・人數・餐盒等資料。QR＝旅團（團體單位）專有；個人身份由工作人員按名單點名。（示範資料）</div>
-      </div>`;
-  },
-  pcQrCycle(audId){
-    this.pcQrIdx=this.pcQrIdx||{};
-    this.pcQrIdx[audId]=(this.pcQrIdx[audId]||0)+1;
-    const land=document.getElementById('public-landing');
-    if(land && this.pcLandAudience===audId && !land.classList.contains('hidden')) this.renderPublicLanding();
-    else this.renderPublicChannelDemo();
   },
 
   /* ═══════════ 嘉賓接待站（工作人員端）：102 位嘉賓・逐位唔同安排・接待報到 ═══════════
@@ -719,38 +968,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* ── 報名：該受眾嘅表特大，其他收埋 ── */
-  pcDemoApplyForHTML(d,featured){
-    const forms=d.apply_forms||[];
-    const big=forms.filter(f=>featured.includes(f.name));
-    const rest=forms.filter(f=>!featured.includes(f.name));
-    return `
-      ${big.map(f=>`
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-2" style="border-left:4px solid #6d28d9">
-        <div class="flex items-center gap-3">
-          <div class="text-2xl">${f.icon}</div>
-          <div class="min-w-0">
-            <b class="text-[14px]">${escapeHtml(f.name)}</b>
-            <div class="text-[11.5px] text-slate-500">${escapeHtml(f.target)}｜${escapeHtml(f.desc)}</div>
-          </div>
-        </div>
-        <button onclick="app.pcOpenFormByName('${escapeHtml(f.name)}')" class="mt-3 w-full bg-sky-600 text-white text-[13px] font-bold rounded-xl py-2.5">立即報名 →</button>
-        <div class="text-[10.5px] text-slate-400 mt-1.5 text-center">免登入・提交即有申請編號可查進度</div>
-      </div>`).join('')}
-      ${rest.length?`
-      <details class="bg-white border border-slate-200 rounded-2xl p-3">
-        <summary class="font-bold text-[12px] text-slate-500 cursor-pointer">其他參與方式（${rest.length} 個）</summary>
-        <div class="grid grid-cols-2 gap-2 mt-2">
-          ${rest.map(f=>`
-          <div class="border border-slate-200 rounded-xl p-2.5">
-            <div class="text-lg">${f.icon}</div>
-            <b class="text-[11.5px] leading-tight">${escapeHtml(f.name)}</b>
-            <div class="text-[10.5px] text-slate-500">${escapeHtml(f.target)}</div>
-          </div>`).join('')}
-        </div>
-      </details>`:''}`;
-  },
-
   /* ── 須知：該受眾身份嘅版本（唔使再揀 tab） ── */
   pcDemoGuideForHTML(d,keys){
     const guides=d.guides||{};
@@ -779,9 +996,9 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* ═══════════ 委員一頁睇晒（8 分頁，含手冊） ═══════════ */
+  /* ═══════════ 委員一頁睇晒（全部分頁，含手冊） ═══════════ */
   pcDemoTabsBody(d){
-    const tabs=[['home','基本盤','fa-solid fa-circle-info'],['transport','交通','fa-solid fa-bus'],['program','全日程序','fa-regular fa-calendar-check'],['booths','攤位','fa-solid fa-store'],['apply','報名','fa-solid fa-file-pen'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
+    const tabs=[['home','基本資訊','fa-solid fa-circle-info'],['program','全日程序','fa-regular fa-calendar-check'],['venue','活動地圖','fa-solid fa-map'],['ceremony','典禮儀式流程','fa-solid fa-award'],['seating','座位表','fa-solid fa-chair'],['lunch','午膳安排','fa-solid fa-utensils'],['mess','午膳儀式','fa-solid fa-champagne-glasses'],['transport','交通','fa-solid fa-bus'],['booths','攤位','fa-solid fa-store'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
     return `
       <div class="flex justify-between items-center mb-2">
         <div class="text-[11.5px] font-bold text-slate-500">📊 委員預覽・一頁睇晒（公眾實際會按身份見到唔同組合，見「切換身份」）</div>
@@ -797,8 +1014,12 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     switch(this.pcDemoTab){
       case 'transport': return this.pcDemoTransportHTML(d);
       case 'program': return this.pcDemoProgramHTML(d);
+      case 'venue': return this.pcDemoVenueFullHTML(d);
+      case 'ceremony': return this.pcDemoCeremonyFlowHTML(d,{id:'guest'});
+      case 'seating': return this.pcDemoSeatingHTML(d);
+      case 'lunch': return this.pcDemoLunchHTML(d);
+      case 'mess': return this.pcDemoMessCeremonyHTML(d);
       case 'booths': return this.pcDemoBoothsHTML(d);
-      case 'apply': return this.pcDemoApplyHTML(d);
       case 'guide': return this.pcDemoGuideTabsHTML(d);
       case 'help': return this.pcDemoHelpHTML(d);
       case 'manual': return this.pcDemoManualHTML(d);
@@ -822,10 +1043,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
             <div class="rounded-xl p-3" style="background:rgba(255,255,255,.15)"><div class="text-[10.5px] font-bold mb-1" style="color:#ddd6fe"><i class="fa-regular fa-clock"></i> 時間</div><b>${escapeHtml(b.time||'')}</b></div>
             <div class="rounded-xl p-3 col-span-2" style="background:rgba(255,255,255,.15)"><div class="text-[10.5px] font-bold mb-1" style="color:#ddd6fe"><i class="fa-solid fa-location-dot"></i> 地點</div><b>${escapeHtml(b.location||'')}</b></div>
           </div>
-        </div>
-        <div class="p-4 grid grid-cols-2 gap-2 text-center">
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-[10.5px] font-bold text-amber-700">名額（先到先得）</div><div class="text-lg font-black text-amber-900">${escapeHtml(b.quota||'')}</div></div>
-          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[10.5px] font-bold text-emerald-700">費用（連紀念章）</div><div class="text-lg font-black text-emerald-900">${escapeHtml(b.fee||'')}</div></div>
         </div>
       </div>
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-3" style="border-left:4px solid #6d28d9">
@@ -920,21 +1137,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* 八大報名（一頁睇晒版） */
-  pcDemoApplyHTML(d){
-    return `
-      <div class="text-[12px] text-slate-500 mb-2 px-1">${escapeHtml(d.apply_note||'')}</div>
-      <div class="grid grid-cols-2 gap-2">
-        ${(d.apply_forms||[]).map(f=>`
-        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col">
-          <div class="text-xl mb-1">${f.icon}</div>
-          <b class="text-[12.5px] leading-tight">${escapeHtml(f.name)}</b>
-          <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(f.target)}<br>${escapeHtml(f.desc)}</div>
-          <button onclick="app.pcOpenFormByName('${escapeHtml(f.name)}')" class="mt-2.5 bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
-        </div>`).join('')}
-      </div>`;
-  },
-
   /* 須知分眾 tabs（一頁睇晒版） */
   pcDemoGuideTabsHTML(d){
     const keys=Object.keys(d.guides||{});
@@ -956,7 +1158,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* 活動日求助 */
+  /* 求助（活動日） */
   pcDemoHelpHTML(d){
     const h=d.help||{};
     const cards=[['🔍','失物認領',h.lost_found],['☎️','查詢窗口',h.hotline],['⛑️','急救站',h.first_aid]];
@@ -1074,10 +1276,11 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       <div class="text-center mt-10 pb-4">
         <button onclick="app.pcStaffGate()" class="text-[10px] text-slate-300 font-bold" style="letter-spacing:.25em;color:#cbd5e1" onmouseover="this.style.color=''#64748b''" onmouseout="this.style.color=''#cbd5e1''">工作人員入口</button>
       </div>`;
+    if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);
   },
 
-  pcLandPick(id){ this.pcLandAudience=id; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
-  pcLandBack(){ this.pcLandAudience=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
+  pcLandPick(id){ this.pcLandAudience=id; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
+  pcLandBack(){ this.pcLandAudience=''; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
 
   /* ═══════════ 工作人員閘口（頁尾隱藏入口）：4位密碼／籌委帳密 ═══════════ */
   pcStaffGate(){

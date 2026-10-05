@@ -18,6 +18,9 @@
  *  ⑮ 嘉賓接待站：102 位真實 2026 嘉賓——搜尋／分類／頒獎台・大會車・茶聚篩選／接待報到＋最後一分鐘變動實錄
  *  ⑯ 八大報名表（階段2）：免登入提交→申請編號；旅團報名→T 編號・QR・人數・餐盒一條血脈；報名總覽＋名額着燈
  *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
+ *  ⑰ 活動日版（v15）：頁簽化（唔再長版）＋刪走參與報名／名額費用／公開 QR；
+ *     改名（基本資訊・日程・須知・求助・報到資訊）；新增 活動地圖（全部人）・典禮儀式流程（全部人）・
+ *     座位表／午膳安排／午膳儀式（嘉賓）；報到 QR 改為電郵發俾負責領袖
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.resolve(__dirname, '..');
@@ -33,13 +36,13 @@ ok(pc.audiences && pc.audiences.length === 7, '① 公眾入口＝須知分眾�
 ok(['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => pc.audiences.some(a => a.id === id)), '① 七類 id 齊：嘉賓/旅團/優異旅團獲獎/步操隊伍/其他制服團體/支部最高獎勵/成人獎勵');
 ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
 ok(pc.audiences.every(a => ['schedule', 'arrival'].every(x => a.sections.includes(x))), '① 每類都有：時間表＋報到地圖');
-ok(pc.audiences.filter(a => a.sections.includes('qr')).length === 1 && pc.audiences.find(a => a.sections.includes('qr')).id === 'troop', '① 報到 QR 只有旅團（團體單位）');
+ok(pc.audiences.every(a => !a.sections.includes('qr') && !a.sections.includes('apply')), '① 活動日版：冇「參與／報名」、冇公開「報到 QR」分節');
 ok(pc.audiences.filter(a => a.guide).every(a => a.guide.every(k => pc.guides[k])), '① 每類嘅須知都喺七類須知數據入面');
 ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
 ok(pc.notices && Object.keys(pc.notices).length === 7 && Object.values(pc.notices).every(v => v.startsWith('02_通知書/') && v.endsWith('/')), '① 七類通知書：一類一個資料夾（原名原檔掉入就得）');
 ok(!!pc.notice_rule && pc.notice_rule.includes('最後修改'), '① 通知書規則：系統攞最後修改嗰份做最新');
 ok(new Set(Object.values(pc.notices)).size === 7, '① 七份通知書檔名全部唔同');
-ok(pc.section_labels && Object.keys(pc.section_labels).length === 11, '① 分節標籤 11 個');
+ok(pc.section_labels && Object.keys(pc.section_labels).length === 14, '① 分節標籤 14 個');
 ok(Object.keys(pc.schedules).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.schedules[id].items || []).length >= 6), '① 每類有專屬時間表（7 份・各至少 6 項）');
 ok(Object.keys(pc.arrivals).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.arrivals[id].checkin || []).length === 2), '① 每類有專屬報到地點＋時間（7 份）');
 ok(pc.venue_map && pc.venue_map.nodes.length === 10, '① 場地示意圖 10 節點（東閘／報到處／櫃位／大操場／莫榮大樓…）');
@@ -105,48 +108,63 @@ ok(['嘉賓', '旅團', '優異旅團獲獎', '步操隊伍', '其他制服團�
 ok((html.match(/\?pub=/g) || []).length >= 7, '⑤ 每個入口有專屬連結提示（?pub=）');
 ok(html.includes('一頁睇晒'), '⑤ 底部有委員預覽入口');
 
-/* ── ⑥ 分眾版面：七類各有各嘅時間表＋報到地點＋須知＋報名 ── */
+/* ── ⑥ 分眾版面（v15 頁簽制）：揀身份後一個頁簽一版，唔再長長一版拖拉 ── */
+const renderTab = (audId, tab) => { app.pcDemoPickAudience(audId); if (tab) app.pcAudTab = tab; return render(); };
+
 app.pcDemoPickAudience('guest'); html = render();
-ok(html.includes('你的時間表') && html.includes('大會車開出') && html.includes('15:00'), '⑥ 嘉賓：自己時間表（大會車去回程）');
-ok(html.includes('你的報到地點') && html.includes('莫榮大樓地下接待處'), '⑥ 嘉賓：報到＝莫榮大樓接待處');
-ok(html.includes('嘉賓專屬安排'), '⑥ 嘉賓：接待安排做基本盤');
-ok(html.includes('嘉賓報名') && html.includes('立即報名'), '⑥ 嘉賓：嘉賓報名做主角');
+ok(html.includes('id="pc-aud-tabs"'), '⑥ 受眾版面有頁簽列（pc-aud-tabs）');
+ok(html.includes('id="pc-aud-panel"'), '⑥ 一次只 render 當前頁簽嘅內容（pc-aud-panel）');
+ok(html.includes("app.pcSetAudTab('schedule')") && html.includes("app.pcSetAudTab('ceremony')"), '⑥ 頁簽可切換');
+ok(html.includes('1 / 10'), '⑥ 嘉賓 10 個頁簽（有座位表／午膳安排／午膳儀式）');
+ok(html.includes('嘉賓專屬安排') && !html.includes('大會車開出'), '⑥ 預設第一個頁簽＝基本資訊（唔會同時出埋日程）');
+
+html = renderTab('guest', 'schedule');
+ok(html.includes('大會車開出') && html.includes('15:00'), '⑥ 嘉賓・日程：自己時間表（大會車去回程）');
+html = renderTab('guest', 'arrival');
+ok(html.includes('你的報到地點') && html.includes('莫榮大樓地下接待處'), '⑥ 嘉賓・報到資訊＝莫榮大樓接待處');
 ok(!html.includes('名額（先到先得）'), '⑥ 嘉賓：唔講名額費用（獲邀人士）');
 
-app.pcDemoPickAudience('troop'); html = render();
-ok(html.includes('按報名時段報到') && html.includes('集印換紀念章'), '⑥ 旅團：自己時間表（報到時段＋集印）');
-ok(html.includes('有蓋操場報到處（東閘入）'), '⑥ 旅團：報到＝有蓋操場（東閘入）');
+html = renderTab('troop', 'schedule');
+ok(html.includes('按報名時段報到') && html.includes('集印換紀念章'), '⑥ 旅團・日程（報到時段＋集印）');
+html = renderTab('troop', 'arrival');
+ok(html.includes('有蓋操場報到處（東閘入）'), '⑥ 旅團・報到資訊＝有蓋操場（東閘入）');
 ok(html.includes('旅遊巴'), '⑥ 旅團：專屬交通提示（旅遊巴）');
-ok(html.includes('PT/46') && html.includes('普通旅團・須知'), '⑥ 旅團：普通旅團版須知');
+html = renderTab('troop', 'guide');
+ok(html.includes('PT/46') && html.includes('普通旅團・須知'), '⑥ 旅團・須知：普通旅團版');
 
-app.pcDemoPickAudience('merit'); html = render();
-ok(html.includes('10:15') && html.includes('排位'), '⑥ 優異旅團獲獎：自己時間表（10:15 排位）');
-ok(html.includes('優異旅團櫃位（核對名單・領取彩帶）'), '⑥ 優異旅團獲獎：報到＝優異旅團櫃位（核對名單・領彩帶）');
-ok(html.includes('大操場後方排位區（按區會）'), '⑥ 優異旅團獲獎：報到後排位（後方排位區）');
+html = renderTab('merit', 'schedule');
+ok(html.includes('10:15') && html.includes('排位'), '⑥ 優異旅團獲獎・日程（10:15 排位）');
+html = renderTab('merit', 'arrival');
+ok(html.includes('優異旅團櫃位（核對名單・領取彩帶）'), '⑥ 優異旅團獲獎・報到＝優異旅團櫃位');
+ok(html.includes('大操場後方排位區（按區會）'), '⑥ 優異旅團獲獎：報到後排位');
+html = renderTab('merit', 'guide');
 ok(html.includes('彩帶') && html.includes('優異旅團・須知') && !html.includes('普通旅團・須知'), '⑥ 優異旅團獲獎：只見自己版須知');
 
-app.pcDemoPickAudience('march'); html = render();
-ok(html.includes('08:00') && html.includes('綵排') && !html.includes('07:45'), '⑥ 步操隊伍：自己時間表（08:00 綵排，唔係 07:45）');
-ok(html.includes('大操場指定位置（依旗幟）'), '⑥ 步操隊伍：報到＝大操場依旗幟');
-ok(html.includes('指揮官檢閱'), '⑥ 步操隊伍：檢閱安排');
-ok(!html.includes('優異旅團・須知'), '⑥ 步操隊伍：唔會見到優異旅團版須知（場地示意圖上嘅櫃位標示唔算）');
+html = renderTab('march', 'schedule');
+ok(html.includes('08:00') && html.includes('綵排') && !html.includes('07:45'), '⑥ 步操隊伍・日程（08:00 綵排）');
+html = renderTab('march', 'arrival');
+ok(html.includes('大操場指定位置（依旗幟）'), '⑥ 步操隊伍・報到＝大操場依旗幟');
+html = renderTab('march', 'guide');
+ok(html.includes('指揮官檢閱') && !html.includes('優異旅團・須知'), '⑥ 步操隊伍：檢閱安排＋唔會見到優異旅團版須知');
 
-app.pcDemoPickAudience('ug'); html = render();
-ok(html.includes('有蓋操場報到處・UG 專櫃'), '⑥ 其他制服團體：報到＝UG 專櫃');
+html = renderTab('ug', 'arrival');
+ok(html.includes('有蓋操場報到處・UG 專櫃'), '⑥ 其他制服團體・報到＝UG 專櫃');
 ok(html.includes('穿梭巴士'), '⑥ 其他制服團體：專屬交通提示（穿梭巴士）');
-ok(html.includes('其他制服團體報名') && html.includes('NGO 報名'), '⑥ 其他制服團體：兩個報名入口');
 
-app.pcDemoPickAudience('awardee_section'); html = render();
-ok(html.includes('總領袖獎章 → 榮譽童軍獎章 → 貝登堡獎章'), '⑥ 支部最高獎勵：頒獎次序時間表');
-ok(html.includes('大操場左側後台排位（依獎章分組）'), '⑥ 支部最高獎勵：報到＝後台（依獎章分組）');
-ok(html.includes('親友觀禮區'), '⑥ 支部最高獎勵：親友觀禮提示');
-ok(!html.includes('長期服務獎章'), '⑥ 支部最高獎勵：唔會見到成人獎勵內容');
+html = renderTab('awardee_section', 'schedule');
+ok(html.includes('總領袖獎章 → 榮譽童軍獎章 → 貝登堡獎章'), '⑥ 支部最高獎勵・日程：頒獎次序');
+html = renderTab('awardee_section', 'arrival');
+ok(html.includes('大操場左側後台排位（依獎章分組）'), '⑥ 支部最高獎勵・報到＝後台（依獎章分組）');
+ok(html.includes('親友觀禮區'), '⑥ 支部最高獎勵・報到資訊：親友觀禮提示');
+html = renderTab('awardee_section', 'guide');
+ok(html.includes('觀禮區預留') && !html.includes('長期服務獎章'), '⑥ 支部最高獎勵・須知：唔會見到成人獎勵內容');
 
-app.pcDemoPickAudience('awardee_adult'); html = render();
-ok(html.includes('覆誓') && html.includes('唱名序'), '⑥ 成人獎勵：覆誓＋唱名時間表');
-ok(html.includes('大操場左側後台排位（依獎項分組）'), '⑥ 成人獎勵：報到＝後台（依獎項分組）');
-ok(html.includes('副會長'), '⑥ 成人獎勵：一星／三星由副會長頒發');
-ok(!html.includes('貝登堡獎章'), '⑥ 成人獎勵：唔會見到支部獎章內容');
+html = renderTab('awardee_adult', 'schedule');
+ok(html.includes('覆誓') && html.includes('唱名序'), '⑥ 成人獎勵・日程：覆誓＋唱名');
+html = renderTab('awardee_adult', 'arrival');
+ok(html.includes('大操場左側後台排位（依獎項分組）'), '⑥ 成人獎勵・報到＝後台（依獎項分組）');
+html = renderTab('awardee_adult', 'guide');
+ok(html.includes('副會長') && !html.includes('貝登堡獎章'), '⑥ 成人獎勵：一星／三星由副會長頒發、唔會見到支部獎章內容');
 ok(html.includes('切換身份'), '⑥ 各版面有「切換身份」');
 
 /* ── ⑦ ?pub= 深連結（生產版專屬 QR 機制） ── */
@@ -159,39 +177,40 @@ app2.renderPublicChannelDemo();
 ok(app2.pcDemoMode === 'audience' && app2.pcDemoAudience === 'merit', '⑦ ?pub=merit 開啟即入優異旅團版面');
 ok(containers['module-content'].innerHTML.includes('彩帶'), '⑦ 深連結內容正確');
 
-/* ── ⑩ 報到 QR（只有旅團＝團體單位；個人／隊伍＝工作人員按名單點名） ── */
+/* ── ⑩ 報到 QR（v15）：公開頁唔顯示 QR；QR 以電郵發俾負責領袖，當日出示俾登記 BOOTH 掃描 ── */
 const cd = pc.checkin_demo || {};
 const troopEntries = cd.entries.filter(e => e.kind === '旅團');
-ok(cd.entries && cd.entries.length === 31 && troopEntries.length === 31, '⑩ checkin_demo：31 個旅團 token（T001–T031，2026 真實名單）——只有旅團');
+ok(cd.entries && cd.entries.length === 31 && troopEntries.length === 31, '⑩ checkin_demo：31 個旅團 token（T001–T031，後台報到站用）');
 ok(new Set(cd.entries.map(e => e.token)).size === 31, '⑩ token 全部唯一');
-app.pcDemoPickAudience('troop'); html = render();
-ok(html.includes('你的報到 QR') && html.includes('報名編號') && html.includes('代訂餐盒'), '⑩ 旅團版面：報到 QR＋人數＋餐盒');
-ok(html.includes(troopEntries[0].token) && html.includes(troopEntries[0].name), '⑩ 顯示第一個旅團（' + troopEntries[0].token + ' ' + troopEntries[0].name + '）');
-ok((html.match(/data-pcqr-fallback|<svg/g) || []).length >= 1, '⑩ QR 圖有渲染（VM＝佔位，瀏覽器＝真 QR）');
-app.pcQrCycle('troop'); html = render();
-ok(html.includes(troopEntries[1].token), '⑩ 切換示範旅團 → 第二個 token');
-['guest', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].forEach(id => {
-  app.pcDemoPickAudience(id); const h = render();
-  ok(!h.includes('你的報到 QR'), '⑩ ' + id + '：冇 QR（個人／隊伍＝工作人員按名單點名）');
+ok(pc.checkin_qr_rule && pc.checkin_qr_rule.headline.includes('電郵'), '⑩ 數據有「QR 以電郵發俾負責領袖」規則');
+['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].forEach(id => {
+  const h = renderTab(id, 'arrival');
+  ok(!h.includes('你的報到 QR'), '⑩ ' + id + '：公開頁冇報到 QR（唔使登入嘅頁唔顯示 QR）');
+  ok(!/<svg[^>]*>[\s\S]*?<rect[^>]*fill="#000000"/.test(h), '⑩ ' + id + '：冇 QR 圖');
 });
-app.pcDemoPickAudience('guest'); html = render();
+html = renderTab('troop', 'arrival');
+ok(html.includes('報到 QR Code 已電郵給負責領袖'), '⑩ 旅團：報到 QR 已電郵俾負責領袖');
+ok(html.includes('負責領袖（旅長／領隊）') && html.includes('報到 QR Code 及場地指示'), '⑩ 旅團：顯示收件人＋電郵主旨（示範）');
+ok(html.includes('代訂餐盒數量') && html.includes('出席人數'), '⑩ 旅團：講明登記 BOOTH 掃描後會見到咩資料');
+ok(html.includes('登記 BOOTH') || html.includes('登記處'), '⑩ 旅團：講明由負責領袖出示俾登記處掃描');
+html = renderTab('guest', 'arrival');
 ok(html.includes('向接待處職員報姓名即可'), '⑩ 嘉賓：點名方式提示（報姓名即可）');
-app.pcDemoPickAudience('awardee_adult'); html = render();
+html = renderTab('awardee_adult', 'arrival');
 ok(html.includes('需覆誓者 10:55 前綵排'), '⑩ 成人獎勵：點名提示（含覆誓提醒）');
-app.pcDemoPickAudience('merit'); html = render();
+html = renderTab('merit', 'arrival');
 ok(html.includes('核對名單＋領彩帶（工作人員按名單點名）'), '⑩ 優異旅團：櫃位點名提示');
 
-/* ── ⑫ 場地示意圖：每類人嘅路線＋報到點標喺圖上（示意就好） ── */
-app.pcDemoPickAudience('troop'); html = render();
-ok(html.includes('你要去嘅地方（示意圖）'), '⑫ 旅團：示意圖卡');
+/* ── ⑫ 每個人自己嘅地圖：報到資訊頁簽內，路線＋報到點標喺圖上 ── */
+html = renderTab('troop', 'arrival');
+ok(html.includes('你要去嘅地方（示意圖）'), '⑫ 旅團：自己嘅示意圖');
 ok(html.includes('pc-map-pin') && html.includes('你喺呢度報到'), '⑫ 旅團：📍紅點脈衝標記報到點');
 ok(html.includes('有蓋操場・報到處') && html.includes('東閘'), '⑫ 旅團：路線節點（東閘→報到處）');
-ok(html.includes('為不同人士製作幾張唔同嘅標註地圖'), '⑫ 註明生產版：籌委提供源點→每類人士一張標註地圖');
-app.pcDemoPickAudience('guest'); html = render();
+ok(html.includes('你的路線（由入口行到報到點）'), '⑫ 旅團：逐步路線清單');
+html = renderTab('guest', 'arrival');
 ok(html.includes('pc-map-pin') && html.includes('莫榮大樓'), '⑫ 嘉賓：📍標喺莫榮大樓');
-app.pcDemoPickAudience('march'); html = render();
+html = renderTab('march', 'arrival');
 ok(html.includes('步操集結位置') && html.includes('依旗幟'), '⑫ 步操：集結位置標示');
-app.pcDemoPickAudience('awardee_section'); html = render();
+html = renderTab('awardee_section', 'arrival');
 ok(html.includes('後台排位') && html.includes('大操場左側'), '⑫ 支部得主：後台排位標示');
 
 /* ── ⑪ 報到站（工作人員端：一 DO 即知咩旅團・幾多人・有無訂飯盒） ── */
@@ -387,13 +406,14 @@ ok(loginOpened && containers['modal-staff-gate'].classList.contains('hidden'), '
 
 /* ── ③ 委員一頁睇晒（tabs 模式） ── */
 app.pcDemoOpenTabs();
-for (const t of ['home', 'transport', 'program', 'booths', 'apply', 'guide', 'help', 'manual']) {
+for (const t of ['home', 'program', 'venue', 'ceremony', 'seating', 'lunch', 'mess', 'transport', 'booths', 'guide', 'help', 'manual']) {
   app.openPublicChannelTab(t);
   ok(containers['module-content'].innerHTML.length > 400, `③ 分頁 ${t} render 有內容`);
 }
 app.openPublicChannelTab('home');
 ok(containers['module-content'].innerHTML.includes('2027 港島童軍繽紛日'), '③ 基本盤有活動名');
 ok(containers['module-content'].innerHTML.includes('惡劣天氣安排'), '③ 基本盤有惡劣天氣安排');
+ok(!containers['module-content'].innerHTML.includes('名額（先到先得）') && !containers['module-content'].innerHTML.includes('費用（連紀念章）'), '③ 基本資訊：名額／費用已刪走（活動日唔使再講）');
 app.openPublicChannelTab('booths');
 ok(containers['module-content'].innerHTML.includes('A01'), '③ 攤位列表有 A01');
 app.pcDemoZone = 'F'; app.renderPublicChannelDemo();
@@ -404,6 +424,69 @@ ok(containers['module-content'].innerHTML.includes('合共 31 團'), '③ 參加
 ok(containers['module-content'].innerHTML.includes('188 團次'), '③ 優異旅團名單總數');
 ok(containers['module-content'].innerHTML.includes('1,016'), '③ 總人數 1,016');
 ok(!containers['module-content'].innerHTML.includes('9722 9989'), '③ 公眾版冇領隊電話');
+
+/* ── ⑰ 活動日版（v15）：改名・頁簽・刪走報名/名額費用・新增地圖/典禮/座位/午膳 ── */
+const L = pc.section_labels;
+ok(L.banner === '基本資訊' && L.schedule === '日程' && L.guide === '須知' && L.help === '求助' && L.arrival === '報到資訊',
+  '⑰ 改名：活動基本盤→基本資訊、你的時間表→日程、你的須知→須知、活動日求助→求助、報到與地圖→報到資訊');
+ok(L.venue === '活動地圖' && L.ceremony === '典禮儀式流程' && L.seating === '座位表' && L.lunch === '午膳安排' && L.mess === '午膳儀式',
+  '⑰ 新分節：活動地圖／典禮儀式流程／座位表／午膳安排／午膳儀式');
+ok(!('apply' in L) && !('qr' in L), '⑰ 已刪分節：參與／報名、你的報到 QR');
+ok(!('quota' in pc.banner) && !('fee' in pc.banner), '⑰ 基本資訊：名額／費用欄位已由數據刪走');
+ok(pc.audiences.every(a => a.sections.includes('venue') && a.sections.includes('ceremony')), '⑰ 全部七類都有「活動地圖」＋「典禮儀式流程」');
+{
+  const g = pc.audiences.find(a => a.id === 'guest');
+  ok(['seating', 'lunch', 'mess'].every(x => g.sections.includes(x)), '⑰ 嘉賓額外有 座位表／午膳安排／午膳儀式');
+  ok(pc.audiences.filter(a => a.id !== 'guest').every(a => !a.sections.some(x => ['seating', 'lunch', 'mess'].includes(x))), '⑰ 其餘六類唔會見到嘉賓專屬三個頁簽');
+}
+
+/* 活動地圖（全部人） */
+html = renderTab('troop', 'venue');
+ok(html.includes('全場活動地圖'), '⑰ 活動地圖：全場地圖');
+ok(html.includes('場內設施位置') && html.includes('急救站') && html.includes('洗手間') && html.includes('失物認領處'), '⑰ 活動地圖：設施位置（急救／洗手間／失物）');
+ok(html.includes('圖例'), '⑰ 活動地圖：有圖例');
+ok(html.includes('官方場地指示圖'), '⑰ 活動地圖：官方場地指示圖（可下載）');
+['guest', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].forEach(id => {
+  ok(renderTab(id, 'venue').includes('全場活動地圖'), '⑰ ' + id + '：都有活動地圖');
+});
+
+/* 典禮儀式流程（全部人） */
+['troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].forEach(id => {
+  const h = renderTab(id, 'ceremony');
+  ok(h.includes('典禮儀式流程') && h.includes('優異旅團及各項獎勵頒發儀式') && h.includes('會操檢閱暨步操比賽頒獎典禮'), '⑰ ' + id + '：典禮儀式流程（第一、二部分）');
+  ok(!h.includes('莫榮大樓午膳儀式'), '⑰ ' + id + '：唔會見到只限嘉賓嘅第三部分');
+});
+html = renderTab('guest', 'ceremony');
+ok(html.includes('莫榮大樓午膳儀式'), '⑰ 嘉賓：典禮流程包埋第三部分（莫榮大樓）');
+ok(html.includes('風笛手引領主禮團進場') && html.includes('分列式步操'), '⑰ 典禮流程：來自司儀稿／Rundown 嘅關鍵環節');
+
+/* 座位表（嘉賓） */
+html = renderTab('guest', 'seating');
+ok(html.includes('嘉賓席座位表'), '⑰ 嘉賓：座位表');
+ok(html.includes('檢閱台（主禮台）'), '⑰ 座位表：主禮台方向');
+ok(['A 區・主禮團', 'B 區・會長及副會長', 'F 區・獲獎人士及親友觀禮區'].every(x => html.includes(x)), '⑰ 座位表：A–F 分區');
+ok(html.includes('你的座位') && html.includes('B07'), '⑰ 座位表：顯示自己座位（示範）');
+ok(html.includes('就座須知'), '⑰ 座位表：就座須知');
+
+/* 午膳安排（嘉賓） */
+html = renderTab('guest', 'lunch');
+ok(html.includes('13:00–14:00') && html.includes('Officer Mess'), '⑰ 午膳安排：時間＋地點（Officer Mess）');
+ok(html.includes('特別膳食') && html.includes('入場'), '⑰ 午膳安排：入場及特別膳食');
+ok(html.includes('代訂餐盒'), '⑰ 午膳安排：講明旅團用餐盒（午膳只供嘉賓）');
+
+/* 午膳儀式（嘉賓・Officer Mess 小型典禮） */
+html = renderTab('guest', 'mess');
+ok(html.includes('午膳儀式') && html.includes('只限嘉賓'), '⑰ 午膳儀式：只限嘉賓');
+ok(html.includes('香港女童軍總會') && html.includes('香港紅十字會青年團') && html.includes('香港聖約翰救傷隊少青團'), '⑰ 午膳儀式：致送感謝狀 3 個制服團隊（司儀稿 V2）');
+ok(html.includes('會操檢閱官'), '⑰ 午膳儀式：致送紀念品予檢閱官');
+ok(html.includes('13:30'), '⑰ 午膳儀式：13:30 開始');
+
+/* 一進 APP 直接入公眾頻道 */
+{
+  const core = read('js/10-app-core.js');
+  ok(core.includes('autoEnterPublicDemo') && core.includes("AUTO_DEMO_EVENT_ID:'mock_demo'"), '⑰ 一入 APP 自動進入模擬示範版（公眾頻道）');
+  ok(/await this\.autoEnterPublicDemo\(\);/.test(core), '⑰ init() 已接線');
+}
 
 /* ── ④ requiresData 過濾＋接線 ── */
 ok(visible({ public_channel_2027: pc }).some(d => d.id === 'public_channel_demo'), '④ mock_demo（有數據）→ 卡片顯示');
