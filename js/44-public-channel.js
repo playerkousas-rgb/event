@@ -51,7 +51,8 @@ Object.assign(ScoutEventApp.prototype,{
     if(this.pcDemoMode==='pick'){ const u=this.pcDemoUrlAudience(); if(u){ this.pcDemoMode='audience'; this.pcDemoAudience=u; } }
     const aud=this.pcDemoAudienceDef(this.pcDemoAudience);
     let body;
-    if(this.pcDemoMode==='tabs'){ body=this.pcDemoTabsBody(d); }
+    if(this.pcDemoMode==='form' && this.pcFormId){ body=this.pcFormBody(d); }
+    else if(this.pcDemoMode==='tabs'){ body=this.pcDemoTabsBody(d); }
     else if(this.pcDemoMode==='audience' && aud){ body=this.pcDemoAudienceBody(d,aud); }
     else { body=this.pcDemoPickerBody(d); }
     container.innerHTML=`
@@ -308,6 +309,19 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
         <b>🧪 階段 1 成品示範</b> — 真實 2026 嘉賓名單（102 位）。最麻煩在於<b>逐位唔同</b>：典禮①②／茶聚／大會車各自勾、頒獎定受獎、車牌、備注。2026 檔案底部手寫合計「97/95」，實際逐格加係 <b>96/94</b>——人手合計冇人更新；2027 合計實時計（下面個bar）。生產版：名單由嘉賓報名表／上傳中心餵入，接待組用手機版即場報到。
       </div>
+      ${(d.guest_lastmin)?`
+      <div class="bg-white border border-rose-200 rounded-2xl p-4 mb-3">
+        <div class="font-black text-[13px] mb-2 text-rose-700">⏱️ 2026 實錄：活動當日仲改緊（最後一分鐘變動係常態）</div>
+        ${(d.guest_lastmin.events||[]).map(e=>`
+        <div class="flex gap-2.5 py-2 border-t border-slate-100 first:border-t-0">
+          <span class="shrink-0 text-[11px] font-black text-rose-600 w-9 pt-0.5">${escapeHtml(e.date)}</span>
+          <div class="min-w-0">
+            <b class="text-[12px]">${escapeHtml(e.label)}</b>
+            <div class="text-[10.5px] text-slate-500 leading-relaxed">${escapeHtml(e.detail)}</div>
+          </div>
+        </div>`).join('')}
+        <div class="mt-2 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-2.5">💡 ${escapeHtml(d.guest_lastmin.lesson)}</div>
+      </div>`:''}
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3">
         <div class="grid grid-cols-4 gap-2 text-center">
           <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">嘉賓總數</div><div class="text-lg font-black">${T.total}</div></div>
@@ -436,6 +450,172 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     if(input) input.value='';
   },
 
+  /* ═══════════ 八大報名表（階段 2）：免登入・提交即出申請編號・旅團=T 編號 QR 一條血脈 ═══════════ */
+  pcFormId:null, pcFormDone:null, pcIntakeSubs:[],
+  pcOpenForm(id){ this.pcDemoMode='form'; this.pcFormId=id; this.pcFormDone=null; this.renderPublicChannelDemo(); },
+  pcOpenFormByName(name){
+    const d=this.pcDemoData(); const f=((d&&d.intake_forms)||[]).find(x=>x.name===name);
+    if(!f){ showToast('示範版：此表暫未接入','warning'); return; }
+    this.pcOpenForm(f.id);
+  },
+  pcFormBack(){ this.pcDemoMode='tabs'; this.pcFormId=null; this.pcFormDone=null; this.renderPublicChannelDemo(); },
+  pcFormBody(d){
+    const f=((d.intake_forms)||[]).find(x=>x.id===this.pcFormId);
+    if(!f){ return '<p class="text-sm text-slate-400">找不到表格</p>'; }
+    if(this.pcFormDone){
+      const no=this.pcFormDone.no; const isTroop=f.id==='troop_registration';
+      return `
+      <div class="max-w-md mx-auto">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center">
+          <div class="text-3xl">✓</div>
+          <div class="font-black text-[15px] text-emerald-800 mt-1">已收到「${escapeHtml(f.name)}」</div>
+          <div class="mt-3 bg-white border border-emerald-300 rounded-xl py-2.5">
+            <div class="text-[10.5px] text-slate-400 font-bold">申請編號</div>
+            <div class="text-2xl font-black tracking-wider text-emerald-700">${escapeHtml(no)}</div>
+          </div>
+          ${isTroop?`
+          <div class="mt-4 bg-white border border-slate-200 rounded-xl p-4">
+            <div class="text-[11px] font-bold text-slate-500 mb-2">你嘅報到 QR（活動當日出示呢個就得）</div>
+            <div class="flex justify-center">${this.pcQrSvg(no)}</div>
+            <div class="text-[10.5px] text-slate-400 mt-2">人數・餐盒已自動入名冊；工作人員掃呢個 QR 即見你旅團資料</div>
+          </div>`:''}
+          <div class="mt-3 text-[10.5px] text-emerald-700 leading-relaxed">公眾用「申請編號＋電話」查進度｜之後改動原地改，冇新版本｜確認後以電郵通知繳費（$10/人・餐盒 $60/份）</div>
+        </div>
+        <button onclick="app.pcFormBack()" class="mt-3 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[12.5px] font-bold rounded-xl py-2.5">← 返回報名</button>
+      </div>`;
+    }
+    return `
+    <div class="max-w-md mx-auto">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3" style="border-left:4px solid #6d28d9">
+        <div class="flex items-center gap-3">
+          <div class="text-2xl">${f.icon}</div>
+          <div class="min-w-0">
+            <b class="text-[14px]">${escapeHtml(f.name)}</b>
+            <div class="text-[11px] text-slate-500">${escapeHtml(f.target||'')}</div>
+          </div>
+        </div>
+      </div>
+      <form onsubmit="app.pcFormSubmit(event,'${escapeHtml(f.id)}')" class="bg-white border border-slate-200 rounded-2xl p-4">
+        ${(f.fields||[]).map(fl=>{
+          const req=fl.required?'<span class="text-rose-500">*</span>':'';
+          if(fl.type==='check'){
+            return `<label class="flex items-start gap-2.5 py-2 border-t border-slate-100 first:border-t-0 cursor-pointer">
+              <input type="checkbox" data-pcf="${escapeHtml(fl.key)}" class="mt-0.5 w-4 h-4" ${fl.required?'required':''}>
+              <span class="text-[12.5px] text-slate-700">${escapeHtml(fl.label)} ${req}</span></label>`;
+          }
+          if(fl.type==='select'){
+            return `<div class="py-2 border-t border-slate-100 first:border-t-0">
+              <div class="text-[12px] font-bold text-slate-600 mb-1">${escapeHtml(fl.label)} ${req}</div>
+              <select data-pcf="${escapeHtml(fl.key)}" ${fl.required?'required':''} class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-[13px] bg-white">
+                <option value="">請選擇…</option>
+                ${(fl.options||[]).map(o=>`<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('')}
+              </select></div>`;
+          }
+          return `<div class="py-2 border-t border-slate-100 first:border-t-0">
+            <div class="text-[12px] font-bold text-slate-600 mb-1">${escapeHtml(fl.label)} ${req}</div>
+            <input type="${fl.type==='number'?'number':'text'}" data-pcf="${escapeHtml(fl.key)}" ${fl.required?'required':''} ${fl.type==='number'?'min="0"':''} class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-[13px]"></div>`;
+        }).join('')}
+        <div class="text-[10.5px] text-slate-400 mt-3 leading-relaxed">${escapeHtml(d.intake_note||'')}</div>
+        <button type="submit" class="mt-3 w-full bg-sky-600 text-white text-[13.5px] font-bold rounded-xl py-3">提交 → 出申請編號</button>
+        <button type="button" onclick="app.pcFormBack()" class="mt-2 w-full bg-slate-100 border border-slate-200 text-slate-500 text-[12px] font-bold rounded-xl py-2">取消</button>
+      </form>
+    </div>`;
+  },
+  pcFormSubmit(ev,id){
+    ev.preventDefault();
+    const d=this.pcDemoData(); const f=((d&&d.intake_forms)||[]).find(x=>x.id===id); if(!f) return;
+    const vals={};
+    (f.fields||[]).forEach(fl=>{
+      const el=document.querySelector('[data-pcf="'+fl.key+'"]');
+      if(!el) return;
+      vals[fl.key]=fl.type==='check'?el.checked:(fl.type==='number'?(+el.value||0):el.value.trim());
+    });
+    this.pcSubmitForm(id,vals);
+  },
+  pcSubmitForm(id,vals){
+    const d=this.pcDemoData(); const f=((d&&d.intake_forms)||[]).find(x=>x.id===id); if(!f) return false;
+    for(const fl of (f.fields||[])){
+      if(!fl.required) continue;
+      const v=vals[fl.key];
+      const empty=(fl.type==='check')? !v : (v===undefined||String(v).trim()===''||(fl.type==='number'&&!(+v>0)));
+      if(empty){ showToast('⚠️ 請填好必填欄位：'+fl.label,'warning'); return false; }
+    }
+    const subs=this.pcIntakeSubs=this.pcIntakeSubs||[];
+    const t=new Date(); const at=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    let no;
+    if(id==='troop_registration'){
+      const list=((d.checkin_demo||{}).entries)||[];
+      no='T'+String(list.length+1).padStart(3,'0');
+      list.push({ token:no, kind:'旅團', name:(vals.troop_no+(vals.group?'・'+vals.group:'')), area:vals.area, headcount:+vals.headcount||0, meal_boxes:+vals.meals||0, note:'領隊：'+vals.leader+(vals.phone?'（'+vals.phone+'）':'') });
+    }else{
+      no=f.prefix+String(subs.filter(x=>x.prefix===f.prefix).length+1).padStart(3,'0');
+    }
+    subs.push({ form:id, prefix:f.prefix, no, vals, at });
+    this.pcFormDone={ no, form:id };
+    showToast('✓ 已提交——申請編號 '+no+(id==='troop_registration'?'（報到 QR・人數・餐盒已自動生成）':''),'success');
+    this.renderPublicChannelDemo();
+    return true;
+  },
+
+  /* ═══════════ 報名總覽（工作人員）：八大表提交集中化＋名額自動着燈 ═══════════ */
+  renderIntakeBoard(){
+    const container=document.getElementById('module-content');
+    const d=this.pcDemoData();
+    if(!d){ container.innerHTML='<p class="text-sm text-slate-400">此活動未有報名總覽示範資料</p>'; return; }
+    const subs=this.pcIntakeSubs||[];
+    const forms=d.intake_forms||[];
+    const troopSubs=subs.filter(s=>s.form==='troop_registration');
+    const totalPax=troopSubs.reduce((a,s)=>a+(+s.vals.headcount||0),0);
+    const totalMeals=troopSubs.reduce((a,s)=>a+(+s.vals.meals||0),0);
+    const CAP_PAX=2000, CAP_MEAL=700;
+    const bar=(v,cap)=>`<div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-violet-500" style="width:${Math.min(100,Math.round(v/cap*100))}%"></div></div>`;
+    container.innerHTML=`
+      <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
+        <b>🧪 階段 2 成品示範</b> — 八大報名表（欄位照 FIELD_CONTRACT）：公眾免登入提交→申請編號→旅團自動生成 T 編號・報到 QR・人數・餐盒（一條血脈）。2026 報名散落 email／WhatsApp／Excel；2027 集中一處、名額自動着燈。生產版＝GAS <code>onIntakeSubmit</code>（Google Forms 觸發）→ <code>Public_2027_Intake</code> Sheet＋自動電郵確認。
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3">
+        <div class="font-black text-[13.5px] mb-3">📊 名額自動着燈（提交即刻計）</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <div class="flex justify-between text-[11.5px] font-bold mb-1"><span>人數（名額 2,000）</span><span>${totalPax} 人</span></div>
+            ${bar(totalPax,CAP_PAX)}
+          </div>
+          <div>
+            <div class="flex justify-between text-[11.5px] font-bold mb-1"><span>代訂餐盒（上限 700・$60/份）</span><span>${totalMeals} 份</span></div>
+            ${bar(totalMeals,CAP_MEAL)}
+          </div>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3">
+        <div class="font-black text-[13.5px] mb-2">📥 八大報名表提交統計</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          ${forms.map(f=>{
+            const n=subs.filter(s=>s.form===f.id).length;
+            return `<div class="border ${n?'border-violet-300 bg-violet-50':'border-slate-200'} rounded-xl p-2.5 text-center">
+              <div class="text-lg">${f.icon}</div>
+              <div class="text-[10.5px] font-bold text-slate-600 leading-tight mt-0.5">${escapeHtml(f.name)}</div>
+              <div class="text-lg font-black ${n?'text-violet-700':'text-slate-300'}">${n}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="font-black text-[13.5px] mb-2">📋 最新提交（最新在上）</div>
+        ${subs.length?subs.slice().reverse().map(s=>{
+          const f=forms.find(x=>x.id===s.form)||{};
+          const sum=(f.summary||[]).map(k=>s.vals[k]).filter(v=>v!==undefined&&v!=='').join('・');
+          return `<div class="flex items-center gap-2.5 py-2 border-t border-slate-100 first:border-t-0">
+            <span class="shrink-0 rounded-lg px-1.5 py-0.5 text-[10px] font-bold bg-violet-100 text-violet-700">${escapeHtml(s.no)}</span>
+            <div class="min-w-0 flex-1">
+              <b class="text-[12.5px]">${escapeHtml(f.name||s.form)}</b>
+              <div class="text-[11px] text-slate-500 truncate">${escapeHtml(String(sum||''))}</div>
+            </div>
+            <span class="shrink-0 text-[10.5px] text-slate-400 font-bold">${escapeHtml(s.at)}</span>
+          </div>`;
+        }).join(''):'<div class="text-[12px] text-slate-400 text-center py-6">未有提交——去公眾頻道「報名」分頁試下填一張（旅團報名會即時生成 T 編號 QR）</div>'}
+      </div>`;
+  },
+
   /* ═══════════ 報到站（工作人員端）：掃描／輸入 token → 即見單位資料 → 確認報到 ═══════════ */
   pcCheckinFound:null, pcCheckinArrivals:[],
   renderCheckinStation(){
@@ -554,7 +734,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
             <div class="text-[11.5px] text-slate-500">${escapeHtml(f.target)}｜${escapeHtml(f.desc)}</div>
           </div>
         </div>
-        <button onclick="showToast('示範版：報名表將於階段 2 接入 — 提交即入系統、自動出名單','warning')" class="mt-3 w-full bg-sky-600 text-white text-[13px] font-bold rounded-xl py-2.5">立即報名 →</button>
+        <button onclick="app.pcOpenFormByName('${escapeHtml(f.name)}')" class="mt-3 w-full bg-sky-600 text-white text-[13px] font-bold rounded-xl py-2.5">立即報名 →</button>
         <div class="text-[10.5px] text-slate-400 mt-1.5 text-center">免登入・提交即有申請編號可查進度</div>
       </div>`).join('')}
       ${rest.length?`
@@ -595,7 +775,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <div class="text-2xl mb-1">${f?f.icon:'❤️'}</div>
         <b class="text-[13.5px] text-rose-700">童心捐贈大行動</b>
         <p class="text-[12px] text-slate-500 mt-1">物品／食品捐贈・現場掃 QR Code 登記</p>
-        <button onclick="showToast('示範版：捐贈表將於階段 2 接入','warning')" class="mt-2.5 bg-rose-600 text-white text-[12px] font-bold rounded-lg px-4 py-2">我要捐贈 ❤</button>
+        <button onclick="app.pcOpenFormByName('童心捐贈')" class="mt-2.5 bg-rose-600 text-white text-[12px] font-bold rounded-lg px-4 py-2">我要捐贈 ❤</button>
       </div>`;
   },
 
@@ -750,7 +930,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
           <div class="text-xl mb-1">${f.icon}</div>
           <b class="text-[12.5px] leading-tight">${escapeHtml(f.name)}</b>
           <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(f.target)}<br>${escapeHtml(f.desc)}</div>
-          <button onclick="showToast('示範版：報名表將於階段 2 接入 — 提交即入系統、自動出名單','warning')" class="mt-2.5 bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
+          <button onclick="app.pcOpenFormByName('${escapeHtml(f.name)}')" class="mt-2.5 bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
         </div>`).join('')}
       </div>`;
   },

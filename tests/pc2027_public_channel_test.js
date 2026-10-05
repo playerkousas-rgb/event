@@ -15,7 +15,8 @@
  *  ⑫ 場地示意圖：每類人嘅路線（虛線①②③）＋報到點（📍脈衝）標喺圖上（生產版＝每類一張標註地圖）
  *  ⑬ 七類通知書＝秘書正式信做源頭（資料夾制：原名原檔掉入、系統攞最新）＋每類入口有下載掣
  *  ⑭ 源頭上傳中心（工作人員前端）：7 通知書＋7 地圖上傳掣——撳掣揀檔案，直入後端指定位置
- *  ⑮ 嘉賓接待站：102 位真實 2026 嘉賓——搜尋／分類／頒獎台・大會車・茶聚篩選／接待報到
+ *  ⑮ 嘉賓接待站：102 位真實 2026 嘉賓——搜尋／分類／頒獎台・大會車・茶聚篩選／接待報到＋最後一分鐘變動實錄
+ *  ⑯ 八大報名表（階段2）：免登入提交→申請編號；旅團報名→T 編號・QR・人數・餐盒一條血脈；報名總覽＋名額着燈
  *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -233,14 +234,14 @@ ok(html.includes('原名原檔唔使改名') && html.includes('攞最新'), '⑬
 const ucCard = defs.find(d => d.id === 'upload_center');
 ok(ucCard && ucCard.minLevel === 20 && ucCard.requiresData === 'public_channel_2027', '⑭ 源頭上傳中心卡：工作人員等級＋requiresData 隔離');
 ok(!visible({ public_channel_2027: pc }).some(d => d.id === 'upload_center') && !visible({}).some(d => d.id === 'upload_center'), '⑭ 上傳中心唔會喺公眾／2026／2027 出現');
-ok((pc.upload_slots || []).length === 2 && pc.upload_slots.every(g => (g.items || []).length === 7), '⑭ 上傳入口：7 通知書＋7 地圖＝14 個掣');
+ok((pc.upload_slots || []).length === 3 && pc.upload_slots.filter(g => g.group !== 'seating').every(g => (g.items || []).length === 7), '⑭ 上傳入口：7 通知書＋7 地圖＋座位表（3 組）');
 app.currentUser = { user_id: '陳子明', role: 'staff', mock_admin: true };
 containers['module-content'] = mkEl();
 app.renderUploadCenter();
 let uc = containers['module-content'].innerHTML;
 ok(uc.includes('七類通知書') && uc.includes('七類場地指示圖'), '⑭ 兩組入口（通知書＋地圖）');
-ok((uc.match(/📤 上傳檔案/g) || []).length === 14, '⑭ 14 個上傳掣');
-ok(uc.includes('ISD2027/02_通知書/02_旅團/') && uc.includes('ISD2027/04_場地/場地指示圖（公眾版）/01_嘉賓/'), '⑭ 每個掣標明後端 Drive 指定位置');
+ok((uc.match(/📤 上傳檔案/g) || []).length === 15, '⑭ 15 個上傳掣（7 通知書＋7 地圖＋1 座位表）');
+ok(uc.includes('ISD2027/02_通知書/02_旅團/') && uc.includes('ISD2027/04_場地/場地指示圖（公眾版）/01_嘉賓/') && uc.includes('ISD2027/04_場地/座位表/'), '⑭ 每個掣標明後端 Drive 指定位置（含座位表）');
 ok(uc.includes('未上傳'), '⑭ 未上傳狀態顯示');
 ok(app.pcUploadSlot('notices', 'troop').path === '02_通知書/02_旅團', '⑭ slot 對應後端路徑');
 app.pcUploadFile('notices', 'troop', { files: [{ name: '旅團通知書_final.pdf', size: 12345 }], value: '' });
@@ -269,6 +270,9 @@ app.renderGuestReception();
 let gr = containers['module-content'].innerHTML;
 ok(gr.includes('區永樑先生') && gr.includes('102') && gr.includes('96/94'.replace('96/94','人手合計冇人更新')), '⑮ 渲染全名單＋2026 合計病徵說明');
 ok(gr.includes('搜尋姓名／職銜／車牌／備注'), '⑮ 搜尋框（姓名/職銜/車牌/備注）');
+ok(gr.includes('活動當日仲改緊') && gr.includes('V8 Final') && gr.includes('座位表'), '⑮ 最後一分鐘變動實錄卡（02.10 合計錯→03.10 加人→04.10 座位表 V8）');
+ok(gr.includes('王偉傑') && gr.includes('胡廖可儀') && gr.includes('區Sir師母'), '⑮ 實錄卡記錄 03.10 新增嘉賓（活動前一日加人）');
+ok(gr.includes('活體出口'), '⑮ 實錄卡結論：只有活體出口（手機）追到');
 ok((gr.match(/接待報到/g) || []).length === 102, '⑮ 102 個接待報到掣');
 app.pcGuestSearch('區永樑');
 gr = containers['module-content'].innerHTML;
@@ -279,7 +283,7 @@ gr = containers['module-content'].innerHTML;
 ok(gr.includes('張佩珊') && !gr.includes('吳家亮'), '⑮ 分組篩選：政府 4 位（唔見總會人）');
 app.pcGuestSetCat(''); app.pcGuestSetView('bus');
 gr = containers['module-content'].innerHTML;
-ok(['馮敬安', '鍾偉言', '鄭定國', '曾滿淦'].every(n => gr.includes(n)) && !gr.includes('區永樑'), '⑮ 大會車 4 位一鍵篩出');
+ok(['馮敬安', '鍾偉言', '鄭定國', '曾滿淦'].every(n => gr.includes(n)) && !gr.includes('張佩珊'), '⑮ 大會車 4 位一鍵篩出');
 app.pcGuestSetView('present');
 gr = containers['module-content'].innerHTML;
 ok(gr.includes('頒獎台') && gr.includes('葉永成') && !gr.includes('張佩珊'), '⑮ 頒獎台 6 位一鍵篩出');
@@ -291,6 +295,55 @@ app.pcGuestSetView('arrived');
 gr = containers['module-content'].innerHTML;
 ok(gr.includes('區永樑') && !gr.includes('張佩珊') && gr.includes('顯示 1/102'), '⑮ 已到達視圖：只見已報到嗰位');
 app.pcGuestToggle(1); app.pcGuestSetView(''); app.pcGuestSetCat(''); app.currentUser = null;
+
+/* ── ⑯ 八大報名表（階段 2）：報名→申請編號→T 編號 QR 一條血脈 ── */
+const IF = pc.intake_forms || [];
+ok(IF.length === 8, '⑯ 八大報名表齊全（照 FIELD_CONTRACT §3）');
+const troopForm = IF.find(f => f.id === 'troop_registration');
+ok(troopForm && troopForm.prefix === 'T' && (troopForm.fields || []).some(fl => fl.key === 'pt46') && (troopForm.fields || []).some(fl => fl.key === 'meals'), '⑯ 旅團報名：PT/46＋餐盒欄位（照合約）');
+ok(IF.find(f => f.id === 'guest' && (f.fields || []).some(fl => fl.key === 'plate')), '⑯ 嘉賓報名：車牌欄位（照 2026 CSV 直搬）');
+ok((IF.find(f => f.id === 'section_award').fields.find(fl => fl.key === 'award').options || []).includes('貝登堡獎章'), '⑯ 支部獎：獎章選項（總領袖/榮譽童軍/貝登堡）');
+ok((IF.find(f => f.id === 'leader_award').fields.find(fl => fl.key === 'award').options || []).includes('10年長期服務獎狀'), '⑯ 成人獎：獎項選項照 2026 得主結構');
+app.currentUser = null; containers['module-content'] = mkEl();
+app.pcOpenFormByName('旅團報名');
+let fb = containers['module-content'].innerHTML;
+ok(app.pcDemoMode === 'form' && fb.includes('旅團報名') && fb.includes('代訂餐盒數量') && fb.includes('提交 → 出申請編號'), '⑯ 公眾開表：免登入・手機表格（餐盒/PT/46 欄位）');
+ok(fb.includes('家長同意書 PT/46'), '⑯ PT/46 必填勾選');
+// 缺必填 → 擋
+ok(app.pcSubmitForm('troop_registration', { troop_no: '第 99 旅', area: 'CHW 柴灣區' }) === false && toasts[toasts.length - 1][1] === 'warning', '⑯ 必填驗證：缺領隊/人數 → 擋＋提示');
+// 補齊 → T032 一條血脈
+const entriesBefore = pc.checkin_demo.entries.length;
+ok(app.pcSubmitForm('troop_registration', { troop_no: '第 99 旅', group: '童軍團', area: 'CHW 柴灣區', leader: '陳大文', phone: '91234567', headcount: 25, meals: 25, pt46: true }) === true, '⑯ 旅團報名提交成功');
+const newEntry = pc.checkin_demo.entries[pc.checkin_demo.entries.length - 1];
+ok(newEntry.token === 'T032' && newEntry.name.includes('第 99 旅') && newEntry.headcount === 25 && newEntry.meal_boxes === 25 && newEntry.note.includes('陳大文'), '⑲→⑯ 一條血脈：T032＋人數 25＋餐盒 25＋領隊 自動入名冊');
+ok(app.pcFormDone && app.pcFormDone.no === 'T032', '⑯ 申請編號＝T032（申請編號=報到編號）');
+fb = containers['module-content'].innerHTML;
+ok(fb.includes('T032') && fb.includes('報到 QR') && fb.includes('查進度'), '⑯ 確認卡：T032＋報到 QR＋查進度提示');
+ok(!app.currentUser, '⑯ 以上全部免登入（公眾身份做到）');
+// 報到站即見新旅團
+app.currentUser = { user_id: '陳子明', role: 'staff', mock_admin: true };
+containers['module-content'] = mkEl();
+app.pcCheckinLookup('T032');
+ok((app.pcCheckinFound || {}).name && app.pcCheckinFound.name.includes('第 99 旅') && app.pcCheckinFound.headcount === 25, '⑯ 報到站掃 T032 即見新旅團・人數（名冊自動着燈）');
+// 其他表：申請編號 prefix
+app.currentUser = null; app.pcFormBack();
+ok(app.pcSubmitForm('guest', { name: '測試嘉賓', title: '太平紳士', plate: 'AB1234' }) === true && app.pcIntakeSubs.some(x => x.no === 'G001'), '⑯ 嘉賓報名 → G001');
+app.pcFormBack();
+ok(app.pcSubmitForm('donations', { type: '物品', desc: '文具 100 份', qty: 100, contact: '林小姐', phone: '98765432' }) === true && app.pcIntakeSubs.some(x => x.no === 'D001'), '⑯ 童心捐贈 → D001');
+// 報名總覽（工作人員）
+ok(defs.find(d => d.id === 'intake_board' && d.minLevel === 20 && d.requiresData === 'public_channel_2027'), '⑯ 報名總覽卡：工作人員＋requiresData');
+ok(!visible({ public_channel_2027: pc }).some(d => d.id === 'intake_board'), '⑯ 總覽唔會喺公眾出現');
+app.currentUser = { user_id: '陳子明', role: 'staff', mock_admin: true };
+containers['module-content'] = mkEl();
+app.renderIntakeBoard();
+const ib = containers['module-content'].innerHTML;
+ok(ib.includes('名額自動着燈') && ib.includes('2,000') && ib.includes('700'), '⑯ 名額自動着燈（2,000 人／700 餐盒）');
+ok(ib.includes('旅團報名') && ib.includes('T032') && ib.includes('第 99 旅'), '⑯ 總覽見 T032 提交');
+ok(ib.includes('G001') && ib.includes('測試嘉賓'), '⑯ 總覽見 G001 提交');
+ok(ib.includes('onIntakeSubmit') || ib.includes('GAS'), '⑯ 生產版說明：GAS onIntakeSubmit');
+// 還原（唔影響後續測試嘅 31 隊基數）
+pc.checkin_demo.entries.length = entriesBefore;
+app.pcIntakeSubs = []; app.pcFormDone = null; app.currentUser = null;
 
 /* ── ⑧ 公眾 landing：一進APP就是公眾頻道（mock_demo・未登入） ── */
 app.currentUser = null; app.pcLandAudience = '';

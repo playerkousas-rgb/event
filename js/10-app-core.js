@@ -1574,7 +1574,7 @@ Object.assign(ScoutEventApp.prototype,{
   openModule(key){
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});
-    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'優異旅團獲獎名單',crisis:'危機處理',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動',dept_hub:'部門管理中心',public_channel_demo:'公眾頻道 2027（示範）', checkin_station:'報到站（示範）', upload_center:'源頭上傳中心（示範）', guest_reception:'嘉賓接待站（示範）'}[key]||key;
+    this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'優異旅團獲獎名單',crisis:'危機處理',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動',dept_hub:'部門管理中心',public_channel_demo:'公眾頻道 2027（示範）', checkin_station:'報到站（示範）', upload_center:'源頭上傳中心（示範）', guest_reception:'嘉賓接待站（示範）', intake_board:'報名總覽（示範）'}[key]||key;
     if(key==='meetings'){
       // 正式活動已有會議 Drive 時，點擊會議卡片直接顯示各次會議資料夾及最新議程／紀錄。
       this.meetingSubTab='list';
@@ -1598,7 +1598,7 @@ Object.assign(ScoutEventApp.prototype,{
       // v13：財務頁所有操作（指引／預算／開支申報／口頭報價／結算批核）都在下方分頁按鈕內，
       // 唔再出現右上角嗰粒「冇用嘅通用新增掣」（以前跌落兜底分支出嚟，撳開只係一個假表格）。
       document.getElementById('module-actions').innerHTML='<span class="text-[11px] bg-amber-50 text-amber-700 px-3 py-2 rounded-full border border-amber-200 whitespace-nowrap"><i class="fa-solid fa-wallet mr-1"></i>指引・預算・開支申報・口頭報價・結算：全部在下方分頁內處理</span>';
-    } else if(key==='my_monitor'||key==='apply_hub'||key==='exec_manual'||key==='coordinator_group'||key==='admin_group'||key==='public_channel_demo'||key==='checkin_station'||key==='upload_center'||key==='guest_reception'){
+    } else if(key==='my_monitor'||key==='apply_hub'||key==='exec_manual'||key==='coordinator_group'||key==='admin_group'||key==='public_channel_demo'||key==='checkin_station'||key==='upload_center'||key==='guest_reception'||key==='intake_board'){
       // v12.1：行政組／協調組部門頁有自己嘅按鈕（列印統計等），唔顯示通用「新增」掣（以前 admin_group 跌落兜底分支出咗粒多餘「新增」）
       document.getElementById('module-actions').innerHTML='';
     } else if(key==='donations'){
@@ -1842,7 +1842,8 @@ Object.assign(ScoutEventApp.prototype,{
     if(mod==='public_channel_demo'){this.renderPublicChannelDemo(); return;}
       if(mod==='checkin_station'){this.renderCheckinStation(); return;} // 階段1：報到站（工作人員掃 QR 用）
       if(mod==='upload_center'){this.renderUploadCenter(); return;} // 階段1：源頭上傳中心（7 通知書＋7 地圖，直入後端指定位置）
-      if(mod==='guest_reception'){this.renderGuestReception(); return;} // 階段1：嘉賓接待站（102 位嘉賓・逐位接待報到） // 階段 1：公眾頻道 2027 形態示範（mock_demo）
+      if(mod==='guest_reception'){this.renderGuestReception(); return;} // 階段1：嘉賓接待站（102 位嘉賓・逐位接待報到）
+      if(mod==='intake_board'){this.renderIntakeBoard(); return;} // 階段2：報名總覽（八大報名表提交集中化） // 階段 1：公眾頻道 2027 形態示範（mock_demo）
     if(mod==='permissions'){this.renderPermissionsModule(); return;}
     container.innerHTML='<p class="text-sm text-slate-400">此模組暫時未有資料</p>';
   }

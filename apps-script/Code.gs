@@ -1812,3 +1812,113 @@ function getImport2026Status() {
   }
   return { success: true, version: GS_VERSION, counts: counts, audit_rows: auditRows, last_run: lastRun };
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   階段 2（2027）：八大報名表接入 — Google Forms 提交 → 一條血脈
+   ═══════════════════════════════════════════════════════════════════
+   部署（一次性）：
+   1. 開 8 個 Google Forms（欄位照 docs/2027_FIELD_CONTRACT.md §3，
+      對應 js/44-public-channel.js 嘅 intake_forms 欄位 key）。
+   2. 每個 Form「回應→連結至試算表」→ 同一張 Public_2027_Intake
+      （或各表獨立回應表，再把 INTAKE_FORM_MAP 指去對應 sheet 名）。
+   3. 每個 Form 加「指令碼觸發器」：onIntakeSubmit（提交時）。
+   4. appsscript.json oauthScopes 加：
+      https://www.googleapis.com/auth/drive（上傳掣寫入 Drive 指定資料夾）
+      https://www.googleapis.com/auth/script.send_mail（確認電郵）
+   5. 旅團報名回應表喺 INTAKE_FORM_MAP.troop_registration.sheet。
+
+   機制（照 FIELD_CONTRACT §0 原則）：
+   - 提交即出申請編號（troop=T### 報到編號，其餘 G/M/UG/N/SA/LA/D###）
+   - 紀錄代替檔案：一筆紀錄原地改，updated_by/updated_at 留痕
+   - 旅團報名 → 參加旅團名冊＋餐盒統計自動着燈
+   ═══════════════════════════════════════════════════════════════════ */
+
+var INTAKE_FORM_MAP = {
+  // formId（Google Form ID）→ { type, sheet, prefix }
+  // 部署時逐個填入真實 Form ID
+  'FORM_ID_TROOP_REGISTRATION': { type: 'troop_registration', sheet: 'Public_2027_Intake', prefix: 'T' },
+  'FORM_ID_MERIT_TROOP':        { type: 'merit_troop',        sheet: 'Public_2027_Intake', prefix: 'M' },
+  'FORM_ID_GUEST':              { type: 'guest',              sheet: 'Public_2027_Intake', prefix: 'G' },
+  'FORM_ID_UG_REGISTRATION':    { type: 'ug_registration',    sheet: 'Public_2027_Intake', prefix: 'UG' },
+  'FORM_ID_NGO_REGISTRATION':   { type: 'ngo_registration',   sheet: 'Public_2027_Intake', prefix: 'N' },
+  'FORM_ID_SECTION_AWARD':      { type: 'section_award',      sheet: 'Public_2027_Intake', prefix: 'SA' },
+  'FORM_ID_LEADER_AWARD':       { type: 'leader_award',       sheet: 'Public_2027_Intake', prefix: 'LA' },
+  'FORM_ID_DONATIONS':          { type: 'donations',          sheet: 'Public_2027_Intake', prefix: 'D' }
+};
+
+/* Form 提交觸發器（每個 Form 各裝一個，指去呢個函數） */
+function onIntakeSubmit(e) {
+  var formId = e && e.source ? e.source.getId() : '';
+  var cfg = INTAKE_FORM_MAP[formId];
+  if (!cfg) return; // 未登記嘅 Form：唔理（避免撈亂其他表）
+  var vals = {};
+  Object.keys(e.namedValues || {}).forEach(function (k) {
+    var v = e.namedValues[k]; vals[k] = Array.isArray(v) ? v[0] : v;
+  });
+  var no = nextIntakeNo(cfg);
+  var row = {
+    submission_type: cfg.type, application_no: no,
+    payload: JSON.stringify(vals),
+    status: 'submitted', updated_by: 'form:' + formId,
+    updated_at: new Date().toISOString()
+  };
+  appendIntakeRow(cfg.sheet, row);
+  if (cfg.type === 'troop_registration') syncTroopToRoster(no, vals); // T 編號→名冊＋餐盒
+  sendIntakeConfirmation(vals, no, cfg); // 確認電郵（骨架）
+  return no;
+}
+
+/* 申請編號：troop=T###（報到編號＝申請編號，一條血脈）；其餘 prefix+序號 */
+function nextIntakeNo(cfg) {
+  var sh = getSheet().getSheetByName(cfg.sheet);
+  if (!sh) return cfg.prefix + '001';
+  var last = sh.getLastRow();
+  var n = 1;
+  if (cfg.prefix === 'T') {
+    n = Math.max(last, 1); // T 編號跟旅團名冊行數走（名冊=旅團報名生成，T=報到編號）
+  } else {
+    var nos = sh.getRange(2, 3, Math.max(last - 1, 1), 1).getValues(); // 第 3 欄=application_no
+    nos.forEach(function (r) {
+      if (String(r[0]).indexOf(cfg.prefix) === 0) n++;
+    });
+  }
+  return cfg.prefix + ('000' + n).slice(-3); // T032・G001・UG001・SA001
+}
+
+function appendIntakeRow(sheetName, row) {
+  var ss = getSheet();
+  var sh = ss.getSheetByName(sheetName);
+  if (!sh) {
+    sh = ss.insertSheet(sheetName);
+    sh.appendRow(['timestamp', 'submission_type', 'application_no', 'payload', 'status', 'updated_by', 'updated_at']);
+  }
+  sh.appendRow([new Date(), row.submission_type, row.application_no, row.payload, row.status, row.updated_by, row.updated_at]);
+}
+
+/* 旅團報名 → Roster_Lists（participants/meal_box）自動着燈（照 v14 引擎 key） */
+function syncTroopToRoster(token, vals) {
+  // v14 Roster_Lists 引擎已有名冊渲染；呢度最小侵入：寫一筆 token 紀錄，
+  // 前端（js/41-roster-lists.js / 44-public-channel.js）讀 submission_type=troop_checkin_token
+  // 即自動帶上報到編號＋人數＋餐盒（名冊・餐盒統計自動着燈）
+  appendIntakeRow('Public_2027_Intake', {
+    submission_type: 'troop_checkin_token', application_no: token,
+    payload: JSON.stringify({ token: token, unit: vals['旅號'], headcount: vals['成員人數（連領袖）'], meal_boxes: vals['代訂餐盒數量（$60/份・名額 700）'] }),
+    status: 'final', updated_by: 'gas:syncTroopToRoster', updated_at: new Date().toISOString()
+  });
+}
+
+/* 確認電郵骨架（GAS sendMail；費用同繳款按 FIELD_CONTRACT §8 待決問題 3） */
+function sendIntakeConfirmation(vals, no, cfg) {
+  var email = vals['電郵'] || vals['聯絡電郵'] || '';
+  if (!email) return;
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: '【港島童軍繽紛日 2027】已收到報名 — 申請編號 ' + no,
+      body: '已收到你的報名（' + cfg.type + '）。\n\n申請編號：' + no +
+        '\n\n查進度：APP 公眾頻道 →「查進度」→ 輸入申請編號＋電話。' +
+        (cfg.prefix === 'T' ? '\n\n你的報到 QR：開 APP 旅團入口（?pub=troop）→ 輸入申請編號即見。活動當日出示即可報到。' : '') +
+        '\n\n（此為自動通知，請勿回覆）'
+    });
+  } catch (err) { /* 配額用盡等：寫入 Audit_Log 就好 */ }
+}

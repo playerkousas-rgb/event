@@ -119,6 +119,103 @@ const pc = {
   staff_gate: { pin: '2027', login_as: '陳子明' },
   /* ── 分眾入口：公眾（非工作人員）揀身份入嚟，各有各嘅版面組合（階段 1 形態） ──
      生產版：每類受眾一條專屬連結／QR（index.html?pub=troop 等），開門即見自己嘅版本 */
+  /* ── 八大報名表（階段 2）：欄位照 docs/2027_FIELD_CONTRACT.md §3
+     共通機制：免登入・提交即出申請編號・旅團報名=T 編號報到 QR（一條血脈：報名→QR→名冊→餐盒）── */
+  intake_forms: [
+    { id: 'troop_registration', icon: '🏃', name: '旅團報名', target: '旅領袖（每旅最少 1 領袖帶隊）', desc: '人數・餐盒・旅遊巴・PT/46', prefix: 'T', summary: ['troop_no', 'headcount', 'meals'], fields: [
+      { key: 'troop_no', label: '旅號（例：第 1 旅）', type: 'text', required: true },
+      { key: 'group', label: '團（可多團，頓號分隔）', type: 'text' },
+      { key: 'area', label: '區會', type: 'select', options: ['HKN 港島北區', 'SKW 筲箕灣區', 'WCH 灣仔區', 'CHW 柴灣區', 'VIC 維多利亞城區', 'HKS 港島南區', 'HKW 港島西區', 'HKIR 港島地域'], required: true },
+      { key: 'leader', label: '領隊姓名', type: 'text', required: true },
+      { key: 'phone', label: '領隊電話', type: 'text', required: true },
+      { key: 'email', label: '電郵', type: 'text' },
+      { key: 'headcount', label: '成員人數（連領袖）', type: 'number', required: true },
+      { key: 'parents', label: '家長親友人數', type: 'number' },
+      { key: 'meals', label: '代訂餐盒數量（$60/份・名額 700）', type: 'number' },
+      { key: 'bus', label: '旅遊巴', type: 'select', options: ['不需要', '需要'] },
+      { key: 'pt46', label: '已收齊家長同意書 PT/46', type: 'check', required: true },
+      { key: 'note', label: '備註（旅遊巴時間等）', type: 'text' }
+    ] },
+    { id: 'merit_troop', icon: '🏆', name: '優異旅團報名', target: '獲獎旅團領袖（名單由典禮組預載）', desc: '出席／派隊人數・領取安排', prefix: 'M', summary: ['troop_no', 'attending'], fields: [
+      { key: 'troop_no', label: '旅號', type: 'text', required: true },
+      { key: 'group', label: '團', type: 'text' },
+      { key: 'area', label: '區會', type: 'select', options: ['HKN 港島北區', 'SKW 筲箕灣區', 'WCH 灣仔區', 'CHW 柴灣區', 'VIC 維多利亞城區', 'HKS 港島南區', 'HKW 港島西區'], required: true },
+      { key: 'leader', label: '領隊姓名', type: 'text', required: true },
+      { key: 'phone', label: '聯絡電話', type: 'text', required: true },
+      { key: 'attending', label: '出席人數', type: 'number', required: true },
+      { key: 'parade', label: '派隊人數（步操）', type: 'number' },
+      { key: 'collect', label: '領取安排', type: 'select', options: ['證書（小童軍）', '彩帶（幼童軍／童軍／深資／樂行）'] }
+    ] },
+    { id: 'guest', icon: '🎩', name: '嘉賓報名', target: '獲邀人士／秘書處代填', desc: '照 2026 嘉賓名單欄位直接照搬', prefix: 'G', summary: ['name', 'title'], fields: [
+      { key: 'name', label: '姓名', type: 'text', required: true },
+      { key: 'title', label: '職銜', type: 'text', required: true },
+      { key: 'org', label: '機構', type: 'text' },
+      { key: 'c1', label: '出席第一部分典禮（優異旅團頒獎）', type: 'check' },
+      { key: 'c2', label: '出席第二部分典禮（會操檢閱）', type: 'check' },
+      { key: 'tea', label: '嘉賓茶聚（莫榮大樓自助餐）', type: 'check' },
+      { key: 'bus', label: '乘坐大會車（10:15 灣仔伊利沙伯體育館）', type: 'check' },
+      { key: 'plate', label: '車牌（泊車預登記）', type: 'text' },
+      { key: 'diet', label: '飲食需要', type: 'text' },
+      { key: 'note', label: '備註', type: 'text' }
+    ] },
+    { id: 'ug_registration', icon: '🧢', name: '其他制服團體報名', target: 'UG 領隊', desc: '隊伍＋嘉賓代表', prefix: 'UG', summary: ['unit', 'headcount'], fields: [
+      { key: 'unit', label: '單位', type: 'select', options: ['香港女童軍總會', '香港紅十字會', '香港聖約翰救傷隊', '香港少年領袖團', '香港海事青年團', '醫療輔助隊', '香港青少年軍總會', '香港基督少年軍'], required: true },
+      { key: 'leader', label: '領隊姓名', type: 'text', required: true },
+      { key: 'position', label: '職位', type: 'text' },
+      { key: 'contact', label: '聯絡電話', type: 'text', required: true },
+      { key: 'headcount', label: '出席人數', type: 'number', required: true },
+      { key: 'tea', label: '茶聚', type: 'check' },
+      { key: 'guest_name', label: '出席嘉賓代表姓名', type: 'text' },
+      { key: 'guest_position', label: '嘉賓代表職位', type: 'text' }
+    ] },
+    { id: 'ngo_registration', icon: '🤝', name: 'NGO 報名', target: '機構代表（2027 新增）', desc: '攤位／服務／觀禮', prefix: 'N', summary: ['org', 'mode'], fields: [
+      { key: 'org', label: '機構名稱', type: 'text', required: true },
+      { key: 'contact', label: '聯絡人', type: 'text', required: true },
+      { key: 'position', label: '職位', type: 'text' },
+      { key: 'phone', label: '電話', type: 'text', required: true },
+      { key: 'email', label: '電郵', type: 'text' },
+      { key: 'mode', label: '參與形式', type: 'select', options: ['攤位', '服務', '觀禮'], required: true },
+      { key: 'headcount', label: '人數', type: 'number' },
+      { key: 'booth_plan', label: '有攤位計劃書（跟攤位流程）', type: 'check' }
+    ] },
+    { id: 'section_award', icon: '🎖️', name: '支部最高獎勵得主報名', target: '總領袖／榮譽童軍／貝登堡', desc: '出席・親友人數', prefix: 'SA', summary: ['name', 'award'], fields: [
+      { key: 'name', label: '姓名', type: 'text', required: true },
+      { key: 'area', label: '區會', type: 'select', options: ['HKN 港島北區', 'SKW 筲箕灣區', 'WCH 灣仔區', 'CHW 柴灣區', 'VIC 維多利亞城區', 'HKS 港島南區', 'HKW 港島西區', 'HKIR 港島地域'] },
+      { key: 'section', label: '支部', type: 'select', options: ['小童軍', '幼童軍', '童軍', '深資童軍', '樂行童軍'] },
+      { key: 'troop', label: '旅團', type: 'text' },
+      { key: 'award', label: '獎章', type: 'select', options: ['總領袖獎章', '榮譽童軍獎章', '貝登堡獎章'], required: true },
+      { key: 'attend', label: '出席', type: 'check', required: true },
+      { key: 'guests', label: '親友人數', type: 'number' },
+      { key: 'note', label: '備註（代領等）', type: 'text' }
+    ] },
+    { id: 'leader_award', icon: '🏅', name: '成人獎勵得主報名', target: '長期服務獎等', desc: '出席・覆誓', prefix: 'LA', summary: ['name', 'award'], fields: [
+      { key: 'name', label: '姓名', type: 'text', required: true },
+      { key: 'area', label: '區會', type: 'select', options: ['HKN 港島北區', 'SKW 筲箕灣區', 'WCH 灣仔區', 'CHW 柴灣區', 'VIC 維多利亞城區', 'HKS 港島南區', 'HKW 港島西區', 'HKIR 港島地域'] },
+      { key: 'unit', label: '單位', type: 'text' },
+      { key: 'rank', label: '職級', type: 'text' },
+      { key: 'award', label: '獎項', type: 'select', options: ['總監委任書', '10年長期服務獎狀', '長期服務獎章', '一星獎章', '三星獎章', '領袖及委員獎勵'], required: true },
+      { key: 'oath', label: '需覆誓', type: 'check' },
+      { key: 'attend', label: '出席', type: 'check' },
+      { key: 'note', label: '備註', type: 'text' }
+    ] },
+    { id: 'donations', icon: '❤️', name: '童心捐贈', target: '任何人', desc: '物品／食品捐贈', prefix: 'D', summary: ['desc', 'qty'], fields: [
+      { key: 'type', label: '捐贈類型', type: 'select', options: ['物品', '食品'], required: true },
+      { key: 'desc', label: '物品／食品描述', type: 'text', required: true },
+      { key: 'qty', label: '數量', type: 'number', required: true },
+      { key: 'contact', label: '聯絡人', type: 'text', required: true },
+      { key: 'phone', label: '電話', type: 'text', required: true }
+    ] }
+  ],
+  intake_note: '全部免登入・提交即出申請編號（公眾用編號＋電話查進度）。旅團報名提交後 T 編號・報到 QR・人數・餐盒一條血脈自動生成。名額 2,000 人・餐盒 700 份・費用 $10/人・餐盒 $60/份。',
+  /* ── 2026 最後一分鐘變動實錄（用戶 2026-10-05 上載嘅三個檔案）── */
+  guest_lastmin: {
+    events: [
+      { date: '02.10', label: '嘉賓名單 as at 02.10（102 位）', detail: '檔案底部手寫合計「97/95」，實際逐格加係 96/94——人手合計冇人更新' },
+      { date: '03.10', label: '活動前一日：名單再改（as at 03.10）', detail: '＋王偉傑（香港島青年聯會副主席）・＋伍麗明（南區民政處高級聯絡主任）・＋胡廖可儀（區Sir師母・主禮人親友）；區Sir職銜→助理處長；「AWARD」→具體獎名（十年長期／長期三星／總監委任書）；改錯字（副區總該你→副區總監）' },
+      { date: '04.10', label: '活動當日：座位表 V8 Final', detail: '黃竹坑香港警察學院嘉賓席座位安排：第 1–5 行＋A–U 位・檢閱台（黃偉安總監・鍾震宇總監）・主禮區永樑——改到第 8 版先 Final' }
+    ],
+    lesson: '最後一分鐘變動係常態：印刷品・電郵附件派出去就追唔到，只有活體出口（參加者手機）先至跟到最新。'
+  },
   /* ── 嘉賓接待名單：真實 2026 數據（as at 02.10.2026.csv）清洗而成
      欄位＝[序號,組別,姓名,職銜,典禮①,典禮②,茶聚,大會車,頒獎角色,車牌,備注]
      2026 病徵已醫：重複表頭×3 刪除、跳號 15 修正、多行職銜合併、
@@ -144,6 +241,9 @@ const pc = {
       { id: 'ug', label: '其他制服團體場地圖', path: '04_場地/場地指示圖（公眾版）/05_其他制服團體' },
       { id: 'awardee_section', label: '支部最高獎勵獲獎人士場地圖', path: '04_場地/場地指示圖（公眾版）/06_支部最高獎勵獲獎人士' },
       { id: 'awardee_adult', label: '成人獎勵獲獎人士場地圖', path: '04_場地/場地指示圖（公眾版）/07_成人獎勵獲獎人士' }
+    ] },
+    { group: 'seating', title: '典禮座位表（嘉賓席排位・2026 改到 V8）', items: [
+      { id: 'guest_seating', label: '嘉賓席座位表', path: '04_場地/座位表' }
     ] }
   ],
   /* ── 七類通知書（2026 已存在、只係冇整理）
