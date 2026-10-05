@@ -81,13 +81,14 @@ const CARDS = [
     ['報價紀錄', 'oral_quotes.quotes', null, '張', '活動期間逐單登記；2026 無存檔'],
   ]],
   ['童心捐贈大行動', 'donations', [
-    ['捐贈紀錄', 'donations.records', null, '張', '活動日逐單填；2026 無存檔（通告已收入公告／須知）'],
+    ['捐贈紀錄', 'donations.records', null, '張', '活動日逐單填；2026 無存檔（v18 起公眾可喺手機預填，捐贈單直接入呢度）'],
   ]],
   ['公眾頻道 2027（示範）', 'public_channel_demo', [
     ['分眾身份', 'public_channel_2027.audiences', null, '類', ''],
     ['參加旅團名單', 'public_channel_2027.manual.participants.rows', null, '旅', ''],
     ['攤位', 'public_channel_2027.booths.list', null, '個', ''],
     ['嘉賓（內部）', 'public_channel_2027.guests_rows', null, '位', ''],
+    ['童心捐贈計劃', 'public_channel_2027.donate.schemes', null, '個', 'v18：食品捐贈＋物品回收，含收／唔收清單及規格'],
   ]],
 ];
 
@@ -148,7 +149,7 @@ const GAPS = [
   ['攤位：未填負責人', booths.filter(b => !String(b.contact_person || '').trim()).length + ' / ' + booths.length, 'ISD2026 攤位總表部分攤位負責人欄空白（已知）'],
   ['攤位：未填人手數目', booths.filter(b => !String(b.staff_count || '').trim()).length + ' / ' + booths.length, '同上'],
   ['財務：收入／支出', (mk.finance && mk.finance.income || []).length + ' / ' + (mk.finance && mk.finance.expenses || []).length + ' 項（示範）', '2026 正式檔案為 0，預算只有 Google Sheet 連結'],
-  ['口頭報價・童心捐贈紀錄', '0 張', '活動期間逐單登記，2026 無存檔'],
+  ['口頭報價・童心捐贈紀錄', '0 張', '活動期間逐單登記，2026 無存檔（童心捐贈 v18 起由公眾頻道預填入數）'],
 ];
 
 if (MD) {

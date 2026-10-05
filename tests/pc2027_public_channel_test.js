@@ -571,4 +571,69 @@ ok(coreSrc.includes('pcPublicLandingActive') && coreSrc.includes('renderPublicLa
 const idxSrc = read('index.html');
 ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-gate"') && idxSrc.includes('id="dash-hero"'), '④ index.html：landing 容器＋工作人員閘口 modal＋dash-hero');
 
+/* ══════ ⑱ 童心捐贈大行動（v18）：公眾手機預填 → 捐贈單 → 到攤位換章 ══════ */
+{
+  const dn = pc.donate;
+  ok(dn && typeof dn === 'object', '⑱ public_channel_2027.donate 存在');
+  ok(pc.section_labels.donate === '童心捐贈', '⑱ section_labels 有 donate');
+  const parts = pc.audiences.filter(a => a.id !== 'guest');
+  ok(parts.length === 6 && parts.every(a => a.sections.includes('donate')), '⑱ 6 類參加者入口都有「童心捐贈」頁簽');
+  ok(!pc.audiences.find(a => a.id === 'guest').sections.includes('donate'), '⑱ 嘉賓入口暫不顯示（待確認）');
+  ok(pc.audiences.every(a => a.sections.indexOf('donate') === -1 || a.sections.indexOf('donate') === a.sections.length - 2), '⑱ donate 排喺「求助」之前');
+
+  /* 兩個計劃＝2026 兩份特別通告 */
+  const ids = (dn.schemes || []).map(x => x.id);
+  ok(ids.join(',') === 'food,goods', '⑱ 兩個計劃：食品捐贈＋物品回收');
+  const food = dn.schemes[0], goods = dn.schemes[1];
+  ok(food.beneficiary === '循道衛理觀塘社會服務處', '⑱ 食品受惠機構＝循道衛理觀塘社會服務處');
+  ok(goods.beneficiary === '國際十字路會', '⑱ 物品受惠機構＝國際十字路會');
+  ok(food.bonus && food.bonus.threshold === 200, '⑱ 食品 >200 件 → 特別紀念章及感謝狀');
+  ok(goods.stationery_unit === 10, '⑱ 文具 10 件 = 1 單位');
+  ok(food.rules.some(r => /2028 年 6 月 1 日/.test(r)), '⑱ 最佳食用日期 2028-06-01（2026 規則順延一年）');
+  ok(food.rules.some(r => /75 克/.test(r)), '⑱ 每件 75 克或以上');
+  ['散裝食米', '熟食', '奶類製品', '罐頭類', '玻璃容器'].forEach(x =>
+    ok(food.reject.some(r => r.includes(x)), `⑱ 食品唔收：${x}`));
+  ok(dn.schemes.every(x => /2835 7714/.test(x.enquiry || '')), '⑱ 查詢電話 2835 7714（發展幹事鄧倩姸女士）');
+  ok(/11:00/.test(dn.collect.time) && /3:00/.test(dn.collect.time), '⑱ 收集時間 11:00–15:00');
+  ok(/2027/.test(dn.collect.date), '⑱ 收集日期已轉 2027 示範');
+  ok(dn.paper && dn.paper.url, '⑱ 保留紙本表格下載（唔用手機照樣捐）');
+
+  /* 渲染：未揀計劃 → 兩張卡 */
+  let h = renderTab('troop', 'donate');
+  ok(h.includes('童心捐贈大行動') && h.includes('收集攤位'), '⑱ 渲染：標題＋收集地點');
+  ok(h.includes('循道衛理觀塘社會服務處') && h.includes('國際十字路會'), '⑱ 渲染：兩個受惠機構同時見到');
+  ok(h.includes('pcDonatePick'), '⑱ 渲染：有揀計劃掣');
+  ok(h.includes('id="pc-donate-body"'), '⑱ 渲染：有獨立重畫容器（打字唔會彈走）');
+
+  /* 揀咗食品 → 合規格自我檢查＋捐贈者名單 */
+  app.pcDonateScheme = 'food'; app.pcDonateRows = [{ name: '', qty: '' }]; app.pcDonateDone = null;
+  h = app.pcDonateBodyHTML(pc);
+  ok(h.includes('唔收呢啲') && h.includes('散裝食米'), '⑱ 揀咗計劃：即見「收／唔收」清單（出門前知唔合規格）');
+  ok(h.includes('data-donor-name') && h.includes('data-donor-qty'), '⑱ 捐贈者名單：一行一位（姓名＋件數）');
+  ok(h.includes('pc-dn-group') && h.includes('pc-dn-leader'), '⑱ 交表人：旅團＋負責領袖');
+  ok(!/qrcode|QRCode/i.test(h), '⑱ 公開頁唔出 QR Code（遵守既定規則）');
+
+  /* 自動計數：3 位（12 / 250 / 5 件） */
+  app.pcDonateRows = [{ name: '陳大文', qty: '12' }, { name: '李小明', qty: '250' }, { name: '黃小芳', qty: '5' }];
+  let t = app.pcDonateTotals(pc);
+  ok(t.donors === 3 && t.items === 267 && t.badges === 3, '⑱ 自動計：3 位捐贈者・267 件・3 枚紀念章');
+  ok(t.bonus === 1, '⑱ 自動計：1 位超過 200 件 → 特別紀念章');
+  app.pcDonateRows = [{ name: '', qty: '8' }];
+  ok(app.pcDonateTotals(pc).missingName === 1, '⑱ 填咗件數但冇姓名 → 即時提示（紙表最常見嘅甩漏）');
+
+  /* 完成票 */
+  app.pcDonateDone = { no: 'DF2027-1234', scheme: 'food', group: '港島第 6 旅', leader: '張國強', donors: 3, items: 267, badges: 3, bonus: 1 };
+  h = app.pcDonateBodyHTML(pc);
+  ok(h.includes('DF2027-1234') && h.includes('捐贈單已登記'), '⑱ 捐贈單：顯示編號');
+  ok(h.includes('即場按名單派章'), '⑱ 捐贈單：寫明到場點做');
+  ok(!/qrcode|QRCode/i.test(h), '⑱ 捐贈單：只有編號，冇 QR');
+  app.pcDonateDone = null; app.pcDonateScheme = ''; app.pcDonateRows = null;
+
+  /* 寫返「童心捐贈」模組嘅格式（籌委卡片即刻見到） */
+  ok(/items:t\.rows\.filter\(r=>r\.name\)\.map\(r=>\(\{name:r\.name, quantity:parseInt\(r\.qty,10\)\|\|0\}\)\)/.test(pcSrc),
+    '⑱ 提交寫入 donations 模組格式（items[].name/quantity）');
+  ok(pcSrc.includes('this.getDonationsData()') && pcSrc.includes('this.saveDonationsData(data)'), '⑱ 接線：沿用 js/38-donations.js 現有存檔');
+  ok(pcSrc.includes("['donate','童心捐贈'"), '⑱ 委員「一頁睇晒」都加咗童心捐贈分頁');
+}
+
 console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜audiences 7・booths 33・participants 31・merit ${meritTotal}`);

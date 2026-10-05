@@ -391,6 +391,59 @@ const pc = {
       '個人身份（嘉賓／獎勵得主／UG 代表）無 QR，由工作人員按名單點名。'
     ]
   },
+  /* ── 童心捐贈大行動（v18）：由「事前下載紙表／現場櫃位手寫」改為手機填好即出捐贈單
+       來源：2026 兩份特別通告（食品捐贈＝循道衛理觀塘社會服務處；物品回收＝國際十字路會）
+       年份／日期已轉為 2027 示範；受惠機構及規格沿用 2026，正式版由服務及發展組更新。 ── */
+  donate: {
+    title: '童心捐贈大行動',
+    tagline: '帶啲嘢嚟，換返個章 ❤',
+    why: '實踐童軍「對別人要幫助」嘅承諾，同時響應總會周年主題。',
+    eligible: '參與繽紛日之各支部成員、家長、領袖及會務委員',
+    collect: {
+      date: '2027 年 10 月 3 日（星期日）',
+      time: '上午 11:00 – 下午 3:00',
+      place: '香港警察學院・有蓋操場「港島童軍繽紛日」收集攤位',
+      how: '由童軍旅負責領袖收齊，連同捐贈表格一次過交到攤位'
+    },
+    old_way: '以前：喺地域網頁下載紙本表格 → 手寫捐贈者名單 → 當日連貨交到櫃位 → 工作人員逐張點人數同件數 → 派章',
+    new_way: '而家：出門前喺手機填好 → 即出「捐贈單編號」→ 到攤位報編號 → 工作人員一撳就核對到人數／件數 → 即場派章（唔想用手機？紙本表格照樣收）',
+    pain: [
+      '最常見：到咗場先知件貨唔合規格（過期、玻璃樽、散裝米）— 而家喺手機揀嗰陣就見到「收／唔收」清單。',
+      '第二常見：紙表寫漏捐贈者姓名 → 派唔到章。而家名單係一行一位，漏咗會即時提你。',
+      '櫃位唔使再人手加數：件數同應派章數自動計。'
+    ],
+    schemes: [
+      {
+        id: 'food', icon: '🍚', name: '食品捐贈', en: 'Food Donation',
+        beneficiary: '循道衛理觀塘社會服務處',
+        beneficiary_note: '將收集到嘅食品轉贈社會上有需要人士',
+        accept: ['已包裝食米（1–2 公斤）', '粉麵類（上海麵／米粉／粉絲／公仔麵／通心粉）', '餅乾類（盒裝或袋裝為單位）', '非玻璃容器食油（花生油／粟米油／芥花籽油／橄欖油）', '燕麥片', '湯料（中藥材類）'],
+        reject: ['已拆封或損毀', '已變質或變壞', '冇商標標貼', '散裝食米', '熟食', '奶類製品', '罐頭類', '玻璃容器'],
+        rules: ['最佳食用日期必須為 2028 年 6 月 1 日或之後', '每件重量須 75 克或以上', '必須印有獨立食品標籤及最佳食用日期，方作計算'],
+        badge: '每位捐贈者可獲紀念章乙枚',
+        bonus: { threshold: 200, text: '同一位捐贈者／單位捐贈超過 200 件 → 額外獲特別紀念章及感謝狀' },
+        unit: '件', per_badge: 1,
+        enquiry: '2835 7714 發展幹事鄧倩姸女士'
+      },
+      {
+        id: 'goods', icon: '📦', name: '物品回收', en: 'Goods Donating',
+        beneficiary: '國際十字路會',
+        beneficiary_note: '將回收物品轉贈本地或海外有需要人士',
+        accept: ['電腦相關用品：滑鼠、鍵盤、顯示器、手提電腦充電用品（全新或狀態良好）', '具教育意義玩具（例如 Lego 樂高積木）', '全新學校文具', '狀態良好嘅英語兒童讀物'],
+        reject: ['已損壞／唔著得嘅電器', '殘舊或缺頁書本', '非英語兒童讀物（本年度唔收）', '二手文具'],
+        rules: ['學校文具以 10 件為 1 個單位，夠 1 個單位先計 1 枚紀念章', '電器類請確保可正常運作', '書本請確保乾淨無缺頁'],
+        badge: '每位捐贈者可獲紀念章乙枚',
+        bonus: null,
+        unit: '件', per_badge: 1,
+        stationery_unit: 10,
+        enquiry: '2835 7714 發展幹事鄧倩姸女士'
+      }
+    ],
+    form_note: '※ 紀念章按「捐贈者名單」逐位派發，所以每位捐贈者要獨立一行（同紙本表格一樣）。',
+    paper: { label: '下載紙本捐贈表格（PDF）', url: 'https://www.hkirscout.org.hk', note: '唔用手機都得：印定、手寫、當日連貨交到攤位。' },
+    receipt_rule: '捐贈單只顯示編號及摘要，唔會喺公開頁出 QR Code；到攤位報編號或出示屏幕即可。',
+    note: '※ 示範資料：日期已轉為 2027，受惠機構及收集規格沿用 2026 兩份特別通告；正式版由服務及發展組更新後自動同步。'
+  },
   section_labels: {
     banner: '基本資訊', schedule: '日程', arrival: '報到資訊', venue: '活動地圖',
     ceremony: '典禮儀式流程', seating: '座位表', lunch: '午膳安排', mess: '午膳儀式',
@@ -415,22 +468,22 @@ const pc = {
       sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'seating', 'lunch', 'mess', 'guide', 'help'],
       guide: ['嘉賓'], banner: 'guest' },
     { id: 'troop', icon: '🏃', name: '旅團', desc: '帶隊參加：報到・餐盒・場地・典禮',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['普通旅團'] },
     { id: 'merit', icon: '🏆', name: '優異旅團獲獎', desc: '出席頒獎禮：排位・彩帶・派隊',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['優異旅團'] },
     { id: 'march', icon: '🥁', name: '步操隊伍', desc: '參與步操：綵排・集結・檢閱・退場',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['步操隊伍'] },
     { id: 'ug', icon: '🧢', name: '其他制服團體', desc: '制服團體／NGO：隊伍參加或設攤位',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['其他制服團體'] },
     { id: 'awardee_section', icon: '🎖️', name: '支部最高獎勵獲獎人士', desc: '總領袖獎章・榮譽童軍獎章・貝登堡獎章',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['支部最高獎勵得主'] },
     { id: 'awardee_adult', icon: '🎗️', name: '成人獎勵獲獎人士', desc: '長期服務獎狀・長期服務獎章・一星／三星服務獎章',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'help'],
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['成人獎勵得主'] }
   ],
   /* ══════ v2（活動日版）新增內容 ══════ */
