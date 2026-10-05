@@ -985,17 +985,123 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
   },
 
   /* ── 捐贈（訪客版） ── */
-  /* ═══════════ 童心捐贈大行動（v18）：公眾頻道＝純看版 ═══════════
-     定位：呢度淨係「出門前睇清楚帶咩、點交、幾時交」，唔收表、唔寫任何嘢、唔駁後端。
-     實際入數：當日喺收集攤位由發展組工作人員用「童心捐贈大行動」模組（js/38-donations.js）逐張輸入。
-     所以呢個 function 只係 render，冇 submit、冇 state、冇 localStorage 寫入。 */
+  /* ═══════════ 童心捐贈大行動（v19）：自己部機填 → 自己部機出 QR → 攤位掃一次入數
+     ⚠️ 關鍵：呢一頁【唔會寫任何嘢落後端】。QR 係喺你部瀏覽器本機砌出嚟（vendor qrcode.min.js），
+        載荷就係表格內容本身。全場唯一一次寫入，係當日攤位同事掃完、核對完實物、撳「確認收貨」嗰下。
+        咁就唔會「又收紙又收 online」，活動完咗唔使兩邊對數——帳目永遠得一本。
+        （報到 QR 嘅舊規矩唔變：報到 QR 照舊唔喺公開頁出，用電郵發俾負責領袖。呢個係捐贈單 QR，兩回事。）
+     草稿淨係存喺用家自己部機（localStorage 另一個 key），唔會掂到籌委嗰本捐贈紀錄。 ═══════════ */
+  pcDonateScheme: '', pcDonateRows: null, pcDonateQR: null,
+
   pcDonateDef(d){ return (d||this.pcDemoData()||{}).donate||null; },
+  pcDonateSchemeDef(d,id){ const dn=this.pcDonateDef(d); if(!dn) return null; return (dn.schemes||[]).find(x=>x.id===(id||this.pcDonateScheme))||null; },
+  pcDonateEnsureRows(){ if(!Array.isArray(this.pcDonateRows)||!this.pcDonateRows.length) this.pcDonateRows=[{name:'',qty:''},{name:'',qty:''},{name:'',qty:''}]; return this.pcDonateRows; },
+  pcDonateDraftKey(){ return 'pc_donate_draft_'+((this.currentEvent&&this.currentEvent.event_id)||'mock_demo'); },
+
+  /* 由 DOM 讀返用家打咗嘅嘢（重畫前一定要叫，唔係會清空） */
+  pcDonateReadForm(){
+    const v=id=>{const e=document.getElementById(id);return e?String(e.value||'').trim():'';};
+    const box=document.getElementById('pc-donate-rows');
+    if(box&&box.querySelectorAll){
+      const rows=[];
+      box.querySelectorAll('[data-donor-row]').forEach(el=>{
+        const n=el.querySelector('[data-donor-name]'), q=el.querySelector('[data-donor-qty]');
+        rows.push({name:(n&&n.value||'').trim(), qty:(q&&q.value||'').trim()});
+      });
+      if(rows.length) this.pcDonateRows=rows;
+    }
+    this.pcDonateHead={group:v('pc-dn-group'),leader:v('pc-dn-leader'),pos:v('pc-dn-pos'),phone:v('pc-dn-phone')};
+    return this.pcDonateHead;
+  },
+  pcDonateHead:null,
+
+  pcDonateSaveDraft(){
+    try{
+      if(typeof localStorage==='undefined') return;
+      localStorage.setItem(this.pcDonateDraftKey(),JSON.stringify({scheme:this.pcDonateScheme,head:this.pcDonateHead,rows:this.pcDonateRows}));
+    }catch(e){}
+  },
+  pcDonateLoadDraft(){
+    try{
+      if(typeof localStorage==='undefined') return null;
+      return JSON.parse(localStorage.getItem(this.pcDonateDraftKey())||'null');
+    }catch(e){ return null; }
+  },
+  pcDonateClearDraft(){ try{ if(typeof localStorage!=='undefined') localStorage.removeItem(this.pcDonateDraftKey()); }catch(e){} },
+
+  pcDonatePick(id){
+    this.pcDonateScheme=id; this.pcDonateQR=null;
+    const dr=this.pcDonateLoadDraft();
+    if(dr&&dr.scheme===id){ this.pcDonateRows=dr.rows||null; this.pcDonateHead=dr.head||null; }
+    this.pcDonateEnsureRows(); this.pcDonateRepaint();
+  },
+  pcDonateBack(){ this.pcDonateReadForm(); this.pcDonateSaveDraft(); this.pcDonateScheme=''; this.pcDonateQR=null; this.pcDonateRepaint(); },
+  pcDonateAddRow(){ this.pcDonateReadForm(); this.pcDonateRows.push({name:'',qty:''}); this.pcDonateRepaint(); },
+  pcDonateDelRow(i){ this.pcDonateReadForm(); this.pcDonateRows.splice(i,1); this.pcDonateEnsureRows(); this.pcDonateRepaint(); },
+  pcDonateEdit(){ this.pcDonateQR=null; this.pcDonateRepaint(); },
+  pcDonateReset(){ this.pcDonateClearDraft(); this.pcDonateScheme=''; this.pcDonateRows=null; this.pcDonateHead=null; this.pcDonateQR=null; this.pcDonateRepaint(); },
+
+  /* 只重畫捐贈區（成頁重畫會令手機打字彈走） */
+  pcDonateRepaint(){
+    const box=document.getElementById('pc-donate-body');
+    if(box){ box.innerHTML=this.pcDonateBodyHTML(this.pcDemoData()); return; }
+    if(typeof this.pcRerenderAudience==='function') this.pcRerenderAudience();
+  },
+  /* 打字時只更新合計數字，唔郁 input */
+  pcDonateRecalc(){
+    this.pcDonateReadForm(); this.pcDonateSaveDraft();
+    const el=document.getElementById('pc-donate-sum');
+    if(el) el.innerHTML=this.pcDonateSumHTML(this.pcDemoData());
+  },
+
+  pcDonateTotals(d){
+    const sc=this.pcDonateSchemeDef(d)||{};
+    const rows=(this.pcDonateRows||[]).map(r=>({name:(r.name||'').trim(),qty:parseInt(r.qty,10)||0}));
+    const used=rows.filter(r=>r.name||r.qty);
+    return {
+      donors: used.filter(r=>r.name&&r.qty>0).length,
+      items: used.reduce((s,r)=>s+r.qty,0),
+      bonus: sc.bonus? used.filter(r=>r.qty>sc.bonus.threshold).length : 0,
+      missingName: used.filter(r=>r.qty>0&&!r.name).length,
+      missingQty: used.filter(r=>r.name&&!r.qty).length
+    };
+  },
+
+  pcDonateSumHTML(d){
+    const sc=this.pcDonateSchemeDef(d)||{}; const t=this.pcDonateTotals(d);
+    const chip=(v,l,cls)=>`<div class="rounded-xl px-2.5 py-1.5 text-center ${cls}"><div class="text-[16px] font-extrabold leading-none">${v}</div><div class="text-[9.5px] mt-0.5 font-bold">${l}</div></div>`;
+    return `<div class="grid grid-cols-3 gap-2">
+        ${chip(t.donors,'位捐贈者','bg-white text-rose-700 border border-rose-200')}
+        ${chip(t.items,'件','bg-white text-rose-700 border border-rose-200')}
+        ${chip(t.donors,'枚紀念章','bg-rose-600 text-white')}
+      </div>
+      ${t.bonus?`<div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏅 有 ${t.bonus} 位捐贈超過 ${sc.bonus.threshold} 件 → 額外特別紀念章及感謝狀</div>`:''}
+      ${t.missingName?`<div class="mt-2 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-2.5 py-1.5">⚠️ 有 ${t.missingName} 行填咗件數但未填姓名 — 紀念章按姓名派，唔填派唔到。</div>`:''}
+      ${t.missingQty?`<div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">有 ${t.missingQty} 行填咗姓名但未填件數。</div>`:''}`;
+  },
+
+  /* 產生 QR：全程喺本機，冇任何網絡請求 */
+  pcDonateMakeQR(ev){
+    if(ev&&ev.preventDefault) ev.preventDefault();
+    const d=this.pcDemoData(); const sc=this.pcDonateSchemeDef(d);
+    if(!sc){ showToast('請先揀捐贈計劃','warning'); return; }
+    const head=this.pcDonateReadForm();
+    const t=this.pcDonateTotals(d);
+    if(!head.group||!head.leader){ showToast('請填旅團／單位及負責領袖姓名','error'); return; }
+    if(!t.donors){ showToast('請最少填一位捐贈者同件數','error'); return; }
+    if(t.missingName){ showToast('有行填咗件數但未填姓名，紀念章派唔到','error'); return; }
+    const packed=this.pcDonatePack(sc.id,head,this.pcDonateRows);
+    if(packed.bytes>900){ showToast('名單太長，QR 會掃唔到。請分兩張表（例如每張最多 30 位）','error'); return; }
+    this.pcDonateQR=Object.assign({scheme:sc.id,head:head},packed);
+    this.pcDonateSaveDraft();
+    showToast('QR 已產生（淨係喺你部機，冇上傳）','success');
+    this.pcDonateRepaint();
+  },
 
   pcDemoDonateHTML(d){
     const dn=this.pcDonateDef(d);
     if(!dn) return '';
     const c=dn.collect||{};
-    const list=(arr,ok)=>`<ul class="space-y-1">${(arr||[]).map(x=>`<li class="flex gap-1.5 text-[11.5px] leading-relaxed"><span class="${ok?'text-emerald-600':'text-rose-500'} shrink-0 font-bold">${ok?'✓':'✕'}</span><span class="${ok?'text-slate-600':'text-slate-400'}">${escapeHtml(x)}</span></li>`).join('')}</ul>`;
     return `
       <div class="space-y-3">
         <div class="rounded-2xl p-4 text-white" style="background:linear-gradient(135deg,#e11d48,#be123c)">
@@ -1014,7 +1120,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
 
         ${(dn.steps||[]).length?`
         <div class="bg-white border border-slate-200 rounded-2xl p-4">
-          <div class="text-[11.5px] font-bold text-slate-500 mb-2.5">🧭 點樣交（邊個填・幾時填）</div>
+          <div class="text-[11.5px] font-bold text-slate-500 mb-2.5">🧭 點樣交</div>
           <div class="space-y-2.5">
             ${dn.steps.map((st,i)=>`
               <div class="flex gap-2.5">
@@ -1025,30 +1131,123 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
                 </div>
               </div>`).join('')}
           </div>
-          ${dn.paper&&dn.paper.url?`<a href="${escapeHtml(dn.paper.url)}" target="_blank" rel="noopener" class="mt-3 block text-center bg-rose-600 text-white text-[12.5px] font-bold rounded-xl py-2.5"><i class="fa-solid fa-download mr-1"></i>${escapeHtml(dn.paper.label||'下載捐贈表格')}</a>
-          <div class="text-[10.5px] text-slate-400 text-center mt-1.5 leading-relaxed">${escapeHtml(dn.paper.note||'')}</div>`:''}
         </div>`:''}
 
-        <div class="text-[11.5px] font-bold text-slate-500 pt-0.5">🔎 出門前對一對：帶咩先收得</div>
-        ${(dn.schemes||[]).map(sc=>`
-          <div class="bg-white border border-slate-200 rounded-2xl p-4">
-            <div class="flex items-center gap-2 flex-wrap mb-1.5">
-              <span class="text-[20px]">${escapeHtml(sc.icon||'')}</span>
-              <b class="text-[14px] text-slate-800">${escapeHtml(sc.name||'')}</b>
-              <span class="text-[10px] text-slate-400">${escapeHtml(sc.en||'')}</span>
-            </div>
-            <div class="text-[11.5px] text-slate-500 mb-2.5">受惠機構：<b class="text-slate-700">${escapeHtml(sc.beneficiary||'')}</b>　<span class="text-slate-400">${escapeHtml(sc.beneficiary_note||'')}</span></div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[11px] font-bold text-emerald-800 mb-1.5">✓ 收呢啲</div>${list(sc.accept,true)}</div>
-              <div class="bg-rose-50 border border-rose-200 rounded-xl p-3"><div class="text-[11px] font-bold text-rose-700 mb-1.5">✕ 唔收呢啲</div>${list(sc.reject,false)}</div>
-            </div>
-            ${(sc.rules||[]).length?`<div class="mt-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-[11px] font-bold text-amber-900 mb-1">⚠️ 計唔計得數，睇呢幾點</div>${sc.rules.map(r=>`<div class="text-[11.5px] text-amber-900 leading-relaxed">・${escapeHtml(r)}</div>`).join('')}</div>`:''}
-            <div class="mt-2 text-[11px] text-slate-500 leading-relaxed">🏅 ${escapeHtml(sc.badge||'')}${sc.bonus?`；${escapeHtml(sc.bonus.text)}`:''}</div>
-            <div class="mt-1.5 text-[10.5px] text-slate-400">查詢：${escapeHtml(sc.enquiry||'')}</div>
-          </div>`).join('')}
+        <div id="pc-donate-body">${this.pcDonateBodyHTML(d)}</div>
 
-        ${dn.counter_note?`<div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-[11.5px] text-slate-600 leading-relaxed"><b class="text-slate-700">攤位點運作：</b>${escapeHtml(dn.counter_note)}</div>`:''}
+        ${dn.privacy?`<div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-[11.5px] text-slate-600 leading-relaxed"><b class="text-slate-700">你啲資料去咗邊：</b>${escapeHtml(dn.privacy)}</div>`:''}
         ${dn.note?`<div class="text-[10.5px] text-slate-400 leading-relaxed">${escapeHtml(dn.note)}</div>`:''}
+      </div>`;
+  },
+
+  pcDonateBodyHTML(d){
+    const dn=this.pcDonateDef(d); if(!dn) return '';
+    const list=(arr,ok)=>`<ul class="space-y-1">${(arr||[]).map(x=>`<li class="flex gap-1.5 text-[11.5px] leading-relaxed"><span class="${ok?'text-emerald-600':'text-rose-500'} shrink-0 font-bold">${ok?'✓':'✕'}</span><span class="${ok?'text-slate-600':'text-slate-400'}">${escapeHtml(x)}</span></li>`).join('')}</ul>`;
+
+    /* ③ QR 出咗：當日淨係俾人掃呢個 */
+    if(this.pcDonateQR){
+      const q=this.pcDonateQR;
+      const sc=(dn.schemes||[]).find(x=>x.id===q.scheme)||{};
+      const bonus=sc.bonus? q.rows.filter(r=>r.qty>sc.bonus.threshold).length : 0;
+      return `
+        <div class="bg-white border-2 border-rose-300 rounded-2xl p-4">
+          <div class="text-center">
+            <div class="text-[11px] font-bold text-rose-600">當日俾攤位同事掃呢個</div>
+            <div class="mt-2 flex justify-center" style="max-width:230px;margin:0 auto">${this.pcQrSvg(q.text)}</div>
+            <div class="text-[10.5px] text-slate-400 mt-1.5">掃唔到？口頭報呢個碼</div>
+            <div class="text-[22px] font-black text-rose-700 tracking-[0.18em] leading-none mt-0.5">${escapeHtml(q.code)}</div>
+            <div class="text-[11.5px] text-slate-500 mt-1.5">${escapeHtml(sc.icon||'')} ${escapeHtml(sc.name||'')}・${escapeHtml(q.head.group||'')}</div>
+          </div>
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <div class="bg-rose-50 rounded-xl py-2 text-center"><div class="text-[17px] font-extrabold text-rose-700 leading-none">${q.donors}</div><div class="text-[9.5px] font-bold text-rose-600 mt-0.5">位捐贈者</div></div>
+            <div class="bg-rose-50 rounded-xl py-2 text-center"><div class="text-[17px] font-extrabold text-rose-700 leading-none">${q.items}</div><div class="text-[9.5px] font-bold text-rose-600 mt-0.5">件</div></div>
+            <div class="bg-rose-600 rounded-xl py-2 text-center"><div class="text-[17px] font-extrabold text-white leading-none">${q.donors}</div><div class="text-[9.5px] font-bold text-white mt-0.5">枚紀念章</div></div>
+          </div>
+          ${bonus?`<div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 text-center">🏅 另有 ${bonus} 份特別紀念章及感謝狀</div>`:''}
+          <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11.5px] text-slate-600 leading-relaxed">
+            <b class="text-slate-700">到場點做：</b>攜同物資去收集攤位 → 出示呢個畫面俾同事掃 → 同事當場核對實物同件數 → 即場按名單派章。<br>
+            <span class="text-slate-400">呢個 QR 係喺你部機砌出嚟，資料未交過去任何地方；掃嗰一刻先會入大會系統（全場只入一次，唔會同紙本重覆）。建議先截圖，場內冇網絡都出到。</span>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button type="button" onclick="app.pcDonateEdit()" class="flex-1 bg-white border border-slate-200 text-slate-600 text-[12px] font-bold rounded-xl py-2.5 btn-mobile">改名單</button>
+            <button type="button" onclick="app.pcDonateReset()" class="flex-1 bg-white border border-slate-200 text-slate-400 text-[12px] font-bold rounded-xl py-2.5 btn-mobile">清走，重新開始</button>
+          </div>
+        </div>`;
+    }
+
+    /* ① 未揀計劃 */
+    if(!this.pcDonateScheme){
+      const dr=this.pcDonateLoadDraft();
+      return `
+        <div class="space-y-2.5">
+          ${dr&&dr.scheme?`<button type="button" onclick="app.pcDonatePick('${escapeHtml(dr.scheme)}')" class="w-full bg-amber-50 border border-amber-200 text-amber-900 text-[11.5px] font-bold rounded-xl px-3 py-2.5 text-left btn-mobile">↩ 繼續上次未填完嗰張（存喺你部機）</button>`:''}
+          <div class="text-[11.5px] font-bold text-slate-500">揀你要捐邊樣（兩樣都捐？分兩張表）</div>
+          ${(dn.schemes||[]).map(sc=>`
+            <button type="button" onclick="app.pcDonatePick('${sc.id}')" class="w-full text-left bg-white border-2 border-slate-200 hover:border-rose-400 rounded-2xl p-3.5 btn-mobile transition">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[20px]">${escapeHtml(sc.icon||'')}</span>
+                <b class="text-[14px] text-slate-800">${escapeHtml(sc.name||'')}</b>
+                <span class="text-[10px] text-slate-400">${escapeHtml(sc.en||'')}</span>
+              </div>
+              <div class="text-[11.5px] text-slate-500 mt-1.5">受惠機構：<b class="text-slate-700">${escapeHtml(sc.beneficiary||'')}</b>　<span class="text-slate-400">${escapeHtml(sc.beneficiary_note||'')}</span></div>
+              <div class="text-[11px] text-emerald-700 mt-1.5">✓ 收：${escapeHtml((sc.accept||[]).slice(0,3).join('、'))}${(sc.accept||[]).length>3?' 等':''}</div>
+              <div class="text-[11px] text-rose-500 mt-0.5">✕ 唔收：${escapeHtml((sc.reject||[]).slice(0,4).join('、'))}${(sc.reject||[]).length>4?' 等':''}</div>
+              <div class="text-[12px] font-bold text-rose-700 mt-2">填名單・出 QR →</div>
+            </button>`).join('')}
+          ${dn.paper&&dn.paper.url?`<div class="text-[11px] text-slate-400 text-center leading-relaxed pt-1">冇手機？<a href="${escapeHtml(dn.paper.url)}" target="_blank" rel="noopener" class="font-bold text-slate-500 underline">${escapeHtml(dn.paper.label)}</a>　${escapeHtml(dn.paper.note||'')}</div>`:''}
+        </div>`;
+    }
+
+    /* ② 填表 */
+    const sc=this.pcDonateSchemeDef(d)||{};
+    const rows=this.pcDonateEnsureRows();
+    const h=this.pcDonateHead||{};
+    return `
+      <div class="space-y-3">
+        <button type="button" onclick="app.pcDonateBack()" class="text-[11px] font-bold text-slate-400 btn-mobile"><i class="fa-solid fa-chevron-left mr-1"></i>返回揀計劃</button>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-4">
+          <div class="flex items-center gap-2 flex-wrap mb-2">
+            <span class="text-[18px]">${escapeHtml(sc.icon||'')}</span><b class="text-[14px]">${escapeHtml(sc.name||'')}</b>
+            <span class="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded-full">受惠：${escapeHtml(sc.beneficiary||'')}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[11px] font-bold text-emerald-800 mb-1.5">✓ 收呢啲</div>${list(sc.accept,true)}</div>
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-3"><div class="text-[11px] font-bold text-rose-700 mb-1.5">✕ 唔收呢啲</div>${list(sc.reject,false)}</div>
+          </div>
+          ${(sc.rules||[]).length?`<div class="mt-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-[11px] font-bold text-amber-900 mb-1">⚠️ 計唔計得數，睇呢幾點</div>${sc.rules.map(r=>`<div class="text-[11.5px] text-amber-900 leading-relaxed">・${escapeHtml(r)}</div>`).join('')}</div>`:''}
+          <div class="mt-2 text-[11px] text-slate-500 leading-relaxed">🏅 ${escapeHtml(sc.badge||'')}${sc.bonus?`；${escapeHtml(sc.bonus.text)}`:''}</div>
+        </div>
+
+        <form onsubmit="app.pcDonateMakeQR(event)" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
+          <div class="text-[11.5px] font-bold text-slate-500">① 邊個交</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input id="pc-dn-group" value="${escapeHtml(h.group||'')}" oninput="app.pcDonateRecalc()" placeholder="旅團／單位（例：港島第 6 旅）*" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+            <input id="pc-dn-leader" value="${escapeHtml(h.leader||'')}" oninput="app.pcDonateRecalc()" placeholder="負責領袖姓名 *" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+            <input id="pc-dn-pos" value="${escapeHtml(h.pos||'')}" oninput="app.pcDonateRecalc()" placeholder="職銜（例：旅長）" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+            <input id="pc-dn-phone" value="${escapeHtml(h.phone||'')}" oninput="app.pcDonateRecalc()" placeholder="聯絡電話" inputmode="tel" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+          </div>
+
+          <div class="flex items-end justify-between gap-2 pt-1">
+            <div class="text-[11.5px] font-bold text-slate-500">② 捐贈者名單（紀念章按姓名逐位派）</div>
+            <button type="button" onclick="app.pcDonateAddRow()" class="bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-bold rounded-lg px-2.5 py-1 btn-mobile">＋ 加一位</button>
+          </div>
+          <div id="pc-donate-rows" class="space-y-2">
+            ${rows.map((r,i)=>`
+              <div data-donor-row class="flex gap-2 items-center">
+                <span class="text-[10.5px] text-slate-300 font-bold" style="min-width:16px">${i+1}</span>
+                <input data-donor-name value="${escapeHtml(r.name||'')}" oninput="app.pcDonateRecalc()" placeholder="捐贈者姓名" class="flex-1 min-w-0 px-3 py-2 border rounded-xl text-[13px]">
+                <input data-donor-qty value="${escapeHtml(r.qty||'')}" oninput="app.pcDonateRecalc()" inputmode="numeric" placeholder="件數" class="px-3 py-2 border rounded-xl text-[13px] text-center" style="width:74px">
+                <button type="button" onclick="app.pcDonateDelRow(${i})" class="text-slate-300 px-1.5 btn-mobile" title="刪除"><i class="fa-solid fa-xmark"></i></button>
+              </div>`).join('')}
+          </div>
+
+          <div class="text-[11.5px] font-bold text-slate-500 pt-1">③ 核對</div>
+          <div id="pc-donate-sum">${this.pcDonateSumHTML(d)}</div>
+
+          <button type="submit" class="w-full bg-rose-600 text-white text-[13px] font-bold rounded-xl py-3 btn-mobile"><i class="fa-solid fa-qrcode mr-1.5"></i>產生 QR（唔會上傳）</button>
+          <div class="text-[10.5px] text-slate-400 text-center leading-relaxed">邊打邊自動存喺你部機，閂咗都搵得返。查詢：${escapeHtml(sc.enquiry||'')}</div>
+        </form>
       </div>`;
   },
 

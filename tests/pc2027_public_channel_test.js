@@ -67,7 +67,10 @@ const orderSrc = cfgSrc.match(/const PUBLIC_CARD_ORDER=\[[^\]]+\];/)[0];
 const defsSrc = cfgSrc.match(/const DASH_CARD_DEFS=\[[\s\S]*?\n\];/)[0];
 const escSrc = cfgSrc.match(/function escapeHtml\(s\)\{.*?\}\n/s)[0].split('\n')[0];
 const pcSrc = read('js/44-public-channel.js');
-const inner = pcSrc.slice(pcSrc.indexOf('Object.assign(ScoutEventApp.prototype,{') + 'Object.assign(ScoutEventApp.prototype,{'.length, pcSrc.lastIndexOf('});'));
+const qrSrc = read('js/45-donate-qr.js');
+const innerOf = src => src.slice(src.indexOf('Object.assign(ScoutEventApp.prototype,{') + 'Object.assign(ScoutEventApp.prototype,{'.length, src.lastIndexOf('});'));
+const inner = innerOf(pcSrc);
+const innerQr = innerOf(qrSrc);
 const stripCommaLines = s => s.replace(/^[ \t]*,[ \t]*$/gm, '');
 const containers = {};
 const mkEl = () => ({ innerHTML: '', textContent: '', style: {}, classList: { _s: new Set(), add(c) { this._s.add(c); }, remove(c) { this._s.delete(c); }, toggle(c, f) { f ? this._s.add(c) : this._s.delete(c); }, contains(c) { return this._s.has(c); } } });
@@ -84,6 +87,7 @@ ${orderSrc}
 ${defsSrc}
 class ScoutEventApp{}
 Object.assign(ScoutEventApp.prototype,{ ${stripCommaLines(inner)} });
+Object.assign(ScoutEventApp.prototype,{ ${stripCommaLines(innerQr)} });
 ScoutEventApp;
 `, ctx);
 const app = new ScoutEventApp();
@@ -571,7 +575,10 @@ ok(coreSrc.includes('pcPublicLandingActive') && coreSrc.includes('renderPublicLa
 const idxSrc = read('index.html');
 ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-gate"') && idxSrc.includes('id="dash-hero"'), '④ index.html：landing 容器＋工作人員閘口 modal＋dash-hero');
 
-/* ══════ ⑱ 童心捐贈大行動（v18）：公眾頻道＝純看版，入數留返畀當日攤位嘅發展組 ══════ */
+/* ══════ ⑱ 童心捐贈（v19）：公眾自己部機出 QR，攤位掃一次入數 ══════
+   設計重點＝唔好「又收紙又收 online」。公眾端只係砌 QR（零後端），
+   全場唯一一次寫入係攤位同事掃完確認嗰下 → 完場唔使對數。
+   （codec／掃描器／寫入邊界嘅詳細斷言喺 tests/donate_qr_test.js） */
 {
   const dn = pc.donate;
   ok(dn && typeof dn === 'object', '⑱ public_channel_2027.donate 存在');
@@ -595,30 +602,53 @@ ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-ga
   ok(dn.schemes.every(x => /2835 7714/.test(x.enquiry || '')), '⑱ 查詢電話 2835 7714（發展幹事鄧倩姸女士）');
   ok(/11:00/.test(dn.collect.time) && /3:00/.test(dn.collect.time), '⑱ 收集時間 11:00–15:00');
   ok(/2027/.test(dn.collect.date), '⑱ 收集日期已轉 2027 示範');
-  ok((dn.steps || []).length === 4, '⑱ 有 4 步「點樣交」（邊個填・幾時填）');
-  ok(dn.paper && dn.paper.url, '⑱ 捐贈表格＝下載紙本填（唯一填表途徑）');
-  ok(/工作人員/.test(dn.counter_note || '') && /唔使喺度填/.test(dn.counter_note || ''),
-    '⑱ 明寫：呢頁唔使填嘢，入數由當日攤位工作人員做');
+  ok((dn.steps || []).length === 4 && /QR/.test(dn.steps[1].t), '⑱ 4 步流程，第 2 步＝產生 QR');
+  ok(/掃/.test(dn.steps[3].t), '⑱ 第 4 步＝同事掃碼核對後即場派章');
+  ok(dn.paper && dn.paper.url && /唔會做兩本帳|同一個系統/.test(dn.paper.note || ''),
+    '⑱ 紙本後備：明寫會入返同一個系統，唔會兩本帳');
+  ok(/只留喺你自己部手機/.test(dn.privacy || '') && /冇上傳/.test(dn.privacy || ''),
+    '⑱ 私隱講清楚：填嘅嘢淨係留喺自己部機，產生 QR 都冇上傳');
+  ok(/掃兩次只會入一次/.test(dn.privacy || ''), '⑱ 明寫同一張 QR 唔會重覆入數');
 
-  /* ── 渲染：純看，一個輸入欄都唔可以有 ── */
-  const h = renderTab('troop', 'donate');
+  /* ── 渲染：① 揀計劃 ── */
+  let h = renderTab('troop', 'donate');
   ok(h.includes('童心捐贈大行動') && h.includes('收集攤位'), '⑱ 渲染：標題＋收集地點');
   ok(h.includes('循道衛理觀塘社會服務處') && h.includes('國際十字路會'), '⑱ 渲染：兩個受惠機構同時見到');
-  ok(h.includes('收呢啲') && h.includes('唔收呢啲') && h.includes('散裝食米'),
-    '⑱ 渲染：出門前對得到「收／唔收」清單（最大價值）');
-  ok(h.includes('下載捐贈表格'), '⑱ 渲染：下載紙本表格');
-  ok(!/<input|<textarea|<select|<form/i.test(h), '⑱ 公眾頻道純看：冇任何輸入欄或表單');
-  ok(!/onsubmit|type="submit"/i.test(h), '⑱ 公眾頻道純看：冇提交掣');
-  ok(!/qrcode|QRCode/i.test(h), '⑱ 公眾頁唔出 QR Code');
+  ok(h.includes('pcDonatePick'), '⑱ 渲染：有揀計劃掣');
+  ok(h.includes('id="pc-donate-body"'), '⑱ 渲染：獨立重畫容器（手機打字唔會彈走）');
 
-  /* ── 源碼層面：公眾頻道唔准掂任何寫入／後端 ── */
-  const donateSrc = pcSrc.slice(pcSrc.indexOf('pcDemoDonateHTML(d){'), pcSrc.indexOf('pcDemoTabsBody(d){'));
-  ok(!/saveDonationsData|localStorage\.setItem|fetch\(/.test(donateSrc),
-    '⑱ 捐贈版面源碼：冇 saveDonationsData／localStorage 寫入／fetch');
-  ok(!/pcDonateSubmit|pcDonateRows|pcDonateTotals/.test(pcSrc),
-    '⑱ 已移除所有公眾端提交狀態（唔會意外駁返後端）');
-  ok(/js\/38-donations\.js/.test(pcSrc), '⑱ 註明實際入數位置＝js/38-donations.js（工作人員模組）');
+  /* ── ② 填表：出門前合規格自我檢查 ── */
+  app.pcDonateScheme = 'food'; app.pcDonateRows = [{ name: '', qty: '' }]; app.pcDonateQR = null; app.pcDonateHead = null;
+  h = app.pcDonateBodyHTML(pc);
+  ok(h.includes('唔收呢啲') && h.includes('散裝食米'), '⑱ 揀咗計劃即見「收／唔收」清單（出門前知唔合規格）');
+  ok(h.includes('data-donor-name') && h.includes('data-donor-qty'), '⑱ 捐贈者名單：一行一位（姓名＋件數）');
+  ok(h.includes('產生 QR') && h.includes('唔會上傳'), '⑱ 提交掣寫明「唔會上傳」');
+
+  /* 自動計數＋提示 */
+  app.pcDonateRows = [{ name: '陳大文', qty: '12' }, { name: '李小明', qty: '250' }, { name: '黃小芳', qty: '5' }];
+  let t = app.pcDonateTotals(pc);
+  ok(t.donors === 3 && t.items === 267, '⑱ 自動計：3 位捐贈者・267 件');
+  ok(t.bonus === 1, '⑱ 自動計：1 位超過 200 件 → 特別紀念章');
+  app.pcDonateRows = [{ name: '', qty: '8' }];
+  ok(app.pcDonateTotals(pc).missingName === 1, '⑱ 填咗件數冇姓名 → 即時提示（紙表最常見甩漏）');
+  app.pcDonateRows = [{ name: '甲', qty: '' }];
+  ok(app.pcDonateTotals(pc).missingQty === 1, '⑱ 填咗姓名冇件數 → 即時提示');
+
+  /* ── ③ QR 畫面 ── */
+  const packed = app.pcDonatePack('food', { group: '港島第 6 旅', leader: '張國強' },
+    [{ name: '陳大文', qty: 12 }, { name: '李小明', qty: 250 }]);
+  app.pcDonateQR = Object.assign({ scheme: 'food', head: { group: '港島第 6 旅', leader: '張國強' } }, packed);
+  h = app.pcDonateBodyHTML(pc);
+  ok(h.includes(packed.code), '⑱ QR 畫面：顯示 6 位校驗碼（掃唔到可以口頭報）');
+  ok(h.includes('當日俾攤位同事掃呢個'), '⑱ QR 畫面：講明點用');
+  ok(/掃嗰一刻先會入大會系統/.test(h), '⑱ QR 畫面：明寫掃嗰一刻先入系統');
+  ok(/建議先截圖/.test(h), '⑱ QR 畫面：提你截圖（場內可能冇網絡）');
+  ok(h.includes('app.pcDonateEdit()'), '⑱ QR 畫面：改得返名單');
+  app.pcDonateQR = null; app.pcDonateScheme = ''; app.pcDonateRows = null; app.pcDonateHead = null;
+
+  /* ── 接線 ── */
   ok(pcSrc.includes("['donate','童心捐贈'"), '⑱ 委員「一頁睇晒」都睇到童心捐贈分頁');
+  ok(!/saveDonationsData|getDonationsData/.test(pcSrc), '⑱ 公眾頻道完全唔掂捐贈存檔（入數只可以喺工作人員端）');
 }
 
 console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜audiences 7・booths 33・participants 31・merit ${meritTotal}`);

@@ -48,13 +48,14 @@ Object.assign(ScoutEventApp.prototype,{
     const canStats=this.canViewDonationsStats();
     if(!this.donSubTab) this.donSubTab=canStats?'dashboard':'entry';
     if(!canStats && this.donSubTab!=='entry') this.donSubTab='entry';
-    if(canStats && !['dashboard','goods','food','qrcode'].includes(this.donSubTab)) this.donSubTab='dashboard';
+    if(canStats && !['scan','dashboard','goods','food','qrcode'].includes(this.donSubTab)) this.donSubTab='dashboard';
     const data=this.getDonationsData();
     const goods=data.goods||[];
     const food=data.food||[];
     const canManage=canStats&&(this.isAdmin()||this.isExecViceOrChair()||(this.currentUser?.group_name||'').includes('服務及發展'));
     const tabs=canStats
       ? [
+          {k:'scan',icon:'fa-solid fa-camera',label:'掃碼收貨'},
           {k:'dashboard',icon:'fa-solid fa-chart-pie',label:'統計總覽'},
           {k:'goods',icon:'fa-solid fa-box-open',label:'物品捐贈'},
           {k:'food',icon:'fa-solid fa-apple-whole',label:'食品捐贈'},
@@ -71,7 +72,8 @@ Object.assign(ScoutEventApp.prototype,{
         <div id="don-tab-body"></div>
       </div>`;
     const body=document.getElementById('don-tab-body');
-    if(this.donSubTab==='dashboard') this.renderDonDashboard(body,goods,food,canManage);
+    if(this.donSubTab==='scan') this.renderDonScan(body);
+    else if(this.donSubTab==='dashboard') this.renderDonDashboard(body,goods,food,canManage);
     else if(this.donSubTab==='goods') this.renderDonGoods(body,goods,canManage);
     else if(this.donSubTab==='food') this.renderDonFood(body,food,canManage);
     else if(this.donSubTab==='entry') this.renderDonPublicEntry(body);
@@ -196,6 +198,152 @@ Object.assign(ScoutEventApp.prototype,{
         }).join('')}</div>`:'<div class="bg-white border-2 border-dashed border-amber-200 rounded-2xl p-8 text-center"><div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-apple-whole"></i></div><h4 class="font-bold text-sm mt-3">暫無食品捐贈紀錄</h4><p class="text-xs text-slate-400 mt-1">點擊「填寫食品捐贈表」開始記錄</p></div>'}
       </div>`;
     setTimeout(()=>{ this.generateQR('qr-food-inline',foodUrl); },100);
+  }
+,
+  /* ═══════════ 掃碼收貨（v19）：全場唯一一次寫入後端嘅位 ═══════════
+     公眾喺自己部機填好名單、出 QR（唔會上傳）。攤位同事喺呢度掃：
+       掃到 → 成張名單即刻彈出 → 同事核對實物同件數 → 撳「確認收貨並入數」→ 寫入。
+     所以唔存在「又收紙又收 online」：紙本都係同事喺呢度幫手入返，帳目得一本。
+     同一張 QR 已收過會擋住（靠載荷校驗碼 code），唔會入兩次。 */
+  donScanned:null,
+
+  renderDonScan(body){
+    const sc=this.donScanned;
+    body.innerHTML=`
+      <div class="space-y-4">
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[11px] leading-relaxed text-rose-900">
+          <b><i class="fa-solid fa-camera mr-1"></i>攤位收貨流程：</b>掃捐贈人嘅 QR → 核對實物同件數 → 撳「確認收貨並入數」。
+          <b>撳確認嗰下先會寫入系統</b>，全場只入一次，所以活動完咗唔使同紙本對數。冇 QR 嘅（紙本／口頭）就用下面「人手輸入」，入同一本帳。
+        </div>
+
+        ${sc?'':`
+        <div class="bg-white border rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <b class="text-[13px]"><i class="fa-solid fa-qrcode mr-1 text-rose-600"></i>掃描捐贈 QR</b>
+            <button onclick="app.donScanToggle()" id="don-scan-btn" class="ml-auto bg-rose-600 text-white text-[11.5px] font-bold rounded-lg px-3 py-1.5">開鏡頭</button>
+          </div>
+          <div class="rounded-xl overflow-hidden bg-slate-900 relative" style="aspect-ratio:4/3;max-height:320px">
+            <video id="don-scan-video" class="w-full h-full object-cover" muted playsinline></video>
+            <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+              <div style="width:62%;aspect-ratio:1;border:3px solid rgba(255,255,255,.7);border-radius:16px"></div>
+            </div>
+          </div>
+          <p id="don-scan-msg" class="text-[11px] text-slate-500 mt-2 leading-relaxed">撳「開鏡頭」，對準捐贈人部手機嘅 QR。（鏡頭要 https 或 localhost 先開到）</p>
+        </div>
+
+        <div class="bg-white border rounded-xl p-4 space-y-2">
+          <b class="text-[13px]"><i class="fa-solid fa-keyboard mr-1 text-slate-500"></i>人手輸入（掃唔到／紙本／口頭報碼）</b>
+          <textarea id="don-scan-manual" rows="3" placeholder="貼上 QR 內容，或由捐贈人讀出 6 位碼時用下面「紙本登記」入表" class="w-full px-3 py-2 border rounded-xl text-[12px]"></textarea>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="app.donScanManual()" class="bg-slate-800 text-white text-[11.5px] font-bold rounded-lg px-3 py-2">讀取</button>
+            <button onclick="app.openGoodsDonationForm()" class="bg-white border text-slate-600 text-[11.5px] font-bold rounded-lg px-3 py-2">紙本・物品登記</button>
+            <button onclick="app.openFoodDonationForm()" class="bg-white border text-slate-600 text-[11.5px] font-bold rounded-lg px-3 py-2">紙本・食品登記</button>
+          </div>
+        </div>`}
+
+        ${sc?this.donScanReviewHTML(sc):''}
+      </div>`;
+  },
+
+  donScanToggle(){
+    const btn=document.getElementById('don-scan-btn');
+    if(this.pcScan){ this.pcDonateScanStop(); if(btn) btn.textContent='開鏡頭'; return; }
+    if(btn) btn.textContent='熄鏡頭';
+    this.pcDonateScanStart('don-scan-video',text=>this.donScanHandle(text));
+  },
+
+  donScanManual(){
+    const el=document.getElementById('don-scan-manual');
+    this.donScanHandle(el?el.value:'');
+  },
+
+  donScanHandle(text){
+    const parsed=this.pcDonateParse(text);
+    if(!parsed){ showToast('讀唔到捐贈 QR（唔係呢個活動嘅單）','error'); return; }
+    if(!parsed.ok){ showToast('QR 有問題：'+parsed.reason,'error'); return; }
+    const data=this.getDonationsData();
+    const dup=[].concat(data.goods||[],data.food||[]).find(r=>r&&r.qr_code===parsed.code);
+    if(dup){ showToast('呢張單已經收過（'+parsed.code+'・'+(dup.scout_group||'')+'），唔會入第二次','warning'); return; }
+    this.pcDonateScanStop();
+    const btn=document.getElementById('don-scan-btn'); if(btn) btn.textContent='開鏡頭';
+    this.donScanned=parsed;
+    this.renderDonationsModule();
+  },
+
+  donScanReviewHTML(p){
+    const b=this.pcDonateBadges(p);
+    const isFood=p.scheme==='food';
+    return `
+      <div class="bg-white border-2 border-emerald-300 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[18px]">${isFood?'🍚':'📦'}</span>
+          <b class="text-[14px]">${isFood?'食品捐贈':'物品回收'}</b>
+          <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full">校驗碼 ${escapeHtml(p.code)}</span>
+          <button onclick="app.donScanCancel()" class="ml-auto text-slate-400 text-[11px] font-bold">取消</button>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[12px]">
+          <div><span class="text-slate-400">旅團／單位</span><div class="font-bold">${escapeHtml(p.scout_group||'—')}</div></div>
+          <div><span class="text-slate-400">負責領袖</span><div class="font-bold">${escapeHtml(p.leader_name||'—')} ${escapeHtml(p.leader_position||'')}</div></div>
+          <div><span class="text-slate-400">電話</span><div class="font-bold">${escapeHtml(p.leader_phone||'—')}</div></div>
+          <div><span class="text-slate-400">捐贈者</span><div class="font-bold">${p.donors} 位</div></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-slate-50 rounded-xl py-2 text-center"><div class="text-[18px] font-extrabold text-slate-700 leading-none">${p.donors}</div><div class="text-[9.5px] font-bold text-slate-500 mt-0.5">位捐贈者</div></div>
+          <div class="bg-slate-50 rounded-xl py-2 text-center"><div class="text-[18px] font-extrabold text-slate-700 leading-none">${p.total}</div><div class="text-[9.5px] font-bold text-slate-500 mt-0.5">件（申報）</div></div>
+          <div class="bg-rose-600 rounded-xl py-2 text-center"><div class="text-[18px] font-extrabold text-white leading-none">${b.badges}</div><div class="text-[9.5px] font-bold text-white mt-0.5">枚紀念章</div></div>
+        </div>
+        ${b.bonus?`<div class="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏅 另有 ${b.bonus} 位 >200 件 → 特別紀念章及感謝狀</div>`:''}
+        <div>
+          <div class="text-[11px] font-bold text-slate-500 mb-1">核對名單（件數可以就住實物改）</div>
+          <div class="space-y-1.5 max-h-[280px] overflow-y-auto" id="don-scan-items">
+            ${p.items.map((it,i)=>`
+              <div class="flex gap-2 items-center" data-scan-row>
+                <span class="text-[10.5px] text-slate-300 font-bold" style="min-width:16px">${i+1}</span>
+                <input data-scan-name value="${escapeHtml(it.name)}" class="flex-1 min-w-0 px-3 py-1.5 border rounded-lg text-[12.5px]">
+                <input data-scan-qty value="${it.quantity}" inputmode="numeric" class="px-2 py-1.5 border rounded-lg text-[12.5px] text-center" style="width:68px">
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-[11px] text-amber-900 leading-relaxed">
+          收貨前最後檢查：${isFood?'有獨立食品標籤及最佳食用日期・每件 ≥ 75 克・冇散裝米／熟食／奶類／罐頭／玻璃容器':'電器可正常運作・書本乾淨無缺頁・冇二手文具（學校文具 10 件 = 1 單位）'}
+        </div>
+        <button onclick="app.donScanConfirm()" class="w-full bg-emerald-600 text-white text-[13px] font-bold rounded-xl py-3">
+          <i class="fa-solid fa-check mr-1.5"></i>確認收貨並入數（寫入系統）
+        </button>
+      </div>`;
+  },
+
+  donScanCancel(){ this.donScanned=null; this.renderDonationsModule(); },
+
+  donScanConfirm(){
+    const p=this.donScanned;
+    if(!p) return;
+    const rows=[];
+    document.querySelectorAll('#don-scan-items [data-scan-row]').forEach(el=>{
+      const n=el.querySelector('[data-scan-name]'), q=el.querySelector('[data-scan-qty]');
+      const name=(n&&n.value||'').trim(), qty=parseInt(q&&q.value,10)||0;
+      if(name) rows.push({name,quantity:qty});
+    });
+    if(!rows.length){ showToast('名單係空嘅','error'); return; }
+    const data=this.getDonationsData();
+    if([].concat(data.goods||[],data.food||[]).some(r=>r&&r.qr_code===p.code)){
+      showToast('呢張單已經收過，唔會入第二次','warning'); this.donScanned=null; this.renderDonationsModule(); return;
+    }
+    const key=p.scheme==='goods'?'goods':'food';
+    data[key]=data[key]||[];
+    data[key].push({
+      id:'don_'+Date.now(), qr_code:p.code, source:'攤位掃碼',
+      scout_group:p.scout_group, leader_name:p.leader_name, leader_position:p.leader_position,
+      leader_phone:p.leader_phone, leader_email:'',
+      date:(new Date()).toISOString().slice(0,10),
+      received_by:(this.currentUser&&this.currentUser.name)||'',
+      items:rows
+    });
+    this.saveDonationsData(data);
+    const n=rows.filter(r=>r.quantity>0).length;
+    showToast('已收貨並入數：'+p.scout_group+'（'+n+' 枚紀念章）','success');
+    this.donScanned=null;
+    this.renderDonationsModule();
   }
 ,
   renderDonQRCode(body){
