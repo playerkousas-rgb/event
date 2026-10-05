@@ -16,7 +16,7 @@ Object.assign(ScoutEventApp.prototype,{
       {id:'rd_o5',time:'14:00',program:'參觀主題活動區',location:'全場'}
     ];
     if(!this.isDemoEvent()) { const roster=this.eventData?.guest_roster?.guests||[]; const cer=this.eventData?.ceremony||{}; return {rundown:officialRundown,mc_script:[],speech:cer.speech||null,guests:roster.map(g=>({...g,title:g.title||g.scout_title||'',note:g.note||g.notes||''})),seating:cer.seating||[],files:cer.files||[],meritRoster:cer.meritRoster||[],responses:cer.responses||[],mc_scripts:cer.mc_scripts||[],ug_units:cer.ug_units||[]}; } // 真實活動：內建官方典禮程序、附件及優異旅團名單版位
-    return {
+    const demo={
       rundown:officialRundown,
       files:[],
       meritRoster:[],
@@ -76,6 +76,17 @@ Object.assign(ScoutEventApp.prototype,{
         {id:'s7',zone:'嘉賓席（第4-5行）',arrangement:'各旅團代表、獲獎領袖及委員' }
       ]
     };
+    // v17：示範版底層資料已用 2026 真實資料填滿 → 內置 ceremony 優先覆蓋硬編示範內容
+    //      （Rundown V5／司儀稿 ×3／會操檢閱路線／優異旅團 188／成人獎勵／其他制服團體）
+    const ed=this.eventData&&this.eventData.ceremony;
+    if(ed&&typeof ed==='object'){
+      const take=(k)=>{ const v=ed[k]; return (Array.isArray(v)?v.length:(v&&typeof v==='object'?Object.keys(v).length:0))?v:undefined; };
+      ['meritRoster','adult_awards','mc_scripts','ug_units','ug_guests','responses','files','speech','seating','inspection_route','rundown_part1_v5','merit_source','ug_source','updated_at'].forEach(k=>{
+        const v=take(k); if(v!==undefined) demo[k]=v;
+      });
+      if(Array.isArray(ed.rundown)&&ed.rundown.length) demo.rundown=ed.rundown;
+    }
+    return demo;
   },
   saveCeremonyData(data){ if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
   renderCeremonyModule(box){

@@ -6,6 +6,9 @@ Object.assign(ScoutEventApp.prototype,{
     const key=LS.announcements(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
     if(local) return local;
+    // v17：優先用活動資料檔內置嘅公告（mock_demo 由 2026 通告生成；正式活動由後端寫入）
+    const ed=this.eventData&&this.eventData['announcements'];
+    if(ed&&Array.isArray(ed.announcements)&&ed.announcements.length) return ed;
     if(!this.isDemoEvent()) return {announcements:[]}; // 真實活動：預留版位
     return {announcements:[
       {id:'ann_1',title:'歡迎使用全新執行手冊 v7.0',content:'本系統已完全取代舊 Google Sites，所有資料公開可看，僅修改需登入，登入一次永久有效 (儲存於瀏覽器)。各部門間可在此發佈公告、溝通協作。',category:'系統公告',created_by:'系統',created_at:new Date().toISOString(),pinned:true},
@@ -183,6 +186,9 @@ Object.assign(ScoutEventApp.prototype,{
     const key=LS.unit_guide(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
     if(local) return local;
+    // v17：優先用活動資料檔內置嘅旅團須知（mock_demo 由特別通告第 12/26 號生成）
+    const ed=this.eventData&&this.eventData['unit_guide'];
+    if(ed&&Array.isArray(ed.docs)&&ed.docs.length) return ed;
     if(!this.isDemoEvent()) return {docs:[]}; // 真實活動：預留版位
     return {docs:[
       {id:'ug_1',title:'旅團報到須知',description:'請各旅團於指定時間到報到處報到，並帶同報名表及參加者名單。',category:'報到'},

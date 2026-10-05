@@ -119,9 +119,13 @@ vm.runInContext(`
   });
 `, context);
 const cnt = JSON.parse(vm.runInContext(`JSON.stringify((()=>{const c={};__app.getEventGroups().forEach(g=>{const nodes=__app.getGroupOrgNodes(g);const s=new Set();nodes.forEach(n=>{(n.names||'').split(/[\\/、,，]/).map(x=>x.trim()).filter(Boolean).forEach(y=>s.add(y))});c[g]=nodes.length+'/'+s.size});return c})())`, context));
+// v17（2026-10-05）：示範版底層資料已換成 2026 真實組織架構（tools/fill_mock_demo_from_2026.js），
+// 以下人數改為跟足 isd_2026.json → staff.org_chart（逐人一行）；舊數字係之前嘅虛構示範資料。
 ok(cnt['顧問團'] === '2/2', `⑥ 部門卡：顧問團應 2 崗位 · 2 人（實際 ${cnt['顧問團']}）`);
 ok(cnt['主題節目組'] === '7/7', `⑥ 部門卡：主題節目組應 7 崗位 · 7 人（實際 ${cnt['主題節目組']}）`);
-ok(cnt['協調組'] === '9/9', `⑥ 部門卡：協調組應 9 崗位 · 9 人（實際 ${cnt['協調組']}）`);
+ok(cnt['協調組'] === '10/10', `⑥ 部門卡：協調組應 10 崗位 · 10 人（2026 實數，實際 ${cnt['協調組']}）`);
+ok(cnt['會操及典禮組'] === '14/14', `⑥ 部門卡：會操及典禮組應 14 崗位 · 14 人（2026 實數，實際 ${cnt['會操及典禮組']}）`);
+ok(cnt['行政組'] === '7/7', `⑥ 部門卡：行政組應 7 崗位 · 7 人（2026 實數，實際 ${cnt['行政組']}）`);
 const st = vm.runInContext(`JSON.stringify(__app.groupApplyStats('主題節目組'))`, context);
 const stJ = JSON.parse(st);
 ok(stJ.requests.length === 4 && stJ.boothReqs.length === 1, `⑥ 主題節目組統計：物資 4＋攤位計劃書 1（v8.7 每攤位一筆計劃書；實際 物資 ${stJ.requests.length}／攤位 ${stJ.boothReqs.length}）`);
