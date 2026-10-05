@@ -11,7 +11,8 @@
  *  ⑦ ?pub= 深連結：帶參數開啟即入該受眾版面（生產版專屬 QR 機制）
  *  ⑧ 公眾 landing：mock_demo 未登入 → 一進APP就是公眾頻道（儀表板組件／底部導覽收起；登入後回復正常）
  *  ⑨ 工作人員閘口：頁尾隱藏入口 → 4位密碼（錯=拒絕、啱=登入工作人員）＋籌委帳密分流
- *  ⑩ 報到 QR（公眾端）：每個報名一個獨有 token，自己版面見自己 QR＋人數餐盒
+ *  ⑩ 報到 QR（公眾端）：只有旅團（團體單位）有 token；個人／隊伍＝工作人員按名單點名
+ *  ⑫ 場地示意圖：每類人嘅路線（虛線①②③）＋報到點（📍脈衝）標喺圖上（生產版＝每類一張標註地圖）
  *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -27,12 +28,18 @@ ok(pc, '① mock_demo.json 有 public_channel_2027');
 ok(pc.audiences && pc.audiences.length === 7, '① 公眾入口＝須知分眾七類');
 ok(['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => pc.audiences.some(a => a.id === id)), '① 七類 id 齊：嘉賓/旅團/優異旅團獲獎/步操隊伍/其他制服團體/支部最高獎勵/成人獎勵');
 ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
-ok(pc.audiences.every(a => ['schedule', 'arrival', 'qr'].every(x => a.sections.includes(x))), '① 每類都有：時間表＋報到地圖＋報到 QR');
+ok(pc.audiences.every(a => ['schedule', 'arrival'].every(x => a.sections.includes(x))), '① 每類都有：時間表＋報到地圖');
+ok(pc.audiences.filter(a => a.sections.includes('qr')).length === 1 && pc.audiences.find(a => a.sections.includes('qr')).id === 'troop', '① 報到 QR 只有旅團（團體單位）');
 ok(pc.audiences.filter(a => a.guide).every(a => a.guide.every(k => pc.guides[k])), '① 每類嘅須知都喺七類須知數據入面');
 ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
 ok(pc.section_labels && Object.keys(pc.section_labels).length === 11, '① 分節標籤 11 個');
 ok(Object.keys(pc.schedules).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.schedules[id].items || []).length >= 6), '① 每類有專屬時間表（7 份・各至少 6 項）');
 ok(Object.keys(pc.arrivals).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.arrivals[id].checkin || []).length === 2), '① 每類有專屬報到地點＋時間（7 份）');
+ok(pc.venue_map && pc.venue_map.nodes.length === 10, '① 場地示意圖 10 節點（東閘／報到處／櫃位／大操場／莫榮大樓…）');
+{
+  const nodeIds = new Set((pc.venue_map.nodes || []).map(n => n.id));
+  ok(Object.values(pc.arrivals).every(ar => (ar.route || []).length >= 2 && ar.route.every(id => nodeIds.has(id)) && nodeIds.has(ar.pin_at)), '① 每類有路線（route）＋報到點（pin_at），全部對應示意圖節點');
+}
 ok(pc.banner && pc.banner.event_name === '2027 港島童軍繽紛日', '① banner：2027 港島童軍繽紛日');
 ok(pc.transport && pc.transport.items.length === 5, '① 交通與入場 5 項');
 ok(pc.program && pc.program.items.length >= 6, '① 當日程序 6 項');
@@ -115,7 +122,7 @@ app.pcDemoPickAudience('march'); html = render();
 ok(html.includes('08:00') && html.includes('綵排') && !html.includes('07:45'), '⑥ 步操隊伍：自己時間表（08:00 綵排，唔係 07:45）');
 ok(html.includes('大操場指定位置（依旗幟）'), '⑥ 步操隊伍：報到＝大操場依旗幟');
 ok(html.includes('指揮官檢閱'), '⑥ 步操隊伍：檢閱安排');
-ok(!html.includes('彩帶'), '⑥ 步操隊伍：唔會見到優異旅團須知');
+ok(!html.includes('優異旅團・須知'), '⑥ 步操隊伍：唔會見到優異旅團版須知（場地示意圖上嘅櫃位標示唔算）');
 
 app.pcDemoPickAudience('ug'); html = render();
 ok(html.includes('有蓋操場報到處・UG 專櫃'), '⑥ 其他制服團體：報到＝UG 專櫃');
@@ -145,23 +152,40 @@ app2.renderPublicChannelDemo();
 ok(app2.pcDemoMode === 'audience' && app2.pcDemoAudience === 'merit', '⑦ ?pub=merit 開啟即入優異旅團版面');
 ok(containers['module-content'].innerHTML.includes('彩帶'), '⑦ 深連結內容正確');
 
-/* ── ⑩ 報到 QR（公眾端：自己版面見自己 QR） ── */
+/* ── ⑩ 報到 QR（只有旅團＝團體單位；個人／隊伍＝工作人員按名單點名） ── */
 const cd = pc.checkin_demo || {};
-ok(cd.entries && cd.entries.length >= 40, '⑩ checkin_demo：31 旅團＋各類示範＝' + (cd.entries || []).length + ' 個報到 token');
-ok(new Set((cd.entries || []).map(e => e.token)).size === (cd.entries || []).length, '⑩ token 全部唯一');
-ok(Object.keys(cd.audience_kinds || {}).length === 7, '⑩ 七類各自對應一種報到 token');
 const troopEntries = cd.entries.filter(e => e.kind === '旅團');
-ok(troopEntries.length === 31, '⑩ 31 個旅團 token（T001–T031，2026 真實名單）');
+ok(cd.entries && cd.entries.length === 31 && troopEntries.length === 31, '⑩ checkin_demo：31 個旅團 token（T001–T031，2026 真實名單）——只有旅團');
+ok(new Set(cd.entries.map(e => e.token)).size === 31, '⑩ token 全部唯一');
 app.pcDemoPickAudience('troop'); html = render();
 ok(html.includes('你的報到 QR') && html.includes('報名編號') && html.includes('代訂餐盒'), '⑩ 旅團版面：報到 QR＋人數＋餐盒');
 ok(html.includes(troopEntries[0].token) && html.includes(troopEntries[0].name), '⑩ 顯示第一個旅團（' + troopEntries[0].token + ' ' + troopEntries[0].name + '）');
-ok((html.match(/data-pcqr-fallback|<svg/g) || []).length >= 1, '⑩ QR 圖有渲染（VM 環境＝佔位，瀏覽器＝真 QR）');
+ok((html.match(/data-pcqr-fallback|<svg/g) || []).length >= 1, '⑩ QR 圖有渲染（VM＝佔位，瀏覽器＝真 QR）');
 app.pcQrCycle('troop'); html = render();
 ok(html.includes(troopEntries[1].token), '⑩ 切換示範旅團 → 第二個 token');
+['guest', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].forEach(id => {
+  app.pcDemoPickAudience(id); const h = render();
+  ok(!h.includes('你的報到 QR'), '⑩ ' + id + '：冇 QR（個人／隊伍＝工作人員按名單點名）');
+});
 app.pcDemoPickAudience('guest'); html = render();
-ok(html.includes('你的報到 QR') && html.includes('G001'), '⑩ 嘉賓版面：個人報到 QR（G001）');
+ok(html.includes('向接待處職員報姓名即可'), '⑩ 嘉賓：點名方式提示（報姓名即可）');
 app.pcDemoPickAudience('awardee_adult'); html = render();
-ok(html.includes('你的報到 QR') && html.includes('需覆誓'), '⑩ 成人獎勵版面：個人 QR＋覆誓備註');
+ok(html.includes('需覆誓者 10:55 前綵排'), '⑩ 成人獎勵：點名提示（含覆誓提醒）');
+app.pcDemoPickAudience('merit'); html = render();
+ok(html.includes('核對名單＋領彩帶（工作人員按名單點名）'), '⑩ 優異旅團：櫃位點名提示');
+
+/* ── ⑫ 場地示意圖：每類人嘅路線＋報到點標喺圖上（示意就好） ── */
+app.pcDemoPickAudience('troop'); html = render();
+ok(html.includes('你要去嘅地方（示意圖）'), '⑫ 旅團：示意圖卡');
+ok(html.includes('pc-map-pin') && html.includes('你喺呢度報到'), '⑫ 旅團：📍紅點脈衝標記報到點');
+ok(html.includes('有蓋操場・報到處') && html.includes('東閘'), '⑫ 旅團：路線節點（東閘→報到處）');
+ok(html.includes('為不同人士製作幾張唔同嘅標註地圖'), '⑫ 註明生產版：籌委提供源點→每類人士一張標註地圖');
+app.pcDemoPickAudience('guest'); html = render();
+ok(html.includes('pc-map-pin') && html.includes('莫榮大樓'), '⑫ 嘉賓：📍標喺莫榮大樓');
+app.pcDemoPickAudience('march'); html = render();
+ok(html.includes('步操集結位置') && html.includes('依旗幟'), '⑫ 步操：集結位置標示');
+app.pcDemoPickAudience('awardee_section'); html = render();
+ok(html.includes('後台排位') && html.includes('大操場左側'), '⑫ 支部得主：後台排位標示');
 
 /* ── ⑪ 報到站（工作人員端：一 DO 即知咩旅團・幾多人・有無訂飯盒） ── */
 const csCard = defs.find(d => d.id === 'checkin_station');

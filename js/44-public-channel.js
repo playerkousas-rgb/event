@@ -9,7 +9,8 @@
    ・ 數據由 tools/build_pc2027_demo.js 產生（攤位／旅團／優異旅團直接抽自 isd_2026.json）。
    ・ 公眾 landing（mock_demo・未登入）：一進APP＝公眾頻道（applyDashboardMode 分流）；工作人員入口收埋喺頁尾
      —— 工作人員打 4 位密碼（staff_gate.pin）、籌委用帳號密碼（一個登入口分流）。
-   ・ 報到 QR：每個報名一個獨有 token（checkin_demo）——公眾版面見自己 QR；工作人員「報到站」卡
+   ・ 報到 QR：只有旅團（團體單位）有 token（T001–T031）；個人／隊伍＝工作人員按名單點名（checkin_note）。
+   ・ 場地示意圖（venue_map 數據驅動）：每類人嘅路線＋報到點📍直接標喺圖上——生產版由籌委提供源點，為不同人士製作幾張唔同嘅圖。
      （minLevel 20・requiresData 同樣 gated）掃描／輸入即見旅團・人數・餐盒，一撳確認報到。
    ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版 8 個分頁（含手冊）全部開放。
    回歸測試：tests/pc2027_public_channel_test.js */
@@ -149,6 +150,48 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
+  /* ── 場地示意圖（示意就好）：每類人嘅路線（虛線＋①②③）＋報到點（📍紅點脈衝）直接標喺圖上
+       生產版：籌委提供源點（報到點＋路線節點座標）→ 為不同人士自動產生幾張唔同嘅標註地圖 ── */
+  pcDemoVenueMapHTML(d,aud){
+    const vm=d.venue_map||{}; const nodes=vm.nodes||[];
+    if(!nodes.length) return '';
+    const byId={}; nodes.forEach(n=>byId[n.id]=n);
+    const ar=(d.arrivals||{})[aud.id]||{};
+    const route=(ar.route||[]).map(id=>byId[id]).filter(Boolean);
+    const routeIds=new Set((ar.route||[]));
+    const pin=byId[ar.pin_at];
+    const cx=n=>n.x+n.w/2, cy=n=>n.y+n.h/2;
+    const pathD=route.length>1?route.map((n,i)=>(i?'L':'M')+cx(n)+' '+cy(n)).join(' '):'';
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 你要去嘅地方（示意圖）</div>
+        <svg viewBox="0 0 380 520" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="380" height="520" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+          ${pathD?`<path d="${pathD}" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-dasharray="7 5" stroke-linecap="round"/>`:''}
+          ${nodes.map(n=>{
+            const hl=routeIds.has(n.id), isPin=pin&&n.id===pin.id;
+            return `<g>
+              <rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="8" fill="${isPin?'#fee2e2':hl?'#eef2ff':'#ffffff'}" stroke="${isPin?'#ef4444':hl?'#6366f1':'#cbd5e1'}" stroke-width="${isPin?3:(hl?2:1.5)}"/>
+              <text x="${cx(n)}" y="${cy(n)-(n.sub?3:0)}" text-anchor="middle" font-size="11" font-weight="700" fill="${isPin?'#b91c1c':(hl?'#3730a3':'#475569')}">${escapeHtml(n.label)}</text>
+              ${n.sub?`<text x="${cx(n)}" y="${cy(n)+11}" text-anchor="middle" font-size="8.5" fill="#94a3b8">${escapeHtml(n.sub)}</text>`:''}
+            </g>`;
+          }).join('')}
+          ${route.map((n,i)=>`<circle cx="${n.x+n.w-10}" cy="${n.y+10}" r="9" fill="#6366f1" stroke="#fff" stroke-width="2"/><text x="${n.x+n.w-10}" y="${n.y+13.5}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">${i+1}</text>`).join('')}
+          ${pin?`
+          <g id="pc-map-pin">
+            <circle cx="${cx(pin)}" cy="${cy(pin)}" r="12" fill="#ef4444" opacity="0.4">
+              <animate attributeName="r" values="10;22;10" dur="1.8s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.4;0;0.4" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="${cx(pin)}" cy="${cy(pin)}" r="7" fill="#ef4444" stroke="#fff" stroke-width="2.5"/>
+            <rect x="${Math.max(Math.min(cx(pin)-64,380-130),4)}" y="${Math.max(pin.y-30,6)}" width="126" height="22" rx="11" fill="#ef4444"/>
+            <text x="${Math.max(Math.min(cx(pin),380-67),67)}" y="${Math.max(pin.y-15,21)}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">📍 你喺呢度報到</text>
+          </g>`:''}
+        </svg>
+        <div class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">①②③ 粗框藍線＝你嘅路線；📍＝你嘅報到點。生產版：籌委提供源點（報到點＋路線），為不同人士製作幾張唔同嘅標註地圖。</div>
+      </div>`;
+  },
+
   /* ── 報到與地圖（每類唔同報到點＋路線重點＋專屬交通提示） ── */
   pcDemoArrivalHTML(d,aud){
     const ar=(d.arrivals||{})[aud.id]||{};
@@ -158,7 +201,9 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <div class="text-[10.5px] font-bold text-indigo-600">📍 你的報到地點</div>
         <div class="text-[16px] font-black text-indigo-900 leading-snug mt-1">${escapeHtml((ar.checkin||[])[1]||'')}</div>
         <div class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 rounded-full px-3 py-1 mt-2 text-[12px] font-bold text-indigo-700"><i class="fa-regular fa-clock"></i>${escapeHtml((ar.checkin||[])[0]||'')}</div>
+        ${ar.checkin_note?`<div class="mt-2.5 text-[11.5px] text-slate-500 leading-relaxed border-t border-slate-100 pt-2"><i class="fa-solid fa-clipboard-check text-slate-400 mr-1"></i>${escapeHtml(ar.checkin_note)}</div>`:''}
       </div>
+      ${this.pcDemoVenueMapHTML(d,aud)}
       ${(ar.points||[]).length?`
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
         <div class="font-black text-[13px] mb-2.5">🚶 你的路線重點</div>
@@ -177,7 +222,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 場地指示圖</div>
         ${t.map_url?`<img src="${escapeHtml(t.map_url)}" alt="場地指示圖" class="w-full rounded-xl border border-slate-200">`:''}
         ${t.map_pdf?`<a href="${escapeHtml(t.map_pdf)}" target="_blank" class="mt-2 inline-block text-[12px] font-bold text-indigo-700">📎 下載完整場地指示圖（PDF）↗</a>`:''}
-        <div class="text-[10px] text-slate-400 mt-1.5">生產版：每類入口會有標註你自己位置嘅專屬地圖</div>
+        <div class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">生產版：籌委按呢個方式提供源點（各類嘅報到點＋路線節點），為不同人士製作幾張唔同嘅標註地圖——上面示意圖就係結果形態。</div>
       </div>`;
   },
 
@@ -199,7 +244,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
   },
   pcDemoQrHTML(d,aud){
     const cd=d.checkin_demo||{};
-    const entries=(cd.entries||[]).filter(e=>e.kind===(cd.audience_kinds||{})[aud.id]);
+    const entries=(cd.entries||[]).filter(e=>e.kind==='旅團');
     if(!entries.length) return '';
     this.pcQrIdx=this.pcQrIdx||{};
     const idx=(this.pcQrIdx[aud.id]||0)%entries.length;
@@ -217,7 +262,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         </div>
         ${e.note?`<div class="text-[11px] text-slate-500 mt-2 leading-relaxed">${escapeHtml(e.note)}</div>`:''}
         ${entries.length>1?`<button onclick="app.pcQrCycle('${escapeHtml(aud.id)}')" class="mt-3 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[11.5px] font-bold rounded-xl py-2">🔄 切換示範${escapeHtml(e.kind)}（第 ${idx+1}/${entries.length} 個）</button>`:''}
-        <div class="text-[10px] text-slate-400 mt-2 leading-relaxed">工作人員掃描此 QR → 即見你嘅旅團・人數・餐盒等資料。每個報名一個獨有 QR（以上為示範資料）。</div>
+        <div class="text-[10px] text-slate-400 mt-2 leading-relaxed">工作人員掃描此 QR → 即見你嘅旅團・人數・餐盒等資料。QR＝旅團（團體單位）專有；個人身份由工作人員按名單點名。（示範資料）</div>
       </div>`;
   },
   pcQrCycle(audId){

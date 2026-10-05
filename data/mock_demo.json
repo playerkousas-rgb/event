@@ -2610,15 +2610,6 @@
     ],
     "apply_note": "全部免登入、填完即有申請編號可查進度。費用（$10／人・餐盒 $60／份）於確認後一併通知繳付。",
     "checkin_demo": {
-      "audience_kinds": {
-        "troop": "旅團",
-        "merit": "優異旅團",
-        "march": "步操隊伍",
-        "ug": "其他制服團體",
-        "guest": "嘉賓",
-        "awardee_section": "支部最高獎勵得主",
-        "awardee_adult": "成人獎勵得主"
-      },
       "entries": [
         {
           "token": "T001",
@@ -2898,132 +2889,100 @@
           "headcount": 6,
           "meal_boxes": 0,
           "note": "領隊：黎禮勳"
+        }
+      ]
+    },
+    "venue_map": {
+      "nodes": [
+        {
+          "id": "morrison",
+          "label": "莫榮大樓",
+          "sub": "接待・茶聚",
+          "x": 20,
+          "y": 20,
+          "w": 130,
+          "h": 56
         },
         {
-          "token": "M001",
-          "kind": "優異旅團",
-          "name": "港島第六旅",
-          "area": "小童軍團",
-          "headcount": 12,
-          "meal_boxes": 0,
-          "note": "出席頒獎：派隊上台領彩帶＋獎狀"
+          "id": "parade",
+          "label": "大操場",
+          "sub": "典禮・檢閱",
+          "x": 170,
+          "y": 20,
+          "w": 190,
+          "h": 170
         },
         {
-          "token": "M002",
-          "kind": "優異旅團",
-          "name": "港島第二四三旅",
-          "area": "童軍團",
-          "headcount": 12,
-          "meal_boxes": 0,
-          "note": "出席頒獎：派隊上台領彩帶＋獎狀"
+          "id": "backstage",
+          "label": "後台排位",
+          "sub": "大操場左側",
+          "x": 20,
+          "y": 100,
+          "w": 130,
+          "h": 48
         },
         {
-          "token": "M003",
-          "kind": "優異旅團",
-          "name": "港島第六旅",
-          "area": "幼童軍團",
-          "headcount": 12,
-          "meal_boxes": 0,
-          "note": "出席頒獎：派隊上台領彩帶＋獎狀"
+          "id": "checkin",
+          "label": "有蓋操場・報到處",
+          "sub": "領物資・餐盒",
+          "x": 20,
+          "y": 180,
+          "w": 140,
+          "h": 64
         },
         {
-          "token": "W001",
-          "kind": "步操隊伍",
-          "name": "港島第175旅",
-          "area": "HKN 港島北區",
-          "headcount": 24,
-          "meal_boxes": 0,
-          "note": "旗幟：有｜綵排 08:00 報到"
+          "id": "merit_counter",
+          "label": "優異旅團櫃位",
+          "sub": "核對名單・領彩帶",
+          "x": 20,
+          "y": 260,
+          "w": 140,
+          "h": 40
         },
         {
-          "token": "W002",
-          "kind": "步操隊伍",
-          "name": "港島第242旅",
-          "area": "SKW 筲箕灣區",
-          "headcount": 24,
-          "meal_boxes": 0,
-          "note": "旗幟：有｜綵排 08:00 報到"
+          "id": "ug_counter",
+          "label": "UG 專櫃",
+          "sub": "有蓋操場報到處",
+          "x": 20,
+          "y": 315,
+          "w": 140,
+          "h": 40
         },
         {
-          "token": "W003",
-          "kind": "步操隊伍",
-          "name": "港島第5海童軍旅",
-          "area": "WCH 灣仔區",
-          "headcount": 24,
-          "meal_boxes": 17,
-          "note": "旗幟：有｜綵排 08:00 報到"
+          "id": "merit_zone",
+          "label": "優異旅團排位區",
+          "sub": "大操場後方（按區會）",
+          "x": 180,
+          "y": 205,
+          "w": 170,
+          "h": 36
         },
         {
-          "token": "U001",
-          "kind": "其他制服團體",
-          "name": "香港聖約翰救傷隊（示範）",
-          "area": "—",
-          "headcount": 18,
-          "meal_boxes": 6,
-          "note": "UG 專櫃報到"
+          "id": "march_spot",
+          "label": "步操集結位置",
+          "sub": "依旗幟",
+          "x": 180,
+          "y": 250,
+          "w": 170,
+          "h": 36
         },
         {
-          "token": "U002",
-          "kind": "其他制服團體",
-          "name": "香港海事青年團（示範）",
-          "area": "—",
-          "headcount": 15,
-          "meal_boxes": 5,
-          "note": "UG 專櫃報到"
+          "id": "booths",
+          "label": "攤位活動區 A–F",
+          "sub": "六大主題 33 攤位",
+          "x": 20,
+          "y": 380,
+          "w": 340,
+          "h": 56
         },
         {
-          "token": "G001",
-          "kind": "嘉賓",
-          "name": "李偉明先生 BBS, MH（示範）",
-          "area": "—",
-          "headcount": 1,
-          "meal_boxes": 0,
-          "note": "茶聚：是｜大會車：是"
-        },
-        {
-          "token": "G002",
-          "kind": "嘉賓",
-          "name": "王秀蘭女士 MH（示範）",
-          "area": "—",
-          "headcount": 1,
-          "meal_boxes": 0,
-          "note": "茶聚：是｜大會車：否"
-        },
-        {
-          "token": "A001",
-          "kind": "支部最高獎勵得主",
-          "name": "貝登堡獎章得主（示範）",
-          "area": "—",
-          "headcount": 1,
-          "meal_boxes": 0,
-          "note": "親友觀禮：2 位"
-        },
-        {
-          "token": "A002",
-          "kind": "支部最高獎勵得主",
-          "name": "榮譽童軍獎章得主（示範）",
-          "area": "—",
-          "headcount": 1,
-          "meal_boxes": 0,
-          "note": "親友觀禮：3 位"
-        },
-        {
-          "token": "A003",
-          "kind": "成人獎勵得主",
-          "name": "長期服務獎章得主（示範）",
-          "area": "—",
-          "headcount": 1,
-          "meal_boxes": 0,
-          "note": "需覆誓：是"
-        },
-        {
-          "token": "A004",
-          "kind": "成人獎勵得主",
-          "name": "一星服務獎章得主（示範）",
-          "area": "—",
-          "headcount": 1,
-          "meal_boxes": 0,
-          "note": "需覆誓：否"
+          "id": "east_gate",
+          "label": "東閘",
+          "sub": "警校道・唯一入口",
+          "x": 250,
+          "y": 455,
+          "w": 110,
+          "h": 50
         }
       ]
     },
@@ -3325,7 +3284,14 @@
         "transport": [
           "大會車：去程 10:15 灣仔開出；回程 15:00 學院門口",
           "查詢：2835 7712（助理執行幹事何家耀先生）"
-        ]
+        ],
+        "route": [
+          "morrison",
+          "parade",
+          "morrison"
+        ],
+        "pin_at": "morrison",
+        "checkin_note": "向接待處職員報姓名即可（按嘉賓名單點名）"
       },
       "troop": {
         "checkin": [
@@ -3341,7 +3307,14 @@
         "transport": [
           "旅遊巴：報名時申報嘅旅遊巴前往指定落客點，司機依警衛指示停泊",
           "公共交通：港鐵海洋公園站步行約 10 分鐘；多條巴士路線直達黃竹坑"
-        ]
+        ],
+        "route": [
+          "east_gate",
+          "checkin",
+          "booths",
+          "parade"
+        ],
+        "pin_at": "checkin"
       },
       "merit": {
         "checkin": [
@@ -3357,7 +3330,15 @@
         "transport": [
           "公共交通：港鐵海洋公園站步行約 10 分鐘",
           "報到後先去排位區按區會排位，頒獎時依指示上台"
-        ]
+        ],
+        "route": [
+          "east_gate",
+          "merit_counter",
+          "merit_zone",
+          "parade"
+        ],
+        "pin_at": "merit_counter",
+        "checkin_note": "領隊向櫃位報旅團名：核對名單＋領彩帶（工作人員按名單點名）"
       },
       "march": {
         "checkin": [
@@ -3372,7 +3353,15 @@
         "transport": [
           "請預早出發：08:30 綵排前必須到位",
           "大會飲水點：大操場側；雨具自備"
-        ]
+        ],
+        "route": [
+          "east_gate",
+          "checkin",
+          "march_spot",
+          "parade"
+        ],
+        "pin_at": "march_spot",
+        "checkin_note": "領隊報旅團名，工作人員指示旗幟位置（按隊伍名單點名）"
       },
       "ug": {
         "checkin": [
@@ -3386,7 +3375,14 @@
         ],
         "transport": [
           "穿梭巴士：海洋公園停車場 ↔ 東閘，10:00 起每 15 分鐘一班"
-        ]
+        ],
+        "route": [
+          "east_gate",
+          "ug_counter",
+          "booths"
+        ],
+        "pin_at": "ug_counter",
+        "checkin_note": "領隊向 UG 專櫃報隊名（工作人員按隊伍名單點名）"
       },
       "awardee_section": {
         "checkin": [
@@ -3400,7 +3396,14 @@
         ],
         "transport": [
           "親友觀禮區：大操場預留（報名時申報人數）"
-        ]
+        ],
+        "route": [
+          "east_gate",
+          "backstage",
+          "parade"
+        ],
+        "pin_at": "backstage",
+        "checkin_note": "向工作人員報姓名＋獎項（按得主名單點名）"
       },
       "awardee_adult": {
         "checkin": [
@@ -3414,7 +3417,14 @@
         ],
         "transport": [
           "服裝：制服編號 3 或常服＋佩戴原有勳章"
-        ]
+        ],
+        "route": [
+          "east_gate",
+          "backstage",
+          "parade"
+        ],
+        "pin_at": "backstage",
+        "checkin_note": "向工作人員報姓名＋獎項（按得主名單點名；需覆誓者 10:55 前綵排）"
       }
     },
     "section_labels": {
@@ -3465,7 +3475,6 @@
           "banner",
           "schedule",
           "arrival",
-          "qr",
           "guide",
           "apply",
           "help"
@@ -3508,7 +3517,6 @@
           "banner",
           "schedule",
           "arrival",
-          "qr",
           "guide",
           "apply",
           "help"
@@ -3529,7 +3537,6 @@
           "banner",
           "schedule",
           "arrival",
-          "qr",
           "guide",
           "apply",
           "help"
@@ -3550,7 +3557,6 @@
           "banner",
           "schedule",
           "arrival",
-          "qr",
           "guide",
           "apply",
           "help"
@@ -3572,7 +3578,6 @@
           "banner",
           "schedule",
           "arrival",
-          "qr",
           "guide",
           "apply",
           "help"
@@ -3593,7 +3598,6 @@
           "banner",
           "schedule",
           "arrival",
-          "qr",
           "guide",
           "apply",
           "help"
