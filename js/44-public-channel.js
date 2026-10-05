@@ -1362,10 +1362,34 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     for(let i=0;i<4;i++){ html+=`<span class="rounded-full" style="width:14px;height:14px;${i<(this.pcPinBuf||'').length?'background:#1e293b':'background:#e2e8f0'}"></span>`; }
     dots.innerHTML=html;
   },
+  /* ╔══════════════════════════════════════════════════════════════════╗
+     ║ 【唯一要搬去後端嘅位】活動密碼驗證                                  ║
+     ║ 而家：前端對 data.staff_gate.pin（示範用，開 DevTools 睇得到）。     ║
+     ║ 之後：整個 function 換成叫 GAS 就得，呼叫方唔使改——                 ║
+     ║   async pcVerifyStaffPin(pin){                                    ║
+     ║     const r=await fetch(this.gasUrl,{method:'POST',               ║
+     ║       headers:{'Content-Type':'text/plain'},                      ║
+     ║       body:JSON.stringify({action:'verifyStaffPin',               ║
+     ║         api_key:this.apiKey, event_id:this.currentEvent?.event_id,║
+     ║         pin})});                                                  ║
+     ║     const j=await r.json(); return !!(j&&j.success);              ║
+     ║   }                                                               ║
+     ║ pcPinCheck() 同時食 boolean 同 Promise，所以轉 async 唔使改其他嘢。 ║
+     ╚══════════════════════════════════════════════════════════════════╝ */
+  pcVerifyStaffPin(pin,sg){
+    const def=sg||this.pcStaffGateDef();
+    return !!(def.pin && String(pin)===String(def.pin));
+  },
+
   pcPinCheck(){
     const sg=this.pcStaffGateDef();
-    if(sg.pin && this.pcPinBuf===String(sg.pin)){ this.pcStaffLogin(sg); }
-    else{ showToast('密碼不正確，請重試','error'); this.pcPinBuf=''; this.pcPinRender(); }
+    const entered=this.pcPinBuf;
+    const done=(pass)=>{
+      if(pass){ this.pcStaffLogin(sg); }
+      else{ showToast('密碼不正確，請重試','error'); this.pcPinBuf=''; this.pcPinRender(); }
+    };
+    const r=this.pcVerifyStaffPin(entered,sg);
+    if(r && typeof r.then==='function') r.then(done,()=>done(false)); else done(r);
   },
 
   // ① 普通工作人員：密碼過咗 → 受限身份（role=staff，無 mock_admin，staff_pin=true）

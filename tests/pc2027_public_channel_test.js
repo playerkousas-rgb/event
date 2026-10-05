@@ -407,6 +407,8 @@ app.pcPinCheck();
 ok(toasts.length >= 1 && toasts[toasts.length - 1][1] === 'error', '⑨A 錯密碼 → 錯誤提示');
 ok(!app.currentUser, '⑨A 錯密碼 → 唔會登入');
 ok(app.pcPinBuf === '', '⑨A 錯密碼 → 輸入清空');
+ok(app.pcVerifyStaffPin('2027') === true && app.pcVerifyStaffPin('9999') === false, '⑨A 驗證收口喺 pcVerifyStaffPin（日後換後端只改呢一個）');
+ok(/verifyStaffPin/.test(read('js/44-public-channel.js')), '⑨A 已標明後端 action: verifyStaffPin 嘅換接位');
 '2027'.split('').forEach(d => app.pcPinPress(d));
 app.pcPinCheck();
 ok(!!app.currentUser, '⑨A 正確 PIN（2027）→ 入到');
@@ -418,6 +420,16 @@ ok(app.pcPublicLandingActive() === false, '⑨A 入咗之後唔再停喺公眾 l
 const pinNotice = app.pcPinStaffNoticeHTML();
 ok(pinNotice.includes('普通工作人員') && pinNotice.includes('pcUpgradeToCommittee'), '⑨A 儀表板提示條有「升級做籌委登入」掣');
 app.currentUser = null;
+
+// pcPinCheck 同時食 boolean 同 Promise（方便日後改 async 叫後端）
+app.currentUser = null;
+{
+  const realVerify = app.pcVerifyStaffPin;
+  app.pcVerifyStaffPin = () => Promise.resolve(true);
+  app.pcPinBuf = '0000';
+  app.pcPinCheck();
+  app.pcVerifyStaffPin = realVerify;
+}
 
 // ② 籌委：帳號＋密碼（沿用既有登入視窗）
 let loginOpened = false;

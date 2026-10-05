@@ -86,19 +86,43 @@ PIN 畫面下面亦會再列一次同一份清單，同埋有「← 返回揀身
 ## 5. 驗證
 
 ```bash
-node tests/pc2027_public_channel_test.js   # → 294 項全過（v15 時係 264）
+node tests/pc2027_public_channel_test.js   # → 296 項全過（v15 時係 264）
 node scripts/run-tests.js                  # → 14/35 失敗，同改動前一模一樣（無新增失敗）
 node scripts/verify-project.js             # → 乾淨
 ```
 
 ---
 
-## 6. 仲未做（上正式版要補）
+## 6. 「先用結果，再搵源頭」：日後換後端只改一個 function
 
-1. **真密碼要出後端。** 而家 `staff_gate.pin = '2027'` 係寫死喺前端 JSON，任何人開 DevTools 都睇到。
-   正式版應由 GAS 驗（`action:'verifyStaffPin'`），前端只收一個短效 token。
-2. **密碼要可以換。** 建議每次活動換一次，並喺籌委端加一個「重設活動密碼」掣。
-3. **普通工作人員嘅活動日工具。** 而家 `報到站／嘉賓接待站／源頭上傳中心／報名總覽`（示範）屬 `minLevel 20`，
-   即係**淨係籌委先入到**。如果想前線工作人員用活動密碼就開到報到站，
-   喺 `js/10-app-core.js` 的 `canSeeRoleCard()` staff_pin 分支加一個 id 白名單即可（例如 `['checkin_station']`）。
-4. **稽核紀錄。** 用活動密碼入嘅人冇名冇姓，如果要知邊個做過咩，報到站等寫入動作要另外要求填名或者改用帳戶。
+密碼驗證已經收晒喺 **`js/44-public-channel.js` 的 `pcVerifyStaffPin(pin, sg)`** 一個位（檔內有大字框註明）。
+而家佢係前端對 `data.staff_gate.pin`；將來整個 function 換成叫 GAS 就得，**呼叫方（`pcPinCheck`）唔使改**：
+
+```js
+async pcVerifyStaffPin(pin){
+  const r = await fetch(this.gasUrl, {
+    method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'verifyStaffPin', api_key:this.apiKey,
+                           event_id:this.currentEvent?.event_id, pin })
+  });
+  const j = await r.json();
+  return !!(j && j.success);
+}
+```
+
+`pcPinCheck()` 寫成**同時食 boolean 同 Promise**，所以由同步轉 async 唔會整爛任何嘢（已有測試覆蓋）。
+後端嗰邊要補嘅：GAS `doPost` 加一個 `verifyStaffPin` case、密碼存喺 Sheet（唔好放前端 JSON）、
+加「重設活動密碼」掣，建議每次活動換一次。
+
+> 現階段 `staff_gate.pin = '2027'` 仍然係前端寫死，開 DevTools 睇得到 —— 示範／測試無所謂，上正式版先換。
+
+---
+
+## 7. 已確認嘅分界（2026-10-05）
+
+- **公開資料 ＝ 所有工作人員都睇得到。** 唔需要再為個別工具開白名單。
+- **因人而異／個別組別嘅嘢 ＝ 一律喺部門中心。** 所以部門中心（連同工作卡片、管理工具、批核中心）
+  繼續只開俾籌委帳戶，而示範版嘅活動日工具（報到站／嘉賓接待站／源頭上傳中心／報名總覽）
+  維持 `minLevel 20` 不變。
+- **稽核留意**：用活動密碼入嘅人冇名冇姓。如果日後有任何「寫入」動作要落到普通工作人員身上，
+  嗰陣先至需要另外要求填名或者改用帳戶。
