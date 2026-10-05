@@ -150,10 +150,12 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
   </div>
 
   <div id="view-dashboard" class="hidden space-y-5">
+    <!-- 公眾頻道 landing（階段1・mock_demo）：一進APP就是公眾頻道；工作人員入口喺頁尾（隱藏） -->
+    <div id="public-landing" class="hidden"></div>
     <!-- 活動資訊（精簡版）：只留 日期/時間/地點/天氣 + 活動簡介 + 會議預告；「我的監察」已併入此橫幅。
          v11.2：最新消息與會議預告互換位置——最新消息升上全站頂部橫幅（可由執副以上／秘書處喺 APP 內修改），會議預告落到此橫幅內。
          活動名稱已顯示喺最頂 BAR 標題列，唔再於此重覆；想換活動＝按最頂 BAR 標題/Logo 回選擇活動頁 -->
-    <div class="hero-gradient text-white rounded-[20px] p-4 sm:p-5 shadow-2xl relative overflow-hidden">
+    <div id="dash-hero" class="hero-gradient text-white rounded-[20px] p-4 sm:p-5 shadow-2xl relative overflow-hidden">
       <div class="absolute right-0 bottom-0 opacity-10 translate-x-6 translate-y-6 text-7xl pointer-events-none"><i class="fa-solid fa-calendar-star"></i></div>
       <div class="relative z-10 space-y-2">
         <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[12px] text-white/90">
@@ -245,6 +247,34 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 <div id="modal-password" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-lock text-sky-600 mr-2"></i> 輸入活動密碼</h3><button onclick="app.closeModal('modal-password')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="app.submitEventPassword(event)" class="space-y-3"><input type="password" id="event-pwd-input" required placeholder="活動密碼 預設 1234" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-password')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">進入</button></div></form></div></div>
 
 <div id="modal-login" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl space-y-4 modal-content-anim"><div class="flex justify-between items-center"><h3 class="font-bold">身份登入</h3><button onclick="app.closeModal('modal-login')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500 leading-relaxed">你的身份 (角色＋組別) 由管理員批核，決定你能看到與修改哪些卡片。登入後身份會取代公開身份，公開資料仍然全部可看。<br>正式活動使用後端開設的帳戶登入；示範帳戶僅於「模擬示範版」活動（Mock）提供。</p><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed space-y-1"><div><i class="fa-solid fa-key mr-1 text-amber-600"></i><b>初始帳戶：</b>中文姓名（例如「陳子明」）｜<b>初始密碼：</b>1234</div><div><i class="fa-solid fa-circle-info mr-1 text-indigo-600"></i><b>如需要開戶請找所屬組別的總主任。</b></div></div><div id="mock-demo-login" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2"><div class="text-[11px] font-bold text-amber-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>模擬示範版 (本地沙盒)：一鍵切換身份</div><div class="flex flex-wrap gap-1.5"><button type="button" onclick="app.demoLogin('黃偉安')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-slate-800 text-white btn-mobile">🎓 顧問 (黃偉安)</button><button type="button" onclick="app.demoLogin('何家騏')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-slate-700 text-white btn-mobile">🎓 顧問 (何家騏)</button><button type="button" onclick="app.demoLogin('區子君')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-sky-600 text-white btn-mobile">👔 主席</button><button type="button" onclick="app.demoLogin('羅雅雯')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 text-white btn-mobile">🧭 執行副主席</button><button type="button" onclick="app.demoLogin('畢美儀')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-rose-600 text-white btn-mobile">✅ 協調組總主任（批核物資）</button><button type="button" onclick="app.demoLogin('龍正謙')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white btn-mobile">📋 主題節目組總主任</button><button type="button" onclick="app.demoLogin('曾令勤')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-teal-600 text-white btn-mobile">🧑‍🏫 主任</button><button type="button" onclick="app.demoLogin('陳子明')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-600 text-white btn-mobile">🧑‍💼 工作人員</button><button type="button" onclick="app.logout(); app.closeModal('modal-login')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-white border border-slate-300 text-slate-600 btn-mobile">🌍 切換為訪客（公開）</button></div><div class="text-[10px] text-amber-700/80">只於「模擬示範版」活動顯示；正式活動請用管理員開設的帳戶登入。<b>🔓 MOCK 示範登入已開放全部管理權限（本地沙盒，改動只影響你嘅瀏覽器）。</b></div></div><form onsubmit="app.submitLogin(event)" class="space-y-3"><input type="text" id="login-email-input" required placeholder="中文姓名（登入帳號）" autocapitalize="none" autocorrect="off" autocomplete="username" class="w-full px-4 py-3 border rounded-xl text-sm"><p class="text-[10px] text-slate-500 -mt-1">用中文姓名登入，例如「陳子明」。籌委帳戶帳號＝中文名。</p><input type="password" id="login-password-input" required placeholder="密碼" autocomplete="current-password" class="w-full px-4 py-3 border rounded-xl text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="app.closeModal('modal-login')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">登入</button></div></form><div class="pt-2 mt-1 border-t border-slate-100 text-[10.5px] text-slate-400 flex items-center justify-between gap-2 flex-wrap"><span>登入唔到？可能唔係密碼問題，係後端連線斷咗。</span><button type="button" onclick="app.openBackendDiagModal()" class="text-sky-600 font-bold hover:underline"><i class="fa-solid fa-stethoscope mr-1"></i>後端連線診斷</button></div></div></div>
+
+<!-- 階段1：工作人員入口（收埋喺公眾頻道頁尾）——工作人員 4 位密碼／籌委帳號密碼，一個入口分流 -->
+<div id="modal-staff-gate" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xs w-full p-6 shadow-2xl space-y-4 modal-content-anim">
+  <div class="flex justify-between items-center"><h3 class="font-bold text-[15px]"><i class="fa-solid fa-user-shield text-slate-500 mr-1"></i>工作人員入口</h3><button onclick="app.closeModal('modal-staff-gate')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="text-center">
+    <div class="text-[11px] font-bold text-slate-500 mb-2">工作人員・請輸入 4 位密碼</div>
+    <div id="pc-pin-dots" class="flex justify-center gap-3 mb-4"></div>
+    <div class="grid grid-cols-3 gap-2">
+      <button type="button" onclick="app.pcPinPress('1')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">1</button>
+      <button type="button" onclick="app.pcPinPress('2')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">2</button>
+      <button type="button" onclick="app.pcPinPress('3')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">3</button>
+      <button type="button" onclick="app.pcPinPress('4')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">4</button>
+      <button type="button" onclick="app.pcPinPress('5')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">5</button>
+      <button type="button" onclick="app.pcPinPress('6')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">6</button>
+      <button type="button" onclick="app.pcPinPress('7')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">7</button>
+      <button type="button" onclick="app.pcPinPress('8')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">8</button>
+      <button type="button" onclick="app.pcPinPress('9')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">9</button>
+      <button type="button" onclick="app.pcPinPress('clr')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-[12px] font-bold text-slate-400 btn-mobile">清除</button>
+      <button type="button" onclick="app.pcPinPress('0')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-lg font-bold text-slate-700 btn-mobile">0</button>
+      <button type="button" onclick="app.pcPinPress('del')" class="bg-slate-50 border border-slate-200 rounded-xl py-3 text-[15px] font-bold text-slate-500 btn-mobile">⌫</button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2.5">示範密碼：2027</div>
+  </div>
+  <div class="border-t border-slate-100 pt-3 space-y-1.5">
+    <button type="button" onclick="app.pcCommitteeLogin()" class="w-full border border-slate-200 rounded-xl py-2.5 text-[12.5px] font-bold text-slate-600 btn-mobile"><i class="fa-solid fa-id-card mr-1"></i>籌委登入（帳號密碼）</button>
+    <div class="text-[10px] text-slate-400 text-center leading-relaxed">籌委帳戶由管理員開設（帳號＝中文姓名）</div>
+  </div>
+</div></div>
 
 <div id="modal-diag" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl space-y-3 modal-content-anim max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center"><h3 class="font-bold"><i class="fa-solid fa-stethoscope text-sky-600 mr-2"></i>後端連線診斷</h3><button onclick="app.closeModal('modal-diag')" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button></div><p class="text-[11px] text-slate-500 leading-relaxed">一次過檢查：<b>前端設定 → /api/config → 後端 GET（部署係咪仲活著）→ 後端 POST（doPost 有冇執行到）→ API Key</b>。登入唔到（尤其最高層管理帳號）嗰陣請先跑一次，再撳「複製報告」貼俾技術人員。</p><div class="flex items-end gap-2 flex-wrap"><div class="flex-1 min-w-[200px]"><label class="text-[11px] font-bold text-slate-600">要體檢嘅帳號（填登入唔到嗰個，留空即只測連線）</label><input id="diag-account" placeholder="中文姓名／登入帳號" class="w-full px-3 py-2 border rounded-xl text-sm mt-1"></div><div class="w-40"><label class="text-[11px] font-bold text-slate-600">密碼（選填，只作比對用）</label><input id="diag-password" type="password" placeholder="要測嘅密碼" class="w-full px-3 py-2 border rounded-xl text-sm mt-1" autocomplete="off"></div><button type="button" onclick="app.runBackendDiag()" class="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-magnifying-glass mr-1"></i>查</button></div><div id="diag-content" class="space-y-2"></div><div class="flex justify-end gap-2 pt-1"><button type="button" onclick="app.copyDiagReport()" class="px-3 py-2 border rounded-xl text-xs font-bold"><i class="fa-solid fa-copy mr-1"></i>複製報告</button><button type="button" onclick="app.runBackendDiag()" class="px-3 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i>重新測試</button></div></div></div>
 <div id="modal-record" class="fixed inset-0 bg-slate-900/60 modal z-50 flex items-center justify-center hidden p-4"><div class="bg-white rounded-[20px] max-w-xl w-full shadow-2xl modal-content-anim max-h-[88vh] overflow-y-auto"><div class="sticky top-0 z-20 bg-white rounded-t-[20px] border-b flex justify-between items-center px-6 pt-4 pb-3"><h3 id="record-modal-title" class="font-bold">新增紀錄</h3><button onclick="app.closeModal('modal-record')" class="text-slate-400 p-2 text-lg"><i class="fa-solid fa-xmark"></i></button></div><form id="record-form" onsubmit="app.submitRecordForm(event)" class="space-y-4 px-6 pt-4 pb-4"><div id="record-form-fields" class="space-y-4"></div><div class="sticky bottom-0 z-20 bg-white rounded-b-[20px] border-t flex justify-end gap-2 pt-3 pb-2"><button type="button" onclick="app.closeModal('modal-record')" class="px-4 py-2 border rounded-xl text-sm">取消</button><button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm">提交</button></div></form></div></div>
@@ -511,32 +541,34 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
 
 <footer class="bg-white border-t py-6 text-center text-[11px] text-slate-500 px-4 pb-[70px]"><p>童軍活動管理系統 v8.6 · COPYRIGHT 2026</p></footer>
 
-<script src="js/00-config.js?v=20261003e"></script>
-<script src="js/10-app-core.js?v=20261003e"></script>
-<script src="js/11-news.js?v=20261003e"></script>
-<script src="js/20-accounts.js?v=20261003e"></script>
-<script src="js/21-activities.js?v=20261003e"></script>
-<script src="js/22-meals.js?v=20261003e"></script>
-<script src="js/23-sync.js?v=20261003e"></script>
-<script src="js/24-supplies.js?v=20261003e"></script>
-<script src="js/25-vehicle.js?v=20261003e"></script>
-<script src="js/26-monitor-apply.js?v=20261003e"></script>
-<script src="js/27-parking.js?v=20261003e"></script>
-<script src="js/28-oral-quotes.js?v=20261003e"></script>
-<script src="js/30-finance.js?v=20261003e"></script>
-<script src="js/31-staff.js?v=20261003e"></script>
-<script src="js/32-meetings.js?v=20261003e"></script>
-<script src="js/33-users.js?v=20261003e"></script>
-<script src="js/34-announcements.js?v=20261003e"></script>
-<script src="js/35-ceremony.js?v=20261003e"></script>
-<script src="js/36-crisis.js?v=20261003e"></script>
-<script src="js/37-coordinator.js?v=20261003e"></script>
-<script src="js/38-donations.js?v=20261003e"></script>
-<script src="js/39-lost-found.js?v=20261003e"></script>
-<script src="js/40-souvenir-stamps.js?v=20261003e"></script>
-<script src="js/41-roster-lists.js?v=20261003e"></script>
-<script src="js/42-import-2026.js?v=20261003e"></script>
-<script src="js/43-checkin-modal.js?v=20261003e"></script>
-<script src="js/90-bootstrap.js?v=20261003e"></script>
+<script src="js/00-config.js?v=20261004i"></script>
+<script src="js/10-app-core.js?v=20261004i"></script>
+<script src="js/11-news.js?v=20261004i"></script>
+<script src="js/20-accounts.js?v=20261004i"></script>
+<script src="js/21-activities.js?v=20261004i"></script>
+<script src="js/22-meals.js?v=20261004i"></script>
+<script src="js/23-sync.js?v=20261004i"></script>
+<script src="js/24-supplies.js?v=20261004i"></script>
+<script src="js/25-vehicle.js?v=20261004i"></script>
+<script src="js/26-monitor-apply.js?v=20261004i"></script>
+<script src="js/27-parking.js?v=20261004i"></script>
+<script src="js/28-oral-quotes.js?v=20261004i"></script>
+<script src="js/30-finance.js?v=20261004i"></script>
+<script src="js/31-staff.js?v=20261004i"></script>
+<script src="js/32-meetings.js?v=20261004i"></script>
+<script src="js/33-users.js?v=20261004i"></script>
+<script src="js/34-announcements.js?v=20261004i"></script>
+<script src="js/35-ceremony.js?v=20261004i"></script>
+<script src="js/36-crisis.js?v=20261004i"></script>
+<script src="js/37-coordinator.js?v=20261004i"></script>
+<script src="js/38-donations.js?v=20261004i"></script>
+<script src="js/39-lost-found.js?v=20261004i"></script>
+<script src="js/40-souvenir-stamps.js?v=20261004i"></script>
+<script src="js/41-roster-lists.js?v=20261004i"></script>
+<script src="js/42-import-2026.js?v=20261004i"></script>
+<script src="js/43-checkin-modal.js?v=20261004i"></script>
+<script src="js/vendor/qrcode.min.js?v=20261004i"></script>
+  <script src="js/44-public-channel.js?v=20261004i"></script>
+<script src="js/90-bootstrap.js?v=20261004i"></script>
 </body>
 </html>
