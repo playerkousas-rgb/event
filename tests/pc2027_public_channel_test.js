@@ -15,6 +15,7 @@
  *  ⑫ 場地示意圖：每類人嘅路線（虛線①②③）＋報到點（📍脈衝）標喺圖上（生產版＝每類一張標註地圖）
  *  ⑬ 七類通知書＝秘書正式信做源頭（資料夾制：原名原檔掉入、系統攞最新）＋每類入口有下載掣
  *  ⑭ 源頭上傳中心（工作人員前端）：7 通知書＋7 地圖上傳掣——撳掣揀檔案，直入後端指定位置
+ *  ⑮ 嘉賓接待站：102 位真實 2026 嘉賓——搜尋／分類／頒獎台・大會車・茶聚篩選／接待報到
  *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -250,6 +251,46 @@ ok(uc.includes('✓ 已上傳') && uc.includes('旅團通知書_final.pdf'), '�
 app.pcDemoPickAudience('troop'); html = render();
 ok(html.includes('最新版本：旅團通知書_final.pdf'), '⑭ 連動出口：公眾旅團入口即時顯示最新通知書版本');
 app.currentUser = null;
+
+/* ── ⑮ 嘉賓接待站：最麻煩嘅一群——102 位・逐位唔同安排 ── */
+const grCard = defs.find(d => d.id === 'guest_reception');
+ok(grCard && grCard.minLevel === 20 && grCard.requiresData === 'public_channel_2027', '⑮ 嘉賓接待站卡：工作人員等級＋requiresData 隔離');
+ok(!visible({ public_channel_2027: pc }).some(d => d.id === 'guest_reception') && !visible({}).some(d => d.id === 'guest_reception'), '⑮ 接待站唔會喺公眾／2026／2027 出現');
+const G = pc.guests_rows || [];
+ok(G.length === 102, '⑮ 真實 2026 嘉賓名單：102 位（跳號 15 已修正為連續數據）');
+ok(G.every(g => g.length === 11 && g[2] && g[3]), '⑮ 每位欄位齊全：[序號,組別,姓名,職銜,典禮①②,茶聚,車,角色,車牌,備注]');
+const gt = { c1: 0, c2: 0, tea: 0, bus: 0, present: 0, awardee: 0 };
+G.forEach(g => { gt.c1 += g[4]; gt.c2 += g[5]; gt.tea += g[6]; gt.bus += g[7]; if (g[8] === '頒獎') gt.present++; if (g[8] === 'AWARD') gt.awardee++; });
+ok(gt.c1 === 82 && gt.c2 === 96 && gt.tea === 94 && gt.bus === 4, '⑮ 合計實時計：典①82・典②96・茶聚94・大會車4（2026 檔案手寫 97/95 係錯嘅）');
+ok(gt.present === 6 && gt.awardee === 11, '⑮ 頒獎台 6 位・獲獎出席 11 位');
+app.currentUser = { user_id: '陳子明', role: 'staff', mock_admin: true };
+containers['module-content'] = mkEl();
+app.renderGuestReception();
+let gr = containers['module-content'].innerHTML;
+ok(gr.includes('區永樑先生') && gr.includes('102') && gr.includes('96/94'.replace('96/94','人手合計冇人更新')), '⑮ 渲染全名單＋2026 合計病徵說明');
+ok(gr.includes('搜尋姓名／職銜／車牌／備注'), '⑮ 搜尋框（姓名/職銜/車牌/備注）');
+ok((gr.match(/接待報到/g) || []).length === 102, '⑮ 102 個接待報到掣');
+app.pcGuestSearch('區永樑');
+gr = containers['module-content'].innerHTML;
+ok(gr.includes('區永樑先生') && !gr.includes('張佩珊'), '⑮ 搜尋：搵到區永樑、唔見張佩珊');
+ok(gr.includes('顯示 1/102'), '⑮ 顯示計數 1/102');
+app.pcGuestSearch(''); app.pcGuestSetCat('政府');
+gr = containers['module-content'].innerHTML;
+ok(gr.includes('張佩珊') && !gr.includes('吳家亮'), '⑮ 分組篩選：政府 4 位（唔見總會人）');
+app.pcGuestSetCat(''); app.pcGuestSetView('bus');
+gr = containers['module-content'].innerHTML;
+ok(['馮敬安', '鍾偉言', '鄭定國', '曾滿淦'].every(n => gr.includes(n)) && !gr.includes('區永樑'), '⑮ 大會車 4 位一鍵篩出');
+app.pcGuestSetView('present');
+gr = containers['module-content'].innerHTML;
+ok(gr.includes('頒獎台') && gr.includes('葉永成') && !gr.includes('張佩珊'), '⑮ 頒獎台 6 位一鍵篩出');
+app.pcGuestSetView(''); app.pcGuestToggle(1);
+gr = containers['module-content'].innerHTML;
+ok((app.pcGuestArr || {})[1] && toasts[toasts.length - 1][1] === 'success' && toasts[toasts.length - 1][0].includes('已到達'), '⑮ 接待報到：記錄時間＋成功提示');
+ok(gr.includes('✓ 已到達') && (gr.match(/接待報到/g) || []).length === 101, '⑮ 該位變✓、其餘 101 個掣照舊');
+app.pcGuestSetView('arrived');
+gr = containers['module-content'].innerHTML;
+ok(gr.includes('區永樑') && !gr.includes('張佩珊') && gr.includes('顯示 1/102'), '⑮ 已到達視圖：只見已報到嗰位');
+app.pcGuestToggle(1); app.pcGuestSetView(''); app.pcGuestSetCat(''); app.currentUser = null;
 
 /* ── ⑧ 公眾 landing：一進APP就是公眾頻道（mock_demo・未登入） ── */
 app.currentUser = null; app.pcLandAudience = '';

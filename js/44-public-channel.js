@@ -275,6 +275,111 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     else this.renderPublicChannelDemo();
   },
 
+  /* ═══════════ 嘉賓接待站（工作人員端）：102 位嘉賓・逐位唔同安排・接待報到 ═══════════
+     數據＝真實 2026 嘉賓名單（102 位）。2026 病徵：底部手寫合計 97/95，
+     實際逐格加＝96/94（人手合計冇人更新）→ 2027 合計實時計。 */
+  pcGuestF:{q:'',view:'',cat:''},
+  pcGuestArr:{},
+  renderGuestReception(){
+    const container=document.getElementById('module-content');
+    const d=this.pcDemoData();
+    if(!d){ container.innerHTML='<p class="text-sm text-slate-400">此活動未有嘉賓接待示範資料</p>'; return; }
+    const all=d.guests_rows||[];
+    const T={total:all.length,c1:0,c2:0,tea:0,bus:0,present:0,awardee:0};
+    all.forEach(g=>{T.c1+=g[4];T.c2+=g[5];T.tea+=g[6];T.bus+=g[7];if(g[8]==='頒獎')T.present++;if(g[8]==='AWARD')T.awardee++;});
+    const arr=this.pcGuestArr||{};
+    const arrived=Object.keys(arr).length;
+    const f=this.pcGuestF||{q:'',view:'',cat:''};
+    const cats=[...new Set(all.map(g=>g[1]))];
+    const catCount=c=>all.filter(g=>g[1]===c).length;
+    const match=g=>{
+      if(f.cat&&g[1]!==f.cat) return false;
+      if(f.view==='present'&&g[8]!=='頒獎') return false;
+      if(f.view==='awardee'&&g[8]!=='AWARD') return false;
+      if(f.view==='bus'&&g[7]!==1) return false;
+      if(f.view==='tea'&&g[6]!==1) return false;
+      if(f.view==='arrived'&&!arr[g[0]]) return false;
+      if(f.q){const q=f.q.toLowerCase();const hay=(g[2]+' '+g[3]+' '+g[9]+' '+g[10]).toLowerCase();if(!hay.includes(q)) return false;}
+      return true;
+    };
+    const shown=all.filter(match);
+    const chip=(on,label,cls)=>on?`<span class="text-[9px] font-bold rounded-full px-1.5 py-0.5 ${cls}">${label}</span>`:'';
+    container.innerHTML=`
+      <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
+        <b>🧪 階段 1 成品示範</b> — 真實 2026 嘉賓名單（102 位）。最麻煩在於<b>逐位唔同</b>：典禮①②／茶聚／大會車各自勾、頒獎定受獎、車牌、備注。2026 檔案底部手寫合計「97/95」，實際逐格加係 <b>96/94</b>——人手合計冇人更新；2027 合計實時計（下面個bar）。生產版：名單由嘉賓報名表／上傳中心餵入，接待組用手機版即場報到。
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3">
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">嘉賓總數</div><div class="text-lg font-black">${T.total}</div></div>
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">典禮①出席</div><div class="text-lg font-black">${T.c1}</div></div>
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">典禮②出席</div><div class="text-lg font-black">${T.c2}</div></div>
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">茶聚</div><div class="text-lg font-black">${T.tea}</div></div>
+        </div>
+        <div class="grid grid-cols-4 gap-2 text-center mt-2">
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">🎖頒獎台</div><div class="text-lg font-black">${T.present}</div></div>
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">🏆獲獎出席</div><div class="text-lg font-black">${T.awardee}</div></div>
+          <div class="bg-slate-50 rounded-xl py-2"><div class="text-[10px] text-slate-400">🚌大會車</div><div class="text-lg font-black">${T.bus}</div></div>
+          <div class="bg-emerald-50 rounded-xl py-2 border border-emerald-200"><div class="text-[10px] text-emerald-600">✓ 已到達</div><div class="text-lg font-black text-emerald-600">${arrived}</div></div>
+        </div>
+        <div class="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:${T.total?Math.round(arrived/T.total*100):0}%"></div></div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mb-3">
+        <input value="${escapeHtml(f.q)}" oninput="app.pcGuestSearch(this.value)" placeholder="🔍 搜尋姓名／職銜／車牌／備注…" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-[12.5px]">
+        <div class="flex flex-wrap gap-1.5 mt-2">
+          ${[['','全部'],['present','🎖頒獎台 '+T.present],['awardee','🏆獲獎 '+T.awardee],['bus','🚌大會車 '+T.bus],['tea','🍵茶聚 '+T.tea],['arrived','✓已到達 '+arrived]].map(([v,l])=>`<button onclick="app.pcGuestSetView('${v}')" class="text-[10.5px] font-bold rounded-full px-2.5 py-1 border ${f.view===v?'bg-slate-800 text-white border-slate-800':'bg-white text-slate-600 border-slate-200'}">${l}</button>`).join('')}
+        </div>
+        <div class="flex flex-wrap gap-1.5 mt-1.5">
+          ${[['',...['全部 '+T.total]],...cats.map(c=>[c,c+' '+catCount(c)])].map(([v,l])=>`<button onclick="app.pcGuestSetCat('${escapeHtml(v)}')" class="text-[10.5px] rounded-full px-2.5 py-1 border ${f.cat===v?'bg-amber-500 text-white border-amber-500':'bg-white text-slate-500 border-slate-200'}">${escapeHtml(l)}</button>`).join('')}
+        </div>
+      </div>
+      <div class="text-[10.5px] text-slate-400 mb-2">顯示 ${shown.length}/${T.total} 位</div>
+      ${cats.filter(c=>shown.some(g=>g[1]===c)).map(c=>{
+        const group=shown.filter(g=>g[1]===c);
+        return `
+        <div class="bg-white border border-slate-200 rounded-2xl p-3 mb-2">
+          <div class="text-[12px] font-black mb-2">${escapeHtml(c)} <span class="text-slate-400 font-bold">${group.length}</span></div>
+          ${group.map(g=>{
+            const a=arr[g[0]];
+            return `
+            <div class="flex items-center gap-2 py-2 border-t border-slate-100 first:border-t-0">
+              <span class="shrink-0 text-[10px] text-slate-400 font-mono w-7">#${String(g[0]).padStart(2,'0')}</span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <b class="text-[12.5px]">${escapeHtml(g[2])}</b>
+                  ${a?`<span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-full px-1.5 py-0.5">✓ ${escapeHtml(a)}</span>`:''}
+                </div>
+                <div class="text-[10.5px] text-slate-500 truncate">${escapeHtml(g[3])}</div>
+                <div class="flex flex-wrap gap-1 mt-1">
+                  ${chip(g[4],'典禮①','bg-indigo-50 text-indigo-700 border border-indigo-200')}
+                  ${chip(g[5],'典禮②','bg-indigo-50 text-indigo-700 border border-indigo-200')}
+                  ${chip(g[6],'🍵茶聚','bg-teal-50 text-teal-700 border border-teal-200')}
+                  ${chip(g[7],'🚌大會車','bg-sky-50 text-sky-700 border border-sky-200')}
+                  ${chip(g[8]==='頒獎','🎖頒獎台','bg-amber-100 text-amber-800 border border-amber-300')}
+                  ${chip(g[8]==='AWARD','🏆獲獎','bg-violet-50 text-violet-700 border border-violet-200')}
+                  ${g[9]?`<span class="text-[9px] font-bold font-mono bg-slate-100 text-slate-600 rounded-full px-1.5 py-0.5">🚗 ${escapeHtml(g[9])}</span>`:''}
+                  ${g[10]?`<span class="text-[9px] bg-rose-50 text-rose-600 border border-rose-200 rounded-full px-1.5 py-0.5" title="${escapeHtml(g[10])}">💬 ${escapeHtml(g[10].length>10?g[10].slice(0,10)+'…':g[10])}</span>`:''}
+                </div>
+              </div>
+              <button onclick="app.pcGuestToggle(${g[0]})" class="shrink-0 text-[10.5px] font-bold rounded-lg px-3 py-2 border ${a?'bg-emerald-500 text-white border-emerald-500':'bg-white text-emerald-700 border-emerald-300'}">${a?'✓ 已到達':'接待報到'}</button>
+            </div>`;
+          }).join('')}
+        </div>`;
+      }).join('')}
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-[11px] text-slate-500 leading-relaxed">
+        💡 嘉賓報到＝接待處職員按名單㩒掣（唔使 QR，按姓名報到即可）｜大會車名單（${T.bus} 位）＋頒獎台次序＋茶聚安排一鍵篩出｜嘉賓入口（?pub=guest）顯示大會車・座位・茶聚安排。
+      </div>`;
+  },
+  pcGuestSearch(q){ this.pcGuestF=this.pcGuestF||{q:'',view:'',cat:''}; this.pcGuestF.q=q; this.renderGuestReception(); },
+  pcGuestSetView(v){ this.pcGuestF=this.pcGuestF||{q:'',view:'',cat:''}; this.pcGuestF.view=v; this.renderGuestReception(); },
+  pcGuestSetCat(c){ this.pcGuestF=this.pcGuestF||{q:'',view:'',cat:''}; this.pcGuestF.cat=c; this.renderGuestReception(); },
+  pcGuestToggle(n){
+    const d=this.pcDemoData(); const g=(d&&d.guests_rows||[]).find(x=>x[0]===n); if(!g) return;
+    this.pcGuestArr=this.pcGuestArr||{};
+    if(this.pcGuestArr[n]){ delete this.pcGuestArr[n]; showToast('↩ 已取消 '+g[2]+' 嘅接待報到','info'); }
+    else{ const t=new Date(); this.pcGuestArr[n]=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); showToast('✓ '+g[2]+' 已到達（'+this.pcGuestArr[n]+'）——接待處報到','success'); }
+    this.renderGuestReception();
+  },
+
   /* ═══════════ 源頭上傳中心（工作人員前端）：7 通知書＋7 地圖上傳入口 ═══════════
      見到自己負責嘅掣 → 揀檔案 → 完成。系統自動存入後端 Drive 指定資料夾＋記錄上傳時間
      （攞最新 100% 可靠）；上傳者永遠唔使入 Drive、唔使搵 folder、唔使改名。 */
