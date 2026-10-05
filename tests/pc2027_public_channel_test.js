@@ -13,6 +13,7 @@
  *  ⑨ 工作人員閘口：頁尾隱藏入口 → 4位密碼（錯=拒絕、啱=登入工作人員）＋籌委帳密分流
  *  ⑩ 報到 QR（公眾端）：只有旅團（團體單位）有 token；個人／隊伍＝工作人員按名單點名
  *  ⑫ 場地示意圖：每類人嘅路線（虛線①②③）＋報到點（📍脈衝）標喺圖上（生產版＝每類一張標註地圖）
+ *  ⑬ 七類通知書：檔名鎖死（Drive 覆蓋即更新）＋每類入口有「下載你的通知書」掣
  *  ⑪ 報到站（工作人員端）：輸入／模擬掃描 token → 即見旅團人數餐盒 → 確認報到→紀錄
  */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -32,6 +33,8 @@ ok(pc.audiences.every(a => ['schedule', 'arrival'].every(x => a.sections.include
 ok(pc.audiences.filter(a => a.sections.includes('qr')).length === 1 && pc.audiences.find(a => a.sections.includes('qr')).id === 'troop', '① 報到 QR 只有旅團（團體單位）');
 ok(pc.audiences.filter(a => a.guide).every(a => a.guide.every(k => pc.guides[k])), '① 每類嘅須知都喺七類須知數據入面');
 ok(pc.banner_guest && pc.banner_guest.rows.length === 5, '① 嘉賓版基本盤（接待安排 5 行）');
+ok(pc.notices && Object.keys(pc.notices).length === 7 && Object.values(pc.notices).every(v => v.startsWith('02_通知書/') && v.endsWith('.pdf')), '① 七類通知書：檔名鎖死（02_通知書/0X_…pdf）');
+ok(new Set(Object.values(pc.notices)).size === 7, '① 七份通知書檔名全部唔同');
 ok(pc.section_labels && Object.keys(pc.section_labels).length === 11, '① 分節標籤 11 個');
 ok(Object.keys(pc.schedules).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.schedules[id].items || []).length >= 6), '① 每類有專屬時間表（7 份・各至少 6 項）');
 ok(Object.keys(pc.arrivals).length === 7 && ['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => (pc.arrivals[id].checkin || []).length === 2), '① 每類有專屬報到地點＋時間（7 份）');
@@ -214,6 +217,14 @@ ok(toasts.length > toastsBefore && toasts[toasts.length - 1][1] === 'error', '�
 app.pcCheckinSimulate();
 ok(app.pcCheckinFound && !(app.pcCheckinArrivals || []).some(a => a.token === app.pcCheckinFound.token), '⑪ 模擬掃描 → 抽中一個未報到單位');
 app.currentUser = null;
+
+/* ── ⑬ 七類通知書：每類入口有下載掣（出口示範） ── */
+['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].forEach(id => {
+  app.pcDemoPickAudience(id); const h = render();
+  ok(h.includes('下載你的通知書（PDF）') && h.includes(pc.notices[id]), '⑬ ' + id + '：通知書下載掣＋指向鎖死檔名 ' + pc.notices[id]);
+});
+app.pcDemoPickAudience('guest'); html = render();
+ok(html.includes('覆蓋新版即全站自動更新'), '⑬ 講明生產機制：覆蓋即更新（唔使改檔名）');
 
 /* ── ⑧ 公眾 landing：一進APP就是公眾頻道（mock_demo・未登入） ── */
 app.currentUser = null; app.pcLandAudience = '';
