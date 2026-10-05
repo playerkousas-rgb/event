@@ -158,13 +158,25 @@ const PC_CONTENT_SCHEMA = [
     fields:[{k:'',label:'共同須知',type:'pairs',cols:['項目','內容']}]}
 ];
 
+/* ══════════════════════════════════════════════════════════════════════════
+   v22【全鎖定】
+   文字內容一律唔開放畀組改。原因（用戶定嘅規矩）：
+     ・呢啲表單係今年 Google Form 內置化嘅成果，明年直接沿用，唔會大改。
+     ・「字眼上嘅改」＝ 換成張表單／EXCEL／WORD／PDF（去「🔗 連結總表」做）。
+     ・細字微調由技術方統一改——格式跟規矩，唔係各組各自寫。
+   所以下面個表變成【唯讀合約視圖】：睇到邊格屬邊組、幾時由邊份文件嚟，但改唔到。
+   將來要局部開放，淨係要喺 PC_CONTENT_UNLOCKED 加返個 key。
+   ══════════════════════════════════════════════════════════════════════════ */
+const PC_CONTENT_LOCKED = true;
+const PC_CONTENT_UNLOCKED = [];     // 例外名單：將來想開返邊個區塊就加喺呢度
+
 /* 結構類 key：唔開放編輯，由我哋定 */
 const PC_LOCKED_KEYS = ['audiences','section_labels','guides','notices','schedules','arrivals',
   'manual','guests_rows','booths','venue_map','apply_forms','intake_forms','staff_gate','upload_slots','checkin_demo'];
 
 Object.assign(ScoutEventApp.prototype,{
 
-  PC_CONTENT_SCHEMA, PC_LOCKED_KEYS,
+  PC_CONTENT_SCHEMA, PC_LOCKED_KEYS, PC_CONTENT_LOCKED, PC_CONTENT_UNLOCKED,
 
   /* ══════ 存取 ══════ */
   pcEditStoreKey(){ return 'event_pc_content_v21_'+((this.currentEvent&&this.currentEvent.event_id)||'mock_demo'); },
@@ -195,6 +207,8 @@ Object.assign(ScoutEventApp.prototype,{
   /* ══════ 權限：本組嘅嘢本組改；主席／行政組／admin 全開 ══════ */
   pcEditCanEdit(sectionKey){
     const def=this.PC_CONTENT_SCHEMA.find(s=>s.key===sectionKey); if(!def) return false;
+    // v22 全鎖定：除非喺例外名單，否則邊個都改唔到（連管理員都唔得——規矩就係規矩）
+    if(this.PC_CONTENT_LOCKED && this.PC_CONTENT_UNLOCKED.indexOf(sectionKey)<0) return false;
     const u=this.currentUser||{};
     if(this.isAdmin&&this.isAdmin()) return true;
     if(this.isExecViceOrChair&&this.isExecViceOrChair()) return true;
@@ -236,11 +250,21 @@ Object.assign(ScoutEventApp.prototype,{
     const mine=this.pcEditSectionsForGroup();
     return `
       <div class="space-y-3">
+        ${this.PC_CONTENT_LOCKED?`
+        <div class="bg-slate-100 border border-slate-300 rounded-xl p-3 text-[11px] leading-relaxed text-slate-700">
+          <b><i class="fa-solid fa-lock mr-1"></i>格式已鎖定——呢頁只可以睇。</b>
+          下面係你組負責嗰幾格嘅內容同埋佢哋喺公眾頁邊個位出。呢啲嘢係今年表單內置化嘅成果，明年直接沿用。
+          <ul class="list-disc pl-4 mt-1.5 space-y-0.5 text-slate-600">
+            <li><b>想換成張表單／EXCEL／WORD／PDF／地圖</b> → 去「🔗 連結總表」自己換，改一次全站同步。</li>
+            <li><b>想改入面啲細字</b> → 搵技術組統一改。格式跟規矩，唔係各組各自寫。</li>
+            <li><b>2027 想加新項目</b> → 到時再傾，而家先用返 2026 版行通條線。</li>
+          </ul>
+        </div>`:`
         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[11px] leading-relaxed text-indigo-900">
           <b><i class="fa-solid fa-pen-to-square mr-1"></i>公眾頻道內容：</b>呢度係你組負責嗰幾格嘅文字。
-          改完撳「儲存」即刻生效，公眾頁同手冊會自動用新內容，<b>唔使搵人改程式</b>。
+          改完撳「儲存」即刻生效，公眾頁同手冊會自動用新內容。
           <br><span class="text-indigo-700">分眾入口、頁簽組合呢啲<b>結構</b>唔喺呢度改——框鎖死咗，你點改內容都唔會整爛個版。</span>
-        </div>
+        </div>`}
         ${mine.length?'':'<div class="bg-white border-2 border-dashed rounded-xl p-8 text-center text-[12px] text-slate-400">你組暫時冇負責公眾頻道嘅內容</div>'}
         <div id="pc-edit-body">${this.pcEditBodyHTML()}</div>
       </div>`;
@@ -258,7 +282,7 @@ Object.assign(ScoutEventApp.prototype,{
             <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0"><i class="${sec.icon}"></i></span>
             <span class="min-w-0 flex-1">
               <span class="block font-bold text-[13px] text-slate-800">${escapeHtml(sec.label)}</span>
-              <span class="block text-[10.5px] text-slate-400">負責：${escapeHtml(sec.owner)}・${sec.fields.length} 格${meta?`・上次改：${escapeHtml(meta.at)} ${escapeHtml(meta.by)}`:'・未改過'}</span>
+              <span class="block text-[10.5px] text-slate-400">負責：${escapeHtml(sec.owner)}・${sec.fields.length} 格${meta?`・上次改：${escapeHtml(meta.at)} ${escapeHtml(meta.by)}`:(this.PC_CONTENT_LOCKED?'・<i class="fa-solid fa-lock"></i> 已鎖定':'・未改過')}</span>
             </span>
             <i class="fa-solid fa-chevron-${open?'up':'down'} text-slate-300 text-[11px]"></i>
           </button>
@@ -268,7 +292,9 @@ Object.assign(ScoutEventApp.prototype,{
             ${can?`<div class="flex gap-2 pt-1">
               <button onclick="app.pcEditSave('${sec.key}')" class="flex-1 bg-indigo-600 text-white text-[12.5px] font-bold rounded-xl py-2.5"><i class="fa-solid fa-check mr-1"></i>儲存</button>
               <button onclick="app.pcEditReset('${sec.key}')" class="bg-white border text-slate-500 text-[12px] font-bold rounded-xl px-3">還原預設</button>
-            </div>`:'<div class="text-[11px] text-slate-400 text-center py-2">唔係你組負責，只可以睇</div>'}
+            </div>`:(this.PC_CONTENT_LOCKED
+              ?'<div class="text-[10.5px] text-slate-400 text-center py-2"><i class="fa-solid fa-lock mr-1"></i>格式鎖定中。換文件去「🔗 連結總表」，改細字搵技術組。</div>'
+              :'<div class="text-[11px] text-slate-400 text-center py-2">唔係你組負責，只可以睇</div>')}
           </div>`:''}
         </div>`;
     }).join('');

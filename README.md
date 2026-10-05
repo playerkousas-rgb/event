@@ -52,8 +52,9 @@
 14. **模擬示範版改用 2026 真實資料（v17）**：示範版底層資料由「虛構示範資料」換成 **2026 港島童軍繽紛日真實資料**——籌委帳戶 **61**（真實 54＋示範 7）、組織架構 **54 崗位（逐人一行）**、聯絡表 **80**（真電話去空格）、活動日工作人員編更 **279 人次**、參加旅團 **31 旅**、旅團點名 **31**、攤位 **33**（A–F 區）、文件 **79 份**、特別通告 **3 份全文**、公告 **6**（由通告／危機手冊／派飯／泊車生成）、旅團須知 **12**（特別通告第 12/26 號逐項）、典禮 **Rundown V5 13 行＋司儀稿 ×3＋檢閱路線**、優異旅團 **188 團次**、嘉賓 **102 位**＋嘉賓車、膳食 **290 人／餐單 9／派飯 14 組 30 攤位**、派章 **290 人**。**`data/isd_2026.json` 一個字都冇改**（正式凍結檔，意外報告必須保持 0）。工具可重複執行：`node tools/fill_mock_demo_from_2026.js`（三類策略 REPLACE／MERGE+NORMALIZE／KEEP）→ `node tools/build_pc2027_demo.js` → `node tools/check_mock_demo_coverage.js`（完成度報告，`--md` 出表）。完成度：**公開資料卡 13/15 齊全、2 張不適用（口頭報價／童心捐贈＝活動期間先逐單登記）；參加者相關資料 9 組全部 100%**。順手修好 `getAnnouncementsData`／`getUnitGuideData`／`getCeremonyData`／`getLocalUsers` 四個「讀唔到活動檔內置資料」嘅接線（優異旅團 188 團次之前一直顯示唔到）。回歸測試：`tests/mock_demo_2026_fill_test.js`（125 項，見 [`docs/UPDATE_V17_FILL_FROM_2026.md`](docs/UPDATE_V17_FILL_FROM_2026.md)）。
 15. **童心捐贈「一次入數」QR 方案（v19）**：解決「又收紙又收 online、完場兩邊對數」嘅問題——**公眾喺自己瀏覽器填名單 → 自己部機產生 QR（零後端、零上傳）→ 當日攤位同事掃 QR → 核對實物後撳「確認收貨並入數」**，呢一撳就係**全場唯一一次寫入**，紙本／口頭都係同事喺同一個畫面入返，所以帳目永遠得一本。公眾端（六類參加者入口 **❤ 童心捐贈** 頁簽）：收集時地 → 4 步流程 → 揀計劃（🍚 食品→**循道衛理觀塘社會服務處**／📦 物品→**國際十字路會**）→ 完整 ✓ 收／✕ 唔收清單＋規格（食品 ≥75 克、有獨立標籤、最佳食用日期 2028-06-01 或之後；文具 10 件 = 1 單位）→ 逐位填姓名件數、即時計位數／件數／應派章 → **產生 QR＋6 位校驗碼**。QR 載荷 3 位名單只 **96 bytes**、30 位 **598 bytes**，校驗碼防改數（改件數或旅團即拒收）、防重覆（`qr_code` 擋第二次掃）、唔相干 QR 直接當唔識。工作人員端「童心捐贈大行動」新增第一個分頁 **📷 掃碼收貨**：原生 `BarcodeDetector` 行先、後備 lazy-load 本地 **jsQR**（`js/vendor/jsqr.min.js`），核對畫面件數可就住實物改，紀錄帶 `qr_code`／`source:'攤位掃碼'`／`received_by`。公眾頻道源碼**完全冇** `getDonationsData`／`saveDonationsData`／`fetch`，草稿用獨立 key `pc_donate_draft_*`——全部由測試鎖死（新檔 `tests/donate_qr_test.js` 40 項；`tests/pc2027_public_channel_test.js` 296 → **339 項**）。報到 QR 舊規矩不變（照舊唔喺公開頁出，電郵發俾負責領袖）。詳見 [`docs/UPDATE_V19_DONATE_QR.md`](docs/UPDATE_V19_DONATE_QR.md)。
 16. **工作人員 × 參加者對接（v20）**：用 JSDOM 掃出四個實際缺口再逐個修，重點係**把已有嘅 2026 真實資料接返去用家見到嘅位**。**① 點名**：執行手冊四張名單共用引擎已通——優異旅團 **188** 團次（會操及典禮組）、參加旅團 **31** 旅（行政組）、代訂餐盒 **31** 旅（協調組）、支部／領袖獎勵版位已備；防錯規則 TICK 只加不減、撤銷要剔「修正」並留痕。**② 派嘉賓章 10 → 102**：`getCeremonyData()` 示範版本來回硬編 10 位，改為有 `guest_roster.guests`（2026 正式 102 位）就用正式名單，一改即通派嘉賓章／嘉賓接待站／典禮嘉賓名單三處；點名政策照跟 2026「唔准換名代入，只可加獨立紀錄」。**③ 司儀稿入執行手冊**：新增 🎤 分頁，3 份全文 **16,571 字**內置（場內冇網絡都讀到），可**搵字＋高亮**（顯示共命中 N 段，綵排改稿用）、**字級 12–26px**（台上睇手機）、全部展開／收起、**單份列印**、開原檔 PDF。**④ 成年獎勵及 RUNDOWN** 由空白（65 字）修到 1,035 字——兩個函數喺示範版早退 `return ''`，但 v17 已填好 Rundown Part1 V5 **13 行**同成年獎勵 **6 項**。**⑤ 協調組「點車牌」（新 `js/46-plate-roll.js`）**：因為警察學院閘門由**警方**把守、放唔放行由警察決定，所以呢頁唔係批核系統（批核照舊喺「🚗 車輛批核」），只做兩件事——事前把車牌砌成一份**交警校名單**（可印可匯出，底部印免責聲明）、當日**閘口查冊**（打尾 4 位就搵到）。車牌三個來源自動歸邊：嘉賓 `car_plate`（**23**）、已批核 `vehicle_passes`、自行加嘅供應商；車牌會正規化先比對，同一車牌兩處出現自動合併標示，另有撳「到咗」紀錄時間同經手人、「標示已交」並提醒之後新增要補交。測試 `tests/v20_staff_participant_wiring_test.js` **46 項**，詳見 [`docs/UPDATE_V20_WIRING.md`](docs/UPDATE_V20_WIRING.md)。
-17. **公眾頻道內容各組自助編輯（v21）**：v20 之前公眾頻道 2027 嘅 **32 個頂層區塊 100% 由 `tools/build_pc2027_demo.js` 產生**——籌委想改一個字都要搵人郁程式，呢個就係「冇框 → 人隨意改 → 對唔上 → 自動更新失效 → 最後人手夾」嘅起點。v21 劃一條界：**內容開放，結構鎖死**。**內容**（文字、時間、地點、清單）由負責組喺 APP「部門中心 → 🌐 公眾頻道內容」自己改，即改即生效；**結構**（分眾入口、頁簽組合、欄位名、名單之間點連）寫死喺 `PC_LOCKED_KEYS`（15 個 key），**就算 override 入面有都唔會生效**，所以組點改內容都整唔爛個版。表單唔係人手寫，係由 `js/47-pc-content-editor.js` 嘅 **`PC_CONTENT_SCHEMA` 自動生成**——同一份 schema 做三件事：生成表單、寫死擁有權（`owner` 決定邊組見到邊格）、**就係 2027 欄位合約本身**，所以表單同合約永遠唔會脫節。支援 5 種欄位型別（單行／多行／一行一項清單／`項目 | 內容` 兩欄表／結構化項目清單）。**14 個區塊按組分好**：行政組 4（活動基本資訊・求助・報到 QR 規則・共同須知）、協調組 3（全日程序・交通入場・午膳）、會操及典禮組 3（儀式流程・座位表・午膳儀式）、嘉賓接待組 2、服務及發展組 1（童心捐贈）、秘書處 1；冇負責內容嘅組連個頁籤都唔會出現。改動存 overrides（按 `event_id`），`pcDemoData()` 開頁疊一次就通曬公眾頁七類入口／執行手冊，**完全唔寫 `data/mock_demo.json`**（隨時「還原預設」），每格記低改嘅人同時間——**原地改，冇 R2 R3 final 呢啲版本地獄**。另附 `tools/dump_field_contract.js` 由 schema **機械抽取**欄位合約（Markdown／CSV／JSON／`--check` 核對死路徑，現時 ✓ 66 條路徑零死路徑），產生 [`docs/2027_PC_FIELD_CONTRACT.md`](docs/2027_PC_FIELD_CONTRACT.md)。測試 `tests/v21_pc_content_editor_test.js` **147 項**，詳見 [`docs/UPDATE_V21_PC_CONTENT_EDITOR.md`](docs/UPDATE_V21_PC_CONTENT_EDITOR.md)。
-18. **不改舊有資料的安全更新架構 (Non-Destructive Schema Update)**：
+17. **公眾頻道內容 schema 與擁有權（v21，⚠️ 已於 v22 全鎖定為唯讀）**：v20 之前公眾頻道 2027 嘅 **32 個頂層區塊 100% 由 `tools/build_pc2027_demo.js` 產生**——籌委想改一個字都要搵人郁程式，呢個就係「冇框 → 人隨意改 → 對唔上 → 自動更新失效 → 最後人手夾」嘅起點。v21 劃一條界：**內容開放，結構鎖死**。**內容**（文字、時間、地點、清單）由負責組喺 APP「部門中心 → 🌐 公眾頻道內容」自己改，即改即生效；**結構**（分眾入口、頁簽組合、欄位名、名單之間點連）寫死喺 `PC_LOCKED_KEYS`（15 個 key），**就算 override 入面有都唔會生效**，所以組點改內容都整唔爛個版。表單唔係人手寫，係由 `js/47-pc-content-editor.js` 嘅 **`PC_CONTENT_SCHEMA` 自動生成**——同一份 schema 做三件事：生成表單、寫死擁有權（`owner` 決定邊組見到邊格）、**就係 2027 欄位合約本身**，所以表單同合約永遠唔會脫節。支援 5 種欄位型別（單行／多行／一行一項清單／`項目 | 內容` 兩欄表／結構化項目清單）。**14 個區塊按組分好**：行政組 4（活動基本資訊・求助・報到 QR 規則・共同須知）、協調組 3（全日程序・交通入場・午膳）、會操及典禮組 3（儀式流程・座位表・午膳儀式）、嘉賓接待組 2、服務及發展組 1（童心捐贈）、秘書處 1；冇負責內容嘅組連個頁籤都唔會出現。改動存 overrides（按 `event_id`），`pcDemoData()` 開頁疊一次就通曬公眾頁七類入口／執行手冊，**完全唔寫 `data/mock_demo.json`**（隨時「還原預設」），每格記低改嘅人同時間——**原地改，冇 R2 R3 final 呢啲版本地獄**。另附 `tools/dump_field_contract.js` 由 schema **機械抽取**欄位合約（Markdown／CSV／JSON／`--check` 核對死路徑，現時 ✓ 66 條路徑零死路徑），產生 [`docs/2027_PC_FIELD_CONTRACT.md`](docs/2027_PC_FIELD_CONTRACT.md)。測試 `tests/v21_pc_content_editor_test.js` **147 項**，詳見 [`docs/UPDATE_V21_PC_CONTENT_EDITOR.md`](docs/UPDATE_V21_PC_CONTENT_EDITOR.md)。
+18. **連結總表：改一次全站同步＋文字格式全鎖定（v22）**：實測 `data/mock_demo.json` 有 **74 條獨立連結散落喺 121 個位置**——會議 Drive 資料夾出現 **13 處**、特別通告第 12/26 號 PDF 出現 **13 處**（通告庫／公告／旅團指南／各支部須知…），換一次檔要手改十幾處，必然漏，然後就「對唔上」。v22 建立**連結登記處**：一條連結＝一個 id ＋ 一個主人 ＋ 一個 URL ＋ `targets[]`（用喺邊幾個位）；後台改一次 URL，`loadEventData()` → `applyLinkRegistry()` 自動寫返入全部 targets，**通告庫／公告／旅團指南／會議／公眾頁一齊變**。登記處由 `tools/build_link_registry.js` **機械掃**出嚟唔靠人填：類型由副檔名／網域推（📁資料夾 📊EXCEL 📝WORD 📋表單 🗺️地圖 📄PDF 🌐網頁），負責組三層推導（資料本身 `uploaded_by` → `category` 對照 → 路徑規則），結果分佈合理（秘書處 31・行政組 13・主題節目組 11・嘉賓接待組 6・會操及典禮組 6・協調組 5・服務及發展組 1・品牌推廣組 1）；夾喺內文中間嘅連結唔自動換但**着燈**叫人手跟。介面喺部門中心「🔗 連結總表」：一般組只見本組、秘書處／行政組／管理層見全部，每條顯示用喺 N 個位（可展開睇晒），改完撳「更新並同步 N 個位」即刻生效並留痕；**着燈**包括 `冇連結`／`仲係 2026 版`（現時 48 條）／`有 N 處夾喺內文`——呢個計分板就係明年嘅工作清單。同時**文字格式全鎖定**（`PC_CONTENT_LOCKED=true`）：v21 嗰個編輯器變成唯讀合約視圖，睇到 14 區塊 66 欄位分屬邊組但改唔到，**連管理員都改唔到**，要改成張文件去連結總表、要改細字搵技術組。測試 `tests/v22_link_registry_test.js` **561 項**（121 個 target 零死路徑、同一 URL 唔分裂、一個位置淨係一條連結話事、改一條同步 13 處而其他完全唔郁），詳見 [`docs/UPDATE_V22_LINK_REGISTRY.md`](docs/UPDATE_V22_LINK_REGISTRY.md)。
+19. **不改舊有資料的安全更新架構 (Non-Destructive Schema Update)**：
    - 後端 GAS 採用智慧結構檢驗 (`ensureSheet`)：當你新增功能或測試時，只會自動補齊缺失的欄位，**絕對不會覆蓋或刪除現有的工作表與舊資料**。
 
 ---
@@ -65,23 +66,23 @@
 前端結構（2026-08-27 起）：`index.html` 只剩 HTML 骨架（約 84KB），全部 JS 按功能拆在 `js/` 目錄，**必須按檔名順序載入**（`00-config.js` → `10-app-core.js`（class 主體）→ `20-38` 各功能模組（以 `Object.assign(ScoutEventApp.prototype,{...})` 掛上方法）→ `90-bootstrap.js`（啟動））。**絕對不要再用一次性 Node 腳本＋正則去批量改寫**——這種做法曾兩次弄壞網站（正則截斷方法、整段吞掉仍在用的方法），導致整頁只顯示靜態首頁。
 
 正確做法：
-2. **慢慢手改**：小步修改，改邊個 `js/*.js` 就只改嗰個檔；新增方法放在對應模組的 `Object.assign` 區塊內。
-3. **每次修改後必跑檢查**：
+3. **慢慢手改**：小步修改，改邊個 `js/*.js` 就只改嗰個檔；新增方法放在對應模組的 `Object.assign` 區塊內。
+4. **每次修改後必跑檢查**：
    ```bash
    # 1) 每個檔案語法檢查
    for f in js/*.js; do node --check "$f" || echo "FAIL: $f"; done
    # 2) 跑全部測試
    for t in tests/*.js; do node "$t"; done
    ```
-4. **檢查「呼叫 ↔ 定義」**：改動若刪走方法，先全 `app.方法名(` 有沒有殘留呼叫。
-5. 歷史上的一次性補丁腳本（`rewrite_parking.js`、`fix_*.js`、`test*.js` 等）已於 2026-08-27 刪除，只留在 git 歷史內，**不要重跑**。
-6. 拆檔經「重組還原恆等式」驗證（所有方法依序串接與原本逐 byte 相同），方法內容零改寫；`js/` 檔案之間的頂層 `const`／`class` 不可重名（瀏覽器共享全域詞法環境，重名即 SyntaxError）。
+5. **檢查「呼叫 ↔ 定義」**：改動若刪走方法，先全 `app.方法名(` 有沒有殘留呼叫。
+6. 歷史上的一次性補丁腳本（`rewrite_parking.js`、`fix_*.js`、`test*.js` 等）已於 2026-08-27 刪除，只留在 git 歷史內，**不要重跑**。
+7. 拆檔經「重組還原恆等式」驗證（所有方法依序串接與原本逐 byte 相同），方法內容零改寫；`js/` 檔案之間的頂層 `const`／`class` 不可重名（瀏覽器共享全域詞法環境，重名即 SyntaxError）。
 
 ### 🤖 AI Agent 協作規則（本倉庫主要由 AI Agent 修改）
 
 **開工前：**
-2. 先讀本節＋跑一次 `for t in tests/*.js; do node "$t"; done` 確認基線全綠（4 個測試都要 PASS）。
-3. 用下面檔案地圖定位目標檔；搵唔到就 `grep -rn "方法名或關鍵字" js/`，或搜 `app.方法名(` 的呼叫處反查定義。
+3. 先讀本節＋跑一次 `for t in tests/*.js; do node "$t"; done` 確認基線全綠（4 個測試都要 PASS）。
+4. 用下面檔案地圖定位目標檔；搵唔到就 `grep -rn "方法名或關鍵字" js/`，或搜 `app.方法名(` 的呼叫處反查定義。
 
 **改動時：**
 - 只改與任務相關的 `js/*.js`；新增方法放在該模組 `Object.assign(ScoutEventApp.prototype,{ ... })` 區塊內，**沿用 2 空格縮排＋既有命名風格**。
@@ -127,12 +128,12 @@ for t in tests/*.js; do node "$t"; done   # 測試全綠
 | `js/90-bootstrap.js` | 啟動（`const app=new ScoutEventApp()`＋Escape 鍵處理） |
 
 ### 第一步：設置 Google Sheet 與 Apps Script 後端
-2. 在 Google Drive 建立一個新的 **Google 試算表**（例如命名為「活動行政管理總庫」）。
-3. 點擊頂部選單的 **擴充功能 (Extensions)** ➔ **Apps Script**。
-4. 清除編輯器中的預設程式碼，並將本項目中的 `apps-script/Code.gs` 完整貼上。
-5. 點擊上方的 **儲存 (Save)** 按鈕。
-6. 執行一次 `initializeSheets` 函數（點擊上方「執行」），授權權限後，它會建立／補齊所有系統工作表，包括 `Approval_Routing`、`Meal_Orders`、`Supply_Requests`、`Vehicle_Passes`、`Parking_Requests` 及 `Finance_Expenses`；此步驟不會重建已刪除的測試申請。
-7. **部署為網頁應用程式 (Deploy as Web App)**：
+3. 在 Google Drive 建立一個新的 **Google 試算表**（例如命名為「活動行政管理總庫」）。
+4. 點擊頂部選單的 **擴充功能 (Extensions)** ➔ **Apps Script**。
+5. 清除編輯器中的預設程式碼，並將本項目中的 `apps-script/Code.gs` 完整貼上。
+6. 點擊上方的 **儲存 (Save)** 按鈕。
+7. 執行一次 `initializeSheets` 函數（點擊上方「執行」），授權權限後，它會建立／補齊所有系統工作表，包括 `Approval_Routing`、`Meal_Orders`、`Supply_Requests`、`Vehicle_Passes`、`Parking_Requests` 及 `Finance_Expenses`；此步驟不會重建已刪除的測試申請。
+8. **部署為網頁應用程式 (Deploy as Web App)**：
    - 點擊右上角 **部署 (Deploy)** ➔ **新增部署 (New deployment)**。
    - 類型選擇 **網頁應用程式 (Web app)**。
    - 說明填寫 `v1.0`。
@@ -141,8 +142,8 @@ for t in tests/*.js; do node "$t"; done   # 測試全綠
    - 點擊部署，複製產生的 **網頁應用程式 URL** (`https://script.google.com/macros/s/.../exec`)。
 
 ### 第二步：部署前端到 GitHub 與 Vercel
-2. 將前端文件（`index.html`）上傳至你的 GitHub 倉庫。
-3. 登入 [Vercel](https://vercel.com)，匯入該 GitHub 倉庫。
-4. 部署完成後，開啟網頁。
-5. 點擊右上角 **「⚙️ 系統設定 / GAS URL」**，將剛才複製的 **Google Apps Script URL** 貼上並儲存。
-6. 即完成前後端完整聯動！你可以隨時測試新增會議、提交膳食申請、審批物資等功能，試算表數據實時同步。
+3. 將前端文件（`index.html`）上傳至你的 GitHub 倉庫。
+4. 登入 [Vercel](https://vercel.com)，匯入該 GitHub 倉庫。
+5. 部署完成後，開啟網頁。
+6. 點擊右上角 **「⚙️ 系統設定 / GAS URL」**，將剛才複製的 **Google Apps Script URL** 貼上並儲存。
+7. 即完成前後端完整聯動！你可以隨時測試新增會議、提交膳食申請、審批物資等功能，試算表數據實時同步。

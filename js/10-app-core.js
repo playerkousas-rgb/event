@@ -1390,7 +1390,9 @@ Object.assign(ScoutEventApp.prototype,{
       {k:'group_quotes',label:'📝 口頭報價'},
       {k:'group_finance_guide',label:'📖 財務指引'},
       // v21：公眾頻道內容——邊格屬邊組寫死喺 PC_CONTENT_SCHEMA，本組有份先出呢個頁籤
-      ...((this.pcEditSectionsForGroup&&this.pcEditSectionsForGroup(groupName).length)?[{k:'group_pc_content',label:'🌐 公眾頻道內容（本組負責）'}]:[])
+      ...((this.pcEditSectionsForGroup&&this.pcEditSectionsForGroup(groupName).length)?[{k:'group_pc_content',label:'🌐 公眾頻道內容（本組負責）'}]:[]),
+      // v22：連結總表——換成張表單／EXCEL／WORD／PDF／地圖，改一次全站同步
+      ...((this.linkRegistry&&this.linkRegistry())?[{k:'group_links',label:'🔗 連結總表（改一次全站同步）'}]:[])
     ];
     const groupTabList=[
       {k:'apps',label:'📋 本組申請'},
@@ -1471,6 +1473,7 @@ Object.assign(ScoutEventApp.prototype,{
       else if(t.k==='group_quotes') el.innerHTML=this.renderGroupQuotesTabHTML(groupName);
       else if(t.k==='group_finance_guide') el.innerHTML=this.renderGroupFinanceGuideTabHTML(groupName);
       else if(t.k==='group_pc_content') this.renderPcContentEditor(el);
+      else if(t.k==='group_links') this.renderLinkRegistry(el, (groupName==='秘書處'||groupName==='行政組'||this.isAdmin())?{}:{scope:'group'});
     });
     if(isThemeGroup){
       const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
@@ -1500,6 +1503,8 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
+    // v22：連結總表——後台改過嘅連結，喺呢度一次過寫返入全部用到佢嘅位置（一處更新、全站同步）
+    try{ if(this.applyLinkRegistry) this.applyLinkRegistry(this.eventData); }catch(e){}
     // 正式活動（已連後端）：內置靜態資料仍從 JSON 載入（無後端模組），後端/本地改動優先
     if(!this.isDemoEvent() && this.currentEvent){
       try{

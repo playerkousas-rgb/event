@@ -65,13 +65,15 @@ ok(Array.isArray(LOCKED)&&LOCKED.length>=10,'② 有結構鎖定名單');
 ok(SCHEMA.every(s=>LOCKED.indexOf(s.key)<0),'② 鎖定嘅 key 冇一個出現喺可編輯 schema');
 ok(/PC_LOCKED_KEYS\.indexOf\(sec\)>=0\) return/.test(src),'② 疊加層會跳過鎖定 key（就算 store 入面有都唔生效）');
 
-/* ── ③ 權限 ── */
+/* ── ③ 權限：擁有權規則 ── */
+/* ⚠️ v22 起文字內容【全鎖定】(PC_CONTENT_LOCKED=true)，下面係驗證底層嘅擁有權規則，
+   所以特登用 PC_CONTENT_LOCKED:false 嘅 stub —— 將來解鎖返邊個區塊，呢套規則就會生效。 */
 const mk=g=>({currentUser:{group_name:g,name:g+'仔'},isAdmin:()=>false,isExecViceOrChair:()=>false,
-  PC_CONTENT_SCHEMA:SCHEMA,PC_LOCKED_KEYS:LOCKED,
+  PC_CONTENT_SCHEMA:SCHEMA,PC_LOCKED_KEYS:LOCKED,PC_CONTENT_LOCKED:false,PC_CONTENT_UNLOCKED:[],
   pcEditCanEdit:P.pcEditCanEdit,pcEditSectionsForGroup:P.pcEditSectionsForGroup});
 const serv=mk('服務及發展組');
-ok(serv.pcEditCanEdit('donate')===true,'③ 服務及發展組可改童心捐贈');
-ok(serv.pcEditCanEdit('lunch')===false,'③ 服務及發展組改唔到午膳（唔係佢負責）');
+ok(serv.pcEditCanEdit('donate')===true,'③ 解鎖情況下：服務及發展組可改童心捐贈');
+ok(serv.pcEditCanEdit('lunch')===false,'③ 解鎖情況下：服務及發展組改唔到午膳（唔係佢負責）');
 ok(serv.pcEditSectionsForGroup().length>=1,'③ 服務及發展組至少見到一個區塊');
 const brand=mk('品牌推廣組');
 ok(brand.pcEditSectionsForGroup().length===0,'③ 冇負責內容嘅組見唔到可編輯區塊');
@@ -79,6 +81,13 @@ const admin=mk('行政組');
 ok(admin.pcEditSectionsForGroup().length===SCHEMA.length,'③ 行政組見到全部（統籌角色）');
 const boss=Object.assign(mk('顧問團'),{isAdmin:()=>true});
 ok(boss.pcEditCanEdit('donate')===true&&boss.pcEditSectionsForGroup().length===SCHEMA.length,'③ 管理層全開');
+
+/* ── ③B 實際狀態：v22 全鎖定，邊個都改唔到 ── */
+const real=g=>Object.assign(Object.create(P),{currentUser:{group_name:g,name:g},isAdmin:()=>false,isExecViceOrChair:()=>false});
+ok(P.PC_CONTENT_LOCKED===true,'③B 現行狀態：PC_CONTENT_LOCKED = true');
+ok(real('服務及發展組').pcEditCanEdit('donate')===false,'③B 負責組而家都改唔到文字（格式跟規矩）');
+ok(Object.assign(real('顧問團'),{isAdmin:()=>true}).pcEditCanEdit('donate')===false,'③B 連管理員都改唔到');
+ok(real('行政組').pcEditSectionsForGroup().length===SCHEMA.length,'③B 但仍然睇得到成份合約（唯讀）');
 
 /* 負責組必須係真實存在嘅組 */
 const groups=new Set((mock.staff&&mock.staff.org_chart||[]).map(r=>r.group).filter(Boolean));

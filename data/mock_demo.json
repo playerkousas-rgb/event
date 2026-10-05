@@ -25516,5 +25516,1245 @@
     "filled_at": "2026-10-05",
     "policy": "REPLACE＝2026 權威資料覆蓋；MERGE＝以 2026 為底保留示範版獨有欄位；KEEP＝2026 為空時保留示範流程",
     "note": "示範版唔好手改 JSON：改 tool 再 node tools/fill_mock_demo_from_2026.js && node tools/build_pc2027_demo.js"
+  },
+  "link_registry": {
+    "generated_at": "2026-10-05",
+    "generated_by": "tools/build_link_registry.js",
+    "note": "一條連結一個主人一個 URL。後台「🔗 連結總表」改一次，開頁自動寫返入 targets 全部位置。唔好手改本段。",
+    "total_links": 74,
+    "total_targets": 121,
+    "links": [
+      {
+        "id": "word-20260818-品牌推廣組-google-doc",
+        "label": "20260818 品牌推廣組 (Google Doc)",
+        "kind": "word",
+        "kind_zh": "📝 WORD",
+        "owner": "品牌推廣組",
+        "url": "https://docs.google.com/document/d/19z-1pSG6NRnAhGOMe1phQZ656rb5xo6TQsWiXBcGyoI/edit",
+        "targets": [
+          "documents[43].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "word-籌備委員會工作大綱-2025-藍本-2026-人名-年份",
+        "label": "籌備委員會工作大綱（2025 藍本 → 2026 人名／年份）",
+        "kind": "word",
+        "kind_zh": "📝 WORD",
+        "owner": "行政組",
+        "url": "https://docs.google.com/document/d/1U2ic--TjQkavJQzuysjvRgkNBrZxrv-Y/edit",
+        "targets": [
+          "staff.duties_source.url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "excel-isd2026-budget-xlsx",
+        "label": "ISD2026 Budget.xlsx",
+        "kind": "excel",
+        "kind_zh": "📊 EXCEL",
+        "owner": "行政組",
+        "url": "https://docs.google.com/spreadsheets/d/1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE/edit",
+        "targets": [
+          "documents[22].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "excel-isd2025-攤位資料-參考",
+        "label": "ISD2025 攤位資料(參考)",
+        "kind": "excel",
+        "kind_zh": "📊 EXCEL",
+        "owner": "主題節目組",
+        "url": "https://docs.google.com/spreadsheets/d/1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY/edit",
+        "targets": [
+          "documents[28].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "excel-港島童軍繽紛日2026-泊車證申請表格-xlsx",
+        "label": "港島童軍繽紛日2026－泊車證申請表格.xlsx",
+        "kind": "excel",
+        "kind_zh": "📊 EXCEL",
+        "owner": "協調組",
+        "url": "https://docs.google.com/spreadsheets/d/1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4/edit",
+        "targets": [
+          "documents[26].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "folder-該次會議資料夾內其他檔案-簡報-附件",
+        "label": "該次會議資料夾內其他檔案（簡報／附件）",
+        "kind": "folder",
+        "kind_zh": "📁 資料夾",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+        "targets": [
+          "drive.meeting_upload_folder_link",
+          "meetings[0].classified_files[2].file_url",
+          "meetings[0].drive_root_url",
+          "meetings[1].classified_files[2].file_url",
+          "meetings[1].drive_root_url",
+          "meetings[2].classified_files[2].file_url",
+          "meetings[2].drive_root_url",
+          "meetings[3].classified_files[2].file_url",
+          "meetings[3].drive_root_url",
+          "meetings[4].drive_root_url",
+          "meetings[5].agenda_file_url",
+          "meetings[5].drive_root_url",
+          "meetings[5].minutes_file_url"
+        ],
+        "uses": 13,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "folder-1fqfmbrpmaujqousomr0gzrprteg-o8jf",
+        "label": "1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+        "kind": "folder",
+        "kind_zh": "📁 資料夾",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+        "targets": [
+          "drive.root_folder_link"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-警察學院實地視察-18-8-2026-內容及程序-2026",
+        "label": "警察學院實地視察 18.8.2026－內容及程序 2026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "會操及典禮組",
+        "url": "https://drive.google.com/file/d/1-AdQ4UVfMt9eglwaVMYZLwbxWqCGnI-C/view",
+        "targets": [
+          "documents[40].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件5a-結算總表-word-w-autosum-docx",
+        "label": "ISD2026 附件5A - 結算總表 (WORD w autosum).docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/16krtzQYD11b2cyL8h_Qdb0a8X4_wyDN-/view",
+        "targets": [
+          "documents[19].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-邀請卡-會長-04102026",
+        "label": "ISD2026 邀請卡－會長 04102026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "嘉賓接待組",
+        "url": "https://drive.google.com/file/d/16oB9SIq5_ugp8e3B99hYuL5HL_jodXse/view",
+        "targets": [
+          "documents[36].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件1-報價要求-docx",
+        "label": "ISD2026 附件1 - 報價要求.docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/176X1zGzH_k7DJzzuzE5fHkAr6GE3_IHm/view",
+        "targets": [
+          "documents[14].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-積極公民獎章-機電先鋒章-full-set",
+        "label": "積極公民獎章－機電先鋒章（Full Set）",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/19Wy-9FU5zh399e6XFU1PgeXS1bAy9QcP/view",
+        "targets": [
+          "documents[49].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件6-四格印簽名位置-docx",
+        "label": "ISD2026 附件6 - 四格印簽名位置.docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/19bmvieiDcnFBcQ6qPAGagN8UDXc3tAG2/view",
+        "targets": [
+          "documents[21].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告-童心捐贈大行動-食品捐贈-food-donation",
+        "label": "特別通告 — 童心捐贈大行動（食品捐贈）Food Donation",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1AXsmbK59MFz-ODLtZ-ysgvW2RcF8mu7j/view",
+        "targets": [
+          "announcements.announcements[1].file_url",
+          "documents[3].file_url",
+          "notices[1].drive_url",
+          "unit_guide.docs[10].file_url"
+        ],
+        "uses": 4,
+        "inline_uses": 1,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-wish-list-2026",
+        "label": "Wish List 2026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "會操及典禮組",
+        "url": "https://drive.google.com/file/d/1BBhz4gWd3OY2QIqY3s8dGaUQP9BJ5IGd/view",
+        "targets": [
+          "documents[42].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-app1-isd2026-籌備委員會第3次會議記錄-ver1",
+        "label": "App1-ISD2026-籌備委員會第3次會議記錄 Ver1",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1BFyL3_i4xXhlpm8cOPl9il1Iy7JVbGTC/view",
+        "targets": [
+          "documents[46].file_url",
+          "meetings[4].classified_files[1].file_url",
+          "meetings[4].minutes_file_url"
+        ],
+        "uses": 3,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-第3次籌備委員會議",
+        "label": "第3次籌備委員會議",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1CRDJo6LGfXCM5jjeyjzXtbNpi2Jict0C/view",
+        "targets": [
+          "meetings[3].agenda_file_url",
+          "meetings[3].classified_files[0].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-主題節目組報告-20260818-rev-1",
+        "label": "ISD2026 - 主題節目組報告 (20260818) Rev.1",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1E2EyyxLqeEqKQrYUoBNiHILSt3VkfEkr/view",
+        "targets": [
+          "documents[48].file_url",
+          "meetings[4].classified_files[2].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件5-結算總表-word-docx",
+        "label": "ISD2026 附件5 - 結算總表 (WORD).docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1FwpuK79mWDToX_p_csO_8Fg085lT0QkC/view",
+        "targets": [
+          "documents[18].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-app1-isd2026-籌備委員會第2次會議記錄-ver1-pdf",
+        "label": "App1-ISD2026-籌備委員會第2次會議記錄_Ver1.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1GZtQgV4vLMVIQMX3J5uEHTumVazpBgH1/view",
+        "targets": [
+          "meetings[3].classified_files[1].file_url",
+          "meetings[3].minutes_file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-機電先鋒-家居電力安全手冊-cub-appendix",
+        "label": "機電先鋒－家居電力安全手冊 (Cub Appendix)",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1JGwVHA2BDPvg2r9-B8-79E718sn4S5Yi/view",
+        "targets": [
+          "documents[55].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-parade-ceremony-rundown-2026-典禮程序",
+        "label": "Parade Ceremony Rundown 2026 (典禮程序)",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "會操及典禮組",
+        "url": "https://drive.google.com/file/d/1JQRvk1vYDvUip3cL2bBQ-zciwC2-19mD/view",
+        "targets": [
+          "documents[41].file_url",
+          "meetings[4].classified_files[3].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-1-app-8-工作計劃及進度-v2-docx",
+        "label": "1_App 8_工作計劃及進度 V2.docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1OPRHxG3x_fLvpLDBEqmdb8dlsq0HuSe1/view",
+        "targets": [
+          "documents[2].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-邀請卡-主禮嘉賓-goh-04102026",
+        "label": "ISD2026 邀請卡－主禮嘉賓 (GoH) 04102026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "嘉賓接待組",
+        "url": "https://drive.google.com/file/d/1OrV3danpfjhuEJlyNIxU96nhBji-CHrR/view",
+        "targets": [
+          "documents[37].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-map-gif-場地地圖",
+        "label": "MAP.gif（場地地圖）",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "協調組",
+        "url": "https://drive.google.com/file/d/1OrnF4mWDpYEQ04I-wN2t32pDeVJmfjbP/view",
+        "targets": [
+          "documents[56].file_url",
+          "meetings[4].classified_files[4].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-警察學院地圖-嘉賓版-policecollege-maps-guest-",
+        "label": "ISD2026 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "嘉賓接待組",
+        "url": "https://drive.google.com/file/d/1PFspBoKN0Nv4KvpinZS7MFlmolL3Kyvu/view",
+        "targets": [
+          "documents[39].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-積極公民獎章-機電先鋒-童軍支部-a2",
+        "label": "積極公民獎章－機電先鋒：童軍支部 A2",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1P_geoygn4mE1ZXcnk3-dr74OhcLUtMs4/view",
+        "targets": [
+          "documents[52].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-攤位資料-xlsx",
+        "label": "ISD2026 攤位資料.xlsx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle/view",
+        "targets": [
+          "documents[27].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-財務指引及會計程序-ver-1-docx",
+        "label": "ISD2026 財務指引及會計程序 ver 1.docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1QNWNG1BnVab3oHlI7yvIK_2YMMSFV-p4/view",
+        "targets": [
+          "documents[13].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件4-書面報價比較表-docx",
+        "label": "ISD2026 附件4 - 書面報價比較表.docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1Qal9KVjgN54cb6GwxideH_lsRXJquVWy/view",
+        "targets": [
+          "documents[17].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-m28a-2026-isd2026-oc-invitation-replyslip-do",
+        "label": "M28a_2026_ISD2026_OC Invitation_ReplySlip.docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1Qh3nO-5lbuN5wKtDCtGu2jG3LQ2SFBvl/view",
+        "targets": [
+          "documents[12].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-m28-2026-isd2026-oc-invitation-drcs-docx",
+        "label": "M28_2026_ISD2026_OC Invitation(DRCs).docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1SILJ9E2zOVjcuFJDi2REs1Avr246gOI5/view",
+        "targets": [
+          "documents[11].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-回條-in-reply-04102026",
+        "label": "ISD2026 回條 (IN reply) 04102026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "嘉賓接待組",
+        "url": "https://drive.google.com/file/d/1SfKgQmB4m-uMF7dxbGKzewBtvyQPz95P/view",
+        "targets": [
+          "documents[38].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-fooddonation-form-doc",
+        "label": "FoodDonation_Form.doc",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1SuqR2x-Ws0F8zqcX9-tZKUbEndDbS7xJ/view",
+        "targets": [
+          "documents[4].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-0-pre-meeting-20260501-zoom",
+        "label": "0 Pre-Meeting 20260501 (Zoom)",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1SxRCj6NxEKB_CgQp6hXSo3ByAWZtzibX/view",
+        "targets": [
+          "meetings[0].agenda_file_url",
+          "meetings[0].classified_files[0].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-sp12a-26-isd2026-enrollform-pdf",
+        "label": "sp12a_26_isd2026_enrollform.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1TsqPjL57LooYZ21OqP_dXjnt_L_Q0b1Q/view",
+        "targets": [
+          "documents[1].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-m28-2026-isd2026-oc-invitation-district-docx",
+        "label": "M28_2026_ISD2026_OC Invitation(District).docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1UEFJpWX7QOZNIlS-jyXjhWMUSieANOdW/view",
+        "targets": [
+          "documents[10].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-3-司儀稿-莫榮大樓自助餐-2026-v2-2026-10-04-pdf",
+        "label": "3_司儀稿_莫榮大樓自助餐 2026 ( V2 2026-10-04).pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "會操及典禮組",
+        "url": "https://drive.google.com/file/d/1UKPMQUj0amiZFBhyMfFXDZWrxdds8R5e/view",
+        "targets": [
+          "documents[78].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-pc132018c-pdf",
+        "label": "pc132018c.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1V-Kj7xIu8ow9ncVF9dJ6j680IEP9qHZl/view",
+        "targets": [
+          "documents[7].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-app1-isd2026-籌備委員會第1次會議記錄-ver1-pdf",
+        "label": "App1-ISD2026-籌備委員會第1次會議記錄_Ver1.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1VqiKvRBVwbSn9ZyjEQeq3jgGg0pHkTpz/view",
+        "targets": [
+          "meetings[2].classified_files[1].file_url",
+          "meetings[2].minutes_file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告-童心捐贈大行動-物品回收-goods-donating",
+        "label": "特別通告 — 童心捐贈大行動（物品回收）Goods Donating",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1WbfGCy90Pkau6TLNg9J_DdohEqPzdknQ/view",
+        "targets": [
+          "announcements.announcements[2].file_url",
+          "documents[5].file_url",
+          "notices[2].drive_url",
+          "unit_guide.docs[11].file_url"
+        ],
+        "uses": 4,
+        "inline_uses": 1,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-2-司儀稿-會操檢閱典禮2026-v4-pdf",
+        "label": "2. 司儀稿_會操檢閱典禮2026 V4.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "會操及典禮組",
+        "url": "https://drive.google.com/file/d/1XP_tusoCXfkz9yNoRNAmqy3XcPnCY9LK/view",
+        "targets": [
+          "documents[63].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件2-豁免商戶名單-rev-dec-2025-pdf",
+        "label": "ISD2026 附件2 - 豁免商戶名單 (Rev Dec 2025).pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1Z_VqtQ1LjKGI7fFqRCvN9sI8XrmJLbL2/view",
+        "targets": [
+          "documents[15].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-org-chart-and-contact-list-持續更新-xlsx",
+        "label": "ISD2026 Org Chart and Contact List（持續更新）.xlsx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp/view",
+        "targets": [
+          "documents[23].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-積極公民獎章-機電先鋒-深資童軍支部-a2",
+        "label": "積極公民獎章－機電先鋒：深資童軍支部 A2",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1b-kItukpLqcs5PpkBF71CjY2WlN7hdTI/view",
+        "targets": [
+          "documents[53].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-1-司儀稿-優異旅團頒獎儀式-2026-v5-2026-10-04-pdf",
+        "label": "1_司儀稿_優異旅團頒獎儀式 2026 ( V5 2026-10-04).pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "會操及典禮組",
+        "url": "https://drive.google.com/file/d/1bBdWpJy90PhWEDz2hq7Hd2dz-IuLGuYV/view",
+        "targets": [
+          "documents[77].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件5b-結算總表-excel-xlsx",
+        "label": "ISD2026 附件5B - 結算總表 (EXCEL).xlsx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1boZYb4XxiZllAP_2sxxcdatiOQIZMfbJ/view",
+        "targets": [
+          "documents[20].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-主題節目組報告-20260616-rev-1",
+        "label": "ISD2026 - 主題節目組報告 (20260616) Rev.1",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1cbmYoNOhlP3EQcNrSMgSycELQYsLpj4o/view",
+        "targets": [
+          "documents[47].file_url",
+          "meetings[2].classified_files[3].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-goods-donating-form-doc",
+        "label": "Goods Donating_Form.doc",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1eLhBg1yJxo99hG-nUhL9kjtfR15KizxW/view",
+        "targets": [
+          "documents[6].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-積極公民獎章-機電先鋒-樂行童軍支部-a2",
+        "label": "積極公民獎章－機電先鋒：樂行童軍支部 A2",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1f1JYpZEA5_NUJXVLEY1RSQ8BQiupknft/view",
+        "targets": [
+          "documents[54].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-rundown-pdf",
+        "label": "ISD2026_RunDown.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1gDvBWNCJq9aVZV7CEClyYqV-GlHxX14E/view",
+        "targets": [
+          "documents[57].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-4-agenda-籌備委員會議程-20260818",
+        "label": "4_Agenda 籌備委員會議程 (20260818)",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1iCYG0wbev_paJhVvWAasbtFe-j0wLv5K/view",
+        "targets": [
+          "documents[45].file_url",
+          "meetings[4].agenda_file_url",
+          "meetings[4].classified_files[0].file_url"
+        ],
+        "uses": 3,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-積極公民獎章-機電先鋒-幼童軍支部-a2",
+        "label": "積極公民獎章－機電先鋒：幼童軍支部 A2",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1jLmNGafyZ6JdGGSUno7e9rJrZ_sqFGCY/view",
+        "targets": [
+          "documents[51].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-wfq26070315-香港童軍總會港島地域-4-10-報價",
+        "label": "WFQ26070315 香港童軍總會港島地域 4-10 (報價)",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "嘉賓接待組",
+        "url": "https://drive.google.com/file/d/1jaIqdBHkF39Ist62hjUWqEKqGMljWP1n/view",
+        "targets": [
+          "documents[44].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-m28-2026-isd2026-oc-invitation-councils-docx",
+        "label": "M28_2026_ISD2026_OC Invitation(Councils).docx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1l8qM7JOxGWdBzMnIx0nKqH-OGqvU6a6i/view",
+        "targets": [
+          "documents[9].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-邀請函-invitation-letter-04102026",
+        "label": "ISD2026 邀請函 (Invitation Letter) 04102026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "嘉賓接待組",
+        "url": "https://drive.google.com/file/d/1mAP7Qq0UbdDy7PZB9npVzoUIFl_kXwPY/view",
+        "targets": [
+          "documents[35].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2025-籌備委員會檢討會議記錄-pdf",
+        "label": "ISD2025 籌備委員會檢討會議記錄.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1nH8adS9z0oS4XFK3jnxoN_inUpEG3ngV/view",
+        "targets": [
+          "meetings[0].classified_files[1].file_url",
+          "meetings[0].minutes_file_url",
+          "meetings[1].classified_files[1].file_url",
+          "meetings[1].minutes_file_url"
+        ],
+        "uses": 4,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-cleaning-quotation-request-pdf",
+        "label": "ISD2026_Cleaning Quotation request.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "協調組",
+        "url": "https://drive.google.com/file/d/1n_vRIZ4X_NV3523r89hd8mODQpyNMvbL/view",
+        "targets": [
+          "documents[25].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-積極公民獎章-機電先鋒章-a2-100",
+        "label": "積極公民獎章－機電先鋒章 A2 100%",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "主題節目組",
+        "url": "https://drive.google.com/file/d/1pSFhBS0ABvl3cxwtG6W54u0hcn_1qd3I/view",
+        "targets": [
+          "documents[50].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第12-26號-港島童軍繽紛日2026-活動詳情",
+        "label": "特別通告第12/26號 — 港島童軍繽紛日2026（活動詳情）",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1rmV3zqrBex803aiyjrf20QddudOBoTFf/view",
+        "targets": [
+          "announcements.announcements[0].file_url",
+          "documents[0].file_url",
+          "notices[0].drive_url",
+          "unit_guide.docs[0].file_url",
+          "unit_guide.docs[1].file_url",
+          "unit_guide.docs[2].file_url",
+          "unit_guide.docs[3].file_url",
+          "unit_guide.docs[4].file_url",
+          "unit_guide.docs[5].file_url",
+          "unit_guide.docs[6].file_url",
+          "unit_guide.docs[7].file_url",
+          "unit_guide.docs[8].file_url",
+          "unit_guide.docs[9].file_url"
+        ],
+        "uses": 13,
+        "inline_uses": 1,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-site-setup-quotation-request-pdf",
+        "label": "ISD2026_ Site setup Quotation Request.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "協調組",
+        "url": "https://drive.google.com/file/d/1ryQltDGazkf_l2qPPnxc6DmomfIlMu-x/view",
+        "targets": [
+          "documents[24].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-isd2026-附件3-口頭報價資料記錄-xlsx",
+        "label": "ISD2026 附件3 - 口頭報價資料記錄.xlsx",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "行政組",
+        "url": "https://drive.google.com/file/d/1s5X9v7FJfbCZG1zDX5GX_yXpE2C_8BIq/view",
+        "targets": [
+          "documents[16].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-第1次籌備委員會議",
+        "label": "第1次籌備委員會議",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1tYIifGR10RI63xLdraLqgibjZJQZMyVv/view",
+        "targets": [
+          "meetings[1].agenda_file_url",
+          "meetings[1].classified_files[0].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-第2次籌備委員會議",
+        "label": "第2次籌備委員會議",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1vQRmiIToJd5Py-EjyYIYbNd6yHKL7Xj8/view",
+        "targets": [
+          "meetings[2].agenda_file_url",
+          "meetings[2].classified_files[0].file_url"
+        ],
+        "uses": 2,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-pc142018c-pdf",
+        "label": "pc142018c.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1w-u50e3cMpMf2SCAw-3BQfJ66l4qBFzy/view",
+        "targets": [
+          "documents[8].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-policecollege-map-pdf",
+        "label": "PoliceCollege_Map.pdf",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://drive.google.com/file/d/1yCBNv88GEh7rdNSbebtdv6vGtU5omvoA/view",
+        "targets": [
+          "documents[58].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "map-xsgmzw7n84ywkuvga",
+        "label": "XSgMZW7N84ywKUVGA",
+        "kind": "map",
+        "kind_zh": "🗺️ 地圖",
+        "owner": "協調組",
+        "url": "https://maps.app.goo.gl/XSgMZW7N84ywKUVGA",
+        "targets": [
+          "guest_transport.outbound.map_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "web-下載紙本表格-pdf",
+        "label": "下載紙本表格（PDF）",
+        "kind": "web",
+        "kind_zh": "🌐 網頁",
+        "owner": "服務及發展組",
+        "url": "https://www.hkirscout.org.hk",
+        "targets": [
+          "public_channel_2027.donate.paper.url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第01-26號-地域總監嘉許計劃-2026",
+        "label": "特別通告第01/26號－地域總監嘉許計劃 2026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://www.scout.org.hk/uploads/tc/circulars/23224/Sp01_26_RCAward2026.pdf",
+        "targets": [
+          "documents[29].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第02-26號-區總監嘉許計劃-2026",
+        "label": "特別通告第02/26號－區總監嘉許計劃 2026",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://www.scout.org.hk/uploads/tc/circulars/23225/Sp02_26_DCAward2026.pdf",
+        "targets": [
+          "documents[30].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第03-26號-2026年優異旅團獎勵計劃",
+        "label": "特別通告第03/26號－2026年優異旅團獎勵計劃",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://www.scout.org.hk/uploads/tc/circulars/23226/Sp03_26_DGA2026.pdf",
+        "targets": [
+          "documents[31].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第11-26號-2026-2027年度活動與訓練行事曆",
+        "label": "特別通告第11/26號－2026/2027年度活動與訓練行事曆",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://www.scout.org.hk/uploads/tc/circulars/24389/Sp11_26_Calendar_of_Event-2026-2027.pdf",
+        "targets": [
+          "documents[32].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第15-26號-幼童軍及童軍積極公民獎章系列-機電先鋒章考驗",
+        "label": "特別通告第15/26號－幼童軍及童軍積極公民獎章系列·機電先鋒章考驗",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://www.scout.org.hk/uploads/tc/circulars/25709/sp15_26_isd2026_csactivecitizenshipbadgee_m.pdf",
+        "targets": [
+          "documents[33].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      },
+      {
+        "id": "pdf-特別通告第16-26號-深資童軍及樂行童軍積極公民獎章系列-機電先鋒章工作坊",
+        "label": "特別通告第16/26號－深資童軍及樂行童軍積極公民獎章系列·機電先鋒章工作坊",
+        "kind": "pdf",
+        "kind_zh": "📄 PDF",
+        "owner": "秘書處",
+        "url": "https://www.scout.org.hk/uploads/tc/circulars/25710/sp16_26_isd2026_vsrsactivecitizenshipbadgee_m.pdf",
+        "targets": [
+          "documents[34].file_url"
+        ],
+        "uses": 1,
+        "inline_uses": 0,
+        "source": "2026",
+        "updated_by": "",
+        "updated_at": ""
+      }
+    ]
   }
 }
