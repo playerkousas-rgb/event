@@ -206,7 +206,7 @@ const crisisDocs=list(event.crisis&&event.crisis.docs).map(row=>({
 const documentCatalogRecords=docs.map(row=>({
   id:row.id||'', title:row.title||'', category:row.category||row.folder||'其他活動文件',
   status:(row.file_url||row.drive_file_id||row.drive_file_link)?'2027_owned_file_linked':'metadata_copied_file_pending',
-  note:'2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register.'
+  note:'2027 文件目錄已建立；保留、替換或退役的決定及 2027 原檔狀態由資料中樞統一管理。'
 }));
 
 /* These are information labels, not a management dashboard or a prescribed
@@ -268,37 +268,32 @@ const departmentActivityDayReadiness=[
   {group:'行政組', materials:'工作人員編更、全日程序及跨組後勤資料', lists:'工作人員點名及紀念章派發名單', issue:'工作人員紀念章', output:'派發 Excel／Word／列印後備名單', status:'ready', status_label:'可供使用', color:'emerald', source_paths:['staff.event_staff_roster','souvenirs.staff_stamps']}
 ];
 
-/* A source-to-presentation map: users can see why two screens are related and
- * exactly which independent 2027 record controls them.  Counts intentionally
- * do not define this map; a later event can have different quantities without
- * changing the relationship. */
-const activityDayRelationships=[
-  {id:'staff_station', title:'工作人員點名及紀念章派發', color:'emerald',
-    provenance:'2026 已完成資料只作一次性參考；名單已獨立複製為 2027 記錄。',
-    canonical:'ISD 2027 · staff.event_staff_roster',
-    presentation:'行政組工作人員派章站：先選組別／攤位或搜尋，再排序及逐人點名。',
-    output:'同一份 2027 名單 → Excel、Word、列印後備名單及派發紀錄。'},
-  {id:'guest_station', title:'嘉賓點名及紀念章派發', color:'emerald',
-    provenance:'2026 已完成資料只作一次性參考；嘉賓資料在 2027 獨立持有。',
-    canonical:'ISD 2027 · guest_roster.guests',
-    presentation:'嘉賓接待的直接逐人點名；紀念章頁可按單位、姓名、職銜及狀態排序。',
-    output:'同一份 2027 嘉賓名單 → 派發 Excel、Word、列印及點名留痕。'},
-  {id:'participant_meal_station', title:'旅團報到及餐盒派發', color:'amber',
-    provenance:'2026 已完成資料已作 2027 參考種籽，最終到場及交接仍待確認。',
-    canonical:'ISD 2027 · participants · meal_distribution · meal_logistics',
-    presentation:'手冊中的旅團、餐盒及服務點資料，並連接共用點名名單。',
-    output:'同一份 2027 名單 → Excel、Word、列印／PDF 點名及派發表。'},
-  {id:'venue_programme_station', title:'場地、節目、典禮及安全資料', color:'amber',
-    provenance:'已整理為 2027 場地圖、遊戲卡、程序、司儀稿及危機應變參考資產。',
-    canonical:'ISD 2027 · activities · schedule · ceremony · crisis',
-    presentation:'執行手冊按場地、程序、典禮及安全分類呈現，不按角色隱藏非私隱資料。',
-    output:'同一份 2027 資產 → 手冊開啟、活動日列印及受控檔案連結。'},
-  {id:'notice_document_station', title:'通告及完整活動日文件', color:'rose',
-    provenance:'2026 封存文件只留下可追溯的 2027 元資料參考種籽，從不再由 2026 直接供應。',
-    canonical:'ISD 2027 · notices · documents · execution_manual_gap_register',
-    presentation:'手冊的通告及必讀文件目錄，以紅色標示尚未有 2027 原檔或處置決定的項目。',
-    output:'負責人補上／確認 2027 原檔後，同一受控來源再供手冊及列印輸出使用。'}
+/* The 2027 system is a data hub, not a collection of department-owned
+ * copies.  One group can maintain a domain and consume other domains; every
+ * rendered view and export reads the same 2027 canonical record. */
+const systemDomains=[
+  {id:'programme', title:'全日程序、典禮及會操', canonical:'ISD 2027 · schedule · ceremony', input_groups:['行政組','會操及典禮組'], consumer_groups:['所有工作組'], presentations:['執行手冊：全日程序及交接','典禮及會操','司儀稿'], privacy:'非私隱活動資料，供所有工作人員查閱'},
+  {id:'venue', title:'場地、攤位、遊戲及動線', canonical:'ISD 2027 · activities.maps · activities.booths · activities.gameCards', input_groups:['協調組','主題節目組'], consumer_groups:['所有工作組'], presentations:['執行手冊：場地、攤位、遊戲及動線','場地圖／遊戲卡／攤位總表'], privacy:'非私隱活動資料，供所有工作人員查閱'},
+  {id:'registration', title:'旅團、報到及服務點', canonical:'ISD 2027 · participants · troop_checkin', input_groups:['行政組','協調組'], consumer_groups:['行政組','協調組','服務及發展組','會操及典禮組'], presentations:['旅團資料','報到及點名表','服務點及餐盒交接'], privacy:'單位及數量共享；個人聯絡及簽收只限授權人員'},
+  {id:'logistics', title:'膳食、物資、車輛及現場後勤', canonical:'ISD 2027 · meal_logistics · meal_distribution · supplies', input_groups:['協調組','行政組'], consumer_groups:['行政組','協調組','服務及發展組','嘉賓接待組','主題節目組'], presentations:['報到、服務點、膳食及後勤','餐盒／工作人員膳食名單','列印及匯出'], privacy:'公開安排共享；個人餐膳及簽收受私隱保護'},
+  {id:'staff', title:'各組職責、編更及工作人員派發', canonical:'ISD 2027 · staff.job_duties · staff.event_staff_roster · souvenirs.staff_stamps', input_groups:['秘書處','各總主任','行政組'], consumer_groups:['所有工作組'], presentations:['各組職責及工作資料','行政組工作人員點名／派章站','Excel、Word、列印後備名單'], privacy:'非私人職責共享；個人身份、聯絡及派發紀錄只限授權人員'},
+  {id:'guest', title:'嘉賓接待、點名及紀念章派發', canonical:'ISD 2027 · guest_roster.guests · souvenirs.guest_stamps', input_groups:['嘉賓接待組','行政組'], consumer_groups:['嘉賓接待組','行政組','會操及典禮組'], presentations:['直接嘉賓點名','嘉賓紀念章派發','Excel、Word、列印'], privacy:'嘉賓個人資料只向獲授權組別顯示'},
+  {id:'safety', title:'安全、危機及應變', canonical:'ISD 2027 · crisis.docs · crisis.manuals', input_groups:['危機處理組','行政組'], consumer_groups:['所有工作組'], presentations:['執行手冊：安全及應變','危機處理手冊'], privacy:'非私隱應變程序供所有工作人員查閱'},
+  {id:'notices', title:'通告、指引及活動日文件', canonical:'ISD 2027 · notices · documents · execution_manual_gap_register', input_groups:['秘書處','行政組','品牌推廣組','相關內容組別'], consumer_groups:['所有工作組'], presentations:['執行手冊：通告及必讀文件','2027 文件目錄及確認標籤'], privacy:'非私隱文件內容共享；私隱附件按權限處理'}
 ];
+const systemGroups=['顧問團','主席及執行副主席','秘書處','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+const isConsumer=(domain,group)=>domain.consumer_groups.includes('所有工作組')||domain.consumer_groups.includes(group);
+const systemGroupRelations=systemGroups.map(group=>({
+  group,
+  input_domains:systemDomains.filter(domain=>domain.input_groups.includes(group)).map(domain=>domain.id),
+  consume_domains:systemDomains.filter(domain=>isConsumer(domain,group)).map(domain=>domain.id)
+}));
+const systemIntegration={
+  title:'2027 一體化活動資料系統',
+  rule:'每個領域只在 ISD 2027 持有一個受控資料根源。任何組別可同時是某領域的輸入／維護方，以及其他領域的使用方；畫面、名單、點名、派發、匯出及列印不建立平行版本。',
+  domains:systemDomains,
+  group_relations:systemGroupRelations
+};
 
 /* This index is the worker-facing table of contents.  It deliberately contains
  * operational material for every worker; only personally identifying or
@@ -309,7 +304,7 @@ event.execution_manual_2027={
   event_id:'isd_2027',
   status:sourceRef,
   generated_at:today,
-  source_rule:'本手冊由 ISD 2027 受控資料整理而成。2026 只屬一次性封存參考，日後修訂只可在 ISD 2027 folder／2027 前端流程進行。',
+  source_rule:'本手冊、活動日名單、點名、派發、匯出及列印均由 ISD 2027 一體化資料系統供應。日後所有更新只在 ISD 2027 folder／2027 前端流程進行，所有組別讀取同一受控資料根源。',
   audience_rule:{
     ordinary_staff:'所有不涉及個人私隱的活動日操作資料均可在此唯讀查閱：崗位、場地、流程、攤位、報到、膳食、服務點、應變和常見問題不按組別隱藏。',
     committee:'同一份操作資料供所有工作人員查閱；籌委帳戶只額外提供來源編輯、個人／受限名單和管理操作。',
@@ -364,7 +359,7 @@ event.execution_manual_2027={
   document_catalog:{total:docs.length, by_category:documentsByCategory, notices:count(event.notices), unit_guides:count(event.unit_guide&&event.unit_guide.docs), staff_guidance:staffGuidance.length, records:documentCatalogRecords},
   activity_day_readiness:activityDayReadiness,
   department_activity_day_readiness:departmentActivityDayReadiness,
-  activity_day_relationships:activityDayRelationships,
+  system_integration:systemIntegration,
   completion_checklist:[
     '確認全部活動日文件均已有 2027 擁有的檔案／連結。',
     '由各總主任確認所屬組別崗位、集合位置、交接及聯絡安排。',
