@@ -1378,6 +1378,7 @@ Object.assign(ScoutEventApp.prototype,{
       ]:[]),
       // 三張典禮獎勵名單均在「會操及典禮組（典禮組）」部門中心提供操作入口。
       ...(groupName==='會操及典禮組'?[
+        {k:'cer_live_script',label:'🎙️ 活司儀稿'},
         {k:'cer_award_merit',label:'🏆 優異旅團獲獎名單'},
         {k:'cer_award_section',label:'🏅 支部獎勵名單'},
         {k:'cer_award_leader',label:'🎖️ 領袖獎勵名單'}
@@ -1462,6 +1463,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'coord_meal_staff':
           el.innerHTML=`<div class="space-y-3"><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('staff_meals',{scope:'coord'})}</div>${this.staffMealDigestHTML?this.staffMealDigestHTML():''}${this.mealMenuHTML?this.mealMenuHTML():''}</div>`;
           break;
+        case 'cer_live_script': this.renderLiveScript(el); break;
         case 'cer_award_merit': el.innerHTML=this.rosterPanelHTML('merit_award',{scope:'dept'}); break;
         case 'cer_award_section': el.innerHTML=this.rosterPanelHTML('section_award',{scope:'dept'}); break;
         case 'cer_award_leader': el.innerHTML=this.adultAwards2026HTML()+this.rosterPanelHTML('leader_award',{scope:'dept'}); break;
@@ -1498,7 +1500,7 @@ Object.assign(ScoutEventApp.prototype,{
   switchGroupTab(tab){
     this.groupBoothTab=tab;
     // v13：頂部頁籤涵蓋全部特色功能＋全部門共設財務頁籤（行政組財務匯總/旅團/文件/票券/紀念章/失物；協調組物資/車輛/膳食/場地文件；各組開支申報/口頭報價/財務指引）
-    ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_troop_checkin','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','coord_meal_staff','cer_award_merit','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
+    ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_troop_checkin','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','coord_meal_staff','cer_live_script','cer_award_merit','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
     document.querySelectorAll('.group-tab-btn').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className='group-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
