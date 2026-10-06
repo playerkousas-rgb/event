@@ -83,8 +83,8 @@ ok(index.entry_routes.length === 10 && index.entry_routes.map((r) => r.route_id)
 
 ok(index.assets_2027.controlled_domains.length === 8 && index.assets_2027.controlled_domains.every((d) => d.drive_file_id), 'all 8 controlled-domain Drive files are indexed');
 ok(index.assets_2027.controlled_domains.reduce((sum, d) => sum + d.record_count, 0) === 96, 'controlled domains still total the 96 canonical sources');
-ok(index.assets_2027.reference_snapshots.length === 14, 'all 14 2027 reference snapshots (2026 read-only copies) are indexed');
-ok(new Set(index.assets_2027.reference_snapshots.map((s) => s.drive_file_id)).size === 14, 'snapshot Drive IDs are unique');
+ok(index.assets_2027.reference_snapshots.length === 16, 'all 16 2027 reference snapshots (2026 read-only copies) are indexed');
+ok(new Set(index.assets_2027.reference_snapshots.map((s) => s.drive_file_id)).size === 16, 'snapshot Drive IDs are unique');
 ok(index.assets_2027.reference_snapshots.every((s) => s.maps_to_source_ids.length && s.origin_2026 && s.drive_file_id), 'every snapshot maps to 2027 source IDs and keeps its 2026 origin provenance');
 ok(index.assets_2027.framework_catalogs.some((a) => a.asset_id === 'REG-DRIVE' && a.drive_file_id === '1mUiVpt-DIvCLHZnySt-sruhnfQBIqGcR'), 'the Drive source registry file the GS reads is itself indexed');
 ok(index.child_sheet_templates.length === 8 && new Set(index.child_sheet_templates.map((t) => t.template_code)).size === 8, 'all 8 child-sheet templates (CS01–CS08) are indexed');

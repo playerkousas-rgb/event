@@ -112,6 +112,8 @@ const REFERENCE_SNAPSHOTS = [
   { asset_id: 'SNAP-MC-PARADE', name: '2027 參考快照－會操檢閱司儀稿.pdf', kind: 'pdf', drive_file_id: '14CNb40X0eXTI5qJkimr54xAFA4BL2MXe', maps_to_source_ids: ['SCRIPT-PARADE'], origin_2026: '2026 司儀稿：2. 司儀稿_會操檢閱典禮2026 (V4 2026-10-04).pdf' },
   { asset_id: 'SNAP-MC-LUNCH', name: '2027 參考快照－嘉賓午膳司儀稿.pdf', kind: 'pdf', drive_file_id: '1PS50F4uvBMIX1kQiVP3svu62Uo9iUSV-', maps_to_source_ids: ['SCRIPT-LUNCH'], origin_2026: '2026 司儀稿：3_司儀稿_莫榮大樓自助餐 2026 (V2 2026-10-04).pdf' },
   { asset_id: 'SNAP-CIRCULAR', name: '2027 參考快照－活動特別通告.pdf', kind: 'pdf', drive_file_id: '1HA46I0rJCrnYRiUa9etqUVv0hdZpW2WX', maps_to_source_ids: ['DOC-MAIN-CIRCULAR', 'DOC-SPECIAL-CIRCULAR'], origin_2026: '2026 通告：sp12_26_isd2026.pdf（特別通告第12/26號）' },
+  { asset_id: 'SNAP-DONATE-FOOD', name: '2027 參考快照－童心捐贈（食品捐贈）.doc', kind: 'doc', drive_file_id: '1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ', maps_to_source_ids: ['DOC-FOOD-DONATION'], origin_2026: '2026 通告：_FoodDonation.doc（童心捐贈大行動・食品捐贈）' },
+  { asset_id: 'SNAP-DONATE-GOODS', name: '2027 參考快照－童心捐贈（物品回收）.doc', kind: 'doc', drive_file_id: '10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk', maps_to_source_ids: ['DOC-GOODS-DONATION'], origin_2026: '2026 通告：_Goods Donating.doc（童心捐贈大行動・物品回收）' },
   { asset_id: 'SNAP-UG-ATTEND', name: '2027 參考快照－其他制服團體出席清單.pdf', kind: 'pdf', drive_file_id: '1fAVXD5CwWf4wgMfJEqRcbRwL8Qc8sQAv', maps_to_source_ids: ['DATA-UG-ATTENDANCE'], origin_2026: '2026：出席UG及派隊清單_2026_as at 20260929.pdf' },
   { asset_id: 'SNAP-AWARD-MERIT', name: '2027 參考快照－優異旅團及獎項名單.docx', kind: 'docx', drive_file_id: '1JBz0Ph8ukHPmMlnjU4spatT5YzX025sR', maps_to_source_ids: ['DATA-AWARD-MERIT', 'DATA-AWARD-SECTION', 'DATA-AWARD-LEADER'], origin_2026: '2026 優異旅團獲獎名單（188 團次；ceremony.meritRoster）' },
   { asset_id: 'SNAP-GUEST-LIST', name: '2027 參考快照－嘉賓名單.csv', kind: 'csv', drive_file_id: '1Uhg6zQS-_V_eI_MBpnIY-O3EUcCNxiCu', maps_to_source_ids: ['DATA-GUEST'], origin_2026: '2026：港島童軍繽紛日2026 - 嘉賓名單 as at 02.10.2026.csv（102 位）' },
@@ -394,7 +396,7 @@ CHILD_ROUTES.forEach((r) => {
   }
 });
 if (ENTRY_ROUTES.length !== 10) throw new Error('expected 10 entry routes');
-if (REFERENCE_SNAPSHOTS.length !== 14) throw new Error('expected 14 reference snapshots');
+if (REFERENCE_SNAPSHOTS.length !== 16) throw new Error('expected 16 reference snapshots');
 index.datasets_2026.forEach((d) => {
   if (d.record_count === null) throw new Error(`dataset ${d.key} count is null (path moved in 2026 archive)`);
   d.related_master_tabs.forEach((t) => { if (!masterTabNames.has(t)) throw new Error(`dataset ${d.key} bad tab ${t}`); });

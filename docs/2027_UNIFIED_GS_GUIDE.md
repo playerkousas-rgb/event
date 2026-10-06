@@ -2,15 +2,15 @@
 
 > **成品**：[`apps-script/Code2027Unified.gs`](../apps-script/Code2027Unified.gs)（一個檔，貼上即用）
 > **Drive 副本（00_系統及資料）**：
-> - 連通索引 `ISD 2027－2026資料連通索引（一體化版 v1）.json` → ID `1WlO139-5SvgPfzEtJc3n4o2Qu9XZZPGS`
-> - 一體化 GS `ISD 2027－一體化後端 GS（2026連通／主SHEET同步／受控來源）v1.gs` → ID `1ucZO83i29XnBgz6w5BV75pFoR4BdPWx7`
-> **版本**：`2027-unified-gs-v1`｜2026-10-06
+> - 連通索引 `ISD 2027－2026資料連通索引（一體化版 v1.1）.json`（16 快照版）→ ID `1JXD_zudm8p9S5CSZLp0_vIhWwnjE2NX1`
+> - 一體化 GS `ISD 2027－一體化後端 GS（2026連通／主SHEET同步／受控來源）v1.1.gs` → ID `1LN7Psgzn88tREQWuwHtWKlrW2yyByQ0T`
+> **版本**：`2027-unified-gs-v1`｜2026-10-06（同日完成 18 角色同源輻射驗證：`tests/all_roles_single_source_test.js` 220 項全過）
 
 ## 一、呢個 GS 做咩（一體化＝四件事一個檔）
 
 | 層 | Action | 用途 |
 |---|---|---|
-| **① 一體化索引** | `getUnifiedIndex`／`findAsset`／`get2026Reference` | 讀取 Drive 上嘅連通索引：96 受控來源、14 份 07_參考快照（2026 唯讀副本）、主SHEET 25 分頁模型、25 條子SHEET 路由（17 條已接通）、10 個填寫入口、2026 數據集統計（31 旅／102 嘉賓／33 攤位／188 團次……只記數字，唔含個人資料） |
+| **① 一體化索引** | `getUnifiedIndex`／`findAsset`／`get2026Reference` | 讀取 Drive 上嘅連通索引：96 受控來源、16 份 07_參考快照（2026 唯讀副本）、主SHEET 25 分頁模型、25 條子SHEET 路由（17 條已接通）、10 個填寫入口、2026 數據集統計（31 旅／102 嘉賓／33 攤位／188 團次……只記數字，唔含個人資料） |
 | **② 主SHEET 同步引擎** | `upsertMasterRows`／`registerChildSheet`／`pullChildSheet`／`resolveFieldError` | 按 02_資料字典 欄位鍵名合約驗證 → 按 `source_record_id`／業務鍵 upsert → 自動寫 `04_同步狀態`／`05_欄位錯誤`／`24_修正紀錄`。欄位唔啱會**拒收＋記低原因**，絕不暗中改名 |
 | **③ 受控來源發佈** | `update2027Source`／`get2027Output` | 與 `Code2027.gs` v1 完全相同規則（revision 樂觀鎖、owner／approval、封鎖 2026 引用），驅動 8 個 domain JSON |
 | **④ 延伸登記** | `register2027Extension` | 「再加上 2027 的 SHEET 和 SCRIPT」嘅正式入口：新 Sheet／Script／入口一律登記入主SHEET `2027_登記表`，留痕可查 |
@@ -40,7 +40,7 @@ GET …/exec?action=get2026Reference&event_id=isd_2027&api_key=KEY
 GET …/exec?action=findAsset&q=攤位&event_id=isd_2027&api_key=KEY
 GET …/exec?action=getUnifiedIndex&section=assets_2027.reference_snapshots&…
 ```
-→ 2027 owner 準備資料時一查就知：上屆用邊份檔（14 份參考快照全部有連結）、歸邊個 source ID、邊組負責。
+→ 2027 owner 準備資料時一查就知：上屆用邊份檔（16 份參考快照全部有連結）、歸邊個 source ID、邊組負責。
 
 ### 登記你嘅 2027 子SHEET（例：行政組開咗 CS01 工作副本）
 ```
@@ -90,7 +90,7 @@ pending 路由 `pullChildSheet` 會直接拒絕並寫 `05_欄位錯誤`，原因
 
 ```
 2026 檔案／Sheet／數據集  →── 唯讀參考（索引＋統計；永不寫回、永不 live link）
-                              │ 規劃參考：14 份參考快照＋2026 數據集統計＋Drive 地圖
+                              │ 規劃參考：16 份參考快照＋2026 數據集統計＋Drive 地圖
                               ▼
 2027 受控來源（96 source／8 domain JSON）  ←── update2027Source（owner＋approval＋revision）
 2027 系統主SHEET（25 分頁）              ←── upsertMasterRows／pullChildSheet（鍵名合約＋留痕）

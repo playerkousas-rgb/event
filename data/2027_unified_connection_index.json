@@ -1859,6 +1859,38 @@
         "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
       },
       {
+        "asset_id": "SNAP-DONATE-FOOD",
+        "name": "2027 參考快照－童心捐贈（食品捐贈）.doc",
+        "kind": "doc",
+        "drive_file_id": "1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ",
+        "link": "https://drive.google.com/file/d/1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DOC-FOOD-DONATION",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          }
+        ],
+        "origin_2026": "2026 通告：_FoodDonation.doc（童心捐贈大行動・食品捐贈）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-DONATE-GOODS",
+        "name": "2027 參考快照－童心捐贈（物品回收）.doc",
+        "kind": "doc",
+        "drive_file_id": "10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk",
+        "link": "https://drive.google.com/file/d/10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DOC-GOODS-DONATION",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          }
+        ],
+        "origin_2026": "2026 通告：_Goods Donating.doc（童心捐贈大行動・物品回收）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
         "asset_id": "SNAP-UG-ATTEND",
         "name": "2027 參考快照－其他制服團體出席清單.pdf",
         "kind": "pdf",

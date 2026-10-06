@@ -8901,9 +8901,9 @@
     "booth_import_validation": {
       "count": 33,
       "source_sheet": "2026",
-      "source_file": "ISD2027 攤位資料.xlsx (Drive 1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle)",
+      "source_file": "2027 參考快照－攤位資料.xlsx (Drive 1jFQxYgZSv11PIEromK_DviGixcMoCL3W)",
       "parsed_at": "2026-10-02",
-      "note": "攤位資料。",
+      "note": "攤位資料（33 攤位種籽來自 07_參考快照嘅 2026 唯讀副本；正式 2027 攤位表待主題節目組上載）。",
       "names_nonempty": true,
       "cell_address_mapping": true
     }
@@ -25571,7 +25571,7 @@
       {
         "id": "ann_notice_1",
         "title": "特別通告第12/26號 — 港島童軍繽紛日2026（活動詳情）",
-        "content": "日期、地點、時間、名額 2,000 人、費用 $10、報名辦法、代訂餐盒、紀念品、交通、服裝、截止 9月11日及惡劣天氣延期安排（10月11日）。\n\n正式文件：https://drive.google.com/file/d/1rmV3zqrBex803aiyjrf20QddudOBoTFf/view",
+        "content": "日期、地點、時間、名額 2,000 人、費用 $10、報名辦法、代訂餐盒、紀念品、交通、服裝、截止 9月11日及惡劣天氣延期安排（10月11日）。\n\n正式文件：https://drive.google.com/file/d/1HA46I0rJCrnYRiUa9etqUVv0hdZpW2WX/view",
         "category": "通告",
         "created_by": "秘書處",
         "created_at": "2026-07-01T09:00:00Z",
@@ -25583,7 +25583,7 @@
       {
         "id": "ann_notice_2",
         "title": "特別通告 — 童心捐贈大行動（食品捐贈）Food Donation",
-        "content": "受惠機構：循道衛理觀塘社會服務處。收集非罐頭食品，10月4日 11:00–15:00 香港警察學院食品收集攤位，捐贈者獲紀念章。\n\n正式文件：https://drive.google.com/file/d/1AXsmbK59MFz-ODLtZ-ysgvW2RcF8mu7j/view",
+        "content": "受惠機構：循道衛理觀塘社會服務處。收集非罐頭食品，10月4日 11:00–15:00 香港警察學院食品收集攤位，捐贈者獲紀念章。\n\n正式文件：https://drive.google.com/file/d/1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ/view",
         "category": "通告",
         "created_by": "秘書處",
         "created_at": "2026-08-01T09:00:00Z",
@@ -25595,7 +25595,7 @@
       {
         "id": "ann_notice_3",
         "title": "特別通告 — 童心捐贈大行動（物品回收）Goods Donating",
-        "content": "受惠機構：國際十字路會。回收電腦用品、教育玩具（Lego）、全新文具、英語兒童讀物，10月4日 11:00–15:00 香港警察學院物品回收攤位。\n\n正式文件：https://drive.google.com/file/d/1WbfGCy90Pkau6TLNg9J_DdohEqPzdknQ/view",
+        "content": "受惠機構：國際十字路會。回收電腦用品、教育玩具（Lego）、全新文具、英語兒童讀物，10月4日 11:00–15:00 香港警察學院物品回收攤位。\n\n正式文件：https://drive.google.com/file/d/10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk/view",
         "category": "通告",
         "created_by": "秘書處",
         "created_at": "2026-08-01T09:00:00Z",
@@ -28634,10 +28634,10 @@
   "mock_demo_source": {
     "source_event_id": "isd_2027",
     "source_read_model": "data/isd_2027.json",
-    "source_sha256": "2ed7c82aab7844eb5ff9e504f5eacd45db319ec7ea99f96f6ef890c3010a4621",
+    "source_sha256": "860cee572d31fb0c116e93abd59cc62ee9bd4dcd3a3ba06fe769772e6095378d",
     "builder": "tools/build_mock_demo_from_2027.js",
     "policy": "This rehearsal product is rebuilt only from the independent 2027 source. 2026 is immutable provenance only and is never read at runtime.",
-    "rebuilt_at": "2026-10-06T04:06:52.217Z"
+    "rebuilt_at": "2026-10-06T13:22:32.241Z"
   },
   "link_registry": {
     "generated_at": "2026-10-06",

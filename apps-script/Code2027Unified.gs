@@ -41,7 +41,7 @@ const ISD2027_UNIFIED_VERSION = '2027-unified-gs-v1';
 const ISD2027_EVENT_ID = 'isd_2027';
 
 // Drive 上嘅連通索引檔（00_系統及資料 內；由 tools/build_2027_unified_connection_index.js 產生）
-const ISD2027_CONNECTION_INDEX_FILE_ID = '1WlO139-5SvgPfzEtJc3n4o2Qu9XZZPGS';
+const ISD2027_CONNECTION_INDEX_FILE_ID = '1JXD_zudm8p9S5CSZLp0_vIhWwnjE2NX1';
 
 // 受控來源 Drive 登記檔（Code2027.gs v1 同一檔案）
 const ISD2027_DRIVE_REGISTRY_FILE_ID = '1mUiVpt-DIvCLHZnySt-sruhnfQBIqGcR';
