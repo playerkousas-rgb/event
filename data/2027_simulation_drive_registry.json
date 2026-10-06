@@ -28,6 +28,7 @@
     "output_connection_registry": {"id": "1XCOWWnFUr1v4yNglgoXxkR7-JbgUd31d", "name": "SIMULATION_ONLY－2027 輸出連線索引.json"},
     "output_projection": {"id": "1ou2kKaUeGGrkcQUg9ARJUVzfdz4to3Bf", "name": "SIMULATION_ONLY－2027 輸出指標.json"},
     "review": {"id": "1LBd-24pAYdKj56E4kF_R3KvaHv7fffeE", "name": "SIMULATION_ONLY－2027 演練覆核.json"},
+    "change_audit": {"id": "1Eh2wcnJr7YEXEfmc3zukwl1HUBARujHk", "name": "SIMULATION_ONLY－2027 來源變更審計.json"},
     "domains": [
       {"domain_id": "system", "id": "1uTHlG15lnKX4cUB3et-3vsCBIxXkUx8S", "name": "SIMULATION_ONLY－00_系統及資料.json"},
       {"domain_id": "registration", "id": "1dIFLVSaBcUDuLN_yiigiDk9fnFCpGyqS", "name": "SIMULATION_ONLY－01_報名.json"},
@@ -38,8 +39,8 @@
       {"domain_id": "logistics", "id": "1X_Mwg3mw4uRcL7KeGinCOIPWRFy3UGqC", "name": "SIMULATION_ONLY－06_後勤.json"},
       {"domain_id": "reference_snapshot", "id": "10iuQk_YibXln-0PIIcUg2exNpdRbyptG", "name": "SIMULATION_ONLY－07_參考快照.json"}
     ],
-    "review_guide": {"id": "17byn0u2ij5KGZuI57Dq02dpRChLW5w7Y", "name": "README－2027 假資料來源連通覆核.md"},
-    "review_interface_source": {"id": "1MqGc0kHLZ8ZmqjSHGBw2k8X7YxfYH1jL", "name": "simulation-review.html"}
+    "review_guide": {"id": "1M0ukeIZxQZQhHlE6AUaVRj-w4UpBvHRR", "name": "README－2027 假資料來源連通覆核（current）.md"},
+    "review_interface_source": {"id": "1EZ1dxnb3_mW40KICudoolp4Kcy9c3Zjn", "name": "simulation-review（current）.html"}
   },
   "repository_review_commands": [
     "node tools/build_2027_simulation_from_2026.js",

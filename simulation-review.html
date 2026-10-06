@@ -48,7 +48,7 @@ async function load(){
 }
 function selected(){return state.sources.find(source=>source.source_id===$('source').value)||state.sources[0];}
 function render(){
-  $('summary').innerHTML=[`<span class="rounded-full bg-white/10 px-3 py-1">${state.review.source_count} 個 fake source</span>`,`<span class="rounded-full bg-white/10 px-3 py-1">${state.review.output_count} 個 ready outputs</span>`,`<span class="rounded-full bg-amber-400/20 text-amber-100 px-3 py-1">simulation only</span>`].join('');
+  $('summary').innerHTML=[`<span class="rounded-full bg-white/10 px-3 py-1">${state.review.source_count} 個 fake source</span>`,`<span class="rounded-full bg-white/10 px-3 py-1">${state.review.output_count} 個 ready outputs</span>`,`<span class="rounded-full bg-white/10 px-3 py-1">${state.audit_entry_count} 筆演練審計</span>`,`<span class="rounded-full bg-amber-400/20 text-amber-100 px-3 py-1">simulation only</span>`].join('');
   const source=$('source'), previous=source.value;
   source.innerHTML=state.sources.map(item=>`<option value="${escape(item.source_id)}">${escape(item.source_id)} · ${escape(item.owner_group)}</option>`).join('');
   source.value=state.sources.some(item=>item.source_id===previous)?previous:state.sources[0].source_id;
@@ -57,7 +57,8 @@ function render(){
 function renderSource(){
   const item=selected(); if(!item)return;
   $('value').value=item.editable_test_value;
-  $('source-meta').innerHTML=`<div><b>主責：</b>${escape(item.owner_group)}</div><div class="mt-1"><b>Domain：</b>${escape(item.canonical_domain)}　<b>Revision：</b>${item.revision}</div><div class="mt-2 font-bold">相依輸出（${item.dependent_outputs.length}）</div><ul class="list-disc pl-4 mt-1 space-y-0.5">${item.dependent_outputs.map(output=>`<li>${escape(output)}</li>`).join('')}</ul>`;
+  const audit=item.last_audit; const auditLine=audit?`<div class="mt-2 border-t pt-2"><b>最近審計：</b><span class="font-mono break-all">${escape(audit.audit_id)}</span><br>revision ${audit.before_revision} → ${audit.after_revision} · ${escape(audit.occurred_at)}</div>`:'<div class="mt-2 border-t pt-2 text-slate-500">尚未有此 source 的表單修改；現為 bootstrap 演練值。</div>';
+  $('source-meta').innerHTML=`<div><b>主責：</b>${escape(item.owner_group)}</div><div class="mt-1"><b>Domain：</b>${escape(item.canonical_domain)}　<b>Revision：</b>${item.revision}</div>${auditLine}<div class="mt-2 font-bold">相依輸出（${item.dependent_outputs.length}）</div><ul class="list-disc pl-4 mt-1 space-y-0.5">${item.dependent_outputs.map(output=>`<li>${escape(output)}</li>`).join('')}</ul>`;
 }
 function renderOutputs(){
   const term=$('search').value.trim().toLowerCase(); const focused=selected()?.source_id;

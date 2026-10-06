@@ -39,8 +39,9 @@ fake records. Personal names, contact details, car plates, direct document URLs
 and full ceremony scripts are not carried over. Participant and guest data are
 anonymised patterns; document and script records are metadata/templates.
 
-The command resets simulation content back to its reproducible revision-1
-seed. It does **not** touch the blank framework.
+The command resets simulation content and `data/2027_simulation_change_audit.json`
+back to their reproducible revision-1/bootstrap state. It does **not** touch the
+blank framework.
 
 ## Review form: edit one source and watch propagation
 
@@ -53,7 +54,8 @@ workspace). The form:
 
 1. lists the simulation canonical source IDs and their ownership;
 2. lets the reviewer change that source's `editable_test_value`;
-3. records a controlled approved simulation revision with an audit ID;
+3. records a controlled approved simulation revision with an audit ID in
+   `data/2027_simulation_change_audit.json`;
 4. rebuilds only the simulation projection/review; and
 5. highlights every dependent output card, showing the same source revision and
    preview value.
@@ -61,8 +63,9 @@ workspace). The form:
 The server never opens the 2026 archive and rejects blocked live-2026
 references through the shared source validator. It only writes
 `data/2027_simulation_sources/`,
-`data/2027_simulation_output_source_projection.json`, and
-`data/2027_simulation_review.json`.
+`data/2027_simulation_output_source_projection.json`,
+`data/2027_simulation_review.json`, and
+`data/2027_simulation_change_audit.json`.
 
 For a non-browser source edit, use the review-only builder afterward:
 

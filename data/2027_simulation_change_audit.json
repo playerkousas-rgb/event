@@ -1,0 +1,21 @@
+{
+  "schema_version": "2027-simulation-change-audit-v1",
+  "event_id": "isd_2027",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "simulation_label": "2027 演練來源變更審計（非 live）",
+  "note": "Simulation-only audit history. Re-running the locked-evidence bootstrap resets this log and fake source revisions to their reproducible seed.",
+  "entry_count": 1,
+  "entries": [
+    {
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "action": "simulation_bootstrap_from_locked_2026_evidence",
+      "occurred_at": "2027-01-15T09:00:00+08:00",
+      "actor_group": "system simulation builder",
+      "source_count": 96,
+      "output_count": 109,
+      "evidence_sha256": "d7dcd05521c01e7925851d74f5a87321c38e0ddadbbd921bb5ea41fe2c2ce037",
+      "rule": "One-time seed only; never a 2026 live link or real 2027 publication."
+    }
+  ]
+}

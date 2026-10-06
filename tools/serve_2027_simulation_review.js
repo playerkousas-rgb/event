@@ -10,6 +10,7 @@ const root=path.resolve(__dirname,'..');
 const port=Number(process.env.PORT||4177);
 const readJson=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
 const writeJson=(file,value)=>fs.writeFileSync(path.join(root,file),JSON.stringify(value,null,2)+'\n');
+const SIMULATION_AUDIT_FILE='data/2027_simulation_change_audit.json';
 const send=(res,status,body,type='application/json; charset=utf-8')=>{res.writeHead(status,{'Content-Type':type,'Cache-Control':'no-store'});res.end(typeof body==='string'?body:JSON.stringify(body));};
 function rebuildReview(){
   const framework=loadFramework(root,'simulation');
@@ -33,14 +34,31 @@ function rebuildReview(){
   writeJson('data/2027_simulation_review.json',review);
   return {framework,review};
 }
+function loadAudit(){
+  const audit=readJson(SIMULATION_AUDIT_FILE);
+  if(audit.status!=='simulation_seed_from_2026_evidence_not_live'||audit.simulation_only!==true||!Array.isArray(audit.entries)) throw new Error('invalid simulation audit log');
+  return audit;
+}
+function appendAudit(entry){
+  const audit=loadAudit();
+  audit.entries.unshift(entry);
+  audit.entry_count=audit.entries.length;
+  writeJson(SIMULATION_AUDIT_FILE,audit);
+  return entry;
+}
 function state(){
   const {framework,review}=rebuildReview();
+  const audit=loadAudit();
+  const latestBySource=new Map();
+  for(const entry of audit.entries) if(entry.source_id&&!latestBySource.has(entry.source_id)) latestBySource.set(entry.source_id,entry);
   return {
     review,
+    audit_entry_count:audit.entry_count,
+    recent_audit_entries:audit.entries.slice(0,12),
     sources:framework.catalog.sources.map(source=>{
       const record=framework.sources.get(source.source_id).record;
       const first=record.payload.records[0]||{};
-      return {source_id:source.source_id,owner_group:source.owner_group,canonical_domain:source.canonical_domain,revision:record.revision,approved_by:record.approved_by,editable_test_value:first.editable_test_value||'',dependent_outputs:source.output_ids.map(id=>framework.connections.outputs.find(output=>output.output_id===id)?.final_output).filter(Boolean)};
+      return {source_id:source.source_id,owner_group:source.owner_group,canonical_domain:source.canonical_domain,revision:record.revision,approved_by:record.approved_by,editable_test_value:first.editable_test_value||'',last_audit:latestBySource.get(source.source_id)||null,dependent_outputs:source.output_ids.map(id=>framework.connections.outputs.find(output=>output.output_id===id)?.final_output).filter(Boolean)};
     })
   };
 }
@@ -53,17 +71,37 @@ function applyTestValue(body){
   if(!located) throw new Error(`unknown simulation source: ${sourceId}`);
   const payload=JSON.parse(JSON.stringify(located.record.payload));
   if(!Array.isArray(payload.records)||!payload.records.length) payload.records=[{record_id:`SIM-${sourceId}-001`}];
+  const previousValue=payload.records[0].editable_test_value||'';
   payload.records[0].editable_test_value=value;
+  const updatedAt=new Date().toISOString();
+  const auditId=`SIM-REVIEW-${sourceId}-${Date.now()}`;
   const next=applyApprovedChange(framework,{
     source_id:sourceId,
     updated_by:located.record.owner_group,
     approved_by:located.record.approved_by[0],
-    updated_at:new Date().toISOString(),
-    audit_id:`SIM-REVIEW-${sourceId}-${Date.now()}`,
+    updated_at:updatedAt,
+    audit_id:auditId,
     publication_status:'approved',
     payload
   });
+  const updated=next.sources.get(sourceId).record;
   writeFramework(root,next);
+  appendAudit({
+    audit_id:auditId,
+    action:'simulation_source_edit',
+    occurred_at:updatedAt,
+    source_id:sourceId,
+    source_domain:located.domain,
+    actor_group:located.record.owner_group,
+    approved_by:located.record.approved_by[0],
+    before_revision:located.record.revision,
+    after_revision:updated.revision,
+    changed_record_id:payload.records[0].record_id||null,
+    previous_preview_value:previousValue,
+    updated_preview_value:value,
+    dependent_output_ids:framework.connections.outputs.filter(output=>output.canonical_source_id===sourceId).map(output=>output.output_id),
+    simulation_only:true
+  });
   return state();
 }
 const server=http.createServer((req,res)=>{

@@ -238,4 +238,20 @@ const review={
   })
 };
 writeJson('data/2027_simulation_review.json',review);
+writeJson('data/2027_simulation_change_audit.json',{
+  schema_version:'2027-simulation-change-audit-v1',event_id:'isd_2027',status:SIMULATION_STATUS,simulation_only:true,
+  simulation_label:'2027 演練來源變更審計（非 live）',
+  note:'Simulation-only audit history. Re-running the locked-evidence bootstrap resets this log and fake source revisions to their reproducible seed.',
+  entry_count:1,
+  entries:[{
+    audit_id:SIMULATION_AUDIT,
+    action:'simulation_bootstrap_from_locked_2026_evidence',
+    occurred_at:SIMULATION_UPDATED_AT,
+    actor_group:'system simulation builder',
+    source_count:simulationCatalog.source_count,
+    output_count:projection.output_count,
+    evidence_sha256:lock.sha256,
+    rule:'One-time seed only; never a 2026 live link or real 2027 publication.'
+  }]
+});
 console.log(`Built fake 2027 simulation from locked 2026 evidence: ${simulationCatalog.source_count} sources, ${projection.output_count} ready outputs, ${assets.participants.length} anonymised participant patterns, ${assets.guests.length} anonymised guest patterns.`);
