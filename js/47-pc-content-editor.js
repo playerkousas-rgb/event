@@ -172,7 +172,7 @@ const PC_CONTENT_UNLOCKED = [];     // 例外名單：將來想開返邊個區�
 
 /* 結構類 key：唔開放編輯，由我哋定 */
 const PC_LOCKED_KEYS = ['audiences','section_labels','guides','notices','schedules','arrivals',
-  'manual','guests_rows','booths','venue_map','apply_forms','intake_forms','public_registration_2027','staff_gate','upload_slots','checkin_demo'];
+  'manual','guests_rows','booths','venue_map','apply_forms','intake_forms','staff_gate','upload_slots','checkin_demo'];
 
 Object.assign(ScoutEventApp.prototype,{
 

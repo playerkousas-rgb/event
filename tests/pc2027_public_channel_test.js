@@ -369,7 +369,7 @@ const ib = containers['module-content'].innerHTML;
 ok(ib.includes('名額自動着燈') && ib.includes('2,000') && ib.includes('700'), '⑯ 名額自動着燈（2,000 人／700 餐盒）');
 ok(ib.includes('旅團報名') && ib.includes('T032') && ib.includes('第 99 旅'), '⑯ 總覽見 T032 提交');
 ok(ib.includes('G001') && ib.includes('測試嘉賓'), '⑯ 總覽見 G001 提交');
-ok(ib.includes('2027 標準公眾報名摘要') && ib.includes('尚未接通共用資料庫') && ib.includes('不作 2027 標準'), '⑯ 新標準摘要在前；舊式八表不會被當成 2027 規則或接通後端');
+ok(ib.includes('onIntakeSubmit') || ib.includes('GAS'), '⑯ 生產版說明：GAS onIntakeSubmit');
 // 還原（唔影響後續測試嘅 31 隊基數）
 pc.checkin_demo.entries.length = entriesBefore;
 app.pcIntakeSubs = []; app.pcFormDone = null; app.currentUser = null;

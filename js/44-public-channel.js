@@ -721,117 +721,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     if(input) input.value='';
   },
 
-  /* ═══════════ 2027 公眾報名：一種 canonical record、四個易揀入口 ═══════════
-     This MOCK keeps submissions in the current browser only.  It is deliberately
-     not a shadow Google Sheet: a real shared store is deferred until the final
-     public outputs and data rules are approved. */
-  pcRegistrationFormId:null, pcRegistrationDone:null,
-  pcPublicRegistrationDef(){
-    const d=this.pcDemoData(); return (d&&d.public_registration_2027)||null;
-  },
-  pcPublicRegistrationStoreKey(){
-    const id=(this.eventData&&this.eventData.id)||'mock_demo';
-    return 'isd2027-public-registration-'+String(id);
-  },
-  pcPublicRegistrationSubmissions(){
-    try{
-      if(typeof localStorage==='undefined') return [];
-      const rows=JSON.parse(localStorage.getItem(this.pcPublicRegistrationStoreKey())||'[]');
-      return Array.isArray(rows)?rows:[];
-    }catch(e){ return []; }
-  },
-  pcSavePublicRegistrationSubmissions(rows){
-    try{ if(typeof localStorage!=='undefined') localStorage.setItem(this.pcPublicRegistrationStoreKey(),JSON.stringify(rows)); }
-    catch(e){ showToast('未能儲存此瀏覽器的示範提交','warning'); }
-  },
-  pcOpenPublicRegistration(id){
-    this.pcRegistrationFormId=id||'select'; this.pcRegistrationDone=null; this.renderPublicLanding();
-    if(typeof window!=='undefined') window.scrollTo(0,0);
-  },
-  pcPublicRegistrationBack(){
-    this.pcRegistrationFormId=null; this.pcRegistrationDone=null; this.renderPublicLanding();
-    if(typeof window!=='undefined') window.scrollTo(0,0);
-  },
-  pcPublicRegistrationCategory(id){
-    const r=this.pcPublicRegistrationDef(); return (r&&r.categories||[]).find(c=>c.id===id)||null;
-  },
-  pcPublicRegistrationFieldHTML(fl){
-    const req=fl.required?'<span class="text-rose-500">*</span>':'';
-    const key=escapeHtml(fl.key), label=escapeHtml(fl.label), help=fl.help?`<div class="text-[10.5px] text-slate-400 mt-0.5">${escapeHtml(fl.help)}</div>`:'';
-    if(fl.type==='check') return `<label class="flex items-start gap-2.5 py-3 border-t border-slate-100 first:border-t-0 cursor-pointer"><input type="checkbox" data-pcr="${key}" class="mt-0.5 w-4 h-4" ${fl.required?'required':''}><span class="text-[12.5px] text-slate-700">${label} ${req}${help}</span></label>`;
-    const head=`<div class="text-[12px] font-bold text-slate-600 mb-1">${label} ${req}</div>`;
-    if(fl.type==='select') return `<div class="py-2.5 border-t border-slate-100 first:border-t-0">${head}<select data-pcr="${key}" ${fl.required?'required':''} class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-[13px] bg-white"><option value="">請選擇…</option>${(fl.options||[]).map(o=>`<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('')}</select>${help}</div>`;
-    if(fl.type==='textarea') return `<div class="py-2.5 border-t border-slate-100 first:border-t-0">${head}<textarea data-pcr="${key}" rows="3" placeholder="${escapeHtml(fl.placeholder||'')}" class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-[13px] resize-y"></textarea>${help}</div>`;
-    const type=['number','email','tel'].includes(fl.type)?fl.type:'text';
-    return `<div class="py-2.5 border-t border-slate-100 first:border-t-0">${head}<input type="${type}" data-pcr="${key}" ${fl.required?'required':''} ${type==='number'?'min="0" inputmode="numeric"':''} placeholder="${escapeHtml(fl.placeholder||'')}" class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-[13px]">${help}</div>`;
-  },
-  pcPublicRegistrationHTML(){
-    const r=this.pcPublicRegistrationDef();
-    if(!r) return '<p class="text-sm text-slate-400">此活動尚未設定公眾報名資料。</p>';
-    if(this.pcRegistrationDone){
-      const done=this.pcRegistrationDone;
-      return `<div class="max-w-md mx-auto"><div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center"><div class="text-3xl">✓</div><div class="font-black text-[15px] text-emerald-800 mt-1">已記錄你的報名資料</div><div class="mt-3 bg-white border border-emerald-300 rounded-xl py-2.5"><div class="text-[10.5px] text-slate-400 font-bold">報名參考編號</div><div class="text-2xl font-black tracking-wider text-emerald-700">${escapeHtml(done.no)}</div></div><div class="mt-3 text-[11px] text-emerald-700 leading-relaxed">${escapeHtml(r.mock_note||'')}</div></div><button onclick="app.pcPublicRegistrationBack()" class="mt-3 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[12.5px] font-bold rounded-xl py-2.5">← 返回公眾頁</button></div>`;
-    }
-    const category=this.pcPublicRegistrationCategory(this.pcRegistrationFormId);
-    if(!category){
-      return `<div class="max-w-3xl mx-auto"><button onclick="app.pcPublicRegistrationBack()" class="text-[12px] text-violet-700 font-bold mb-3">← 返回活動資料</button><div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3"><div class="font-black text-[18px] text-slate-800">${escapeHtml(r.title||'公眾報名')}</div><p class="text-[12.5px] text-slate-600 leading-relaxed mt-1">${escapeHtml(r.intro||'')}</p><div class="mt-3 bg-violet-50 border border-violet-200 rounded-xl px-3 py-2 text-[11px] text-violet-800 leading-relaxed">${escapeHtml(r.privacy_note||'')}</div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${(r.categories||[]).map(c=>`<button onclick="app.pcOpenPublicRegistration('${escapeHtml(c.id)}')" class="text-left bg-white border-2 border-slate-200 hover:border-violet-500 rounded-2xl p-4 transition"><div class="flex items-start gap-2.5"><span class="text-2xl">${escapeHtml(c.icon||'📝')}</span><div><div class="font-black text-[14px] text-slate-800">${escapeHtml(c.title)}</div><div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(c.target||'')}</div></div></div><div class="mt-3 text-[11.5px] font-bold text-violet-800">你會告訴系統：</div><ul class="mt-1 space-y-0.5 text-[11px] text-slate-600">${(c.reports||[]).map(x=>`<li>• ${escapeHtml(x)}</li>`).join('')}</ul><div class="mt-3 text-[12px] font-bold text-violet-700">填寫此類報名 →</div></button>`).join('')}</div><div class="mt-3 text-[10.5px] text-slate-400 leading-relaxed text-center">${escapeHtml(r.mock_note||'')}</div></div>`;
-    }
-    return `<div class="max-w-xl mx-auto"><button onclick="app.pcOpenPublicRegistration('select')" class="text-[12px] text-violet-700 font-bold mb-3">← 選擇其他報名類別</button><div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3" style="border-left:4px solid #6d28d9"><div class="flex items-center gap-3"><div class="text-2xl">${escapeHtml(category.icon||'📝')}</div><div><b class="text-[15px] text-slate-800">${escapeHtml(category.title)}</b><div class="text-[11.5px] text-slate-500">${escapeHtml(category.target||'')}</div></div></div><div class="mt-3 bg-violet-50 border border-violet-100 rounded-xl px-3 py-2"><div class="text-[11px] font-bold text-violet-800">此報名會提供：</div><div class="text-[11px] text-violet-700 mt-0.5">${(category.reports||[]).map(x=>escapeHtml(x)).join('・')}</div></div></div><form onsubmit="app.pcPublicRegistrationSubmit(event,'${escapeHtml(category.id)}')" class="bg-white border border-slate-200 rounded-2xl p-4">${(category.fields||[]).map(fl=>this.pcPublicRegistrationFieldHTML(fl)).join('')}<div class="text-[10.5px] text-slate-400 mt-3 leading-relaxed">${escapeHtml(r.privacy_note||'')}</div><button type="submit" class="mt-3 w-full bg-violet-700 text-white text-[13.5px] font-bold rounded-xl py-3">提交報名資料</button><button type="button" onclick="app.pcOpenPublicRegistration('select')" class="mt-2 w-full bg-slate-100 border border-slate-200 text-slate-500 text-[12px] font-bold rounded-xl py-2">取消</button></form></div>`;
-  },
-  pcPublicRegistrationSubmit(ev,id){
-    if(ev&&ev.preventDefault) ev.preventDefault();
-    const category=this.pcPublicRegistrationCategory(id); if(!category) return false;
-    const vals={};
-    for(const fl of (category.fields||[])){
-      const el=document.querySelector('[data-pcr="'+fl.key+'"]');
-      if(!el) continue;
-      vals[fl.key]=fl.type==='check'?el.checked:(fl.type==='number'?(el.value===''?'':+el.value):el.value.trim());
-      if(fl.required){
-        const v=vals[fl.key]; const empty=fl.type==='check'?!v:(v===''||v===undefined||(fl.type==='number'&&!(+v>0)));
-        if(empty){ showToast('⚠️ 請填好必填欄位：'+fl.label,'warning'); return false; }
-      }
-    }
-    const rows=this.pcPublicRegistrationSubmissions();
-    const seq=rows.filter(x=>(x.registrant_type||x.category)===id).length+1;
-    const no='PR-'+String(category.prefix||'R')+String(seq).padStart(4,'0');
-    rows.push(this.pcCanonicalPublicRegistration(category,vals,no));
-    this.pcSavePublicRegistrationSubmissions(rows);
-    this.pcRegistrationDone={no,category:id};
-    showToast('✓ 已記錄報名資料：'+no,'success');
-    this.renderPublicLanding();
-    return true;
-  },
-  pcCanonicalPublicRegistration(category,vals,no){
-    /* One neutral record envelope for every registrant type.  The type-specific
-       values are retained once in field_values; all later views use the common
-       attendance / needs / transport fields instead of separate departmental copies. */
-    return {
-      schema:'isd2027.public_registration.v1', registration_id:no,
-      registrant_type:category.id, status:'submitted', submitted_at:new Date().toISOString(), source:'public_channel_mock',
-      contact:{name:vals.contact_name||vals.name||'',phone:vals.phone||'',email:vals.email||''},
-      organisation:{name:vals.unit_name||vals.organisation||'',type:vals.unit_type||vals.organisation_type||'',area:vals.area||''},
-      attendance:{total:+vals.attending_count||0,youth:+vals.youth_count||0,adult:+vals.adult_count||0,family:+vals.family_count||0,mode:vals.attendance||vals.participation||''},
-      needs:{meal_count:+vals.meal_count||0,dietary:vals.dietary_needs||'',accessibility:vals.accessibility_needs||'',activity:vals.activity_needs||''},
-      transport:{mode:vals.transport||'',vehicle_count:+vals.vehicle_count||0,arrival_note:vals.arrival_note||''},
-      notes:vals.note||'', field_values:vals
-    };
-  },
-  pcPublicRegistrationStats(){
-    const r=this.pcPublicRegistrationDef(), rows=this.pcPublicRegistrationSubmissions();
-    const type=x=>x.registrant_type||x.category, vals=x=>x.field_values||x.vals||{};
-    const cats=(r&&r.categories)||[];
-    const byCategory=cats.map(c=>{
-      const list=rows.filter(x=>type(x)===c.id);
-      return {id:c.id,title:c.title,icon:c.icon,submissions:list.length,people:list.reduce((sum,x)=>sum+(+(x.attendance&&x.attendance.total)||+vals(x).attending_count||0),0)};
-    });
-    const all=rows.reduce((a,x)=>a+(+(x.attendance&&x.attendance.total)||+vals(x).attending_count||0),0);
-    const meals=rows.reduce((a,x)=>a+(+(x.needs&&x.needs.meal_count)||+vals(x).meal_count||0),0);
-    const dietary=rows.filter(x=>String((x.needs&&x.needs.dietary)||vals(x).dietary_needs||'').trim()).length;
-    const access=rows.filter(x=>String((x.needs&&x.needs.accessibility)||vals(x).accessibility_needs||'').trim()).length;
-    const vehicles=rows.reduce((a,x)=>a+(+(x.transport&&x.transport.vehicle_count)||+vals(x).vehicle_count||0),0);
-    return {rows,byCategory,submissions:rows.length,people:all,meals,dietary,access,vehicles};
-  },
-
   /* ═══════════ 八大報名表（階段 2）：免登入・提交即出申請編號・旅團=T 編號 QR 一條血脈 ═══════════ */
   pcFormId:null, pcFormDone:null, pcIntakeSubs:[],
   pcOpenForm(id){ this.pcDemoMode='form'; this.pcFormId=id; this.pcFormDone=null; this.renderPublicChannelDemo(); },
@@ -951,20 +840,10 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     const totalMeals=troopSubs.reduce((a,s)=>a+(+s.vals.meals||0),0);
     const CAP_PAX=2000, CAP_MEAL=700;
     const bar=(v,cap)=>`<div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-violet-500" style="width:${Math.min(100,Math.round(v/cap*100))}%"></div></div>`;
-    const publicReg=d.public_registration_2027?this.pcPublicRegistrationStats():null;
-    const publicRegPanel=publicReg?`<div class="bg-violet-50 border border-violet-200 rounded-2xl p-4 mb-3">
-      <div class="flex items-start gap-2"><span class="text-lg">📝</span><div><div class="font-black text-[13.5px] text-violet-900">2027 標準公眾報名摘要</div><div class="text-[10.5px] text-violet-700 mt-0.5">只顯示可規劃的匯總資料；個人聯絡及需要留在受權限保護的報名記錄內。</div></div></div>
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-3">
-        ${[[publicReg.submissions,'份提交'],[publicReg.people,'出席人數'],[publicReg.meals,'餐飲份數'],[publicReg.dietary,'飲食需要'],[publicReg.access,'無障礙需要']].map(x=>`<div class="bg-white border border-violet-100 rounded-xl px-2 py-2 text-center"><div class="text-[17px] font-black text-violet-800">${x[0]}</div><div class="text-[10px] font-bold text-violet-600">${x[1]}</div></div>`).join('')}
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">${publicReg.byCategory.map(x=>`<div class="bg-white/70 border border-violet-100 rounded-xl px-2 py-2"><div class="text-[10.5px] font-bold text-slate-700 truncate">${escapeHtml(x.icon||'')} ${escapeHtml(x.title)}</div><div class="text-[10.5px] text-slate-500 mt-0.5">${x.submissions} 份・${x.people} 人</div></div>`).join('')}</div>
-      <div class="mt-3 text-[10.5px] text-violet-700 leading-relaxed">車輛登記需要：${publicReg.vehicles} 輛。MOCK 提交只存在提交者目前瀏覽器；此摘要用作測試統一記錄、統計及日後輸出的欄位關係，尚未接通共用資料庫。</div>
-    </div>`:'';
     container.innerHTML=`
       <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 text-[11.5px] leading-relaxed mb-3">
-        <b>🧪 舊式八表原型（不作 2027 標準）</b> — 此區保留作欄位比對及相容性測試；歷史分表、名額、費用、QR 規則及提交資料不會成為新公眾報名的來源。新的「2027 標準公眾報名摘要」才是目前測試的統一記錄模型，且尚未接通共用資料庫。
+        <b>🧪 階段 2 成品示範</b> — 八大報名表（欄位照 FIELD_CONTRACT）：公眾免登入提交→申請編號→旅團自動生成 T 編號・報到 QR・人數・餐盒（一條血脈）。2026 報名散落 email／WhatsApp／Excel；2027 集中一處、名額自動着燈。生產版＝GAS <code>onIntakeSubmit</code>（Google Forms 觸發）→ <code>Public_2027_Intake</code> Sheet＋自動電郵確認。
       </div>
-      ${publicRegPanel}
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-3">
         <div class="font-black text-[13.5px] mb-3">📊 名額自動着燈（提交即刻計）</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1677,11 +1556,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     const aud=this.pcDemoAudienceDef(this.pcLandAudience);
     const b=d.banner||{};
     el.classList.remove('hidden');
-    if(this.pcRegistrationFormId){
-      el.innerHTML=`<div class="text-center text-[10.5px] text-slate-400 pt-1">🧪 2027 公眾報名・模擬示範版</div><div class="mt-3">${this.pcPublicRegistrationHTML()}</div>`;
-      if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);
-      return;
-    }
     el.innerHTML=`
       <div class="text-center text-[10.5px] text-slate-400 pt-1">🧪 階段 1 形態示範（模擬示範版）</div>
       ${!aud?`
@@ -1702,7 +1576,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <span class="bg-amber-100 text-amber-800 text-[10.5px] font-bold px-2 py-1 rounded-lg shrink-0 mt-0.5"><i class="fa-solid fa-bullhorn mr-0.5"></i>最新</span>
         <div class="text-[12.5px] leading-relaxed text-slate-700">${escapeHtml(b.news.text)}<span class="block text-[10px] text-slate-400 mt-0.5">${escapeHtml(b.news.updated_at||'')}・${escapeHtml(b.news.updated_by||'')}</span></div>
       </div>`:''}
-      ${d.public_registration_2027?`<button onclick="app.pcOpenPublicRegistration('select')" class="mt-3 w-full text-left bg-violet-700 hover:bg-violet-800 text-white rounded-2xl p-4 shadow-sm transition"><div class="flex items-center gap-3"><span class="text-2xl">📝</span><div class="flex-1"><div class="font-black text-[15px]">${escapeHtml(d.public_registration_2027.title||'2027 公眾報名')}</div><div class="text-[11.5px] text-violet-100 mt-0.5">按身分填一份標準報名，提供人數、餐飲、交通及特別需要</div></div><span class="font-bold text-[13px]">開始 →</span></div></button>`:''}
       <div class="mt-5">${this.pcDemoPickerBody(d,'pcLandPick',{tabsLink:false})}</div>`:''}
       ${aud?this.pcDemoAudienceBody(d,aud,'pcLandBack'):''}`;
     if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);

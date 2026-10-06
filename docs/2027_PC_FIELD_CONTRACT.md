@@ -126,5 +126,5 @@
 
 以下屬於**框**唔係**內容**：分眾入口、頁簽組合、欄位名、名單之間點連。改呢啲等於改規矩，要經技術組。
 
-`public_channel_2027.audiences`、`public_channel_2027.section_labels`、`public_channel_2027.guides`、`public_channel_2027.notices`、`public_channel_2027.schedules`、`public_channel_2027.arrivals`、`public_channel_2027.manual`、`public_channel_2027.guests_rows`、`public_channel_2027.booths`、`public_channel_2027.venue_map`、`public_channel_2027.apply_forms`、`public_channel_2027.intake_forms`、`public_channel_2027.public_registration_2027`、`public_channel_2027.staff_gate`、`public_channel_2027.upload_slots`、`public_channel_2027.checkin_demo`
+`public_channel_2027.audiences`、`public_channel_2027.section_labels`、`public_channel_2027.guides`、`public_channel_2027.notices`、`public_channel_2027.schedules`、`public_channel_2027.arrivals`、`public_channel_2027.manual`、`public_channel_2027.guests_rows`、`public_channel_2027.booths`、`public_channel_2027.venue_map`、`public_channel_2027.apply_forms`、`public_channel_2027.intake_forms`、`public_channel_2027.staff_gate`、`public_channel_2027.upload_slots`、`public_channel_2027.checkin_demo`
 
