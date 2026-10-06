@@ -58,6 +58,22 @@ Object.assign(ScoutEventApp.prototype,{
     this.updateSaveBar();
     // QR Code hash routing：掃碼後自動開啟捐贈表
     this.handleHashRoute();
+    // v15（UI 示範階段）：一入 APP 直接進入「模擬示範版」嘅公眾頻道 2027（示範）頁面，
+    // 唔使先喺首頁揀活動。想返活動選擇頁＝按最頂 BAR 嘅營帳圖示。
+    await this.autoEnterPublicDemo();
+  }
+,
+  // 自動進入示範活動（公眾頻道 2027）：只喺未揀活動、未登入、冇掃碼 hash 時觸發
+  AUTO_DEMO_EVENT_ID:'mock_demo',
+  async autoEnterPublicDemo(){
+    try{
+      if(this.currentEvent) return;
+      if(typeof location!=='undefined' && String(location.hash||'').trim()) return;
+      if(!this.eventsList || !this.eventsList.length) await this.loadEvents();
+      const ev=(this.eventsList||[]).find(e=>e.event_id===this.AUTO_DEMO_EVENT_ID);
+      if(!ev) return;
+      this.accessEvent(ev.event_id);
+    }catch(e){ console.warn('[autoEnterPublicDemo]', e); }
   }
 ,
   closeModal(id){document.getElementById(id).classList.add('hidden');}
@@ -165,7 +181,7 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   async enterFirstEvent(){if(this.currentEvent){this.showDashboard(); return;} if(!this.eventsList.length) await this.loadEvents(); const ev=this.eventsList[0]; if(ev) this.accessEvent(ev.event_id); else showToast('暫無活動可進入','warning');}
 ,
-  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; const dashTitleEl=document.getElementById('dash-event-title'); if(dashTitleEl) dashTitleEl.textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); this.renderEventNews(); /* v11.2：最新消息＝全站最頂橫幅（可由執副以上／秘書處喺 APP 內修改）；會議預告＝此活動橫幅內 */ if(this.currentUser){const roleDisplayEl=document.getElementById('dash-role-display'); if(roleDisplayEl) roleDisplayEl.textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; document.getElementById('banner-admin-actions')?.classList.toggle('hidden', !this.canSendMeetingReminder());} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
+  async showDashboard(){document.getElementById('view-landing').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); ['module','users','bulk','system','approvals','approvalmatrix'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); const ev=this.currentEvent; const dashTitleEl=document.getElementById('dash-event-title'); if(dashTitleEl) dashTitleEl.textContent=ev.event_name; document.getElementById('dash-event-desc').textContent=ev.description||''; document.getElementById('current-event-subtitle').textContent=ev.event_name; const evDates=[ev.start_date,ev.end_date].filter(Boolean).join(' → ')||'日期待公佈'; const datesEl=document.getElementById('dash-event-dates'); if(datesEl) datesEl.textContent=evDates; const stEl=document.getElementById('dash-status-badge'); if(stEl) stEl.textContent=ev.status==='active'?'進行中':'即將舉行'; const timeEl=document.getElementById('dash-event-time'); if(timeEl) timeEl.textContent=ev.time||'時間待公佈'; const locEl=document.getElementById('dash-event-location'); if(locEl) locEl.textContent=ev.location||'地點待公佈'; const wxEl=document.getElementById('dash-event-weather'); if(wxEl) wxEl.textContent='載入天氣中…'; this.loadHkoWeather(); this.renderEventNews(); /* v11.2：最新消息＝全站最頂橫幅（可由執副以上／秘書處喺 APP 內修改）；會議預告＝此活動橫幅內 */ if(this.currentUser){const roleDisplayEl=document.getElementById('dash-role-display'); if(roleDisplayEl) roleDisplayEl.textContent=ROLE_LABELS[this.currentUser.role]||this.currentUser.role; document.getElementById('banner-admin-actions')?.classList.toggle('hidden', !this.canSendMeetingReminder());} const grpSec=document.getElementById('group-management-section'); if(grpSec) grpSec.classList.toggle('hidden',!this.currentUser||!!this.currentUser.staff_pin); await this.loadEventData(); await this.loadUsers(); await Promise.all([this.loadApprovalPermissions(),this.loadApprovalRouting()]); this.renderGroupQuickAccess(); this.applyDashboardMode(); this.updateBottomNav(); setTimeout(()=>this.checkAndShowNotifications(), 800); this.autoSyncDriveSources();}
 ,
 
   // 天文台 (HKO) 天氣 API 即時讀取；失敗時退回活動自設天氣欄位
@@ -446,6 +462,8 @@ Object.assign(ScoutEventApp.prototype,{
   canSeeRoleCard(def){
     if(!this.currentUser) return def.minLevel<=0;
     const u=this.currentUser;
+    // v16：普通工作人員（活動密碼入，無帳戶）＝只開「工作人員公開資料」，部門中心／工作卡片／管理工具一律唔開
+    if(u.staff_pin) return def.minLevel<=0;
     const lvl=this.roleLevel(u.role);
     if(lvl>=100) return true;
     // v8.14：部門卡（group_*）只畀「本組」＋「執副以上」＋「行政組（統管）」＋上級明確授權者睇
@@ -574,6 +592,7 @@ Object.assign(ScoutEventApp.prototype,{
     }
     // 登入後：身份卡片隱藏（身份已喺最頂 BAR 右上角），只保留活動橫幅監察區塊
     if(card) card.classList.add('hidden');
+    if(user.staff_pin){ if(heroMon){ heroMon.classList.add('hidden'); heroMon.innerHTML=''; } return; } // v16：普通工作人員冇「我的監察」
     if(heroMon){
       const sum=this.monitorSummary();
       const canGoApprovals=sum.canApproveAny||this.roleLevel(user.role)>=40;
@@ -634,6 +653,7 @@ Object.assign(ScoutEventApp.prototype,{
     if(note){ note.classList.add('hidden'); note.innerHTML=''; }
 
     if(!user){
+      const pn0=document.getElementById('pin-staff-notice'); if(pn0){ pn0.classList.add('hidden'); pn0.innerHTML=''; }
       if(identitySection) identitySection.classList.add('hidden');
       if(toolsSection) toolsSection.classList.add('hidden');
       if(publicSection) publicSection.classList.remove('hidden');
@@ -645,6 +665,21 @@ Object.assign(ScoutEventApp.prototype,{
       if(toolsCount) toolsCount.textContent='';
       return;
     }
+    // v16：普通工作人員（活動密碼）＝只有「公開資料」一區，冇工作卡片／管理工具／部門中心
+    const pinNote=document.getElementById('pin-staff-notice');
+    if(user.staff_pin){
+      if(identitySection) identitySection.classList.add('hidden');
+      if(toolsSection) toolsSection.classList.add('hidden');
+      if(publicSection) publicSection.classList.remove('hidden');
+      identityGrid.innerHTML=''; toolsGrid.innerHTML='';
+      if(pinNote){ pinNote.classList.remove('hidden'); pinNote.innerHTML=(typeof this.pcPinStaffNoticeHTML==='function')?this.pcPinStaffNoticeHTML():''; }
+      this.deferredDashWrite(publicGrid, publicDefs.map(d=>this.cardHTML(d,{locked:false})).join(''));
+      if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
+      if(identityCount) identityCount.textContent='';
+      if(toolsCount) toolsCount.textContent='';
+      return;
+    }
+    if(pinNote){ pinNote.classList.add('hidden'); pinNote.innerHTML=''; }
     if(publicSection) publicSection.classList.remove('hidden');
     if(identitySection) identitySection.classList.remove('hidden');
 
@@ -671,11 +706,12 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   updateAdminNav(){
     const loggedIn=!!this.currentUser;
-    const chiefOrAbove=this.roleLevel(this.currentUser?.role)>=40;
+    const pinStaff=!!(this.currentUser&&this.currentUser.staff_pin); // v16：活動密碼入嘅普通工作人員
+    const chiefOrAbove=!pinStaff&&this.roleLevel(this.currentUser?.role)>=40;
     const noEvent=!this.currentEvent;
     const hLogin=document.getElementById('login-toggle-btn'); if(hLogin){ hLogin.style.display=(loggedIn||noEvent||(typeof this.pcPublicLandingActive==='function'&&this.pcPublicLandingActive()))?'none':''; if(noEvent&&!loggedIn) hLogin.title='請先選擇並進入活動，再按登入'; }
     const hLogout=document.getElementById('logout-btn'); if(hLogout) hLogout.style.display=loggedIn?'':'none';
-    const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=loggedIn?'':'none';
+    const tcp=document.getElementById('topbar-changepwd'); if(tcp) tcp.style.display=(loggedIn&&!pinStaff)?'':'none';
     const taSetup=document.getElementById('topbar-account-setup'); if(taSetup) taSetup.style.display=(loggedIn&&chiefOrAbove)?'':'none';
     const setNav=(id,show)=>{const el=document.getElementById(id); if(el) el.style.display=show?'':'none';};
     // 底部導覽列 = 執行手冊・申請中心・批核中心(有權限)・部門中心（登入後：執副以上見列表／普通人入自己部門）
@@ -684,7 +720,7 @@ Object.assign(ScoutEventApp.prototype,{
     setNav('bn-exec',true);
     setNav('bn-apply',true);
     setNav('bn-approvals',loggedIn&&chiefOrAbove);
-    setNav('bn-dept',loggedIn);
+    setNav('bn-dept',loggedIn&&!pinStaff);
     const bn=document.getElementById('bottom-nav'); if(bn) bn.style.display='';
     this.updateBottomNav();
   }
@@ -1334,6 +1370,7 @@ Object.assign(ScoutEventApp.prototype,{
       ...(groupName==='協調組'?[
         {k:'coord_supplies',label:'📦 物資批核'},
         {k:'coord_vehicle',label:'🚗 車輛批核'},
+        {k:'coord_plate',label:'🔢 點車牌（交警校／閘口查冊）'},
         {k:'coord_meals',label:'🍱 膳食批核'},
         {k:'coord_mealbox',label:'🍱 代訂餐盒名單'},
         {k:'coord_meal_staff',label:'🍚 工作人員膳食點名'},
@@ -1341,6 +1378,7 @@ Object.assign(ScoutEventApp.prototype,{
       ]:[]),
       // 三張典禮獎勵名單均在「會操及典禮組（典禮組）」部門中心提供操作入口。
       ...(groupName==='會操及典禮組'?[
+        {k:'cer_live_script',label:'🎙️ 活司儀稿'},
         {k:'cer_award_merit',label:'🏆 優異旅團獲獎名單'},
         {k:'cer_award_section',label:'🏅 支部獎勵名單'},
         {k:'cer_award_leader',label:'🎖️ 領袖獎勵名單'}
@@ -1351,7 +1389,15 @@ Object.assign(ScoutEventApp.prototype,{
     const groupCommonTabs=[
       {k:'group_expense',label:'💰 開支申報'},
       {k:'group_quotes',label:'📝 口頭報價'},
-      {k:'group_finance_guide',label:'📖 財務指引'}
+      {k:'group_finance_guide',label:'📖 財務指引'},
+      // v21：公眾頻道內容——邊格屬邊組寫死喺 PC_CONTENT_SCHEMA，本組有份先出呢個頁籤
+      ...((this.pcEditSectionsForGroup&&this.pcEditSectionsForGroup(groupName).length)?[{k:'group_pc_content',label:'🌐 公眾頻道內容（本組負責）'}]:[]),
+      // v22：連結總表——換成張表單／EXCEL／WORD／PDF／地圖，改一次全站同步
+      ...((this.linkRegistry&&this.linkRegistry())?[{k:'group_links',label:'🔗 連結總表（改一次全站同步）'}]:[]),
+      // v24：跨組對帳——邊組改咗、邊組未跟（攤位 × 編更 × 派章 × 午膳）
+      {k:'group_crosscheck',label:'🔀 跨組對帳（邊組改咗邊組未跟）'},
+      // 第 1 步：輸出總表——2027 要出嘅嘢，三層三色，畀籌委核對同補料
+      {k:'group_outputs',label:'📋 輸出總表（2027 要出嘅嘢）'}
     ];
     const groupTabList=[
       {k:'apps',label:'📋 本組申請'},
@@ -1411,6 +1457,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'admin_tickets': el.innerHTML=this.renderAdminTicketsTabHTML(); break;
         case 'coord_supplies': this.renderCoordSupplies(el); break;
         case 'coord_vehicle': this.renderCoordVehicles(el); break;
+        case 'coord_plate': this.renderPlateRoll(el); break;
         case 'coord_meals': this.renderCoordMeals(el); break;
         case 'coord_docs': this.renderCoordDocs(el); break;
         // 名單與點名資料在各入口共用；此處提供負責組的操作入口。
@@ -1418,6 +1465,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'coord_meal_staff':
           el.innerHTML=`<div class="space-y-3"><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('staff_meals',{scope:'coord'})}</div>${this.staffMealDigestHTML?this.staffMealDigestHTML():''}${this.mealMenuHTML?this.mealMenuHTML():''}</div>`;
           break;
+        case 'cer_live_script': this.renderLiveScript(el); break;
         case 'cer_award_merit': el.innerHTML=this.rosterPanelHTML('merit_award',{scope:'dept'}); break;
         case 'cer_award_section': el.innerHTML=this.rosterPanelHTML('section_award',{scope:'dept'}); break;
         case 'cer_award_leader': el.innerHTML=this.adultAwards2026HTML()+this.rosterPanelHTML('leader_award',{scope:'dept'}); break;
@@ -1430,6 +1478,10 @@ Object.assign(ScoutEventApp.prototype,{
       if(t.k==='group_expense') el.innerHTML=this.renderGroupExpenseTabHTML(groupName);
       else if(t.k==='group_quotes') el.innerHTML=this.renderGroupQuotesTabHTML(groupName);
       else if(t.k==='group_finance_guide') el.innerHTML=this.renderGroupFinanceGuideTabHTML(groupName);
+      else if(t.k==='group_pc_content') this.renderPcContentEditor(el);
+      else if(t.k==='group_links') this.renderLinkRegistry(el, (groupName==='秘書處'||groupName==='行政組'||this.isAdmin())?{}:{scope:'group'});
+      else if(t.k==='group_crosscheck') this.renderCrossCheck(el);
+      else if(t.k==='group_outputs') this.renderOutputBoard(el);
     });
     if(isThemeGroup){
       const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
@@ -1451,7 +1503,7 @@ Object.assign(ScoutEventApp.prototype,{
   switchGroupTab(tab){
     this.groupBoothTab=tab;
     // v13：頂部頁籤涵蓋全部特色功能＋全部門共設財務頁籤（行政組財務匯總/旅團/文件/票券/紀念章/失物；協調組物資/車輛/膳食/場地文件；各組開支申報/口頭報價/財務指引）
-    ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_troop_checkin','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','coord_meal_staff','cer_award_merit','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
+    ['apps','drive','master','borrow','group_expense','group_quotes','group_finance_guide','stamp_staff','stamp_guest','lost_found','admin_finance','admin_participants','admin_troop_checkin','admin_docs','admin_tickets','coord_supplies','coord_vehicle','coord_meals','coord_docs','coord_mealbox','coord_meal_staff','cer_live_script','cer_award_merit','cer_award_section','cer_award_leader'].forEach(t=>{ const el=document.getElementById('group-tab-'+t); if(el) el.classList.toggle('hidden',t!==tab); });
     document.querySelectorAll('.group-tab-btn').forEach(btn=>{
       const t=btn.getAttribute('onclick').match(/'([^']+)'/)[1];
       btn.className='group-tab-btn '+(t===tab?'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-white shadow':'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200');
@@ -1459,6 +1511,8 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   async loadEventData(){this.eventData={}; if(this.mockMode){try{const res=await fetch(`data/${this.currentEvent.event_id}.json`); this.eventData=await res.json();}catch(e){}} if(!this.eventData.meetings) this.eventData.meetings=[]; if(!this.eventData.staff) this.eventData.staff={org_chart:[],contacts:[],job_duties:[]};
+    // v22：連結總表——後台改過嘅連結，喺呢度一次過寫返入全部用到佢嘅位置（一處更新、全站同步）
+    try{ if(this.applyLinkRegistry) this.applyLinkRegistry(this.eventData); }catch(e){}
     // 正式活動（已連後端）：內置靜態資料仍從 JSON 載入（無後端模組），後端/本地改動優先
     if(!this.isDemoEvent() && this.currentEvent){
       try{
@@ -1572,6 +1626,12 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   openModule(key){
+    // v16：普通工作人員（活動密碼入）＝只准開「公開資料」卡片，其餘要籌委帳戶
+    if(this.currentUser&&this.currentUser.staff_pin){
+      const def=(typeof DASH_CARD_DEFS!=='undefined')?DASH_CARD_DEFS.find(d=>d.id===key):null;
+      const openToAll=(key==='dept_hub'||key==='my_monitor')?false:(def?def.minLevel<=0:false);
+      if(!openToAll){ showToast('呢部分要籌委帳戶（帳號＋密碼）先入到，請撳「我係籌委・帳號登入」','warning'); return; }
+    }
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});
     this.currentModule=key; ['landing','dashboard','users','bulk','system','approvals'].forEach(v=>document.getElementById('view-'+v)?.classList.add('hidden')); document.getElementById('view-module').classList.remove('hidden'); document.getElementById('module-title').textContent={meetings:'會議卡片',staff:'工作人員卡片',finance:'財務',activities:'活動與攤位',meals:'膳食',schedule:'日程表',supplies:'物資申請',booth:'攤位計劃書',parking:'泊車證',oral_quotes:'口頭報價登記',documents:'文件檔案',unit_guide:'旅團須知',ceremony:'典禮儀式',awards:'優異旅團獲獎名單',crisis:'危機處理',announcements:'公告及溝通',exec_manual:'執行手冊',apply_hub:'申請中心',my_monitor:'我的監察',admin_group:'行政組',coordinator_group:'協調組',transport:'交通及泊車',account_setup:'開戶',permissions:'權限管理',donations:'童心捐贈大行動',dept_hub:'部門管理中心',public_channel_demo:'公眾頻道 2027（示範）', checkin_station:'報到站（示範）', upload_center:'源頭上傳中心（示範）', guest_reception:'嘉賓接待站（示範）', intake_board:'報名總覽（示範）'}[key]||key;

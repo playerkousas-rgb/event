@@ -1,0 +1,670 @@
+{
+  "generated_at": "2026-10-06",
+  "generated_by": "tools/build_2027_templates.js",
+  "note": "由 tools/schema/templates_2027.js 產生。APP 同範本讀同一份，唔會各有各讀。唔好手改。",
+  "levels": {
+    "BLOCK": "必須",
+    "BEST": "盡量",
+    "AUTO": "自動"
+  },
+  "templates": [
+    {
+      "id": "guest-roster",
+      "file": "01_嘉賓名單.xlsx",
+      "kind": "xlsx",
+      "title": "嘉賓名單",
+      "owner": "嘉賓接待組",
+      "target": "guest_roster.guests",
+      "key": "name",
+      "feeds": [
+        "嘉賓接待站",
+        "派嘉賓章",
+        "閘口點車牌",
+        "典禮座位表",
+        "午膳儀式名單",
+        "公眾頻道嘉賓入口"
+      ],
+      "churn": "呢張表一定會改到最後一日。2026 由 as at 02.10 改到 as at 03.10，加咗四位、改咗頭銜。所以唔好另外抄一份名單出嚟用——全部位置都讀返呢張。",
+      "rules": [
+        "一行一位嘉賓。同一個人唔好出現兩次。",
+        "姓名要連稱謂（先生／女士／太平紳士），因為司儀稿同名牌直接攞嚟用。",
+        "唔好中途換人：嘉賓走咗就喺「備註」寫明，新嘉賓開新一行。對得返 2026 嘅點名規矩。"
+      ],
+      "columns": [
+        {
+          "col": "A",
+          "k": "serial",
+          "label": "編號",
+          "type": "number",
+          "level": "自動",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "程式自動排，唔好手改"
+        },
+        {
+          "col": "B",
+          "k": "name",
+          "label": "姓名（連稱謂）",
+          "type": "text",
+          "level": "必須",
+          "format": "person",
+          "canon": "陳大文",
+          "rule": "一格只准一個人。兩個人要開兩行 —— 2026 就係有一格寫咗兩個人，搞到 55 行變 54 人。",
+          "note": "唯一鍵。司儀稿、名牌、紀念章都認呢個"
+        },
+        {
+          "col": "C",
+          "k": "title",
+          "label": "職銜",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "可以多過一行，司儀會照讀"
+        },
+        {
+          "col": "D",
+          "k": "section",
+          "label": "界別",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "政府／議員／友好團體／童軍"
+        },
+        {
+          "col": "E",
+          "k": "ceremony_part_1",
+          "label": "出席第一部分",
+          "type": "bool",
+          "level": "盡量",
+          "format": "yesno",
+          "canon": "Y",
+          "rule": "只准填 Y 或者留空。唔好填「是」「有」「✓」「1」。",
+          "note": "優異旅團頒獎"
+        },
+        {
+          "col": "F",
+          "k": "ceremony_part_2",
+          "label": "出席第二部分",
+          "type": "bool",
+          "level": "盡量",
+          "format": "yesno",
+          "canon": "Y",
+          "rule": "只准填 Y 或者留空。唔好填「是」「有」「✓」「1」。",
+          "note": "會操檢閱"
+        },
+        {
+          "col": "G",
+          "k": "guest_tea",
+          "label": "出席午膳",
+          "type": "bool",
+          "level": "盡量",
+          "format": "yesno",
+          "canon": "Y",
+          "rule": "只准填 Y 或者留空。唔好填「是」「有」「✓」「1」。",
+          "note": ""
+        },
+        {
+          "col": "H",
+          "k": "event_bus",
+          "label": "坐大會車",
+          "type": "bool",
+          "level": "盡量",
+          "format": "yesno",
+          "canon": "Y",
+          "rule": "只准填 Y 或者留空。唔好填「是」「有」「✓」「1」。",
+          "note": "影響嘉賓交通安排"
+        },
+        {
+          "col": "I",
+          "k": "car_plate",
+          "label": "車牌",
+          "type": "text",
+          "level": "盡量",
+          "format": "plate",
+          "canon": "AM1334",
+          "rule": "淨係填車牌本身，冇空格冇符號，英文大寫。",
+          "note": "要入警察學院就要有。放唔放行由警方決定"
+        },
+        {
+          "col": "J",
+          "k": "column_1",
+          "label": "典禮角色",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "K",
+          "k": "note",
+          "label": "備註",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "換人、取消、特別安排寫喺度"
+        },
+        {
+          "col": "L",
+          "k": "checked_in",
+          "label": "已報到",
+          "type": "bool",
+          "level": "自動",
+          "format": "yesno",
+          "canon": "Y",
+          "rule": "只准填 Y 或者留空。唔好填「是」「有」「✓」「1」。",
+          "note": "活動日由 APP 點名，唔好手填"
+        }
+      ]
+    },
+    {
+      "id": "org-contacts",
+      "file": "02_組織架構及聯絡.xlsx",
+      "kind": "xlsx",
+      "title": "組織架構及聯絡",
+      "owner": "秘書處",
+      "target": "staff.contacts",
+      "key": "name",
+      "feeds": [
+        "組織架構圖",
+        "聯絡清單",
+        "APP 登入帳號",
+        "編更",
+        "各組部門中心權限"
+      ],
+      "churn": "2026 由 55 行正規化成 54 人（有一行寫咗兩個人名）。人會加會走，所以唔好印死一份 PDF 傳嚟傳去。",
+      "rules": [
+        "一行一個人。兩個人唔好擠喺同一格——2026 就係咁出事。",
+        "電話淨係填 8 位數字，唔好加 +852、空格或者「/」。",
+        "職位未搵到人，照留一行，姓名留空並喺備註寫「待定」——空缺要睇得見，唔好隱形。",
+        "APP 登入帳號由電話自動開，所以電話錯＝登入唔到。"
+      ],
+      "columns": [
+        {
+          "col": "A",
+          "k": "group_name",
+          "label": "組別",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "要同「組別一覽」表一致"
+        },
+        {
+          "col": "B",
+          "k": "level",
+          "label": "層級",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "C",
+          "k": "role_title",
+          "label": "職位",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "D",
+          "k": "name",
+          "label": "姓名",
+          "type": "text",
+          "level": "盡量",
+          "format": "person",
+          "canon": "陳大文",
+          "rule": "一格只准一個人。兩個人要開兩行 —— 2026 就係有一格寫咗兩個人，搞到 55 行變 54 人。",
+          "note": "空缺就留空，備註寫「待定」"
+        },
+        {
+          "col": "E",
+          "k": "contact",
+          "label": "電話",
+          "type": "phone",
+          "level": "盡量",
+          "format": "phone",
+          "canon": "92157472",
+          "rule": "只准填 8 位數字。唔好加 +852、空格、斜線或者「／」。",
+          "note": "8 位數字。錯咗就登入唔到 APP"
+        },
+        {
+          "col": "F",
+          "k": "email",
+          "label": "電郵",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "G",
+          "k": "job_desc",
+          "label": "職務描述",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "H",
+          "k": "note",
+          "label": "備註",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "booths",
+      "file": "03_攤位資料.xlsx",
+      "kind": "xlsx",
+      "title": "攤位資料",
+      "owner": "主題節目組",
+      "target": "activities.booths",
+      "key": "booth_no",
+      "feeds": [
+        "攤位總表",
+        "場地平面圖",
+        "遊戲卡",
+        "午膳點算",
+        "公眾頻道攤位頁"
+      ],
+      "churn": "攤位由外間團體提供，佢哋嘅人手名單好遲先至定，有啲到當日先知。所以「聯絡人」同「人數」係【盡量】，唔會着紅燈——但攤位編號同名稱一定要有，因為場地圖靠佢。",
+      "rules": [
+        "攤位編號＝區＋兩位數（A01、B07）。場地圖、遊戲卡、箱頭紙全部認呢個編號。",
+        "2026 有兩欄「聯絡」同「聯絡人」內容重疊（16/33 同 25/33），今次合併成一欄。",
+        "請外間團體（例如警察、消防）擺嘅攤位，交唔到人名係正常，填「待定」就得。"
+      ],
+      "columns": [
+        {
+          "col": "A",
+          "k": "booth_no",
+          "label": "攤位編號",
+          "type": "text",
+          "level": "必須",
+          "format": "booth",
+          "canon": "A01",
+          "rule": "只准填編號本身：一個英文區碼 ＋ 兩位數字。攤位名稱填落「攤位名稱」嗰欄。",
+          "note": "唯一鍵。場地圖同遊戲卡認呢個"
+        },
+        {
+          "col": "B",
+          "k": "zone",
+          "label": "區",
+          "type": "text",
+          "level": "自動",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "由攤位編號第一個字自動取"
+        },
+        {
+          "col": "C",
+          "k": "booth_name",
+          "label": "攤位名稱",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "D",
+          "k": "group_name",
+          "label": "負責單位",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "E",
+          "k": "theme",
+          "label": "主題",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "F",
+          "k": "content",
+          "label": "活動內容",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "G",
+          "k": "contact",
+          "label": "聯絡人及電話",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "外間團體交唔到就寫「待定」"
+        },
+        {
+          "col": "H",
+          "k": "staff_count",
+          "label": "人手",
+          "type": "number",
+          "level": "盡量",
+          "format": "count",
+          "canon": "7",
+          "rule": "只准填整數。唔好填「7.0」「約7」「7人」。",
+          "note": ""
+        },
+        {
+          "col": "I",
+          "k": "lunch",
+          "label": "午膳數",
+          "type": "number",
+          "level": "盡量",
+          "format": "count",
+          "canon": "7",
+          "rule": "只准填整數。唔好填「7.0」「約7」「7人」。",
+          "note": "影響代訂餐盒"
+        },
+        {
+          "col": "J",
+          "k": "confirmed",
+          "label": "已確認",
+          "type": "bool",
+          "level": "盡量",
+          "format": "yesno",
+          "canon": "Y",
+          "rule": "只准填 Y 或者留空。唔好填「是」「有」「✓」「1」。",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "merit-roster",
+      "file": "04_優異旅團獲獎名單.xlsx",
+      "kind": "xlsx",
+      "title": "優異旅團獲獎名單",
+      "owner": "會操及典禮組",
+      "target": "ceremony.meritRoster",
+      "key": "unit+section",
+      "feeds": [
+        "典禮頒獎點名",
+        "司儀稿唱名",
+        "獎座數量",
+        "公眾頻道優異旅團入口"
+      ],
+      "churn": "呢張表一經總部公佈就唔應該改。如果真係要改，喺備註寫明原因——2026 就係靠呢個查返邊個團次漏咗。",
+      "rules": [
+        "一行一個「團次」：同一旅唔同支部要分開行，因為獎座係逐個支部派。",
+        "旅名只准填阿拉伯數字：港島第6旅。唔准填「港島第六旅」或者淨係「6」——2026 就係兩張表各有各寫法。",
+        "唱名要中文數字係司儀嘅事，系統會自動轉，唔使你喺度填中文。"
+      ],
+      "columns": [
+        {
+          "col": "A",
+          "k": "area",
+          "label": "區",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "B",
+          "k": "unit",
+          "label": "旅名",
+          "type": "text",
+          "level": "必須",
+          "format": "troop",
+          "canon": "港島第1旅",
+          "rule": "只准填「港島第1旅」咁嘅寫法：區名 ＋ 第 ＋ 阿拉伯數字 ＋ 旅。",
+          "note": "同「支部」一齊做唯一鍵。寫法要同參加旅團表一致"
+        },
+        {
+          "col": "C",
+          "k": "section",
+          "label": "支部",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "獎座逐個支部派"
+        },
+        {
+          "col": "D",
+          "k": "note",
+          "label": "備註",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "participants",
+      "file": "05_參加旅團報名.xlsx",
+      "kind": "xlsx",
+      "title": "參加旅團報名",
+      "owner": "行政組",
+      "target": "public_channel_2027.manual.participants.rows",
+      "key": "unit",
+      "feeds": [
+        "旅團點名簽收",
+        "代訂餐盒",
+        "場地分區",
+        "公眾頻道旅團入口"
+      ],
+      "churn": "報名截止之後仲會有加減人數。所以人數欄係【盡量】，當日以點名為準。",
+      "rules": [
+        "一行一旅。人數改咗就改返呢度，唔好另開一份「最新版」。",
+        "領隊姓名同電話係當日搵人嘅唯一途徑，盡量填。"
+      ],
+      "columns": [
+        {
+          "col": "A",
+          "k": "seq",
+          "label": "序號",
+          "type": "number",
+          "level": "自動",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "B",
+          "k": "unit",
+          "label": "旅名",
+          "type": "text",
+          "level": "必須",
+          "format": "troop",
+          "canon": "港島第1旅",
+          "rule": "只准填「港島第1旅」咁嘅寫法：區名 ＋ 第 ＋ 阿拉伯數字 ＋ 旅。",
+          "note": "唯一鍵。寫法要同優異旅團表一致"
+        },
+        {
+          "col": "C",
+          "k": "area",
+          "label": "區",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "D",
+          "k": "headcount",
+          "label": "人數",
+          "type": "number",
+          "level": "盡量",
+          "format": "count",
+          "canon": "7",
+          "rule": "只准填整數。唔好填「7.0」「約7」「7人」。",
+          "note": "當日以點名為準"
+        },
+        {
+          "col": "E",
+          "k": "mealbox",
+          "label": "代訂餐盒",
+          "type": "number",
+          "level": "盡量",
+          "format": "count",
+          "canon": "7",
+          "rule": "只准填整數。唔好填「7.0」「約7」「7人」。",
+          "note": ""
+        },
+        {
+          "col": "F",
+          "k": "leader",
+          "label": "領隊",
+          "type": "text",
+          "level": "盡量",
+          "format": "person",
+          "canon": "陳大文",
+          "rule": "一格只准一個人。兩個人要開兩行 —— 2026 就係有一格寫咗兩個人，搞到 55 行變 54 人。",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "mc-script",
+      "file": "06_司儀稿.docx",
+      "kind": "docx",
+      "title": "司儀稿",
+      "owner": "會操及典禮組",
+      "target": "ceremony.mc_scripts",
+      "key": "part",
+      "feeds": [
+        "執行手冊司儀稿分頁（場內離線可讀）",
+        "典禮流程對時",
+        "Rundown 核對"
+      ],
+      "churn": "2026 改到活動當日先定稿（V5，2026-10-04）。所以司儀手上嗰份同 APP 入面嗰份一定要係同一份——唔好印完紙再改 Word，APP 要讀返最後嗰份。",
+      "rules": [
+        "每一部分一份文件，開頭要有「部分／版本／日期／司儀姓名」四行。",
+        "正文直接打字，唔好貼圖——APP 要搵字、要放大畀台上睇手機。",
+        "改完記得更新「版本」同「更新日期」兩行，APP 靠佢判斷邊份係最新。"
+      ],
+      "columns": [
+        {
+          "col": "A",
+          "k": "part",
+          "label": "部分",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "B",
+          "k": "title",
+          "label": "標題",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "C",
+          "k": "version",
+          "label": "版本",
+          "type": "text",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "D",
+          "k": "updated_at",
+          "label": "更新日期",
+          "type": "date",
+          "level": "必須",
+          "format": "date",
+          "canon": "2027-10-03",
+          "rule": "只准填 YYYY-MM-DD。唔准填 3/10/27 —— 唔知係 3 月 10 號定 10 月 3 號。",
+          "note": "APP 靠呢個判斷邊份最新"
+        },
+        {
+          "col": "E",
+          "k": "mc",
+          "label": "司儀",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "F",
+          "k": "note",
+          "label": "重點提示",
+          "type": "text",
+          "level": "盡量",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": ""
+        },
+        {
+          "col": "G",
+          "k": "content",
+          "label": "正文",
+          "type": "long",
+          "level": "必須",
+          "format": "",
+          "canon": "",
+          "rule": "",
+          "note": "直接打字，唔好貼圖"
+        }
+      ]
+    }
+  ]
+}

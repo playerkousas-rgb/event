@@ -16,7 +16,7 @@ Object.assign(ScoutEventApp.prototype,{
       {id:'rd_o5',time:'14:00',program:'參觀主題活動區',location:'全場'}
     ];
     if(!this.isDemoEvent()) { const roster=this.eventData?.guest_roster?.guests||[]; const cer=this.eventData?.ceremony||{}; return {rundown:officialRundown,mc_script:[],speech:cer.speech||null,guests:roster.map(g=>({...g,title:g.title||g.scout_title||'',note:g.note||g.notes||''})),seating:cer.seating||[],files:cer.files||[],meritRoster:cer.meritRoster||[],responses:cer.responses||[],mc_scripts:cer.mc_scripts||[],ug_units:cer.ug_units||[]}; } // 真實活動：內建官方典禮程序、附件及優異旅團名單版位
-    return {
+    const demo={
       rundown:officialRundown,
       files:[],
       meritRoster:[],
@@ -76,6 +76,27 @@ Object.assign(ScoutEventApp.prototype,{
         {id:'s7',zone:'嘉賓席（第4-5行）',arrangement:'各旅團代表、獲獎領袖及委員' }
       ]
     };
+    // v17：示範版底層資料已用 2026 真實資料填滿 → 內置 ceremony 優先覆蓋硬編示範內容
+    //      （Rundown V5／司儀稿 ×3／會操檢閱路線／優異旅團 188／成人獎勵／其他制服團體）
+    // v20：派嘉賓章／嘉賓點名要用正式名單——示範版有 guest_roster.guests 102 位，
+    //      硬編嗰 10 位只係未有真資料嗰陣嘅頂替，有真名單就要讓位。
+    const gr=this.eventData&&this.eventData.guest_roster&&this.eventData.guest_roster.guests;
+    if(Array.isArray(gr)&&gr.length){
+      demo.guests=gr.map(g=>Object.assign({},g,{
+        title:String(g.title||'').replace(/\s*\n\s*/g,'・'),
+        unit:g.unit||g.section||'',
+        note:g.note||g.notes||''
+      }));
+    }
+    const ed=this.eventData&&this.eventData.ceremony;
+    if(ed&&typeof ed==='object'){
+      const take=(k)=>{ const v=ed[k]; return (Array.isArray(v)?v.length:(v&&typeof v==='object'?Object.keys(v).length:0))?v:undefined; };
+      ['meritRoster','adult_awards','mc_scripts','ug_units','ug_guests','responses','files','speech','seating','inspection_route','rundown_part1_v5','merit_source','ug_source','updated_at'].forEach(k=>{
+        const v=take(k); if(v!==undefined) demo[k]=v;
+      });
+      if(Array.isArray(ed.rundown)&&ed.rundown.length) demo.rundown=ed.rundown;
+    }
+    return demo;
   },
   saveCeremonyData(data){ if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
   renderCeremonyModule(box){
@@ -228,7 +249,7 @@ Object.assign(ScoutEventApp.prototype,{
   },
   /* 第一部分 RUNDOWN（官方 Rundown_All 2026 連獎項 Part 1 V５）：逐項含主禮人，內容已定稿改為只讀顯示 */
   ceremonyPart1RundownV5HTML(){
-    if(this.isDemoEvent&&this.isDemoEvent()) return '';
+    // v20：示範版底層已換成 2026 真實資料（rundown_part1_v5 13 行），唔再早退
     const p1=this.eventData?.ceremony?.rundown_part1_v5; if(!p1||!(p1.rows||[]).length) return '';
     return `<div class="bg-white border rounded-xl p-3">
       <div class="flex justify-between items-start gap-2 flex-wrap mb-2">
@@ -243,7 +264,7 @@ Object.assign(ScoutEventApp.prototype,{
   },
   /* 2026 成年獎勵（委任書／長期服務獎／感謝狀）— 取自 Rundown_All 2026 連獎項 Part 1 V５ 定稿 */
   adultAwards2026HTML(){
-    if(this.isDemoEvent&&this.isDemoEvent()) return '';
+    // v20：同上，示範版有真實成年獎勵 6 項
     const list=this.eventData?.ceremony?.adult_awards||[]; if(!list.length) return '';
     const src=this.eventData?.ceremony?.rundown_part1_v5||{};
     return `<div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3 space-y-3">
@@ -264,6 +285,116 @@ Object.assign(ScoutEventApp.prototype,{
   },
 
   /* 2026 官方司儀稿（3 份最新版本，內建全文 + 開啟原 PDF） */
+  /* ══════════ 執行手冊・司儀稿全文（v20）══════════
+     典禮模組嗰個係「摘要＋開 PDF」；手冊呢個係俾司儀當日真係攞上台讀：
+       ・三份全文一次過喺度，唔使開 PDF、唔使有網絡
+       ・搵得字（打關鍵字即時篩段落並highlight）——綵排改稿最有用
+       ・字級可以調大（台上睇手機／平板）
+       ・可以淨係列印一份
+     資料來源＝ceremony.mc_scripts（2026 官方 3 份最新版本，全文已內置）。 */
+  execMcQ:'', execMcSize:15, execMcOpen:{},
+
+  execManualMcScripts(){ return (this.eventData&&this.eventData.ceremony&&this.eventData.ceremony.mc_scripts)||[]; },
+  execMcSetQ(v){ this.execMcQ=String(v||''); this.execMcRefresh(); },
+  execMcSetSize(d){ this.execMcSize=Math.min(26,Math.max(12,(this.execMcSize||15)+d)); this.execMcRefresh(); },
+  execMcToggle(i){ this.execMcOpen[i]=!this.execMcOpen[i]; this.execMcRefresh(); },
+  execMcOpenAll(v){ this.execManualMcScripts().forEach((_,i)=>this.execMcOpen[i]=v); this.execMcRefresh(); },
+  execMcRefresh(){
+    const box=document.getElementById('exec-mc-body');
+    if(box) box.innerHTML=this.execMcBodyHTML();
+    else if(this.execManualSubTab==='mc_scripts'&&typeof this.renderExecManualTab==='function') this.renderExecManualTab();
+  },
+
+  /* 把全文斬做段落；有關鍵字就淨係留中嗰啲（前後文唔會斷） */
+  execMcParas(text){
+    return String(text||'').split(/\n{2,}|\r\n{2,}/).map(x=>x.trim()).filter(Boolean);
+  },
+  execMcHighlight(line,q){
+    const esc=escapeHtml(line);
+    if(!q) return esc;
+    try{
+      const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+      return esc.replace(re,'<mark style="background:#fde68a;border-radius:3px">$1</mark>');
+    }catch(e){ return esc; }
+  },
+
+  execManualMcScriptsHTML(){
+    const list=this.execManualMcScripts();
+    if(!list.length) return '<div class="bg-white border rounded-xl p-6 text-center text-[12px] text-slate-400">未有司儀稿資料</div>';
+    const total=list.reduce((a,s)=>a+String(s.content||'').length,0);
+    return `
+      <div class="space-y-3">
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900">
+          <b><i class="fa-solid fa-microphone-lines mr-1"></i>司儀稿全文：</b>${list.length} 份・共 ${total.toLocaleString()} 字，全部內置喺手冊入面——
+          場內冇網絡都讀得到，唔使開 PDF。綵排改稿：打關鍵字即刻搵到邊一段。
+        </div>
+
+        <div class="bg-white border rounded-xl p-3 flex gap-2 items-center flex-wrap">
+          <div class="relative flex-1 min-w-[180px]">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[11px]"></i>
+            <input id="exec-mc-q" value="${escapeHtml(this.execMcQ||'')}" oninput="app.execMcSetQ(this.value)" placeholder="搵字（例：彩帶、總領袖獎章、區子君）" class="w-full pl-8 pr-3 py-2 border rounded-xl text-[12px]">
+          </div>
+          <div class="flex gap-1 items-center">
+            <button onclick="app.execMcSetSize(-1)" class="w-8 h-8 bg-slate-100 rounded-lg text-[13px] font-bold">A-</button>
+            <span class="text-[10px] text-slate-400 w-7 text-center">${this.execMcSize}</span>
+            <button onclick="app.execMcSetSize(1)" class="w-8 h-8 bg-slate-100 rounded-lg text-[15px] font-bold">A+</button>
+          </div>
+          <button onclick="app.execMcOpenAll(true)" class="bg-slate-800 text-white text-[11px] font-bold rounded-lg px-3 py-2">全部展開</button>
+          <button onclick="app.execMcOpenAll(false)" class="bg-white border text-slate-600 text-[11px] font-bold rounded-lg px-3 py-2">全部收起</button>
+        </div>
+
+        <div id="exec-mc-body">${this.execMcBodyHTML()}</div>
+      </div>`;
+  },
+
+  execMcBodyHTML(){
+    const list=this.execManualMcScripts();
+    const q=(this.execMcQ||'').trim();
+    const size=this.execMcSize||15;
+    let hitTotal=0;
+    const cards=list.map((sc,i)=>{
+      const paras=this.execMcParas(sc.content);
+      const hits=q?paras.filter(p=>p.toLowerCase().includes(q.toLowerCase())):paras;
+      hitTotal+=q?hits.length:0;
+      const open=q?hits.length>0:!!this.execMcOpen[i];
+      const shown=q?hits:paras;
+      return `
+        <div class="bg-white border rounded-xl overflow-hidden">
+          <div class="p-3 flex justify-between items-start gap-2 flex-wrap ${open?'border-b':''}">
+            <div class="min-w-0">
+              <div class="font-bold text-[12.5px] text-slate-800">${escapeHtml(sc.part||'')}｜${escapeHtml(sc.title||'')}
+                <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full ml-1">${escapeHtml(sc.version||'')}</span></div>
+              <div class="text-[10.5px] text-slate-500 mt-0.5">司儀：${escapeHtml(sc.mc||'—')}${sc.pages?'｜'+escapeHtml(String(sc.pages))+' 頁':''}${sc.updated_at?'｜更新 '+escapeHtml(sc.updated_at):''}｜${String(sc.content||'').length.toLocaleString()} 字${q?`｜<b class="text-sky-700">命中 ${hits.length} 段</b>`:''}</div>
+              ${sc.note?`<div class="text-[11px] text-slate-600 mt-1 leading-relaxed">${escapeHtml(sc.note)}</div>`:''}
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+              ${q?'':`<button onclick="app.execMcToggle(${i})" class="bg-sky-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-lines mr-1"></i>${open?'收起':'全文'}</button>`}
+              <button onclick="app.execMcPrint(${i})" class="bg-white border text-slate-600 px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-print mr-1"></i>列印</button>
+              ${sc.file_url?`<a href="${escapeHtml(sc.file_url)}" target="_blank" rel="noopener" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold"><i class="fa-solid fa-file-pdf mr-1"></i>原檔</a>`:''}
+            </div>
+          </div>
+          ${open?`<div class="p-3 bg-slate-50 max-h-[65vh] overflow-y-auto">
+            ${shown.length?shown.map(pp=>`<p class="mb-2.5 leading-relaxed text-slate-800 whitespace-pre-wrap" style="font-size:${size}px">${this.execMcHighlight(pp,q)}</p>`).join('')
+              :'<p class="text-[12px] text-slate-400">呢份稿冇呢個關鍵字</p>'}
+          </div>`:''}
+        </div>`;
+    }).join('');
+    return (q?`<div class="text-[11px] text-slate-500 mb-2">「${escapeHtml(q)}」全部司儀稿共命中 <b class="text-sky-700">${hitTotal}</b> 段</div>`:'')+`<div class="space-y-3">${cards}</div>`;
+  },
+
+  execMcPrint(i){
+    const sc=this.execManualMcScripts()[i]; if(!sc) return;
+    const w=window.open('','_blank'); if(!w){ showToast('瀏覽器擋咗新視窗','warning'); return; }
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>${escapeHtml(sc.title||'司儀稿')}</title>
+      <style>body{font-family:"Microsoft JhengHei","PingFang HK",sans-serif;padding:24px;line-height:1.9;font-size:15px}
+      h1{font-size:19px;margin:0 0 4px}.m{color:#666;font-size:12px;margin-bottom:18px;border-bottom:1px solid #ddd;padding-bottom:10px}
+      p{margin:0 0 12px;white-space:pre-wrap}@media print{body{padding:0}}</style>
+      <h1>${escapeHtml(sc.part||'')}｜${escapeHtml(sc.title||'')}</h1>
+      <div class="m">${escapeHtml(sc.version||'')}｜司儀：${escapeHtml(sc.mc||'—')}${sc.updated_at?'｜更新 '+escapeHtml(sc.updated_at):''}</div>
+      ${this.execMcParas(sc.content).map(x=>`<p>${escapeHtml(x)}</p>`).join('')}`);
+    w.document.close(); setTimeout(()=>{ try{ w.print(); }catch(e){} },400);
+  },
+
   ceremonyMcScriptsHTML(){
     const list=this.eventData?.ceremony?.mc_scripts||[]; if(!list.length) return '';
     return `<div class="space-y-3">${list.map((s,i)=>{

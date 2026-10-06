@@ -12,7 +12,7 @@
    ・ 報到 QR：只有旅團（團體單位）有 token（T001–T031）；個人／隊伍＝工作人員按名單點名（checkin_note）。
    ・ 場地示意圖（venue_map 數據驅動）：每類人嘅路線＋報到點📍直接標喺圖上——生產版由籌委提供源點，為不同人士製作幾張唔同嘅圖。
      （minLevel 20・requiresData 同樣 gated）掃描／輸入即見旅團・人數・餐盒，一撳確認報到。
-   ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版 8 個分頁（含手冊）全部開放。
+   ・ 委員預覽：入口頁底部「一頁睇晒」＝舊版全部分頁（含手冊）全部開放。
    回歸測試：tests/pc2027_public_channel_test.js */
 Object.assign(ScoutEventApp.prototype,{
   pcDemoMode:'pick',        // pick=身份入口選擇 | audience=某受眾專屬版面 | tabs=委員一頁睇晒
@@ -20,7 +20,14 @@ Object.assign(ScoutEventApp.prototype,{
   pcDemoTab:'home', pcDemoZone:'all', pcDemoGuideKey:'',
   _pcPubChecked:false,
 
-  pcDemoData(){ return (this.eventData && this.eventData.public_channel_2027) || null; },
+  pcDemoData(){
+    const base=(this.eventData && this.eventData.public_channel_2027) || null;
+    if(!base) return null;
+    // v21：各組喺 APP 入面改過嘅內容，喺呢度一次性疊返上去（唔郁 data/mock_demo.json）
+    const eid=(this.currentEvent&&this.currentEvent.event_id)||'mock_demo';
+    if(this._pcOverlayFor!==eid && this.pcApplyContentOverrides){ try{ this.pcApplyContentOverrides(base); }catch(e){} this._pcOverlayFor=eid; }
+    return base;
+  },
   pcDemoAudienceDef(id){ const d=this.pcDemoData(); return (d && (d.audiences||[]).find(a=>a.id===id)) || null; },
 
   /* ?pub=xxx 深連結：生產版每類受眾專屬入口（示範版模擬同一機制） */
@@ -38,8 +45,8 @@ Object.assign(ScoutEventApp.prototype,{
 
   openPublicChannelTab(t){ this.pcDemoMode='tabs'; this.pcDemoTab=t; this.renderPublicChannelDemo(); },
   pcDemoOpenTabs(){ this.pcDemoMode='tabs'; this.pcDemoTab='home'; this.renderPublicChannelDemo(); },
-  pcDemoPickAudience(id){ this.pcDemoMode='audience'; this.pcDemoAudience=id; this.renderPublicChannelDemo(); },
-  pcDemoBackToPick(){ this.pcDemoMode='pick'; this.pcDemoAudience=''; this.renderPublicChannelDemo(); },
+  pcDemoPickAudience(id){ this.pcDemoMode='audience'; this.pcDemoAudience=id; this.pcAudTab=''; this.renderPublicChannelDemo(); },
+  pcDemoBackToPick(){ this.pcDemoMode='pick'; this.pcDemoAudience=''; this.pcAudTab=''; this.renderPublicChannelDemo(); },
   pcDemoSetZone(z){ this.pcDemoZone=z; this.renderPublicChannelDemo(); },
   pcDemoSetGuide(g){ this.pcDemoGuideKey=g; this.renderPublicChannelDemo(); },
 
@@ -60,6 +67,7 @@ Object.assign(ScoutEventApp.prototype,{
         <b>🧪 階段 1 成品示範</b> — 公眾（非工作人員）嘅分眾入口：唔同類型訪客見到唔同版面；生產版每類入口有專屬連結／QR（?pub=xxx）。數據＝2026 真實資料（docs/2027_FIELD_CONTRACT.md）。
       </div>
       ${body}`;
+    if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);
   },
 
   /* ═══════════ 入口選擇頁 ═══════════ */
@@ -86,15 +94,46 @@ Object.assign(ScoutEventApp.prototype,{
         </div>`).join('')}
       </div>
 ${opts.tabsLink!==false?`      <div class="text-center mt-4">
-        <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容（8 個分頁）</button>
+        <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容</button>
       </div>`:''}`;
   },
 
   /* ═══════════ 受眾專屬版面 ═══════════ */
+  /* ── 受眾專屬版面（v2・活動日版）：改為「頁簽」——唔再長長一版要不停拖拉 ──
+       pcAudTab 記住目前頁簽；切換身份會重設返第一個頁簽。 */
+  pcAudTab:'',
+  pcSectionIcon(s){
+    return ({banner:'fa-solid fa-circle-info',schedule:'fa-regular fa-clock',arrival:'fa-solid fa-location-dot',
+      venue:'fa-solid fa-map',ceremony:'fa-solid fa-award',seating:'fa-solid fa-chair',lunch:'fa-solid fa-utensils',
+      mess:'fa-solid fa-champagne-glasses',guide:'fa-solid fa-book-open',help:'fa-solid fa-life-ring',
+      program:'fa-regular fa-calendar-check',booths:'fa-solid fa-store',transport:'fa-solid fa-bus',donate:'fa-solid fa-heart'})[s]||'fa-solid fa-circle';
+  },
+  /* 頁簽列黐頂：避開最頂 BAR（高度會因手機分行而變，所以實時量度） */
+  pcSyncTabbarOffset(){
+    try{
+      const bar=document.getElementById('pc-aud-tabs'); if(!bar||!bar.style) return;
+      const hd=document.querySelector&&document.querySelector('header');
+      bar.style.top=((hd&&hd.offsetHeight)||56)+'px';
+    }catch(e){}
+  },
+  pcRerenderAudience(){
+    const land=document.getElementById('public-landing');
+    if(land && !land.classList.contains('hidden')) this.renderPublicLanding();
+    else this.renderPublicChannelDemo();
+  },
+  pcSetAudTab(k){
+    this.pcAudTab=k;
+    this.pcRerenderAudience();
+    try{ const el=document.getElementById('pc-aud-tabs'); if(el&&el.scrollIntoView) el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); }catch(e){ }
+  },
+
   pcDemoAudienceBody(d,aud,backFn='pcDemoBackToPick'){
     const labels=d.section_labels||{};
+    const secs=(aud.sections||[]);
+    if(!secs.includes(this.pcAudTab)) this.pcAudTab=secs[0]||'';
+    const cur=this.pcAudTab;
     return `
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-1">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-2">
         <div class="flex items-center gap-3">
           <div class="text-3xl">${aud.icon}</div>
           <div class="min-w-0">
@@ -107,11 +146,21 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         ${d.notices&&d.notices[aud.id]?`<button onclick="showToast('📄 正式通知書（地域格式）＝秘書出嗰封：掉入 ISD2027/${escapeHtml(d.notices[aud.id])} 就得——原名原檔唔使改名，系統自動攞最新嗰份（示範版）','info')" class="mt-2.5 w-full bg-white border border-indigo-200 text-indigo-700 text-[11.5px] font-bold rounded-lg py-2.5">📄 你的正式通知書（PDF）</button>
         ${(this.pcUploadState&&this.pcUploadState['notices:'+aud.id])?`<div class="mt-1.5 text-[10px] text-emerald-600 font-bold text-center truncate">✓ 最新版本：${escapeHtml(this.pcUploadState['notices:'+aud.id].file)}（${escapeHtml(this.pcUploadState['notices:'+aud.id].at)}・經源頭上傳中心）</div>`:''}`:''}
       </div>
-      ${(aud.sections||[]).map((s,i)=>`
-        <div class="flex items-center gap-2 font-black text-[14.5px] text-slate-800 mt-4 mb-2">
-          <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 text-[12px] flex items-center justify-center shrink-0">${i+1}</span>${escapeHtml(labels[s]||s)}
+      <div id="pc-aud-tabs" class="pc-tabbar sticky top-0 z-20 -mx-1 px-1 py-2 bg-slate-50/95 backdrop-blur border-b border-slate-200 mb-3">
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar" style="scrollbar-width:none">
+          ${secs.map(sx=>`<button onclick="app.pcSetAudTab('${escapeHtml(sx)}')" class="shrink-0 whitespace-nowrap text-[12px] font-bold rounded-full px-3 py-2 border ${cur===sx?'bg-indigo-600 text-white border-indigo-600 shadow-sm':'bg-white text-slate-600 border-slate-200'}"><i class="${this.pcSectionIcon(sx)} mr-1"></i>${escapeHtml(labels[sx]||sx)}</button>`).join('')}
         </div>
-        ${this.pcDemoSectionFor(d,aud,s)}`).join('')}
+      </div>
+      <div class="flex items-center gap-2 font-black text-[15px] text-slate-800 mb-2">
+        <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 text-[11px] flex items-center justify-center shrink-0"><i class="${this.pcSectionIcon(cur)}"></i></span>${escapeHtml(labels[cur]||cur)}
+        <span class="ml-auto text-[10.5px] font-bold text-slate-400">${secs.indexOf(cur)+1} / ${secs.length}</span>
+      </div>
+      <div id="pc-aud-panel">${this.pcDemoSectionFor(d,aud,cur)}</div>
+      ${secs.length>1?`
+      <div class="flex gap-2 mt-4">
+        ${secs.indexOf(cur)>0?`<button onclick="app.pcSetAudTab('${escapeHtml(secs[secs.indexOf(cur)-1])}')" class="flex-1 bg-white border border-slate-200 text-slate-600 text-[12px] font-bold rounded-xl py-2.5">← ${escapeHtml(labels[secs[secs.indexOf(cur)-1]]||'')}</button>`:''}
+        ${secs.indexOf(cur)<secs.length-1?`<button onclick="app.pcSetAudTab('${escapeHtml(secs[secs.indexOf(cur)+1])}')" class="flex-1 bg-indigo-600 text-white text-[12px] font-bold rounded-xl py-2.5">${escapeHtml(labels[secs[secs.indexOf(cur)+1]]||'')} →</button>`:''}
+      </div>`:''}
       <div class="text-center text-[10.5px] text-slate-400 mt-5">生產版：呢個版面有專屬連結／QR（?pub=${escapeHtml(aud.id)}），唔使揀身份直接入</div>`;
   },
 
@@ -120,8 +169,11 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       case 'banner': return aud.banner==='guest'?this.pcDemoGuestBannerHTML(d):this.pcDemoHomeHTML(d);
       case 'schedule': return this.pcDemoScheduleForHTML(d,aud);
       case 'arrival': return this.pcDemoArrivalHTML(d,aud);
-      case 'qr': return this.pcDemoQrHTML(d,aud);
-      case 'apply': return this.pcDemoApplyForHTML(d,aud.featured||[]);
+      case 'venue': return this.pcDemoVenueFullHTML(d);
+      case 'ceremony': return this.pcDemoCeremonyFlowHTML(d,aud);
+      case 'seating': return this.pcDemoSeatingHTML(d);
+      case 'lunch': return this.pcDemoLunchHTML(d);
+      case 'mess': return this.pcDemoMessCeremonyHTML(d);
       case 'guide': return this.pcDemoGuideForHTML(d,aud.guide||[]);
       case 'program': return this.pcDemoProgramHTML(d);
       case 'booths': return this.pcDemoBoothsHTML(d);
@@ -195,38 +247,271 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* ── 報到與地圖（每類唔同報到點＋路線重點＋專屬交通提示） ── */
+  /* ── 報到資訊（v2）：每個參加者有自己嘅地圖——清楚知道去邊報到、路線點走。
+       報到 QR 唔會喺呢度顯示（公開頁、唔使登入）：QR 以電郵發俾負責領袖，當日由佢出示作登記。 ── */
   pcDemoArrivalHTML(d,aud){
     const ar=(d.arrivals||{})[aud.id]||{};
-    const t=d.transport||{};
+    const qr=ar.qr_email||null;
+    const rule=d.checkin_qr_rule||{};
     return `
       <div class="bg-white border-2 border-indigo-500 rounded-2xl p-4 text-center">
         <div class="text-[10.5px] font-bold text-indigo-600">📍 你的報到地點</div>
-        <div class="text-[16px] font-black text-indigo-900 leading-snug mt-1">${escapeHtml((ar.checkin||[])[1]||'')}</div>
+        <div class="text-[17px] font-black text-indigo-900 leading-snug mt-1">${escapeHtml((ar.checkin||[])[1]||'')}</div>
         <div class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 rounded-full px-3 py-1 mt-2 text-[12px] font-bold text-indigo-700"><i class="fa-regular fa-clock"></i>${escapeHtml((ar.checkin||[])[0]||'')}</div>
         ${ar.checkin_note?`<div class="mt-2.5 text-[11.5px] text-slate-500 leading-relaxed border-t border-slate-100 pt-2"><i class="fa-solid fa-clipboard-check text-slate-400 mr-1"></i>${escapeHtml(ar.checkin_note)}</div>`:''}
       </div>
       ${this.pcDemoVenueMapHTML(d,aud)}
       ${(ar.points||[]).length?`
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
-        <div class="font-black text-[13px] mb-2.5">🚶 你的路線重點</div>
-        <div class="space-y-2">
-          ${(ar.points||[]).map((pt,i)=>`
-          <div class="flex items-center gap-2.5 text-[13.5px]">
-            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">${i+1}</span><span class="min-w-0">${escapeHtml(pt)}</span>
+        <div class="font-black text-[13px] mb-2.5">🚶 你的路線（由入口行到報到點）</div>
+        <div class="space-y-0">
+          ${(ar.points||[]).map((pt,i,all)=>`
+          <div class="flex gap-2.5 text-[13.5px]">
+            <div class="flex flex-col items-center shrink-0">
+              <span class="w-6 h-6 rounded-full ${i===all.length-1?'bg-rose-500':'bg-indigo-600'} text-white text-[11px] font-black flex items-center justify-center">${i+1}</span>
+              ${i<all.length-1?'<span style="width:2px;flex:1;min-height:14px;background:#c7d2fe"></span>':''}
+            </div>
+            <div class="min-w-0 pb-3 pt-0.5">${escapeHtml(pt)}</div>
           </div>`).join('')}
         </div>
       </div>`:''}
       ${(ar.transport||[]).length?`
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2 space-y-2">
+        <div class="font-black text-[13px]">🚍 你的交通提示</div>
         ${(ar.transport||[]).map(x=>`<div class="flex gap-2 text-[12.5px] text-slate-700 leading-relaxed"><i class="fa-solid fa-circle-info text-slate-400 mt-1"></i><span>${escapeHtml(x)}</span></div>`).join('')}
       </div>`:''}
+      <div class="bg-white border-2 border-amber-300 rounded-2xl p-4 mt-2">
+        <div class="flex items-start gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-envelope-circle-check"></i></div>
+          <div class="min-w-0">
+            <b class="text-[13.5px] text-amber-900">${escapeHtml(rule.headline||'報到 QR Code 已電郵給負責領袖')}</b>
+            <div class="text-[11.5px] text-slate-600 leading-relaxed mt-1">${escapeHtml(rule.detail||'')}</div>
+          </div>
+        </div>
+        ${qr?`
+        <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <div class="text-[10px] font-bold text-slate-400 mb-1.5">📧 已發出的電郵（示範）</div>
+          <div class="text-[12px]"><b>收件人：</b>${escapeHtml(qr.to||'')}</div>
+          <div class="text-[12px]"><b>主旨：</b>${escapeHtml(qr.subject||'')}</div>
+          <div class="text-[12px]"><b>發送時間：</b>${escapeHtml(qr.sent_at||'')}</div>
+          ${(qr.shows||[]).length?`<div class="text-[11.5px] text-slate-500 mt-1.5">登記 BOOTH 掃描後會見到：${(qr.shows||[]).map(x=>`<span class="inline-block bg-white border border-slate-200 rounded-full px-2 py-0.5 text-[10.5px] mr-1 mb-1">${escapeHtml(x)}</span>`).join('')}</div>`:''}
+        </div>`:''}
+        ${(rule.points||[]).length?`
+        <ul class="mt-2.5 space-y-1 text-[11.5px] text-slate-600 list-disc pl-5">
+          ${(rule.points||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+        </ul>`:''}
+      </div>`;
+  },
+
+  /* ── 活動地圖（所有人都要睇到）：全場地圖＋設施位置＋圖例＋官方地圖下載 ── */
+  pcDemoVenueFullHTML(d){
+    const vm=d.venue_map||{}; const nodes=vm.nodes||[]; const t=d.transport||{};
+    const cx=n=>n.x+n.w/2, cy=n=>n.y+n.h/2;
+    const accent=id=>({parade:'#ede9fe',booths:'#ecfdf5',east_gate:'#fef3c7',morrison:'#e0f2fe',checkin:'#fff1f2'})[id]||'#ffffff';
+    const stroke=id=>({parade:'#8b5cf6',booths:'#10b981',east_gate:'#f59e0b',morrison:'#0ea5e9',checkin:'#f43f5e'})[id]||'#cbd5e1';
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-3">
+        <div class="font-black text-[13.5px] mb-1"><i class="fa-solid fa-map text-indigo-600"></i> 全場活動地圖（示意圖）</div>
+        <div class="text-[11px] text-slate-500 mb-2">香港警察學院・2027年10月3日（星期日）</div>
+        <svg viewBox="0 0 380 520" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="380" height="520" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+          ${nodes.map(n=>`<g>
+            <rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="8" fill="${accent(n.id)}" stroke="${stroke(n.id)}" stroke-width="2"/>
+            <text x="${cx(n)}" y="${cy(n)-(n.sub?3:0)}" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">${escapeHtml(n.label)}</text>
+            ${n.sub?`<text x="${cx(n)}" y="${cy(n)+11}" text-anchor="middle" font-size="8.5" fill="#94a3b8">${escapeHtml(n.sub)}</text>`:''}
+          </g>`).join('')}
+        </svg>
+        ${vm.zones_note?`<div class="text-[11px] text-slate-500 mt-2 leading-relaxed">${escapeHtml(vm.zones_note)}</div>`:''}
+      </div>
+      ${(vm.facilities||[]).length?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2.5">🏥 場內設施位置</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+          ${(vm.facilities||[]).map(f=>`
+          <div class="flex items-start gap-2 border border-slate-100 rounded-xl p-2.5">
+            <span class="text-base shrink-0">${f.icon}</span>
+            <div class="min-w-0"><b class="text-[12.5px]">${escapeHtml(f.name)}</b><div class="text-[11px] text-slate-500 leading-snug">${escapeHtml(f.where)}</div></div>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
+      ${(vm.legend||[]).length?`
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-bold text-[12px] text-slate-600 mb-1.5">圖例</div>
+        ${(vm.legend||[]).map(l=>`<div class="text-[11.5px] text-slate-600 leading-relaxed">${escapeHtml(l[0])}　＝　${escapeHtml(l[1])}</div>`).join('')}
+      </div>`:''}
       <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
-        <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 場地指示圖</div>
+        <div class="font-black text-[13px] mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600"></i> 官方場地指示圖</div>
         ${t.map_url?`<img src="${escapeHtml(t.map_url)}" alt="場地指示圖" class="w-full rounded-xl border border-slate-200">`:''}
         ${t.map_pdf?`<a href="${escapeHtml(t.map_pdf)}" target="_blank" class="mt-2 inline-block text-[12px] font-bold text-indigo-700">📎 下載完整場地指示圖（PDF）↗</a>`:''}
-        <div class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">生產版：籌委按呢個方式提供源點（各類嘅報到點＋路線節點），為不同人士製作幾張唔同嘅標註地圖——上面示意圖就係結果形態。</div>
       </div>`;
+  },
+
+  /* ── 典禮儀式流程（所有人）：三部分，可逐部分開合 ── */
+  pcDemoCeremonyFlowHTML(d,aud){
+    const cf=d.ceremony_flow||{};
+    const isGuest=!!(aud&&aud.id==='guest');
+    const parts=(cf.parts||[]).filter(p=>!p.guest_only||isGuest);
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="font-black text-[15px] text-indigo-900">👑 ${escapeHtml(cf.title||'典禮儀式流程')}</div>
+        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(cf.venue||'')}</div>
+        <div class="grid grid-cols-1 gap-1.5 mt-2.5 text-[12px]">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"><b class="text-slate-500">服裝：</b>${escapeHtml(cf.dress||'')}</div>
+          ${cf.salute_note?`<div class="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-amber-900"><b>敬禮提示：</b>${escapeHtml(cf.salute_note)}</div>`:''}
+        </div>
+      </div>
+      ${parts.map((p,i)=>`
+      <details class="bg-white border border-slate-200 rounded-2xl overflow-hidden mt-2" ${i===0?'open':''}>
+        <summary class="cursor-pointer px-4 py-3 flex items-center gap-2.5" style="background:${p.guest_only?'#fff7ed':'#eef2ff'}">
+          <span class="text-[10px] font-black rounded-full px-2 py-1 ${p.guest_only?'bg-amber-500':'bg-indigo-600'} text-white shrink-0">${escapeHtml(p.badge||'')}</span>
+          <div class="min-w-0 flex-1">
+            <b class="text-[13.5px] leading-tight">${escapeHtml(p.name||'')}</b>
+            <div class="text-[11px] text-slate-500">${escapeHtml(p.time||'')}｜${escapeHtml(p.place||'')}</div>
+          </div>
+          <i class="fa-solid fa-chevron-down text-slate-400 text-[11px]"></i>
+        </summary>
+        <div class="p-3">
+          <div class="text-[11.5px] text-slate-500 mb-2">${escapeHtml(p.officiant||'')}${p.mc?'｜'+escapeHtml(p.mc):''}</div>
+          ${p.guest_only?'<div class="bg-amber-50 border border-amber-200 text-amber-900 text-[11.5px] rounded-xl px-3 py-2 mb-2">⚠️ 此部分只限獲邀嘉賓出席。</div>':''}
+          <div class="space-y-0">
+            ${(p.rows||[]).map((r,j,all)=>`
+            <div class="flex gap-2.5">
+              <div class="flex flex-col items-center shrink-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 mt-1.5"></span>
+                ${j<all.length-1?'<span style="width:2px;flex:1;background:#e0e7ff"></span>':''}
+              </div>
+              <div class="pb-3 min-w-0">
+                <div class="font-black text-[12.5px] text-indigo-700">${escapeHtml(r.time||'')}</div>
+                <div class="text-[13px] leading-snug">${escapeHtml(r.item||'')}</div>
+                ${r.who?`<div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(r.who)}</div>`:''}
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </details>`).join('')}
+      ${cf.public_note?`<div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-2 text-[11.5px] text-slate-600 leading-relaxed">${escapeHtml(cf.public_note)}</div>`:''}
+      ${cf.note?`<div class="text-[10.5px] text-slate-400 mt-2 text-center">${escapeHtml(cf.note)}</div>`:''}`;
+  },
+
+  /* ── 嘉賓座位表 ── */
+  pcDemoSeatingHTML(d){
+    const st=d.seating||{};
+    const blocks=st.blocks||[];
+    const my=st.my_seat||null;
+    const bw=300, bx=40;
+    let y=52;
+    const rects=blocks.map((b,i)=>{ const h=34+(i<4?4:0); const r={b,x:bx,y,w:bw,h}; y+=h+7; return r; });
+    const vh=y+14;
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl p-4">
+        <div class="font-black text-[15px] text-indigo-900">🪑 ${escapeHtml(st.title||'座位表')}</div>
+        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(st.subtitle||'')}</div>
+        ${my?`
+        <div class="mt-3 bg-rose-50 border-2 border-rose-300 rounded-xl p-3 text-center">
+          <div class="text-[10.5px] font-bold text-rose-500">你的座位</div>
+          <div class="text-2xl font-black text-rose-700 tracking-wider">${escapeHtml(my.seat||'')}</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml((blocks.find(b=>b.id===my.block)||{}).label||'')}</div>
+          ${my.note?`<div class="text-[10px] text-slate-400 mt-1">${escapeHtml(my.note)}</div>`:''}
+        </div>`:''}
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
+        <svg viewBox="0 0 380 ${vh}" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">
+          <rect x="${bx}" y="10" width="${bw}" height="30" rx="8" fill="#1e293b"/>
+          <text x="${bx+bw/2}" y="29" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">${escapeHtml(st.stage_label||'主禮台')}</text>
+          ${rects.map(r=>{
+            const mine=my&&my.block===r.b.id;
+            return `<g>
+              <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="7" fill="${r.b.color||'#64748b'}1a" stroke="${mine?'#e11d48':(r.b.color||'#94a3b8')}" stroke-width="${mine?3:1.6}"/>
+              <text x="${r.x+10}" y="${r.y+r.h/2+4}" font-size="11" font-weight="800" fill="${r.b.color||'#475569'}">${escapeHtml(r.b.label)}</text>
+              <text x="${r.x+r.w-10}" y="${r.y+r.h/2+4}" text-anchor="end" font-size="9.5" fill="#64748b">${escapeHtml(r.b.seats)}</text>
+            </g>`;
+          }).join('')}
+        </svg>
+        <div class="text-[10px] text-slate-400 mt-1 text-center">↑ 面向主禮台方向（示意圖）</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-black text-[13px] mb-2">分區安排</div>
+        ${blocks.map(b=>`
+        <div class="border-t border-slate-100 py-2.5 first:border-t-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-white text-[10.5px] font-black rounded-lg px-2 py-0.5" style="background:${b.color||'#64748b'}">${escapeHtml(b.id)}</span>
+            <b class="text-[12.5px]">${escapeHtml(b.label)}</b>
+            <span class="text-[10.5px] text-slate-400">${escapeHtml(b.rows)}・${escapeHtml(b.seats)}</span>
+          </div>
+          <div class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">${escapeHtml(b.who)}</div>
+        </div>`).join('')}
+      </div>
+      ${(st.rules||[]).length?`
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-2">
+        <div class="font-bold text-[12px] text-slate-600 mb-1.5">就座須知</div>
+        <ul class="space-y-1 text-[11.5px] text-slate-600 list-disc pl-5">
+          ${(st.rules||[]).map(r=>`<li>${escapeHtml(r)}</li>`).join('')}
+        </ul>
+      </div>`:''}`;
+  },
+
+  /* ── 午膳安排（嘉賓） ── */
+  pcDemoLunchHTML(d){
+    const l=d.lunch||{};
+    const hd=l.headline||[];
+    return `
+      <div class="bg-white border-2 border-emerald-400 rounded-2xl p-4 text-center">
+        <div class="text-2xl">🍽️</div>
+        <div class="text-[18px] font-black text-emerald-800 mt-1">${escapeHtml(hd[0]||'')}</div>
+        <div class="text-[13px] font-bold text-slate-700 mt-0.5">${escapeHtml(hd[1]||'')}</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-2 mt-2">
+        ${(l.rows||[]).map(r=>`
+        <div class="flex gap-2.5 px-2 py-2.5 border-t border-slate-100 first:border-t-0 text-[13px]">
+          <div class="w-[72px] shrink-0 font-bold text-slate-500 text-[12px]">${escapeHtml(r[0])}</div>
+          <div class="min-w-0 leading-relaxed">${escapeHtml(r[1])}</div>
+        </div>`).join('')}
+      </div>
+      ${l.note?`<div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-3 mt-2 text-[11.5px] leading-relaxed">${escapeHtml(l.note)}</div>`:''}`;
+  },
+
+  /* ── 午膳儀式（Officer Mess・只限嘉賓） ── */
+  pcDemoMessCeremonyHTML(d){
+    const m=d.mess_ceremony||{};
+    return `
+      <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="p-4" style="background:linear-gradient(135deg,#7c2d12,#b45309);color:#fff">
+          <div class="text-[10.5px] font-bold" style="color:#fed7aa">只限嘉賓・第三部分典禮</div>
+          <div class="text-[16px] font-black leading-tight mt-0.5">🥂 ${escapeHtml(m.title||'午膳儀式')}</div>
+          <div class="text-[11.5px] mt-1" style="color:#fed7aa">${escapeHtml(m.subtitle||'')}</div>
+          <div class="inline-block mt-2 rounded-full px-3 py-1 text-[12px] font-bold" style="background:rgba(255,255,255,.2)"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(m.time||'')}</div>
+        </div>
+        <div class="p-4 text-[12.5px] text-slate-600 leading-relaxed">${escapeHtml(m.intro||'')}${m.mc?`<div class="text-[11px] text-slate-400 mt-1.5">${escapeHtml(m.mc)}</div>`:''}</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2.5">儀式流程</div>
+        <div class="space-y-0">
+          ${(m.rows||[]).map((r,i,all)=>`
+          <div class="flex gap-2.5">
+            <div class="flex flex-col items-center shrink-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1.5"></span>
+              ${i<all.length-1?'<span style="width:2px;flex:1;background:#fde68a"></span>':''}
+            </div>
+            <div class="pb-3 min-w-0">
+              <div class="font-black text-[12.5px] text-amber-700">${escapeHtml(r.time||'')}</div>
+              <div class="text-[13px] leading-snug">${escapeHtml(r.item||'')}</div>
+              ${r.who?`<div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(r.who)}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      ${(m.recipients||[]).length?`
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[13px] mb-2">致送名單</div>
+        ${(m.recipients||[]).map(r=>`<div class="flex gap-2.5 py-2 border-t border-slate-100 first:border-t-0 text-[12.5px]"><div class="w-[70px] shrink-0 font-bold text-slate-500 text-[11.5px]">${escapeHtml(r[0])}</div><div class="min-w-0">${escapeHtml(r[1])}</div></div>`).join('')}
+      </div>`:''}
+      ${(m.reminders||[]).length?`
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mt-2">
+        <div class="font-bold text-[12px] text-amber-800 mb-1.5">注意事項</div>
+        <ul class="space-y-1 text-[11.5px] text-amber-900 list-disc pl-5">
+          ${(m.reminders||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+        </ul>
+      </div>`:''}`;
   },
 
   /* ── 求助卡：電話號碼變可撥 tel: 連結（手機直接撳打） ── */
@@ -234,8 +519,9 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     return escapeHtml(text||'').replace(/(\d{4})\s?(\d{4})/g,(m,a,b)=>`<a href="tel:${a}${b}" class="text-sky-700 font-bold underline">${a} ${b}</a>`);
   },
 
-  /* ── 你的報到 QR（每個報名一個獨有 token；工作人員一撳即見旅團・人數・餐盒） ── */
-  pcQrIdx:{},
+  /* ── QR 產生器（共用）：報到站（工作人員端）及報名回條仍會用到。
+       ⚠️ v2：公開頁（分眾入口）唔再顯示報到 QR——QR 以電郵發俾負責領袖，
+       由佢當日出示作登記，登記 BOOTH 掃描即見該單位資料（見「報到資訊」頁簽）。 ── */
   pcQrSvg(text){
     try{
       if(typeof qrcode!=='undefined'){
@@ -244,36 +530,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       }
     }catch(e){}
     return '<div data-pcqr-fallback style="width:130px;height:130px;border:2px dashed #94a3b8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#64748b">QR Code</div>';
-  },
-  pcDemoQrHTML(d,aud){
-    const cd=d.checkin_demo||{};
-    const entries=(cd.entries||[]).filter(e=>e.kind==='旅團');
-    if(!entries.length) return '';
-    this.pcQrIdx=this.pcQrIdx||{};
-    const idx=(this.pcQrIdx[aud.id]||0)%entries.length;
-    this.pcQrIdx[aud.id]=idx;
-    const e=entries[idx];
-    return `
-      <div class="bg-white border-2 border-slate-800 rounded-2xl p-4 text-center">
-        <div class="text-[10.5px] font-bold text-slate-500">📲 你的報到 QR Code（報到時出示）</div>
-        <div class="flex justify-center my-3">${this.pcQrSvg('PC2027:'+e.token)}</div>
-        <div class="font-black text-[15px] text-slate-900 leading-snug">${escapeHtml(e.name)}</div>
-        <div class="text-[11.5px] text-slate-500 mt-0.5">${escapeHtml(e.area||'')}｜報名編號 <b>${escapeHtml(e.token)}</b></div>
-        <div class="grid grid-cols-2 gap-2 mt-3">
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400">人數</div><b class="text-[15px]">${escapeHtml(String(e.headcount))}</b></div>
-          <div class="bg-rose-50 border border-rose-200 rounded-xl p-2"><div class="text-[10px] font-bold text-rose-400">代訂餐盒</div><b class="text-[15px] text-rose-700">${escapeHtml(String(e.meal_boxes))}</b></div>
-        </div>
-        ${e.note?`<div class="text-[11px] text-slate-500 mt-2 leading-relaxed">${escapeHtml(e.note)}</div>`:''}
-        ${entries.length>1?`<button onclick="app.pcQrCycle('${escapeHtml(aud.id)}')" class="mt-3 w-full bg-slate-100 border border-slate-200 text-slate-600 text-[11.5px] font-bold rounded-xl py-2">🔄 切換示範${escapeHtml(e.kind)}（第 ${idx+1}/${entries.length} 個）</button>`:''}
-        <div class="text-[10px] text-slate-400 mt-2 leading-relaxed">工作人員掃描此 QR → 即見你嘅旅團・人數・餐盒等資料。QR＝旅團（團體單位）專有；個人身份由工作人員按名單點名。（示範資料）</div>
-      </div>`;
-  },
-  pcQrCycle(audId){
-    this.pcQrIdx=this.pcQrIdx||{};
-    this.pcQrIdx[audId]=(this.pcQrIdx[audId]||0)+1;
-    const land=document.getElementById('public-landing');
-    if(land && this.pcLandAudience===audId && !land.classList.contains('hidden')) this.renderPublicLanding();
-    else this.renderPublicChannelDemo();
   },
 
   /* ═══════════ 嘉賓接待站（工作人員端）：102 位嘉賓・逐位唔同安排・接待報到 ═══════════
@@ -719,38 +975,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* ── 報名：該受眾嘅表特大，其他收埋 ── */
-  pcDemoApplyForHTML(d,featured){
-    const forms=d.apply_forms||[];
-    const big=forms.filter(f=>featured.includes(f.name));
-    const rest=forms.filter(f=>!featured.includes(f.name));
-    return `
-      ${big.map(f=>`
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-2" style="border-left:4px solid #6d28d9">
-        <div class="flex items-center gap-3">
-          <div class="text-2xl">${f.icon}</div>
-          <div class="min-w-0">
-            <b class="text-[14px]">${escapeHtml(f.name)}</b>
-            <div class="text-[11.5px] text-slate-500">${escapeHtml(f.target)}｜${escapeHtml(f.desc)}</div>
-          </div>
-        </div>
-        <button onclick="app.pcOpenFormByName('${escapeHtml(f.name)}')" class="mt-3 w-full bg-sky-600 text-white text-[13px] font-bold rounded-xl py-2.5">立即報名 →</button>
-        <div class="text-[10.5px] text-slate-400 mt-1.5 text-center">免登入・提交即有申請編號可查進度</div>
-      </div>`).join('')}
-      ${rest.length?`
-      <details class="bg-white border border-slate-200 rounded-2xl p-3">
-        <summary class="font-bold text-[12px] text-slate-500 cursor-pointer">其他參與方式（${rest.length} 個）</summary>
-        <div class="grid grid-cols-2 gap-2 mt-2">
-          ${rest.map(f=>`
-          <div class="border border-slate-200 rounded-xl p-2.5">
-            <div class="text-lg">${f.icon}</div>
-            <b class="text-[11.5px] leading-tight">${escapeHtml(f.name)}</b>
-            <div class="text-[10.5px] text-slate-500">${escapeHtml(f.target)}</div>
-          </div>`).join('')}
-        </div>
-      </details>`:''}`;
-  },
-
   /* ── 須知：該受眾身份嘅版本（唔使再揀 tab） ── */
   pcDemoGuideForHTML(d,keys){
     const guides=d.guides||{};
@@ -768,20 +992,275 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
   },
 
   /* ── 捐贈（訪客版） ── */
+  /* ═══════════ 童心捐贈大行動（v19）：自己部機填 → 自己部機出 QR → 攤位掃一次入數
+     ⚠️ 關鍵：呢一頁【唔會寫任何嘢落後端】。QR 係喺你部瀏覽器本機砌出嚟（vendor qrcode.min.js），
+        載荷就係表格內容本身。全場唯一一次寫入，係當日攤位同事掃完、核對完實物、撳「確認收貨」嗰下。
+        咁就唔會「又收紙又收 online」，活動完咗唔使兩邊對數——帳目永遠得一本。
+        （報到 QR 嘅舊規矩唔變：報到 QR 照舊唔喺公開頁出，用電郵發俾負責領袖。呢個係捐贈單 QR，兩回事。）
+     草稿淨係存喺用家自己部機（localStorage 另一個 key），唔會掂到籌委嗰本捐贈紀錄。 ═══════════ */
+  pcDonateScheme: '', pcDonateRows: null, pcDonateQR: null,
+
+  pcDonateDef(d){ return (d||this.pcDemoData()||{}).donate||null; },
+  pcDonateSchemeDef(d,id){ const dn=this.pcDonateDef(d); if(!dn) return null; return (dn.schemes||[]).find(x=>x.id===(id||this.pcDonateScheme))||null; },
+  pcDonateEnsureRows(){ if(!Array.isArray(this.pcDonateRows)||!this.pcDonateRows.length) this.pcDonateRows=[{name:'',qty:''},{name:'',qty:''},{name:'',qty:''}]; return this.pcDonateRows; },
+  pcDonateDraftKey(){ return 'pc_donate_draft_'+((this.currentEvent&&this.currentEvent.event_id)||'mock_demo'); },
+
+  /* 由 DOM 讀返用家打咗嘅嘢（重畫前一定要叫，唔係會清空） */
+  pcDonateReadForm(){
+    const v=id=>{const e=document.getElementById(id);return e?String(e.value||'').trim():'';};
+    const box=document.getElementById('pc-donate-rows');
+    if(box&&box.querySelectorAll){
+      const rows=[];
+      box.querySelectorAll('[data-donor-row]').forEach(el=>{
+        const n=el.querySelector('[data-donor-name]'), q=el.querySelector('[data-donor-qty]');
+        rows.push({name:(n&&n.value||'').trim(), qty:(q&&q.value||'').trim()});
+      });
+      if(rows.length) this.pcDonateRows=rows;
+    }
+    this.pcDonateHead={group:v('pc-dn-group'),leader:v('pc-dn-leader'),pos:v('pc-dn-pos'),phone:v('pc-dn-phone')};
+    return this.pcDonateHead;
+  },
+  pcDonateHead:null,
+
+  pcDonateSaveDraft(){
+    try{
+      if(typeof localStorage==='undefined') return;
+      localStorage.setItem(this.pcDonateDraftKey(),JSON.stringify({scheme:this.pcDonateScheme,head:this.pcDonateHead,rows:this.pcDonateRows}));
+    }catch(e){}
+  },
+  pcDonateLoadDraft(){
+    try{
+      if(typeof localStorage==='undefined') return null;
+      return JSON.parse(localStorage.getItem(this.pcDonateDraftKey())||'null');
+    }catch(e){ return null; }
+  },
+  pcDonateClearDraft(){ try{ if(typeof localStorage!=='undefined') localStorage.removeItem(this.pcDonateDraftKey()); }catch(e){} },
+
+  pcDonatePick(id){
+    this.pcDonateScheme=id; this.pcDonateQR=null;
+    const dr=this.pcDonateLoadDraft();
+    if(dr&&dr.scheme===id){ this.pcDonateRows=dr.rows||null; this.pcDonateHead=dr.head||null; }
+    this.pcDonateEnsureRows(); this.pcDonateRepaint();
+  },
+  pcDonateBack(){ this.pcDonateReadForm(); this.pcDonateSaveDraft(); this.pcDonateScheme=''; this.pcDonateQR=null; this.pcDonateRepaint(); },
+  pcDonateAddRow(){ this.pcDonateReadForm(); this.pcDonateRows.push({name:'',qty:''}); this.pcDonateRepaint(); },
+  pcDonateDelRow(i){ this.pcDonateReadForm(); this.pcDonateRows.splice(i,1); this.pcDonateEnsureRows(); this.pcDonateRepaint(); },
+  pcDonateEdit(){ this.pcDonateQR=null; this.pcDonateRepaint(); },
+  pcDonateReset(){ this.pcDonateClearDraft(); this.pcDonateScheme=''; this.pcDonateRows=null; this.pcDonateHead=null; this.pcDonateQR=null; this.pcDonateRepaint(); },
+
+  /* 只重畫捐贈區（成頁重畫會令手機打字彈走） */
+  pcDonateRepaint(){
+    const box=document.getElementById('pc-donate-body');
+    if(box){ box.innerHTML=this.pcDonateBodyHTML(this.pcDemoData()); return; }
+    if(typeof this.pcRerenderAudience==='function') this.pcRerenderAudience();
+  },
+  /* 打字時只更新合計數字，唔郁 input */
+  pcDonateRecalc(){
+    this.pcDonateReadForm(); this.pcDonateSaveDraft();
+    const el=document.getElementById('pc-donate-sum');
+    if(el) el.innerHTML=this.pcDonateSumHTML(this.pcDemoData());
+  },
+
+  pcDonateTotals(d){
+    const sc=this.pcDonateSchemeDef(d)||{};
+    const rows=(this.pcDonateRows||[]).map(r=>({name:(r.name||'').trim(),qty:parseInt(r.qty,10)||0}));
+    const used=rows.filter(r=>r.name||r.qty);
+    return {
+      donors: used.filter(r=>r.name&&r.qty>0).length,
+      items: used.reduce((s,r)=>s+r.qty,0),
+      bonus: sc.bonus? used.filter(r=>r.qty>sc.bonus.threshold).length : 0,
+      missingName: used.filter(r=>r.qty>0&&!r.name).length,
+      missingQty: used.filter(r=>r.name&&!r.qty).length
+    };
+  },
+
+  pcDonateSumHTML(d){
+    const sc=this.pcDonateSchemeDef(d)||{}; const t=this.pcDonateTotals(d);
+    const chip=(v,l,cls)=>`<div class="rounded-xl px-2.5 py-1.5 text-center ${cls}"><div class="text-[16px] font-extrabold leading-none">${v}</div><div class="text-[9.5px] mt-0.5 font-bold">${l}</div></div>`;
+    return `<div class="grid grid-cols-3 gap-2">
+        ${chip(t.donors,'位捐贈者','bg-white text-rose-700 border border-rose-200')}
+        ${chip(t.items,'件','bg-white text-rose-700 border border-rose-200')}
+        ${chip(t.donors,'枚紀念章','bg-rose-600 text-white')}
+      </div>
+      ${t.bonus?`<div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏅 有 ${t.bonus} 位捐贈超過 ${sc.bonus.threshold} 件 → 額外特別紀念章及感謝狀</div>`:''}
+      ${t.missingName?`<div class="mt-2 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-2.5 py-1.5">⚠️ 有 ${t.missingName} 行填咗件數但未填姓名 — 紀念章按姓名派，唔填派唔到。</div>`:''}
+      ${t.missingQty?`<div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">有 ${t.missingQty} 行填咗姓名但未填件數。</div>`:''}`;
+  },
+
+  /* 產生 QR：全程喺本機，冇任何網絡請求 */
+  pcDonateMakeQR(ev){
+    if(ev&&ev.preventDefault) ev.preventDefault();
+    const d=this.pcDemoData(); const sc=this.pcDonateSchemeDef(d);
+    if(!sc){ showToast('請先揀捐贈計劃','warning'); return; }
+    const head=this.pcDonateReadForm();
+    const t=this.pcDonateTotals(d);
+    if(!head.group||!head.leader){ showToast('請填旅團／單位及負責領袖姓名','error'); return; }
+    if(!t.donors){ showToast('請最少填一位捐贈者同件數','error'); return; }
+    if(t.missingName){ showToast('有行填咗件數但未填姓名，紀念章派唔到','error'); return; }
+    const packed=this.pcDonatePack(sc.id,head,this.pcDonateRows);
+    if(packed.bytes>900){ showToast('名單太長，QR 會掃唔到。請分兩張表（例如每張最多 30 位）','error'); return; }
+    this.pcDonateQR=Object.assign({scheme:sc.id,head:head},packed);
+    this.pcDonateSaveDraft();
+    showToast('QR 已產生（淨係喺你部機，冇上傳）','success');
+    this.pcDonateRepaint();
+  },
+
   pcDemoDonateHTML(d){
-    const f=(d.apply_forms||[]).find(x=>x.name==='童心捐贈');
+    const dn=this.pcDonateDef(d);
+    if(!dn) return '';
+    const c=dn.collect||{};
     return `
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center">
-        <div class="text-2xl mb-1">${f?f.icon:'❤️'}</div>
-        <b class="text-[13.5px] text-rose-700">童心捐贈大行動</b>
-        <p class="text-[12px] text-slate-500 mt-1">物品／食品捐贈・現場掃 QR Code 登記</p>
-        <button onclick="app.pcOpenFormByName('童心捐贈')" class="mt-2.5 bg-rose-600 text-white text-[12px] font-bold rounded-lg px-4 py-2">我要捐贈 ❤</button>
+      <div class="space-y-3">
+        <div class="rounded-2xl p-4 text-white" style="background:linear-gradient(135deg,#e11d48,#be123c)">
+          <div class="text-[11px] font-bold" style="opacity:.85">❤ ${escapeHtml(dn.title||'')}</div>
+          <div class="text-[18px] font-black mt-0.5">${escapeHtml(dn.tagline||'')}</div>
+          <div class="text-[11.5px] mt-1.5 leading-relaxed" style="opacity:.9">${escapeHtml(dn.why||'')}</div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-4">
+          <div class="text-[11.5px] font-bold text-slate-500 mb-2">📍 幾時・邊度交</div>
+          <div class="space-y-1.5 text-[12.5px]">
+            ${[['日期',c.date],['時間',c.time],['地點',c.place],['邊個可以捐',dn.eligible]]
+              .filter(r=>r[1]).map(r=>`<div class="flex gap-2"><span class="text-slate-400 shrink-0" style="min-width:68px">${escapeHtml(r[0])}</span><b class="text-slate-700">${escapeHtml(r[1])}</b></div>`).join('')}
+          </div>
+        </div>
+
+        ${(dn.steps||[]).length?`
+        <div class="bg-white border border-slate-200 rounded-2xl p-4">
+          <div class="text-[11.5px] font-bold text-slate-500 mb-2.5">🧭 點樣交</div>
+          <div class="space-y-2.5">
+            ${dn.steps.map((st,i)=>`
+              <div class="flex gap-2.5">
+                <span class="shrink-0 w-5 h-5 rounded-full bg-rose-100 text-rose-700 text-[10.5px] font-extrabold flex items-center justify-center mt-0.5">${i+1}</span>
+                <div class="min-w-0">
+                  <div class="text-[12.5px] font-bold text-slate-700">${escapeHtml(st.t||'')}</div>
+                  <div class="text-[11.5px] text-slate-500 leading-relaxed">${escapeHtml(st.d||'')}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>`:''}
+
+        <div id="pc-donate-body">${this.pcDonateBodyHTML(d)}</div>
+
+        ${dn.privacy?`<div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-[11.5px] text-slate-600 leading-relaxed"><b class="text-slate-700">你啲資料去咗邊：</b>${escapeHtml(dn.privacy)}</div>`:''}
+        ${dn.note?`<div class="text-[10.5px] text-slate-400 leading-relaxed">${escapeHtml(dn.note)}</div>`:''}
       </div>`;
   },
 
-  /* ═══════════ 委員一頁睇晒（8 分頁，含手冊） ═══════════ */
+  pcDonateBodyHTML(d){
+    const dn=this.pcDonateDef(d); if(!dn) return '';
+    const list=(arr,ok)=>`<ul class="space-y-1">${(arr||[]).map(x=>`<li class="flex gap-1.5 text-[11.5px] leading-relaxed"><span class="${ok?'text-emerald-600':'text-rose-500'} shrink-0 font-bold">${ok?'✓':'✕'}</span><span class="${ok?'text-slate-600':'text-slate-400'}">${escapeHtml(x)}</span></li>`).join('')}</ul>`;
+
+    /* ③ QR 出咗：當日淨係俾人掃呢個 */
+    if(this.pcDonateQR){
+      const q=this.pcDonateQR;
+      const sc=(dn.schemes||[]).find(x=>x.id===q.scheme)||{};
+      const bonus=sc.bonus? q.rows.filter(r=>r.qty>sc.bonus.threshold).length : 0;
+      return `
+        <div class="bg-white border-2 border-rose-300 rounded-2xl p-4">
+          <div class="text-center">
+            <div class="text-[11px] font-bold text-rose-600">當日俾攤位同事掃呢個</div>
+            <div class="mt-2 flex justify-center" style="max-width:230px;margin:0 auto">${this.pcQrSvg(q.text)}</div>
+            <div class="text-[10.5px] text-slate-400 mt-1.5">掃唔到？口頭報呢個碼</div>
+            <div class="text-[22px] font-black text-rose-700 tracking-[0.18em] leading-none mt-0.5">${escapeHtml(q.code)}</div>
+            <div class="text-[11.5px] text-slate-500 mt-1.5">${escapeHtml(sc.icon||'')} ${escapeHtml(sc.name||'')}・${escapeHtml(q.head.group||'')}</div>
+          </div>
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <div class="bg-rose-50 rounded-xl py-2 text-center"><div class="text-[17px] font-extrabold text-rose-700 leading-none">${q.donors}</div><div class="text-[9.5px] font-bold text-rose-600 mt-0.5">位捐贈者</div></div>
+            <div class="bg-rose-50 rounded-xl py-2 text-center"><div class="text-[17px] font-extrabold text-rose-700 leading-none">${q.items}</div><div class="text-[9.5px] font-bold text-rose-600 mt-0.5">件</div></div>
+            <div class="bg-rose-600 rounded-xl py-2 text-center"><div class="text-[17px] font-extrabold text-white leading-none">${q.donors}</div><div class="text-[9.5px] font-bold text-white mt-0.5">枚紀念章</div></div>
+          </div>
+          ${bonus?`<div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 text-center">🏅 另有 ${bonus} 份特別紀念章及感謝狀</div>`:''}
+          <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11.5px] text-slate-600 leading-relaxed">
+            <b class="text-slate-700">到場點做：</b>攜同物資去收集攤位 → 出示呢個畫面俾同事掃 → 同事當場核對實物同件數 → 即場按名單派章。<br>
+            <span class="text-slate-400">呢個 QR 係喺你部機砌出嚟，資料未交過去任何地方；掃嗰一刻先會入大會系統（全場只入一次，唔會同紙本重覆）。建議先截圖，場內冇網絡都出到。</span>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button type="button" onclick="app.pcDonateEdit()" class="flex-1 bg-white border border-slate-200 text-slate-600 text-[12px] font-bold rounded-xl py-2.5 btn-mobile">改名單</button>
+            <button type="button" onclick="app.pcDonateReset()" class="flex-1 bg-white border border-slate-200 text-slate-400 text-[12px] font-bold rounded-xl py-2.5 btn-mobile">清走，重新開始</button>
+          </div>
+        </div>`;
+    }
+
+    /* ① 未揀計劃 */
+    if(!this.pcDonateScheme){
+      const dr=this.pcDonateLoadDraft();
+      return `
+        <div class="space-y-2.5">
+          ${dr&&dr.scheme?`<button type="button" onclick="app.pcDonatePick('${escapeHtml(dr.scheme)}')" class="w-full bg-amber-50 border border-amber-200 text-amber-900 text-[11.5px] font-bold rounded-xl px-3 py-2.5 text-left btn-mobile">↩ 繼續上次未填完嗰張（存喺你部機）</button>`:''}
+          <div class="text-[11.5px] font-bold text-slate-500">揀你要捐邊樣（兩樣都捐？分兩張表）</div>
+          ${(dn.schemes||[]).map(sc=>`
+            <button type="button" onclick="app.pcDonatePick('${sc.id}')" class="w-full text-left bg-white border-2 border-slate-200 hover:border-rose-400 rounded-2xl p-3.5 btn-mobile transition">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[20px]">${escapeHtml(sc.icon||'')}</span>
+                <b class="text-[14px] text-slate-800">${escapeHtml(sc.name||'')}</b>
+                <span class="text-[10px] text-slate-400">${escapeHtml(sc.en||'')}</span>
+              </div>
+              <div class="text-[11.5px] text-slate-500 mt-1.5">受惠機構：<b class="text-slate-700">${escapeHtml(sc.beneficiary||'')}</b>　<span class="text-slate-400">${escapeHtml(sc.beneficiary_note||'')}</span></div>
+              <div class="text-[11px] text-emerald-700 mt-1.5">✓ 收：${escapeHtml((sc.accept||[]).slice(0,3).join('、'))}${(sc.accept||[]).length>3?' 等':''}</div>
+              <div class="text-[11px] text-rose-500 mt-0.5">✕ 唔收：${escapeHtml((sc.reject||[]).slice(0,4).join('、'))}${(sc.reject||[]).length>4?' 等':''}</div>
+              <div class="text-[12px] font-bold text-rose-700 mt-2">填名單・出 QR →</div>
+            </button>`).join('')}
+          ${dn.paper&&dn.paper.url?`<div class="text-[11px] text-slate-400 text-center leading-relaxed pt-1">冇手機？<a href="${escapeHtml(dn.paper.url)}" target="_blank" rel="noopener" class="font-bold text-slate-500 underline">${escapeHtml(dn.paper.label)}</a>　${escapeHtml(dn.paper.note||'')}</div>`:''}
+        </div>`;
+    }
+
+    /* ② 填表 */
+    const sc=this.pcDonateSchemeDef(d)||{};
+    const rows=this.pcDonateEnsureRows();
+    const h=this.pcDonateHead||{};
+    return `
+      <div class="space-y-3">
+        <button type="button" onclick="app.pcDonateBack()" class="text-[11px] font-bold text-slate-400 btn-mobile"><i class="fa-solid fa-chevron-left mr-1"></i>返回揀計劃</button>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-4">
+          <div class="flex items-center gap-2 flex-wrap mb-2">
+            <span class="text-[18px]">${escapeHtml(sc.icon||'')}</span><b class="text-[14px]">${escapeHtml(sc.name||'')}</b>
+            <span class="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded-full">受惠：${escapeHtml(sc.beneficiary||'')}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[11px] font-bold text-emerald-800 mb-1.5">✓ 收呢啲</div>${list(sc.accept,true)}</div>
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-3"><div class="text-[11px] font-bold text-rose-700 mb-1.5">✕ 唔收呢啲</div>${list(sc.reject,false)}</div>
+          </div>
+          ${(sc.rules||[]).length?`<div class="mt-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-[11px] font-bold text-amber-900 mb-1">⚠️ 計唔計得數，睇呢幾點</div>${sc.rules.map(r=>`<div class="text-[11.5px] text-amber-900 leading-relaxed">・${escapeHtml(r)}</div>`).join('')}</div>`:''}
+          <div class="mt-2 text-[11px] text-slate-500 leading-relaxed">🏅 ${escapeHtml(sc.badge||'')}${sc.bonus?`；${escapeHtml(sc.bonus.text)}`:''}</div>
+        </div>
+
+        <form onsubmit="app.pcDonateMakeQR(event)" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
+          <div class="text-[11.5px] font-bold text-slate-500">① 邊個交</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input id="pc-dn-group" value="${escapeHtml(h.group||'')}" oninput="app.pcDonateRecalc()" placeholder="旅團／單位（例：港島第 6 旅）*" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+            <input id="pc-dn-leader" value="${escapeHtml(h.leader||'')}" oninput="app.pcDonateRecalc()" placeholder="負責領袖姓名 *" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+            <input id="pc-dn-pos" value="${escapeHtml(h.pos||'')}" oninput="app.pcDonateRecalc()" placeholder="職銜（例：旅長）" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+            <input id="pc-dn-phone" value="${escapeHtml(h.phone||'')}" oninput="app.pcDonateRecalc()" placeholder="聯絡電話" inputmode="tel" class="w-full px-3 py-2 border rounded-xl text-[13px]">
+          </div>
+
+          <div class="flex items-end justify-between gap-2 pt-1">
+            <div class="text-[11.5px] font-bold text-slate-500">② 捐贈者名單（紀念章按姓名逐位派）</div>
+            <button type="button" onclick="app.pcDonateAddRow()" class="bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-bold rounded-lg px-2.5 py-1 btn-mobile">＋ 加一位</button>
+          </div>
+          <div id="pc-donate-rows" class="space-y-2">
+            ${rows.map((r,i)=>`
+              <div data-donor-row class="flex gap-2 items-center">
+                <span class="text-[10.5px] text-slate-300 font-bold" style="min-width:16px">${i+1}</span>
+                <input data-donor-name value="${escapeHtml(r.name||'')}" oninput="app.pcDonateRecalc()" placeholder="捐贈者姓名" class="flex-1 min-w-0 px-3 py-2 border rounded-xl text-[13px]">
+                <input data-donor-qty value="${escapeHtml(r.qty||'')}" oninput="app.pcDonateRecalc()" inputmode="numeric" placeholder="件數" class="px-3 py-2 border rounded-xl text-[13px] text-center" style="width:74px">
+                <button type="button" onclick="app.pcDonateDelRow(${i})" class="text-slate-300 px-1.5 btn-mobile" title="刪除"><i class="fa-solid fa-xmark"></i></button>
+              </div>`).join('')}
+          </div>
+
+          <div class="text-[11.5px] font-bold text-slate-500 pt-1">③ 核對</div>
+          <div id="pc-donate-sum">${this.pcDonateSumHTML(d)}</div>
+
+          <button type="submit" class="w-full bg-rose-600 text-white text-[13px] font-bold rounded-xl py-3 btn-mobile"><i class="fa-solid fa-qrcode mr-1.5"></i>產生 QR（唔會上傳）</button>
+          <div class="text-[10.5px] text-slate-400 text-center leading-relaxed">邊打邊自動存喺你部機，閂咗都搵得返。查詢：${escapeHtml(sc.enquiry||'')}</div>
+        </form>
+      </div>`;
+  },
+
+  /* ═══════════ 委員一頁睇晒（全部分頁，含手冊） ═══════════ */
   pcDemoTabsBody(d){
-    const tabs=[['home','基本盤','fa-solid fa-circle-info'],['transport','交通','fa-solid fa-bus'],['program','全日程序','fa-regular fa-calendar-check'],['booths','攤位','fa-solid fa-store'],['apply','報名','fa-solid fa-file-pen'],['guide','須知','fa-solid fa-book-open'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
+    const tabs=[['home','基本資訊','fa-solid fa-circle-info'],['program','全日程序','fa-regular fa-calendar-check'],['venue','活動地圖','fa-solid fa-map'],['ceremony','典禮儀式流程','fa-solid fa-award'],['seating','座位表','fa-solid fa-chair'],['lunch','午膳安排','fa-solid fa-utensils'],['mess','午膳儀式','fa-solid fa-champagne-glasses'],['transport','交通','fa-solid fa-bus'],['booths','攤位','fa-solid fa-store'],['guide','須知','fa-solid fa-book-open'],['donate','童心捐贈','fa-solid fa-heart'],['help','求助','fa-solid fa-life-ring'],['manual','手冊','fa-solid fa-book']];
     return `
       <div class="flex justify-between items-center mb-2">
         <div class="text-[11.5px] font-bold text-slate-500">📊 委員預覽・一頁睇晒（公眾實際會按身份見到唔同組合，見「切換身份」）</div>
@@ -797,10 +1276,15 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     switch(this.pcDemoTab){
       case 'transport': return this.pcDemoTransportHTML(d);
       case 'program': return this.pcDemoProgramHTML(d);
+      case 'venue': return this.pcDemoVenueFullHTML(d);
+      case 'ceremony': return this.pcDemoCeremonyFlowHTML(d,{id:'guest'});
+      case 'seating': return this.pcDemoSeatingHTML(d);
+      case 'lunch': return this.pcDemoLunchHTML(d);
+      case 'mess': return this.pcDemoMessCeremonyHTML(d);
       case 'booths': return this.pcDemoBoothsHTML(d);
-      case 'apply': return this.pcDemoApplyHTML(d);
       case 'guide': return this.pcDemoGuideTabsHTML(d);
       case 'help': return this.pcDemoHelpHTML(d);
+      case 'donate': return this.pcDemoDonateHTML(d);
       case 'manual': return this.pcDemoManualHTML(d);
       default: return this.pcDemoHomeHTML(d);
     }
@@ -822,10 +1306,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
             <div class="rounded-xl p-3" style="background:rgba(255,255,255,.15)"><div class="text-[10.5px] font-bold mb-1" style="color:#ddd6fe"><i class="fa-regular fa-clock"></i> 時間</div><b>${escapeHtml(b.time||'')}</b></div>
             <div class="rounded-xl p-3 col-span-2" style="background:rgba(255,255,255,.15)"><div class="text-[10.5px] font-bold mb-1" style="color:#ddd6fe"><i class="fa-solid fa-location-dot"></i> 地點</div><b>${escapeHtml(b.location||'')}</b></div>
           </div>
-        </div>
-        <div class="p-4 grid grid-cols-2 gap-2 text-center">
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><div class="text-[10.5px] font-bold text-amber-700">名額（先到先得）</div><div class="text-lg font-black text-amber-900">${escapeHtml(b.quota||'')}</div></div>
-          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[10.5px] font-bold text-emerald-700">費用（連紀念章）</div><div class="text-lg font-black text-emerald-900">${escapeHtml(b.fee||'')}</div></div>
         </div>
       </div>
       <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-3" style="border-left:4px solid #6d28d9">
@@ -920,21 +1400,6 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* 八大報名（一頁睇晒版） */
-  pcDemoApplyHTML(d){
-    return `
-      <div class="text-[12px] text-slate-500 mb-2 px-1">${escapeHtml(d.apply_note||'')}</div>
-      <div class="grid grid-cols-2 gap-2">
-        ${(d.apply_forms||[]).map(f=>`
-        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col">
-          <div class="text-xl mb-1">${f.icon}</div>
-          <b class="text-[12.5px] leading-tight">${escapeHtml(f.name)}</b>
-          <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(f.target)}<br>${escapeHtml(f.desc)}</div>
-          <button onclick="app.pcOpenFormByName('${escapeHtml(f.name)}')" class="mt-2.5 bg-sky-600 text-white text-[11.5px] font-bold rounded-lg py-1.5">立即報名 →</button>
-        </div>`).join('')}
-      </div>`;
-  },
-
   /* 須知分眾 tabs（一頁睇晒版） */
   pcDemoGuideTabsHTML(d){
     const keys=Object.keys(d.guides||{});
@@ -956,7 +1421,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* 活動日求助 */
+  /* 求助（活動日） */
   pcDemoHelpHTML(d){
     const h=d.help||{};
     const cards=[['🔍','失物認領',h.lost_found],['☎️','查詢窗口',h.hotline],['⛑️','急救站',h.first_aid]];
@@ -1074,43 +1539,171 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       <div class="text-center mt-10 pb-4">
         <button onclick="app.pcStaffGate()" class="text-[10px] text-slate-300 font-bold" style="letter-spacing:.25em;color:#cbd5e1" onmouseover="this.style.color=''#64748b''" onmouseout="this.style.color=''#cbd5e1''">工作人員入口</button>
       </div>`;
+    if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);
   },
 
-  pcLandPick(id){ this.pcLandAudience=id; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
-  pcLandBack(){ this.pcLandAudience=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
+  pcLandPick(id){ this.pcLandAudience=id; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
+  pcLandBack(){ this.pcLandAudience=''; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
 
-  /* ═══════════ 工作人員閘口（頁尾隱藏入口）：4位密碼／籌委帳密 ═══════════ */
+  /* ═══════════ 工作人員入口（頁尾隱藏入口）：一個入口分流 ═══════════
+     ① 普通工作人員＝4 位活動密碼 → 只見「工作人員公開資料」
+     ② 籌委／職員＝帳號＋密碼 → 公開資料＋部門中心嗰啲（同 2026 設計一樣）
+  */
+  pcStaffGateDef(){
+    const d=this.pcDemoData(); const sg=(d&&d.staff_gate)||{};
+    const lanes=Array.isArray(sg.lanes)&&sg.lanes.length?sg.lanes:[
+      {id:'staff',icon:'🦺',name:'普通工作人員',badge:'只需活動密碼',desc:'打一次 4 位活動密碼，即可查看工作人員公開資料。',cta:'打密碼入 →',can:[],cannot:[]},
+      {id:'committee',icon:'🎖️',name:'籌委／職員（有帳戶）',badge:'帳號＋密碼',desc:'用管理員開設嘅帳戶登入，額外有部門中心嗰啲。',cta:'帳號密碼登入 →',can:[],cannot:[]}
+    ];
+    return Object.assign({},sg,{lanes});
+  },
+  pcStaffLaneDef(id){ return (this.pcStaffGateDef().lanes||[]).find(l=>l.id===id)||null; },
+
   pcStaffGate(){
     this.pcPinBuf='';
     const m=document.getElementById('modal-staff-gate');
-    if(m){ this.pcPinRender(); m.classList.remove('hidden'); }
+    this.pcGateRender();
+    this.pcGateSetMode('choose');
+    if(m) m.classList.remove('hidden');
   },
+
+  // 分流畫面（由 data.staff_gate 砌，唔使改 HTML 都改得到文案）
+  pcGateRender(){
+    const sg=this.pcStaffGateDef();
+    const t=document.getElementById('pc-gate-title'); if(t) t.textContent=sg.title||'工作人員入口';
+    const rm=document.getElementById('pc-gate-remember'); if(rm) rm.textContent=sg.remember_note||'';
+    const pl=document.getElementById('pc-pin-label'); if(pl) pl.textContent=sg.pin_label||'普通工作人員・請輸入 4 位活動密碼';
+    const ph=document.getElementById('pc-pin-hint'); if(ph) ph.textContent=sg.pin_hint||'';
+    const list=(items,ok)=>!items||!items.length?'':`<ul class="mt-1.5 space-y-0.5">${items.map(x=>`<li class="flex gap-1.5 items-start"><span class="${ok?'text-emerald-600':'text-rose-400'} shrink-0">${ok?'✓':'✕'}</span><span class="${ok?'text-slate-600':'text-slate-400'}">${escapeHtml(x)}</span></li>`).join('')}</ul>`;
+    const box=document.getElementById('pc-gate-choose');
+    if(box){
+      box.innerHTML=`
+      ${sg.intro?`<p class="text-[11.5px] text-slate-500 leading-relaxed">${escapeHtml(sg.intro)}</p>`:''}
+      ${(sg.lanes||[]).map(l=>`
+        <button type="button" onclick="app.pcGatePick('${l.id}')" data-lane="${l.id}" class="w-full text-left border-2 border-slate-200 hover:border-slate-900 rounded-2xl p-3.5 btn-mobile transition">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[18px]">${escapeHtml(l.icon||'')}</span>
+            <span class="font-bold text-[13.5px] text-slate-800">${escapeHtml(l.name||'')}</span>
+            <span class="bg-slate-900 text-white text-[9.5px] font-bold px-2 py-0.5 rounded-full">${escapeHtml(l.badge||'')}</span>
+          </div>
+          <div class="text-[11px] text-slate-500 leading-relaxed mt-1.5">${escapeHtml(l.desc||'')}</div>
+          <div class="text-[10.5px] leading-relaxed mt-2">${list(l.can,true)}${list(l.cannot,false)}</div>
+          <div class="text-[11.5px] font-bold text-slate-900 mt-2.5">${escapeHtml(l.cta||'入 →')}</div>
+        </button>`).join('')}
+      ${sg.account_hint?`<div class="text-[10px] text-slate-400 text-center leading-relaxed">${escapeHtml(sg.account_hint)}</div>`:''}`;
+    }
+    const scope=document.getElementById('pc-pin-scope');
+    const lane=this.pcStaffLaneDef('staff');
+    if(scope&&lane){
+      scope.innerHTML=`<div class="font-bold text-slate-600 mb-1">入咗之後睇到／睇唔到</div>${list(lane.can,true)}${list(lane.cannot,false)}`;
+    }
+  },
+
+  pcGateSetMode(mode){
+    this.pcGateMode=mode||'choose';
+    const c=document.getElementById('pc-gate-choose'); const p=document.getElementById('pc-gate-pin');
+    if(c) c.classList.toggle('hidden',this.pcGateMode!=='choose');
+    if(p) p.classList.toggle('hidden',this.pcGateMode!=='pin');
+    if(this.pcGateMode==='pin'){ this.pcPinBuf=''; this.pcPinRender(); }
+  },
+
+  pcGatePick(id){
+    if(id==='committee'){ this.pcCommitteeLogin(); return; }
+    this.pcGateSetMode('pin');
+  },
+
   pcPinPress(k){
     if(k==='clr'){ this.pcPinBuf=''; }
-    else if(k==='del'){ this.pcPinBuf=this.pcPinBuf.slice(0,-1); }
-    else if(this.pcPinBuf.length<4 && /^[0-9]$/.test(k)){ this.pcPinBuf+=k; }
+    else if(k==='del'){ this.pcPinBuf=(this.pcPinBuf||'').slice(0,-1); }
+    else if((this.pcPinBuf||'').length<4 && /^[0-9]$/.test(k)){ this.pcPinBuf=(this.pcPinBuf||'')+k; }
     this.pcPinRender();
-    if(this.pcPinBuf.length===4) setTimeout(()=>this.pcPinCheck(),120);
+    if((this.pcPinBuf||'').length===4) setTimeout(()=>this.pcPinCheck(),120);
   },
   pcPinRender(){
     const dots=document.getElementById('pc-pin-dots'); if(!dots) return;
     let html='';
-    for(let i=0;i<4;i++){ html+=`<span class="rounded-full" style="width:14px;height:14px;${i<this.pcPinBuf.length?'background:#1e293b':'background:#e2e8f0'}"></span>`; }
+    for(let i=0;i<4;i++){ html+=`<span class="rounded-full" style="width:14px;height:14px;${i<(this.pcPinBuf||'').length?'background:#1e293b':'background:#e2e8f0'}"></span>`; }
     dots.innerHTML=html;
   },
-  pcPinCheck(){
-    const d=this.pcDemoData(); const sg=(d&&d.staff_gate)||{};
-    if(sg.pin && this.pcPinBuf===String(sg.pin)){ this.pcStaffLogin(sg); }
-    else{ showToast('密碼不正確，請重試','error'); this.pcPinBuf=''; this.pcPinRender(); }
+  /* ╔══════════════════════════════════════════════════════════════════╗
+     ║ 【唯一要搬去後端嘅位】活動密碼驗證                                  ║
+     ║ 而家：前端對 data.staff_gate.pin（示範用，開 DevTools 睇得到）。     ║
+     ║ 之後：整個 function 換成叫 GAS 就得，呼叫方唔使改——                 ║
+     ║   async pcVerifyStaffPin(pin){                                    ║
+     ║     const r=await fetch(this.gasUrl,{method:'POST',               ║
+     ║       headers:{'Content-Type':'text/plain'},                      ║
+     ║       body:JSON.stringify({action:'verifyStaffPin',               ║
+     ║         api_key:this.apiKey, event_id:this.currentEvent?.event_id,║
+     ║         pin})});                                                  ║
+     ║     const j=await r.json(); return !!(j&&j.success);              ║
+     ║   }                                                               ║
+     ║ pcPinCheck() 同時食 boolean 同 Promise，所以轉 async 唔使改其他嘢。 ║
+     ╚══════════════════════════════════════════════════════════════════╝ */
+  pcVerifyStaffPin(pin,sg){
+    const def=sg||this.pcStaffGateDef();
+    return !!(def.pin && String(pin)===String(def.pin));
   },
+
+  pcPinCheck(){
+    const sg=this.pcStaffGateDef();
+    const entered=this.pcPinBuf;
+    const done=(pass)=>{
+      if(pass){ this.pcStaffLogin(sg); }
+      else{ showToast('密碼不正確，請重試','error'); this.pcPinBuf=''; this.pcPinRender(); }
+    };
+    const r=this.pcVerifyStaffPin(entered,sg);
+    if(r && typeof r.then==='function') r.then(done,()=>done(false)); else done(r);
+  },
+
+  // ① 普通工作人員：密碼過咗 → 受限身份（role=staff，無 mock_admin，staff_pin=true）
   pcStaffLogin(sg){
     const m=document.getElementById('modal-staff-gate'); if(m) m.classList.add('hidden');
-    const target=(sg&&sg.login_as)||'';
-    if(typeof this.demoLogin==='function' && target){ this.demoLogin(target); } // 示範版：對應本地示範帳戶（工作人員）
-    else if(target){ this.currentUser={user_id:target,name:target,role:'staff',group_name:'未分組',mock_admin:true}; if(this.currentEvent) this.showDashboard(); }
+    const def=(sg&&sg.pin_user)||{};
+    const lane=this.pcStaffLaneDef('staff')||{};
+    this.currentUser={
+      user_id: def.user_id||'staff_pin',
+      name: def.name||'工作人員',
+      role: def.role||'staff',
+      group_name: def.group_name||'未分組',
+      staff_pin: true   // ← 關鍵旗標：只開「工作人員公開資料」，唔開部門中心／工作卡片／批核／管理工具
+    };
+    try{ localStorage.setItem(LS.currentUser,JSON.stringify(this.currentUser)); }catch(e){}
+    this.pcLandAudience=''; this.pcAudTab='';
+    if(typeof this.updateUserUI==='function') this.updateUserUI();
+    if(typeof this.updateAdminNav==='function') this.updateAdminNav();
+    showToast('已以「'+(lane.name||'普通工作人員')+'」身份入咗（只睇工作人員公開資料）','success');
+    if(this.currentEvent && typeof this.showDashboard==='function') this.showDashboard();
+    if(typeof window!=='undefined'&&window.scrollTo) window.scrollTo(0,0);
   },
+
+  // ② 籌委／職員：帳號＋密碼（沿用 2026 既有登入視窗）
   pcCommitteeLogin(){
     const m=document.getElementById('modal-staff-gate'); if(m) m.classList.add('hidden');
-    if(typeof this.openLoginModal==='function') this.openLoginModal(); // 籌委＝帳號密碼（同一入口分流）
+    if(typeof this.openLoginModal==='function') this.openLoginModal();
+  },
+
+  // 普通工作人員想升做籌委：由儀表板橫額直接叫出帳密登入
+  pcUpgradeToCommittee(){
+    if(typeof this.openLoginModal==='function') this.openLoginModal();
+    else this.pcStaffGate();
+  },
+
+  // 受限身份判斷（俾 10-app-core 用）
+  isPinStaff(){ return !!(this.currentUser && this.currentUser.staff_pin); },
+
+  // 儀表板頂部提示條（只喺普通工作人員身份顯示）
+  pcPinStaffNoticeHTML(){
+    const lane=this.pcStaffLaneDef('staff')||{};
+    const cannot=(lane.cannot||[]).slice(0,3).join('、');
+    return `<div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 mb-4">
+      <div class="flex items-start gap-2.5 flex-wrap">
+        <span class="text-[16px] leading-none mt-0.5">🦺</span>
+        <div class="flex-1 min-w-[180px]">
+          <div class="font-bold text-[12.5px] text-amber-900">普通工作人員模式（活動密碼登入）</div>
+          <div class="text-[11px] text-amber-800 leading-relaxed mt-0.5">你而家睇到嘅係<b>工作人員公開資料</b>。${cannot?`<br>未開放：${escapeHtml(cannot)}等——需要籌委帳戶。`:''}</div>
+        </div>
+        <button type="button" onclick="app.pcUpgradeToCommittee()" class="bg-amber-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl btn-mobile whitespace-nowrap"><i class="fa-solid fa-id-card mr-1"></i>我係籌委・帳號登入</button>
+      </div>
+    </div>`;
   },
 });

@@ -7,9 +7,12 @@ Object.assign(ScoutEventApp.prototype,{
     let list=JSON.parse(localStorage.getItem(key)||'null');
     if(!list || !list.length){
       if(this.isDemoEvent()){
+        // v17：示範版已用 2026 真實資料填滿 → 優先用活動檔內置嘅 54 個真實籌委帳戶（＋7 個示範帳戶）
+        const fromData=(Array.isArray(this.eventData?.users)?this.eventData.users:[]);
+        if(fromData.length) return this.finalizeUserList(fromData.map(u=>({user_id:u.user_id,name:u.name,role:u.role,group_name:u.group_name,job_title:u.job_title||'',email:u.email||'',contact:String(u.contact||'').replace(/\D/g,''),password:u.password||'1234',status:u.status||'active',can_tick:u.can_tick!==false})),key);
         list=[
-          {user_id:'黃偉安',name:'黃偉安',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'91000001',password:'1234',status:'active',can_tick:true},
-          {user_id:'何家騏',name:'何家騏',email:'advisor2@isd.local',role:'advisor',group_name:'顧問團',contact:'91000002',password:'1234',status:'active',can_tick:true},
+          {user_id:'黃偉安',name:'黃偉安',email:'advisor1@isd.local',role:'advisor',group_name:'顧問團',contact:'92157472',password:'1234',status:'active',can_tick:true},
+          {user_id:'何家騏',name:'何家騏',email:'advisor2@isd.local',role:'advisor',group_name:'顧問團',contact:'90200716',password:'1234',status:'active',can_tick:true},
           {user_id:'區子君',name:'區子君',email:'chair@isd.local',role:'chairperson',group_name:'主席及執行副主席',contact:'92000001',password:'1234',status:'active',can_tick:true},
           {user_id:'羅雅雯',name:'羅雅雯',email:'execvp@isd.local',role:'executive_vice_chairperson',group_name:'主席及執行副主席',job_title:'執行副主席',contact:'92000002',password:'1234',status:'active',can_tick:true},
           {user_id:'畢美儀',name:'畢美儀',email:'coordgd@isd.local',role:'general_director',group_name:'協調組',contact:'97000002',password:'1234',status:'active',can_tick:true},
@@ -28,8 +31,17 @@ Object.assign(ScoutEventApp.prototype,{
       group_name:normalizeGroupName(u.group_name),
       role:(u.user_id==='exec_vp'||(u.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':u.role
     }));
+    return this.finalizeUserList(list,key);
+  }
+,
+  // 共用收尾：組名遷移／執副角色修正／中文登入遷移／寫入本機
+  finalizeUserList(list,key){
+    list=(list||[]).map(u=>({...u,
+      group_name:normalizeGroupName(u.group_name),
+      role:(u.user_id==='exec_vp'||(u.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':u.role
+    }));
     list=migrateUsersToChineseLogin(list);
-    localStorage.setItem(key,JSON.stringify(list));
+    try{ localStorage.setItem(key,JSON.stringify(list)); }catch(e){}
     return list;
   }
 ,
