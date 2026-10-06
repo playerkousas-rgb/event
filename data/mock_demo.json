@@ -10027,6 +10027,8 @@
       ],
       "game_card": "assets/event-day/game-card-2026.pdf",
       "site_plan": "assets/event-day/site-setup-plan-2026.pdf",
+      "site_plan_label": "下載完整攤位遊戲地圖（PDF）",
+      "map_note": "分區示意按 2026 攤位資料整理；當日實際位置及動線以大會發出的完整攤位遊戲地圖為準。",
       "note": "※ 公眾版隱藏攤位負責人聯絡（登記負責人可見）。"
     },
     "apply_forms": [
@@ -10518,6 +10520,12 @@
         }
       ]
     },
+    "entry_summary": {
+      "total": 8,
+      "public_audiences": 7,
+      "staff_entry": 1,
+      "label": "8 個入口：7 個公眾身份＋1 個工作人員入口"
+    },
     "staff_gate": {
       "pin": "2027",
       "login_as": "陳子明",
@@ -10552,7 +10560,7 @@
           "icon": "🎖️",
           "name": "籌委／職員（有帳戶）",
           "badge": "帳號＋密碼",
-          "desc": "用管理員開設嘅帳戶登入，睇到工作人員公開資料之外，仲有部門中心嗰啲（同 2026 設計一樣）。",
+          "desc": "沿用 2026 現有帳戶及密碼模式登入；未有帳戶由總主任用現有「開戶」流程建立。",
           "cta": "帳號密碼登入 →",
           "can": [
             "工作人員公開資料（全部）",
@@ -10572,7 +10580,7 @@
         "role": "staff",
         "group_name": "未分組"
       },
-      "account_hint": "籌委帳戶由管理員開設（帳號＝中文姓名，初始密碼 1234）"
+      "account_hint": "籌委帳戶沿用 2026 現有「開戶」流程：由總主任／管理員建立（帳號＝中文姓名，初始密碼 1234）"
     },
     "intake_forms": [
       {
@@ -13178,7 +13186,7 @@
       "mess": "午膳儀式",
       "guide": "須知",
       "program": "全日程序",
-      "booths": "攤位與地圖",
+      "booths": "攤位遊戲",
       "transport": "交通與入場",
       "help": "求助",
       "donate": "童心捐贈"
@@ -13235,12 +13243,13 @@
         "id": "troop",
         "icon": "🏃",
         "name": "旅團",
-        "desc": "帶隊參加：報到・餐盒・場地・典禮",
+        "desc": "帶隊參加：報到・餐盒・攤位遊戲・場地・典禮",
         "sections": [
           "banner",
           "schedule",
           "arrival",
           "venue",
+          "booths",
           "ceremony",
           "guide",
           "donate",

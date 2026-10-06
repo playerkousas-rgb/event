@@ -80,6 +80,8 @@ const pc = {
     list: booths,
     game_card: 'assets/event-day/game-card-2026.pdf',
     site_plan: 'assets/event-day/site-setup-plan-2026.pdf',
+    site_plan_label: '下載完整攤位遊戲地圖（PDF）',
+    map_note: '分區示意按 2026 攤位資料整理；當日實際位置及動線以大會發出的完整攤位遊戲地圖為準。',
     note: '※ 公眾版隱藏攤位負責人聯絡（登記負責人可見）。'
   },
   apply_forms: [
@@ -131,7 +133,14 @@ const pc = {
       { id: 'east_gate', label: '東閘', sub: '警校道・唯一入口', x: 250, y: 455, w: 110, h: 50 }
     ]
   },
-  /* ── 工作人員閘口：公眾 landing 頁尾有一個隱藏入口，工作人員打 4 位密碼即入；
+  /* ── 首屏八個入口：七類公眾身份＋一個工作人員入口（進入後再分普通工作人員／籌委）。 ── */
+  entry_summary: {
+    total: 8,
+    public_audiences: 7,
+    staff_entry: 1,
+    label: '8 個入口：7 個公眾身份＋1 個工作人員入口'
+  },
+  /* ── 工作人員閘口：第八個入口，工作人員打 4 位密碼即入；
      籌委就用帳號密碼（一個登入口分流）。示範版 login_as＝內置示範帳戶「陳子明」（工作人員） ── */
   staff_gate: {
     pin: '2027',
@@ -149,7 +158,7 @@ const pc = {
       },
       {
         id: 'committee', icon: '🎖️', name: '籌委／職員（有帳戶）', badge: '帳號＋密碼',
-        desc: '用管理員開設嘅帳戶登入，睇到工作人員公開資料之外，仲有部門中心嗰啲（同 2026 設計一樣）。',
+        desc: '沿用 2026 現有帳戶及密碼模式登入；未有帳戶由總主任用現有「開戶」流程建立。',
         cta: '帳號密碼登入 →',
         can: ['工作人員公開資料（全部）', '部門中心（本組成員／職務／文件／統計）', '工作卡片（會議・物資・攤位・車輛・膳食・財務）', '批核中心（總主任以上）', '管理工具（開戶／權限／用戶管理，按職級）'],
         cannot: []
@@ -158,7 +167,7 @@ const pc = {
     pin_hint: '示範密碼：2027',
     pin_label: '普通工作人員・請輸入 4 位活動密碼',
     pin_user: { user_id: 'staff_pin', name: '工作人員', role: 'staff', group_name: '未分組' },
-    account_hint: '籌委帳戶由管理員開設（帳號＝中文姓名，初始密碼 1234）'
+    account_hint: '籌委帳戶沿用 2026 現有「開戶」流程：由總主任／管理員建立（帳號＝中文姓名，初始密碼 1234）'
   },
   /* ── 分眾入口：公眾（非工作人員）揀身份入嚟，各有各嘅版面組合（階段 1 形態） ──
      生產版：每類受眾一條專屬連結／QR（index.html?pub=troop 等），開門即見自己嘅版本 */
@@ -448,7 +457,7 @@ const pc = {
   section_labels: {
     banner: '基本資訊', schedule: '日程', arrival: '報到資訊', venue: '活動地圖',
     ceremony: '典禮儀式流程', seating: '座位表', lunch: '午膳安排', mess: '午膳儀式',
-    guide: '須知', program: '全日程序', booths: '攤位與地圖', transport: '交通與入場',
+    guide: '須知', program: '全日程序', booths: '攤位遊戲', transport: '交通與入場',
     help: '求助', donate: '童心捐贈'
   },
   banner_guest: {
@@ -470,8 +479,8 @@ const pc = {
     { id: 'guest', icon: '🎩', name: '嘉賓', desc: '獲邀出席典禮及午膳：接待・座位・大會車',
       sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'seating', 'lunch', 'mess', 'guide', 'help'],
       guide: ['嘉賓'], banner: 'guest' },
-    { id: 'troop', icon: '🏃', name: '旅團', desc: '帶隊參加：報到・餐盒・場地・典禮',
-      sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],
+    { id: 'troop', icon: '🏃', name: '旅團', desc: '帶隊參加：報到・餐盒・攤位遊戲・場地・典禮',
+      sections: ['banner', 'schedule', 'arrival', 'venue', 'booths', 'ceremony', 'guide', 'donate', 'help'],
       guide: ['普通旅團'] },
     { id: 'merit', icon: '🏆', name: '優異旅團獲獎', desc: '出席頒獎禮：排位・彩帶・派隊',
       sections: ['banner', 'schedule', 'arrival', 'venue', 'ceremony', 'guide', 'donate', 'help'],

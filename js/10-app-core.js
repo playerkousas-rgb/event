@@ -754,7 +754,7 @@ Object.assign(ScoutEventApp.prototype,{
     const simplePanel=document.getElementById('simple-card-panel');
     const heroEl=document.getElementById('dash-hero'); if(heroEl) heroEl.classList.remove('hidden');
     const landEl=document.getElementById('public-landing');
-    // 階段1：mock_demo（有 public_channel_2027）＋未登入 → 一進APP＝公眾頻道；工作人員入口收埋喺頁尾
+    // mock_demo（有 public_channel_2027）＋未登入 → 一進APP＝公眾頻道；首屏 8 個入口（7 類公眾＋工作人員分流）
     if(typeof this.pcPublicLandingActive==='function' && this.pcPublicLandingActive()){
       if(landEl) landEl.classList.remove('hidden');
       this.updateAdminNav();
