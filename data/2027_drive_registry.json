@@ -276,5 +276,12 @@
     "drive_file_id": "1paVJR-Zx330ojpa9xn7sbH6HmAXJ9XVP",
     "drive_file_link": "https://drive.google.com/file/d/1paVJR-Zx330ojpa9xn7sbH6HmAXJ9XVP/view",
     "output_count": 109
+  },
+  "output_source_projection": {
+    "file": "ISD 2027－輸出來源指標（空白實框架）.json",
+    "drive_file_id": "1BDCPaD1b8m0PaDj4hXr4f530TbHnqgzo",
+    "drive_file_link": "https://drive.google.com/file/d/1BDCPaD1b8m0PaDj4hXr4f530TbHnqgzo/view",
+    "output_count": 109,
+    "payload_free": true
   }
 }

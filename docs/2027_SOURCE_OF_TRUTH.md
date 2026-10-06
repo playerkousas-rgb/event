@@ -80,7 +80,9 @@ Visibility is data based, not file-copy based:
 # Rebuild the blank source catalogue, 109 output connections and eight domain files.
 # Reads only the reviewed 2027 dataflow maps; never reads 2026 event data.
 node tools/build_2027_blank_framework.js
+node tools/build_2027_output_source_projection.js
 node tests/blank_2027_framework_test.js
+node tests/controlled_2027_source_connection_test.js
 
 # Historical rehearsal builders: do not use these as a source-entry path.
 # They operate on the old rehearsal/read-model artefacts until the controlled

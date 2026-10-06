@@ -47,7 +47,7 @@ ok(domainRecords.every(x=>x.record_state==='blank_awaiting_2027_owner_entry'&&x.
 ok(domainRecords.every(x=>Object.keys(x.payload).length===0||Object.values(x.payload).every(value=>Array.isArray(value)&&value.length===0)),'blank source payloads contain no 2026-seeded records');
 const driveRegistry=readJson('data/2027_drive_registry.json');
 ok(driveRegistry.status==='blank_framework_ready_not_live'&&driveRegistry.domains.length===8,'the Drive registry identifies all eight verified blank-domain source files as current');
-ok(driveRegistry.domains.reduce((total,domain)=>total+domain.record_count,0)===96&&driveRegistry.framework_catalog.source_count===96&&driveRegistry.output_connection_registry.output_count===109,'the Drive registry links the 96-source catalogue and all 109 output connections');
+ok(driveRegistry.domains.reduce((total,domain)=>total+domain.record_count,0)===96&&driveRegistry.framework_catalog.source_count===96&&driveRegistry.output_connection_registry.output_count===109&&driveRegistry.output_source_projection.output_count===109&&driveRegistry.output_source_projection.payload_free===true,'the Drive registry links the 96-source catalogue, the 109 output connections and the payload-free source projection');
 const builder=fs.readFileSync(path.join(root,'tools/build_2027_blank_framework.js'),'utf8');
 ok(!builder.includes("data/isd_2026.json")&&builder.includes('read_only_from_canonical_source'),'the builder only reads reviewed maps and enforces source-to-output consumption');
 const retiredExporter=cp.spawnSync('node',['tools/export_2027_drive_sources.js'],{cwd:root,encoding:'utf8'});

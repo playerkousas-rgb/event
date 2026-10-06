@@ -52,6 +52,8 @@ assert(registry.domains.every(d=>d.drive_file_id&&d.drive_file_link&&d.status===
 assert.strictEqual(registry.domains.reduce((total,d)=>total+d.record_count,0),96,'the Drive domains contain exactly the 96 canonical source records');
 assert.strictEqual(registry.framework_catalog?.source_count,96,'the verified Drive source catalogue covers every canonical source');
 assert.strictEqual(registry.output_connection_registry?.output_count,109,'the verified Drive output registry covers all detailed outputs');
+assert.strictEqual(registry.output_source_projection?.output_count,109,'the payload-free Drive source projection covers all detailed outputs');
+assert.strictEqual(registry.output_source_projection?.payload_free,true,'the Drive output projection must not duplicate source payloads');
 assert(registry.historical_rehearsal_exports?.domains?.length===7,'the old seed exports are retained only as explicitly non-canonical history');
 
 const prohibitedLegacyDriveIds=['1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF','13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM'];
