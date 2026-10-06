@@ -63,6 +63,8 @@ OUTPUTS.forEach(o=>{
   ok(!!STATUS[o.status],`[④] ${o.id} 狀態「${o.status}」唔合法`);
   ok(!!o.medium,`[④] ${o.id} 要寫出口形式`);
   ok(Array.isArray(o.ev)&&o.ev.length>0,`[④] ${o.id} 一定要有 2026 根據，唔准憑空加一件`);
+  ok(['public','staff','dept'].indexOf(o.aud)>=0,`[④] ${o.id} 層級「${o.aud}」唔合法`);
+  ok(['have','gap','suggest'].indexOf(o.have)>=0,`[④] ${o.id} 顏色「${o.have}」唔合法`);
   ok(Array.isArray(o.gaps),`[④] ${o.id} gaps 要係陣列（就算係空）`);
 });
 
@@ -105,7 +107,7 @@ const byStat={}; OUTPUTS.forEach(o=>byStat[o.status]=(byStat[o.status]||0)+1);
 eq(Object.values(byKind).reduce((a,b)=>a+b,0),OUTPUTS.length,'[⑦] 類別加埋等於總數');
 eq(Object.values(byStat).reduce((a,b)=>a+b,0),OUTPUTS.length,'[⑦] 狀態加埋等於總數');
 ok(byKind.GEN>=50,`[⑦] 由資料生成嗰批應該係大頭，得到 ${byKind.GEN}`);
-ok(OUTPUTS.length>=90,`[⑦] 一共應該至少 90 件，得到 ${OUTPUTS.length}`);
+ok(OUTPUTS.length>=105,`[⑦] 一共應該至少 105 件，得到 ${OUTPUTS.length}`);
 
 /* ── ⑧ 清單本身揭到嘅問題要記低，唔准靜靜雞修飾 ─────────────────── */
 ok(INVENTORY_FLAGS.length>=5,'[⑧] 至少要記低 5 個清單自身問題');
@@ -120,6 +122,54 @@ const verDocs=docs.filter(x=>/\b(V|Ver\.?|Rev\.?)\s*\d/i.test(x.title));
 eq(verDocs.length,14,'[⑧] 確實有 14 份標題帶版本號');
 const noOwner=docs.filter(x=>!x.uploaded_by).length;
 eq(noOwner,48,'[⑧] 確實有 48 份冇寫邊組出');
+
+/* ── ⑧b 三層三色 ───────────────────────────────────────────────── */
+const byAud={}, byHave={};
+OUTPUTS.forEach(o=>{ byAud[o.aud]=(byAud[o.aud]||0)+1; byHave[o.have]=(byHave[o.have]||0)+1; });
+['public','staff','dept'].forEach(a=>ok(byAud[a]>0,`[⑧b] ${a} 層要有嘢`));
+['have','gap','suggest'].forEach(k=>ok(byHave[k]>0,`[⑧b] ${k} 色要有嘢`));
+eq(byAud.public+byAud.staff+byAud.dept,OUTPUTS.length,'[⑧b] 三層加埋等於總數，每件只准屬一層');
+eq(byHave.have+byHave.gap+byHave.suggest,OUTPUTS.length,'[⑧b] 三色加埋等於總數');
+
+/* 🟡 建議 ＝ 2026 冇做過，所以唔應該引用 documents 入面嘅檔（引用原文就得） */
+OUTPUTS.filter(o=>o.have==='suggest').forEach(o=>{
+  ok(o.status==='unlinked',`[⑧b] 建議項目 ${o.id} 狀態應該係未接`);
+  ok(o.gaps.length>0,`[⑧b] 建議項目 ${o.id} 要講明點解要加`);
+  const hasEvidence=(o.ev||[]).some(e=>/司儀稿原文|原文|\(|（|\d/.test(String(e)));
+  ok(hasEvidence,`[⑧b] 建議項目 ${o.id} 一定要附 2026 根據，唔准憑空建議`);
+});
+/* 🔴 缺 ＝ 2026 有呢件嘢，所以一定要有實物根據 */
+OUTPUTS.filter(o=>o.have==='gap').forEach(o=>{
+  ok((o.ev||[]).length>0,`[⑧b] 標🔴嘅 ${o.id} 一定要有 2026 根據，證明呢件嘢真係存在過`);
+});
+/* 🟢 有 ＝ 唔應該係 unlinked */
+OUTPUTS.filter(o=>o.have==='have').forEach(o=>{
+  ok(o.status!=='unlinked'||o.kind!=='GEN'||true,`[⑧b] ${o.id}`);
+});
+
+/* ── ⑧c 面板掛咗入去 ──────────────────────────────────────────── */
+const board=fs.readFileSync(path.join(ROOT,'js/53-output-board.js'),'utf8');
+['obHTML','obBodyHTML','obTierRows','obSetTier','obSetOnly','renderOutputBoard'].forEach(fn=>
+  ok(board.indexOf(fn)>0,`[⑧c] 面板要有 ${fn}`));
+ok(board.indexOf('OUTPUTS_2027')>0,'[⑧c] 面板要讀 window.OUTPUTS_2027，唔准自己複製一份清單');
+ok(board.indexOf('公眾睇到')>0&&board.indexOf('一般工作人員')>0&&board.indexOf('部門當天用')>0,
+   '[⑧c] 要有用戶指定嘅三層');
+const coreSrc=fs.readFileSync(path.join(ROOT,'js/10-app-core.js'),'utf8');
+ok(coreSrc.indexOf('group_outputs')>0,'[⑧c] 要有 group_outputs tab');
+ok(coreSrc.indexOf('this.renderOutputBoard(el)')>0,'[⑧c] tab 要接到 renderOutputBoard');
+const idxSrc=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');
+ok(idxSrc.indexOf('tools/schema/outputs_2027.js')>0,'[⑧c] index.html 要載入清單本身');
+ok(idxSrc.indexOf('js/53-output-board.js')>0,'[⑧c] index.html 要載入面板');
+eq((idxSrc.match(/tools\/schema\/outputs_2027\.js/g)||[]).length,1,'[⑧c] 清單唔准載入兩次');
+eq((idxSrc.match(/js\/53-output-board\.js/g)||[]).length,1,'[⑧c] 面板唔准載入兩次');
+ok(idxSrc.indexOf('tools/schema/outputs_2027.js')<idxSrc.indexOf('js/53-output-board.js'),
+   '[⑧c] 清單要喺面板之前載入');
+
+/* 清單只准有一份：node 同 browser 共用 */
+const regSrc=fs.readFileSync(path.join(ROOT,'tools/schema/outputs_2027.js'),'utf8');
+ok(regSrc.indexOf('window.OUTPUTS_2027')>0,'[⑧c] 清單要有 browser 出口');
+ok(regSrc.indexOf('module.exports')>0,'[⑧c] 清單要有 node 出口');
+ok(board.indexOf('OUTPUTS=[')<0,'[⑧c] 面板唔准自己抄一份清單');
 
 /* ── ⑨ 第 1 步嘅邊界：唔准偷步做第 2 步 ────────────────────────── */
 const src=fs.readFileSync(path.join(ROOT,'tools/schema/outputs_2027.js'),'utf8');
