@@ -35,6 +35,9 @@ const departments=manual.department_activity_day_readiness||[];
 const departmentNames=['顧問團','主席及執行副主席','秘書處','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
 ok(departments.length===10&&departmentNames.every(group=>departments.some(row=>row.group===group)),'manual reviews the activity-day documents and operational outputs for every department');
 ok(departments.every(row=>row.materials&&row.lists&&row.issue!==undefined&&row.output&&row.status_label&&row.color),'each department review explicitly covers documents, lists/check-in or issue, print/export output and confirmation state');
+const relationships=manual.activity_day_relationships||[];
+ok(relationships.length===5&&relationships.every(row=>row.provenance&&row.canonical&&row.presentation&&row.output),'manual maps each principal activity-day flow from provenance through its 2027 canonical record to presentation and output');
+ok(relationships.some(row=>row.canonical==='ISD 2027 · staff.event_staff_roster')&&relationships.some(row=>row.canonical==='ISD 2027 · guest_roster.guests'),'manual explicitly distinguishes the 2027 staff and guest source roots from their screens');
 ok(manual.audience_rule.ordinary_staff.includes('不按組別隱藏')&&manual.audience_rule.restricted.includes('個人私隱'),'manual shares non-private operations across staff and restricts only private data');
 ok(!manual.task_finder&&manual.manual_catalog.length===9,'manual is a complete category-indexed reference book rather than a prescribed workstation finder');
 ok(manual.public_records.participant_units.length===31&&manual.public_records.booth_meal_allocation.length>=25,'manual includes public unit, meal and duty-allocation records in their own category');
@@ -71,6 +74,7 @@ ok(frontend.includes("const isStaffManual=this.currentModule==='exec_manual'")&&
 ok(frontend.includes('renderExecManualDocuments')&&frontend.includes('2027 擁有版本'),'manual UI renders its curated files and readable staff guidance rather than an empty document library');
 ok(frontend.includes('活動日資料確認標籤')&&frontend.includes('activity_day_readiness')&&frontend.includes('readinessStyle')&&frontend.includes('readinessPill'),'manual UI makes required-but-unconfirmed sources explicit with colour-coded labels rather than hiding them');
 ok(frontend.includes('各組活動日文件／名單／派發及輸出覆核')&&frontend.includes('department_activity_day_readiness'),'manual UI provides a non-workflow department reference for documents, lists, issue and print/export needs');
+ok(frontend.includes('資料本源及呈現關連')&&frontend.includes('activity_day_relationships')&&frontend.includes('2027 資料根源')&&frontend.includes('關連輸出'),'manual UI shows the origin → presentation → output relationship instead of foregrounding incidental record counts');
 ok(activities.includes('execution_manual_2027')&&activities.includes('2027 工作人員場地及動線圖'),'maps UI uses the 2027 manual source');
 ok(activities.includes('usePublishedManual')&&activities.includes("this.currentModule==='exec_manual'"),'maps and participant lists ignore stale browser cache inside the manual');
 ok(staff.includes("this.currentModule==='exec_manual'")&&staff.includes('browser-local MOCK edit'),'staff manual ignores stale browser-local roster cache');

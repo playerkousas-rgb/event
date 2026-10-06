@@ -216,7 +216,7 @@ const activityDayReadiness=[
   {
     id:'staff_badge_checkin', category:'報到、服務點、膳食及後勤', title:'工作人員點名及紀念章派發名單',
     owner:'行政組', status:'ready', status_label:'可供活動日使用', color:'emerald',
-    description:`以 2027 工作人員編更名單（${staffRosterCount} 位）作唯一現場名單；派發頁可按組別、攤位、姓名及未派狀態篩選／排序。`,
+    description:'以 2027 工作人員編更名單作唯一現場名單；派發頁可按組別、攤位、姓名及未派狀態篩選／排序。',
     source_paths:['staff.event_staff_roster','souvenirs.staff_stamps']
   },
   {
@@ -240,13 +240,13 @@ const activityDayReadiness=[
   {
     id:'notices', category:'通告及必讀文件', title:'活動通告原檔', owner:'行政組、各文件擁有人',
     status:'file_gap', status_label:'缺 2027 擁有檔案', color:'rose',
-    description:`已複製 ${count(event.notices)} 項通告資料；每項仍須建立、連結或確認其 2027 擁有的原檔。`,
+    description:'已複製活動通告資料；每項仍須建立、連結或確認其 2027 擁有的原檔。',
     source_paths:['notices']
   },
   {
     id:'document_catalogue', category:'通告及必讀文件', title:'完整活動日文件目錄', owner:'各文件擁有人',
     status:'file_gap', status_label:'缺 2027 擁有檔案／處置確認', color:'rose',
-    description:`已保留 ${docs.length} 項文件目錄及來源；每項須由擁有人決定保留、替換或退役，並補上 2027 檔案。`,
+    description:'已保留完整活動日文件目錄及來源；每項須由擁有人決定保留、替換或退役，並補上 2027 檔案。',
     source_paths:['documents','source_of_truth.execution_manual_gap_register.document_review_queue']
   }
 ];
@@ -265,7 +265,39 @@ const departmentActivityDayReadiness=[
   {group:'嘉賓接待組', materials:'嘉賓接待位置圖及典禮資料', lists:'嘉賓名單（私隱受限）', issue:'嘉賓紀念章', output:'嘉賓派發 Excel／Word／列印', status:'ready', status_label:'可供使用', color:'emerald', source_paths:['guest_roster.guests','souvenirs.guest_stamps','activities.maps']},
   {group:'協調組', materials:'後勤、物資、車輛及膳食資料', lists:'餐盒／工作人員膳食名單', issue:'餐盒及後勤物資', output:'名單 Excel／Word／列印 PDF', status:'confirmation_required', status_label:'待確認', color:'amber', source_paths:['meal_logistics','meal_distribution','roster_lists.meal_box']},
   {group:'服務及發展組', materials:'旅團報到、服務點及參加旅團資料', lists:'參加旅團點名簽收表', issue:'旅團報到資料', output:'旅團名單 Excel／Word／列印 PDF', status:'confirmation_required', status_label:'待確認', color:'amber', source_paths:['participants','roster_lists.participants']},
-  {group:'行政組', materials:'工作人員編更、全日程序及跨組後勤資料', lists:`${staffRosterCount} 位工作人員點名及紀念章派發名單`, issue:'工作人員紀念章', output:'派發 Excel／Word／列印後備名單', status:'ready', status_label:'可供使用', color:'emerald', source_paths:['staff.event_staff_roster','souvenirs.staff_stamps']}
+  {group:'行政組', materials:'工作人員編更、全日程序及跨組後勤資料', lists:'工作人員點名及紀念章派發名單', issue:'工作人員紀念章', output:'派發 Excel／Word／列印後備名單', status:'ready', status_label:'可供使用', color:'emerald', source_paths:['staff.event_staff_roster','souvenirs.staff_stamps']}
+];
+
+/* A source-to-presentation map: users can see why two screens are related and
+ * exactly which independent 2027 record controls them.  Counts intentionally
+ * do not define this map; a later event can have different quantities without
+ * changing the relationship. */
+const activityDayRelationships=[
+  {id:'staff_station', title:'工作人員點名及紀念章派發', color:'emerald',
+    provenance:'2026 已完成資料只作一次性參考；名單已獨立複製為 2027 記錄。',
+    canonical:'ISD 2027 · staff.event_staff_roster',
+    presentation:'行政組工作人員派章站：先選組別／攤位或搜尋，再排序及逐人點名。',
+    output:'同一份 2027 名單 → Excel、Word、列印後備名單及派發紀錄。'},
+  {id:'guest_station', title:'嘉賓點名及紀念章派發', color:'emerald',
+    provenance:'2026 已完成資料只作一次性參考；嘉賓資料在 2027 獨立持有。',
+    canonical:'ISD 2027 · guest_roster.guests',
+    presentation:'嘉賓接待的直接逐人點名；紀念章頁可按單位、姓名、職銜及狀態排序。',
+    output:'同一份 2027 嘉賓名單 → 派發 Excel、Word、列印及點名留痕。'},
+  {id:'participant_meal_station', title:'旅團報到及餐盒派發', color:'amber',
+    provenance:'2026 已完成資料已作 2027 參考種籽，最終到場及交接仍待確認。',
+    canonical:'ISD 2027 · participants · meal_distribution · meal_logistics',
+    presentation:'手冊中的旅團、餐盒及服務點資料，並連接共用點名名單。',
+    output:'同一份 2027 名單 → Excel、Word、列印／PDF 點名及派發表。'},
+  {id:'venue_programme_station', title:'場地、節目、典禮及安全資料', color:'amber',
+    provenance:'已整理為 2027 場地圖、遊戲卡、程序、司儀稿及危機應變參考資產。',
+    canonical:'ISD 2027 · activities · schedule · ceremony · crisis',
+    presentation:'執行手冊按場地、程序、典禮及安全分類呈現，不按角色隱藏非私隱資料。',
+    output:'同一份 2027 資產 → 手冊開啟、活動日列印及受控檔案連結。'},
+  {id:'notice_document_station', title:'通告及完整活動日文件', color:'rose',
+    provenance:'2026 封存文件只留下可追溯的 2027 元資料參考種籽，從不再由 2026 直接供應。',
+    canonical:'ISD 2027 · notices · documents · execution_manual_gap_register',
+    presentation:'手冊的通告及必讀文件目錄，以紅色標示尚未有 2027 原檔或處置決定的項目。',
+    output:'負責人補上／確認 2027 原檔後，同一受控來源再供手冊及列印輸出使用。'}
 ];
 
 /* This index is the worker-facing table of contents.  It deliberately contains
@@ -332,6 +364,7 @@ event.execution_manual_2027={
   document_catalog:{total:docs.length, by_category:documentsByCategory, notices:count(event.notices), unit_guides:count(event.unit_guide&&event.unit_guide.docs), staff_guidance:staffGuidance.length, records:documentCatalogRecords},
   activity_day_readiness:activityDayReadiness,
   department_activity_day_readiness:departmentActivityDayReadiness,
+  activity_day_relationships:activityDayRelationships,
   completion_checklist:[
     '確認全部活動日文件均已有 2027 擁有的檔案／連結。',
     '由各總主任確認所屬組別崗位、集合位置、交接及聯絡安排。',
