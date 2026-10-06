@@ -258,13 +258,14 @@ Object.assign(ScoutEventApp.prototype,{
     if(!container) return;
     if(!this.execManualSubTab) this.execManualSubTab='overview';
     const tabs=[
-      {k:'overview', icon:'fa-solid fa-person-circle-question', label:'工作崗位及即時指引'},
+      {k:'overview', icon:'fa-solid fa-book-open', label:'手冊目錄'},
       {k:'programme', icon:'fa-solid fa-clock', label:'全日程序及交接'},
-      {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地、攤位及遊戲'},
-      {k:'logistics', icon:'fa-solid fa-clipboard-check', label:'報到、膳食及後勤'},
-      {k:'ceremony', icon:'fa-solid fa-crown', label:'典禮儀式'},
+      {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地、攤位、遊戲及動線'},
+      {k:'logistics', icon:'fa-solid fa-clipboard-check', label:'報到、服務點、膳食及後勤'},
+      {k:'ceremony', icon:'fa-solid fa-crown', label:'典禮及會操'},
       {k:'mc_scripts', icon:'fa-solid fa-microphone-lines', label:'司儀稿'},
-      {k:'staff', icon:'fa-solid fa-people-group', label:'各類工作指引'},
+      {k:'records', icon:'fa-solid fa-table-list', label:'旅團、膳食及編更資料'},
+      {k:'staff', icon:'fa-solid fa-people-group', label:'各組職責及工作資料'},
       {k:'crisis', icon:'fa-solid fa-triangle-exclamation', label:'安全及應變'},
       {k:'documents', icon:'fa-solid fa-folder-open', label:'通告及必讀文件'}
     ];
@@ -293,6 +294,7 @@ Object.assign(ScoutEventApp.prototype,{
       ceremony:()=>this.renderCeremonyModule(panel),
       mc_scripts:()=>{ panel.innerHTML=this.execManualMcScriptsHTML(); },
       crisis:()=>this.renderCrisisModule(panel),
+      records:()=>this.renderExecManualPublicRecords(panel),
       overview:()=>this.renderExecManualOverview(panel),
       programme:()=>this.renderExecManualProgramme(panel),
       logistics:()=>this.renderExecManualLogistics(panel),
@@ -308,43 +310,30 @@ Object.assign(ScoutEventApp.prototype,{
   renderExecManualOverview(panel){
     const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
     const manual=this.execManualData();
-    const finder=manual.task_finder||{};
-    const guides=finder.role_guides||[];
-    const guideCards=guides.map(guide=>`<button onclick="app.switchExecManualTab('${guide.action_tab||'overview'}')" class="text-left bg-white border rounded-xl p-3 hover:border-sky-300 hover:bg-sky-50 transition"><div class="font-bold text-[12px] text-slate-800"><i class="fa-solid ${escapeHtml(guide.icon||'fa-circle-info')} text-sky-600 mr-1"></i>${escapeHtml(guide.title||'')}</div><div class="mt-1 text-[10.5px] leading-relaxed text-slate-500">${escapeHtml(guide.instruction||'')}</div></button>`).join('');
-    const answers=(finder.common_answers||[]).map(row=>`<details class="bg-white border rounded-xl p-3"><summary class="cursor-pointer list-none flex items-start justify-between gap-3"><b class="text-[12px]">${escapeHtml(row.question||'')}</b><i class="fa-solid fa-chevron-down text-slate-400 mt-1"></i></summary><p class="mt-2 pt-2 border-t whitespace-pre-line text-[11px] leading-relaxed text-slate-700">${escapeHtml(row.answer||'')}</p></details>`).join('');
-    const facilities=(finder.facilities||[]).map(row=>`<div class="bg-white border rounded-xl p-2.5 text-[11px]"><span class="mr-1">${escapeHtml(row.icon||'📍')}</span><b>${escapeHtml(row.question||'')}</b><div class="text-slate-600 mt-1">${escapeHtml(row.answer||'')}</div></div>`).join('');
+    const catalog=manual.manual_catalog||manual.sections||[];
+    const cards=catalog.filter(item=>item.id!=='overview').map(item=>`<button onclick="app.switchExecManualTab('${item.id}')" class="text-left bg-white border rounded-xl p-3 hover:border-indigo-300 hover:bg-indigo-50 transition"><div class="font-bold text-[12px] text-slate-800"><i class="fa-solid ${escapeHtml(item.icon||'fa-folder-open')} text-indigo-600 mr-1"></i>${escapeHtml(item.title||'')}</div><p class="mt-1 text-[10.5px] leading-relaxed text-slate-500">${escapeHtml(item.description||'')}</p></button>`).join('');
     box.innerHTML=`<div class="space-y-4">
-      <section class="rounded-2xl p-4 bg-gradient-to-br from-slate-900 to-sky-900 text-white"><div class="flex items-start justify-between gap-3 flex-wrap"><div><div class="text-[11px] text-sky-100 font-bold tracking-wide">活動日工作人員・唯讀指引</div><h3 class="font-bold text-lg mt-1">我要去哪裡？現在要做甚麼？出事怎樣處理？</h3><p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-sky-50">這不是管理摘要。請先找你的工作崗位；手冊會帶你到位置、活動內容、工作時段、服務點、常見問題及應變程序。</p></div><span class="bg-white/15 border border-white/25 rounded-full px-3 py-1.5 text-[10px]">所有活動日操作資料可查・只遮蔽個人私隱</span></div></section>
-      <section class="bg-sky-50 border border-sky-200 rounded-2xl p-4"><div class="flex items-start gap-2"><i class="fa-solid fa-magnifying-glass text-sky-700 mt-1"></i><div class="flex-1"><label for="exec-task-search" class="font-bold text-[13px] text-sky-950">找我的工作崗位</label><p class="text-[10.5px] text-sky-800 mt-0.5">輸入攤位編號（例如 A01）、編更代號（例如 A1 Core）、攤位名稱或協助機構；再查看本站位置、活動內容、何時處理甚麼及遇事怎樣做。</p><input id="exec-task-search" oninput="app.renderExecManualTaskFinder()" placeholder="例如：A01、A1 Core、機電、無人機、反恐" class="mt-3 w-full bg-white border border-sky-200 rounded-xl px-3 py-2 text-sm" autocomplete="off"><div id="exec-task-finder-results" class="mt-3"></div></div></div></section>
-      <section><h4 class="font-bold text-sm mb-2">我屬於哪一類工作？</h4><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">${guideCards}</div></section>
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-4"><div><h4 class="font-bold text-sm mb-2">有人問我怎樣回答？</h4><div class="space-y-2">${answers||'<p class="text-sm text-slate-400">暫未有常見問題資料</p>'}</div></div><div><h4 class="font-bold text-sm mb-2">常用服務點</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${facilities||'<p class="text-sm text-slate-400">請查看場地圖</p>'}</div><button onclick="app.switchExecManualTab('activities')" class="mt-3 text-[11px] font-bold text-sky-700">開啟完整場地及動線圖 →</button></div></section>
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] leading-relaxed text-amber-950"><b>私隱保護：</b>${escapeHtml(manual.audience_rule?.restricted||'只遮蔽個人資料。')}</div>
+      <section class="rounded-2xl p-4 bg-gradient-to-br from-slate-900 to-indigo-900 text-white"><div class="text-[11px] text-indigo-100 font-bold tracking-wide">2027 活動資料・唯讀執行手冊</div><h3 class="font-bold text-lg mt-1">${escapeHtml(manual.title||'2027 港島童軍繽紛日｜工作人員執行手冊')}</h3><p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-indigo-50">這是按資料類別編排的完整活動手冊，不預設工作人員的查閱方式。請按下列標籤自行開啟所需的活動資料。</p></section>
+      <section><h4 class="font-bold text-sm mb-2">活動資料分類</h4><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">${cards}</div></section>
+      <section class="bg-white border rounded-2xl p-4"><h4 class="font-bold text-sm"><i class="fa-solid fa-circle-info text-indigo-600 mr-1"></i>資料說明</h4><p class="mt-2 text-[11px] leading-relaxed text-slate-600">${escapeHtml(manual.source_rule||'')}</p><p class="mt-2 text-[11px] leading-relaxed text-slate-600">${escapeHtml(manual.audience_rule?.ordinary_staff||'')}</p></section>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] leading-relaxed text-amber-950"><b>私隱界線：</b>${escapeHtml(manual.audience_rule?.restricted||'只遮蔽個人資料。')}</div>
     </div>`;
-    this.renderExecManualTaskFinder();
   }
 ,
-  renderExecManualTaskFinder(query){
-    const out=document.getElementById('exec-task-finder-results'); if(!out) return;
-    const finder=this.execManualData().task_finder||{};
-    const input=document.getElementById('exec-task-search');
-    const q=String(query!==undefined?query:(input?.value||'')).trim().toLowerCase();
-    if(input&&query!==undefined) input.value=query;
-    const rows=(finder.workstations||[]).filter(row=>!q||`${row.booth_code||''} ${(row.assignment_labels||[]).join(' ')} ${row.booth_name||''} ${row.operator||''} ${row.activity||''}`.toLowerCase().includes(q));
-    const card=row=>`<article class="bg-white border rounded-xl p-3.5 space-y-2"><div class="flex items-start justify-between gap-2"><div><span class="inline-block bg-sky-700 text-white rounded-lg px-2 py-1 text-[11px] font-black">${escapeHtml(row.booth_code||'')}</span><span class="ml-1 text-[10px] text-slate-500">${escapeHtml(row.zone||'')} 區</span><h4 class="font-bold text-[13px] mt-1">${escapeHtml(row.booth_name||'')}</h4><p class="text-[10.5px] text-slate-500 mt-0.5">${escapeHtml(row.operator||'')}</p></div><button onclick="app.switchExecManualTab('activities');setTimeout(()=>app.switchActivitiesTab('maps'),120)" class="text-[11px] font-bold text-sky-700 whitespace-nowrap">看地圖 →</button></div><div class="bg-slate-50 border rounded-lg p-2 text-[11px]"><b>本站活動：</b>${escapeHtml(row.activity||'請向當值總主任確認。')}</div><div class="text-[11px] text-slate-700"><i class="fa-solid fa-location-dot text-sky-500 mr-1"></i>${escapeHtml(row.location||'')}</div>${(row.assignment_labels||[]).length?`<div class="text-[10.5px] text-indigo-700"><b>編更上的崗位代號：</b>${escapeHtml((row.assignment_labels||[]).join('／'))}</div>`:''}<ol class="space-y-1.5 text-[10.5px] text-slate-600 list-decimal pl-4">${(row.operating_steps||[]).map(step=>`<li>${escapeHtml(step)}</li>`).join('')}</ol><div class="flex gap-2"><button onclick="app.switchExecManualTab('programme')" class="text-[10.5px] font-bold text-sky-700">看全日時間 →</button><button onclick="app.switchExecManualTab('crisis')" class="text-[10.5px] font-bold text-rose-700">遇事處理 →</button></div></article>`;
-    if(!q){
-      const codes=(finder.workstations||[]).map(row=>`<button onclick="app.renderExecManualTaskFinder('${escapeHtml(row.booth_code||'')}')" class="bg-white border hover:bg-sky-50 px-2 py-1 rounded-lg text-[10px] font-bold">${escapeHtml(row.booth_code||'')}${(row.assignment_labels||[])[0]?` · ${escapeHtml(row.assignment_labels[0])}`:''}</button>`).join('');
-      out.innerHTML=`<div class="text-[10.5px] text-sky-900 mb-2">共用 PIN 不按姓名搜尋，以已分配的攤位編號為準。可直接選擇：</div><div class="flex gap-1.5 flex-wrap">${codes}</div>`;
-      return;
-    }
-    out.innerHTML=rows.length?`<div class="grid grid-cols-1 xl:grid-cols-2 gap-2">${rows.map(card).join('')}</div>`:`<div class="bg-white border rounded-xl p-3 text-[11px] text-slate-600">找不到「${escapeHtml(q)}」；請改用攤位編號、攤位名稱或協助機構搜尋，或向當值總主任確認分配。</div>`;
+  renderExecManualPublicRecords(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const records=this.execManualData().public_records||{};
+    const units=(records.participant_units||[]).map(row=>`<tr class="border-b last:border-0"><td class="px-2 py-1.5">${escapeHtml(row.unit_name||'')}</td><td class="px-2 py-1.5">${escapeHtml(row.area||'')}</td><td class="px-2 py-1.5 text-center">${escapeHtml(String(row.headcount||0))}</td><td class="px-2 py-1.5 text-center">${escapeHtml(String(row.meal_boxes||0))}</td></tr>`).join('');
+    const meals=(records.booth_meal_allocation||[]).map(row=>`<tr class="border-b last:border-0"><td class="px-2 py-1.5">${escapeHtml(row.label||'')}</td><td class="px-2 py-1.5 text-center">${escapeHtml(String(row.headcount??''))}</td><td class="px-2 py-1.5 text-center">${escapeHtml(String(row.rice??'—'))}</td><td class="px-2 py-1.5 text-center">${escapeHtml(String(row.snack??'—'))}</td></tr>`).join('');
+    const awards=(records.ceremony?.adult_awards||[]).map(row=>`<li class="bg-white border rounded-lg p-2 text-[11px]"><b>${escapeHtml(row.award||'')}</b><span class="text-slate-500">　${escapeHtml(String(row.recipient_count||0))} 位獲獎者</span></li>`).join('');
+    box.innerHTML=`<div class="space-y-4"><section class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-[12px] text-teal-950"><b><i class="fa-solid fa-table-list mr-1"></i>旅團、膳食及編更資料</b><br><span class="text-[10.5px]">本分類保留全部可公開的單位、數量及分配資料；個人姓名、聯絡、簽收和個人餐膳記錄按私隱規則遮蔽。</span></section><section><h4 class="font-bold text-sm mb-2">參加旅團資料</h4><div class="table-responsive bg-white border rounded-xl"><table class="min-w-[620px] w-full text-[11px]"><thead class="bg-slate-100"><tr><th class="px-2 py-2 text-left">旅團</th><th class="px-2 py-2 text-left">所屬地區</th><th class="px-2 py-2 text-center">人數</th><th class="px-2 py-2 text-center">代訂餐盒</th></tr></thead><tbody>${units||'<tr><td colspan="4" class="px-3 py-6 text-center text-slate-400">暫未有旅團資料</td></tr>'}</tbody></table></div></section><section><h4 class="font-bold text-sm mb-2">攤位編更及膳食分配</h4><div class="table-responsive bg-white border rounded-xl"><table class="min-w-[520px] w-full text-[11px]"><thead class="bg-slate-100"><tr><th class="px-2 py-2 text-left">崗位／編更代號</th><th class="px-2 py-2 text-center">人手</th><th class="px-2 py-2 text-center">飯</th><th class="px-2 py-2 text-center">小食</th></tr></thead><tbody>${meals||'<tr><td colspan="4" class="px-3 py-6 text-center text-slate-400">暫未有分配資料</td></tr>'}</tbody></table></div></section><section><h4 class="font-bold text-sm mb-2">典禮獎勵資料（不列個人姓名）</h4><ul class="grid grid-cols-1 md:grid-cols-2 gap-2">${awards||'<li class="text-[11px] text-slate-400">暫未有獎勵資料</li>'}</ul><p class="mt-2 text-[10.5px] text-slate-500">優異旅團獎勵資料：${escapeHtml(String(records.ceremony?.merit_award_count||0))} 項記錄。</p></section></div>`;
   }
 ,
   renderExecManualGroupTasks(panel){
     const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
-    const manual=this.execManualData();
-    const guides=manual.task_finder?.role_guides||[];
-    const cards=guides.map(guide=>`<article class="bg-white border rounded-xl p-4"><div class="flex items-start gap-2"><i class="fa-solid ${escapeHtml(guide.icon||'fa-circle-info')} text-indigo-600 mt-0.5"></i><div><h4 class="font-bold text-[13px]">${escapeHtml(guide.title||'')}</h4><p class="text-[11px] text-slate-600 leading-relaxed mt-1">${escapeHtml(guide.instruction||'')}</p><div class="mt-2 text-[10.5px] text-indigo-700"><b>找資料：</b>${escapeHtml(guide.find||'')}</div><button onclick="app.switchExecManualTab('${guide.action_tab||'overview'}')" class="mt-3 text-[11px] font-bold text-indigo-700">直接前往 →</button></div></div></article>`).join('');
-    box.innerHTML=`<div class="space-y-3"><div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[12px] text-indigo-950"><b><i class="fa-solid fa-people-group mr-1"></i>各類工作指引</b><br><span class="text-[10.5px]">所有工作人員均可看全部操作指引，方便跨崗位支援；只有人名、電話、電郵、車牌、個人簽收及事故個資會被遮蔽。</span></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${cards}</div></div>`;
+    const rows=this.execManualData().group_playbook||[];
+    const cards=rows.map(row=>`<details class="bg-white border rounded-xl p-3"><summary class="cursor-pointer list-none flex items-start justify-between gap-3"><div><span class="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2 py-0.5">工作資料</span><b class="block text-[13px] mt-1">${escapeHtml(row.group||'')}</b></div><i class="fa-solid fa-chevron-down text-slate-400 mt-2"></i></summary><div class="border-t mt-3 pt-3 whitespace-pre-line text-[11px] leading-relaxed text-slate-700">${escapeHtml(row.duty||'')}</div></details>`).join('');
+    box.innerHTML=`<div class="space-y-3"><div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[12px] text-indigo-950"><b><i class="fa-solid fa-people-group mr-1"></i>各組職責及工作資料</b><br><span class="text-[10.5px]">完整列出各組及職位的工作內容，方便跨組理解活動運作；只有個人姓名及聯絡資料會被遮蔽。</span></div><div class="space-y-2">${cards||'<p class="text-sm text-slate-400">暫未有工作資料</p>'}</div></div>`;
   }
 ,
   renderExecManualProgramme(panel){
@@ -360,7 +349,7 @@ Object.assign(ScoutEventApp.prototype,{
     const manual=this.execManualData();
     const logistics=manual.logistics||{};
     const meals=(logistics.meal_collection||[]).map(row=>`<div class="bg-white border rounded-xl p-3"><b class="text-[12px] text-rose-800">${escapeHtml(row.label||'')}</b><div class="text-[11px] mt-1"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${escapeHtml(row.place||'')}　<i class="fa-regular fa-clock text-rose-400 ml-1 mr-1"></i>${escapeHtml(row.time||'')}</div><p class="text-[10.5px] text-slate-500 mt-1">${escapeHtml(row.note||'')}</p></div>`).join('');
-    box.innerHTML=`<div class="space-y-4"><section class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[12px] text-rose-950"><b><i class="fa-solid fa-clipboard-check mr-1"></i>報到、膳食及後勤</b><br><span class="text-[10.5px]">旅團報到、餐盒派發和工作人員膳食均按所屬崗位程序辦理；個人簽收資料只會顯示給獲授權人員。</span></section><section class="grid grid-cols-1 sm:grid-cols-3 gap-2">${meals||'<div class="text-sm text-slate-400">暫未有膳食安排</div>'}</section><section class="grid grid-cols-1 md:grid-cols-3 gap-2"><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">旅團報到</b><p class="text-[10.5px] text-slate-500 mt-1">共 ${escapeHtml(String(logistics.participant_units||0))} 個旅團參考記錄。使用「參加旅團名單」核對及按程序派發物資。</p><button onclick="app.switchExecManualTab('participants')" class="mt-2 text-[11px] font-bold text-sky-700">開啟旅團名單 →</button></div><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">代訂餐盒</b><p class="text-[10.5px] text-slate-500 mt-1">按旅團及已確認安排派發；現場更改由協調組按授權紀錄處理。</p><button onclick="app.switchExecManualTab('meal_box')" class="mt-2 text-[11px] font-bold text-sky-700">開啟餐盒名單 →</button></div><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">工作人員餐膳</b><p class="text-[10.5px] text-slate-500 mt-1">${escapeHtml(String(logistics.staff_meal_records||0))} 筆餐膳參考記錄；派發簽收和個人資料受後勤權限限制。</p></div></section><div class="bg-white border rounded-xl p-3 text-[10.5px] text-slate-600">餐單參考：${(logistics.meal_options||[]).map(escapeHtml).join('　·　')||'待確認'}</div></div>`;
+    box.innerHTML=`<div class="space-y-4"><section class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[12px] text-rose-950"><b><i class="fa-solid fa-clipboard-check mr-1"></i>報到、膳食及後勤</b><br><span class="text-[10.5px]">旅團報到、餐盒派發和工作人員膳食均按所屬崗位程序辦理；個人簽收資料只會顯示給獲授權人員。</span></section><section class="grid grid-cols-1 sm:grid-cols-3 gap-2">${meals||'<div class="text-sm text-slate-400">暫未有膳食安排</div>'}</section><section class="grid grid-cols-1 md:grid-cols-3 gap-2"><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">旅團報到</b><p class="text-[10.5px] text-slate-500 mt-1">共 ${escapeHtml(String(logistics.participant_units||0))} 個旅團參考記錄。使用「旅團、膳食及編更資料」核對單位、人數及代訂餐盒，再按程序派發物資。</p><button onclick="app.switchExecManualTab('records')" class="mt-2 text-[11px] font-bold text-sky-700">開啟旅團資料 →</button></div><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">代訂餐盒</b><p class="text-[10.5px] text-slate-500 mt-1">按旅團及已確認安排派發；現場更改由協調組按授權紀錄處理。</p><button onclick="app.switchExecManualTab('records')" class="mt-2 text-[11px] font-bold text-sky-700">開啟餐盒資料 →</button></div><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">工作人員餐膳</b><p class="text-[10.5px] text-slate-500 mt-1">${escapeHtml(String(logistics.staff_meal_records||0))} 筆餐膳參考記錄；派發簽收和個人資料受後勤權限限制。</p></div></section><div class="bg-white border rounded-xl p-3 text-[10.5px] text-slate-600">餐單參考：${(logistics.meal_options||[]).map(escapeHtml).join('　·　')||'待確認'}</div></div>`;
   }
 ,
   renderExecManualDocuments(panel){

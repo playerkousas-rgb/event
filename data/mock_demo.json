@@ -25825,768 +25825,462 @@
       "committee": "同一份操作資料供所有工作人員查閱；籌委帳戶只額外提供來源編輯、個人／受限名單和管理操作。",
       "restricted": "只保護個人私隱及其衍生資料：姓名對應崗位、電話、電郵、嘉賓個人資料、車牌、帳戶、事故個資及簽收紀錄。"
     },
-    "task_finder": {
-      "shared_pin_rule": "普通工作人員使用共用 PIN，不以姓名辨認登入者；請按已獲分配的攤位編號、編更代號、工作類別或所屬崗位搜尋。這樣可讓所有人查閱運作資料，同時不公開個人崗位對應。",
-      "workstations": [
+    "manual_catalog": [
+      {
+        "id": "overview",
+        "title": "手冊目錄及資料說明",
+        "icon": "fa-book-open",
+        "description": "本手冊按活動資料類別編排，工作人員可按需要自行查閱。"
+      },
+      {
+        "id": "programme",
+        "title": "全日程序及交接",
+        "icon": "fa-clock",
+        "description": "跨組的完整時間線、位置、環節及適用資料。"
+      },
+      {
+        "id": "activities",
+        "title": "場地、攤位、遊戲及動線",
+        "icon": "fa-map-location-dot",
+        "description": "場地圖、A–F 攤位總表、活動內容及遊戲卡。"
+      },
+      {
+        "id": "logistics",
+        "title": "報到、服務點、膳食及後勤",
+        "icon": "fa-clipboard-check",
+        "description": "旅團／嘉賓動線、報到、服務點、餐單、派發及後勤資料。"
+      },
+      {
+        "id": "ceremony",
+        "title": "典禮、會操及司儀資料",
+        "icon": "fa-crown",
+        "description": "典禮程序、檢閱路線、rundown 與司儀稿。"
+      },
+      {
+        "id": "records",
+        "title": "旅團、膳食及編更資料",
+        "icon": "fa-table-list",
+        "description": "非私人版本的旅團、餐盒、攤位編更及獎勵資料。"
+      },
+      {
+        "id": "staff",
+        "title": "各組職責及工作資料",
+        "icon": "fa-people-group",
+        "description": "各組及職位職責；個人姓名以外的工作資料完整保留。"
+      },
+      {
+        "id": "crisis",
+        "title": "安全及應變",
+        "icon": "fa-triangle-exclamation",
+        "description": "危機定義、即時行動、回報、集合及對外發言資料。"
+      },
+      {
+        "id": "documents",
+        "title": "通告、指引及活動日文件",
+        "icon": "fa-folder-open",
+        "description": "2027 擁有版本的場地、遊戲、典禮、安全及工作指引文件。"
+      }
+    ],
+    "public_records": {
+      "participant_units": [
         {
-          "id": "booth_A01",
-          "booth_code": "A01",
-          "zone": "A",
-          "booth_name": "主節目組總部",
-          "operator": "主題節目組總部",
-          "activity": "／",
-          "assigned_staff_count": 7,
-          "assignment_labels": [
-            "A1 Core"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第175旅",
+          "area": "HKN 港島北區",
+          "headcount": 28,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A02",
-          "booth_code": "A02",
-          "zone": "A",
-          "booth_name": "機電先鋒 - 綠能一級棒",
-          "operator": "積極公民工作坊 - 機電1",
-          "activity": "1) 可再生能源 2) 氣體安全條例 - GU標誌",
-          "assigned_staff_count": 2,
-          "assignment_labels": [
-            "A2 機電1"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第242旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 17,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A03",
-          "booth_code": "A03",
-          "zone": "A",
-          "booth_name": "機電先鋒 - 一級省電王",
-          "operator": "積極公民工作坊 - 機電2",
-          "activity": "1) 家用電器使用、常見危險 2) 綠色能源標籤／級別標籤",
-          "assigned_staff_count": 2,
-          "assignment_labels": [
-            "A3 機電2"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第5海童軍旅",
+          "area": "WCH 灣仔區",
+          "headcount": 17,
+          "meal_boxes": 17
         },
         {
-          "id": "booth_A04",
-          "booth_code": "A04",
-          "zone": "A",
-          "booth_name": "機電先鋒 - 乘搭安全指南",
-          "operator": "積極公民工作坊 - 機電3",
-          "activity": "1) 升降機、自動梯安全裝置 2) 升降機、自動梯及鐵路安全指示標誌",
-          "assigned_staff_count": 2,
-          "assignment_labels": [
-            "A4 機電3"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第212旅",
+          "area": "WCH 灣仔區",
+          "headcount": 90,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A05",
-          "booth_code": "A05",
-          "zone": "A",
-          "booth_name": "機電先鋒 - 節約能源承諾樹",
-          "operator": "積極公民工作坊 - 機電4",
-          "activity": "1) 節約能源承諾樹 2) 派發工作紙",
-          "assigned_staff_count": 5,
-          "assignment_labels": [
-            "A5 機電4"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第1316旅",
+          "area": "CHW 柴灣區",
+          "headcount": 20,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A06",
-          "booth_code": "A06",
-          "zone": "A",
-          "booth_name": "香港警務處 跨部門反恐專責組",
-          "operator": "香港警務處 - 跨部門反恐專責組(ICTU)",
-          "activity": "1) 反恐小遊戲 2) 派發紀念品及宣傳單張",
-          "assigned_staff_count": 4,
-          "assignment_labels": [
-            "A6 Police-反恐"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第255旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 45,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A07",
-          "booth_code": "A07",
-          "zone": "A",
-          "booth_name": "香港警務處 網絡安全及科技罪案調查科",
-          "operator": "香港警務處 - 網絡安全及科技罪案調查科(CSTCB)",
-          "activity": "1) 推廣「守網聯盟遊戲卡」",
-          "assigned_staff_count": 4,
-          "assignment_labels": [
-            "A7 Police-網絡"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第263旅",
+          "area": "CHW 柴灣區",
+          "headcount": 28,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A08",
-          "booth_code": "A08",
-          "zone": "A",
-          "booth_name": "Hong Kong Police Force Narcotics Bureau",
-          "operator": "香港警務處 - 毒品調查科(NB)",
-          "activity": "1) 禁毒知識分享",
-          "assigned_staff_count": 2,
-          "assignment_labels": [
-            "A8 Police-NB"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第6旅",
+          "area": "CHW 柴灣區",
+          "headcount": 58,
+          "meal_boxes": 25
         },
         {
-          "id": "booth_A09",
-          "booth_code": "A09",
-          "zone": "A",
-          "booth_name": "香港警務處 毒品調查科",
-          "operator": "香港警務處 - 毒品調查科(NB)",
-          "activity": "1) 展示模擬毒品實物 2) 模擬毒品氣味",
-          "assigned_staff_count": 4,
-          "assignment_labels": [
-            "A9 Police-毒品調查"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第186旅",
+          "area": "WCH 灣仔區",
+          "headcount": 103,
+          "meal_boxes": 38
         },
         {
-          "id": "booth_A10",
-          "booth_code": "A10",
-          "zone": "A",
-          "booth_name": "「NSpeed 國安號」宣傳車",
-          "operator": "香港警務處 - 國家安全處(NSD)",
-          "activity": "1) 國安號",
-          "assigned_staff_count": 5,
-          "assignment_labels": [
-            "A10 Police-國安"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第99旅",
+          "area": "VIC 維多利亞城區",
+          "headcount": 55,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_A11",
-          "booth_code": "A11",
-          "zone": "A",
-          "booth_name": "香港警務處 港島總區交通部",
-          "operator": "香港警務處 - 港島總區交通部(T HKI)",
-          "activity": "1) 提供小型警察電單車、小型警察私家車供兒童拍照 2) 兒童警察服飾供兒童拍照",
-          "assigned_staff_count": 3,
-          "assignment_labels": [
-            "A11 Police-交通"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第224旅",
+          "area": "HKS 港島南區",
+          "headcount": 10,
+          "meal_boxes": 10
         },
         {
-          "id": "booth_A12",
-          "booth_code": "A12",
-          "zone": "A",
-          "booth_name": "香港警務處 鑑證科",
-          "operator": "香港警務處 - 鑑證科(IB / CSI)",
-          "activity": "1) 指紋書簽 2)模擬法証光源燈展示 3)播放介紹IB鑑証科片段",
-          "assigned_staff_count": 5,
-          "assignment_labels": [
-            "A12 Police-鑑證"
-          ],
-          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第241旅",
+          "area": "HKS 港島南區",
+          "headcount": 45,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_B01",
-          "booth_code": "B01",
-          "zone": "B",
-          "booth_name": "十五五與我好有關",
-          "operator": "香港島青年聯會",
-          "activity": "參加者先透過幾部iPad觀看有關十五五規劃的影片，然後以手機或掃描QR code以Kahoot測試參加者對十五五規劃的認識。 記憶配對遊戲，讓參加者記得有關十五五規劃的辭彙。",
-          "assigned_staff_count": 4,
-          "assignment_labels": [
-            "B1 青年聯會"
-          ],
-          "location": "B 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第1275旅",
+          "area": "CHW 柴灣區",
+          "headcount": 47,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_B02",
-          "booth_code": "B02",
-          "zone": "B",
-          "booth_name": "港島童軍射藝會",
-          "operator": "港島童軍射藝會",
-          "activity": "箭藝",
-          "assigned_staff_count": 4,
-          "assignment_labels": [
-            "B2 箭會"
-          ],
-          "location": "B 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第15旅",
+          "area": "WCH 灣仔區",
+          "headcount": 41,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_B03",
-          "booth_code": "B03",
-          "zone": "B",
-          "booth_name": "第一個五年規劃",
-          "operator": "港島南區 / 港島地域 - 深資童軍議會",
-          "activity": "展覽 - 展板 ＋ 影片",
-          "assigned_staff_count": 5,
-          "assignment_labels": [
-            "B3 VentureC"
-          ],
-          "location": "B 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第18旅",
+          "area": "WCH 灣仔區",
+          "headcount": 12,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_C01",
-          "booth_code": "C01",
-          "zone": "C",
-          "booth_name": "Smokeless Range",
-          "operator": "港島童軍氣槍射擊會",
-          "activity": "虛擬靶場射擊",
-          "assigned_staff_count": 4,
-          "assignment_labels": [
-            "C1 槍會"
-          ],
-          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第1旅",
+          "area": "VIC 維多利亞城區",
+          "headcount": 72,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_C02",
-          "booth_code": "C02",
-          "zone": "C",
-          "booth_name": "「童」你飛翔",
-          "operator": "港島地域 - 航空活動",
-          "activity": "Flight Sim x2 (Monitor + VR Mode)",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第268旅",
+          "area": "CHW 柴灣區",
+          "headcount": 18,
+          "meal_boxes": 10
         },
         {
-          "id": "booth_C03",
-          "booth_code": "C03",
-          "zone": "C",
-          "booth_name": "漫遊太空站",
-          "operator": "香港航天學會 - 航天、航空",
-          "activity": "航天展覽、航天員造型照、飛行員造型照 汽球直升機、氣壓小火箭、遙控飛機模擬飛行",
-          "assigned_staff_count": 14,
-          "assignment_labels": [
-            "C3 航天學會"
-          ],
-          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第14旅",
+          "area": "WCH 灣仔區",
+          "headcount": 52,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_C04",
-          "booth_code": "C04",
-          "zone": "C",
-          "booth_name": "無人機足球運動同樂",
-          "operator": "中國香港東區無人機協會",
-          "activity": "分享無人機足球運動",
-          "assigned_staff_count": 19,
-          "assignment_labels": [
-            "C4 無人機"
-          ],
-          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第250旅",
+          "area": "HKW 港島西區",
+          "headcount": 9,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_D01",
-          "booth_code": "D01",
-          "zone": "D",
-          "booth_name": "童軍招募及宣傳",
-          "operator": "港島地域 - 發展部",
-          "activity": "童軍招募及宣傳",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第175旅",
+          "area": "HKN 港島北區",
+          "headcount": 7,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_D02",
-          "booth_code": "D02",
-          "zone": "D",
-          "booth_name": "食品捐贈",
-          "operator": "港島地域 - 社區參與及服務1",
-          "activity": "食品捐贈",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第142旅",
+          "area": "HKW 港島西區",
+          "headcount": 30,
+          "meal_boxes": 30
         },
         {
-          "id": "booth_D03",
-          "booth_code": "D03",
-          "zone": "D",
-          "booth_name": "物品捐贈",
-          "operator": "港島地域 - 社區參與及服務2",
-          "activity": "物品捐贈",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第206旅",
+          "area": "SKW 筲箕灣區",
+          "headcount": 55,
+          "meal_boxes": 2
         },
         {
-          "id": "booth_D04",
-          "booth_code": "D04",
-          "zone": "D",
-          "booth_name": "日日keep住食， 藥箱都變成棺材箱",
-          "operator": "港島地域 - 灣仔區 - 社區參與章1",
-          "activity": "1) 展覽 2)互動形式推行藥物教育",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第7旅",
+          "area": "HKN 港島北區",
+          "headcount": 40,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_D05",
-          "booth_code": "D05",
-          "zone": "D",
-          "booth_name": "七彩人生，拒絕毒品",
-          "operator": "港島地域 - 灣仔區 - 社區參與章2",
-          "activity": "1) 扭蛋機 2) 掉彩虹，Matching",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第230旅",
+          "area": "HKN 港島北區",
+          "headcount": 15,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_E01",
-          "booth_code": "E01",
-          "zone": "E",
-          "booth_name": "精神健康與你",
-          "operator": "港島地域 - 維多利亞城區 - 精神健康章",
-          "activity": "待定",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "E 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第22旅",
+          "area": "HKW 港島西區",
+          "headcount": 16,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_E02",
-          "booth_code": "E02",
-          "zone": "E",
-          "booth_name": "抗逆達人",
-          "operator": "港島地域 - 維多利亞城區 - 公共衞生章",
-          "activity": "待定",
-          "assigned_staff_count": 0,
-          "assignment_labels": [],
-          "location": "E 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第70旅",
+          "area": "HKS 港島南區",
+          "headcount": 3,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_E03",
-          "booth_code": "E03",
-          "zone": "E",
-          "booth_name": "童心傾訴站 Listening Ear",
-          "operator": "港島地域",
-          "activity": "/",
-          "assigned_staff_count": 2,
-          "assignment_labels": [
-            "E3 Listening Ear"
-          ],
-          "location": "E 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第5旅",
+          "area": "HKW 港島西區",
+          "headcount": 29,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_F01",
-          "booth_code": "F01",
-          "zone": "F",
-          "booth_name": "生態追擊",
-          "operator": "港島童軍生態小組",
-          "activity": "AI 識別生物(以活動認識香港本地生態)",
-          "assigned_staff_count": 6,
-          "assignment_labels": [
-            "F1 生態"
-          ],
-          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第2旅",
+          "area": "VIC 維多利亞城區",
+          "headcount": 20,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_F02",
-          "booth_code": "F02",
-          "zone": "F",
-          "booth_name": "「章」來會更好",
-          "operator": "港島童軍章會",
-          "activity": "1) 徽章展覽 2) 換章角",
-          "assigned_staff_count": 6,
-          "assignment_labels": [
-            "F2 章會"
-          ],
-          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島地域（鄧靄兒）",
+          "area": "HKIR 港島地域",
+          "headcount": 5,
+          "meal_boxes": 5
         },
         {
-          "id": "booth_F03",
-          "booth_code": "F03",
-          "zone": "F",
-          "booth_name": "追星精明眼",
-          "operator": "港島童軍天文會",
-          "activity": "星座認知",
-          "assigned_staff_count": 3,
-          "assignment_labels": [
-            "F3 天文會"
-          ],
-          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第1665旅",
+          "area": "WCH 灣仔區",
+          "headcount": 23,
+          "meal_boxes": 0
         },
         {
-          "id": "booth_F04",
-          "booth_code": "F04",
-          "zone": "F",
-          "booth_name": "搖搖晃",
-          "operator": "港島童軍先鋒工程會",
-          "activity": "鞦韆架（可遊玩）＋倒叉三腳瞭望台（觀賞）",
-          "assigned_staff_count": 1,
-          "assignment_labels": [
-            "F4 先鋒會"
-          ],
-          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
-        },
-        {
-          "id": "booth_F05",
-          "booth_code": "F05",
-          "zone": "F",
-          "booth_name": "港島地域童軍樂隊",
-          "operator": "港島地域童軍樂隊",
-          "activity": "演奏表演",
-          "assigned_staff_count": 30,
-          "assignment_labels": [
-            "F5 Band"
-          ],
-          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
-        },
-        {
-          "id": "booth_F06",
-          "booth_code": "F06",
-          "zone": "F",
-          "booth_name": "「皮」趣小座",
-          "operator": "港島童軍皮藝會",
-          "activity": "DIY 皮革電話座匙扣",
-          "assigned_staff_count": 6,
-          "assignment_labels": [
-            "F6 皮會"
-          ],
-          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
-          "operating_steps": [
-            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
-            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
-            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
-            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
-          ],
-          "status": "2027_reference_seed_pending_2027_confirmation"
+          "unit_name": "港島第16旅",
+          "area": "HKW 港島西區",
+          "headcount": 6,
+          "meal_boxes": 0
         }
       ],
-      "role_guides": [
+      "booth_meal_allocation": [
         {
-          "id": "booth",
-          "title": "攤位工作人員",
-          "icon": "fa-store",
-          "find": "輸入 A01、A1 Core、攤位名稱或協助機構",
-          "action_tab": "overview",
-          "instruction": "先找本站位置和活動內容；活動時依本站指引接待參加者、回答基本方向問題，超出範圍即回報。"
+          "label": "A1 Core",
+          "headcount": 7,
+          "rice": 6,
+          "snack": ""
         },
         {
-          "id": "checkin",
-          "title": "報到及旅團支援",
-          "icon": "fa-clipboard-check",
-          "find": "查看旅團報到、餐盒及服務點",
-          "action_tab": "logistics",
-          "instruction": "依有蓋操場報到處程序核對、派發和指引旅團；需要人名／簽收資料時只在獲授權的工作崗位處理。"
+          "label": "A2 機電1",
+          "headcount": 2,
+          "rice": 2,
+          "snack": ""
         },
         {
-          "id": "ceremony",
-          "title": "典禮及會操支援",
-          "icon": "fa-crown",
-          "find": "查看時間線、典禮位置及司儀稿",
-          "action_tab": "programme",
-          "instruction": "按全日程序、典禮位置及當值總主任指示處理集合、排位、上台和轉場。"
+          "label": "A3 機電2",
+          "headcount": 3,
+          "rice": 3,
+          "snack": ""
         },
         {
-          "id": "guest",
-          "title": "嘉賓及訪客支援",
-          "icon": "fa-handshake",
-          "find": "查看嘉賓動線及服務點",
-          "action_tab": "activities",
-          "instruction": "提供位置、程序和方向資料；嘉賓個人名單、電話和車輛資料不在共用手冊顯示。"
+          "label": "A4 機電3",
+          "headcount": 6,
+          "rice": 5,
+          "snack": ""
         },
         {
-          "id": "logistics",
-          "title": "交通、膳食及後勤",
-          "icon": "fa-truck",
-          "find": "查看餐盒、用膳、服務點及場地圖",
-          "action_tab": "logistics",
-          "instruction": "按已發佈的後勤資料處理；遇到物資、交通或場地問題即交當值協調／行政崗位。"
+          "label": "A5 機電4",
+          "headcount": 5,
+          "rice": 5,
+          "snack": ""
         },
         {
-          "id": "safety",
-          "title": "安全、急救及突發情況",
-          "icon": "fa-triangle-exclamation",
-          "find": "查看安全及應變",
-          "action_tab": "crisis",
-          "instruction": "先處理人身安全、找急救／指揮支援、記錄並回報；不自行向外發布事故資料。"
+          "label": "A6 Police-反恐",
+          "headcount": 4,
+          "rice": "-",
+          "snack": ""
+        },
+        {
+          "label": "A7 Police-網絡",
+          "headcount": 4,
+          "rice": "-",
+          "snack": ""
+        },
+        {
+          "label": "A8 Police-NB",
+          "headcount": 2,
+          "rice": 2,
+          "snack": ""
+        },
+        {
+          "label": "A9 Police-毒品調查",
+          "headcount": 4,
+          "rice": 4,
+          "snack": ""
+        },
+        {
+          "label": "A10 Police-國安",
+          "headcount": 5,
+          "rice": 5,
+          "snack": ""
+        },
+        {
+          "label": "A11 Police-交通",
+          "headcount": 3,
+          "rice": 3,
+          "snack": ""
+        },
+        {
+          "label": "A12 Police-鑑證",
+          "headcount": 5,
+          "rice": 5,
+          "snack": ""
+        },
+        {
+          "label": "B1 青年聯會",
+          "headcount": 4,
+          "rice": 3,
+          "snack": ""
+        },
+        {
+          "label": "B2 箭會",
+          "headcount": 5,
+          "rice": 5,
+          "snack": ""
+        },
+        {
+          "label": "B3 VentureC",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
+        },
+        {
+          "label": "C1 槍會",
+          "headcount": 4,
+          "rice": "-",
+          "snack": ""
+        },
+        {
+          "label": "C2 Air",
+          "headcount": 7,
+          "rice": 7,
+          "snack": ""
+        },
+        {
+          "label": "C3 航天學會",
+          "headcount": 14,
+          "rice": 14,
+          "snack": ""
+        },
+        {
+          "label": "C4 無人機",
+          "headcount": 19,
+          "rice": "-",
+          "snack": 18
+        },
+        {
+          "label": "D4 WCH-社參 1",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
+        },
+        {
+          "label": "D5 WCH-社參 2",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
+        },
+        {
+          "label": "E1 VIC-精神健康",
+          "headcount": 5,
+          "rice": 5,
+          "snack": ""
+        },
+        {
+          "label": "E2 VIC-公共衛生",
+          "headcount": 5,
+          "rice": 5,
+          "snack": ""
+        },
+        {
+          "label": "E3 Listening Ear",
+          "headcount": 2,
+          "rice": 2,
+          "snack": ""
+        },
+        {
+          "label": "F1 生態",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
+        },
+        {
+          "label": "F2 章會",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
+        },
+        {
+          "label": "F3 天文會",
+          "headcount": 6,
+          "rice": "-",
+          "snack": ""
+        },
+        {
+          "label": "F4 先鋒會",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
+        },
+        {
+          "label": "F5 Band",
+          "headcount": 30,
+          "rice": 29,
+          "snack": ""
+        },
+        {
+          "label": "F6 皮會",
+          "headcount": 6,
+          "rice": 6,
+          "snack": ""
         }
       ],
-      "common_answers": [
-        {
-          "question": "我是攤位工作人員，怎樣找回自己的位置和工作？",
-          "answer": "用攤位編號、編更代號、名稱或所屬機構搜尋本站；頁面會列出分區、活動內容、活動時段和開站／轉換／求助步驟。共用 PIN 不會按姓名辨認身份，因此不公開按人名查詢。"
-        },
-        {
-          "question": "旅團來到時應怎樣指路？",
-          "answer": "旅團由東閘入場，前往有蓋操場報到處領物資／餐盒，之後前往 A–F 攤位活動區；10:45 依指示到大操場集合。"
-        },
-        {
-          "question": "嘉賓、優異旅團或步操隊伍問路怎樣回答？",
-          "answer": "使用「全日程序及交接」及「場地、攤位及遊戲」內的動線資料；不確定時轉交有關接待／典禮崗位，不自行猜測。"
-        },
-        {
-          "question": "有人問餐盒、失物或查詢處在哪裡？",
-          "answer": "餐盒派發／用膳區：有蓋操場；失物認領：拾獲／遺失兩向登記＋認領；查詢：2835 7712（助理執行幹事何家耀先生）。"
-        },
-        {
-          "question": "有人受傷、感到不適或發生突發情況怎樣做？",
-          "answer": "先保障安全及避免風險擴大；即時通知當值總主任／指揮中心，並把不適者交由 香港聖約翰救傷隊急救站（有蓋操場側） 處理。未獲授權不可向外發言。"
-        }
-      ],
-      "facilities": [
-        {
-          "icon": "🚻",
-          "question": "洗手間在哪裡？",
-          "answer": "有蓋操場側・莫榮大樓地下"
-        },
-        {
-          "icon": "⛑️",
-          "question": "急救站在哪裡？",
-          "answer": "有蓋操場側（香港聖約翰救傷隊）"
-        },
-        {
-          "icon": "🔍",
-          "question": "失物認領處在哪裡？",
-          "answer": "有蓋操場報到處旁"
-        },
-        {
-          "icon": "🚰",
-          "question": "飲水站在哪裡？",
-          "answer": "大操場側・攤位 C 區旁"
-        },
-        {
-          "icon": "☎️",
-          "question": "大會查詢處在哪裡？",
-          "answer": "東閘入口旁"
-        },
-        {
-          "icon": "🍱",
-          "question": "餐盒派發／用膳區在哪裡？",
-          "answer": "有蓋操場"
-        },
-        {
-          "icon": "🚌",
-          "question": "穿梭巴士站在哪裡？",
-          "answer": "東閘對出（往返海洋公園停車場）"
-        },
-        {
-          "icon": "🅿️",
-          "question": "持證車輛停車場在哪裡？",
-          "answer": "學院內指定車位（須持泊車證）"
-        }
-      ]
+      "ceremony": {
+        "adult_awards": [
+          {
+            "award": "總監委任書（覆誓 + 委任書）",
+            "recipient_count": 7
+          },
+          {
+            "award": "10 年長期服務獎狀（獎狀）",
+            "recipient_count": 7
+          },
+          {
+            "award": "長期服務獎章（獎章）",
+            "recipient_count": 3
+          },
+          {
+            "award": "長期服務一星獎章（獎章）",
+            "recipient_count": 1
+          },
+          {
+            "award": "長期服務三星獎章（獎章）",
+            "recipient_count": 1
+          },
+          {
+            "award": "致送協助單位紀念品（感謝狀）",
+            "recipient_count": 2
+          }
+        ],
+        "merit_award_count": 0
+      }
     },
     "event_day_snapshot": {
       "event_name": "2027 港島童軍繽紛日",
@@ -26640,7 +26334,7 @@
       ],
       "staff_start_checklist": [
         "到指定工作人員集合／報到位置報到，確認所屬組別及崗位。",
-        "先用「工作崗位及即時指引」找回崗位，再查看場地及動線，確認所在位置及下一個交接點。",
+        "按本手冊分類查閱場地、程序及所需資料，確認所在位置及下一個交接點。",
         "按本組工作指引執行；遇到未列情況，向所屬總主任或指揮中心回報。",
         "任何事故先保障安全；依「安全及應變」程序處理，未獲授權不得對外發言。"
       ]
@@ -26648,84 +26342,57 @@
     "sections": [
       {
         "id": "overview",
-        "title": "工作崗位及即時指引",
-        "icon": "fa-person-circle-question",
-        "audience": "所有工作人員",
-        "source": [
-          "activities.booths",
-          "staff.event_staff_roster",
-          "public_channel_2027"
-        ],
-        "description": "用攤位編號、編更代號、名稱或工作類別，找出位置、工作內容、時段、求助方法及可回答的常見問題。"
-      },
-      {
-        "id": "venue",
-        "title": "場地、攤位及動線",
-        "icon": "fa-map-location-dot",
-        "audience": "所有工作人員",
-        "source": [
-          "activities.maps",
-          "activities.booths",
-          "activities.gameCards"
-        ],
-        "description": "警察學院場地圖、旅團及嘉賓動線、攤位總表和遊戲卡。"
+        "title": "手冊目錄及資料說明",
+        "icon": "fa-book-open",
+        "description": "本手冊按活動資料類別編排，工作人員可按需要自行查閱。"
       },
       {
         "id": "programme",
-        "title": "典禮及全日程序",
+        "title": "全日程序及交接",
         "icon": "fa-clock",
-        "audience": "所有工作人員",
-        "source": [
-          "schedule",
-          "ceremony"
-        ],
-        "description": "按時間排序的活動日程序；典禮組另可使用 rundown、檢閱路線及司儀稿。"
+        "description": "跨組的完整時間線、位置、環節及適用資料。"
       },
       {
-        "id": "checkin_logistics",
-        "title": "報到、膳食及後勤",
+        "id": "activities",
+        "title": "場地、攤位、遊戲及動線",
+        "icon": "fa-map-location-dot",
+        "description": "場地圖、A–F 攤位總表、活動內容及遊戲卡。"
+      },
+      {
+        "id": "logistics",
+        "title": "報到、服務點、膳食及後勤",
         "icon": "fa-clipboard-check",
-        "audience": "所有工作人員",
-        "source": [
-          "participants",
-          "troop_checkin",
-          "meal_logistics",
-          "meal_menu"
-        ],
-        "description": "旅團報到、餐盒、工作人員膳食及現場後勤參考。"
+        "description": "旅團／嘉賓動線、報到、服務點、餐單、派發及後勤資料。"
       },
       {
-        "id": "safety",
+        "id": "ceremony",
+        "title": "典禮、會操及司儀資料",
+        "icon": "fa-crown",
+        "description": "典禮程序、檢閱路線、rundown 與司儀稿。"
+      },
+      {
+        "id": "records",
+        "title": "旅團、膳食及編更資料",
+        "icon": "fa-table-list",
+        "description": "非私人版本的旅團、餐盒、攤位編更及獎勵資料。"
+      },
+      {
+        "id": "staff",
+        "title": "各組職責及工作資料",
+        "icon": "fa-people-group",
+        "description": "各組及職位職責；個人姓名以外的工作資料完整保留。"
+      },
+      {
+        "id": "crisis",
         "title": "安全及應變",
         "icon": "fa-triangle-exclamation",
-        "audience": "所有工作人員",
-        "source": [
-          "crisis"
-        ],
-        "description": "危機定義、即時回報、集合及對外發言規則。"
-      },
-      {
-        "id": "teams",
-        "title": "各類工作指引",
-        "icon": "fa-people-group",
-        "audience": "所有工作人員",
-        "source": [
-          "staff.job_duties",
-          "public_channel_2027"
-        ],
-        "description": "攤位、報到、典禮、嘉賓、後勤及安全工作應怎樣找資料和處理；只遮蔽個人私隱。"
+        "description": "危機定義、即時行動、回報、集合及對外發言資料。"
       },
       {
         "id": "documents",
-        "title": "通告及必讀文件",
+        "title": "通告、指引及活動日文件",
         "icon": "fa-folder-open",
-        "audience": "所有工作人員",
-        "source": [
-          "notices",
-          "unit_guide",
-          "documents"
-        ],
-        "description": "活動當日所需的通告、旅團須知和指引；籌備及敏感文件按角色權限限制。"
+        "description": "2027 擁有版本的場地、遊戲、典禮、安全及工作指引文件。"
       }
     ],
     "venue_assets": [
@@ -27328,57 +26995,57 @@
     "group_playbook": [
       {
         "group": "顧問團",
-        "duty": "顧問（黃偉安、何家騏）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。",
+        "duty": "顧問（〔姓名已遮蔽〕、〔姓名已遮蔽〕）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "主席",
-        "duty": "主席（朱家聰）：\n1. 主持籌備委員會所有會議；\n2. 負責統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察及協調各副主席及各組的工作進度使之順利完成；\n4. 編訂及策劃大會節目程序；及\n5. 建議及邀請繽紛日主禮嘉賓／主禮人。",
+        "duty": "主席（〔姓名已遮蔽〕）：\n1. 主持籌備委員會所有會議；\n2. 負責統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察及協調各副主席及各組的工作進度使之順利完成；\n4. 編訂及策劃大會節目程序；及\n5. 建議及邀請繽紛日主禮嘉賓／主禮人。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "主席",
-        "duty": "執行副主席（袁可秀）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 主席不能履行職務時將代理其職務；\n4. 策劃及執行已編訂的大會節目程序；及\n5. 協助主席及執行其分配的工作。",
+        "duty": "執行副主席（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 主席不能履行職務時將代理其職務；\n4. 策劃及執行已編訂的大會節目程序；及\n5. 協助主席及執行其分配的工作。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "行政組",
-        "duty": "副主席（行政）（徐嘉皓）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日行政、財政及常務等事宜；\n3. 設立及管理指揮中心；\n4. 制訂行政組財政預算；及\n5. 協助主席及執行其分配的工作。\n\n總主任（行政）（莫穎民）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作，如行政、旅團報到、紀念品、財政、危機處理及工作人員統籌等事宜；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n行政主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日行政工作：撰寫籌備委員會會議紀錄；活動日維持詢問處和失物認領處的運作；跟進參加旅團的一般事宜；\n3. 協助指揮中心運作；\n4. 統籌行政組內的物資安排；及\n5. 協助總主任（行政）及執行其分配的工作。\n\n旅團報到主任（陳銘彥）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日旅團報到工作：制訂活動報名表及報名程序；制訂繽紛日參加者報到程序；跟進參加旅團的報名和報到事宜；\n3. 活動日維持旅團報到處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n紀念品主任（何仲康）：\n1. 參與籌備委員會會議並提供意見；\n2. 安排紀念品（包括紀念章）的包裝及分發事宜；\n3. 協助總主任（行政）及執行其分配的工作。\n\n參事主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日工作人員傳訊事宜：編制工作人員手冊；編制工作人員感謝狀；分發工作人員紀念品；活動日對講機分配；\n3. 協助總主任（行政）及執行其分配的工作。\n\n財務主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及處理繽紛日財政事宜：收集及綜合各組之財政預算；協調及控制各小組財政收支平衡；制訂財政指引及會計程序；處理財政結算工作及草擬財政報告；\n3. 協助總主任（行政）及執行其分配的工作。\n\n危機處理主任（何家騏）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂繽紛日危機處理手冊；\n3. 執行危機處理及應變程序；\n4. 協助副地域總監（活動與訓練）、主席、副主席（行政）主持危機小組會議及工作；及\n5. 協助總主任（行政）及執行其分配的工作。",
+        "duty": "副主席（行政）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日行政、財政及常務等事宜；\n3. 設立及管理指揮中心；\n4. 制訂行政組財政預算；及\n5. 協助主席及執行其分配的工作。\n\n總主任（行政）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作，如行政、旅團報到、紀念品、財政、危機處理及工作人員統籌等事宜；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n行政主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日行政工作：撰寫籌備委員會會議紀錄；活動日維持詢問處和失物認領處的運作；跟進參加旅團的一般事宜；\n3. 協助指揮中心運作；\n4. 統籌行政組內的物資安排；及\n5. 協助總主任（行政）及執行其分配的工作。\n\n旅團報到主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日旅團報到工作：制訂活動報名表及報名程序；制訂繽紛日參加者報到程序；跟進參加旅團的報名和報到事宜；\n3. 活動日維持旅團報到處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n紀念品主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 安排紀念品（包括紀念章）的包裝及分發事宜；\n3. 協助總主任（行政）及執行其分配的工作。\n\n參事主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日工作人員傳訊事宜：編制工作人員手冊；編制工作人員感謝狀；分發工作人員紀念品；活動日對講機分配；\n3. 協助總主任（行政）及執行其分配的工作。\n\n財務主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及處理繽紛日財政事宜：收集及綜合各組之財政預算；協調及控制各小組財政收支平衡；制訂財政指引及會計程序；處理財政結算工作及草擬財政報告；\n3. 協助總主任（行政）及執行其分配的工作。\n\n危機處理主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂繽紛日危機處理手冊；\n3. 執行危機處理及應變程序；\n4. 協助副地域總監（活動與訓練）、主席、副主席（行政）主持危機小組會議及工作；及\n5. 協助總主任（行政）及執行其分配的工作。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "會操及典禮組",
-        "duty": "副主席（會操及典禮）（張佳良）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌會操、優異旅團及各項嘉許獎勵頒授典禮事宜；\n3. 制訂會操及典禮組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（會操）（梁文澧）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日會操事宜：負責草擬會操之內容及程序；建議及邀請會操之工作人員；草擬步操組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n步操統籌主任：\n1. 參與籌備委員會會議並提供意見；\n2. 推行會操流程及安排事宜；及\n3. 協助總主任（會操）及執行其分配的工作。\n\n司令員：待定\n\n會操顧問（黃志樂）：待定\n\n總主任（典禮）（李懷恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日典禮事宜：負責草擬典禮之內容及程序；建議及邀請典禮之工作人員；草擬典禮組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n典禮統籌主任（黃凱琳）：待定\n優異旅團統籌主任（林雋逸）：待定\n獎勵統籌主任（馮玉成）：待定\n司儀統籌主任（范紫晴、林卓衡）：待定",
+        "duty": "副主席（會操及典禮）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌會操、優異旅團及各項嘉許獎勵頒授典禮事宜；\n3. 制訂會操及典禮組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（會操）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日會操事宜：負責草擬會操之內容及程序；建議及邀請會操之工作人員；草擬步操組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n步操統籌主任：\n1. 參與籌備委員會會議並提供意見；\n2. 推行會操流程及安排事宜；及\n3. 協助總主任（會操）及執行其分配的工作。\n\n司令員：待定\n\n會操顧問（〔姓名已遮蔽〕）：待定\n\n總主任（典禮）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日典禮事宜：負責草擬典禮之內容及程序；建議及邀請典禮之工作人員；草擬典禮組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n典禮統籌主任（〔姓名已遮蔽〕）：待定\n優異旅團統籌主任（〔姓名已遮蔽〕）：待定\n獎勵統籌主任（〔姓名已遮蔽〕）：待定\n司儀統籌主任（〔姓名已遮蔽〕、〔姓名已遮蔽〕）：待定",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "主題節目組",
-        "duty": "副主席（主題節目）（周恒晉）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席設計、組織、推行繽紛日主題節目活動；\n3. 制訂主題節目組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（主題節目）（仇紹謙）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行主題節目活動；及\n3. 協助副主席（主題節目）及執行其分配的工作。\n\n節目主任（何令勤、陳鋑羲、張宏剛、羅卓華、李庭甄）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日主題節目活動事宜；\n3. 構思及設計配合主題節目之遊戲禮物；及\n4. 協助總主任（主題節目）及執行其分配的工作。",
+        "duty": "副主席（主題節目）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席設計、組織、推行繽紛日主題節目活動；\n3. 制訂主題節目組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（主題節目）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行主題節目活動；及\n3. 協助副主席（主題節目）及執行其分配的工作。\n\n節目主任（〔姓名已遮蔽〕、〔姓名已遮蔽〕、〔姓名已遮蔽〕、〔姓名已遮蔽〕、〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日主題節目活動事宜；\n3. 構思及設計配合主題節目之遊戲禮物；及\n4. 協助總主任（主題節目）及執行其分配的工作。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "協調組",
-        "duty": "副主席（協調）（羅添駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日膳食、秩序、交通、衛生、場地佈置及協調、物資等事宜；\n3. 制訂協調組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（協調）（鍾偉志、黃嘉恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（協調）推行繽紛日秩序、交通、膳食、衛生、場地佈置及物資設備等事宜；及\n3. 協助副主席（協調）及執行其分配的工作。\n\n膳食主任（吳卓藍）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日膳食提供意見；\n3. 協調及統籌繽紛日膳食事宜：編排旅團及工作人員用餐時段；印製參加旅團餐券；派發工作人員膳食或餐券；安排嘉賓之茶點及飲品；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n秩序主任（布瀚文）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之秩序及人流管理提供意見；\n3. 協調及統籌繽紛日保安及秩序事宜：場地秩序及人流管理；確保典禮進行期間各嘉賓及參加者遵守大會程序；安排適當場地指示配合整個活動進行；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（交通管制）（鄺逸俊）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之交通管理提供意見；\n3. 協調及統籌繽紛日交通管理事宜：場內嘉賓及工作人員車輛管制；安排適當場地交通指示；協調參加者及嘉賓往返場地交通安排；管理停車場進出管制儀器（如電子泊車咭）；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n後勤主任（郭慧敏）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日後勤支援服務提供意見；\n3. 協調及統籌繽紛日後勤支援事宜；\n4. 監察及確保衛生服務承辦商妥善清理洗手間及垃圾；及\n5. 協助總主任（協調）及執行其分配的工作。\n\n場地佈置主任（馬一波）：\n1. 參與籌備委員會會議並提供意見；\n2. 與各個組別協調，就繽紛日場地佈置提供意見；\n3. 協調及統籌繽紛日場地佈置事宜：場地佈置（包括場地指示製作）；音響、燈光佈置；監察及確保場地佈置承辦商妥善清理及還原場地；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（物流）（李思諭、袁宇靖）：待定\n物資主任（施珍淇）：待定",
+        "duty": "副主席（協調）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日膳食、秩序、交通、衛生、場地佈置及協調、物資等事宜；\n3. 制訂協調組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（協調）（〔姓名已遮蔽〕、〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（協調）推行繽紛日秩序、交通、膳食、衛生、場地佈置及物資設備等事宜；及\n3. 協助副主席（協調）及執行其分配的工作。\n\n膳食主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日膳食提供意見；\n3. 協調及統籌繽紛日膳食事宜：編排旅團及工作人員用餐時段；印製參加旅團餐券；派發工作人員膳食或餐券；安排嘉賓之茶點及飲品；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n秩序主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之秩序及人流管理提供意見；\n3. 協調及統籌繽紛日保安及秩序事宜：場地秩序及人流管理；確保典禮進行期間各嘉賓及參加者遵守大會程序；安排適當場地指示配合整個活動進行；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（交通管制）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之交通管理提供意見；\n3. 協調及統籌繽紛日交通管理事宜：場內嘉賓及工作人員車輛管制；安排適當場地交通指示；協調參加者及嘉賓往返場地交通安排；管理停車場進出管制儀器（如電子泊車咭）；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n後勤主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日後勤支援服務提供意見；\n3. 協調及統籌繽紛日後勤支援事宜；\n4. 監察及確保衛生服務承辦商妥善清理洗手間及垃圾；及\n5. 協助總主任（協調）及執行其分配的工作。\n\n場地佈置主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 與各個組別協調，就繽紛日場地佈置提供意見；\n3. 協調及統籌繽紛日場地佈置事宜：場地佈置（包括場地指示製作）；音響、燈光佈置；監察及確保場地佈置承辦商妥善清理及還原場地；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（物流）（〔姓名已遮蔽〕、〔姓名已遮蔽〕）：待定\n物資主任（〔姓名已遮蔽〕）：待定",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "服務及發展組",
-        "duty": "副主席（服務及發展）（黎姵伶）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日服務、成員招募及拓展等事宜，並聯絡各志願機構及持份者；\n3. 制訂服務組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（服務及發展）（李卓琪）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（服務及發展）統籌繽紛日服務及聯絡各志願機構及持份者事宜；\n3. 構思及制訂服務項目及執行策略；及\n4. 協助副主席（服務及發展）及執行其分配的工作。\n\n服務主任（郭成威）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日服務及聯絡各志願機構及持份者；及\n3. 協助總主任（服務及發展）及執行其分配的工作。\n\n發展主任：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日的成員招募及拓展、持份者參與策略；及\n3. 協助總主任（服務及發展）及執行其分配的工作。",
+        "duty": "副主席（服務及發展）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日服務、成員招募及拓展等事宜，並聯絡各志願機構及持份者；\n3. 制訂服務組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（服務及發展）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（服務及發展）統籌繽紛日服務及聯絡各志願機構及持份者事宜；\n3. 構思及制訂服務項目及執行策略；及\n4. 協助副主席（服務及發展）及執行其分配的工作。\n\n服務主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日服務及聯絡各志願機構及持份者；及\n3. 協助總主任（服務及發展）及執行其分配的工作。\n\n發展主任：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日的成員招募及拓展、持份者參與策略；及\n3. 協助總主任（服務及發展）及執行其分配的工作。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "品牌推廣組",
-        "duty": "副主席（品牌推廣）（何嘉駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日品牌推廣、宣傳及設計相關事宜；\n3. 制訂品牌推廣組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（宣傳）（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（品牌推廣）統籌繽紛日宣傳及推廣事宜；\n3. 構思及制訂宣傳及推廣策略；及\n4. 協助副主席（品牌推廣）及執行其分配的工作。\n\n設計主任：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂及推行繽紛日宣傳工作：設計繽紛日標誌和各項宣傳品（包括紀念章）及製作；撰寫文章向地域季刊及香港童軍月刊投稿；撰寫文章及準備材料以供港島童軍面書專頁（Facebook Page）及 Instagram 專頁等平台發布；及\n3. 協助總主任（品牌推廣）及執行其分配的工作。\n\n宣傳主任（待定）：待定\n社交媒體主任（陳鈞翰）：待定\n攝影／攝錄主任：\n1. 參與籌備委員會會議並提供意見；\n2. 就宣傳及活動日當日的攝錄安排提供意見；\n3. 協調攝影師在活動日攝錄事宜；及\n4. 協助總主任（品牌推廣）及執行其分配的工作。",
+        "duty": "副主席（品牌推廣）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日品牌推廣、宣傳及設計相關事宜；\n3. 制訂品牌推廣組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（宣傳）（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（品牌推廣）統籌繽紛日宣傳及推廣事宜；\n3. 構思及制訂宣傳及推廣策略；及\n4. 協助副主席（品牌推廣）及執行其分配的工作。\n\n設計主任：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂及推行繽紛日宣傳工作：設計繽紛日標誌和各項宣傳品（包括紀念章）及製作；撰寫文章向地域季刊及香港童軍月刊投稿；撰寫文章及準備材料以供港島童軍面書專頁（Facebook Page）及 Instagram 專頁等平台發布；及\n3. 協助總主任（品牌推廣）及執行其分配的工作。\n\n宣傳主任（待定）：待定\n社交媒體主任（陳鈞翰）：待定\n攝影／攝錄主任：\n1. 參與籌備委員會會議並提供意見；\n2. 就宣傳及活動日當日的攝錄安排提供意見；\n3. 協調攝影師在活動日攝錄事宜；及\n4. 協助總主任（品牌推廣）及執行其分配的工作。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "嘉賓接待組",
-        "duty": "副主席（嘉賓接待）（曾麗珊）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌嘉賓接待及支援相關事宜；\n3. 制訂嘉賓接待組的財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（嘉賓接待）（張嘉政）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（嘉賓接待）及執行其分配的工作。\n\n嘉賓接待及交通主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通及接待報到；\n3. 安排在頒獎典禮前的場內參觀；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n嘉賓支援主任（朱浩銘）：\n1. 參與籌備委員會會議並提供意見；\n2. 在頒獎典禮及會操進行期間協助嘉賓席相關事宜；\n3. 安排在頒獎典禮前及會操後的輕便茶點；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。",
+        "duty": "副主席（嘉賓接待）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌嘉賓接待及支援相關事宜；\n3. 制訂嘉賓接待組的財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（嘉賓接待）（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（嘉賓接待）及執行其分配的工作。\n\n嘉賓接待及交通主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通及接待報到；\n3. 安排在頒獎典禮前的場內參觀；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n嘉賓支援主任（〔姓名已遮蔽〕）：\n1. 參與籌備委員會會議並提供意見；\n2. 在頒獎典禮及會操進行期間協助嘉賓席相關事宜；\n3. 安排在頒獎典禮前及會操後的輕便茶點；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "group": "秘書處",
-        "duty": "秘書處（譚健祥、何家耀、陸詠德、鄧倩姸、曾凱瑩）：\n1. 參與籌備委員會會議；\n2. 會議前準備工作；\n3. 發出及處理所有與政府部門及相關機構的往來書信；\n4. 處理所有報名工作；\n5. 稽查各組的財務；\n6. 支援各組的行政工作；及\n7. 協助主席及執行其分配的工作。\n\n指揮中心（活動日）成員：主席、各副主席、行政主任、危機處理主任、秘書處主管。\n\n危機應變小組成員：主席、副地域總監（活動與訓練）、助理地域總監（活動）、各副主席、危機處理主任、秘書處主管。",
+        "duty": "秘書處（〔姓名已遮蔽〕、〔姓名已遮蔽〕、陸詠德、鄧倩姸、曾凱瑩）：\n1. 參與籌備委員會會議；\n2. 會議前準備工作；\n3. 發出及處理所有與政府部門及相關機構的往來書信；\n4. 處理所有報名工作；\n5. 稽查各組的財務；\n6. 支援各組的行政工作；及\n7. 協助主席及執行其分配的工作。\n\n指揮中心（活動日）成員：主席、各副主席、行政主任、危機處理主任、秘書處主管。\n\n危機應變小組成員：主席、副地域總監（活動與訓練）、助理地域總監（活動）、各副主席、危機處理主任、秘書處主管。",
         "status": "2027_reference_seed_pending_2027_confirmation"
       }
     ],
@@ -27430,10 +27097,10 @@
   "mock_demo_source": {
     "source_event_id": "isd_2027",
     "source_read_model": "data/isd_2027.json",
-    "source_sha256": "7ca09326ddc523d4a11087e925ca63e767f5da5c23d0266559e300ef4e242f39",
+    "source_sha256": "222b76b60f3ca0a81b26a8b265c8d87be0ffbc6242f3d3d4d2a61a307887a6e1",
     "builder": "tools/build_mock_demo_from_2027.js",
     "policy": "This rehearsal product is rebuilt only from the independent 2027 source. 2026 is immutable provenance only and is never read at runtime.",
-    "rebuilt_at": "2026-10-06T03:16:38.635Z"
+    "rebuilt_at": "2026-10-06T03:28:54.344Z"
   },
   "link_registry": {
     "generated_at": "2026-10-06",
