@@ -531,7 +531,7 @@ const ROSTER_LIST_DEFS=[
     exec_location:'執行手冊 → 代訂餐盒名單（工作人員膳食）', dept_tab:'coord_meal_staff',
     tick_label:'派發', tick_hint:'派發工作人員午膳／餐盒時逐人 TICK（已派）；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'',
-    source:'staff_meals_2026', editable:false, required:'name', group_field:'group', sort_fields:['group','name','booth','meal'],
+    source:'staff_meals', editable:false, required:'name', group_field:'group', sort_fields:['group','name','booth','meal'],
     total_fields:[],
     columns:[
       {k:'group',label:'組別',type:'text'},

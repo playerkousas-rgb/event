@@ -1,0 +1,5 @@
+# Preserve event artwork and generated copies as binary payloads.
+*.pdf binary
+*.xlsx binary
+*.xls binary
+*.docx binary

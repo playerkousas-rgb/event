@@ -1,52 +1,90 @@
-# 2027 資料單一來源規則（現階段：MOCK 預製）
+# ISD 2027 單一資料來源規則
 
-## 狀態與界線
+> **狀態：2027 籌備系統已啟用。** 這份規則取代「每次由 2026 重建 MOCK」的舊做法。
 
-- `data/isd_2026.json` 是 **2026 活動日前的封存參考檔**。其 SHA-256 由 `data/2026_reference_lock.json` 鎖定，並已核對為 GitHub commit `1c333862`（2026-10-03 14:24 HKT）的完全相同版本；不可作日常修正、匯入或同步目標。
-- 現有工作範圍仍是 **MOCK 示範版**。因此可更新的預製成品是 `data/mock_demo.json`，不是正式的 `data/isd_2027.json`。
-- `data/isd_2027.json` 在獲正式批准開啟 2027 活動前，維持不動。不要以「先填少少」方式同時維護它和 MOCK，否則立即再次出現兩套版本。
+## 不可跨越的界線
 
-## 唯一資料流
+- `data/isd_2026.json` 是 **2026 活動日前的封存參考檔**。它受 `data/2026_reference_lock.json` 的 SHA-256 和 GitHub pre-event provenance 保護；不可編輯、不可作同步目標、不可被 2027 日常 builder 讀取。
+- 已於 2026-10-06 完成一次受控種籽遷移。遷移來源 hash 只保留在 2027 的 provenance 欄位作審計用途，**不是 live link**。
+- 所有供 2027 使用的資料、文件快照、名單、工作流程和其後更改，都在 **ISD 2027** Drive root（`1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q`）或 2027 frontend → 2027 backend 的受控路徑完成。
+- 2027 backend 必須使用獨立的 `ISD2027_GAS_URL` / `ISD2027_APIKEY`、2027 Main Sheet 和 `2027 Audit_Log`；它必須拒絕 `event_id=isd_2026` 的寫入。現時 endpoint 尚待部署，故不可把 2026 endpoint 當作 2027 frontend 的儲存位置。
 
+## 現行資料鏈（只向前）
+
+```text
+2026 archive (immutable provenance only)
+  └─ one controlled bootstrap already completed
+
+ISD 2027 Drive — canonical controlled sources
+  ├─ 00_系統及資料 / ISD 2027－資料主索引.json
+  ├─ 01_報名 / ISD 2027－報名及旅團資料.json
+  ├─ 02_通知書 / ISD 2027－通告及公眾資訊.json
+  ├─ 03_名單 / ISD 2027－人員、嘉賓及典禮名單.json
+  ├─ 04_場地 / ISD 2027－場地、攤位及泊車資料.json
+  ├─ 05_程序 / ISD 2027－日程及會議資料.json
+  ├─ 06_後勤 / ISD 2027－後勤、安全及財務資料.json
+  └─ 07_參考快照（唯讀） / one-time independent reference copies
+        │
+        ▼ approved 2027 import / publish
+repo read model: data/isd_2027.json
+        │ tools/build_pc2027_demo.js (2027 data only)
+        ▼
+data/mock_demo.json — selectable role-based 2027 rehearsal product
+        │
+        ├─ public / participant / group / guest journeys
+        ├─ ordinary staff PIN `2027` (2027 public execution-manual view only)
+        └─ committee / administrator accounts (existing account-and-password model)
 ```
-2026 封存參考資料（只讀；checksum 驗證）
-  data/isd_2026.json + data/2026_reference_lock.json
-          │  tools/fill_mock_demo_from_2026.js
-          │  tools/build_pc2027_demo.js
-          ▼
-2027 MOCK 預製成品（可重建）
-  data/mock_demo.json
-          │
-          ├─ 公眾／工作人員示範介面
-          └─ tools/schema/templates_2027.js
-                   │  tools/build_2027_templates.js
-                   ▼
-     空白可填範本 + 2026 填寫示例 + template_contract_2027.json
+
+`data/isd_2027.json` is the reviewed **read model** committed with the application, not a second hand-edited source. `data/mock_demo.json` is its renderable rehearsal product, not a department-owned dataset. The live controlled records remain in the Drive domains above; changes require the 2027 importer/publish step or the 2027 frontend/backend flow.
+
+## Drive layout and ownership
+
+| Drive folder | Canonical domain | Primary owners | What it feeds |
+|---|---|---|---|
+| `01_報名` | public intakes, troop, meal and check-in records | 行政組／協調組 | participant lists, meal list, check-in |
+| `02_通知書` | notices, public content, unit guidance and file catalogue | 秘書處／行政組 | public pages and execution manual |
+| `03_名單` | role accounts, staff, guests and ceremony records | 秘書處／嘉賓接待／典禮組 | role views, restricted rosters, ceremony |
+| `04_場地` | venue, booths, supplies and parking | 行政組／協調組／主題節目組 | maps, booth list, logistics |
+| `05_程序` | public/internal programme and meetings | 行政組／典禮組 | programme and run-down |
+| `06_後勤` | catering, safety, finance, souvenirs | 協調組／行政組 | staff operations and statistics |
+| `07_參考快照（唯讀）` | independent copies of selected historical working materials | system custodians | planning reference only; never a live 2026 link |
+
+The root index carries the Drive file IDs and checksums of the seven controlled domain exports. A fact belongs to one domain only. Other pages and teams read its published record instead of copying it into another file.
+
+## Data status and roles
+
+The initial records are labelled `reference_seed_pending_2027_confirmation`: they are a useful 2027 rehearsal starting point, **not confirmation that the person, booking, venue, guest, date or operational decision is valid for 2027**. The responsible 2027 team replaces or confirms each record in place; the audit log records actor, timestamp and previous snapshot.
+
+Visibility is data based, not file-copy based:
+
+- **Public / participants / groups:** only published notices, programme, maps, public lists and their own intake/status data.
+- **Guests:** their own arrival, seating, meal and transport instructions; no other guest personal data.
+- **Ordinary staff:** PIN `2027`, 2027 public execution-manual data only; no personal/contact roster, finance or approval tools.
+- **Committee teams:** their group’s editable source records and operational outputs; confidential lists are restricted by group and level.
+- **Administrators:** controlled account setup, permissions, audit and publication; they do not create parallel copies.
+
+## Supported build and release commands
+
+```bash
+# One-time bootstrap only — do not run as an ordinary update path.
+node tools/bootstrap_2027_source.js
+
+# Rebuild 2027 public defaults, the rehearsal product and its link inventory.
+node tools/build_pc2027_demo.js
+node tools/build_mock_demo_from_2027.js
+node tools/build_link_registry.js
+
+# Produce the domain files to publish into the matching ISD 2027 Drive folders.
+node tools/export_2027_drive_sources.js
 ```
 
-- `tools/fill_mock_demo_from_2026.js` 及 `tools/build_pc2027_demo.js` 均會先驗證 2026 reference checksum，通過後才可讀取封存資料並重建 MOCK 產物。
-- `tools/schema/templates_2027.js` 是 2027 範本欄位、負責組、唯一鍵、流向和填寫規則的**唯一合約**。
-- `tools/build_2027_templates.js` 從同一份 schema 產生所有範本、示例、程式合約及說明；不可分別手改其中一份輸出。
-- 每個事實只可有一個「主表／主欄位」。跨組介面、統計、名單、場地圖和司儀稿都只讀其主表的產物，不能各自複製再改。
-- 先跑 `node tools/build_2027_templates.js --check`；它會阻止同一語意欄位同時出現在兩份範本，並驗證產物目標。
+`tools/fill_mock_demo_from_2026.js` remains only as a compatibility shim; it delegates to the 2027 builder and deliberately cannot read the 2026 archive. Never use it to start a new 2026-to-2027 copy.
 
-## 何時可以填寫正式 2027
+## Publication guardrails
 
-在獲批准開啟正式 2027 資料前，請只用 `templates/2027/blank/` 收集欄位建議或演練，**不要**把填寫結果回寫到 `data/isd_2027.json`。
-
-正式啟動時必須先一次過決定並實作以下項目，再讓任何組別填資料：
-
-1. 指定每份範本的唯一受控儲存位置（例如受管理的 Sheet／資料庫表），並將其對應 schema 的 `id`。
-2. 建立「受控來源 → 單一匯入器／API → 2027 資料產物」流程；APP 只讀該產物，不能從多個組別副本合併猜測。
-3. 每次更新帶來源、更新人、時間和版本；失敗時不覆蓋上一個已驗證版本。
-4. 在單一產物成功生成後，才向各組和公眾介面發佈；所有介面讀同一個版本號。
-
-> 注意：MOCK 模式的互動資料只存在當前瀏覽器，故它不是跨人員同步系統。它目前用來驗證欄位、流程和最終畫面；要做到正式跨組同步，須先按上述流程啟用一個受控後端來源。
-
-## 防止回寫 2026 的閘門
-
-- APP 對 `isd_2026` 的共用儲存函式均經 `isReferenceArchiveWriteBlocked()` 封鎖。
-- `tools/build_2026_freeze.py`、`tools/build_staff2026.py` 及 `scripts/import-2026.js` 不能在沒有明確 `--confirm-2026-archive-write` 的情況下寫入。
-- `tests/reference_archive_lock_test.js` 驗證 checksum、前端儲存閘門、舊工具確認字串，以及 2027 MOCK／schema 產物鏈。
-
-若發現 2026 檔內容不正確，這不是一般編輯工作：必須先找回獲授權的原始資料、審核差異，然後才可進行一次明確的復原和更新封存 checksum。
+1. Do not edit `data/isd_2026.json`, a 2026 Drive folder, or a 2026 Sheet to “fix” a 2027 display.
+2. Do not hand-edit `data/isd_2027.json` or `data/mock_demo.json`; edit the owned 2027 record through the controlled Drive/frontend flow, then publish a verified read model.
+3. Every 2027 write needs `updated_by`, `updated_at`, source domain and an audit entry. A failed build must retain the previous verified publication.
+4. Before public release, confirm reference-seed records for the relevant scope and apply the role visibility matrix.
+5. 2026 is retained only for traceable historical provenance. It is never mutated by this flow.

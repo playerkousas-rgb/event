@@ -115,9 +115,9 @@ Object.assign(ScoutEventApp.prototype,{
         return override.has(k)?Object.assign({_adultSeed:true},override.get(k)):r;
       });
       override.forEach((r,k)=>{ if(!seedKeys.has(k)) rows.push(r); });
-    } else if(def.source==='staff_meals_2026'){
+    } else if(def.source==='staff_meals'){
       // 2026 凍結工作人員名單（只讀）：走 GAS/JSON seed，唔經匯入
-      const seed=Array.isArray(this.eventData?.staff_meals_2026)?this.eventData.staff_meals_2026:[];
+      const seed=Array.isArray(this.eventData?.staff_meals)?this.eventData.staff_meals:[];
       rows=seed.map((e,i)=>({id:e.key||('sm'+i),key:e.key||('sm'+i),group:e.group||'',name:e.name||'',job_title:e.job_title||'',booth:e.booth||'',unit:e.unit||'',meal:e.meal||'',placeholder:!!e.placeholder}));
     } else {
       rows=(d.rows[key]||[]).map(r=>({...r}));

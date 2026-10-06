@@ -1,5 +1,8 @@
 # 2027 交接文件（HANDOVER）— 俾下一個 Agent
 
+> ## 已被現行資料規則取代（2026-10-06）
+> 本文件的早期「每次直接由 2026 填入 `mock_demo`」描述只作歷史交接參考，**不可再照做**。現行唯一規則及 Drive source mapping 見 [`2027_SOURCE_OF_TRUTH.md`](2027_SOURCE_OF_TRUTH.md)：2026 只可作封存 provenance，2027 一律在 ISD 2027 folder／2027 frontend flow 更新，再發佈到 read model 與 MOCK。
+
 > **你嘅任務**：令**所有參加者喺活動當日用手機睇到最新資訊**。
 > 階段 0–2 已完成（本文件講明現狀＋你嘅彈藥庫＋建議路線）。
 > 日期：2026-10-05｜repo：`playerkousas-rgb/event`｜branch：`arena/01a1066c-event` → 經 PR 合併入 `main`

@@ -4,6 +4,9 @@
 
 > 📖 **功能介紹及使用說明書**：見 [`docs/FEATURE_GUIDE.md`](docs/FEATURE_GUIDE.md)。APP 內亦提供「功能介紹」按鈕，不登入也可查看（三類卡片、各卡片功能、職級權限制度、可延展功能及 FAQ）。
 
+> ## 2027 現行資料規則（優先於下列歷史功能紀錄）
+> `data/isd_2026.json` 是不可變更的 2026 封存參考。2027 的受控來源在 **ISD 2027 Drive**（root `1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q`）：`data/isd_2027.json` 是經核對的 read model，`data/mock_demo.json` 是由它建立的角色式演練產品。**不可再由 2026 重建或修改 2027 資料。** 請先閱讀 [`docs/2027_SOURCE_OF_TRUTH.md`](docs/2027_SOURCE_OF_TRUTH.md)。
+
 ---
 
 ## ✨ 系統核心功能特色

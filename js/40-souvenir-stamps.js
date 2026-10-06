@@ -171,7 +171,7 @@ Object.assign(ScoutEventApp.prototype,{
     // 2026 凍結版工作人員名單（ISD2026 staff list ver2 (FROZEN).xlsx）——全組別、連 42 個「人選待定」佔位；
     // 有 booth／職務資料，放最前，同名時以凍結版為準
     try{
-      const seed=(this.eventData&&this.eventData.souvenirs&&this.eventData.souvenirs.staff_roster_2026)||[];
+      const seed=(this.eventData&&this.eventData.souvenirs&&this.eventData.souvenirs.staff_roster)||[];
       seed.forEach(c=>{
         if(!c) return;
         if(c.placeholder){

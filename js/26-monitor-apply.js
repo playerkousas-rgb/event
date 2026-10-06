@@ -590,7 +590,7 @@ Object.assign(ScoutEventApp.prototype,{
 
   /* 2026-10-04 各類餐食領取地點及供應時間（已定稿） */
   mealLogistics2026HTML(){
-    const items=(this.eventData?.meal_logistics_2026)||[
+    const items=(this.eventData?.meal_logistics)||[
       {label:'飯盒',place:'JPO 餐廳',time:'11:00',note:'旅團代訂餐盒（A/C 飯 + B/D 小食互通）'},
       {label:'小食餐盒',place:'JPO 餐廳',time:'12:00',note:'工作人員小食餐盒'},
       {label:'自助餐',place:'莫榮大樓',time:'12:30',note:'嘉賓／工作人員自助餐（莫榮大樓自助餐 司儀稿 V2）'}
@@ -629,8 +629,8 @@ Object.assign(ScoutEventApp.prototype,{
   },
 
   mealMenuHTML(){
-    const menu=this.eventData?.meal_menu_2026||[];
-    const dist=this.eventData?.meal_distribution_2026||{};
+    const menu=this.eventData?.meal_menu||[];
+    const dist=this.eventData?.meal_distribution||{};
     const line=(i)=>`${i.headcount!=null?i.headcount+' 人':''}${i.rice!=null?'｜飯 '+i.rice:''}${i.snack!=null?'｜小食 '+i.snack:''}`;
     return `
       ${this.mealLogistics2026HTML()}

@@ -1,32 +1,31 @@
 #!/usr/bin/env node
-/* build_pc2027_demo.js — 產生「公眾頻道 2027 形態示範」數據（寫入 data/mock_demo.json）
+/* build_pc2027_demo.js — 產生 2027 公眾頻道預設資料（寫入 2027 read model）
    ─────────────────────────────────────────────────────────────────────────────
-   階段 1（2026-10-04）：以 2026 真實資料示範 2027 公眾頻道最終形態。
-   ・ 攤位／參加旅團名單／優異旅團名單 → 直接由 data/isd_2026.json 抽取（公眾版剝離聯絡資料）
-   ・ 橫幅／交通／程序／須知分眾／求助 → 按 2026 實況（特別通告 12/26＋司儀稿 Rundown V5）整理
-   ・ 此檔案同時係「從尾追回源頭」嘅材料：成品形態 → 欄位 → 將來由八大報名表自動生成
+   這是 2027-owned builder：只讀 data/isd_2027.json，絕不讀 2026 archive。
+   2026 只曾在受控的一次性 bootstrap 中提供歷史種籽；其後所有變更必須
+   先在 ISD 2027 Drive 受控來源／2027 前端流程完成，再重建此 read model。
+
    用法：node tools/build_pc2027_demo.js
 */
 const fs = require('fs'), path = require('path');
-const {readReferenceArchive}=require('./reference_archive.js');
 const root = path.join(__dirname, '..');
-const {data:d26}=readReferenceArchive(root);
-const mock = JSON.parse(fs.readFileSync(path.join(root, 'data/mock_demo.json'), 'utf8'));
+const P2027 = path.join(root, 'data/isd_2027.json');
+const source = JSON.parse(fs.readFileSync(P2027, 'utf8'));
 
-/* ── 由 2026 JSON 抽取（公眾版：剝離聯絡電話／電郵） ── */
-const booths = ((d26.activities && d26.activities.booths) || []).map(b =>
+/* ── 由 2027 source snapshot 抽取（公眾版：剝離聯絡電話／電郵） ── */
+const booths = ((source.activities && source.activities.booths) || []).map(b =>
   [b.zone, b.booth_no, b.theme || '', b.group_name || '', b.booth_name || '', String(b.content || '').slice(0, 60)]);
-const participants = (d26.participants || []).map(p =>
+const participants = (source.participants || []).map(p =>
   [p.no, p.unit_name, p.area, +p.headcount || 0, +p.meal_boxes || 0, p.leader || '']);
 const meritByArea = {};
-((d26.ceremony && d26.ceremony.meritRoster) || []).forEach(r => {
+((source.ceremony && source.ceremony.meritRoster) || []).forEach(r => {
   (meritByArea[r.area] = meritByArea[r.area] || []).push(r.unit + '・' + r.section);
 });
 const meritTotal = Object.values(meritByArea).reduce((a, b) => a + b.length, 0);
 const totalHeadcount = participants.reduce((a, r) => a + r[3], 0);
 const totalMeals = participants.reduce((a, r) => a + r[4], 0);
 
-/* ── 示範內容（2026 實況整理／2027 形態） ── */
+/* ── 2027 source-owned public-channel defaults ── */
 const pc = {
   note: '模擬示範版專用卡片：確認形態後，呢套分頁將升格為 2027 正式公開頁，資料由八大報名表自動生成。',
   banner: {
@@ -58,7 +57,7 @@ const pc = {
     ],
     map_title: '場地指示圖',
     map_url: 'assets/ceremony/guest_map.png',
-    map_pdf: 'google_drive/附件2_參加旅團場地指示圖2026 v2.pdf'
+    map_pdf: 'google_drive/ISD 2027－參加旅團場地指示圖.pdf'
   },
   program: {
     now_time: '11:00',
@@ -79,10 +78,10 @@ const pc = {
       ['33 個攤位', 'A12・B3・C4・D5・E3・F6']
     ],
     list: booths,
-    game_card: 'assets/event-day/game-card-2026.pdf',
-    site_plan: 'assets/event-day/site-setup-plan-2026.pdf',
+    game_card: 'assets/event-day/game-card-2027.pdf',
+    site_plan: 'assets/event-day/site-setup-plan-2027.pdf',
     site_plan_label: '下載完整攤位遊戲地圖（PDF）',
-    map_note: '分區示意按 2026 攤位資料整理；當日實際位置及動線以大會發出的完整攤位遊戲地圖為準。',
+    map_note: '分區示意為 2027 參考種籽；當日實際位置及動線以 2027 場地組已發出的完整攤位遊戲地圖為準。',
     note: '※ 公眾版隱藏攤位負責人聯絡（登記負責人可見）。'
   },
   apply_forms: [
@@ -152,14 +151,14 @@ const pc = {
     lanes: [
       {
         id: 'staff', icon: '🦺', name: '普通工作人員', badge: '只需活動密碼',
-        desc: '冇帳戶都用得：打一次 4 位活動密碼，只可查閱已完結的 2026 公開執行手冊參考資料。',
+        desc: '冇帳戶都用得：打一次 4 位活動密碼，只可查閱 2027 工作人員公開執行手冊（唯讀）。',
         cta: '打密碼入 →',
-        can: ['2026 公開執行手冊（全部分頁・唯讀）'],
+        can: ['2027 公開執行手冊（全部分頁・唯讀）'],
         cannot: ['2027 公眾頻道／公告／申請中心／捐贈', '部門中心（各組成員／統計／文件）', '工作卡片（會議・物資・財務・膳食…）', '批核中心', '管理工具（開戶／權限／用戶管理）', '嘉賓名單及個人聯絡資料']
       },
       {
         id: 'committee', icon: '🎖️', name: '籌委／職員（有帳戶）', badge: '帳號＋密碼',
-        desc: '沿用 2026 現有帳戶及密碼模式登入；未有帳戶由總主任用現有「開戶」流程建立。',
+        desc: '沿用現有帳戶及密碼模式登入；未有帳戶由總主任用既有「開戶」流程在 2027 系統建立。',
         cta: '帳號密碼登入 →',
         can: ['工作人員公開資料（全部）', '部門中心（本組成員／職務／文件／統計）', '工作卡片（會議・物資・攤位・車輛・膳食・財務）', '批核中心（總主任以上）', '管理工具（開戶／權限／用戶管理，按職級）'],
         cannot: []
@@ -168,7 +167,7 @@ const pc = {
     pin_hint: '示範密碼：2027',
     pin_label: '普通工作人員・請輸入 4 位活動密碼',
     pin_user: { user_id: 'staff_pin', name: '工作人員', role: 'staff', group_name: '未分組' },
-    account_hint: '籌委帳戶沿用 2026 現有「開戶」流程：由總主任／管理員建立（帳號＝中文姓名，初始密碼 1234）'
+    account_hint: '籌委帳戶沿用既有「開戶」模式：由總主任／管理員在 2027 系統建立（帳號＝中文姓名，初始密碼 1234）'
   },
   /* ── 分眾入口：公眾（非工作人員）揀身份入嚟，各有各嘅版面組合（階段 1 形態） ──
      生產版：每類受眾一條專屬連結／QR（index.html?pub=troop 等），開門即見自己嘅版本 */
@@ -199,7 +198,7 @@ const pc = {
       { key: 'parade', label: '派隊人數（步操）', type: 'number' },
       { key: 'collect', label: '領取安排', type: 'select', options: ['證書（小童軍）', '彩帶（幼童軍／童軍／深資／樂行）'] }
     ] },
-    { id: 'guest', icon: '🎩', name: '嘉賓報名', target: '獲邀人士／秘書處代填', desc: '照 2026 嘉賓名單欄位直接照搬', prefix: 'G', summary: ['name', 'title'], fields: [
+    { id: 'guest', icon: '🎩', name: '嘉賓報名', target: '獲邀人士／秘書處代填', desc: '按 2027 嘉賓名單受控欄位填寫', prefix: 'G', summary: ['name', 'title'], fields: [
       { key: 'name', label: '姓名', type: 'text', required: true },
       { key: 'title', label: '職銜', type: 'text', required: true },
       { key: 'org', label: '機構', type: 'text' },
@@ -295,7 +294,7 @@ const pc = {
       { id: 'awardee_section', label: '支部最高獎勵獲獎人士場地圖', path: '04_場地/場地指示圖（公眾版）/06_支部最高獎勵獲獎人士' },
       { id: 'awardee_adult', label: '成人獎勵獲獎人士場地圖', path: '04_場地/場地指示圖（公眾版）/07_成人獎勵獲獎人士' }
     ] },
-    { group: 'seating', title: '典禮座位表（嘉賓席排位・2026 改到 V8）', items: [
+    { group: 'seating', title: '典禮座位表（嘉賓席排位・2027 受控版本）', items: [
       { id: 'guest_seating', label: '嘉賓席座位表', path: '04_場地/座位表' }
     ] }
   ],
@@ -664,7 +663,7 @@ const pc = {
       ['報到', '有蓋操場報到處（UG 專櫃）'],
       ['服裝', '自家整齊制服'],
       ['人數', '領隊於報到時核對出席人數'],
-      ['出席隊伍（2026）', '女童軍總會 17 人・紅十字會 17 人・聖約翰少青團 18 人'],
+      ['出席隊伍（2027 種籽）', '女童軍總會 17 人・紅十字會 17 人・聖約翰少青團 18 人'],
       ['觀禮', '大操場 UG 觀禮區']
     ],
     '支部最高獎勵得主': [
@@ -705,17 +704,17 @@ const pc = {
       stats: [participants.length + ' 旅團', totalHeadcount.toLocaleString() + ' 人', totalMeals + ' 餐盒'],
       cols: ['#', '旅團', '區會', '人數', '餐盒', '領隊'],
       rows: participants,
-      note: '※ 名單結果公開；領隊電話／電郵須登入後才可見。活動日此頁加「報到 ✓」點名欄。（示範・2026 資料）'
+      note: '※ 名單結果公開；領隊電話／電郵須登入後才可見。活動日此頁加「報到 ✓」點名欄。（2027 參考種籽・待負責組確認）'
     },
     merit: {
       total: meritTotal,
       byArea: meritByArea,
-      note: '（示範・2026 資料）'
+      note: '（2027 參考種籽・待負責組確認）'
     }
   }
 };
 
-mock.public_channel_2027 = pc;
-mock.data_version = '2026-10-04T00:00:00Z-demo-v4-public-channel';
-fs.writeFileSync(path.join(root, 'data/mock_demo.json'), JSON.stringify(mock, null, 2) + '\n');
-console.log('OK public_channel_2027 → mock_demo.json｜booths:' + booths.length + ' participants:' + participants.length + ' merit:' + meritTotal);
+source.public_channel_2027 = pc;
+source.data_version = '2027-drive-source-v1-public-channel';
+fs.writeFileSync(P2027, JSON.stringify(source, null, 2) + '\n');
+console.log('OK public_channel_2027 → data/isd_2027.json｜booths:' + booths.length + ' participants:' + participants.length + ' merit:' + meritTotal);

@@ -1,0 +1,130 @@
+{
+  "schema_version": "2027-drive-registry-v1",
+  "event_id": "isd_2027",
+  "canonical_root": {
+    "root_folder_id": "1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+    "root_folder_link": "https://drive.google.com/drive/folders/1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+    "folders": {
+      "system": "1hMIWMjJx02er0B-sAyviJ2IzYdqLjWZR",
+      "registration": "1CW5QljmlMUKQa69vNQwkMb_1EvKkF59n",
+      "notices": "1AmFGWgduaiFDwQ7vnG4R3ny0W4moCR8S",
+      "rosters": "1--quc9LEdyZMJOPSGnGMjR5BGv1gtG00",
+      "venue": "1rg4ikkJAEz1C0qonfh0x7QepFqMxCPHE",
+      "programme": "1F0j-3qQhqvEXNUpBh0748BY4sMZbG0pC",
+      "logistics": "1T8nK5yuFiUc-LS4_Rv8N1x8dYirB9e1g",
+      "templates": "1upCRCZ-i05Nx49zctaBwv6QK42_5QFsE",
+      "reference_snapshot": "16xOvkXVcxLJcVGSej9g9xvVDKunfvAgc"
+    }
+  },
+  "generated_from": "data/isd_2027.json",
+  "update_policy": "The Drive files below are the 2027-controlled source. Regenerate the repo read model and mock only through the 2027 importer/builders; never edit a 2026 source to change 2027.",
+  "domains": [
+    {
+      "id": "event_master",
+      "folder": "system",
+      "file": "ISD 2027－活動主資料.json",
+      "paths": [
+        "event_id",
+        "event_name",
+        "description",
+        "data_version",
+        "drive",
+        "source_of_truth",
+        "one_time_reference_seed",
+        "record_state",
+        "future_data_intake",
+        "public_channel_2027"
+      ],
+      "drive_file_id": "1nh5UFtNHm_q8WEzq-AUvLQcJa1qwoivm",
+      "drive_file_link": "https://drive.google.com/file/d/1nh5UFtNHm_q8WEzq-AUvLQcJa1qwoivm/view"
+    },
+    {
+      "id": "registration",
+      "folder": "registration",
+      "file": "ISD 2027－報名及旅團資料.json",
+      "paths": [
+        "participants",
+        "participants_source",
+        "troop_checkin",
+        "troop_checkin_source",
+        "roster_seed"
+      ],
+      "drive_file_id": "1HEMRCGMaYACmztpFrGWny9wdj8N6ja7G",
+      "drive_file_link": "https://drive.google.com/file/d/1HEMRCGMaYACmztpFrGWny9wdj8N6ja7G/view"
+    },
+    {
+      "id": "notices",
+      "folder": "notices",
+      "file": "ISD 2027－通告及公眾資訊.json",
+      "paths": [
+        "notices",
+        "announcements",
+        "unit_guide",
+        "documents"
+      ],
+      "drive_file_id": "1i2nwHFsgit9dxuaz-pmZC736VEpb97rK",
+      "drive_file_link": "https://drive.google.com/file/d/1i2nwHFsgit9dxuaz-pmZC736VEpb97rK/view"
+    },
+    {
+      "id": "rosters",
+      "folder": "rosters",
+      "file": "ISD 2027－人員、嘉賓及典禮名單.json",
+      "paths": [
+        "users",
+        "staff",
+        "guest_roster",
+        "guest_transport",
+        "ceremony"
+      ],
+      "drive_file_id": "16VV7hxp9cEKhGpF7E7n6i9l3Vh2Elwvi",
+      "drive_file_link": "https://drive.google.com/file/d/16VV7hxp9cEKhGpF7E7n6i9l3Vh2Elwvi/view"
+    },
+    {
+      "id": "venue",
+      "folder": "venue",
+      "file": "ISD 2027－場地、攤位及泊車資料.json",
+      "paths": [
+        "activities",
+        "supplies",
+        "parking_source"
+      ],
+      "drive_file_id": "1FnvD6xFkrlhYwbbnTg0PWYrrbHPEq1dG",
+      "drive_file_link": "https://drive.google.com/file/d/1FnvD6xFkrlhYwbbnTg0PWYrrbHPEq1dG/view"
+    },
+    {
+      "id": "programme",
+      "folder": "programme",
+      "file": "ISD 2027－日程及會議資料.json",
+      "paths": [
+        "schedule",
+        "schedule_source",
+        "meetings"
+      ],
+      "drive_file_id": "1J1dBMYReyMc5NkdLEImNwQJL1ZmigqMc",
+      "drive_file_link": "https://drive.google.com/file/d/1J1dBMYReyMc5NkdLEImNwQJL1ZmigqMc/view"
+    },
+    {
+      "id": "logistics",
+      "folder": "logistics",
+      "file": "ISD 2027－後勤、安全及財務資料.json",
+      "paths": [
+        "meals",
+        "staff_meals",
+        "meal_menu",
+        "meal_distribution",
+        "meal_logistics",
+        "meals_source",
+        "finance",
+        "crisis",
+        "souvenirs",
+        "activity_day_sources"
+      ],
+      "drive_file_id": "1EOo8fuEpLA-sGZfhxcE9c7Q3HLfqC_bJ",
+      "drive_file_link": "https://drive.google.com/file/d/1EOo8fuEpLA-sGZfhxcE9c7Q3HLfqC_bJ/view"
+    }
+  ],
+  "registry_file": {
+    "id": "14YG-kBituEJXZOjkawQYNe3raUWQIPua",
+    "link": "https://drive.google.com/file/d/14YG-kBituEJXZOjkawQYNe3raUWQIPua/view"
+  }
+}

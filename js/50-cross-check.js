@@ -34,7 +34,7 @@ Object.assign(ScoutEventApp.prototype,{
     const d=this.eventData||{};
     const booths=(d.activities&&d.activities.booths)||[];
     const roster=(d.staff&&d.staff.event_staff_roster)||[];
-    const stamps=(d.souvenirs&&d.souvenirs.staff_roster_2026)||[];
+    const stamps=(d.souvenirs&&d.souvenirs.staff_roster)||[];
     const K=this.kmBooth?this:(typeof window!=='undefined'?window:null);
     if(!K||!K.kmBooth) return [];
 
@@ -70,7 +70,7 @@ Object.assign(ScoutEventApp.prototype,{
     const booths=(d.activities&&d.activities.booths)||[];
     return {
       roster:((d.staff&&d.staff.event_staff_roster)||[]).length,
-      stamp:((d.souvenirs&&d.souvenirs.staff_roster_2026)||[]).length,
+      stamp:((d.souvenirs&&d.souvenirs.staff_roster)||[]).length,
       plan:booths.reduce((s,b)=>s+(parseInt(b.staff_count,10)||0),0),
       lunch:booths.reduce((s,b)=>s+(parseInt(b.lunch,10)||0),0),
       booths:booths.length
