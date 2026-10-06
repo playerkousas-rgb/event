@@ -1,0 +1,442 @@
+{
+  "schema_version": "2027-public7-final-output-tabs-v5",
+  "event_id": "isd_2027",
+  "status": "review_draft",
+  "scope": "第一階段：每個頁簽代表一類公眾對象；同頁 A 欄列出該對象在活動日的最終輸出頁簽，B 欄指向可更新資料的主SHEET／子SHEET，C 欄為中央批核，D 欄為最簡單的輸入地方。此表只供 ISD 2027 籌備覆核。",
+  "rules": [
+    "每個活動日公眾對象保留一個頁簽；A 欄只列該對象真正看到／使用的最終輸出頁簽。",
+    "B 欄只列對應的 2027 主SHEET資料頁及（如有）受控子SHEET，並標明可更新的既有組別。",
+    "C 欄只列中央批核；沒有中央批核時用「—」，不補充不必要的流程。",
+    "D 欄只列最簡單的輸入地方，例如受邀報名表或既有組別文件；不列其他組別的取用情況。",
+    "組別名稱只使用 2026 既有大組別：主席及執行副主席、顧問團、秘書處、行政組、協調組、嘉賓接待組、會操及典禮組、主題節目組、服務及發展組、品牌推廣組。"
+  ],
+  "audiences": [
+    {
+      "audience_id": "guest",
+      "audience_group": "受邀人士及獎勵得主",
+      "audience_name": "嘉賓",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS02／02_回覆出席（行政組／嘉賓接待組）",
+          "central_approval": "行政組",
+          "input_location": "IN04 嘉賓報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "典禮／儀式流程",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "座位表",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS02／03_典禮安排、CS05／03_座位及步操（嘉賓接待組／會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "IN04 嘉賓報名表；會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS02／02_回覆出席、CS07／01_膳食（嘉賓接待組／協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN04 嘉賓報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "午膳／儀式須知",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS02／03_典禮安排（嘉賓接待組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    },
+    {
+      "audience_id": "troop",
+      "audience_group": "參加單位及隊伍",
+      "audience_name": "參加旅團",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS01／02_出席（行政組）",
+          "central_approval": "行政組",
+          "input_location": "IN01 參加旅團報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "活動／攤位",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS04／01_攤位、02_活動安排（主題節目組）",
+          "central_approval": "秘書處",
+          "input_location": "主題節目組文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS01／03_膳食、CS07／01_膳食（行政組／協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN01 參加旅團報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "交通／泊車",
+          "master_child_update_location": "主SHEET：20_交通泊車；子SHEET：CS01／04_交通、CS06／02_車輛泊車、03_旅遊巴（協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN01 參加旅團報名表；協調組交通文件"
+        },
+        {
+          "final_output_tab": "活動日須知",
+          "master_child_update_location": "主SHEET：27_公告及求助（秘書處）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    },
+    {
+      "audience_id": "merit",
+      "audience_group": "參加單位及隊伍",
+      "audience_name": "優異旅團",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS01／02_出席（行政組）",
+          "central_approval": "行政組",
+          "input_location": "IN02 優異旅團報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "頒獎流程",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目、02_唱名及上台（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "集合／排位",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／03_座位及步操（會操及典禮組）",
+          "central_approval": "行政組",
+          "input_location": "IN02 優異旅團報名表；會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS01／03_膳食、CS07／01_膳食（行政組／協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN02 優異旅團報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "儀式須知",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    },
+    {
+      "audience_id": "march",
+      "audience_group": "參加單位及隊伍",
+      "audience_name": "步操隊伍",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程／綵排",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目、03_座位及步操（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS01／02_出席（行政組）",
+          "central_approval": "行政組",
+          "input_location": "IN03 步操隊伍報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "隊形／步操路線",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／03_座位及步操（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "IN03 步操隊伍報名表；會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "交通／泊車",
+          "master_child_update_location": "主SHEET：20_交通泊車；子SHEET：CS06／02_車輛泊車、03_旅遊巴（協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN03 步操隊伍報名表；協調組交通文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS07／01_膳食（協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN03 步操隊伍報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "活動日須知",
+          "master_child_update_location": "主SHEET：27_公告及求助（秘書處）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    },
+    {
+      "audience_id": "ug",
+      "audience_group": "參加單位及隊伍",
+      "audience_name": "其他制服團體",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS01／02_出席（行政組）",
+          "central_approval": "行政組",
+          "input_location": "IN07 其他制服團體報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "觀禮／典禮安排",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目、03_座位及步操（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "IN07 其他制服團體報名表；會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS01／03_膳食、CS07／01_膳食（行政組／協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN07 其他制服團體報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "交通／泊車",
+          "master_child_update_location": "主SHEET：20_交通泊車；子SHEET：CS01／04_交通、CS06／02_車輛泊車、03_旅遊巴（協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN07 其他制服團體報名表；協調組交通文件"
+        },
+        {
+          "final_output_tab": "活動日須知",
+          "master_child_update_location": "主SHEET：27_公告及求助（秘書處）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    },
+    {
+      "audience_id": "awardee_section",
+      "audience_group": "受邀人士及獎勵得主",
+      "audience_name": "支部最高獎勵得主",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS02／02_回覆出席（行政組／嘉賓接待組）",
+          "central_approval": "行政組",
+          "input_location": "IN05 支部最高獎勵得主報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "頒獎／唱名／上台流程",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS02／03_典禮安排、CS05／02_唱名及上台（嘉賓接待組／會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "IN05 支部最高獎勵得主報名表；會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "集合／後台／排位",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／03_座位及步操（會操及典禮組）",
+          "central_approval": "行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS02／02_回覆出席、CS07／01_膳食（嘉賓接待組／協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN05 支部最高獎勵得主報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "儀式須知",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS02／03_典禮安排（嘉賓接待組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    },
+    {
+      "audience_id": "awardee_adult",
+      "audience_group": "受邀人士及獎勵得主",
+      "audience_name": "成人獎勵得主",
+      "flows": [
+        {
+          "final_output_tab": "基本資訊",
+          "master_child_update_location": "主SHEET：25_基本資訊（秘書處／行政組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處正式通知"
+        },
+        {
+          "final_output_tab": "日程",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS05／01_典禮項目（會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "報到資訊",
+          "master_child_update_location": "主SHEET：22_報到；子SHEET：CS02／02_回覆出席（行政組／嘉賓接待組）",
+          "central_approval": "行政組",
+          "input_location": "IN06 成人獎勵得主報名表"
+        },
+        {
+          "final_output_tab": "活動地圖",
+          "master_child_update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地（協調組）",
+          "central_approval": "—",
+          "input_location": "協調組場地文件"
+        },
+        {
+          "final_output_tab": "頒獎／唱名／上台流程",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS02／03_典禮安排、CS05／02_唱名及上台（嘉賓接待組／會操及典禮組）",
+          "central_approval": "秘書處／行政組",
+          "input_location": "IN06 成人獎勵得主報名表；會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "集合／後台／排位",
+          "master_child_update_location": "主SHEET：21_典禮；子SHEET：CS05／03_座位及步操（會操及典禮組）",
+          "central_approval": "行政組",
+          "input_location": "會操及典禮組文件"
+        },
+        {
+          "final_output_tab": "午膳安排",
+          "master_child_update_location": "主SHEET：19_膳食；子SHEET：CS02／02_回覆出席、CS07／01_膳食（嘉賓接待組／協調組）",
+          "central_approval": "行政組",
+          "input_location": "IN06 成人獎勵得主報名表；協調組膳食文件"
+        },
+        {
+          "final_output_tab": "儀式須知",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS02／03_典禮安排（嘉賓接待組）",
+          "central_approval": "秘書處",
+          "input_location": "秘書處通知文件"
+        },
+        {
+          "final_output_tab": "求助",
+          "master_child_update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排、03_緊急資源（協調組／服務及發展組）",
+          "central_approval": "—",
+          "input_location": "協調組安全文件／服務及發展組服務文件"
+        }
+      ]
+    }
+  ]
+}

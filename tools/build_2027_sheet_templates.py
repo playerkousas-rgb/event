@@ -37,13 +37,20 @@ def cell(col: int, row: int, value: object, style: int = 0) -> str:
     return f'<c r="{ref}" t="inlineStr" s="{style}"><is><t>{x(value)}</t></is></c>'
 
 
-def sheet_xml(title: str, instruction: str, headers: list[str], rows: list[list[object]]) -> str:
+def sheet_xml(title: str, instruction: str, headers: list[str], rows: list[list[object]], row_styles: list[int] | None = None) -> str:
+    """Render a sheet, optionally applying a fill style to each data row.
+
+    Existing template builders use the four-argument form.  Review artefacts
+    may pass a fifth ``row_styles`` list to make unresolved source issues
+    immediately visible without changing the data itself.
+    """
     all_rows = []
     all_rows.append('<row r="1" ht="28">' + cell(1, 1, title, 1) + '</row>')
     all_rows.append('<row r="2" ht="38">' + cell(1, 2, instruction, 2) + '</row>')
     all_rows.append('<row r="3">' + ''.join(cell(i + 1, 3, h, 3) for i, h in enumerate(headers)) + '</row>')
-    for ridx, row in enumerate(rows, start=4):
-        all_rows.append(f'<row r="{ridx}">' + ''.join(cell(i + 1, ridx, value, 0) for i, value in enumerate(row)) + '</row>')
+    for index, (ridx, row) in enumerate(zip(range(4, 4 + len(rows)), rows)):
+        style = row_styles[index] if row_styles and index < len(row_styles) else 0
+        all_rows.append(f'<row r="{ridx}">' + ''.join(cell(i + 1, ridx, value, style) for i, value in enumerate(row)) + '</row>')
     width_count = max(1, len(headers))
     cols = ''.join(f'<col min="{i}" max="{i}" width="{min(max(15, len(str(headers[i-1])) * 1.3), 42):.1f}" customWidth="1"/>' for i in range(1, width_count + 1))
     last_col = col_name(width_count)
@@ -65,10 +72,10 @@ def workbook(path: Path, sheets: list[tuple[str, str, list[str], list[list[objec
     styles = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
  <fonts count="3"><font><sz val="10"/><name val="Arial"/></font><font><b/><sz val="16"/><color rgb="FFFFFFFF"/><name val="Arial"/></font><font><i/><sz val="10"/><color rgb="FF475569"/><name val="Arial"/></font></fonts>
- <fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1E3A5F"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDCE6F1"/><bgColor indexed="64"/></patternFill></fill></fills>
+ <fills count="6"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1E3A5F"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDCE6F1"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFCE4D6"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF2CC"/><bgColor indexed="64"/></patternFill></fill></fills>
  <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
- <cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/></cellXfs>
+ <cellXfs count="6"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="5" borderId="0" xfId="0" applyFill="1"/></cellXfs>
 </styleSheet>'''
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr('[Content_Types].xml', f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -105,6 +112,9 @@ TABLES: dict[str, list[str]] = {
     "22_報到": ["checkin_id", "person_id", "organisation_id", "registration_id", "checkin_location", "checkin_status", "checked_in_at", "badge_issued", "meal_issued", "updated_at"],
     "23_物資": ["supply_request_id", "department_code", "booth_id", "item_code", "item_name", "requested_qty", "approved_qty", "issued_qty", "delivery_location", "status", "updated_at"],
     "24_修正紀錄": ["change_id", "entity_type", "entity_id", "field_key", "old_value", "new_value", "change_reason", "changed_by", "changed_at", "source_channel"],
+    "25_基本資訊": ["info_id", "audience_scope", "info_title", "info_content", "visibility", "status", "source_record_id", "updated_at"],
+    "26_日程及地圖": ["schedule_map_id", "record_type", "audience_scope", "title", "start_at", "end_at", "location_code", "map_asset_id", "content", "status", "source_record_id", "updated_at"],
+    "27_公告及求助": ["notice_support_id", "record_type", "audience_scope", "title", "content", "contact_role", "contact_method", "urgency", "status", "source_record_id", "updated_at"],
     "90_代碼表": ["code_set", "code", "label_zh", "label_en", "active", "sort_order", "updated_at"],
 }
 
@@ -176,7 +186,7 @@ def build_master() -> None:
         ["2026 使用方式", "僅用作欄位與來源辨識；不會寫回、同步或更改 2026。"],
     ]
     dictionary_rows = []
-    owner = {"10_組織":"行政／地域", "11_人員":"秘書／行政", "12_邀請":"秘書", "13_報名":"秘書／行政", "14_出席":"秘書／各相關組", "15_工作人員":"行政／各組", "16_當值安排":"各組", "17_攤位":"主題節目組", "18_攤位人手":"主題節目組／各組", "19_膳食":"後勤／膳食", "20_交通泊車":"協調／場地", "21_典禮":"會操及典禮", "22_報到":"行政／接待", "23_物資":"後勤／各組", "24_修正紀錄":"秘書／行政", "90_代碼表":"行政／系統"}
+    owner = {"10_組織":"行政／地域", "11_人員":"秘書／行政", "12_邀請":"秘書", "13_報名":"秘書／行政", "14_出席":"秘書／各相關組", "15_工作人員":"行政／各組", "16_當值安排":"各組", "17_攤位":"主題節目組", "18_攤位人手":"主題節目組／各組", "19_膳食":"後勤／膳食", "20_交通泊車":"協調／場地", "21_典禮":"會操及典禮", "22_報到":"行政／接待", "23_物資":"後勤／各組", "24_修正紀錄":"秘書／行政", "25_基本資訊":"秘書處／行政組", "26_日程及地圖":"協調組／會操及典禮組", "27_公告及求助":"秘書處／協調組／服務及發展組", "90_代碼表":"行政／系統"}
     for tab, fields in TABLES.items():
         for f in fields:
             dictionary_rows.append([tab, f, owner.get(tab, "待確認"), "必填：由入口／同步規則定義", "固定欄位，禁止改名／移位"])
