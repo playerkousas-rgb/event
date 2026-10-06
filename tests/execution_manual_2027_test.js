@@ -26,7 +26,12 @@ ok(manual.logistics.meal_collection.length===3&&manual.logistics.staff_meal_reco
 ok(manual.safety.immediate_steps.length===4&&manual.safety.topics.length>=3,'manual includes practical emergency actions and sourced topics');
 ok(manual.staff_guidance.length===12&&manual.document_catalog.staff_guidance===12,'manual includes all 12 staff-facing guidance records as readable content');
 ok(manual.staff_document_assets.length>=10,'manual has a curated, directly usable activity-day document set');
-ok(manual.audience_rule.ordinary_staff.includes('唯讀')&&manual.audience_rule.restricted.includes('財務'),'manual explicitly separates staff information from restricted data');
+ok(manual.audience_rule.ordinary_staff.includes('不按組別隱藏')&&manual.audience_rule.restricted.includes('個人私隱'),'manual shares non-private operations across staff and restricts only private data');
+const finder=manual.task_finder||{};
+ok(finder.shared_pin_rule.includes('不以姓名辨認')&&finder.shared_pin_rule.includes('攤位編號'),'manual honestly explains shared-PIN workstation lookup without exposing person-to-post mappings');
+ok(finder.workstations.length===33&&finder.workstations.every(row=>row.booth_code&&row.location&&row.operating_steps.length>=4),'manual gives every booth a searchable location and practical operating steps');
+ok(finder.workstations.some(row=>row.booth_code==='A01'&&row.assigned_staff_count>0&&row.assignment_labels.includes('A1 Core')),'manual normalises private roster assignment labels into a non-personal booth lookup alias');
+ok(finder.role_guides.length>=6&&finder.common_answers.length>=5&&finder.facilities.length>=6,'manual includes cross-role task routing, routine answers and practical service-point directions');
 
 const activeAssets=[...manual.venue_assets,...manual.game_cards,{file_url:manual.safety.manual_asset},...source.ceremony.mc_scripts.map(row=>({file_url:row.file_url})),{file_url:source.ceremony.inspection_route.image}];
 ok(activeAssets.length>=10,'manual has maps, game cards, crisis material, scripts and inspection route');
@@ -50,8 +55,11 @@ for(const text of [frontend,activities,announcements,crisis]){
   ok(!text.includes('site-setup-plan-2026.pdf'),'rendered staff map has no 2026 site-plan fallback');
   ok(!text.includes('crisis-manual-2026.pdf'),'rendered staff crisis view has no 2026-manual fallback');
 }
-ok(frontend.includes("{k:'overview'")&&frontend.includes("{k:'logistics'"),'manual UI starts with overview and includes logistics');
-ok(frontend.includes('renderExecManualOverview')&&frontend.includes('renderExecManualProgramme')&&frontend.includes('renderExecManualLogistics'),'manual UI renders the worker-oriented pages');
+ok(frontend.includes('工作崗位及即時指引')&&frontend.includes("{k:'logistics'"),'manual UI starts with task-first guidance and includes logistics');
+ok(frontend.includes('renderExecManualOverview')&&frontend.includes('renderExecManualTaskFinder')&&frontend.includes('exec-task-search')&&frontend.includes('renderExecManualGroupTasks'),'manual UI renders task lookup and cross-role worker guidance');
+ok(frontend.includes('共用 PIN 不按姓名搜尋')&&frontend.includes('編更上的崗位代號')&&frontend.includes('所有活動日操作資料可查・只遮蔽個人私隱'),'manual UI supports roster-label lookup while protecting identity and not hiding operations by team');
+ok(!frontend.includes("{k:'finance_guide'")&&!frontend.includes("{k:'participants'")&&!frontend.includes("{k:'meal_box'")&&!frontend.includes("{k:'merit_award'"),'staff manual navigation excludes finance and person-level roster tabs');
+ok(frontend.includes("const isStaffManual=this.currentModule==='exec_manual'")&&frontend.includes("isStaffManual?'': '<th class=\"px-2 py-2 text-left\">聯絡人"),'booth table keeps operations visible while masking the private contact column in the staff manual');
 ok(frontend.includes('renderExecManualDocuments')&&frontend.includes('2027 擁有版本'),'manual UI renders its curated files and readable staff guidance rather than an empty document library');
 ok(activities.includes('execution_manual_2027')&&activities.includes('2027 工作人員場地及動線圖'),'maps UI uses the 2027 manual source');
 ok(activities.includes('usePublishedManual')&&activities.includes("this.currentModule==='exec_manual'"),'maps and participant lists ignore stale browser cache inside the manual');

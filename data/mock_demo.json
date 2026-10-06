@@ -25821,9 +25821,772 @@
     "generated_at": "2026-10-06",
     "source_rule": "本手冊由 ISD 2027 受控資料整理而成。2026 只屬一次性封存參考，日後修訂只可在 ISD 2027 folder／2027 前端流程進行。",
     "audience_rule": {
-      "ordinary_staff": "可閱覽活動日總覽、程序、場地圖、攤位、報到、膳食、應變及公開工作指引；唯讀。",
-      "committee": "按所屬組別再閱覽工作分配、受限名單、可編輯來源及內部文件。",
-      "restricted": "嘉賓個人資料、電話／電郵、車牌、財務、帳戶及批核資料不在普通工作人員手冊公開。"
+      "ordinary_staff": "所有不涉及個人私隱的活動日操作資料均可在此唯讀查閱：崗位、場地、流程、攤位、報到、膳食、服務點、應變和常見問題不按組別隱藏。",
+      "committee": "同一份操作資料供所有工作人員查閱；籌委帳戶只額外提供來源編輯、個人／受限名單和管理操作。",
+      "restricted": "只保護個人私隱及其衍生資料：姓名對應崗位、電話、電郵、嘉賓個人資料、車牌、帳戶、事故個資及簽收紀錄。"
+    },
+    "task_finder": {
+      "shared_pin_rule": "普通工作人員使用共用 PIN，不以姓名辨認登入者；請按已獲分配的攤位編號、編更代號、工作類別或所屬崗位搜尋。這樣可讓所有人查閱運作資料，同時不公開個人崗位對應。",
+      "workstations": [
+        {
+          "id": "booth_A01",
+          "booth_code": "A01",
+          "zone": "A",
+          "booth_name": "主節目組總部",
+          "operator": "主題節目組總部",
+          "activity": "／",
+          "assigned_staff_count": 7,
+          "assignment_labels": [
+            "A1 Core"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A02",
+          "booth_code": "A02",
+          "zone": "A",
+          "booth_name": "機電先鋒 - 綠能一級棒",
+          "operator": "積極公民工作坊 - 機電1",
+          "activity": "1) 可再生能源 2) 氣體安全條例 - GU標誌",
+          "assigned_staff_count": 2,
+          "assignment_labels": [
+            "A2 機電1"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A03",
+          "booth_code": "A03",
+          "zone": "A",
+          "booth_name": "機電先鋒 - 一級省電王",
+          "operator": "積極公民工作坊 - 機電2",
+          "activity": "1) 家用電器使用、常見危險 2) 綠色能源標籤／級別標籤",
+          "assigned_staff_count": 2,
+          "assignment_labels": [
+            "A3 機電2"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A04",
+          "booth_code": "A04",
+          "zone": "A",
+          "booth_name": "機電先鋒 - 乘搭安全指南",
+          "operator": "積極公民工作坊 - 機電3",
+          "activity": "1) 升降機、自動梯安全裝置 2) 升降機、自動梯及鐵路安全指示標誌",
+          "assigned_staff_count": 2,
+          "assignment_labels": [
+            "A4 機電3"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A05",
+          "booth_code": "A05",
+          "zone": "A",
+          "booth_name": "機電先鋒 - 節約能源承諾樹",
+          "operator": "積極公民工作坊 - 機電4",
+          "activity": "1) 節約能源承諾樹 2) 派發工作紙",
+          "assigned_staff_count": 5,
+          "assignment_labels": [
+            "A5 機電4"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A06",
+          "booth_code": "A06",
+          "zone": "A",
+          "booth_name": "香港警務處 跨部門反恐專責組",
+          "operator": "香港警務處 - 跨部門反恐專責組(ICTU)",
+          "activity": "1) 反恐小遊戲 2) 派發紀念品及宣傳單張",
+          "assigned_staff_count": 4,
+          "assignment_labels": [
+            "A6 Police-反恐"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A07",
+          "booth_code": "A07",
+          "zone": "A",
+          "booth_name": "香港警務處 網絡安全及科技罪案調查科",
+          "operator": "香港警務處 - 網絡安全及科技罪案調查科(CSTCB)",
+          "activity": "1) 推廣「守網聯盟遊戲卡」",
+          "assigned_staff_count": 4,
+          "assignment_labels": [
+            "A7 Police-網絡"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A08",
+          "booth_code": "A08",
+          "zone": "A",
+          "booth_name": "Hong Kong Police Force Narcotics Bureau",
+          "operator": "香港警務處 - 毒品調查科(NB)",
+          "activity": "1) 禁毒知識分享",
+          "assigned_staff_count": 2,
+          "assignment_labels": [
+            "A8 Police-NB"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A09",
+          "booth_code": "A09",
+          "zone": "A",
+          "booth_name": "香港警務處 毒品調查科",
+          "operator": "香港警務處 - 毒品調查科(NB)",
+          "activity": "1) 展示模擬毒品實物 2) 模擬毒品氣味",
+          "assigned_staff_count": 4,
+          "assignment_labels": [
+            "A9 Police-毒品調查"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A10",
+          "booth_code": "A10",
+          "zone": "A",
+          "booth_name": "「NSpeed 國安號」宣傳車",
+          "operator": "香港警務處 - 國家安全處(NSD)",
+          "activity": "1) 國安號",
+          "assigned_staff_count": 5,
+          "assignment_labels": [
+            "A10 Police-國安"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A11",
+          "booth_code": "A11",
+          "zone": "A",
+          "booth_name": "香港警務處 港島總區交通部",
+          "operator": "香港警務處 - 港島總區交通部(T HKI)",
+          "activity": "1) 提供小型警察電單車、小型警察私家車供兒童拍照 2) 兒童警察服飾供兒童拍照",
+          "assigned_staff_count": 3,
+          "assignment_labels": [
+            "A11 Police-交通"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_A12",
+          "booth_code": "A12",
+          "zone": "A",
+          "booth_name": "香港警務處 鑑證科",
+          "operator": "香港警務處 - 鑑證科(IB / CSI)",
+          "activity": "1) 指紋書簽 2)模擬法証光源燈展示 3)播放介紹IB鑑証科片段",
+          "assigned_staff_count": 5,
+          "assignment_labels": [
+            "A12 Police-鑑證"
+          ],
+          "location": "A 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_B01",
+          "booth_code": "B01",
+          "zone": "B",
+          "booth_name": "十五五與我好有關",
+          "operator": "香港島青年聯會",
+          "activity": "參加者先透過幾部iPad觀看有關十五五規劃的影片，然後以手機或掃描QR code以Kahoot測試參加者對十五五規劃的認識。 記憶配對遊戲，讓參加者記得有關十五五規劃的辭彙。",
+          "assigned_staff_count": 4,
+          "assignment_labels": [
+            "B1 青年聯會"
+          ],
+          "location": "B 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_B02",
+          "booth_code": "B02",
+          "zone": "B",
+          "booth_name": "港島童軍射藝會",
+          "operator": "港島童軍射藝會",
+          "activity": "箭藝",
+          "assigned_staff_count": 4,
+          "assignment_labels": [
+            "B2 箭會"
+          ],
+          "location": "B 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_B03",
+          "booth_code": "B03",
+          "zone": "B",
+          "booth_name": "第一個五年規劃",
+          "operator": "港島南區 / 港島地域 - 深資童軍議會",
+          "activity": "展覽 - 展板 ＋ 影片",
+          "assigned_staff_count": 5,
+          "assignment_labels": [
+            "B3 VentureC"
+          ],
+          "location": "B 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_C01",
+          "booth_code": "C01",
+          "zone": "C",
+          "booth_name": "Smokeless Range",
+          "operator": "港島童軍氣槍射擊會",
+          "activity": "虛擬靶場射擊",
+          "assigned_staff_count": 4,
+          "assignment_labels": [
+            "C1 槍會"
+          ],
+          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_C02",
+          "booth_code": "C02",
+          "zone": "C",
+          "booth_name": "「童」你飛翔",
+          "operator": "港島地域 - 航空活動",
+          "activity": "Flight Sim x2 (Monitor + VR Mode)",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_C03",
+          "booth_code": "C03",
+          "zone": "C",
+          "booth_name": "漫遊太空站",
+          "operator": "香港航天學會 - 航天、航空",
+          "activity": "航天展覽、航天員造型照、飛行員造型照 汽球直升機、氣壓小火箭、遙控飛機模擬飛行",
+          "assigned_staff_count": 14,
+          "assignment_labels": [
+            "C3 航天學會"
+          ],
+          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_C04",
+          "booth_code": "C04",
+          "zone": "C",
+          "booth_name": "無人機足球運動同樂",
+          "operator": "中國香港東區無人機協會",
+          "activity": "分享無人機足球運動",
+          "assigned_staff_count": 19,
+          "assignment_labels": [
+            "C4 無人機"
+          ],
+          "location": "C 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_D01",
+          "booth_code": "D01",
+          "zone": "D",
+          "booth_name": "童軍招募及宣傳",
+          "operator": "港島地域 - 發展部",
+          "activity": "童軍招募及宣傳",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_D02",
+          "booth_code": "D02",
+          "zone": "D",
+          "booth_name": "食品捐贈",
+          "operator": "港島地域 - 社區參與及服務1",
+          "activity": "食品捐贈",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_D03",
+          "booth_code": "D03",
+          "zone": "D",
+          "booth_name": "物品捐贈",
+          "operator": "港島地域 - 社區參與及服務2",
+          "activity": "物品捐贈",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_D04",
+          "booth_code": "D04",
+          "zone": "D",
+          "booth_name": "日日keep住食， 藥箱都變成棺材箱",
+          "operator": "港島地域 - 灣仔區 - 社區參與章1",
+          "activity": "1) 展覽 2)互動形式推行藥物教育",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_D05",
+          "booth_code": "D05",
+          "zone": "D",
+          "booth_name": "七彩人生，拒絕毒品",
+          "operator": "港島地域 - 灣仔區 - 社區參與章2",
+          "activity": "1) 扭蛋機 2) 掉彩虹，Matching",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "D 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_E01",
+          "booth_code": "E01",
+          "zone": "E",
+          "booth_name": "精神健康與你",
+          "operator": "港島地域 - 維多利亞城區 - 精神健康章",
+          "activity": "待定",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "E 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_E02",
+          "booth_code": "E02",
+          "zone": "E",
+          "booth_name": "抗逆達人",
+          "operator": "港島地域 - 維多利亞城區 - 公共衞生章",
+          "activity": "待定",
+          "assigned_staff_count": 0,
+          "assignment_labels": [],
+          "location": "E 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_E03",
+          "booth_code": "E03",
+          "zone": "E",
+          "booth_name": "童心傾訴站 Listening Ear",
+          "operator": "港島地域",
+          "activity": "/",
+          "assigned_staff_count": 2,
+          "assignment_labels": [
+            "E3 Listening Ear"
+          ],
+          "location": "E 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_F01",
+          "booth_code": "F01",
+          "zone": "F",
+          "booth_name": "生態追擊",
+          "operator": "港島童軍生態小組",
+          "activity": "AI 識別生物(以活動認識香港本地生態)",
+          "assigned_staff_count": 6,
+          "assignment_labels": [
+            "F1 生態"
+          ],
+          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_F02",
+          "booth_code": "F02",
+          "zone": "F",
+          "booth_name": "「章」來會更好",
+          "operator": "港島童軍章會",
+          "activity": "1) 徽章展覽 2) 換章角",
+          "assigned_staff_count": 6,
+          "assignment_labels": [
+            "F2 章會"
+          ],
+          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_F03",
+          "booth_code": "F03",
+          "zone": "F",
+          "booth_name": "追星精明眼",
+          "operator": "港島童軍天文會",
+          "activity": "星座認知",
+          "assigned_staff_count": 3,
+          "assignment_labels": [
+            "F3 天文會"
+          ],
+          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_F04",
+          "booth_code": "F04",
+          "zone": "F",
+          "booth_name": "搖搖晃",
+          "operator": "港島童軍先鋒工程會",
+          "activity": "鞦韆架（可遊玩）＋倒叉三腳瞭望台（觀賞）",
+          "assigned_staff_count": 1,
+          "assignment_labels": [
+            "F4 先鋒會"
+          ],
+          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_F05",
+          "booth_code": "F05",
+          "zone": "F",
+          "booth_name": "港島地域童軍樂隊",
+          "operator": "港島地域童軍樂隊",
+          "activity": "演奏表演",
+          "assigned_staff_count": 30,
+          "assignment_labels": [
+            "F5 Band"
+          ],
+          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        },
+        {
+          "id": "booth_F06",
+          "booth_code": "F06",
+          "zone": "F",
+          "booth_name": "「皮」趣小座",
+          "operator": "港島童軍皮藝會",
+          "activity": "DIY 皮革電話座匙扣",
+          "assigned_staff_count": 6,
+          "assignment_labels": [
+            "F6 皮會"
+          ],
+          "location": "F 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。",
+          "operating_steps": [
+            "到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。",
+            "09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。",
+            "10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。",
+            "如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。"
+          ],
+          "status": "2027_reference_seed_pending_2027_confirmation"
+        }
+      ],
+      "role_guides": [
+        {
+          "id": "booth",
+          "title": "攤位工作人員",
+          "icon": "fa-store",
+          "find": "輸入 A01、A1 Core、攤位名稱或協助機構",
+          "action_tab": "overview",
+          "instruction": "先找本站位置和活動內容；活動時依本站指引接待參加者、回答基本方向問題，超出範圍即回報。"
+        },
+        {
+          "id": "checkin",
+          "title": "報到及旅團支援",
+          "icon": "fa-clipboard-check",
+          "find": "查看旅團報到、餐盒及服務點",
+          "action_tab": "logistics",
+          "instruction": "依有蓋操場報到處程序核對、派發和指引旅團；需要人名／簽收資料時只在獲授權的工作崗位處理。"
+        },
+        {
+          "id": "ceremony",
+          "title": "典禮及會操支援",
+          "icon": "fa-crown",
+          "find": "查看時間線、典禮位置及司儀稿",
+          "action_tab": "programme",
+          "instruction": "按全日程序、典禮位置及當值總主任指示處理集合、排位、上台和轉場。"
+        },
+        {
+          "id": "guest",
+          "title": "嘉賓及訪客支援",
+          "icon": "fa-handshake",
+          "find": "查看嘉賓動線及服務點",
+          "action_tab": "activities",
+          "instruction": "提供位置、程序和方向資料；嘉賓個人名單、電話和車輛資料不在共用手冊顯示。"
+        },
+        {
+          "id": "logistics",
+          "title": "交通、膳食及後勤",
+          "icon": "fa-truck",
+          "find": "查看餐盒、用膳、服務點及場地圖",
+          "action_tab": "logistics",
+          "instruction": "按已發佈的後勤資料處理；遇到物資、交通或場地問題即交當值協調／行政崗位。"
+        },
+        {
+          "id": "safety",
+          "title": "安全、急救及突發情況",
+          "icon": "fa-triangle-exclamation",
+          "find": "查看安全及應變",
+          "action_tab": "crisis",
+          "instruction": "先處理人身安全、找急救／指揮支援、記錄並回報；不自行向外發布事故資料。"
+        }
+      ],
+      "common_answers": [
+        {
+          "question": "我是攤位工作人員，怎樣找回自己的位置和工作？",
+          "answer": "用攤位編號、編更代號、名稱或所屬機構搜尋本站；頁面會列出分區、活動內容、活動時段和開站／轉換／求助步驟。共用 PIN 不會按姓名辨認身份，因此不公開按人名查詢。"
+        },
+        {
+          "question": "旅團來到時應怎樣指路？",
+          "answer": "旅團由東閘入場，前往有蓋操場報到處領物資／餐盒，之後前往 A–F 攤位活動區；10:45 依指示到大操場集合。"
+        },
+        {
+          "question": "嘉賓、優異旅團或步操隊伍問路怎樣回答？",
+          "answer": "使用「全日程序及交接」及「場地、攤位及遊戲」內的動線資料；不確定時轉交有關接待／典禮崗位，不自行猜測。"
+        },
+        {
+          "question": "有人問餐盒、失物或查詢處在哪裡？",
+          "answer": "餐盒派發／用膳區：有蓋操場；失物認領：拾獲／遺失兩向登記＋認領；查詢：2835 7712（助理執行幹事何家耀先生）。"
+        },
+        {
+          "question": "有人受傷、感到不適或發生突發情況怎樣做？",
+          "answer": "先保障安全及避免風險擴大；即時通知當值總主任／指揮中心，並把不適者交由 香港聖約翰救傷隊急救站（有蓋操場側） 處理。未獲授權不可向外發言。"
+        }
+      ],
+      "facilities": [
+        {
+          "icon": "🚻",
+          "question": "洗手間在哪裡？",
+          "answer": "有蓋操場側・莫榮大樓地下"
+        },
+        {
+          "icon": "⛑️",
+          "question": "急救站在哪裡？",
+          "answer": "有蓋操場側（香港聖約翰救傷隊）"
+        },
+        {
+          "icon": "🔍",
+          "question": "失物認領處在哪裡？",
+          "answer": "有蓋操場報到處旁"
+        },
+        {
+          "icon": "🚰",
+          "question": "飲水站在哪裡？",
+          "answer": "大操場側・攤位 C 區旁"
+        },
+        {
+          "icon": "☎️",
+          "question": "大會查詢處在哪裡？",
+          "answer": "東閘入口旁"
+        },
+        {
+          "icon": "🍱",
+          "question": "餐盒派發／用膳區在哪裡？",
+          "answer": "有蓋操場"
+        },
+        {
+          "icon": "🚌",
+          "question": "穿梭巴士站在哪裡？",
+          "answer": "東閘對出（往返海洋公園停車場）"
+        },
+        {
+          "icon": "🅿️",
+          "question": "持證車輛停車場在哪裡？",
+          "answer": "學院內指定車位（須持泊車證）"
+        }
+      ]
     },
     "event_day_snapshot": {
       "event_name": "2027 港島童軍繽紛日",
@@ -25877,7 +26640,7 @@
       ],
       "staff_start_checklist": [
         "到指定工作人員集合／報到位置報到，確認所屬組別及崗位。",
-        "先查看「活動日總覽」與「場地及動線」，確認所在位置及下一個交接點。",
+        "先用「工作崗位及即時指引」找回崗位，再查看場地及動線，確認所在位置及下一個交接點。",
         "按本組工作指引執行；遇到未列情況，向所屬總主任或指揮中心回報。",
         "任何事故先保障安全；依「安全及應變」程序處理，未獲授權不得對外發言。"
       ]
@@ -25885,14 +26648,15 @@
     "sections": [
       {
         "id": "overview",
-        "title": "活動日總覽",
-        "icon": "fa-house",
+        "title": "工作崗位及即時指引",
+        "icon": "fa-person-circle-question",
         "audience": "所有工作人員",
         "source": [
-          "event_day_snapshot",
-          "schedule"
+          "activities.booths",
+          "staff.event_staff_roster",
+          "public_channel_2027"
         ],
-        "description": "入場後第一個查看的頁面：活動規模、全日程序、工作前檢查及交接提示。"
+        "description": "用攤位編號、編更代號、名稱或工作類別，找出位置、工作內容、時段、求助方法及可回答的常見問題。"
       },
       {
         "id": "venue",
@@ -25942,15 +26706,14 @@
       },
       {
         "id": "teams",
-        "title": "組別職責及聯絡",
+        "title": "各類工作指引",
         "icon": "fa-people-group",
-        "audience": "所有工作人員（敏感聯絡資料受限）",
+        "audience": "所有工作人員",
         "source": [
-          "staff.org_chart",
           "staff.job_duties",
-          "staff.contacts"
+          "public_channel_2027"
         ],
-        "description": "組織架構、各組職責及按權限顯示的聯絡資料。"
+        "description": "攤位、報到、典禮、嘉賓、後勤及安全工作應怎樣找資料和處理；只遮蔽個人私隱。"
       },
       {
         "id": "documents",
@@ -26667,10 +27430,10 @@
   "mock_demo_source": {
     "source_event_id": "isd_2027",
     "source_read_model": "data/isd_2027.json",
-    "source_sha256": "89b2c01a90eedee732927e8c1611ccac8611def8c13c6505b49647f272a2b9e8",
+    "source_sha256": "7ca09326ddc523d4a11087e925ca63e767f5da5c23d0266559e300ef4e242f39",
     "builder": "tools/build_mock_demo_from_2027.js",
     "policy": "This rehearsal product is rebuilt only from the independent 2027 source. 2026 is immutable provenance only and is never read at runtime.",
-    "rebuilt_at": "2026-10-06T03:04:46.082Z"
+    "rebuilt_at": "2026-10-06T03:16:38.635Z"
   },
   "link_registry": {
     "generated_at": "2026-10-06",

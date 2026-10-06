@@ -258,19 +258,14 @@ Object.assign(ScoutEventApp.prototype,{
     if(!container) return;
     if(!this.execManualSubTab) this.execManualSubTab='overview';
     const tabs=[
-      {k:'overview', icon:'fa-solid fa-house', label:'活動日總覽'},
+      {k:'overview', icon:'fa-solid fa-person-circle-question', label:'工作崗位及即時指引'},
       {k:'programme', icon:'fa-solid fa-clock', label:'全日程序及交接'},
       {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地、攤位及遊戲'},
       {k:'logistics', icon:'fa-solid fa-clipboard-check', label:'報到、膳食及後勤'},
       {k:'ceremony', icon:'fa-solid fa-crown', label:'典禮儀式'},
       {k:'mc_scripts', icon:'fa-solid fa-microphone-lines', label:'司儀稿'},
-      {k:'adult_awards', icon:'fa-solid fa-user-shield', label:'成年獎勵及 RUNDOWN'},
-      {k:'merit_award', icon:'fa-solid fa-trophy', label:'優異旅團獲獎'},
-      {k:'participants', icon:'fa-solid fa-people-group', label:'參加旅團名單'},
-      {k:'meal_box', icon:'fa-solid fa-bowl-food', label:'代訂餐盒'},
-      {k:'staff', icon:'fa-solid fa-sitemap', label:'組別職責及聯絡'},
+      {k:'staff', icon:'fa-solid fa-people-group', label:'各類工作指引'},
       {k:'crisis', icon:'fa-solid fa-triangle-exclamation', label:'安全及應變'},
-      {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務（受限）'},
       {k:'documents', icon:'fa-solid fa-folder-open', label:'通告及必讀文件'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
@@ -293,19 +288,14 @@ Object.assign(ScoutEventApp.prototype,{
     const panel=document.getElementById('exec-manual-panel');
     if(!panel) return;
     const map={
-      staff:()=>this.renderStaffModule(panel),
+      staff:()=>this.renderExecManualGroupTasks(panel),
       activities:()=>this.renderActivitiesModule(panel),
       ceremony:()=>this.renderCeremonyModule(panel),
       mc_scripts:()=>{ panel.innerHTML=this.execManualMcScriptsHTML(); },
-      adult_awards:()=>{ panel.innerHTML=`<div class="space-y-3">${this.ceremonyPart1RundownV5HTML()}${this.adultAwards2026HTML()}</div>`; },
-      merit_award:()=>{ panel.innerHTML=`<div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('merit_award',{scope:'exec'})}</div>`; },
       crisis:()=>this.renderCrisisModule(panel),
-      participants:()=>this.renderExecManualParticipants(panel),
-      meal_box:()=>{ this.renderExecManualMealBox(panel); },
       overview:()=>this.renderExecManualOverview(panel),
       programme:()=>this.renderExecManualProgramme(panel),
       logistics:()=>this.renderExecManualLogistics(panel),
-      finance_guide:()=>this.renderExecManualFinanceGuide(panel),
       // 執行手冊只收活動當日真正會用到的文件；會議、籌備及活動教材仍留在完整文件庫。
       documents:()=>this.renderExecManualDocuments(panel),
     };
@@ -318,26 +308,43 @@ Object.assign(ScoutEventApp.prototype,{
   renderExecManualOverview(panel){
     const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
     const manual=this.execManualData();
-    const snap=manual.event_day_snapshot||{};
-    const programme=manual.all_day_programme||manual.programme||snap.activity_schedule||[];
-    const sections=manual.sections||[];
-    const goto=(id,label,icon)=>`<button onclick="app.switchExecManualTab('${id}')" class="text-left bg-white border rounded-xl p-3 hover:border-sky-300 hover:bg-sky-50 transition"><div class="font-bold text-[12px] text-slate-800"><i class="fa-solid ${icon} text-sky-600 mr-1"></i>${label}</div><div class="mt-1 text-[10.5px] leading-relaxed text-slate-500">${escapeHtml((sections.find(s=>s.id===id)||{}).description||'開啟相關活動日資料。')}</div></button>`;
-    const next=programme.slice(0,7).map(row=>`<div class="flex gap-3 border-b last:border-0 py-2"><b class="w-11 flex-none text-sky-700 text-[12px]">${escapeHtml(row.time||'')}</b><div><b class="text-[12px]">${escapeHtml(row.title||'')}</b><div class="text-[10.5px] text-slate-500">${escapeHtml(row.location||row.detail||'')}${row.owner?`　·　${escapeHtml(row.owner)}`:''}</div></div></div>`).join('');
-    const checklist=(snap.staff_start_checklist||[]).map((item,i)=>`<li class="flex gap-2"><span class="w-5 h-5 flex-none rounded-full bg-sky-100 text-sky-700 text-center font-bold">${i+1}</span><span>${escapeHtml(item)}</span></li>`).join('');
+    const finder=manual.task_finder||{};
+    const guides=finder.role_guides||[];
+    const guideCards=guides.map(guide=>`<button onclick="app.switchExecManualTab('${guide.action_tab||'overview'}')" class="text-left bg-white border rounded-xl p-3 hover:border-sky-300 hover:bg-sky-50 transition"><div class="font-bold text-[12px] text-slate-800"><i class="fa-solid ${escapeHtml(guide.icon||'fa-circle-info')} text-sky-600 mr-1"></i>${escapeHtml(guide.title||'')}</div><div class="mt-1 text-[10.5px] leading-relaxed text-slate-500">${escapeHtml(guide.instruction||'')}</div></button>`).join('');
+    const answers=(finder.common_answers||[]).map(row=>`<details class="bg-white border rounded-xl p-3"><summary class="cursor-pointer list-none flex items-start justify-between gap-3"><b class="text-[12px]">${escapeHtml(row.question||'')}</b><i class="fa-solid fa-chevron-down text-slate-400 mt-1"></i></summary><p class="mt-2 pt-2 border-t whitespace-pre-line text-[11px] leading-relaxed text-slate-700">${escapeHtml(row.answer||'')}</p></details>`).join('');
+    const facilities=(finder.facilities||[]).map(row=>`<div class="bg-white border rounded-xl p-2.5 text-[11px]"><span class="mr-1">${escapeHtml(row.icon||'📍')}</span><b>${escapeHtml(row.question||'')}</b><div class="text-slate-600 mt-1">${escapeHtml(row.answer||'')}</div></div>`).join('');
     box.innerHTML=`<div class="space-y-4">
-      <section class="rounded-2xl p-4 bg-gradient-to-br from-slate-900 to-sky-900 text-white">
-        <div class="flex items-start justify-between gap-3 flex-wrap"><div><div class="text-[11px] text-sky-100 font-bold tracking-wide">工作人員・唯讀執行版</div><h3 class="font-bold text-lg mt-1">${escapeHtml(manual.title||'2027 港島童軍繽紛日｜工作人員執行手冊')}</h3><p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-sky-50">${escapeHtml(manual.source_rule||'請以本手冊為活動日查閱入口。')}</p></div><span class="bg-white/15 border border-white/25 rounded-full px-3 py-1.5 text-[10px]">PIN 工作人員：可查閱活動日必需資料</span></div>
-      </section>
-      <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">工作人員編更</div><b class="text-xl">${escapeHtml(String(snap.staff_roster_count||0))}</b><div class="text-[10px] text-slate-400">筆參考記錄</div></div>
-        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">參加旅團</div><b class="text-xl">${escapeHtml(String(snap.participant_unit_count||0))}</b><div class="text-[10px] text-slate-400">個單位</div></div>
-        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">主題攤位</div><b class="text-xl">${escapeHtml(String(snap.booth_count||0))}</b><div class="text-[10px] text-slate-400">個攤位</div></div>
-        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">必讀文件</div><b class="text-xl">${escapeHtml(String(manual.document_catalog?.total||0))}</b><div class="text-[10px] text-slate-400">筆受控記錄</div></div>
-      </section>
-      <section class="grid grid-cols-1 lg:grid-cols-5 gap-4"><div class="lg:col-span-3 bg-white border rounded-2xl p-4"><div class="flex items-center justify-between gap-2"><h4 class="font-bold text-sm"><i class="fa-solid fa-clock text-sky-600 mr-1"></i>全日重點程序</h4><button onclick="app.switchExecManualTab('programme')" class="text-[11px] font-bold text-sky-700">查看全部 →</button></div><div class="mt-2">${next||'<p class="text-sm text-slate-400">暫未有程序資料</p>'}</div></div><div class="lg:col-span-2 bg-sky-50 border border-sky-100 rounded-2xl p-4"><h4 class="font-bold text-sm text-sky-950"><i class="fa-solid fa-list-check mr-1"></i>開工前四步</h4><ol class="mt-3 space-y-2 text-[11px] leading-relaxed text-slate-700">${checklist}</ol></div></section>
-      <section><h4 class="font-bold text-sm mb-2">我需要找甚麼？</h4><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">${goto('activities','地圖、攤位及遊戲','fa-map-location-dot')}${goto('logistics','報到、餐盒及後勤','fa-clipboard-check')}${goto('crisis','安全及緊急應變','fa-triangle-exclamation')}${goto('staff','我的組別職責','fa-people-group')}</div></section>
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] leading-relaxed text-amber-950"><b>資料界線：</b>${escapeHtml(manual.audience_rule?.restricted||'個人及管理資料只向獲授權角色顯示。')}</div>
+      <section class="rounded-2xl p-4 bg-gradient-to-br from-slate-900 to-sky-900 text-white"><div class="flex items-start justify-between gap-3 flex-wrap"><div><div class="text-[11px] text-sky-100 font-bold tracking-wide">活動日工作人員・唯讀指引</div><h3 class="font-bold text-lg mt-1">我要去哪裡？現在要做甚麼？出事怎樣處理？</h3><p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-sky-50">這不是管理摘要。請先找你的工作崗位；手冊會帶你到位置、活動內容、工作時段、服務點、常見問題及應變程序。</p></div><span class="bg-white/15 border border-white/25 rounded-full px-3 py-1.5 text-[10px]">所有活動日操作資料可查・只遮蔽個人私隱</span></div></section>
+      <section class="bg-sky-50 border border-sky-200 rounded-2xl p-4"><div class="flex items-start gap-2"><i class="fa-solid fa-magnifying-glass text-sky-700 mt-1"></i><div class="flex-1"><label for="exec-task-search" class="font-bold text-[13px] text-sky-950">找我的工作崗位</label><p class="text-[10.5px] text-sky-800 mt-0.5">輸入攤位編號（例如 A01）、編更代號（例如 A1 Core）、攤位名稱或協助機構；再查看本站位置、活動內容、何時處理甚麼及遇事怎樣做。</p><input id="exec-task-search" oninput="app.renderExecManualTaskFinder()" placeholder="例如：A01、A1 Core、機電、無人機、反恐" class="mt-3 w-full bg-white border border-sky-200 rounded-xl px-3 py-2 text-sm" autocomplete="off"><div id="exec-task-finder-results" class="mt-3"></div></div></div></section>
+      <section><h4 class="font-bold text-sm mb-2">我屬於哪一類工作？</h4><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">${guideCards}</div></section>
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-4"><div><h4 class="font-bold text-sm mb-2">有人問我怎樣回答？</h4><div class="space-y-2">${answers||'<p class="text-sm text-slate-400">暫未有常見問題資料</p>'}</div></div><div><h4 class="font-bold text-sm mb-2">常用服務點</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${facilities||'<p class="text-sm text-slate-400">請查看場地圖</p>'}</div><button onclick="app.switchExecManualTab('activities')" class="mt-3 text-[11px] font-bold text-sky-700">開啟完整場地及動線圖 →</button></div></section>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] leading-relaxed text-amber-950"><b>私隱保護：</b>${escapeHtml(manual.audience_rule?.restricted||'只遮蔽個人資料。')}</div>
     </div>`;
+    this.renderExecManualTaskFinder();
+  }
+,
+  renderExecManualTaskFinder(query){
+    const out=document.getElementById('exec-task-finder-results'); if(!out) return;
+    const finder=this.execManualData().task_finder||{};
+    const input=document.getElementById('exec-task-search');
+    const q=String(query!==undefined?query:(input?.value||'')).trim().toLowerCase();
+    if(input&&query!==undefined) input.value=query;
+    const rows=(finder.workstations||[]).filter(row=>!q||`${row.booth_code||''} ${(row.assignment_labels||[]).join(' ')} ${row.booth_name||''} ${row.operator||''} ${row.activity||''}`.toLowerCase().includes(q));
+    const card=row=>`<article class="bg-white border rounded-xl p-3.5 space-y-2"><div class="flex items-start justify-between gap-2"><div><span class="inline-block bg-sky-700 text-white rounded-lg px-2 py-1 text-[11px] font-black">${escapeHtml(row.booth_code||'')}</span><span class="ml-1 text-[10px] text-slate-500">${escapeHtml(row.zone||'')} 區</span><h4 class="font-bold text-[13px] mt-1">${escapeHtml(row.booth_name||'')}</h4><p class="text-[10.5px] text-slate-500 mt-0.5">${escapeHtml(row.operator||'')}</p></div><button onclick="app.switchExecManualTab('activities');setTimeout(()=>app.switchActivitiesTab('maps'),120)" class="text-[11px] font-bold text-sky-700 whitespace-nowrap">看地圖 →</button></div><div class="bg-slate-50 border rounded-lg p-2 text-[11px]"><b>本站活動：</b>${escapeHtml(row.activity||'請向當值總主任確認。')}</div><div class="text-[11px] text-slate-700"><i class="fa-solid fa-location-dot text-sky-500 mr-1"></i>${escapeHtml(row.location||'')}</div>${(row.assignment_labels||[]).length?`<div class="text-[10.5px] text-indigo-700"><b>編更上的崗位代號：</b>${escapeHtml((row.assignment_labels||[]).join('／'))}</div>`:''}<ol class="space-y-1.5 text-[10.5px] text-slate-600 list-decimal pl-4">${(row.operating_steps||[]).map(step=>`<li>${escapeHtml(step)}</li>`).join('')}</ol><div class="flex gap-2"><button onclick="app.switchExecManualTab('programme')" class="text-[10.5px] font-bold text-sky-700">看全日時間 →</button><button onclick="app.switchExecManualTab('crisis')" class="text-[10.5px] font-bold text-rose-700">遇事處理 →</button></div></article>`;
+    if(!q){
+      const codes=(finder.workstations||[]).map(row=>`<button onclick="app.renderExecManualTaskFinder('${escapeHtml(row.booth_code||'')}')" class="bg-white border hover:bg-sky-50 px-2 py-1 rounded-lg text-[10px] font-bold">${escapeHtml(row.booth_code||'')}${(row.assignment_labels||[])[0]?` · ${escapeHtml(row.assignment_labels[0])}`:''}</button>`).join('');
+      out.innerHTML=`<div class="text-[10.5px] text-sky-900 mb-2">共用 PIN 不按姓名搜尋，以已分配的攤位編號為準。可直接選擇：</div><div class="flex gap-1.5 flex-wrap">${codes}</div>`;
+      return;
+    }
+    out.innerHTML=rows.length?`<div class="grid grid-cols-1 xl:grid-cols-2 gap-2">${rows.map(card).join('')}</div>`:`<div class="bg-white border rounded-xl p-3 text-[11px] text-slate-600">找不到「${escapeHtml(q)}」；請改用攤位編號、攤位名稱或協助機構搜尋，或向當值總主任確認分配。</div>`;
+  }
+,
+  renderExecManualGroupTasks(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const manual=this.execManualData();
+    const guides=manual.task_finder?.role_guides||[];
+    const cards=guides.map(guide=>`<article class="bg-white border rounded-xl p-4"><div class="flex items-start gap-2"><i class="fa-solid ${escapeHtml(guide.icon||'fa-circle-info')} text-indigo-600 mt-0.5"></i><div><h4 class="font-bold text-[13px]">${escapeHtml(guide.title||'')}</h4><p class="text-[11px] text-slate-600 leading-relaxed mt-1">${escapeHtml(guide.instruction||'')}</p><div class="mt-2 text-[10.5px] text-indigo-700"><b>找資料：</b>${escapeHtml(guide.find||'')}</div><button onclick="app.switchExecManualTab('${guide.action_tab||'overview'}')" class="mt-3 text-[11px] font-bold text-indigo-700">直接前往 →</button></div></div></article>`).join('');
+    box.innerHTML=`<div class="space-y-3"><div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[12px] text-indigo-950"><b><i class="fa-solid fa-people-group mr-1"></i>各類工作指引</b><br><span class="text-[10.5px]">所有工作人員均可看全部操作指引，方便跨崗位支援；只有人名、電話、電郵、車牌、個人簽收及事故個資會被遮蔽。</span></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${cards}</div></div>`;
   }
 ,
   renderExecManualProgramme(panel){
@@ -367,7 +374,7 @@ Object.assign(ScoutEventApp.prototype,{
       return `<article class="bg-white border rounded-xl p-3 flex flex-col"><div class="flex items-start justify-between gap-2"><div><span class="text-[10px] bg-slate-100 border rounded-full px-2 py-0.5">${escapeHtml(asset.category||'活動日文件')}</span><h5 class="font-bold text-[12px] mt-1">${escapeHtml(asset.title||'')}</h5></div>${file?`<a href="${file}" target="_blank" rel="noopener" class="text-[11px] text-sky-700 font-bold whitespace-nowrap">開啟</a>`:''}</div><p class="text-[10.5px] leading-relaxed text-slate-500 mt-1.5">${escapeHtml(asset.description||'')}</p><button onclick="app.switchExecManualTab('${tab}')" class="mt-2 text-left text-[10.5px] font-bold text-slate-700">在手冊中查看 →</button></article>`;
     }).join('');
     const guideCards=guidance.map(guide=>`<details class="bg-white border rounded-xl p-3"><summary class="cursor-pointer list-none flex items-start justify-between gap-3"><div><span class="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2 py-0.5">${escapeHtml(guide.category||'工作人員須知')}</span><b class="block text-[12px] mt-1">${escapeHtml(guide.title||'')}</b></div><i class="fa-solid fa-chevron-down text-slate-400 mt-2"></i></summary><div class="border-t mt-3 pt-3 whitespace-pre-line text-[11px] leading-relaxed text-slate-700">${escapeHtml(guide.description||'')}<p class="mt-2 text-[10px] text-amber-800 bg-amber-50 border border-amber-100 rounded-lg p-2">${escapeHtml(guide.note||'')}</p></div></details>`).join('');
-    box.innerHTML=`<div class="space-y-4"><section class="bg-violet-50 border border-violet-200 rounded-xl p-3 text-[12px] text-violet-950"><b><i class="fa-solid fa-folder-open mr-1"></i>通告、必讀指引及活動日文件</b><br><span class="text-[10.5px]">這裡只列出普通工作人員可查閱的活動日材料；財務、嘉賓個人資料及管理文件仍受角色限制。</span></section><section><h4 class="font-bold text-sm mb-2">活動日文件（2027 擁有版本）</h4><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">${assetCards||'<p class="text-sm text-slate-400">暫未有活動日文件</p>'}</div></section><section><div class="flex items-baseline justify-between gap-2 mb-2"><h4 class="font-bold text-sm">工作人員須知及參考通告</h4><span class="text-[10px] text-slate-500">${guidance.length} 項內建內容</span></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${guideCards||'<p class="text-sm text-slate-400">暫未有工作人員須知</p>'}</div></section><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] text-amber-950"><b>確認提示：</b>所有「2027 參考種籽」內容仍要由相關總主任確認；不要把舊年份、費用、日期或聯絡資料當成已確認的 2027 最終安排。</div></div>`;
+    box.innerHTML=`<div class="space-y-4"><section class="bg-violet-50 border border-violet-200 rounded-xl p-3 text-[12px] text-violet-950"><b><i class="fa-solid fa-folder-open mr-1"></i>通告、必讀指引及活動日文件</b><br><span class="text-[10.5px]">這裡列出所有工作人員可查閱的活動日材料；只遮蔽嘉賓個人資料、個人聯絡及其他私隱紀錄，編輯工具則仍需籌委帳戶。</span></section><section><h4 class="font-bold text-sm mb-2">活動日文件（2027 擁有版本）</h4><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">${assetCards||'<p class="text-sm text-slate-400">暫未有活動日文件</p>'}</div></section><section><div class="flex items-baseline justify-between gap-2 mb-2"><h4 class="font-bold text-sm">工作人員須知及參考通告</h4><span class="text-[10px] text-slate-500">${guidance.length} 項內建內容</span></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${guideCards||'<p class="text-sm text-slate-400">暫未有工作人員須知</p>'}</div></section><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] text-amber-950"><b>確認提示：</b>所有「2027 參考種籽」內容仍要由相關總主任確認；不要把舊年份、費用、日期或聯絡資料當成已確認的 2027 最終安排。</div></div>`;
   }
 ,
   renderExecManualFinanceGuide(panel){
@@ -539,13 +546,14 @@ Object.assign(ScoutEventApp.prototype,{
   boothMasterPanelHTML(){
     const booths=(this.getActivitiesData().booths||[]);
     const rows=booths.slice().sort((a,b)=>String(a.booth_number||'').localeCompare(String(b.booth_number||''),undefined,{numeric:true}));
+    const isStaffManual=this.currentModule==='exec_manual';
     const ref2025=[
       ['A01','主題節目組','主題節目攤位'],['A02','港島航空組','飛行模擬體驗'],['A03','港島手工藝坊','童軍繩結挑戰'],['B02','港島童軍總會','童軍技能創新'],['B03','灣仔區','AR 解碼謎團'],['C01','膳食回收組','衣物回收'],['D02','港島第6旅','海洋探險 2.0'],['E03','港島第243旅','正向價值大轉盤'],['F01','香港青少年服務中心','情緒急救站'],['F08','港島童軍聯會','快問快答']
     ];
     return `<div class="space-y-3">
       <div class="flex items-center justify-between flex-wrap gap-2"><b class="text-[13px]"><i class="fa-solid fa-store mr-1 text-amber-600"></i>攤位總表</b><span class="text-[11px] text-slate-500">${rows.length} 個攤位</span></div>
-      <div class="table-responsive bg-white border rounded-xl"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-2 text-left">編號</th><th class="px-2 py-2 text-left">負責單位</th><th class="px-2 py-2 text-left">攤位名稱／內容</th><th class="px-2 py-2 text-left">聯絡人</th><th class="px-2 py-2 text-center">人手</th><th class="px-2 py-2 text-center">確認</th></tr></thead><tbody class="divide-y">${rows.map(b=>`<tr><td class="px-2 py-1.5 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number||'')}</td><td class="px-2 py-1.5" data-label="負責單位">${escapeHtml(b.group_name||'')}</td><td class="px-2 py-1.5" data-label="攤位名稱／內容"><b>${escapeHtml(b.booth_name||'')}</b>${b.description?`<span class="block text-[10px] text-slate-500">${escapeHtml(b.description)}</span>`:''}</td><td class="px-2 py-1.5" data-label="聯絡人">${escapeHtml(b.responsible||'')}${(!b.responsible&&b.contact)?(this.canSeeContactInfo(b.group_name,'booth')?escapeHtml(b.contact):this.contactLockHTML()):''}</td><td class="px-2 py-1.5 text-center" data-label="人手">${escapeHtml(String(b.staff_count||b.staff||'—'))}</td><td class="px-2 py-1.5 text-center" data-label="確認">${String(b.confirmed||'').toUpperCase()==='Y'?'<span class="text-emerald-700 font-bold">✓</span>':'—'}</td></tr>`).join('')||'<tr><td colspan="6" class="px-2 py-6 text-center text-slate-400">暫無攤位資料</td></tr>'}</tbody></table></div>
-      <details class="bg-slate-50 border rounded-xl p-3"><summary class="cursor-pointer text-[12px] font-bold text-slate-700">2025 攤位資料（參考）</summary><div class="table-responsive mt-3"><table class="min-w-full text-[11px]"><thead class="bg-white"><tr><th class="px-2 py-1 text-left">編號</th><th class="px-2 py-1 text-left">單位</th><th class="px-2 py-1 text-left">攤位</th></tr></thead><tbody class="divide-y">${ref2025.map(r=>`<tr>${r.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-mono':''}">${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>
+      <div class="table-responsive bg-white border rounded-xl"><table class="min-w-full text-xs"><thead class="bg-slate-100"><tr><th class="px-2 py-2 text-left">編號</th><th class="px-2 py-2 text-left">負責單位</th><th class="px-2 py-2 text-left">攤位名稱／內容</th>${isStaffManual?'': '<th class="px-2 py-2 text-left">聯絡人</th>'}<th class="px-2 py-2 text-center">人手</th><th class="px-2 py-2 text-center">確認</th></tr></thead><tbody class="divide-y">${rows.map(b=>`<tr><td class="px-2 py-1.5 font-mono font-bold" data-label="編號">${escapeHtml(b.booth_number||'')}</td><td class="px-2 py-1.5" data-label="負責單位">${escapeHtml(b.group_name||'')}</td><td class="px-2 py-1.5" data-label="攤位名稱／內容"><b>${escapeHtml(b.booth_name||'')}</b>${b.description?`<span class="block text-[10px] text-slate-500">${escapeHtml(b.description)}</span>`:''}</td>${isStaffManual?'':`<td class="px-2 py-1.5" data-label="聯絡人">${escapeHtml(b.responsible||'')}${(!b.responsible&&b.contact)?(this.canSeeContactInfo(b.group_name,'booth')?escapeHtml(b.contact):this.contactLockHTML()):''}</td>`}<td class="px-2 py-1.5 text-center" data-label="人手">${escapeHtml(String(b.staff_count||b.staff||'—'))}</td><td class="px-2 py-1.5 text-center" data-label="確認">${String(b.confirmed||'').toUpperCase()==='Y'?'<span class="text-emerald-700 font-bold">✓</span>':'—'}</td></tr>`).join('')||`<tr><td colspan="${isStaffManual?5:6}" class="px-2 py-6 text-center text-slate-400">暫無攤位資料</td></tr>`}</tbody></table></div>
+      ${isStaffManual?'':`<details class="bg-slate-50 border rounded-xl p-3"><summary class="cursor-pointer text-[12px] font-bold text-slate-700">2025 攤位資料（參考）</summary><div class="table-responsive mt-3"><table class="min-w-full text-[11px]"><thead class="bg-white"><tr><th class="px-2 py-1 text-left">編號</th><th class="px-2 py-1 text-left">單位</th><th class="px-2 py-1 text-left">攤位</th></tr></thead><tbody class="divide-y">${ref2025.map(r=>`<tr>${r.map((c,i)=>`<td class="px-2 py-1 ${i===0?'font-mono':''}">${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`}
     </div>`;
   }
 ,

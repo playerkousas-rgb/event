@@ -162,6 +162,58 @@ const staffRosterCount=count(event.staff&&event.staff.event_staff_roster);
 const groupDuties=list(event.staff&&event.staff.job_duties).map(row=>({
   group:row.group||'', duty:row.duty||'', status:sourceRef
 }));
+const publicChannel=event.public_channel_2027||{};
+const boothKey=value=>{
+  const m=String(value||'').toUpperCase().match(/([A-F])\s*0*(\d{1,2})/);
+  return m?m[1]+Number(m[2]):'';
+};
+const boothStaffCounts={};
+const boothAssignmentLabels={};
+for(const row of list(event.staff&&event.staff.event_staff_roster)){
+  const label=String(row.booth||'').trim();
+  const key=boothKey(label);
+  if(key){
+    boothStaffCounts[key]=(boothStaffCounts[key]||0)+1;
+    if(label) (boothAssignmentLabels[key]||(boothAssignmentLabels[key]=[])).push(label);
+  }
+}
+const boothWorkstations=list(event.activities&&event.activities.booths).map(booth=>{
+  const code=booth.booth_no||booth.booth_number||'';
+  const key=boothKey(code);
+  return {
+    id:booth.id||'', booth_code:code, zone:booth.zone||String(code).charAt(0),
+    booth_name:booth.booth_name||'', operator:booth.group_name||'',
+    activity:booth.content||booth.description||'', assigned_staff_count:boothStaffCounts[key]||0,
+    assignment_labels:[...new Set(boothAssignmentLabels[key]||[])],
+    location:`${booth.zone||String(code).charAt(0)} 區攤位活動區；請在「場地、攤位及遊戲」開啟場地圖核對實際位置。`,
+    operating_steps:[
+      '到崗後先按場地圖確認位置、物資及安全通道；不確定即向主題節目組總部／當值總主任確認。',
+      '09:00 主題活動開始後，按本站活動內容接待參加者；需要找其他攤位時，以攤位編號及場地圖指引。',
+      '10:45 前留意大會集合及典禮轉換安排；13:00 後按全日程序恢復主題活動。',
+      '如有人不適、出現安全風險或超出本站處理範圍，先保障安全，再按「安全及應變」即時回報。'
+    ],
+    status:sourceRef
+  };
+});
+const facilityAnswers=list(publicChannel.venue_map&&publicChannel.venue_map.facilities).map(row=>({
+  icon:row.icon||'📍', question:`${row.name||'服務點'}在哪裡？`, answer:row.where||''
+}));
+const help=publicChannel.help||{};
+const operationalAnswers=[
+  {question:'我是攤位工作人員，怎樣找回自己的位置和工作？',answer:'用攤位編號、編更代號、名稱或所屬機構搜尋本站；頁面會列出分區、活動內容、活動時段和開站／轉換／求助步驟。共用 PIN 不會按姓名辨認身份，因此不公開按人名查詢。'},
+  {question:'旅團來到時應怎樣指路？',answer:'旅團由東閘入場，前往有蓋操場報到處領物資／餐盒，之後前往 A–F 攤位活動區；10:45 依指示到大操場集合。'},
+  {question:'嘉賓、優異旅團或步操隊伍問路怎樣回答？',answer:'使用「全日程序及交接」及「場地、攤位及遊戲」內的動線資料；不確定時轉交有關接待／典禮崗位，不自行猜測。'},
+  {question:'有人問餐盒、失物或查詢處在哪裡？',answer:`餐盒派發／用膳區：${(facilityAnswers.find(row=>row.question.includes('餐盒'))||{}).answer||'請查看場地圖'}；失物認領：${help.lost_found||'請查看場地圖'}；查詢：${help.hotline||'請查看當日公告'}。`},
+  {question:'有人受傷、感到不適或發生突發情況怎樣做？',answer:`先保障安全及避免風險擴大；即時通知當值總主任／指揮中心，並把不適者交由 ${help.first_aid||'急救站'} 處理。未獲授權不可向外發言。`}
+];
+const roleGuides=[
+  {id:'booth',title:'攤位工作人員',icon:'fa-store',find:'輸入 A01、A1 Core、攤位名稱或協助機構',action_tab:'overview',instruction:'先找本站位置和活動內容；活動時依本站指引接待參加者、回答基本方向問題，超出範圍即回報。'},
+  {id:'checkin',title:'報到及旅團支援',icon:'fa-clipboard-check',find:'查看旅團報到、餐盒及服務點',action_tab:'logistics',instruction:'依有蓋操場報到處程序核對、派發和指引旅團；需要人名／簽收資料時只在獲授權的工作崗位處理。'},
+  {id:'ceremony',title:'典禮及會操支援',icon:'fa-crown',find:'查看時間線、典禮位置及司儀稿',action_tab:'programme',instruction:'按全日程序、典禮位置及當值總主任指示處理集合、排位、上台和轉場。'},
+  {id:'guest',title:'嘉賓及訪客支援',icon:'fa-handshake',find:'查看嘉賓動線及服務點',action_tab:'activities',instruction:'提供位置、程序和方向資料；嘉賓個人名單、電話和車輛資料不在共用手冊顯示。'},
+  {id:'logistics',title:'交通、膳食及後勤',icon:'fa-truck',find:'查看餐盒、用膳、服務點及場地圖',action_tab:'logistics',instruction:'按已發佈的後勤資料處理；遇到物資、交通或場地問題即交當值協調／行政崗位。'},
+  {id:'safety',title:'安全、急救及突發情況',icon:'fa-triangle-exclamation',find:'查看安全及應變',action_tab:'crisis',instruction:'先處理人身安全、找急救／指揮支援、記錄並回報；不自行向外發布事故資料。'}
+];
 const staffGuidance=list(event.unit_guide&&event.unit_guide.docs).map(row=>({
   id:row.id||'', title:row.title||'', category:row.category||'工作人員須知',
   description:row.description||'', status:sourceRef,
@@ -172,8 +224,8 @@ const crisisDocs=list(event.crisis&&event.crisis.docs).map(row=>({
 }));
 
 /* This index is the worker-facing table of contents.  It deliberately contains
- * only operational material for ordinary staff; personal contact details,
- * vehicle plates, finances and editable rosters stay behind role permissions. */
+ * operational material for every worker; only personally identifying or
+ * private-record fields are withheld, while editing remains role-controlled. */
 event.execution_manual_2027={
   schema_version:'2027-execution-manual-v1',
   title:'2027 港島童軍繽紛日｜工作人員執行手冊',
@@ -182,9 +234,16 @@ event.execution_manual_2027={
   generated_at:today,
   source_rule:'本手冊由 ISD 2027 受控資料整理而成。2026 只屬一次性封存參考，日後修訂只可在 ISD 2027 folder／2027 前端流程進行。',
   audience_rule:{
-    ordinary_staff:'可閱覽活動日總覽、程序、場地圖、攤位、報到、膳食、應變及公開工作指引；唯讀。',
-    committee:'按所屬組別再閱覽工作分配、受限名單、可編輯來源及內部文件。',
-    restricted:'嘉賓個人資料、電話／電郵、車牌、財務、帳戶及批核資料不在普通工作人員手冊公開。'
+    ordinary_staff:'所有不涉及個人私隱的活動日操作資料均可在此唯讀查閱：崗位、場地、流程、攤位、報到、膳食、服務點、應變和常見問題不按組別隱藏。',
+    committee:'同一份操作資料供所有工作人員查閱；籌委帳戶只額外提供來源編輯、個人／受限名單和管理操作。',
+    restricted:'只保護個人私隱及其衍生資料：姓名對應崗位、電話、電郵、嘉賓個人資料、車牌、帳戶、事故個資及簽收紀錄。'
+  },
+  task_finder:{
+    shared_pin_rule:'普通工作人員使用共用 PIN，不以姓名辨認登入者；請按已獲分配的攤位編號、編更代號、工作類別或所屬崗位搜尋。這樣可讓所有人查閱運作資料，同時不公開個人崗位對應。',
+    workstations:boothWorkstations,
+    role_guides:roleGuides,
+    common_answers:operationalAnswers,
+    facilities:facilityAnswers
   },
   event_day_snapshot:{
     event_name:event.event_name,
@@ -195,18 +254,18 @@ event.execution_manual_2027={
     activity_schedule:schedule,
     staff_start_checklist:[
       '到指定工作人員集合／報到位置報到，確認所屬組別及崗位。',
-      '先查看「活動日總覽」與「場地及動線」，確認所在位置及下一個交接點。',
+      '先用「工作崗位及即時指引」找回崗位，再查看場地及動線，確認所在位置及下一個交接點。',
       '按本組工作指引執行；遇到未列情況，向所屬總主任或指揮中心回報。',
       '任何事故先保障安全；依「安全及應變」程序處理，未獲授權不得對外發言。'
     ]
   },
   sections:[
-    {id:'overview', title:'活動日總覽', icon:'fa-house', audience:'所有工作人員', source:['event_day_snapshot','schedule'], description:'入場後第一個查看的頁面：活動規模、全日程序、工作前檢查及交接提示。'},
+    {id:'overview', title:'工作崗位及即時指引', icon:'fa-person-circle-question', audience:'所有工作人員', source:['activities.booths','staff.event_staff_roster','public_channel_2027'], description:'用攤位編號、編更代號、名稱或工作類別，找出位置、工作內容、時段、求助方法及可回答的常見問題。'},
     {id:'venue', title:'場地、攤位及動線', icon:'fa-map-location-dot', audience:'所有工作人員', source:['activities.maps','activities.booths','activities.gameCards'], description:'警察學院場地圖、旅團及嘉賓動線、攤位總表和遊戲卡。'},
     {id:'programme', title:'典禮及全日程序', icon:'fa-clock', audience:'所有工作人員', source:['schedule','ceremony'], description:'按時間排序的活動日程序；典禮組另可使用 rundown、檢閱路線及司儀稿。'},
     {id:'checkin_logistics', title:'報到、膳食及後勤', icon:'fa-clipboard-check', audience:'所有工作人員', source:['participants','troop_checkin','meal_logistics','meal_menu'], description:'旅團報到、餐盒、工作人員膳食及現場後勤參考。'},
     {id:'safety', title:'安全及應變', icon:'fa-triangle-exclamation', audience:'所有工作人員', source:['crisis'], description:'危機定義、即時回報、集合及對外發言規則。'},
-    {id:'teams', title:'組別職責及聯絡', icon:'fa-people-group', audience:'所有工作人員（敏感聯絡資料受限）', source:['staff.org_chart','staff.job_duties','staff.contacts'], description:'組織架構、各組職責及按權限顯示的聯絡資料。'},
+    {id:'teams', title:'各類工作指引', icon:'fa-people-group', audience:'所有工作人員', source:['staff.job_duties','public_channel_2027'], description:'攤位、報到、典禮、嘉賓、後勤及安全工作應怎樣找資料和處理；只遮蔽個人私隱。'},
     {id:'documents', title:'通告及必讀文件', icon:'fa-folder-open', audience:'所有工作人員', source:['notices','unit_guide','documents'], description:'活動當日所需的通告、旅團須知和指引；籌備及敏感文件按角色權限限制。'}
   ],
   venue_assets:copy(event.activities.maps),
