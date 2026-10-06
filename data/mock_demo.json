@@ -28536,6 +28536,240 @@
         }
       ]
     },
+    "activity_day_readiness": [
+      {
+        "id": "staff_badge_checkin",
+        "category": "報到、服務點、膳食及後勤",
+        "title": "工作人員點名及紀念章派發名單",
+        "owner": "行政組",
+        "status": "ready",
+        "status_label": "可供活動日使用",
+        "color": "emerald",
+        "description": "以 2027 工作人員編更名單（279 位）作唯一現場名單；派發頁可按組別、攤位、姓名及未派狀態篩選／排序。",
+        "source_paths": [
+          "staff.event_staff_roster",
+          "souvenirs.staff_stamps"
+        ]
+      },
+      {
+        "id": "guest_checkin",
+        "category": "報到、服務點、膳食及後勤",
+        "title": "嘉賓點名及紀念章派發名單",
+        "owner": "行政組、嘉賓接待組",
+        "status": "ready",
+        "status_label": "可供活動日使用",
+        "color": "emerald",
+        "description": "保留直接的嘉賓逐人點名；可按單位、姓名、職銜及未派狀態搜尋／排序。",
+        "source_paths": [
+          "guest_roster.guests",
+          "souvenirs.guest_stamps"
+        ]
+      },
+      {
+        "id": "participant_and_meal_lists",
+        "category": "報到、服務點、膳食及後勤",
+        "title": "旅團報到及餐盒派發名單",
+        "owner": "行政組、後勤組",
+        "status": "confirmation_required",
+        "status_label": "待負責組確認",
+        "color": "amber",
+        "description": "2027 已有旅團及餐盒參考名單；活動日前須由負責組確認最終到場、領取位置及交接安排。",
+        "source_paths": [
+          "participants",
+          "meal_distribution",
+          "meal_logistics"
+        ]
+      },
+      {
+        "id": "venue_programme_safety",
+        "category": "場地、攤位、遊戲及動線／安全及應變",
+        "title": "場地圖、遊戲卡、程序及危機應變文件",
+        "owner": "場地組、主題節目組、會操及典禮組、危機處理組",
+        "status": "confirmation_required",
+        "status_label": "待負責組確認",
+        "color": "amber",
+        "description": "2027 已有場地圖、遊戲卡、程序及應變參考資產；仍須確認活動日最終版本、集合位置及當日變更。",
+        "source_paths": [
+          "activities.maps",
+          "activities.gameCards",
+          "schedule",
+          "crisis.manuals"
+        ]
+      },
+      {
+        "id": "notices",
+        "category": "通告及必讀文件",
+        "title": "活動通告原檔",
+        "owner": "行政組、各文件擁有人",
+        "status": "file_gap",
+        "status_label": "缺 2027 擁有檔案",
+        "color": "rose",
+        "description": "已複製 3 項通告資料；每項仍須建立、連結或確認其 2027 擁有的原檔。",
+        "source_paths": [
+          "notices"
+        ]
+      },
+      {
+        "id": "document_catalogue",
+        "category": "通告及必讀文件",
+        "title": "完整活動日文件目錄",
+        "owner": "各文件擁有人",
+        "status": "file_gap",
+        "status_label": "缺 2027 擁有檔案／處置確認",
+        "color": "rose",
+        "description": "已保留 79 項文件目錄及來源；每項須由擁有人決定保留、替換或退役，並補上 2027 檔案。",
+        "source_paths": [
+          "documents",
+          "source_of_truth.execution_manual_gap_register.document_review_queue"
+        ]
+      }
+    ],
+    "department_activity_day_readiness": [
+      {
+        "group": "顧問團",
+        "materials": "全日程序、場地圖、安全及應變參考",
+        "lists": "不設獨立個人名單",
+        "issue": "—",
+        "output": "手冊／場地及安全文件",
+        "status": "confirmation_required",
+        "status_label": "待確認",
+        "color": "amber",
+        "source_paths": [
+          "execution_manual_2027.all_day_programme",
+          "activities.maps",
+          "crisis.manuals"
+        ]
+      },
+      {
+        "group": "主席及執行副主席",
+        "materials": "全日程序、交接及安全回報資料",
+        "lists": "不設獨立個人名單",
+        "issue": "—",
+        "output": "手冊／程序及安全文件",
+        "status": "confirmation_required",
+        "status_label": "待確認",
+        "color": "amber",
+        "source_paths": [
+          "execution_manual_2027.all_day_programme",
+          "crisis"
+        ]
+      },
+      {
+        "group": "秘書處",
+        "materials": "活動通告、工作指引及文件目錄",
+        "lists": "通告及文件來源登記",
+        "issue": "—",
+        "output": "通告原檔／列印版",
+        "status": "file_gap",
+        "status_label": "缺 2027 檔案",
+        "color": "rose",
+        "source_paths": [
+          "notices",
+          "documents"
+        ]
+      },
+      {
+        "group": "會操及典禮組",
+        "materials": "典禮程序、檢閱路線、司儀稿及獎勵資料",
+        "lists": "優異旅團／獎勵點名表",
+        "issue": "典禮物資及獎勵交接",
+        "output": "名單 Excel／Word／列印 PDF",
+        "status": "confirmation_required",
+        "status_label": "待確認",
+        "color": "amber",
+        "source_paths": [
+          "ceremony",
+          "roster_lists.merit_award"
+        ]
+      },
+      {
+        "group": "主題節目組",
+        "materials": "攤位總表、場地圖及遊戲卡",
+        "lists": "攤位編更參考",
+        "issue": "遊戲卡及攤位物資",
+        "output": "攤位總表／場地圖列印",
+        "status": "confirmation_required",
+        "status_label": "待確認",
+        "color": "amber",
+        "source_paths": [
+          "activities.booths",
+          "activities.maps",
+          "activities.gameCards"
+        ]
+      },
+      {
+        "group": "品牌推廣組",
+        "materials": "活動通告、公開資料及品牌推廣文件",
+        "lists": "公開資料來源",
+        "issue": "宣傳品及指示物",
+        "output": "通告／宣傳文件列印",
+        "status": "file_gap",
+        "status_label": "缺 2027 檔案",
+        "color": "rose",
+        "source_paths": [
+          "announcements",
+          "documents"
+        ]
+      },
+      {
+        "group": "嘉賓接待組",
+        "materials": "嘉賓接待位置圖及典禮資料",
+        "lists": "嘉賓名單（私隱受限）",
+        "issue": "嘉賓紀念章",
+        "output": "嘉賓派發 Excel／Word／列印",
+        "status": "ready",
+        "status_label": "可供使用",
+        "color": "emerald",
+        "source_paths": [
+          "guest_roster.guests",
+          "souvenirs.guest_stamps",
+          "activities.maps"
+        ]
+      },
+      {
+        "group": "協調組",
+        "materials": "後勤、物資、車輛及膳食資料",
+        "lists": "餐盒／工作人員膳食名單",
+        "issue": "餐盒及後勤物資",
+        "output": "名單 Excel／Word／列印 PDF",
+        "status": "confirmation_required",
+        "status_label": "待確認",
+        "color": "amber",
+        "source_paths": [
+          "meal_logistics",
+          "meal_distribution",
+          "roster_lists.meal_box"
+        ]
+      },
+      {
+        "group": "服務及發展組",
+        "materials": "旅團報到、服務點及參加旅團資料",
+        "lists": "參加旅團點名簽收表",
+        "issue": "旅團報到資料",
+        "output": "旅團名單 Excel／Word／列印 PDF",
+        "status": "confirmation_required",
+        "status_label": "待確認",
+        "color": "amber",
+        "source_paths": [
+          "participants",
+          "roster_lists.participants"
+        ]
+      },
+      {
+        "group": "行政組",
+        "materials": "工作人員編更、全日程序及跨組後勤資料",
+        "lists": "279 位工作人員點名及紀念章派發名單",
+        "issue": "工作人員紀念章",
+        "output": "派發 Excel／Word／列印後備名單",
+        "status": "ready",
+        "status_label": "可供使用",
+        "color": "emerald",
+        "source_paths": [
+          "staff.event_staff_roster",
+          "souvenirs.staff_stamps"
+        ]
+      }
+    ],
     "completion_checklist": [
       "確認全部活動日文件均已有 2027 擁有的檔案／連結。",
       "由各總主任確認所屬組別崗位、集合位置、交接及聯絡安排。",
@@ -28546,10 +28780,10 @@
   "mock_demo_source": {
     "source_event_id": "isd_2027",
     "source_read_model": "data/isd_2027.json",
-    "source_sha256": "96576200e785e939da011f1fc251d146285b6d78a03af83286ff8c93be439e97",
+    "source_sha256": "10892ddbd586eef8ba095c64c1757062f42da827c0fcff7e51193924cf5c26b3",
     "builder": "tools/build_mock_demo_from_2027.js",
     "policy": "This rehearsal product is rebuilt only from the independent 2027 source. 2026 is immutable provenance only and is never read at runtime.",
-    "rebuilt_at": "2026-10-06T03:38:32.315Z"
+    "rebuilt_at": "2026-10-06T03:48:14.558Z"
   },
   "link_registry": {
     "generated_at": "2026-10-06",

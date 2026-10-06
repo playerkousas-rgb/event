@@ -27,6 +27,14 @@ ok(manual.safety.immediate_steps.length===4&&manual.safety.topics.length>=3,'man
 ok(manual.staff_guidance.length===12&&manual.document_catalog.staff_guidance===12,'manual includes all 12 staff-facing guidance records as readable content');
 ok(manual.staff_document_assets.length>=10,'manual has a curated, directly usable activity-day document set');
 ok(manual.document_catalog.records.length===79&&manual.document_catalog.records.every(row=>row.status==='metadata_copied_file_pending'),'manual keeps the complete copied document catalogue while honestly flagging missing 2027-owned files');
+const readiness=manual.activity_day_readiness||[];
+ok(readiness.length===6&&readiness.every(row=>row.id&&row.status_label&&row.color&&row.description),'manual labels every currently identified activity-day readiness source with a visible status and colour');
+ok(readiness.filter(row=>row.color==='emerald').map(row=>row.id).includes('staff_badge_checkin')&&readiness.some(row=>row.id==='guest_checkin'&&row.color==='emerald'),'manual identifies staff and guest check-in/distribution as usable activity-day stations');
+ok(readiness.some(row=>row.id==='notices'&&row.color==='rose')&&readiness.some(row=>row.id==='document_catalogue'&&row.status==='file_gap'),'manual visibly marks required notices and documents that still lack 2027-owned files');
+const departments=manual.department_activity_day_readiness||[];
+const departmentNames=['顧問團','主席及執行副主席','秘書處','會操及典禮組','主題節目組','品牌推廣組','嘉賓接待組','協調組','服務及發展組','行政組'];
+ok(departments.length===10&&departmentNames.every(group=>departments.some(row=>row.group===group)),'manual reviews the activity-day documents and operational outputs for every department');
+ok(departments.every(row=>row.materials&&row.lists&&row.issue!==undefined&&row.output&&row.status_label&&row.color),'each department review explicitly covers documents, lists/check-in or issue, print/export output and confirmation state');
 ok(manual.audience_rule.ordinary_staff.includes('不按組別隱藏')&&manual.audience_rule.restricted.includes('個人私隱'),'manual shares non-private operations across staff and restricts only private data');
 ok(!manual.task_finder&&manual.manual_catalog.length===9,'manual is a complete category-indexed reference book rather than a prescribed workstation finder');
 ok(manual.public_records.participant_units.length===31&&manual.public_records.booth_meal_allocation.length>=25,'manual includes public unit, meal and duty-allocation records in their own category');
@@ -61,6 +69,8 @@ ok(frontend.includes('不預設工作人員的查閱方式')&&frontend.includes(
 ok(!frontend.includes("{k:'finance_guide'")&&!frontend.includes("{k:'participants'")&&!frontend.includes("{k:'meal_box'")&&!frontend.includes("{k:'merit_award'"),'staff manual navigation omits private person-level roster screens');
 ok(frontend.includes("const isStaffManual=this.currentModule==='exec_manual'")&&frontend.includes("isStaffManual?'': '<th class=\"px-2 py-2 text-left\">聯絡人"),'booth table keeps operations visible while masking the private contact column in the staff manual');
 ok(frontend.includes('renderExecManualDocuments')&&frontend.includes('2027 擁有版本'),'manual UI renders its curated files and readable staff guidance rather than an empty document library');
+ok(frontend.includes('活動日資料確認標籤')&&frontend.includes('activity_day_readiness')&&frontend.includes('readinessStyle')&&frontend.includes('readinessPill'),'manual UI makes required-but-unconfirmed sources explicit with colour-coded labels rather than hiding them');
+ok(frontend.includes('各組活動日文件／名單／派發及輸出覆核')&&frontend.includes('department_activity_day_readiness'),'manual UI provides a non-workflow department reference for documents, lists, issue and print/export needs');
 ok(activities.includes('execution_manual_2027')&&activities.includes('2027 工作人員場地及動線圖'),'maps UI uses the 2027 manual source');
 ok(activities.includes('usePublishedManual')&&activities.includes("this.currentModule==='exec_manual'"),'maps and participant lists ignore stale browser cache inside the manual');
 ok(staff.includes("this.currentModule==='exec_manual'")&&staff.includes('browser-local MOCK edit'),'staff manual ignores stale browser-local roster cache');
