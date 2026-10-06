@@ -42,6 +42,7 @@ const reviewBuilder=read('tools/build_2027_simulation_review.js');
 const server=read('tools/serve_2027_simulation_review.js');
 ok(sourceBuilder.includes("data/isd_2026.json")&&sourceBuilder.includes('2026_reference_lock.json'),'only the controlled one-time bootstrap reads the locked 2026 evidence');
 ok(!reviewBuilder.includes('isd_2026.json')&&!server.includes('isd_2026.json'),'rebuilding and editing the fake profile cannot reread or sync 2026 evidence');
+ok(server.includes('expected_revision')&&server.includes('Revision conflict'),'the review server rejects stale-source writes rather than silently overwriting a newer simulation revision');
 const page=read('simulation-review.html');
-ok(page.includes('/api/simulation/source')&&page.includes('演練測試值')&&page.includes('相依輸出'),'the review form makes an editable source and its dependent outputs visible');
+ok(page.includes('expected_revision:item.revision')&&page.includes('演練測試值')&&page.includes('相依輸出'),'the review form carries its displayed revision and makes the editable source/dependent outputs visible');
 console.log(`2027 simulation review passed (${n} checks)`);

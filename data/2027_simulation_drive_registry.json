@@ -39,8 +39,8 @@
       {"domain_id": "logistics", "id": "1X_Mwg3mw4uRcL7KeGinCOIPWRFy3UGqC", "name": "SIMULATION_ONLY－06_後勤.json"},
       {"domain_id": "reference_snapshot", "id": "10iuQk_YibXln-0PIIcUg2exNpdRbyptG", "name": "SIMULATION_ONLY－07_參考快照.json"}
     ],
-    "review_guide": {"id": "1M0ukeIZxQZQhHlE6AUaVRj-w4UpBvHRR", "name": "README－2027 假資料來源連通覆核（current）.md"},
-    "review_interface_source": {"id": "1EZ1dxnb3_mW40KICudoolp4Kcy9c3Zjn", "name": "simulation-review（current）.html"}
+    "review_guide": {"id": "1VIoAcyOk9CZu5V6NGAwyhuLGQ6F9H4xz", "name": "README－2027 假資料來源連通覆核（current v2）.md"},
+    "review_interface_source": {"id": "1O1DS9-qixe5CJ8a39bBX5N6PFa-mGq3z", "name": "simulation-review（current v2）.html"}
   },
   "repository_review_commands": [
     "node tools/build_2027_simulation_from_2026.js",

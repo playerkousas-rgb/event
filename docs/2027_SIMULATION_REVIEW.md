@@ -54,10 +54,13 @@ workspace). The form:
 
 1. lists the simulation canonical source IDs and their ownership;
 2. lets the reviewer change that source's `editable_test_value`;
-3. records a controlled approved simulation revision with an audit ID in
+3. submits the revision currently displayed by the reviewer; a stale browser
+   receives a revision-conflict error instead of overwriting a newer simulation
+   change;
+4. records a controlled approved simulation revision with an audit ID in
    `data/2027_simulation_change_audit.json`;
-4. rebuilds only the simulation projection/review; and
-5. highlights every dependent output card, showing the same source revision and
+5. rebuilds only the simulation projection/review; and
+6. highlights every dependent output card, showing the same source revision and
    preview value.
 
 The server never opens the 2026 archive and rejects blocked live-2026

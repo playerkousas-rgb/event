@@ -65,10 +65,13 @@ function state(){
 function applyTestValue(body){
   const sourceId=String(body.source_id||'');
   const value=String(body.editable_test_value||'').trim();
+  const expectedRevision=body.expected_revision;
   if(!sourceId||!value) throw new Error('source_id and editable_test_value are required');
+  if(!Number.isInteger(expectedRevision)||expectedRevision<1) throw new Error('expected_revision must be the currently displayed simulation revision');
   const framework=loadFramework(root,'simulation');
   const located=framework.sources.get(sourceId);
   if(!located) throw new Error(`unknown simulation source: ${sourceId}`);
+  if(located.record.revision!==expectedRevision) throw new Error(`Revision conflict: ${sourceId} is now revision ${located.record.revision}; refresh and review the latest simulation value before retrying`);
   const payload=JSON.parse(JSON.stringify(located.record.payload));
   if(!Array.isArray(payload.records)||!payload.records.length) payload.records=[{record_id:`SIM-${sourceId}-001`}];
   const previousValue=payload.records[0].editable_test_value||'';
