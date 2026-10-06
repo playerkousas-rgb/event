@@ -1392,7 +1392,9 @@ Object.assign(ScoutEventApp.prototype,{
       // v21：公眾頻道內容——邊格屬邊組寫死喺 PC_CONTENT_SCHEMA，本組有份先出呢個頁籤
       ...((this.pcEditSectionsForGroup&&this.pcEditSectionsForGroup(groupName).length)?[{k:'group_pc_content',label:'🌐 公眾頻道內容（本組負責）'}]:[]),
       // v22：連結總表——換成張表單／EXCEL／WORD／PDF／地圖，改一次全站同步
-      ...((this.linkRegistry&&this.linkRegistry())?[{k:'group_links',label:'🔗 連結總表（改一次全站同步）'}]:[])
+      ...((this.linkRegistry&&this.linkRegistry())?[{k:'group_links',label:'🔗 連結總表（改一次全站同步）'}]:[]),
+      // v24：跨組對帳——邊組改咗、邊組未跟（攤位 × 編更 × 派章 × 午膳）
+      {k:'group_crosscheck',label:'🔀 跨組對帳（邊組改咗邊組未跟）'}
     ];
     const groupTabList=[
       {k:'apps',label:'📋 本組申請'},
@@ -1474,6 +1476,7 @@ Object.assign(ScoutEventApp.prototype,{
       else if(t.k==='group_finance_guide') el.innerHTML=this.renderGroupFinanceGuideTabHTML(groupName);
       else if(t.k==='group_pc_content') this.renderPcContentEditor(el);
       else if(t.k==='group_links') this.renderLinkRegistry(el, (groupName==='秘書處'||groupName==='行政組'||this.isAdmin())?{}:{scope:'group'});
+      else if(t.k==='group_crosscheck') this.renderCrossCheck(el);
     });
     if(isThemeGroup){
       const agg=this.boothPlanAggregates(this.getSuppliesData().booth_requests||[]);
