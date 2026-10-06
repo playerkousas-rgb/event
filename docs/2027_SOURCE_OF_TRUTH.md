@@ -1,6 +1,6 @@
 # ISD 2027 單一資料來源規則
 
-> **狀態：2026 證據覆核已完成；2027 空白實框架已建立，尚未啟用 live 表單、同步、GAS 或公眾發佈。** 這份規則取代「每次由 2026 重建 MOCK」的舊做法。空白框架的實作細節見 [`2027_BLANK_FRAMEWORK.md`](2027_BLANK_FRAMEWORK.md)。
+> **狀態：2026 證據覆核已完成；2027 空白實框架及獨立 publish adapter 已備妥，但尚未部署 GAS、啟用表單、同步或公眾發佈。** 這份規則取代「每次由 2026 重建 MOCK」的舊做法。空白框架見 [`2027_BLANK_FRAMEWORK.md`](2027_BLANK_FRAMEWORK.md)，安全部署規則見 [`2027_SOURCE_PUBLISH_ADAPTER.md`](2027_SOURCE_PUBLISH_ADAPTER.md)。
 
 ## 不可跨越的界線
 

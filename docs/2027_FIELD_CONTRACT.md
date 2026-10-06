@@ -3,7 +3,9 @@
 > **用法**：先完成最終成品（公眾頻道＋執行手冊），由成品倒推每個欄位由邊張報名表／邊個組產生。
 > 呢份表一鎖定，之後全部照圖施工。**下屆籌委新增活動＝複製範本，直接可用。**
 >
-> 狀態：**v0.1 草稿**（待批核）｜素材基礎：2026 真實資料（通告 12/26・司儀稿 Rundown V5・DGA 名單・嘉賓名單 CSV・UG 清單）
+> 歷史狀態：**v0.1 草稿**（待批核）｜素材基礎：2026 真實資料（通告 12/26・司儀稿 Rundown V5・DGA 名單・嘉賓名單 CSV・UG 清單）
+>
+> **現行界線（2026-10-06）**：本頁的欄位想法只作設計參考；96 個 canonical source ID、109 個輸出連通和 source publish 規則已由 [`2027_BLANK_FRAMEWORK.md`](2027_BLANK_FRAMEWORK.md)／[`2027_SOURCE_PUBLISH_ADAPTER.md`](2027_SOURCE_PUBLISH_ADAPTER.md) 取代。`intake.html` 目前刻意停用，不能把 2027 真實資料寫入舊 GAS／舊 Sheet。
 
 ---
 
@@ -156,7 +158,7 @@
 
 | 紀錄 | 表 | 狀態 |
 |---|---|---|
-| 八大報名 | `Public_2027_Intake`（`submission_type` 擴充至 8 類） | ✅ 已有骨架（intake.html） |
+| 八大報名 | 對應的 2027-owned `IN…` source record（由日後 authenticated server-side intake adapter 寫入） | ⏸️ `intake.html` 已刻意停用；不可使用舊 GAS／Sheet 或 browser API key |
 | 名單 | `Roster_Lists`（participants／meal_box／section_award／leader_award／merit_award） | ✅ 已有（v14 引擎） |
 | 攤位 | `Booth_Requests` | ✅ 已有 |
 | 基本盤／最新消息 | `Events` | ✅ 已有 |

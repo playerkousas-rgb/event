@@ -19,8 +19,9 @@ module.exports = function handler(req, res) {
     apiKey: process.env.ISD2026_APIKEY || process.env.API_KEY || 'scout_e6451624b1f340078ec6a111',
     gasUrl2026: process.env.ISD2026_GAS_URL || 'https://script.google.com/macros/s/AKfycbwT1dZuvymSVaHrBmW31RcnKxWoNHSabRnJVxIkPCevlHvIsPVYJFBDjgwhPS5t_ZQ8mw/exec',
     apiKey2026: process.env.ISD2026_APIKEY || process.env.API_KEY || 'scout_e6451624b1f340078ec6a111',
-    gasUrl2027: process.env.ISD2027_GAS_URL || '',
-    apiKey2027: process.env.ISD2027_APIKEY || ''
+    // The 2027 controlled-source adapter is intentionally not a browser API.
+    // Never expose its URL or ISD2027_APIKEY through this public config route.
+    sourceAdapter2027Configured: Boolean(process.env.ISD2027_GAS_URL && process.env.ISD2027_APIKEY)
   });
 };
 
