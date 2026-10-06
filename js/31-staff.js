@@ -7,7 +7,8 @@ Object.assign(ScoutEventApp.prototype,{
     // （防止過往 localStorage 快取住舊的排序 / 舊聯絡表，強制刷新也沒用的問題）。
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
     let local=JSON.parse(localStorage.getItem(key)||'null');
-    if(this.isDataFrozen&&this.isDataFrozen()) local=null;
+    // The execution manual must not be shadowed by a browser-local MOCK edit.
+    if((this.currentModule==='exec_manual'&&this.eventData?.execution_manual_2027)||(this.isDataFrozen&&this.isDataFrozen())) local=null;
     const jsonStaff=this.eventData['staff']||{org_chart:[],contacts:[],job_duties:[]};
     let raw;
     if(this.isDemoEvent()){

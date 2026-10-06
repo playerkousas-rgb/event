@@ -256,19 +256,22 @@ Object.assign(ScoutEventApp.prototype,{
   renderExecManualModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
-    if(!this.execManualSubTab) this.execManualSubTab='activities';
+    if(!this.execManualSubTab) this.execManualSubTab='overview';
     const tabs=[
-      {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地圖、攤位總表及遊戲卡'},
+      {k:'overview', icon:'fa-solid fa-house', label:'活動日總覽'},
+      {k:'programme', icon:'fa-solid fa-clock', label:'全日程序及交接'},
+      {k:'activities', icon:'fa-solid fa-map-location-dot', label:'場地、攤位及遊戲'},
+      {k:'logistics', icon:'fa-solid fa-clipboard-check', label:'報到、膳食及後勤'},
       {k:'ceremony', icon:'fa-solid fa-crown', label:'典禮儀式'},
       {k:'mc_scripts', icon:'fa-solid fa-microphone-lines', label:'司儀稿'},
       {k:'adult_awards', icon:'fa-solid fa-user-shield', label:'成年獎勵及 RUNDOWN'},
       {k:'merit_award', icon:'fa-solid fa-trophy', label:'優異旅團獲獎'},
       {k:'participants', icon:'fa-solid fa-people-group', label:'參加旅團名單'},
       {k:'meal_box', icon:'fa-solid fa-bowl-food', label:'代訂餐盒'},
-      {k:'staff', icon:'fa-solid fa-sitemap', label:'組織架構與聯絡'},
-      {k:'crisis', icon:'fa-solid fa-triangle-exclamation', label:'危機處理'},
-      {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務指引'},
-      {k:'documents', icon:'fa-solid fa-file-shield', label:'通告及文件'}
+      {k:'staff', icon:'fa-solid fa-sitemap', label:'組別職責及聯絡'},
+      {k:'crisis', icon:'fa-solid fa-triangle-exclamation', label:'安全及應變'},
+      {k:'finance_guide', icon:'fa-solid fa-file-invoice-dollar', label:'財務（受限）'},
+      {k:'documents', icon:'fa-solid fa-folder-open', label:'通告及必讀文件'}
     ];
     const tabBtns=tabs.map(t=>`<button onclick="app.switchExecManualTab('${t.k}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${this.execManualSubTab===t.k?'bg-slate-900 text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200'}"><i class="${t.icon} mr-1"></i>${t.label}</button>`).join('');
     container.innerHTML=`<div class="space-y-4"><div class="flex gap-2 border-b pb-3 overflow-x-auto flex-wrap">${tabBtns}</div><div id="exec-manual-panel"></div></div>`;
@@ -299,38 +302,80 @@ Object.assign(ScoutEventApp.prototype,{
       crisis:()=>this.renderCrisisModule(panel),
       participants:()=>this.renderExecManualParticipants(panel),
       meal_box:()=>{ this.renderExecManualMealBox(panel); },
-      finance_guide:()=>{
-        const fin=this.getFinanceData();
-        const driveFiles=[
-          {name:'ISD2026 財務指引及會計程序 ver 1.docx', id:'1QNWNG1BnVab3oHlI7yvIK_2YMMSFV-p4', type:'docx', desc:'總指引，含報銷程序、預算控制、會計程序'},
-          {name:'ISD2026 附件1 - 報價要求.docx', id:'176X1zGzH_k7DJzzuzE5fHkAr6GE3_IHm', type:'docx', desc:'報價要求範本'},
-          {name:'ISD2026 附件2 - 豁免商戶名單 (Rev Dec 2025).pdf', id:'1Z_VqtQ1LjKGI7fFqRCvN9sI8XrmJLbL2', type:'pdf', desc:'豁免報價商戶清單'},
-          {name:'ISD2026 附件3 - 口頭報價資料記錄.xlsx', id:'1s5X9v7FJfbCZG1zDX5GX_yXpE2C_8BIq', type:'xlsx', desc:'口頭報價記錄表格'},
-          {name:'ISD2026 附件4 - 書面報價比較表.docx', id:'1Qal9KVjgN54cb6GwxideH_lsRXJquVWy', type:'docx', desc:'書面報價比較表 (需3間報價)'},
-          {name:'ISD2026 附件5 - 結算總表 (WORD).docx', id:'1FwpuK79mWDToX_p_csO_8Fg085lT0QkC', type:'docx', desc:'結算總表 Word 版'},
-          {name:'ISD2026 附件5A - 結算總表 (WORD w autosum).docx', id:'16krtzQYD11b2cyL8h_Qdb0a8X4_wyDN-', type:'docx', desc:'結算總表 Word 自動計算版'},
-          {name:'ISD2026 附件5B - 結算總表 (EXCEL).xlsx', id:'1boZYb4XxiZllAP_2sxxcdatiOQIZMfbJ', type:'xlsx', desc:'結算總表 Excel 版 (推薦)'},
-          {name:'ISD2026 附件6 - 四格印簽名位置.docx', id:'19bmvieiDcnFBcQ6qPAGagN8UDXc3tAG2', type:'docx', desc:'簽名位置範本'},
-        ];
-        panel.innerHTML=`<div class="space-y-4">
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] leading-relaxed"><b>財務指引及會計程序</b><br>報銷及結算程序，文件由行政組(財務)提供。</div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            ${driveFiles.map(f=>`<div class="border rounded-xl p-3 bg-white hover:bg-slate-50 transition cursor-pointer" onclick="window.open('https://drive.google.com/file/d/${f.id}/view','_blank')">
-              <div class="flex items-start gap-2">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${f.type==='pdf'?'bg-rose-100 text-rose-600':(f.type==='xlsx'?'bg-emerald-100 text-emerald-600':'bg-blue-100 text-blue-600')}"><i class="fa-solid ${f.type==='pdf'?'fa-file-pdf':(f.type==='xlsx'?'fa-file-excel':'fa-file-word')}"></i></div>
-                <div><div class="text-[12px] font-bold line-clamp-2">${escapeHtml(f.name)}</div><div class="text-[10px] text-slate-500 mt-1">${escapeHtml(f.desc)}</div></div>
-              </div>
-            </div>`).join('')}
-          </div>
-        </div>`;
-      },
+      overview:()=>this.renderExecManualOverview(panel),
+      programme:()=>this.renderExecManualProgramme(panel),
+      logistics:()=>this.renderExecManualLogistics(panel),
+      finance_guide:()=>this.renderExecManualFinanceGuide(panel),
       // 執行手冊只收活動當日真正會用到的文件；會議、籌備及活動教材仍留在完整文件庫。
-      documents:()=>this.renderDocumentsModule(panel,true),
+      documents:()=>this.renderExecManualDocuments(panel),
     };
     (map[this.execManualSubTab]||map.staff)();
   }
 ,
 
+  execManualData(){ return this.eventData?.execution_manual_2027||{}; }
+,
+  renderExecManualOverview(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const manual=this.execManualData();
+    const snap=manual.event_day_snapshot||{};
+    const programme=manual.all_day_programme||manual.programme||snap.activity_schedule||[];
+    const sections=manual.sections||[];
+    const goto=(id,label,icon)=>`<button onclick="app.switchExecManualTab('${id}')" class="text-left bg-white border rounded-xl p-3 hover:border-sky-300 hover:bg-sky-50 transition"><div class="font-bold text-[12px] text-slate-800"><i class="fa-solid ${icon} text-sky-600 mr-1"></i>${label}</div><div class="mt-1 text-[10.5px] leading-relaxed text-slate-500">${escapeHtml((sections.find(s=>s.id===id)||{}).description||'開啟相關活動日資料。')}</div></button>`;
+    const next=programme.slice(0,7).map(row=>`<div class="flex gap-3 border-b last:border-0 py-2"><b class="w-11 flex-none text-sky-700 text-[12px]">${escapeHtml(row.time||'')}</b><div><b class="text-[12px]">${escapeHtml(row.title||'')}</b><div class="text-[10.5px] text-slate-500">${escapeHtml(row.location||row.detail||'')}${row.owner?`　·　${escapeHtml(row.owner)}`:''}</div></div></div>`).join('');
+    const checklist=(snap.staff_start_checklist||[]).map((item,i)=>`<li class="flex gap-2"><span class="w-5 h-5 flex-none rounded-full bg-sky-100 text-sky-700 text-center font-bold">${i+1}</span><span>${escapeHtml(item)}</span></li>`).join('');
+    box.innerHTML=`<div class="space-y-4">
+      <section class="rounded-2xl p-4 bg-gradient-to-br from-slate-900 to-sky-900 text-white">
+        <div class="flex items-start justify-between gap-3 flex-wrap"><div><div class="text-[11px] text-sky-100 font-bold tracking-wide">工作人員・唯讀執行版</div><h3 class="font-bold text-lg mt-1">${escapeHtml(manual.title||'2027 港島童軍繽紛日｜工作人員執行手冊')}</h3><p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-sky-50">${escapeHtml(manual.source_rule||'請以本手冊為活動日查閱入口。')}</p></div><span class="bg-white/15 border border-white/25 rounded-full px-3 py-1.5 text-[10px]">PIN 工作人員：可查閱活動日必需資料</span></div>
+      </section>
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">工作人員編更</div><b class="text-xl">${escapeHtml(String(snap.staff_roster_count||0))}</b><div class="text-[10px] text-slate-400">筆參考記錄</div></div>
+        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">參加旅團</div><b class="text-xl">${escapeHtml(String(snap.participant_unit_count||0))}</b><div class="text-[10px] text-slate-400">個單位</div></div>
+        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">主題攤位</div><b class="text-xl">${escapeHtml(String(snap.booth_count||0))}</b><div class="text-[10px] text-slate-400">個攤位</div></div>
+        <div class="bg-white border rounded-xl p-3"><div class="text-[10px] text-slate-500">必讀文件</div><b class="text-xl">${escapeHtml(String(manual.document_catalog?.total||0))}</b><div class="text-[10px] text-slate-400">筆受控記錄</div></div>
+      </section>
+      <section class="grid grid-cols-1 lg:grid-cols-5 gap-4"><div class="lg:col-span-3 bg-white border rounded-2xl p-4"><div class="flex items-center justify-between gap-2"><h4 class="font-bold text-sm"><i class="fa-solid fa-clock text-sky-600 mr-1"></i>全日重點程序</h4><button onclick="app.switchExecManualTab('programme')" class="text-[11px] font-bold text-sky-700">查看全部 →</button></div><div class="mt-2">${next||'<p class="text-sm text-slate-400">暫未有程序資料</p>'}</div></div><div class="lg:col-span-2 bg-sky-50 border border-sky-100 rounded-2xl p-4"><h4 class="font-bold text-sm text-sky-950"><i class="fa-solid fa-list-check mr-1"></i>開工前四步</h4><ol class="mt-3 space-y-2 text-[11px] leading-relaxed text-slate-700">${checklist}</ol></div></section>
+      <section><h4 class="font-bold text-sm mb-2">我需要找甚麼？</h4><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">${goto('activities','地圖、攤位及遊戲','fa-map-location-dot')}${goto('logistics','報到、餐盒及後勤','fa-clipboard-check')}${goto('crisis','安全及緊急應變','fa-triangle-exclamation')}${goto('staff','我的組別職責','fa-people-group')}</div></section>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] leading-relaxed text-amber-950"><b>資料界線：</b>${escapeHtml(manual.audience_rule?.restricted||'個人及管理資料只向獲授權角色顯示。')}</div>
+    </div>`;
+  }
+,
+  renderExecManualProgramme(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const manual=this.execManualData();
+    const rows=manual.all_day_programme||manual.programme||manual.event_day_snapshot?.activity_schedule||[];
+    const body=rows.map(row=>`<tr class="border-b last:border-0 align-top"><td class="px-3 py-2 font-bold text-sky-800 whitespace-nowrap">${escapeHtml(row.time||'')}</td><td class="px-3 py-2"><b>${escapeHtml(row.title||'')}</b><div class="text-[10.5px] text-slate-500 mt-0.5">${escapeHtml(row.location||row.detail||row.instruction||'')}</div></td><td class="px-3 py-2 text-[11px] text-slate-600">${escapeHtml(row.owner||row.audience||'全體工作人員')}</td></tr>`).join('');
+    box.innerHTML=`<div class="space-y-3"><div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-[12px] text-indigo-950"><b><i class="fa-solid fa-clock mr-1"></i>全日程序及交接</b><br><span class="text-[10.5px]">此頁是跨組工作人員的共同時間軸；典禮細節請再開啟「典禮儀式」及「司儀稿」。</span></div><div class="bg-white border rounded-2xl overflow-hidden"><div class="table-responsive"><table class="w-full min-w-[620px] text-[11px]"><thead class="bg-slate-100"><tr><th class="px-3 py-2 text-left">時間</th><th class="px-3 py-2 text-left">環節及位置</th><th class="px-3 py-2 text-left">主要負責／適用</th></tr></thead><tbody>${body||'<tr><td colspan="3" class="px-3 py-8 text-center text-slate-400">暫未有全日程序</td></tr>'}</tbody></table></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-2"><button onclick="app.switchExecManualTab('ceremony')" class="bg-white border rounded-xl p-3 text-left text-[11px] font-bold">典禮程序與檢閱路線 →</button><button onclick="app.switchExecManualTab('activities')" class="bg-white border rounded-xl p-3 text-left text-[11px] font-bold">場地圖與攤位總表 →</button><button onclick="app.switchExecManualTab('logistics')" class="bg-white border rounded-xl p-3 text-left text-[11px] font-bold">報到、餐盒及後勤 →</button></div></div>`;
+  }
+,
+  renderExecManualLogistics(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const manual=this.execManualData();
+    const logistics=manual.logistics||{};
+    const meals=(logistics.meal_collection||[]).map(row=>`<div class="bg-white border rounded-xl p-3"><b class="text-[12px] text-rose-800">${escapeHtml(row.label||'')}</b><div class="text-[11px] mt-1"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${escapeHtml(row.place||'')}　<i class="fa-regular fa-clock text-rose-400 ml-1 mr-1"></i>${escapeHtml(row.time||'')}</div><p class="text-[10.5px] text-slate-500 mt-1">${escapeHtml(row.note||'')}</p></div>`).join('');
+    box.innerHTML=`<div class="space-y-4"><section class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[12px] text-rose-950"><b><i class="fa-solid fa-clipboard-check mr-1"></i>報到、膳食及後勤</b><br><span class="text-[10.5px]">旅團報到、餐盒派發和工作人員膳食均按所屬崗位程序辦理；個人簽收資料只會顯示給獲授權人員。</span></section><section class="grid grid-cols-1 sm:grid-cols-3 gap-2">${meals||'<div class="text-sm text-slate-400">暫未有膳食安排</div>'}</section><section class="grid grid-cols-1 md:grid-cols-3 gap-2"><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">旅團報到</b><p class="text-[10.5px] text-slate-500 mt-1">共 ${escapeHtml(String(logistics.participant_units||0))} 個旅團參考記錄。使用「參加旅團名單」核對及按程序派發物資。</p><button onclick="app.switchExecManualTab('participants')" class="mt-2 text-[11px] font-bold text-sky-700">開啟旅團名單 →</button></div><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">代訂餐盒</b><p class="text-[10.5px] text-slate-500 mt-1">按旅團及已確認安排派發；現場更改由協調組按授權紀錄處理。</p><button onclick="app.switchExecManualTab('meal_box')" class="mt-2 text-[11px] font-bold text-sky-700">開啟餐盒名單 →</button></div><div class="bg-white border rounded-xl p-3"><b class="text-[12px]">工作人員餐膳</b><p class="text-[10.5px] text-slate-500 mt-1">${escapeHtml(String(logistics.staff_meal_records||0))} 筆餐膳參考記錄；派發簽收和個人資料受後勤權限限制。</p></div></section><div class="bg-white border rounded-xl p-3 text-[10.5px] text-slate-600">餐單參考：${(logistics.meal_options||[]).map(escapeHtml).join('　·　')||'待確認'}</div></div>`;
+  }
+,
+  renderExecManualDocuments(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const manual=this.execManualData();
+    const assets=manual.staff_document_assets||[];
+    const guidance=manual.staff_guidance||[];
+    const assetCards=assets.map(asset=>{
+      const file=escapeHtml(asset.file_url||'');
+      const tab=escapeHtml(asset.tab||'documents');
+      return `<article class="bg-white border rounded-xl p-3 flex flex-col"><div class="flex items-start justify-between gap-2"><div><span class="text-[10px] bg-slate-100 border rounded-full px-2 py-0.5">${escapeHtml(asset.category||'活動日文件')}</span><h5 class="font-bold text-[12px] mt-1">${escapeHtml(asset.title||'')}</h5></div>${file?`<a href="${file}" target="_blank" rel="noopener" class="text-[11px] text-sky-700 font-bold whitespace-nowrap">開啟</a>`:''}</div><p class="text-[10.5px] leading-relaxed text-slate-500 mt-1.5">${escapeHtml(asset.description||'')}</p><button onclick="app.switchExecManualTab('${tab}')" class="mt-2 text-left text-[10.5px] font-bold text-slate-700">在手冊中查看 →</button></article>`;
+    }).join('');
+    const guideCards=guidance.map(guide=>`<details class="bg-white border rounded-xl p-3"><summary class="cursor-pointer list-none flex items-start justify-between gap-3"><div><span class="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2 py-0.5">${escapeHtml(guide.category||'工作人員須知')}</span><b class="block text-[12px] mt-1">${escapeHtml(guide.title||'')}</b></div><i class="fa-solid fa-chevron-down text-slate-400 mt-2"></i></summary><div class="border-t mt-3 pt-3 whitespace-pre-line text-[11px] leading-relaxed text-slate-700">${escapeHtml(guide.description||'')}<p class="mt-2 text-[10px] text-amber-800 bg-amber-50 border border-amber-100 rounded-lg p-2">${escapeHtml(guide.note||'')}</p></div></details>`).join('');
+    box.innerHTML=`<div class="space-y-4"><section class="bg-violet-50 border border-violet-200 rounded-xl p-3 text-[12px] text-violet-950"><b><i class="fa-solid fa-folder-open mr-1"></i>通告、必讀指引及活動日文件</b><br><span class="text-[10.5px]">這裡只列出普通工作人員可查閱的活動日材料；財務、嘉賓個人資料及管理文件仍受角色限制。</span></section><section><h4 class="font-bold text-sm mb-2">活動日文件（2027 擁有版本）</h4><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">${assetCards||'<p class="text-sm text-slate-400">暫未有活動日文件</p>'}</div></section><section><div class="flex items-baseline justify-between gap-2 mb-2"><h4 class="font-bold text-sm">工作人員須知及參考通告</h4><span class="text-[10px] text-slate-500">${guidance.length} 項內建內容</span></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${guideCards||'<p class="text-sm text-slate-400">暫未有工作人員須知</p>'}</div></section><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10.5px] text-amber-950"><b>確認提示：</b>所有「2027 參考種籽」內容仍要由相關總主任確認；不要把舊年份、費用、日期或聯絡資料當成已確認的 2027 最終安排。</div></div>`;
+  }
+,
+  renderExecManualFinanceGuide(panel){
+    const box=panel||document.getElementById('exec-manual-panel'); if(!box) return;
+    const manual=this.execManualData();
+    box.innerHTML=`<div class="space-y-3"><div class="bg-slate-50 border rounded-xl p-4 text-[12px] leading-relaxed"><b><i class="fa-solid fa-lock mr-1"></i>財務及採購資料（受限）</b><p class="mt-2">報價、報銷、預算、商戶資料及結算屬財務／行政組受限資料，不會在普通工作人員版本公開。日後確認的 2027 文件只會放在 ISD 2027 受控來源。</p><p class="mt-2 text-[10.5px] text-slate-500">${escapeHtml(manual.audience_rule?.restricted||'')}</p></div></div>`;
+  }
+,
   renderApplyHubModule(){
     const container=document.getElementById('module-content');
     if(!container) return;
@@ -589,7 +634,7 @@ Object.assign(ScoutEventApp.prototype,{
   },
 
   /* 2026-10-04 各類餐食領取地點及供應時間（已定稿） */
-  mealLogistics2026HTML(){
+  mealLogisticsHTML(){
     const items=(this.eventData?.meal_logistics)||[
       {label:'飯盒',place:'JPO 餐廳',time:'11:00',note:'旅團代訂餐盒（A/C 飯 + B/D 小食互通）'},
       {label:'小食餐盒',place:'JPO 餐廳',time:'12:00',note:'工作人員小食餐盒'},
@@ -633,7 +678,7 @@ Object.assign(ScoutEventApp.prototype,{
     const dist=this.eventData?.meal_distribution||{};
     const line=(i)=>`${i.headcount!=null?i.headcount+' 人':''}${i.rice!=null?'｜飯 '+i.rice:''}${i.snack!=null?'｜小食 '+i.snack:''}`;
     return `
-      ${this.mealLogistics2026HTML()}
+      ${this.mealLogisticsHTML()}
       <div class="bg-white border rounded-xl p-4 space-y-3">
         <h4 class="font-bold text-sm"><i class="fa-solid fa-book-open mr-1 text-rose-600"></i>餐單</h4>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">

@@ -26,7 +26,11 @@ Object.assign(ScoutEventApp.prototype,{
         return {activities:[], maps:raw0.maps||[], booths, gameCards:raw0.gameCards||raw0.game_cards||[], booth_source:raw0.booth_source||null, drive_folder_link:(raw0.drive_folder_link||'https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C')};
       }
     }
-    if(local) return local;
+    // The ordinary-staff execution manual always reads the published 2027
+    // source. A browser's old rehearsal cache must never replace its maps,
+    // booths or game cards with a parallel local copy.
+    const usePublishedManual=this.currentModule==='exec_manual'&&!!this.eventData?.execution_manual_2027;
+    if(local&&!usePublishedManual) return local;
     const raw=this.eventData['activities']||[];
     // raw may be array of activities, convert to new structure
     let activities=[], maps=[], booths=[], gameCards=[], booth_source=null;
@@ -93,14 +97,27 @@ Object.assign(ScoutEventApp.prototype,{
   renderActivitiesMaps(){
     const container=document.getElementById('activities-tab-maps');
     if(!container) return;
-    container.innerHTML=`
-      <div class="space-y-3">
-        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[12px] text-sky-950"><b><i class="fa-solid fa-map-location-dot mr-1"></i>ISD2026 Site Setup Plan R10-SETUP PLAN-1</b></div>
-        <div class="bg-white border rounded-2xl overflow-hidden">
-          <iframe src="assets/event-day/site-setup-plan-2026.pdf#view=FitH" title="ISD2026 Site Setup Plan R10-SETUP PLAN-1" class="w-full h-[72vh] min-h-[520px] border-0"></iframe>
+    const data=this.getActivitiesData();
+    const maps=(data.maps||[]).filter(map=>map&&map.file_url);
+    const manual=this.eventData?.execution_manual_2027||{};
+    const cards=maps.map(map=>{
+      const file=escapeHtml(map.file_url||'');
+      const title=escapeHtml(map.title||map.file_name||'場地圖');
+      const desc=escapeHtml(map.description||'');
+      const audience=escapeHtml(map.audience||'工作人員');
+      return `<section class="bg-white border rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b flex items-start justify-between gap-3">
+          <div><b class="text-[13px]"><i class="fa-solid fa-map-location-dot text-sky-600 mr-1"></i>${title}</b><p class="text-[10.5px] text-slate-500 mt-1">${desc}</p><span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 border border-sky-100">適用：${audience}</span></div>
+          <a href="${file}" target="_blank" rel="noopener" class="text-[11px] text-sky-700 font-bold underline whitespace-nowrap">開啟</a>
         </div>
-        <div class="flex gap-2 flex-wrap"><a href="assets/event-day/site-setup-plan-2026.pdf" target="_blank" rel="noopener" class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>新分頁開啟</a><a href="assets/event-day/site-setup-plan-2026.pdf" download class="bg-white border px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>下載 PDF</a></div>
-      </div>`;
+        <iframe src="${file}#view=FitH" title="${title}" class="w-full h-[64vh] min-h-[460px] border-0"></iframe>
+        <div class="px-4 py-2.5 border-t"><a href="${file}" download class="text-[11px] font-bold text-slate-700"><i class="fa-solid fa-download mr-1"></i>下載檔案</a></div>
+      </section>`;
+    }).join('');
+    container.innerHTML=`<div class="space-y-3">
+      <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[12px] text-sky-950 leading-relaxed"><b><i class="fa-solid fa-map-location-dot mr-1"></i>2027 工作人員場地及動線圖</b><br>${escapeHtml(manual.source_rule||'請以本頁的 2027 擁有版本為準。')}</div>
+      ${cards||'<div class="bg-white border rounded-xl p-5 text-center text-slate-400 text-sm">暫未有場地圖</div>'}
+    </div>`;
   }
 ,
   renderActivitiesBooths(){
@@ -154,15 +171,17 @@ Object.assign(ScoutEventApp.prototype,{
   renderActivitiesGameCards(){
     const container=document.getElementById('activities-tab-gamecards');
     if(!container) return;
-    const cards=[
-      {title:'Game card',file:'assets/event-day/game-card-2026.pdf'},
-      {title:'Game card-P',file:'assets/event-day/game-card-p-2026.pdf'}
-    ];
-    container.innerHTML=`<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">${cards.map(c=>`
-      <section class="bg-white border rounded-2xl overflow-hidden">
-        <div class="px-4 py-3 border-b flex items-center justify-between gap-2"><b class="text-[13px]"><i class="fa-solid fa-id-card text-amber-600 mr-1"></i>${c.title}</b><a href="${c.file}" target="_blank" rel="noopener" class="text-[11px] text-sky-700 font-bold underline">開啟 PDF</a></div>
-        <iframe src="${c.file}#view=FitH" title="${c.title}" class="w-full h-[62vh] min-h-[460px] border-0"></iframe>
-      </section>`).join('')}</div>`;
+    const data=this.getActivitiesData();
+    const cards=(data.gameCards||[]).filter(card=>card&&card.file_url).map(card=>({
+      title:card.title||card.file_name||'遊戲卡', file:card.file_url, description:card.description||'', audience:card.audience||'指定工作人員'
+    }));
+    container.innerHTML=`<div class="space-y-3"><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[12px] text-amber-950"><b><i class="fa-solid fa-id-card mr-1"></i>2027 主題活動遊戲卡</b><br><span class="text-[10.5px]">活動日請按所屬崗位使用指定版本。</span></div><div class="grid grid-cols-1 xl:grid-cols-2 gap-4">${cards.map(c=>{
+      const file=escapeHtml(c.file), title=escapeHtml(c.title);
+      return `<section class="bg-white border rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b flex items-start justify-between gap-2"><div><b class="text-[13px]"><i class="fa-solid fa-id-card text-amber-600 mr-1"></i>${title}</b><div class="text-[10px] text-slate-500 mt-1">${escapeHtml(c.description)}　適用：${escapeHtml(c.audience)}</div></div><a href="${file}" target="_blank" rel="noopener" class="text-[11px] text-sky-700 font-bold underline whitespace-nowrap">開啟 PDF</a></div>
+        <iframe src="${file}#view=FitH" title="${title}" class="w-full h-[62vh] min-h-[460px] border-0"></iframe>
+      </section>`;
+    }).join('')||'<div class="bg-white border rounded-xl p-5 text-center text-slate-400 text-sm">暫未有遊戲卡</div>'}</div></div>`;
   }
 ,
   builtin2026MapCards(){ return ''; }
@@ -965,6 +984,9 @@ Object.assign(ScoutEventApp.prototype,{
     const key=LS.participants(this.currentEvent?.event_id||'isd_2026');
     const local=JSON.parse(localStorage.getItem(key)||'null');
     const raw=this.eventData['participants']||[];
+    // Lists shown inside the staff execution manual must use the one published
+    // 2027 source, rather than an unrelated cached rehearsal edit.
+    if(this.currentModule==='exec_manual'&&this.eventData?.execution_manual_2027) return Array.isArray(raw)?raw:[];
     if(this.isDataFrozen&&this.isDataFrozen()) return Array.isArray(raw)?raw:[];
     if(local) return local;
     if(Array.isArray(raw)) return raw;

@@ -33,10 +33,11 @@
         "one_time_reference_seed",
         "record_state",
         "future_data_intake",
-        "public_channel_2027"
+        "public_channel_2027",
+        "execution_manual_2027"
       ],
-      "drive_file_id": "1nh5UFtNHm_q8WEzq-AUvLQcJa1qwoivm",
-      "drive_file_link": "https://drive.google.com/file/d/1nh5UFtNHm_q8WEzq-AUvLQcJa1qwoivm/view"
+      "drive_file_id": "11bYh1m33I9BjUgfDLKGCVbTAFKky3ZTf",
+      "drive_file_link": "https://drive.google.com/file/d/11bYh1m33I9BjUgfDLKGCVbTAFKky3ZTf/view"
     },
     {
       "id": "registration",
@@ -124,7 +125,59 @@
     }
   ],
   "registry_file": {
-    "id": "14YG-kBituEJXZOjkawQYNe3raUWQIPua",
-    "link": "https://drive.google.com/file/d/14YG-kBituEJXZOjkawQYNe3raUWQIPua/view"
-  }
+    "id": "1uGFPNcee9GAi3ZYr56qR8ICKbZLPHkSy",
+    "link": "https://drive.google.com/file/d/1uGFPNcee9GAi3ZYr56qR8ICKbZLPHkSy/view"
+  },
+  "execution_manual_assets": [
+    {
+      "asset_id": "map_2027_site_setup",
+      "drive_file_id": "1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R",
+      "drive_file_link": "https://drive.google.com/file/d/1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R/view"
+    },
+    {
+      "asset_id": "map_2027_troop_route",
+      "drive_file_id": "1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T",
+      "drive_file_link": "https://drive.google.com/file/d/1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T/view"
+    },
+    {
+      "asset_id": "map_2027_guest_reception",
+      "drive_file_id": "1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr",
+      "drive_file_link": "https://drive.google.com/file/d/1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr/view"
+    },
+    {
+      "asset_id": "map_2027_inspection_route",
+      "drive_file_id": "1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB",
+      "drive_file_link": "https://drive.google.com/file/d/1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB/view"
+    },
+    {
+      "asset_id": "gc_2027",
+      "drive_file_id": "1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z",
+      "drive_file_link": "https://drive.google.com/file/d/1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z/view"
+    },
+    {
+      "asset_id": "gc_p_2027",
+      "drive_file_id": "1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW",
+      "drive_file_link": "https://drive.google.com/file/d/1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW/view"
+    },
+    {
+      "asset_id": "crisis_manual_2027",
+      "drive_file_id": "1OInPhs1NFG193KtX0m341oRZugxkDckj",
+      "drive_file_link": "https://drive.google.com/file/d/1OInPhs1NFG193KtX0m341oRZugxkDckj/view"
+    },
+    {
+      "asset_id": "mc_part1",
+      "drive_file_id": "1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA",
+      "drive_file_link": "https://drive.google.com/file/d/1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA/view"
+    },
+    {
+      "asset_id": "mc_part2",
+      "drive_file_id": "1i5NpagcI4zqT83WmPz452nop-GGRJgX1",
+      "drive_file_link": "https://drive.google.com/file/d/1i5NpagcI4zqT83WmPz452nop-GGRJgX1/view"
+    },
+    {
+      "asset_id": "mc_part3",
+      "drive_file_id": "1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny",
+      "drive_file_link": "https://drive.google.com/file/d/1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny/view"
+    }
+  ]
 }

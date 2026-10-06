@@ -38,6 +38,15 @@ data/mock_demo.json — selectable role-based 2027 rehearsal product
 
 `data/isd_2027.json` is the reviewed **read model** committed with the application, not a second hand-edited source. `data/mock_demo.json` is its renderable rehearsal product, not a department-owned dataset. The live controlled records remain in the Drive domains above; changes require the 2027 importer/publish step or the 2027 frontend/backend flow.
 
+
+## 工作人員執行手冊（目前優先成品）
+
+普通工作人員 PIN `2027` 只會進入唯讀的 **2027 工作人員執行手冊**。其發佈索引為 `execution_manual_2027`，由 `tools/build_execution_manual_2027.js` 只讀取 `data/isd_2027.json` 產生，再由 `tools/build_mock_demo_from_2027.js` 帶入 MOCK。
+
+手冊的共同頁面包括：活動日總覽、全日程序及交接、警察學院場地／旅團／典禮動線、攤位和遊戲卡、旅團報到與膳食後勤、安全及應變、組別職責和活動日必讀文件。個人聯絡資料、嘉賓資料、車牌、財務、帳戶和批核資料仍按角色限制，不能因為放入手冊而變成公開資料。
+
+所有面向工作人員的地圖、遊戲卡、危機手冊、司儀稿和檢閱路線，必須使用 repository／ISD 2027 folder 中的 **2027 擁有檔案**；不可在手冊頁面直接開啟 2026 Drive 或 2026-named asset。這些初始內容仍標記為 `reference_seed_pending_2027_confirmation`，由相關總主任確認後在原有 2027 record 更新。
+
 ## Drive layout and ownership
 
 | Drive folder | Canonical domain | Primary owners | What it feeds |
@@ -69,6 +78,9 @@ Visibility is data based, not file-copy based:
 ```bash
 # One-time bootstrap only — do not run as an ordinary update path.
 node tools/bootstrap_2027_source.js
+
+# Rebuild the staff execution-manual index from the 2027 read model.
+node tools/build_execution_manual_2027.js
 
 # Rebuild 2027 public defaults, the rehearsal product and its link inventory.
 node tools/build_pc2027_demo.js

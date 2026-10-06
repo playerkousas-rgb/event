@@ -1739,7 +1739,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <span class="text-[16px] leading-none mt-0.5">🦺</span>
         <div class="flex-1 min-w-[180px]">
           <div class="font-bold text-[12.5px] text-amber-900">普通工作人員模式（活動密碼登入）</div>
-          <div class="text-[11px] text-amber-800 leading-relaxed mt-0.5">你而家只可查閱<b>2026 公開「執行手冊」參考資料</b>（唯讀）。${cannot?`<br>未開放：${escapeHtml(cannot)}等——需要籌委帳戶。`:''}</div>
+          <div class="text-[11px] text-amber-800 leading-relaxed mt-0.5">你而家只可查閱<b>2027 工作人員「執行手冊」資料</b>（唯讀）。${cannot?`<br>未開放：${escapeHtml(cannot)}等——需要籌委帳戶。`:''}</div>
         </div>
         <button type="button" onclick="app.pcUpgradeToCommittee()" class="bg-amber-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl btn-mobile whitespace-nowrap"><i class="fa-solid fa-id-card mr-1"></i>我係籌委・帳號登入</button>
       </div>

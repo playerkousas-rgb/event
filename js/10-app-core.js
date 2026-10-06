@@ -1475,7 +1475,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'coord_meals': this.renderCoordMeals(el); break;
         case 'coord_docs': this.renderCoordDocs(el); break;
         // 名單與點名資料在各入口共用；此處提供負責組的操作入口。
-        case 'coord_mealbox': el.innerHTML=`<div class="space-y-3">${this.mealLogistics2026HTML?this.mealLogistics2026HTML():''}${this.rosterPanelHTML('meal_box',{scope:'coord'})}</div>`; break;
+        case 'coord_mealbox': el.innerHTML=`<div class="space-y-3">${this.mealLogisticsHTML?this.mealLogisticsHTML():''}${this.rosterPanelHTML('meal_box',{scope:'coord'})}</div>`; break;
         case 'coord_meal_staff':
           el.innerHTML=`<div class="space-y-3"><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('staff_meals',{scope:'coord'})}</div>${this.staffMealDigestHTML?this.staffMealDigestHTML():''}${this.mealMenuHTML?this.mealMenuHTML():''}</div>`;
           break;
@@ -1643,7 +1643,7 @@ Object.assign(ScoutEventApp.prototype,{
     // v16：普通工作人員（活動密碼入）＝只准開「公開資料」卡片，其餘要籌委帳戶
     if(this.currentUser&&this.currentUser.staff_pin){
       const allowed=typeof PIN_STAFF_REFERENCE_CARD_IDS!=='undefined'&&PIN_STAFF_REFERENCE_CARD_IDS.includes(key);
-      if(!allowed){ showToast('普通工作人員只可查看 2026 公開「執行手冊」參考資料；其他內容要籌委帳戶（帳號＋密碼）先入到。','warning'); return; }
+      if(!allowed){ showToast('普通工作人員只可查看 2027 工作人員「執行手冊」資料；其他內容要籌委帳戶（帳號＋密碼）先入到。','warning'); return; }
     }
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});

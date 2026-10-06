@@ -268,7 +268,7 @@ Object.assign(ScoutEventApp.prototype,{
     const data=this.getMealsData();
     const canRouteApprove=this.canApproveArea('meals'),canRouteExecute=this.canExecuteArea('meals');
     const menus=data.menus||[],orders=(data.orders||[]).filter(o=>canRouteApprove||o.status==='approved');
-    const logisticsBar=this.mealLogistics2026HTML?this.mealLogistics2026HTML():'';
+    const logisticsBar=this.mealLogisticsHTML?this.mealLogisticsHTML():'';
     const canManageMenu=this.canManageMealMenu()||this.isAdmin();
     const canConfirm=!!this.currentUser && (this.isAdmin()||this.isExecViceOrChair()||this.roleLevel(this.currentUser.role)>=40);
     const canFinal=this.canFinalApproveMealOrder();

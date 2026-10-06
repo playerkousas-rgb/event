@@ -837,8 +837,8 @@ Object.assign(ScoutEventApp.prototype,{
     const container=document.getElementById('crisis-tab-manual');
     if(!container) return;
     const manual=(this.getCrisisData().manuals||[])[0]||{};
-    const file=manual.file_url||'assets/event-day/crisis-manual-2026.pdf';
-    container.innerHTML=`<div class="space-y-3"><div class="flex items-center justify-between gap-2 flex-wrap"><div><b class="text-[14px]"><i class="fa-solid fa-book-medical text-red-600 mr-1"></i>${escapeHtml(manual.title||'ISD2026 Risk Management Manual')}</b>${manual.version?`<div class="text-[11px] text-slate-500 mt-1">${escapeHtml(manual.version)}</div>`:''}</div><a href="${escapeHtml(file)}" target="_blank" rel="noopener" class="bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟 PDF</a></div><div class="bg-white border rounded-2xl overflow-hidden"><iframe src="${escapeHtml(file)}#view=FitH" title="危機處理手冊" class="w-full h-[72vh] min-h-[520px] border-0"></iframe></div></div>`;
+    const file=manual.file_url||'assets/event-day/crisis-manual-2027.pdf';
+    container.innerHTML=`<div class="space-y-3"><div class="flex items-center justify-between gap-2 flex-wrap"><div><b class="text-[14px]"><i class="fa-solid fa-book-medical text-red-600 mr-1"></i>${escapeHtml(manual.title||'2027 港島童軍繽紛日｜危機處理手冊')}</b>${manual.version?`<div class="text-[11px] text-slate-500 mt-1">${escapeHtml(manual.version)}</div>`:''}</div><a href="${escapeHtml(file)}" target="_blank" rel="noopener" class="bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>開啟 PDF</a></div><div class="bg-white border rounded-2xl overflow-hidden"><iframe src="${escapeHtml(file)}#view=FitH" title="危機處理手冊" class="w-full h-[72vh] min-h-[520px] border-0"></iframe></div></div>`;
   }
 ,
   openCrisisManualForm(id=null){

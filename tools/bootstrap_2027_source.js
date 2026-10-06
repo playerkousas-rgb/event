@@ -45,7 +45,7 @@ function stripLegacyUrls(value,key=''){
       if(typeof v==='string' && /^https?:\/\//i.test(v) && /(url|link)$/i.test(k)){
         out[k]='';
         out[`${k}_state`]='awaiting_2027_owned_copy';
-      } else if(/(?:^|_)(?:source_)?(?:drive_)?file_id$|(?:^|_)(?:sheet_id|folder_id|doc_id|gid)$/i.test(k)) {
+      } else if(/(?:^|_)(?:source_)?(?:drive_)?file_id$|(?:^|_)(?:drive_id|google_drive_id|source_drive_id|sheet_id|folder_id|doc_id|gid)$/i.test(k)) {
         // A copied record may keep its stable record `id`, but never an ID that
         // addresses the old Drive/Sheet object. A 2027 owner links its own copy.
         out[k]='';
@@ -143,7 +143,7 @@ event.future_data_intake={
 };
 
 const domains=[
-  {id:'event_master',folder:'system',file:'ISD 2027－活動主資料.json',paths:['event_id','event_name','description','data_version','drive','source_of_truth','one_time_reference_seed','record_state','future_data_intake','public_channel_2027']},
+  {id:'event_master',folder:'system',file:'ISD 2027－活動主資料.json',paths:['event_id','event_name','description','data_version','drive','source_of_truth','one_time_reference_seed','record_state','future_data_intake','public_channel_2027','execution_manual_2027']},
   {id:'registration',folder:'registration',file:'ISD 2027－報名及旅團資料.json',paths:['participants','participants_source','troop_checkin','troop_checkin_source','roster_seed']},
   {id:'notices',folder:'notices',file:'ISD 2027－通告及公眾資訊.json',paths:['notices','announcements','unit_guide','documents']},
   {id:'rosters',folder:'rosters',file:'ISD 2027－人員、嘉賓及典禮名單.json',paths:['users','staff','guest_roster','guest_transport','ceremony']},
@@ -163,6 +163,7 @@ const registry={
   generated_from:'data/isd_2027.json',
   update_policy:'The Drive files below are the 2027-controlled source. Regenerate the repo read model and mock only through the 2027 importer/builders; never edit a 2026 source to change 2027.',
   registry_file:(priorRegistry&&priorRegistry.registry_file)||null,
+  execution_manual_assets:(priorRegistry&&priorRegistry.execution_manual_assets)||[],
   domains
 };
 writeJson('data/isd_2027.json',event);

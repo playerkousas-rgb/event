@@ -1508,16 +1508,19 @@
     "manuals": [
       {
         "id": "cm_1",
-        "title": "ISD2027 Risk Management Manual（V1, Clean）",
-        "version": "2026 年版（依 2025 手冊修訂）",
+        "title": "2027 港島童軍繽紛日｜危機處理手冊",
+        "version": "2027 參考種籽（待 2027 危機處理組確認）",
         "category": "危機手冊",
         "summary": "更新版：活動風險管理手冊——涵蓋天氣、集體安全、急救安排、緊急撤離及危機通報程序。",
         "description": "港島童軍繽紛日危機處理計劃（組織、職責及運作）2026 年修訂版。\n\n主要章節：\n一、危機定義與分級標準\n二、危機處理小組目的、架構與職責\n三、小組運作時間及指揮中心地點\n四、惡劣天氣及空氣污染處理機制\n五、傳染病應變程序\n六、嚴重意外事件處理\n七、嚴重事故及取消活動程序\n八、急救站駐守（聖約翰救傷隊）與醫療送院安排\n九、童軍活動綜合保險保障範圍\n十、緊急聯絡通訊錄",
-        "file_name": "ISD2027-RiskMangementManual_V1(Clean).pdf",
-        "file_url": "assets/event-day/crisis-manual-2026.pdf",
+        "file_name": "crisis-manual-2027.pdf",
+        "file_url": "assets/event-day/crisis-manual-2027.pdf",
         "uploaded_by": "危機處理主任（何家騏） / 秘書處",
         "date": "2026-09-26",
-        "open_url": "assets/event-day/crisis-manual-2026.pdf"
+        "open_url": "assets/event-day/crisis-manual-2027.pdf",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "drive_file_id": "1OInPhs1NFG193KtX0m341oRZugxkDckj",
+        "drive_file_link": "https://drive.google.com/file/d/1OInPhs1NFG193KtX0m341oRZugxkDckj/view"
       }
     ],
     "accidents": [
@@ -1577,10 +1580,8 @@
         "remarks": "傷者已平安返家，領袖於活動翌日進行電話跟進，康復情況良好。"
       }
     ],
-    "manual_file": {
-      "name": "ISD2027-RiskMangementManual_V1(Clean).pdf",
-      "url": "assets/event-day/crisis-manual-2026.pdf"
-    }
+    "manual_file": "assets/event-day/crisis-manual-2027.pdf",
+    "manual_file_status": "2027_reference_seed_pending_2027_confirmation"
   },
   "staff": {
     "staff_source": {
@@ -8808,36 +8809,72 @@
     ],
     "maps": [
       {
-        "id": "map_2026",
-        "title": "ISD2027 Site Setup Plan R10-SETUP PLAN-1",
-        "description": "場地設置圖。",
-        "file_name": "site-setup-plan-2026.pdf",
-        "file_url": "assets/event-day/site-setup-plan-2026.pdf",
-        "file_data": "",
-        "created_by": "",
-        "created_at": ""
+        "id": "map_2027_site_setup",
+        "title": "警察學院場地佈置及攤位圖",
+        "description": "工作人員活動日主場地圖：攤位、服務點、典禮及後勤位置。",
+        "audience": "所有工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "site-setup-plan-2027.pdf",
+        "file_url": "assets/event-day/site-setup-plan-2027.pdf",
+        "drive_file_id": "1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R",
+        "drive_file_link": "https://drive.google.com/file/d/1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R/view"
+      },
+      {
+        "id": "map_2027_troop_route",
+        "title": "參加旅團場地指示圖",
+        "description": "東閘入場、報到處及旅團活動動線；供報到、秩序和主題活動組使用。",
+        "audience": "所有工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "ISD 2027－參加旅團場地指示圖.pdf",
+        "file_url": "google_drive/ISD 2027－參加旅團場地指示圖.pdf",
+        "drive_file_id": "1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T",
+        "drive_file_link": "https://drive.google.com/file/d/1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T/view"
+      },
+      {
+        "id": "map_2027_guest_reception",
+        "title": "嘉賓接待及典禮位置圖",
+        "description": "嘉賓接待、典禮及座位區域的工作參考圖；嘉賓個人資料仍只限獲授權角色。",
+        "audience": "嘉賓接待組、會操及典禮組及管理層",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "guest-reception-map-2027.pdf",
+        "file_url": "assets/event-day/guest-reception-map-2027.pdf",
+        "drive_file_id": "1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr",
+        "drive_file_link": "https://drive.google.com/file/d/1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr/view"
+      },
+      {
+        "id": "map_2027_inspection_route",
+        "title": "會操檢閱路線圖",
+        "description": "會操及典禮組工作人員的檢閱行進路線參考。",
+        "audience": "會操及典禮組",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "inspection-route-2027.svg",
+        "file_url": "assets/event-day/inspection-route-2027.svg",
+        "drive_file_id": "1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB",
+        "drive_file_link": "https://drive.google.com/file/d/1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB/view"
       }
     ],
     "gameCards": [
       {
-        "id": "gc_2026",
-        "title": "Game card",
-        "description": "活動遊戲卡。",
-        "file_name": "game-card-2026.pdf",
-        "file_url": "assets/event-day/game-card-2026.pdf",
-        "file_data": "",
-        "created_by": "",
-        "created_at": ""
+        "id": "gc_2027",
+        "title": "主題活動遊戲卡",
+        "description": "攤位集印及活動日派發使用。",
+        "audience": "所有工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "game-card-2027.pdf",
+        "file_url": "assets/event-day/game-card-2027.pdf",
+        "drive_file_id": "1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z",
+        "drive_file_link": "https://drive.google.com/file/d/1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z/view"
       },
       {
-        "id": "gc_p_2026",
-        "title": "Game card-P",
-        "description": "活動遊戲卡。",
-        "file_name": "game-card-p-2026.pdf",
-        "file_url": "assets/event-day/game-card-p-2026.pdf",
-        "file_data": "",
-        "created_by": "",
-        "created_at": ""
+        "id": "gc_p_2027",
+        "title": "主題活動遊戲卡（P 版）",
+        "description": "指定工作崗位使用的遊戲卡版本。",
+        "audience": "主題節目組及指定工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "game-card-p-2027.pdf",
+        "file_url": "assets/event-day/game-card-p-2027.pdf",
+        "drive_file_id": "1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW",
+        "drive_file_link": "https://drive.google.com/file/d/1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW/view"
       }
     ],
     "booth_source": {
@@ -15645,10 +15682,13 @@
         "updated_at": "2026-10-02",
         "mc": "林汶珊小姐（女）／林卓衡先生（男）",
         "pages": 12,
-        "file_url": "assets/event-day/mc-awards-v5-2026.pdf",
+        "file_url": "assets/event-day/mc-awards-2027.pdf",
         "note": "1045 宣佈就座｜1055 嘉賓進場｜1100 開場｜1110 主禮團進場及頒獎。主禮人：地域會長 吳家麗女士 OStJ。",
         "content": "港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 1 頁，其 12 頁\n\n港島童軍繽紛日 2026\n\n第一部分\n優異旅團及各項獎勵頒獎典禮\n司儀稿\nV5\n02.10.2026\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 2 頁，其 12 頁\n\n香港警察學院 大操場\n\n司儀：林汶珊小姐（女）及 林卓衡先生（男）\n\n 司儀綵排\n 司儀綵排完畢\n 總綵排\n1045 宣佈就座\n1055 各嘉賓開始進場及就座\n\n1100\n司儀（合 ）： 各位嘉賓，各位童軍，下午好。\n\n司儀（ 女 ）：  我係  港島第 243 旅  教練員  林 汶 珊  V enus\n\n司儀（ 男 ）：  我係  柴灣區  區領袖  林卓衡  Nathan\n\n司儀（ 女 ）  歡迎各位參加 「港島童軍繽紛日 20 26 」 ， 典禮即將開始 ，\n請各位保持安靜。\n\n司儀（ 男 ）：  為確保頒獎典禮可以順利進行，請各位將手提電話及響鬧\n裝置轉為靜音或震動模式。另外，大會攝影師會為每一位\n獲獎者及領獎代表影相，並上載於港島地域網頁，以供瀏\n覽及下載。各家長及領袖可安坐於觀眾席欣賞典禮。\n\n司儀（女 ）： 「港島童軍繽紛日」係港島地域一年一度的盛事。每\n年，大家聚首一堂，嘉許優異旅團、以及表揚有出色表\n現的青少年成員、領袖及會務委員。\n\n司儀（男 ）： 今年活動以 「賦能對接十五五˙ 港島童軍創未來」 作為\n活動主軸 ，參加者將 透過活動進一步了解國家 「十五五」\n規劃及香港第一個五年規劃的重點。\n\n司儀（女 ）： 本年繽紛日除了會操檢閱 、 優異旅團嘉許及獎勵頒發等\n儀式外，大會將呈獻一系列精彩多元的主題節目活動、\n「積極公民」 獎章考驗、青少年參與及社區服務項目，\n響應總會周年主題「百載傳承・同行未來」 。\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 3 頁，其 12 頁\n\n司儀（男 ）： 除了以上精彩活動外，今年繽紛日同時舉辦 「食品及物\n品捐贈」 童心捐贈大行動，希望各童軍成員轉贈最少一\n種食品及物品予有需要人士，以實踐童軍成員「對別\n人、要幫助」及服務社群的承諾。\n\n司儀（女 ）： 今年「港 島童軍繽紛日」 亦係 香港童軍 115 周年其中一\n項認可的慶祝活動。 今天的活動共分為 3 個部份，第一\n部份係現在的優異旅團及各項獎勵頒獎典禮 ， 第二部份\n係稍後的會操檢閲及 步操比賽頒獎 典禮 ，而第三部份則\n係主題攤位節目。\n\n司儀（男 ）： 今年的 「港島童軍繽紛日」 再次得到香港警務處嘅大力\n支持，能夠俾我地喺香港警察學院舉行活動，實在非常\n感謝。而在場的每一位童軍成員及領袖亦要協助保持活\n動場地嘅清潔，多謝各位合作及支持。\n\n（主禮人及嘉賓團於風笛手旁排隊，預備進場）\n\n1110  主禮團進場\n\n司 儀（男）： 今日好高興邀請到 地域會長 吳家麗女士 ， OStJ 擔任\n優異旅團及各項獎勵頒獎典禮的主禮人。\n\n 現在恭請：\n1.  副香港總監（常務） 吳家亮先生、\n2.  總會副會長葉永成先生， GBS, MH, JP 、\n3.  地域總監 楊國光博士、\n4.  地域主席 李傑之先生、\n5.  副地域總監 黃偉安先生、\n6.  伍尚國先生、\n7.  鍾震宇先生及\n8.  活動籌委會主席 助理地域總監朱家聰先生\n陪同主禮 人 進場，請各位起立。\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 4 頁，其 12 頁\n （待司儀介紹完主禮團成員之後）\n\n（由風笛手吹奏音樂引領，主禮團各嘉賓陪同主禮人進場）\n\n（各嘉賓到達座位前，風笛手奏罷音樂，並向主禮人敬禮）\n\n（主禮人回禮後）\n\n司儀 （男） ： 請各位就座。\n\n1110 頒發各項獎項\n\n頒發「2026 年優異旅團彩帶及證書」\n\n（由  地域總監  楊國光博士  頒發）\n司儀（女）： 首先頒發「2026 年優異旅團彩帶及證書」。獲評選為優異旅\n團嘅單位，無論在成員人數增長、考章成績、活動與訓練、社\n區服務及團務管理等 方面，都要達至一定的水平。現在有 請\n地域總監  楊國光博士   為我們頒發彩帶及證 書。並 請  副地\n域總監（常務）伍尚國先生  陪同  楊總監  到台前。\n\n（獲獎旅團代表列隊站立，由林雋逸先生協助，伍尚國總監陪同楊國光總監，\n逐一頒發證書或彩帶，司儀同時讀出獲獎旅團名稱。）\n\n司儀（男 ）： 首先係頒發小童軍支部，今年共有  38   個小童軍團獲獎。\n出席頒獎禮的有：\n\n請參閱附件（小童軍優異旅團）\n\n司儀（女）： 接住係幼童軍支部，今年共有 57 個幼童軍團獲獎。出席頒\n獎禮嘅有：\n\n請參閱附件（幼童軍優異旅團）\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 5 頁，其 12 頁\n\n司儀（男 ）： 至於童軍支部 ， 今年共有 44 個童軍團獲獎 。 出席頒獎禮嘅有：\n\n請參閱附件（童軍優異旅團）\n\n司儀（女）： 接住落嚟係深資童軍支部，今年共有 33 個深資童軍團獲獎。\n出席頒獎禮嘅有：\n\n請參閱附件（深資童軍優異旅團）\n\n司儀（男 ）： 最後係樂行童軍支部，獲獎的有  16   個樂行童軍團。\n出席頒獎禮嘅有：\n\n請參閱附件（樂行童軍優異旅團）\n\n司儀（女）： 恭喜各獲獎旅團。多謝  楊總監 及 伍總監，請兩位到嘉賓\n席就座。\n___________________________________________________________________________________\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 6 頁，其 12 頁\n\n頒發「支部最高獎章嘉許信」\n\n（由  地域會長  吳家麗女士，OstJ  頒發）\n司 儀（女 ）： 接著是頒發「支部最高獎章嘉許信」 。要成功考獲支\n部最高獎章，一點都唔容易 ，他們必須憑著堅定的\n信心、毅力和勇氣，去接受各種的嘅 考驗及挑戰，\n先 能考取一系列的進度性獎章。現在恭請   今日典\n禮主禮人 地域會長  吳家麗女士， OstJ ，為我們頒\n發總領袖獎章嘉許信。並 請   副地域總監 （活動與\n訓練） 黃偉安先生  陪同  吳會長  到台前。\n\n司 儀（男 ）： 今年港島地域共有   46   位童軍考獲總領袖獎章。\n\n司 儀（男 ）： 請獲獎成員代表領獎。\n\n請參閱附件（總領袖獎章第一組名單）\n\n （頒發完第一個代表之後）\n\n 請獲獎成員代表領獎。\n\n請參閱附件（總領袖獎章第二組名單）\n\n （頒發完第二個代表之後）\n\n 請獲獎成員代表領獎。\n\n請參閱附件（總領袖獎章第三組名單）\n\n （頒發完第三個代表之後）\n\n(Command)\n\n（待獲獎者操到檢閱台前停定後）\n\n(Command)\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 7 頁，其 12 頁\n\n司 儀（女）： 繼續請 吳會長 為我們頒發榮譽童軍獎章嘉許信。\n\n(Command)\n\n司 儀（女）： 今年港島地域共有  8  位深資童軍考獲榮譽童軍獎章。\n\n(Command)\n\n司 儀（女）： 出席頒獎禮嘅有     位，佢哋係：\n\n請參閱附件（榮譽童軍獎章名單）\n\n（獲獎者依順序領獎）\n\n司 儀（男 ）： 接著請 吳會長，為我們頒發貝登堡獎章嘉許信。\n\n(Command)\n\n司 儀（男 ）： 今年港島地域共有  3  位樂行童軍考獲貝登堡獎章。\n\n(Command)\n\n司 儀（男 ）： 出席頒獎禮嘅有     位，佢哋係：\n\n請參閱附件（貝登堡獎章名單）\n\n（獲獎者依順序領獎）\n\n(Command)\n\n司 儀（女 ）： 恭喜各位考獲支部最高獎勵的青少年成員。\n\n多謝 吳 會長  及  黃總監，請 兩位 到嘉賓席就座。\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 8 頁，其 12 頁\n\n頒發總監委任書\n\n司儀（男）： 接住係頒發總監委任書儀式。\n\n有請  地域總監 楊國光博士  為我們頒 發「總監委任書」\n及主持覆誓。\n\n 今日共有＿＿位總監接受「總監委任書」 ，有請＿＿位總監\n到台前。\n\n（工作人員引領＿＿位總監移步到台前）\n\n 職位 姓名 初步回覆 出席\n1.  地域總部總監\n（訓練行政） 黃凱威先生 出席\n2.  地域總部總監\n（訓練支援） 鍾兆生先生 未能出席\n3.  助理地域總部總監\n（大潭童軍中心） 何倩羚女士 未能出席\n4.  助理地域總部總監\n（大潭童軍中心） 陳志雄先生 未能出席\n5.  助理地域總部總監\n（航空活動） 陳紀君女士 出席\n6.  助理地域總部總監\n（小童軍） 張惠敏女士 出席\n7.  助理地域總部總監\n（深資童軍） 聶嘉威先生 出席\n\n司 儀（女 ）： 請各位起立 ， 現在進行覆誓儀式 ， 請在場童軍成員行宣誓禮。\n\n（帶白手套之工作人員協助把咪分別放置在楊國光總監及獲頒發委任書的總監\n前面） ， （由楊國光總監開始宣讀童軍誓詞）\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 9 頁，其 12 頁\n\n（獲頒發委任書的總監跟住覆誦童軍誓詞）\n\n楊國光總監：\n眾總監：\n我願以信譽為誓，竭盡所能\n我願以信譽為誓，竭盡所能\n\n楊國光總監：\n眾總監：\n對神明，對國家，盡責任\n對神明，對國家，盡責任\n\n楊國光總監：\n眾總監：\n對別人，要幫助\n對別人，要幫助\n\n楊國光總監：\n眾總監：\n對規律，必遵行\n對規律，必遵行\n\n（帶白手套之工作人員協助把咪取走）\n\n司 儀（男）： 有請 楊總監 頒發「總監委任書」\n\n（獎品小姐送上總監委任書 、地域總監逐一頒發總監委任書）\n\n獲頒發「總監委任書」的總監有：\n\n請 地域總部總監（訓練行政）黃凱威總監 接受，\n請 地域總部總監（訓練支援）鍾兆生總監 接受，\n請 助理地域總部總監（大潭童軍中心）何倩羚總監 接受，\n請 助理地域總部總監（大潭童軍中心）陳志雄總監 接受，\n請 助理地域總部總監（航空活動）陳紀君總監 接受，\n請 助理地域總部總監（小童軍）張惠敏總監 接受，\n請 助理地域總部總監（深資童軍）聶嘉威總監 接受。\n\n頒發完畢\n\n司儀（女）： 恭喜各委任的總監，多謝  楊總監，請 楊總監 到嘉賓席\n就座。\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 10 頁，其 12 頁\n\n頒授童軍獎勵\n\n司 儀（女 ）： 接著頒授 童軍獎勵俾各獲獎人士，以表揚佢地多年來\n對童軍運動作出的貢獻。\n\n司 儀（女 ）： 有請  港島地域會長  吳家麗女士 ，OstJ  頒 授 各項童軍\n獎勵。有請  吳 會長 。\n\n司 儀（男 ）： 首先係頒授 「十年長期服務獎狀」，獲獎人士為童軍會服務\n已達 10 年。\n\n 職位 姓名 初步回覆 出席\n1.  請 港島地域副會長 梁梓健先生 未能出席\n2.  請 港島地域副會長 譚麗女士 未能出席\n3.  請 港島地域副會長 關嘉聰醫生 出席\n4.  請 港島地域副會長 鄧志浩先生 未能出席\n5.  請 港島地域副會長 程桂珍女士 出席\n6.  請 港島地域副會長 郭榮忠先生 未能出席\n7.  請 青少年活動委員會委員 周永光先生 出席\n\n司 儀（女 ）： 接著有請 吳會長 繼續頒授「長期服務獎章」 ，獲獎人士為童\n軍會服務已達 15 年。\n\n 職位 姓名 初步回覆 出席\n1.  教育及發展委員會副主席 林斯初先生 未能出席\n2.  港島地域童軍樂隊主席 邱淑瑜博士 未能出席\n3.  助理地域總監（活動） 何家騏先生 出席\n\n司 儀（男 ）： （頒發後） 恭喜各獲獎人士 ，多謝  吳會長 ，請 到 嘉賓\n席就座。\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 11 頁，其 12 頁\n\n司 儀（女 ）： 接住有請 總會副會長 葉永成太平紳士 ， GBS, MH 頒\n授各項童軍獎勵。有請 葉 副 會長 。\n\n司儀（男）： 首先係頒授「長期服務一星獎章」 ，獲獎人士為童軍會服務已\n達 25 年。\n\n 職位 姓名 初步回覆 出席\n1.  港島童軍先鋒工程會會長 陸偉權博士 出席\n\n司儀（男）： （在頒發期間）陸博士從 2000 年開始，先後服務筲箕灣區，\n柴灣區，港島第175 旅、總會訓練署，以及港島童軍先鋒工程\n會，至今超過 25 年。\n\n司儀（女）： 接著係頒授「長期服務三星獎章」 ，獲獎人士為童軍會服務已\n達 45 年。\n\n 職位 姓名 初步回覆 出席\n1.  地域青少年活動委員會副主席 卓建立先生 出席\n\n司儀 （女） ： （在頒發期間） 卓先生 從 1970 年開始，先 後 服務多個\n童軍 單位， 包 括旅團領袖，沙田東區、新界東地域 及\n港島地域青少年活動委員會，至今超過 45 年。\n\n司 儀（男 ）： （頒發後） 恭喜 咁 多位獲獎人士。多謝 葉副會長 ，請\n到嘉賓席就座。\n\n港島童軍繽紛日 2026\n（4.10.2026）\n優異旅團及各項獎勵頒獎典禮司儀稿\n第 12 頁，其 12 頁\n\n致送協助單位紀念品\n\n司 儀（男）： 今天嘅活動能順利舉行，實在有賴各協助機構嘅 參與及\n幫助。\n\n司 儀（女）： 現在有請  地域 主席  李傑之先生  為我哋致送 感謝狀\n比協助機構。有請：\n\n1. 提供活動場地的 香港警察學院，請代表接受；\n\n2. 提供急救服務的  香港聖約翰救傷隊 ， 請代表接受\n\n多謝 李主席，請到嘉賓席就座。\n\n司 儀（男 ）： 今天第一部份嘅優異旅團及各項獎勵頒獎典禮已經完\n成，稍後將會進行會操檢閲及頒獎典禮。主禮嘉賓即將到\n場，請各位保持安靜。\n\n（第一部份 - 完）",
-        "hint": "內文已內建，可直接在手機向下拉讀稿；「開啟 PDF」為原版檔案。"
+        "hint": "內文已內建，可直接在手機向下拉讀稿；「開啟 PDF」為原版檔案。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "drive_file_id": "1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA",
+        "drive_file_link": "https://drive.google.com/file/d/1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA/view"
       },
       {
         "id": "mc_part2",
@@ -15658,10 +15698,13 @@
         "updated_at": "2026-10-02",
         "mc": "范紫晴小姐（女）／林卓衡先生（男）",
         "pages": 15,
-        "file_url": "assets/event-day/mc-inspection-v4-2026.pdf",
+        "file_url": "assets/event-day/mc-inspection-2027.pdf",
         "note": "1150 會操隊伍進場｜1200 主禮嘉賓到場｜檢閱｜1250 合照。主禮嘉賓：香港警務處港島總區指揮官 區永樑助理處長。全場 15 隊。",
         "content": "港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 1 頁，共 15 頁\n\n香港警察學院 大操場\n\n司儀：范紫晴小姐（女）及林卓衡先生（男）\n\n1150 會操隊伍進場\n\n會操隊伍進場\n\n司儀（合）： 各位嘉賓，各位童軍，大家好。\n\n司儀（女）： 我係 柴灣區 區領袖 范紫晴 Nicole\n\n司儀（男）： 我係 柴灣區 區領袖 林卓衡 Nathan\n\n司儀（女）： 稍後即將會進行「港島童軍繽紛日 2026」 會操檢閱暨\n頒獎典禮。\n\n （等指示）\n\n司儀（男）： 各位嘉賓、各位童軍，大家好！歡迎蒞臨「港島童軍繽\n紛日 2026」 會操檢閱暨頒獎典禮。\n\n為確保頒獎典禮可以順利進行，請各位將手提電話及響\n鬧裝置轉為靜音或震動模式。\n\n另外，大會攝影師會為每一位獲獎者及領獎代表影相，\n並上載於港島地域網頁，以供瀏覽及下載。各家長及領\n袖可安坐於觀眾席欣賞典禮。\n\n司儀（女）： 會操舉行期間，當港島地域旗隊操過各制服成員面前嘅\n時候，包括地域旗隊進場、分列式步操，以及離場，請\n在場各制服成員向地域旗敬禮。\n\n司儀（男）： 現在請 會操副司令員  港島第十五旅 深資海童軍副團長\n吳冠達先生 帶領步操隊伍進場。\n\nV4\n2026-9-29\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 2 頁，共 15 頁\n\nS.I.C. Parade will March On, By the Left Quick March. (all Squads march to position\nspecified)\nS.I.C. Parade will Advance, Left Turn (SC and CB 10 steps to front of Squad)\nS.I.C. Parade Dressing, Right Dress (Squad commander About Turn)\nS.I.C. Parade, Form Two Ranks\nS.I.C. Parade Dressing, In Two Ranks, Right Dress (Squad Commander About Turn)\n\nS.I.C. Colour Party, Order Staff\nS.I.C. Parade, Stand At Ease\n\n（Deputy Parade Commander：Stand at ease）\n\n司儀（男）： 現在請 會操司令員  港島第十二旅   深資童軍團長\n馬旌愷先生  進場。\n\nS.I.C. Parade, Shun\nS.I.C. Colour Party, Shoulder Staff\n\n（Deputy Parade Commander：Colour Party, Shoulder Staff）\n\n（Parade Commander 進場）\n\n（會操司令員及副會操司令員交接及就位）\n\n 司儀（男）： 現在 香港童軍總會 港島地域旗隊 進場，請各位嘉賓、\n各位童軍起立。\n\nP.C. Parade, Present Staff (Parade Commander / 2IC and all squad\ncommanders saluting the colour)\nE.C. Colour Party will March On, By the Centre Quick March\nE.C. Colour Party, Change Direction Left, at the Halt, Left Form\n(Parade Commander / 2IC and all squad commanders hands down\nafter forming)\nE.C. Colour Party, Present Staff\nP.C. Parade, Shoulder Staff (Parade Commander / 2IC and all squad\ncommanders hands down)\n\n（Parade Commander：Shoulder Staff, Drum x1）\n\n司儀（女）： 請各位就座\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 3 頁，共 15 頁\n\nE.C. Colour Party, Dressing, Inward Dress.  Eyes Front\nS.I.C. Colour Party, Order Staff\nS.I.C. Parade, Stand At Ease\n\n（Parade Commander：Stand at ease）\n\n1200 主禮嘉賓到場\n\n主禮嘉賓到場\n\n司儀（女）： 主禮嘉賓現在到場，請各位肅靜。\n\nS.I.C. Parade, Shun\nS.I.C. Colour Party, Shoulder Staff\n\n（Parade Commander：Shoulder Staff）\n\n（主禮嘉賓於 1155 在行政樓地下登上政府車輛（要人手開車門），然後開往\n順泰園吹氣拱門旁邊）\n\n（青少年成員【港島第 81 旅童軍林思齊】佩戴白手套，站立在吹氣拱門旁邊，\n當主禮嘉賓車輛差不多停下的一瞬間向主禮嘉賓車輛敬禮，待車輛停下便落手）\n\n（青少年成員開車門）\n\n（由吳家亮總監、葉永成副會長、吳家麗會長、楊國光總監、李傑之主席、黃\n偉安總監、伍尚國總監、鍾震宇總監及朱家聰總監迎接主禮嘉賓）\n（主禮團嘉賓名單待定）\n\n（當主禮嘉賓下車後，由楊國光總監向主禮嘉賓敬禮，主禮嘉賓回禮，雙方用\n左手握手）\n\n（楊國光總監向主禮嘉賓介紹 吳家亮總監、葉永成副會長、吳家麗會長、李\n傑之主席及同行的其他童軍總監，並逐個握手）\n（主禮團嘉賓名單待定）\n\n（楊國光總監邀請主禮嘉賓步行至風笛手旁排隊，由主禮團陪同）\n\n（待指示）\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 4 頁，共 15 頁\n\n司儀（男）： 各位，今日好榮幸邀請到\n香港警務處港島總區指揮官區永樑助理處長\n擔任主禮嘉賓。\n\n現在恭請：\n副香港總監（常務） 吳家亮先生、\n總會副會長 葉永成太平紳士，GBS, MH、\n地域會長 吳家麗女士，OstJ、\n地域總監 楊國光博士、\n地域主席 李傑之先生、\n副地域總監 黃偉安先生、伍尚國先生、鍾震宇先生 及\n活動籌委會主席  助理地域總監  朱家聰先生\n陪同主禮嘉賓進場，請各位起立。\n\n（待司儀介紹完主禮團成員之後）\n\n（由風笛手吹奏音樂引領，各總監陪同主禮嘉賓進場）\n\n（主禮嘉賓經過禮炮前方，然後步上檢閱台，風笛手奏罷音樂）\n\n（黃偉安總監及鍾震宇總監站立於檢閱台左右兩側，並面向操場）\n\n（主禮嘉賓踏上檢閱台並面向操場，當主禮嘉賓立定後）\n\n（一名風笛手向主禮嘉賓敬禮，主禮嘉賓回禮）\n\n（風笛手敬禮完畢後向右轉，然後以步操離開操場）\n\n司儀（女）： 現在由 會操隊伍 向 主禮嘉賓 致敬\n\nP.C Parade, General Salute, Present Staff\n\n(Parade Commander / 2 IC and all squad commanders salute to\nreviewing officer)\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮，黃偉安總監及鍾震宇\n總監亦敬禮，樂隊奏樂後）\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 5 頁，共 15 頁\nP.C.\nParade, Shoulder Staff (Parade Commander / 2IC and all squad\ncommanders hands down)\n\n（Parade Commander：Shoulder Staff，鼓聲「澎」一下後）\n\n（主禮嘉賓、黃偉安總監及鍾震宇總監落手）\n\n司儀（女）： 請各位就座。\n\n（Parade Commander 請求主禮嘉賓進行檢閱）\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮）\n\nP.C Good Afternoon Madam. Island Scout Day 2026 Presentation Parade, 15\nsquads formed up and ready for your inspection, Madam, please..\n\n（主禮嘉賓回應：carry on officer）\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮）\n\n司儀（男）： 現在恭請 主禮嘉賓   香港警務處港島總區指揮官區永樑\n助理處長  檢閱會操隊伍，並由  副地域總監  黃偉安先\n生 及 鍾震宇先生  陪同。\n\n（主禮嘉賓由檢閲台的右方步下檢閲台，並由黃偉安總監引領主禮嘉賓前往檢\n閲隊伍）\n\n（由 Parade Commander 帶領，黃偉安總監 及 鍾震宇總監 陪同主禮嘉賓進行\n檢閱）\n\n（檢閱時，樂隊奏樂）\n\n（當主禮嘉賓開始檢閱第一隊時）\n\n司儀（女）： 步操係童軍運動中一個非常重要嘅訓練項目，不但鍛鍊\n童軍成員嘅體力、耐力及集中力，亦講求服從性及合作\n精神。\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 6 頁，共 15 頁\nS.I.\nC.\nStand Still the Front Row, Rear Row, Order\nStaff\nRear Row, Stand At Ease\nS.I.\nC.\nRear Row, Shun\nRear Row, Shoulder Staff\nS.I.\nC.\nFront Row, Order Staff\nFront Row, Stand at Ease\nS.I.\nC.\nRear Row, Order Staff\nRear Row, Stand at Ease\n\n（停頓 10 秒）\n\n司儀（男）： 港島地域每年都舉辦步操比賽，目的就係鼓勵童軍成員\n從步操訓練中學習互相合作、嚴守紀律及建立團隊精\n神。\n\n（停頓 10 秒）\n\n司儀（女）： 各位可以看到在場嘅比賽隊伍精神奕奕，的確十分神\n氣，相信他們下過不少苦功。\n\n（檢閲完畢，會操司令員向主禮嘉賓敬禮，主禮嘉賓回禮）\n\n（由黃偉安總監及鍾震宇總監陪同，主禮嘉賓返回檢閲台，並經檢閲台左方返\n回檢閲台）\n\n（待主禮嘉賓返回檢閱台上，黃偉安總監及鍾震宇總監站立於檢閱台左右兩\n側）\n\nP.C Parade, Shun\nP.C Colour Party, Shoulder Staff\nP.C Parade, Form Three Ranks\nP.C\nParade Dressing, In Three Ranks, Right Dress (Squad Commander\nAbout Turn)\n\n（Parade Commander 向主禮嘉賓請求會操隊伍經過檢閱台）\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮）\n\nP.C Madam. May I have your permission to March Past, Madam, Please\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 7 頁，共 15 頁\n（主禮嘉賓回應：carry on officer）\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮）\n\n（當 Parade Commander 獲得 permission 後，操回場中時… ）\n\n司儀（男）： 會操隊伍即將進行分列式步操。並請  區助理處長  接受\n會操隊伍致敬。\n\nP.C Parade Move to the Right in Threes, Right Turn\nP.C Parade will March Past in Quick Time, By the Left Quick March\n\n（步操隊伍第一次經過檢閱台 – March Past）\n\nS.C(選拔組) By the Left Quick March\nS.C(選拔組) By the Left, Left Wheel\nS.C(選拔組) Turning, Squad Will Advance, Left Turn\nS.C(選拔組) By the Right, Eyes Right\n\n（當第一隊操過檢閱台時）\n\n司儀（女）： 香港童軍總會 港島地域旗隊 即將經過檢閱台，請各位\n嘉賓起立。\n（旗隊操過檢閱台後…）請各位就座。\n\n司儀（男）： 隨後係各支青少年制服團體嘅隊伍，分別係：\n\n序號 隊伍名稱\n2.  香港女童軍總會\n3.  香港紅十字會青年團\n4.  香港聖約翰救傷隊少青團\n\n司儀（男）： 緊隨其後嘅係參加  步操比賽（初級組）嘅隊伍，分別\n係（其餘隊伍依次讀出）：（2 位司儀可輪流宣佈旅團\n名單）\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 8 頁，共 15 頁\n\n序號 單位名稱 主辦機構\n1.  港島第 15 旅 香港華仁書院\n\n司儀（女）： 之後係參加  步操比賽（選拔組）嘅隊伍，分別係：\n\n序號 單位名稱 主辦機構\n2.  港島第 10 旅 聖保羅書院\n3.  港島第 12 旅  皇仁書院\n4.  港島第 16 旅  聖類斯中學，佢哋亦派出咗 5 支隊\n伍參與升旗比賽\n5.  港島第 17 旅 慈幼學校，佢哋亦派出咗 6 支隊伍\n參與升旗比賽\n6.  港島第 101 旅 筲箕灣東官立中學\n7.  筲箕灣區\n\n司儀（男）： 然後係參加  隊列比賽  嘅隊伍，分別係：\n\n序號 單位名稱 主辦機構\n8.  港島第 3 海童軍旅  香港航海學校 （共兩隊）\n9.  接住係港島第 221 旅，今年港島第 221 旅雖然未能參加\n隊列比賽，但今天亦派出隊伍參與會操，以實際行動\n支持港島童軍繽紛日。\n10.  最後係由本年度總領袖獎章、榮譽童軍獎章及貝登堡\n獎章嘅獲獎青少年成員組成嘅隊伍。（共兩隊）\n\nS.C(選拔組) Eyes Front\nS.C(選拔組) Turning, Move to the right in threes, right turn\nS.C(選拔組) By the Left, Left Wheel\nS.C(選拔組) By the Left, Left Wheel\nS.C(選拔組) By the Left, Left Wheel\nS.C(選拔組) Squad Halt\n\n（步操隊伍返回操場中央）\n\nP.C Parade will Advance, Left Turn\nP.C\nParade Dressing, In Open Order, Right Dress (Squad Commander About\nTurn)\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 9 頁，共 15 頁\n\n司儀（女）： 現在有請 主禮嘉賓 接受會操隊伍最高致敬，請各位起立。\n\nP.C\nParade will Advance, In Review Order, By the Centre, Quick March (16\npaces)\n\n（步操隊伍於向前操 16 步 Review Order 後）\n\nP.C Parade, General Salute, Present Staff (Parade Commander / DPC and all\nsquad commanders salute to reviewing officer)\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮，黃偉安總監及鍾震宇\n總監亦敬禮，樂隊奏樂後）\n\nP.C.\nParade, Shoulder Staff (Parade Commander / 2IC and all squad\ncommanders hands down)\n\n（Parade Commander：Shoulder Staff，鼓聲「澎」一下後）\n\n（主禮嘉賓、黃偉安總監及鍾震宇總監落手）\n\n司儀（女）： 請各位就座。\n\nP.C Colour Party, Order Staff\nP.C Parade, Stand At Ease\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 10 頁，共 15 頁\n\n主禮嘉賓致辭（檢閱台上）\n\n（童軍制服成員經樓梯上台，用托盤接收主禮嘉賓的手套，並致辭稿予主禮嘉\n賓，然後離開檢閲台，不會敬禮）\n\n（承辦商人員經樓梯上台，然後在檢閲台上 Set 好咪架及調試好咪的角度及高\n度，最後開咪，然後離開檢閲台）\n\n司儀（男）： 現在恭請  香港警務處港島總區指揮官 區永樑助理處長\n致辭。\n\n致辭完畢\n\n司儀（男）： 多謝  區助理處長 。\n\n（承辦商人員經樓梯上台，熄咪，然後搬咪架離開）\n\n（童軍制服成員經樓梯上台，用托盤收回致辭稿，然後離開檢閲台，不會敬\n禮）\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 11 頁，共 15 頁\n\n步操比賽頒獎（檢閱台前）\n\n（Parade Commander 喊 Presentation Party 後，各獲獎隊伍代表自動操向檢閱\n台前）\n\n司儀（女）： 現在頒發「港島地域步操比賽2026」嘅獎項，比賽分為\n升旗比賽、步操比賽及隊列比賽。有請 區助理處長 到\n台前為我們頒發獎項。\n\n（主禮嘉賓由檢閲台的右手邊步下檢閲台，由黃偉安總監引領主禮嘉賓到檢閱\n台前頒發獎項）\n\n（待各獲獎隊伍代表站定後）\n\n司儀（男）： 首先係頒發「港島地域步操比賽 2026」升旗比賽嘅獎\n項。\n\n（獎品小姐送上 升旗比賽 獎項）（4 個）\n\n獎項 獲獎單位 主辦機構\n最佳外觀隊伍獎\n季軍\n亞軍\n冠軍\n\n司儀（女）： 接著係頒發 步操比賽（初級組） 嘅獎項。\n（2 位司儀可輪流宣佈旅團名單）\n\n（獎品小姐送上 步操比賽 （初級組）獎項）（1 個）\n\n獎項 獲獎單位 主辦機構\n冠軍 港島第 15 旅 香港華仁書院\n＞佢地同時獲得「最佳外觀隊伍獎」\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 12 頁，共 15 頁\n\n司儀（男）： 接著係頒發 步操比賽（選拔組） 嘅獎項。\n\n（獎品小姐送上 步操比賽 （選拔組）獎項／旗絮／白色旗套／跪台）（5 個）\n\n獎項 獲獎單位 主辦機構\n最佳外觀隊伍獎\n最佳司令員獎\n季軍\n亞軍\n冠軍\n\n司儀（女）： 接著係頒發 隊列比賽 嘅獎項。\n\n（獎品小姐送上 隊列比賽 獎項）（3 個）\n\n獎項 獲獎單位 主辦機構\n冠軍 港島第 3 海童軍旅X 隊 香港航海學校\n＞ 佢地同時獲得「最佳外觀隊伍獎」，以及「最佳司令員獎  XXXX」\n\n（主禮嘉賓依次頒發獎盃給各獲獎隊伍代表，由檢閲台的左方（順泰園方向）至\n右方（武毅樓方向））\n\n（各獲獎隊伍代表於接受獎盃後，將會向右轉並逐一離開頒獎區域及返回操場\n中央）\n\n恭喜上述各個獲獎的童軍單位。港島地域將派出 6 支代表隊分別參與\n「香港童軍大會操步操比賽及隊列比賽」。\n\n（待頒發獎盃完畢後）\n\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 13 頁，共 15 頁\n\n司儀（女）： 接住係頒發「區際錦標」，「區際錦標」係將各個區\n屬下參加升旗比賽及步操比賽嘅所有旅團嘅分數累\n積，而獲最高分數嘅童軍區就會獲得「區際錦標」。\n\n本年度，獲得「區際錦標」嘅區會係  XXXX。\n請 XXXX 區總監 XXXX  代表接受獎項。\n\n（獎品小姐送上區際錦標）（1 個）\n\n司儀（男）： 恭喜 XXXX 區。多謝  區助理處長。現在有請移步到檢\n閱台，準備接受步操隊伍敬禮。\n\n（待獲獎代表操回各隊伍後，黃偉安總監引領主禮嘉賓經檢閲台左方返回檢閱\n台，接受步操隊伍致敬）\n\n（主禮嘉賓返回檢閱台，工作人員經樓梯上檢閲台，然後交回手套予主禮嘉\n賓，然後離開）\n\nP.C Parade, Shun\nP.C Colour Party, Shoulder Staff\nP.C Parade Dressing, In Close Order, Right Dress\n\n（主禮嘉賓面向操場）\n\n（Parade Commander 請求主禮嘉賓允許離場）\n\n（Parade Commander 向主禮嘉賓敬禮，主禮嘉賓回禮）\n\nP.C Madam. May I have your permission to march off, Madam, please\n\n（主禮嘉賓回應：carry on officer）\n\n（當 Parade Commander 獲得 permission 後，操回場中時… ）\n\n司儀（女）： 步操隊伍即將離場。有請  區助理處長  接受步操隊伍致\n敬。\n\nP.C Parade, move to the right in Coloum of Route, Right Turn\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 14 頁，共 15 頁\nP.C Parade will March Off, By the Left Quick March\n\n（當司令員一轉入直路步向檢閱台時）\n\n司儀（男）： 香港童軍總會 港島地域旗隊 即將經過檢閱台，請各\n位嘉賓起立。\n\n司儀（女）： 現在經過檢閱台嘅係 香港童軍總會 港島地域旗隊，\n今日帶領會操檢閱嘅司令員係 港島第十二旅   深資童\n軍團長   馬旌愷先生。\n\n司儀（女）： 請各位就座。\n\nS.C(選拔組／初級組) By the Left Quick March\nS.C(選拔組／初級組) By the Left, Left Wheel\nS.C(選拔組／初級組) By the Left, Left Wheel\nS.C(選拔組／初級組) By the Right, Eyes Right\nS.C(選拔組／初級組) Eyes Front\n\n（當第一隊經過檢閱台時）\n\n司儀（女）： 現在經過檢閱台嘅係… （其餘隊伍依次讀出）：\n\n（2 位司儀可輪流宣佈旅團名單）\n\n序號 單位名稱 主辦機構\n2.  香港女童軍總會\n3.  香港紅十字會青年團\n4.  香港聖約翰救傷隊少青團\n5.  港島第 15 旅  香港華仁書院\n6.  港島第 10 旅  聖保羅書院\n7.  港島第 12 旅  皇仁書院\n8.  港島第 16 旅  聖類斯中學\n9.  港島第 17 旅  慈幼學校\n10.  港島第 101 旅  筲箕灣東官立中學\n11.  筲箕灣區\n 港島童軍繽紛日 2026\n（4.10.2026）\n會操檢閱及頒獎典禮司儀稿\n\n第 15 頁，共 15 頁\n12.  港島第 3 海童軍旅  香港航海學校（共兩隊）\n13.  港島第 221 旅\n14.  本年度港島地域支部最高獎章獲獎青少年成員組成嘅隊伍\n（共兩隊）\n15.  港島地域童軍樂隊\n\n司儀（男 ）：  以及會操副司令員   港島第十五旅    深資海童軍副\n團長  吳冠達先生\n\n司儀（ 女）： 恭喜各獲獎嘅步操比賽隊伍。多謝  區助理處長。\n\n司儀（男 ）：  各位嘉賓，各位童軍兄弟姊妹，主禮嘉賓即將離\n場，請各位起立。\n\n（待步操隊伍在拍照區完成排位後）\n\n1250\n司儀（男）： 現在有請主禮嘉賓及各嘉賓到拍照區合照。\n\n司儀（女）： 請全體嘉賓與會操隊伍合照\n\n（主禮嘉賓與各嘉賓步向有蓋操場的 Backdrop，然後在有蓋操場寒暄大約 5\n分鐘，並與主要嘉賓合照，合照時戴帽）\n\n司儀（男）： 今年嘅會操已經完結，多謝各位參與。\n請各位嘉賓移步到莫榮大樓，大會安排了茶點招待各位\n嘉賓。\n\n作為一名好童軍，請在場嘅每一位童軍成員及領袖協助\n保持活動場地清潔。明年再見。Bye Bye\n\n（完）",
-        "hint": "內文已內建，可直接在手機向下拉讀稿；「開啟 PDF」為原版檔案。"
+        "hint": "內文已內建，可直接在手機向下拉讀稿；「開啟 PDF」為原版檔案。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "drive_file_id": "1i5NpagcI4zqT83WmPz452nop-GGRJgX1",
+        "drive_file_link": "https://drive.google.com/file/d/1i5NpagcI4zqT83WmPz452nop-GGRJgX1/view"
       },
       {
         "id": "mc_part3",
@@ -15670,15 +15713,18 @@
         "version": "V2",
         "updated_at": "2026-10-02",
         "mc": "—",
-        "file_url": "assets/event-day/mc-buffet-v2-2026.pdf",
+        "file_url": "assets/event-day/mc-buffet-2027.pdf",
         "note": "典禮後嘉賓移步莫榮大樓茶點招待。",
         "content": "港島童軍繽紛日 2026\n（4.10.2026）\n莫榮大樓致送紀念品司儀稿\n第 1 頁，其 2 頁\n\n香港警察學院 莫榮大樓茶水部\n\n司儀：梁喆小姐（女）\n\n13 30 致送紀念品給制服團隊會操隊伍代表\n\n司儀：  為了多謝青少年制服團隊隊伍參與今天的會操，現在請\n地域會長吳家麗女士 ， OstJ 或  地域總監 楊國光博士  代\n表港島地域致送感謝狀給予各青少年制服團隊的代表。\n\n（獎品小姐送上感謝狀）（3 個）\n\n序號 單位名稱\n1.  請 香港女童軍總會 代表接受\n2.  請 香港紅十字會 代表接受\n3.  請 香港聖約翰救傷隊少青團  代表接受\n\nV2\n02.10.2026\n港島童軍繽紛日 2026\n（4.10.2026）\n莫榮大樓致送紀念品司儀稿\n第 2 頁，其 2 頁\n\n司儀： 多謝 吳會長 或者 楊總監。\n\n 致送紀念品給 區永 樑 助理處長\n\n司儀：  在剛才的會操典禮中，我地知道會操檢閲官區 Sir ， 原來\n在求學時期都係我地童軍成員。\n\n 區 Sir 當年擔任童軍及深資童軍的港島第 81 旅師兄弟，\n今天都有到場支持區 Sir 。我知道 81 旅的師兄弟今天預備\n了一份好特別好精美的紀念品送比區 Sir ，就係一個寫住\n「無懼風雨」的相架，亦代表港島第 81 旅童軍成員的座\n右銘，凡事拼搏到底，努力堅持，不懼困難，亦係童軍規\n律「童軍勇敢不怕難」 的真實寫照。\n\n 我地現在邀請港島第 81 旅（筲箕灣官立中學）的舊生，\n\n1.  助理香港總監（產業） 郭柏威先生；\n2.  深旺區區總監 何偉文先生；\n3.  筲箕灣區副區總監（訓練） 文 幹皓先生\n\n一同致送 「 無懼風雨」 紀念品比區永樑 助理處長。\n\n （合照）\n\n 我地好期望  區 Sir 日後可以多 D 返黎參與港島童軍的活\n動，比多 D 鼓勵比港島地域的童軍們。更加希望區 Sir\n大力支持香港童軍運動的發展。\n\n 多謝咁多位。\n\n（完）",
-        "hint": "內文已內建，可直接在手機向下拉讀稿；「開啟 PDF」為原版檔案。"
+        "hint": "內文已內建，可直接在手機向下拉讀稿；「開啟 PDF」為原版檔案。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "drive_file_id": "1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny",
+        "drive_file_link": "https://drive.google.com/file/d/1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny/view"
       }
     ],
     "inspection_route": {
       "title": "會操檢閱路線",
-      "image": "assets/ceremony/inspection_route_2026.svg",
+      "image": "assets/event-day/inspection-route-2027.svg",
       "updated_at": "",
       "reviewing_officer": "香港警務處港島總區指揮官 區永樑先生",
       "party": [
@@ -15701,7 +15747,8 @@
         "你係屬於童軍邊個單位？"
       ],
       "confirm_needed": "",
-      "image_note": ""
+      "image_note": "",
+      "status": "2027_reference_seed_pending_2027_confirmation"
     },
     "ug_units": [
       {
@@ -18764,11 +18811,12 @@
       "no": "12/26",
       "date": "2026-07-01",
       "category": "通告",
-      "drive_id": "1rmV3zqrBex803aiyjrf20QddudOBoTFf",
+      "drive_id": "",
       "drive_url": "",
       "drive_url_state": "awaiting_2027_owned_copy",
       "summary": "日期、地點、時間、名額 2,000 人、費用 $10、報名辦法、代訂餐盒、紀念品、交通、服裝、截止 9月11日及惡劣天氣延期安排（10月11日）。",
-      "text": "特別通告第 12/26 號 \n2026 年 7 月 1 日 \n \n \n港島童軍繽紛日 2026 \nIsland Scout Day 2026 \n（香港童軍 115 周年認可慶祝活動） \n \n「港島童軍繽紛日 2026」將於 10 月份舉行。本年繽紛日除了步操檢閱、優異旅團嘉許及獎\n勵頒發等儀式外，大會將呈獻一系列精彩多元的主題節目活動、「積極公民」獎章考驗、青少年參\n與及社區服務項目，響應總會周年主題「百載傳承・同行未來」以及世界童軍組織的最新倡議，\n詳情敬請留意稍後發出之特別通告。 \n \n歡迎青少年成員、成年成員、家長及親友踴躍參加！茲將詳情臚列如下： \n \n日    期： 2026 年 10 月 4 日（星期日） \n  \n地    點： 香港黃竹坑海洋公園道 18 號香港警察學院 \n  \n時    間： 頒獎典禮及會操檢閱：上午 11 時至下午 1 時 \n主題節目活動   ：下午 1 時至下午 5 時 \n  \n參加資格： 1. 青少年成員、成年成員、家長及親友（港島地域成員將獲優先考慮） ； \n2. 所有參加童軍旅必須最少由一名領袖帶隊。 \n  \n名  額：  2,000 人（由於香港警察學院對入場人數有嚴格規定，基於場地所限，額滿\n即止，敬希見諒。） \n  \n費    用： 每位港幣 10 元（費用包括節目及紀念章等） 。費用必須以劃線支票「一旅\n一票」方式繳付，支票抬頭請書「港島童軍」或「SCOUTS (HKIR)」。 \n  \n報名辦法： 備妥下列各項，於截止日期前遞交或郵寄香港灣仔日善街 23 號香港童軍百\n周年紀念大樓 19 樓港島地域辦事處。 \n1. 填妥夾附之表格 【表格可於地域網頁下載 （www.hkirscout.org.hk）或 到\n地域辦事處索取】 ；未滿18 歲之參加者必須填妥家長同意書 PT/46，並\n交由隨隊領袖保存直至活動結束為止； \n2. 報名費支票。 \n  \n膳    食： 1. 如有需要，大會可代訂購小食餐盒，限額為 700 份，每份$60； \n2. 餐盒價格可能因應實際情況及大會訂購數量而有所更改。 \n \n \n \n \n \n\n \n \n \n \n紀 念 品： 每位參加者將獲得大會紀念章乙枚。 \n  \n交  通：  1. 大會鼓勵參加者盡量使用公共交通工具前往會場； \n2. 如自行安排旅遊巴士前往會場，請於報名表上註明； \n3. 參加童軍旅可於報名表格標示預計到時及離場時間，大會將按需要作\n出協調，以確保到時及離場秩序。 \n  \n服    裝： 童軍成員－整齊童軍制服  非童軍成員－便服 \n  \n截止日期： 2026 年 9 月 11 日（星期五） \n  \n備    註： 1. 報名將以先到先得方式處理，並於 2026 年 9 月 25 日或以前以電郵方\n式通知各童軍單位； \n2. 如天文台在活動前 3 小時發出紅色暴雨警告、3 號強風或更高信號，活\n動將會延期至 2026 年 10 月 11 日（星期日）於同一地點舉行；大會亦\n保留因應實際天氣預測而提前作出延期決定之權利。 \n  \n查    詢： 如有任何查詢，請致電 2835 7712 與助理執行幹事何家耀先生聯絡。 \n  \n地域總監 \n（朱家聰         代行）"
+      "text": "特別通告第 12/26 號 \n2026 年 7 月 1 日 \n \n \n港島童軍繽紛日 2026 \nIsland Scout Day 2026 \n（香港童軍 115 周年認可慶祝活動） \n \n「港島童軍繽紛日 2026」將於 10 月份舉行。本年繽紛日除了步操檢閱、優異旅團嘉許及獎\n勵頒發等儀式外，大會將呈獻一系列精彩多元的主題節目活動、「積極公民」獎章考驗、青少年參\n與及社區服務項目，響應總會周年主題「百載傳承・同行未來」以及世界童軍組織的最新倡議，\n詳情敬請留意稍後發出之特別通告。 \n \n歡迎青少年成員、成年成員、家長及親友踴躍參加！茲將詳情臚列如下： \n \n日    期： 2026 年 10 月 4 日（星期日） \n  \n地    點： 香港黃竹坑海洋公園道 18 號香港警察學院 \n  \n時    間： 頒獎典禮及會操檢閱：上午 11 時至下午 1 時 \n主題節目活動   ：下午 1 時至下午 5 時 \n  \n參加資格： 1. 青少年成員、成年成員、家長及親友（港島地域成員將獲優先考慮） ； \n2. 所有參加童軍旅必須最少由一名領袖帶隊。 \n  \n名  額：  2,000 人（由於香港警察學院對入場人數有嚴格規定，基於場地所限，額滿\n即止，敬希見諒。） \n  \n費    用： 每位港幣 10 元（費用包括節目及紀念章等） 。費用必須以劃線支票「一旅\n一票」方式繳付，支票抬頭請書「港島童軍」或「SCOUTS (HKIR)」。 \n  \n報名辦法： 備妥下列各項，於截止日期前遞交或郵寄香港灣仔日善街 23 號香港童軍百\n周年紀念大樓 19 樓港島地域辦事處。 \n1. 填妥夾附之表格 【表格可於地域網頁下載 （www.hkirscout.org.hk）或 到\n地域辦事處索取】 ；未滿18 歲之參加者必須填妥家長同意書 PT/46，並\n交由隨隊領袖保存直至活動結束為止； \n2. 報名費支票。 \n  \n膳    食： 1. 如有需要，大會可代訂購小食餐盒，限額為 700 份，每份$60； \n2. 餐盒價格可能因應實際情況及大會訂購數量而有所更改。 \n \n \n \n \n \n\n \n \n \n \n紀 念 品： 每位參加者將獲得大會紀念章乙枚。 \n  \n交  通：  1. 大會鼓勵參加者盡量使用公共交通工具前往會場； \n2. 如自行安排旅遊巴士前往會場，請於報名表上註明； \n3. 參加童軍旅可於報名表格標示預計到時及離場時間，大會將按需要作\n出協調，以確保到時及離場秩序。 \n  \n服    裝： 童軍成員－整齊童軍制服  非童軍成員－便服 \n  \n截止日期： 2026 年 9 月 11 日（星期五） \n  \n備    註： 1. 報名將以先到先得方式處理，並於 2026 年 9 月 25 日或以前以電郵方\n式通知各童軍單位； \n2. 如天文台在活動前 3 小時發出紅色暴雨警告、3 號強風或更高信號，活\n動將會延期至 2026 年 10 月 11 日（星期日）於同一地點舉行；大會亦\n保留因應實際天氣預測而提前作出延期決定之權利。 \n  \n查    詢： 如有任何查詢，請致電 2835 7712 與助理執行幹事何家耀先生聯絡。 \n  \n地域總監 \n（朱家聰         代行）",
+      "drive_id_state": "awaiting_2027_owned_copy"
     },
     {
       "id": "notice_food_2026",
@@ -18776,11 +18824,12 @@
       "no": "",
       "date": "2026-08-01",
       "category": "通告",
-      "drive_id": "1AXsmbK59MFz-ODLtZ-ysgvW2RcF8mu7j",
+      "drive_id": "",
       "drive_url": "",
       "drive_url_state": "awaiting_2027_owned_copy",
       "summary": "受惠機構：循道衛理觀塘社會服務處。收集非罐頭食品，10月4日 11:00–15:00 香港警察學院食品收集攤位，捐贈者獲紀念章。",
-      "text": "特別通告（食品捐贈）　2026年8月1日\n港島童軍繽紛日2026 — 童心捐贈大行動（食品捐贈）Food Donation\n\n「港島童軍繽紛日2026」將於10月份舉行，大會將呈獻一系列主題節目活動、「積極公民」獎章考驗、青少年參與及社區服務項目。大會將同時舉行「童心捐贈大行動（食品捐贈）」，希望參加者轉贈最少一種食品予有需要人士，以實踐童軍成員「對別人要幫助」及服務社群的承諾，同時響應香港童軍總會周年主題「百載傳承・同行未來」。\n\n本年度受惠的社福機構為循道衛理觀塘社會服務處，他們將收集之食品轉贈社會上有需要人士，詳情如下：\n\n參加資格：參與「港島童軍繽紛日2026」之各支部成員、家長、領袖及會務委員\n收集日期：2026年10月4日（星期日）\n收集時間：上午11時正至下午3時正\n收集方法：由童軍旅負責領袖收集所得食品，並於收集日連同已填妥之「捐贈表格」，交回：香港黃竹坑海洋公園道18號香港警察學院「港島童軍繽紛日」食品收集攤位。\n\n收集類別：非罐頭類別：例如已包裝的食米（1-2公斤）、粉麵類（如：上海麵、米粉、粉絲、公仔麵或通心粉等）、餅乾類、非玻璃容器的食油（如：花生油、粟米油、芥花籽油或橄欖油等）、燕麥片、湯料（中藥材類）等。\n\n捐贈指引：\n1. 基於食物質量及安全考慮，已拆封或損毀之食品、已變質或變壞的食品、沒有商標標貼的食品，散裝食米、熟食及奶類製品，均不接受；\n2. 餅乾類食品須以盒裝或袋裝為單位；\n3. 食品的最佳食用日期必須為2027年6月1日或之後；\n4. 每件食品重量須為75克或以上，並須印有獨立食品標籤及最佳食用日期，方作計算。\n\n獎勵：\n1. 為鼓勵參加者踴躍捐贈，所有參與食品捐贈的參加者，均可獲贈「港島童軍繽紛日2026－童心捐贈大行動（食品捐贈）」紀念章乙枚以作紀念；\n2. 凡捐贈超過200件食物之人士／單位，將獲頒發特別紀念章及感謝狀；\n3. 紀念章於收集日當日按捐贈表格之捐贈者名單派發。\n\n備註：當日同場舉行物品回收活動，歡迎參加者捐贈合規格的物品，有關「童心捐贈大行動（物品回收）」之詳情，請參閱相關特別通告。\n查詢：如有任何查詢，請致電 2835 7714 與發展幹事鄧倩姸女士聯絡。\n地域總監（何家騏　代行）"
+      "text": "特別通告（食品捐贈）　2026年8月1日\n港島童軍繽紛日2026 — 童心捐贈大行動（食品捐贈）Food Donation\n\n「港島童軍繽紛日2026」將於10月份舉行，大會將呈獻一系列主題節目活動、「積極公民」獎章考驗、青少年參與及社區服務項目。大會將同時舉行「童心捐贈大行動（食品捐贈）」，希望參加者轉贈最少一種食品予有需要人士，以實踐童軍成員「對別人要幫助」及服務社群的承諾，同時響應香港童軍總會周年主題「百載傳承・同行未來」。\n\n本年度受惠的社福機構為循道衛理觀塘社會服務處，他們將收集之食品轉贈社會上有需要人士，詳情如下：\n\n參加資格：參與「港島童軍繽紛日2026」之各支部成員、家長、領袖及會務委員\n收集日期：2026年10月4日（星期日）\n收集時間：上午11時正至下午3時正\n收集方法：由童軍旅負責領袖收集所得食品，並於收集日連同已填妥之「捐贈表格」，交回：香港黃竹坑海洋公園道18號香港警察學院「港島童軍繽紛日」食品收集攤位。\n\n收集類別：非罐頭類別：例如已包裝的食米（1-2公斤）、粉麵類（如：上海麵、米粉、粉絲、公仔麵或通心粉等）、餅乾類、非玻璃容器的食油（如：花生油、粟米油、芥花籽油或橄欖油等）、燕麥片、湯料（中藥材類）等。\n\n捐贈指引：\n1. 基於食物質量及安全考慮，已拆封或損毀之食品、已變質或變壞的食品、沒有商標標貼的食品，散裝食米、熟食及奶類製品，均不接受；\n2. 餅乾類食品須以盒裝或袋裝為單位；\n3. 食品的最佳食用日期必須為2027年6月1日或之後；\n4. 每件食品重量須為75克或以上，並須印有獨立食品標籤及最佳食用日期，方作計算。\n\n獎勵：\n1. 為鼓勵參加者踴躍捐贈，所有參與食品捐贈的參加者，均可獲贈「港島童軍繽紛日2026－童心捐贈大行動（食品捐贈）」紀念章乙枚以作紀念；\n2. 凡捐贈超過200件食物之人士／單位，將獲頒發特別紀念章及感謝狀；\n3. 紀念章於收集日當日按捐贈表格之捐贈者名單派發。\n\n備註：當日同場舉行物品回收活動，歡迎參加者捐贈合規格的物品，有關「童心捐贈大行動（物品回收）」之詳情，請參閱相關特別通告。\n查詢：如有任何查詢，請致電 2835 7714 與發展幹事鄧倩姸女士聯絡。\n地域總監（何家騏　代行）",
+      "drive_id_state": "awaiting_2027_owned_copy"
     },
     {
       "id": "notice_goods_2026",
@@ -18788,11 +18837,12 @@
       "no": "",
       "date": "2026-08-01",
       "category": "通告",
-      "drive_id": "1WbfGCy90Pkau6TLNg9J_DdohEqPzdknQ",
+      "drive_id": "",
       "drive_url": "",
       "drive_url_state": "awaiting_2027_owned_copy",
       "summary": "受惠機構：國際十字路會。回收電腦用品、教育玩具（Lego）、全新文具、英語兒童讀物，10月4日 11:00–15:00 香港警察學院物品回收攤位。",
-      "text": "特別通告（物品回收）　2026年8月1日\n港島童軍繽紛日2026 — 童心捐贈大行動（物品回收）Goods Donating\n\n「港島童軍繽紛日2026」將於10月份舉行，大會將呈獻一系列主題節目活動、「積極公民」獎章考驗、青少年參與及社區服務項目。大會將同時舉行「童心捐贈大行動（物品回收）」，希望參加者轉贈物品予有需要人士，以實踐童軍成員「對別人要幫助」及服務社群的承諾，同時響應香港童軍總會周年主題「百載傳承・同行未來」。\n\n本年度受惠的社福機構為國際十字路會，他們將回收物品轉贈予本地或海外有需要人士，詳情如下：\n\n參加資格：參與「港島童軍繽紛日2026」之各支部成員、家長、領袖及會務委員\n收集日期：2026年10月4日（星期日）\n收集時間：上午11時正至下午3時正\n收集方法：由童軍旅負責領袖收集所得物品，並於收集日連同已填妥之「捐贈表格」，交回：香港黃竹坑海洋公園道18號香港警察學院「港島童軍繽紛日」物品回收攤位。\n\n收集類別：\n1. 電腦相關用品：滑鼠、鍵盤、電腦顯示器、手提電腦充電用品（全新或狀態良好）；\n2. 具教育意義玩具：如樂高積木「Lego」；\n3. 全新的學校文具；\n4. 狀態良好的英語兒童讀物書本。\n\n獎勵：\n1. 為鼓勵參加者踴躍捐贈，所有參與捐贈物品的參加者，均可獲贈「港島童軍繽紛日2026－童心捐贈大行動（物品回收）」紀念章乙枚以作紀念；\n2. 凡捐贈學校文具以10件為1個單位，才獲發紀念章乙枚；\n3. 紀念章於收集日當日按捐贈表格之捐贈者名單派發。\n\n備註：當日同場舉行食品收集活動，歡迎參加者捐贈合規格的食物，有關「童心捐贈大行動（食品捐贈）」之詳情，請參閱相關特別通告。\n查詢：如有任何查詢，請致電 2835 7714 與發展幹事鄧倩姸女士聯絡。\n地域總監（何家騏　代行）"
+      "text": "特別通告（物品回收）　2026年8月1日\n港島童軍繽紛日2026 — 童心捐贈大行動（物品回收）Goods Donating\n\n「港島童軍繽紛日2026」將於10月份舉行，大會將呈獻一系列主題節目活動、「積極公民」獎章考驗、青少年參與及社區服務項目。大會將同時舉行「童心捐贈大行動（物品回收）」，希望參加者轉贈物品予有需要人士，以實踐童軍成員「對別人要幫助」及服務社群的承諾，同時響應香港童軍總會周年主題「百載傳承・同行未來」。\n\n本年度受惠的社福機構為國際十字路會，他們將回收物品轉贈予本地或海外有需要人士，詳情如下：\n\n參加資格：參與「港島童軍繽紛日2026」之各支部成員、家長、領袖及會務委員\n收集日期：2026年10月4日（星期日）\n收集時間：上午11時正至下午3時正\n收集方法：由童軍旅負責領袖收集所得物品，並於收集日連同已填妥之「捐贈表格」，交回：香港黃竹坑海洋公園道18號香港警察學院「港島童軍繽紛日」物品回收攤位。\n\n收集類別：\n1. 電腦相關用品：滑鼠、鍵盤、電腦顯示器、手提電腦充電用品（全新或狀態良好）；\n2. 具教育意義玩具：如樂高積木「Lego」；\n3. 全新的學校文具；\n4. 狀態良好的英語兒童讀物書本。\n\n獎勵：\n1. 為鼓勵參加者踴躍捐贈，所有參與捐贈物品的參加者，均可獲贈「港島童軍繽紛日2026－童心捐贈大行動（物品回收）」紀念章乙枚以作紀念；\n2. 凡捐贈學校文具以10件為1個單位，才獲發紀念章乙枚；\n3. 紀念章於收集日當日按捐贈表格之捐贈者名單派發。\n\n備註：當日同場舉行食品收集活動，歡迎參加者捐贈合規格的食物，有關「童心捐贈大行動（食品捐贈）」之詳情，請參閱相關特別通告。\n查詢：如有任何查詢，請致電 2835 7714 與發展幹事鄧倩姸女士聯絡。\n地域總監（何家騏　代行）",
+      "drive_id_state": "awaiting_2027_owned_copy"
     }
   ],
   "staff_meals": [
@@ -25556,14 +25606,15 @@
       },
       {
         "id": "ann_crisis_manual",
-        "title": "危機處理手冊（2026）已上載",
-        "content": "《ISD2027-RiskMangementManual_V1(Clean).pdf》已上載，全體工作人員請於活動日前閱讀。活動日期 2026-10-04，地點 香港黃竹坑香港警察學院。",
+        "title": "危機處理手冊（2027 參考種籽）",
+        "content": "《crisis-manual-2027.pdf》已整理至 2027 工作人員執行手冊。活動日前請由 2027 危機處理組確認最終程序、日期、地點及聯絡安排。",
         "category": "安全",
         "created_by": "危機應變小組",
         "created_at": "2026-10-03T09:00:00Z",
         "pinned": true,
         "source": "2027_reference_seed.crisis.manual_file",
-        "file_url": "assets/event-day/crisis-manual-2026.pdf"
+        "file_url": "assets/event-day/crisis-manual-2027.pdf",
+        "status": "2027_reference_seed_pending_2027_confirmation"
       },
       {
         "id": "ann_meals",
@@ -25713,7 +25764,12 @@
       "2026 Drive folders",
       "2026 Google Sheet / backend"
     ],
-    "audit_required": true
+    "audit_required": true,
+    "execution_manual": {
+      "canonical_record": "execution_manual_2027 in ISD 2027 活動主資料",
+      "staff_output": "MOCK / 2027 工作人員執行手冊",
+      "update_rule": "先更新 ISD 2027 受控來源，再重建 read model、MOCK 和前端輸出；不得為各組建立平行版本。"
+    }
   },
   "one_time_reference_seed": {
     "status": "completed",
@@ -25756,5 +25812,856 @@
         "record_snapshot"
       ]
     }
+  },
+  "execution_manual_2027": {
+    "schema_version": "2027-execution-manual-v1",
+    "title": "2027 港島童軍繽紛日｜工作人員執行手冊",
+    "event_id": "isd_2027",
+    "status": "2027_reference_seed_pending_2027_confirmation",
+    "generated_at": "2026-10-06",
+    "source_rule": "本手冊由 ISD 2027 受控資料整理而成。2026 只屬一次性封存參考，日後修訂只可在 ISD 2027 folder／2027 前端流程進行。",
+    "audience_rule": {
+      "ordinary_staff": "可閱覽活動日總覽、程序、場地圖、攤位、報到、膳食、應變及公開工作指引；唯讀。",
+      "committee": "按所屬組別再閱覽工作分配、受限名單、可編輯來源及內部文件。",
+      "restricted": "嘉賓個人資料、電話／電郵、車牌、財務、帳戶及批核資料不在普通工作人員手冊公開。"
+    },
+    "event_day_snapshot": {
+      "event_name": "2027 港島童軍繽紛日",
+      "location": "黃竹坑香港警察學院（2027 演練資料）",
+      "staff_roster_count": 279,
+      "participant_unit_count": 31,
+      "booth_count": 33,
+      "activity_schedule": [
+        {
+          "time": "10:45",
+          "title": "嘉賓接待（典禮嘉賓接待處）",
+          "location": "莫榮大樓地下",
+          "owner": "嘉賓接待組",
+          "instruction": "嘉賓報到及接待。"
+        },
+        {
+          "time": "10:55",
+          "title": "嘉賓就座",
+          "location": "大操場",
+          "owner": "嘉賓接待組／會操及典禮組",
+          "instruction": "引領嘉賓到嘉賓席。"
+        },
+        {
+          "time": "11:00",
+          "title": "第一部分典禮",
+          "location": "大操場",
+          "owner": "會操及典禮組",
+          "instruction": "優異旅團及各項獎勵頒發儀式。"
+        },
+        {
+          "time": "12:00",
+          "title": "第二部分典禮",
+          "location": "大操場",
+          "owner": "會操及典禮組",
+          "instruction": "會操檢閱及頒獎儀式。"
+        },
+        {
+          "time": "13:00",
+          "title": "嘉賓茶聚",
+          "location": "莫榮大樓地下",
+          "owner": "嘉賓接待組",
+          "instruction": "頒獎典禮完畢後舉行。"
+        },
+        {
+          "time": "14:00",
+          "title": "參觀主題活動區",
+          "location": "全場",
+          "owner": "主題節目組",
+          "instruction": "嘉賓參觀主題活動區。"
+        }
+      ],
+      "staff_start_checklist": [
+        "到指定工作人員集合／報到位置報到，確認所屬組別及崗位。",
+        "先查看「活動日總覽」與「場地及動線」，確認所在位置及下一個交接點。",
+        "按本組工作指引執行；遇到未列情況，向所屬總主任或指揮中心回報。",
+        "任何事故先保障安全；依「安全及應變」程序處理，未獲授權不得對外發言。"
+      ]
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "title": "活動日總覽",
+        "icon": "fa-house",
+        "audience": "所有工作人員",
+        "source": [
+          "event_day_snapshot",
+          "schedule"
+        ],
+        "description": "入場後第一個查看的頁面：活動規模、全日程序、工作前檢查及交接提示。"
+      },
+      {
+        "id": "venue",
+        "title": "場地、攤位及動線",
+        "icon": "fa-map-location-dot",
+        "audience": "所有工作人員",
+        "source": [
+          "activities.maps",
+          "activities.booths",
+          "activities.gameCards"
+        ],
+        "description": "警察學院場地圖、旅團及嘉賓動線、攤位總表和遊戲卡。"
+      },
+      {
+        "id": "programme",
+        "title": "典禮及全日程序",
+        "icon": "fa-clock",
+        "audience": "所有工作人員",
+        "source": [
+          "schedule",
+          "ceremony"
+        ],
+        "description": "按時間排序的活動日程序；典禮組另可使用 rundown、檢閱路線及司儀稿。"
+      },
+      {
+        "id": "checkin_logistics",
+        "title": "報到、膳食及後勤",
+        "icon": "fa-clipboard-check",
+        "audience": "所有工作人員",
+        "source": [
+          "participants",
+          "troop_checkin",
+          "meal_logistics",
+          "meal_menu"
+        ],
+        "description": "旅團報到、餐盒、工作人員膳食及現場後勤參考。"
+      },
+      {
+        "id": "safety",
+        "title": "安全及應變",
+        "icon": "fa-triangle-exclamation",
+        "audience": "所有工作人員",
+        "source": [
+          "crisis"
+        ],
+        "description": "危機定義、即時回報、集合及對外發言規則。"
+      },
+      {
+        "id": "teams",
+        "title": "組別職責及聯絡",
+        "icon": "fa-people-group",
+        "audience": "所有工作人員（敏感聯絡資料受限）",
+        "source": [
+          "staff.org_chart",
+          "staff.job_duties",
+          "staff.contacts"
+        ],
+        "description": "組織架構、各組職責及按權限顯示的聯絡資料。"
+      },
+      {
+        "id": "documents",
+        "title": "通告及必讀文件",
+        "icon": "fa-folder-open",
+        "audience": "所有工作人員",
+        "source": [
+          "notices",
+          "unit_guide",
+          "documents"
+        ],
+        "description": "活動當日所需的通告、旅團須知和指引；籌備及敏感文件按角色權限限制。"
+      }
+    ],
+    "venue_assets": [
+      {
+        "id": "map_2027_site_setup",
+        "title": "警察學院場地佈置及攤位圖",
+        "description": "工作人員活動日主場地圖：攤位、服務點、典禮及後勤位置。",
+        "audience": "所有工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "site-setup-plan-2027.pdf",
+        "file_url": "assets/event-day/site-setup-plan-2027.pdf",
+        "drive_file_id": "1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R",
+        "drive_file_link": "https://drive.google.com/file/d/1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R/view"
+      },
+      {
+        "id": "map_2027_troop_route",
+        "title": "參加旅團場地指示圖",
+        "description": "東閘入場、報到處及旅團活動動線；供報到、秩序和主題活動組使用。",
+        "audience": "所有工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "ISD 2027－參加旅團場地指示圖.pdf",
+        "file_url": "google_drive/ISD 2027－參加旅團場地指示圖.pdf",
+        "drive_file_id": "1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T",
+        "drive_file_link": "https://drive.google.com/file/d/1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T/view"
+      },
+      {
+        "id": "map_2027_guest_reception",
+        "title": "嘉賓接待及典禮位置圖",
+        "description": "嘉賓接待、典禮及座位區域的工作參考圖；嘉賓個人資料仍只限獲授權角色。",
+        "audience": "嘉賓接待組、會操及典禮組及管理層",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "guest-reception-map-2027.pdf",
+        "file_url": "assets/event-day/guest-reception-map-2027.pdf",
+        "drive_file_id": "1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr",
+        "drive_file_link": "https://drive.google.com/file/d/1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr/view"
+      },
+      {
+        "id": "map_2027_inspection_route",
+        "title": "會操檢閱路線圖",
+        "description": "會操及典禮組工作人員的檢閱行進路線參考。",
+        "audience": "會操及典禮組",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "inspection-route-2027.svg",
+        "file_url": "assets/event-day/inspection-route-2027.svg",
+        "drive_file_id": "1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB",
+        "drive_file_link": "https://drive.google.com/file/d/1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB/view"
+      }
+    ],
+    "game_cards": [
+      {
+        "id": "gc_2027",
+        "title": "主題活動遊戲卡",
+        "description": "攤位集印及活動日派發使用。",
+        "audience": "所有工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "game-card-2027.pdf",
+        "file_url": "assets/event-day/game-card-2027.pdf",
+        "drive_file_id": "1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z",
+        "drive_file_link": "https://drive.google.com/file/d/1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z/view"
+      },
+      {
+        "id": "gc_p_2027",
+        "title": "主題活動遊戲卡（P 版）",
+        "description": "指定工作崗位使用的遊戲卡版本。",
+        "audience": "主題節目組及指定工作人員",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "file_name": "game-card-p-2027.pdf",
+        "file_url": "assets/event-day/game-card-p-2027.pdf",
+        "drive_file_id": "1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW",
+        "drive_file_link": "https://drive.google.com/file/d/1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW/view"
+      }
+    ],
+    "programme": [
+      {
+        "time": "10:45",
+        "title": "嘉賓接待（典禮嘉賓接待處）",
+        "location": "莫榮大樓地下",
+        "owner": "嘉賓接待組",
+        "instruction": "嘉賓報到及接待。"
+      },
+      {
+        "time": "10:55",
+        "title": "嘉賓就座",
+        "location": "大操場",
+        "owner": "嘉賓接待組／會操及典禮組",
+        "instruction": "引領嘉賓到嘉賓席。"
+      },
+      {
+        "time": "11:00",
+        "title": "第一部分典禮",
+        "location": "大操場",
+        "owner": "會操及典禮組",
+        "instruction": "優異旅團及各項獎勵頒發儀式。"
+      },
+      {
+        "time": "12:00",
+        "title": "第二部分典禮",
+        "location": "大操場",
+        "owner": "會操及典禮組",
+        "instruction": "會操檢閱及頒獎儀式。"
+      },
+      {
+        "time": "13:00",
+        "title": "嘉賓茶聚",
+        "location": "莫榮大樓地下",
+        "owner": "嘉賓接待組",
+        "instruction": "頒獎典禮完畢後舉行。"
+      },
+      {
+        "time": "14:00",
+        "title": "參觀主題活動區",
+        "location": "全場",
+        "owner": "主題節目組",
+        "instruction": "嘉賓參觀主題活動區。"
+      }
+    ],
+    "all_day_programme": [
+      {
+        "time": "08:00",
+        "title": "按報名時段報到",
+        "detail": "東閘入場 → 有蓋操場報到處（領物資・餐盒）",
+        "location": "東閘入場 → 有蓋操場報到處（領物資・餐盒）",
+        "owner": "旅團及報到人員"
+      },
+      {
+        "time": "08:00",
+        "title": "綵排報到",
+        "detail": "大操場指定位置（依旗幟集結）",
+        "location": "大操場指定位置（依旗幟集結）",
+        "owner": "會操及典禮組"
+      },
+      {
+        "time": "08:30",
+        "title": "綵排開始",
+        "detail": "08:30–10:30 依司儀及總指揮指示",
+        "location": "08:30–10:30 依司儀及總指揮指示",
+        "owner": "會操及典禮組"
+      },
+      {
+        "time": "09:00",
+        "title": "攤位主題活動開始",
+        "detail": "六大主題 33 攤位（A–F 區）・集印換紀念章",
+        "location": "六大主題 33 攤位（A–F 區）・集印換紀念章",
+        "owner": "旅團及報到人員"
+      },
+      {
+        "time": "10:15",
+        "title": "大會車開出",
+        "detail": "灣仔愛群道伊利沙伯體育館門口",
+        "location": "灣仔愛群道伊利沙伯體育館門口",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "10:30",
+        "title": "整裝待命",
+        "detail": "原地休息（大會飲水點・雨具自備）",
+        "location": "原地休息（大會飲水點・雨具自備）",
+        "owner": "會操及典禮組"
+      },
+      {
+        "time": "10:45",
+        "title": "到達・專人接待",
+        "detail": "莫榮大樓地下接待處",
+        "location": "莫榮大樓地下接待處",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "10:45",
+        "title": "帶隊往大操場集合",
+        "detail": "準備參加典禮",
+        "location": "準備參加典禮",
+        "owner": "旅團及報到人員"
+      },
+      {
+        "time": "10:45",
+        "title": "嘉賓接待（典禮嘉賓接待處）",
+        "detail": "莫榮大樓地下",
+        "location": "莫榮大樓地下",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "10:55",
+        "title": "就座",
+        "detail": "大操場嘉賓席",
+        "location": "大操場嘉賓席",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "10:55",
+        "title": "嘉賓就座",
+        "detail": "大操場",
+        "location": "大操場",
+        "owner": "嘉賓接待組／會操及典禮組"
+      },
+      {
+        "time": "11:00",
+        "title": "第一部分典禮",
+        "detail": "大操場；頒發優異旅團及各項獎勵；風笛手引領進場・頒發優異旅團及各項獎勵；列隊參與",
+        "location": "大操場",
+        "owner": "會操及典禮組／旅團及報到人員／嘉賓接待組"
+      },
+      {
+        "time": "12:00",
+        "title": "第二部分典禮",
+        "detail": "大操場",
+        "location": "大操場",
+        "owner": "會操及典禮組"
+      },
+      {
+        "time": "12:00",
+        "title": "第二部分典禮・會操檢閱",
+        "detail": "港島總區指揮官主禮",
+        "location": "港島總區指揮官主禮",
+        "owner": "旅團及報到人員／嘉賓接待組"
+      },
+      {
+        "time": "12:00",
+        "title": "第二部分典禮：指揮官檢閱",
+        "detail": "港島總區指揮官檢閱步操隊伍",
+        "location": "港島總區指揮官檢閱步操隊伍",
+        "owner": "會操及典禮組"
+      },
+      {
+        "time": "13:00",
+        "title": "午膳（自助餐）",
+        "detail": "莫榮大樓地下 茶水部（Officer Mess）",
+        "location": "莫榮大樓地下 茶水部（Officer Mess）",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "13:00",
+        "title": "午餐",
+        "detail": "大會飲水點",
+        "location": "大會飲水點",
+        "owner": "會操及典禮組"
+      },
+      {
+        "time": "13:00",
+        "title": "午餐＋攤位博覽",
+        "detail": "餐盒於報到時領取",
+        "location": "餐盒於報到時領取",
+        "owner": "旅團及報到人員"
+      },
+      {
+        "time": "13:00",
+        "title": "嘉賓茶聚",
+        "detail": "莫榮大樓地下",
+        "location": "莫榮大樓地下",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "13:30",
+        "title": "午膳儀式",
+        "detail": "致送感謝狀予制服團隊代表・致送紀念品予檢閱官（只限嘉賓）",
+        "location": "致送感謝狀予制服團隊代表・致送紀念品予檢閱官（只限嘉賓）",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "14:00",
+        "title": "參觀主題活動區",
+        "detail": "全場",
+        "location": "全場",
+        "owner": "主題節目組"
+      },
+      {
+        "time": "15:00",
+        "title": "回程",
+        "detail": "大會車於學院門口開出",
+        "location": "大會車於學院門口開出",
+        "owner": "嘉賓接待組"
+      },
+      {
+        "time": "17:00",
+        "title": "回程",
+        "detail": "請依指示由東閘離場（旅遊巴依指示上客）",
+        "location": "請依指示由東閘離場（旅遊巴依指示上客）",
+        "owner": "旅團及報到人員"
+      },
+      {
+        "time": "17:00",
+        "title": "退場",
+        "detail": "依指示帶隊離場",
+        "location": "依指示帶隊離場",
+        "owner": "會操及典禮組"
+      }
+    ],
+    "logistics": {
+      "meal_collection": [
+        {
+          "label": "飯盒",
+          "place": "JPO 餐廳",
+          "time": "11:00",
+          "note": "旅團代訂餐盒及工作人員飯餐(A/B/C)"
+        },
+        {
+          "label": "小食餐盒",
+          "place": "JPO 餐廳",
+          "time": "12:00",
+          "note": "工作人員小食餐盒(D)"
+        },
+        {
+          "label": "自助餐",
+          "place": "莫榮大樓",
+          "time": "12:30",
+          "note": "嘉賓／工作人員自助餐（莫榮大樓自助餐司儀稿 V2）"
+        }
+      ],
+      "meal_options": [
+        "嘉賓自助午餐(只限總監級/副主席)",
+        "嘉賓自助午餐(只限總監級)",
+        "A 柱侯蘿蔔牛腩飯 配菜",
+        "B 鹹蛋蒸肉餅飯 配菜",
+        "C 滷水雞髀拼紅腸飯 配菜",
+        "D (素)翠玉瓜雲耳炒野菌",
+        "Random",
+        "小食餐盒",
+        "午餐時間無需當值"
+      ],
+      "participant_units": 31,
+      "staff_meal_records": 290,
+      "note": "個人餐膳紀錄及簽收資料只向獲授權後勤人員顯示。"
+    },
+    "safety": {
+      "command_post": "活動中由指揮中心統籌；實際位置須由 2027 籌委確認後更新。",
+      "immediate_steps": [
+        "先確保人身安全及避免擴大風險。",
+        "即時通知所屬總主任／指揮中心。",
+        "記錄時間、地點、涉及人員及已採取行動。",
+        "未獲活動主席授權，不向傳媒或無關人士發表事故資料。"
+      ],
+      "manual_asset": "assets/event-day/crisis-manual-2027.pdf",
+      "topics": [
+        {
+          "title": "危機的定義",
+          "category": "定義",
+          "description": "在活動期間出現以下事故而影響或將會影響參加者及（或）整個活動的安全：\n1. 惡劣天氣及空氣污染情況；\n2. 致命性傳染病；\n3. 嚴重意外事件（參加者在活動內遭遇意外而牽涉人命或眾多傷者的事件）；\n4. 嚴重事故（對全體參加者有嚴重影響或引致活動未能正常運作的事故）。"
+        },
+        {
+          "title": "危機處理小組 - 目的及職責",
+          "category": "小組",
+          "description": "目的：在活動期間出現事故時，危機處理小組協助活動主席迅速作出決定及指揮各單位按已制訂的方法處理，確保活動安全。\n職責：1. 收集資料；2. 分析及評估各類事故對參加者及大會的影響；3. 依照各項情況制訂的處理方法處理事故；4. 向活動主席作出匯報及建議；5. 指揮及協調各單位行動。\n對外發言：活動主席為唯一對外發言人，任何工作人員未得活動主席同意，不得向傳媒或其他無關人士透露事故發生的經過及處理方法。"
+        },
+        {
+          "title": "危機處理小組 - 運作時間及地點",
+          "category": "小組",
+          "description": "當上述任何一項事故出現時，小組即時開始運作直至事故得到解決為止。各成員須盡快齊集；如未能齊集，要確保能與各成員保持聯絡，及考慮委派其單位內工作人員為署理主管。各成員須全期等候指令。\n工作地點：活動前：港島地域總部；活動中：香港黃竹坑香港警察學院（2026 年 10 月 4 日）。\n職員緊急集合點：香港黃竹坑香港警察學院大會指揮中心。"
+        },
+        {
+          "title": "惡劣天氣及空氣污染 - 處理方法（表一）",
+          "category": "天氣",
+          "description": "活動前三小時內及活動期間：\n• 一號戒備／山泥傾瀉／霜凍／寒冷／酷熱警告：如常進行\n• 雷暴警告（活動所在地區）：延期或取消（留意港島地域網頁公佈）\n• 三號強風或更高信號：延期或取消\n• 黃色、紅色或黑色暴雨警告：延期或取消\n• 空氣質素健康指數 7（健康風險高）：如常進行，負責領袖勸喻對空氣污染敏感的參加者不要參加\n• 空氣質素健康指數 8-10（甚高）：如常進行，用廣播提醒對空氣污染敏感的參加者\n• 空氣質素健康指數 10 以上（嚴重）：延期或取消\n（註：港島童軍繽紛日2026活動開始時間為 2026 年 10 月 4 日）"
+        },
+        {
+          "title": "惡劣天氣及空氣污染 - 活動前準備",
+          "category": "天氣",
+          "description": "1. 秘書處主管在活動日期前 3 日留意天文台天氣報告，隨時向活動主席報告可能出現的惡劣天氣或空氣污染情況；\n2. 如活動前一日出現惡劣天氣及空氣污染情況，活動主席可決定是否啟動危機處理小組；\n3. 如是，秘書處主管安排秘書處人員於晚上開始留守地域辦事處負責各項聯絡工作（向傳媒、旅團發出通知，及應付旅團及家長的查詢）；\n4. 活動主席利用電話或電郵與其他成員聯絡及按「惡劣天氣及空氣污染情況的處理方法」（表一）處理；\n5. 活動主席發出指令，指揮及協調各單位主管執行指令。"
+        },
+        {
+          "title": "傳染病 - 處理",
+          "category": "傳染病",
+          "description": "凡參加者感覺不適（例如發燒），應即時自行或經由工作人員送到救傷站讓當值救護人員處理。救護人員應對每位到救護站的參加者探熱及登記資料（姓名、性別、年齡、旅團、熱度、不適地方及處理方法等）。\n救護人員按情況判斷是否適宜（一）繼續活動、（二）停止活動返家或（三）轉送醫院。如屬第（一）項，應通知活動副主席（協調）；如屬第（二）或（三）項，應即時通知活動副主席（協調），並通知活動主席及參加者領袖。\n懷疑傳染病個案：救護站主管即時向活動副主席（協調）提交參加者發燒報告；患者所屬小隊提早停止活動；供應小隊口罩及洗手設施；活動主席啟動危機處理小組及按「致命性傳染病的處理方法」（表二）處理。"
+        },
+        {
+          "title": "嚴重意外事件 - 處理",
+          "category": "意外",
+          "description": "1. 當發生意外事件時，有關副主席應立即將傷者送往救護站；若傷者不能移動，立即通知救護站派員救援；\n2. 有關副主席即時通知活動主席；\n3. 如意外事件牽涉人命或眾多傷者，活動主席啟動危機處理小組；\n4. 危機處理小組評估事件的嚴重性並制訂應付方案，活動主席發出指令通知及協調各單位主管執行；\n5. 通知傷者領袖／家長；由活動主席通知港島地域總監及副地域總監（青少年活動）；\n6. 如傷者需要送院，有關副主席到醫院協助；事後向活動主席提交書面報告及建議改善地方。"
+        },
+        {
+          "title": "嚴重事故 - 處理",
+          "category": "事故",
+          "description": "各活動副主席當發現活動範圍有事故發生而可能對全體參加者有嚴重影響或引致活動未能正常運作時，應即通知活動主席。\n活動主席按情況的嚴重性決定啟動危機處理小組：1. 評估事件對參加者及大會的影響；2. 研究及制訂應付方案；3. 活動主席發出指令通知及協調各單位主管執行指令。"
+        },
+        {
+          "title": "取消活動程序",
+          "category": "取消",
+          "description": "1. 取消活動指令由活動主席發出並即時生效；\n2. 活動主席知會港島地域總監、副地域總監（青少年活動）、助理地域總監（青少年活動）及執行幹事；\n3. 以有效的通訊方式（廣播、電話、電郵、網頁、短訊等）通知各參加者、工作人員和嘉賓活動取消及宣佈有關程序（如撤離或逗留）；\n4. 如未能就上述方法通知所有參加者，即使活動已經宣佈取消，但在天氣及交通情況許可下，活動籌備委員會委員仍須前往集合地點通知那些不知道活動已取消的人士，並給予適當照顧；\n5. 如需撤離，活動主席指示各旅團自行離去，副主席（協調）將會同秩序及交通主任指示參加者如何安全離去；\n6. 如須齊集工作人員，活動主席可選擇活動指揮中心作為集合點；\n7. 秘書處主管及秘書處人員盡快返回及駐守地域辦事處應付各界查詢；\n8. 各活動副主席處理該組的撤退行動，物資運返地域；\n9. 活動籌備委員會委員返回地域總部檢討活動取消及跟進工作的安排。"
+        },
+        {
+          "title": "保險安排",
+          "category": "保險",
+          "description": "香港童軍總會已為童軍活動購買保險（涵蓋已登記的參加者及工作人員）。\n如有保險查詢或索償需要，請先聯絡秘書處（2835 7712 / 6131 9451）轉介處理。"
+        },
+        {
+          "title": "急救安排（聖約翰救傷隊）",
+          "category": "急救",
+          "description": "活動場地有聖約翰救傷隊駐守，救傷站設於場地內（大會指揮中心附近）。行政組已向聖約翰救傷隊提交急救服務申請。\n凡參加者感覺不適，可自行或經由工作人員送到救傷站讓當值救護人員處理；救護人員會探熱及登記資料。"
+        },
+        {
+          "title": "衞生及場地安全措施",
+          "category": "急救",
+          "description": "衞生：活動場地設有洗手間供參加者使用。如活動期間本港爆發傳染病問題，大會將準備洗手設施或酒精洗手液及口罩。\n場地：大會已視察及評估場地及其設施的安全。\n聯絡：秘書處及各組別負責人備有各參加單位的負責人名單及聯絡電話號碼。"
+        },
+        {
+          "title": "其他大會準備措施",
+          "category": "其他",
+          "description": "主禮嘉賓：如主禮嘉賓未能主持儀式，可請地域總監代替（預先知會地域總監）。\n後備日期：2026 年 10 月 4 日。\n聯絡：秘書處及各組別負責人備有各參加單位的負責人名單及聯絡電話號碼。"
+        }
+      ]
+    },
+    "staff_guidance": [
+      {
+        "id": "ug_when",
+        "title": "日期・時間・地點",
+        "category": "基本",
+        "description": "日期：2026 年 10 月 4 日（星期日）\n地點：香港黃竹坑海洋公園道 18 號 香港警察學院\n時間：頒獎典禮及會操檢閱 上午 11 時至下午 1 時；主題節目活動 下午 1 時至下午 5 時",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_who",
+        "title": "參加資格",
+        "category": "報名",
+        "description": "1. 青少年成員、成年成員、家長及親友（港島地域成員將獲優先考慮）；\n2. 所有參加童軍旅必須最少由一名領袖帶隊。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_quota",
+        "title": "名額及費用",
+        "category": "報名",
+        "description": "名額：2,000 人（香港警察學院對入場人數有嚴格規定，額滿即止）。\n費用：每位港幣 10 元（包括節目及紀念章等）。費用必須以劃線支票「一旅一票」方式繳付，支票抬頭「港島童軍」或「SCOUTS (HKIR)」。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_apply",
+        "title": "報名辦法及截止日期",
+        "category": "報名",
+        "description": "備妥下列各項，於截止日期前遞交或郵寄香港灣仔日善街 23 號香港童軍百周年紀念大樓 19 樓港島地域辦事處：\n1. 填妥夾附之表格（可於地域網頁 www.hkirscout.org.hk 下載或到地域辦事處索取）；未滿 18 歲之參加者必須填妥家長同意書 PT/46，並交由隨隊領袖保存直至活動結束為止；\n2. 報名費支票。\n\n截止日期：2026 年 9 月 11 日（星期五）。報名以先到先得方式處理，並於 2026 年 9 月 25 日或以前以電郵通知各童軍單位。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_meal",
+        "title": "代訂餐盒",
+        "category": "膳食",
+        "description": "如有需要，大會可代訂購小食餐盒，限額 700 份，每份 $60。餐盒價格可能因應實際情況及大會訂購數量而有所更改。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_gift",
+        "title": "紀念品",
+        "category": "基本",
+        "description": "每位參加者將獲得大會紀念章乙枚。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_transport",
+        "title": "交通及旅遊巴安排",
+        "category": "交通",
+        "description": "1. 大會鼓勵參加者盡量使用公共交通工具前往會場；\n2. 如自行安排旅遊巴士前往會場，請於報名表上註明；\n3. 參加童軍旅可於報名表格標示預計到場及離場時間，大會將按需要作出協調，以確保到場及離場秩序。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_dress",
+        "title": "服裝",
+        "category": "裝備",
+        "description": "童軍成員：整齊童軍制服。\n非童軍成員：便服。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_weather",
+        "title": "惡劣天氣安排",
+        "category": "安全",
+        "description": "如天文台在活動前 3 小時發出紅色暴雨警告、3 號強風或更高信號，活動將延期至 2026 年 10 月 11 日（星期日）於同一地點舉行；大會亦保留因應實際天氣預測而提前作出延期決定之權利。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_enquiry",
+        "title": "查詢",
+        "category": "基本",
+        "description": "如有任何查詢，請致電 2835 7712 與助理執行幹事何家耀先生聯絡。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_donate_food",
+        "title": "童心捐贈大行動（食品捐贈）",
+        "category": "服務",
+        "description": "受惠機構：循道衛理觀塘社會服務處。收集非罐頭食品，10月4日 11:00–15:00 香港警察學院食品收集攤位，捐贈者獲紀念章。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      },
+      {
+        "id": "ug_donate_goods",
+        "title": "童心捐贈大行動（物品回收）",
+        "category": "服務",
+        "description": "受惠機構：國際十字路會。回收電腦用品、教育玩具（Lego）、全新文具、英語兒童讀物，10月4日 11:00–15:00 香港警察學院物品回收攤位。",
+        "status": "2027_reference_seed_pending_2027_confirmation",
+        "note": "內容來自 2027 參考種籽；活動日的日期、費用、聯絡及安排須由相關總主任確認。"
+      }
+    ],
+    "staff_document_assets": [
+      {
+        "id": "map_2027_site_setup",
+        "title": "警察學院場地佈置及攤位圖",
+        "category": "場地及動線",
+        "description": "工作人員活動日主場地圖：攤位、服務點、典禮及後勤位置。",
+        "file_url": "assets/event-day/site-setup-plan-2027.pdf",
+        "drive_file_id": "1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R",
+        "drive_file_link": "https://drive.google.com/file/d/1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R/view",
+        "tab": "activities"
+      },
+      {
+        "id": "map_2027_troop_route",
+        "title": "參加旅團場地指示圖",
+        "category": "場地及動線",
+        "description": "東閘入場、報到處及旅團活動動線；供報到、秩序和主題活動組使用。",
+        "file_url": "google_drive/ISD 2027－參加旅團場地指示圖.pdf",
+        "drive_file_id": "1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T",
+        "drive_file_link": "https://drive.google.com/file/d/1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T/view",
+        "tab": "activities"
+      },
+      {
+        "id": "map_2027_guest_reception",
+        "title": "嘉賓接待及典禮位置圖",
+        "category": "場地及動線",
+        "description": "嘉賓接待、典禮及座位區域的工作參考圖；嘉賓個人資料仍只限獲授權角色。",
+        "file_url": "assets/event-day/guest-reception-map-2027.pdf",
+        "drive_file_id": "1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr",
+        "drive_file_link": "https://drive.google.com/file/d/1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr/view",
+        "tab": "activities"
+      },
+      {
+        "id": "map_2027_inspection_route",
+        "title": "會操檢閱路線圖",
+        "category": "場地及動線",
+        "description": "會操及典禮組工作人員的檢閱行進路線參考。",
+        "file_url": "assets/event-day/inspection-route-2027.svg",
+        "drive_file_id": "1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB",
+        "drive_file_link": "https://drive.google.com/file/d/1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB/view",
+        "tab": "activities"
+      },
+      {
+        "id": "gc_2027",
+        "title": "主題活動遊戲卡",
+        "category": "主題活動",
+        "description": "攤位集印及活動日派發使用。",
+        "file_url": "assets/event-day/game-card-2027.pdf",
+        "drive_file_id": "1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z",
+        "drive_file_link": "https://drive.google.com/file/d/1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z/view",
+        "tab": "activities"
+      },
+      {
+        "id": "gc_p_2027",
+        "title": "主題活動遊戲卡（P 版）",
+        "category": "主題活動",
+        "description": "指定工作崗位使用的遊戲卡版本。",
+        "file_url": "assets/event-day/game-card-p-2027.pdf",
+        "drive_file_id": "1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW",
+        "drive_file_link": "https://drive.google.com/file/d/1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW/view",
+        "tab": "activities"
+      },
+      {
+        "id": "cm_1",
+        "title": "2027 港島童軍繽紛日｜危機處理手冊",
+        "category": "安全及應變",
+        "description": "更新版：活動風險管理手冊——涵蓋天氣、集體安全、急救安排、緊急撤離及危機通報程序。",
+        "file_url": "assets/event-day/crisis-manual-2027.pdf",
+        "drive_file_id": "1OInPhs1NFG193KtX0m341oRZugxkDckj",
+        "drive_file_link": "https://drive.google.com/file/d/1OInPhs1NFG193KtX0m341oRZugxkDckj/view",
+        "tab": "crisis"
+      },
+      {
+        "id": "mc_part1",
+        "title": "優異旅團及各項獎勵頒獎典禮 司儀稿",
+        "category": "典禮及司儀",
+        "description": "1045 宣佈就座｜1055 嘉賓進場｜1100 開場｜1110 主禮團進場及頒獎。主禮人：地域會長 吳家麗女士 OStJ。",
+        "file_url": "assets/event-day/mc-awards-2027.pdf",
+        "drive_file_id": "1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA",
+        "drive_file_link": "https://drive.google.com/file/d/1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA/view",
+        "tab": "mc_scripts"
+      },
+      {
+        "id": "mc_part2",
+        "title": "會操檢閱及頒獎典禮 司儀稿",
+        "category": "典禮及司儀",
+        "description": "1150 會操隊伍進場｜1200 主禮嘉賓到場｜檢閱｜1250 合照。主禮嘉賓：香港警務處港島總區指揮官 區永樑助理處長。全場 15 隊。",
+        "file_url": "assets/event-day/mc-inspection-2027.pdf",
+        "drive_file_id": "1i5NpagcI4zqT83WmPz452nop-GGRJgX1",
+        "drive_file_link": "https://drive.google.com/file/d/1i5NpagcI4zqT83WmPz452nop-GGRJgX1/view",
+        "tab": "mc_scripts"
+      },
+      {
+        "id": "mc_part3",
+        "title": "莫榮大樓自助餐 司儀稿",
+        "category": "典禮及司儀",
+        "description": "典禮後嘉賓移步莫榮大樓茶點招待。",
+        "file_url": "assets/event-day/mc-buffet-2027.pdf",
+        "drive_file_id": "1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny",
+        "drive_file_link": "https://drive.google.com/file/d/1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny/view",
+        "tab": "mc_scripts"
+      }
+    ],
+    "group_playbook": [
+      {
+        "group": "顧問團",
+        "duty": "顧問（黃偉安、何家騏）：\n1. 審核「港島童軍繽紛日」活動的目的；\n2. 就「港島童軍繽紛日」活動的設計、籌劃、推行提供政策性意見；\n3. 因應所提交的目的及計劃，監察「港島童軍繽紛日」活動整體運作；及\n4. 與地域總監確認繽紛日主禮嘉賓／主禮人，並就「港島童軍繽紛日」的重要事務，向地域總監匯報及向籌委會主席提供指導性意見。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "主席",
+        "duty": "主席（朱家聰）：\n1. 主持籌備委員會所有會議；\n2. 負責統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 監察及協調各副主席及各組的工作進度使之順利完成；\n4. 編訂及策劃大會節目程序；及\n5. 建議及邀請繽紛日主禮嘉賓／主禮人。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "主席",
+        "duty": "執行副主席（袁可秀）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌及監察「港島童軍繽紛日」一切有關事宜及確保順利進行；\n3. 主席不能履行職務時將代理其職務；\n4. 策劃及執行已編訂的大會節目程序；及\n5. 協助主席及執行其分配的工作。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "行政組",
+        "duty": "副主席（行政）（徐嘉皓）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日行政、財政及常務等事宜；\n3. 設立及管理指揮中心；\n4. 制訂行政組財政預算；及\n5. 協助主席及執行其分配的工作。\n\n總主任（行政）（莫穎民）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日各項工作，如行政、旅團報到、紀念品、財政、危機處理及工作人員統籌等事宜；及\n3. 協助副主席（行政）及執行其分配的工作。\n\n行政主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日行政工作：撰寫籌備委員會會議紀錄；活動日維持詢問處和失物認領處的運作；跟進參加旅團的一般事宜；\n3. 協助指揮中心運作；\n4. 統籌行政組內的物資安排；及\n5. 協助總主任（行政）及執行其分配的工作。\n\n旅團報到主任（陳銘彥）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）推行繽紛日旅團報到工作：制訂活動報名表及報名程序；制訂繽紛日參加者報到程序；跟進參加旅團的報名和報到事宜；\n3. 活動日維持旅團報到處的運作；及\n4. 協助總主任（行政）及執行其分配的工作。\n\n紀念品主任（何仲康）：\n1. 參與籌備委員會會議並提供意見；\n2. 安排紀念品（包括紀念章）的包裝及分發事宜；\n3. 協助總主任（行政）及執行其分配的工作。\n\n參事主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及推行繽紛日工作人員傳訊事宜：編制工作人員手冊；編制工作人員感謝狀；分發工作人員紀念品；活動日對講機分配；\n3. 協助總主任（行政）及執行其分配的工作。\n\n財務主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（行政）制訂及處理繽紛日財政事宜：收集及綜合各組之財政預算；協調及控制各小組財政收支平衡；制訂財政指引及會計程序；處理財政結算工作及草擬財政報告；\n3. 協助總主任（行政）及執行其分配的工作。\n\n危機處理主任（何家騏）：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂繽紛日危機處理手冊；\n3. 執行危機處理及應變程序；\n4. 協助副地域總監（活動與訓練）、主席、副主席（行政）主持危機小組會議及工作；及\n5. 協助總主任（行政）及執行其分配的工作。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "會操及典禮組",
+        "duty": "副主席（會操及典禮）（張佳良）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌會操、優異旅團及各項嘉許獎勵頒授典禮事宜；\n3. 制訂會操及典禮組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（會操）（梁文澧）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日會操事宜：負責草擬會操之內容及程序；建議及邀請會操之工作人員；草擬步操組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n步操統籌主任：\n1. 參與籌備委員會會議並提供意見；\n2. 推行會操流程及安排事宜；及\n3. 協助總主任（會操）及執行其分配的工作。\n\n司令員：待定\n\n會操顧問（黃志樂）：待定\n\n總主任（典禮）（李懷恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 統籌繽紛日典禮事宜：負責草擬典禮之內容及程序；建議及邀請典禮之工作人員；草擬典禮組財政預算；及\n3. 協助副主席（會操）及執行其分配的工作。\n\n典禮統籌主任（黃凱琳）：待定\n優異旅團統籌主任（林雋逸）：待定\n獎勵統籌主任（馮玉成）：待定\n司儀統籌主任（范紫晴、林卓衡）：待定",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "主題節目組",
+        "duty": "副主席（主題節目）（周恒晉）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席設計、組織、推行繽紛日主題節目活動；\n3. 制訂主題節目組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（主題節目）（仇紹謙）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行主題節目活動；及\n3. 協助副主席（主題節目）及執行其分配的工作。\n\n節目主任（何令勤、陳鋑羲、張宏剛、羅卓華、李庭甄）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日主題節目活動事宜；\n3. 構思及設計配合主題節目之遊戲禮物；及\n4. 協助總主任（主題節目）及執行其分配的工作。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "協調組",
+        "duty": "副主席（協調）（羅添駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日膳食、秩序、交通、衛生、場地佈置及協調、物資等事宜；\n3. 制訂協調組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（協調）（鍾偉志、黃嘉恩）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（協調）推行繽紛日秩序、交通、膳食、衛生、場地佈置及物資設備等事宜；及\n3. 協助副主席（協調）及執行其分配的工作。\n\n膳食主任（吳卓藍）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日膳食提供意見；\n3. 協調及統籌繽紛日膳食事宜：編排旅團及工作人員用餐時段；印製參加旅團餐券；派發工作人員膳食或餐券；安排嘉賓之茶點及飲品；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n秩序主任（布瀚文）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之秩序及人流管理提供意見；\n3. 協調及統籌繽紛日保安及秩序事宜：場地秩序及人流管理；確保典禮進行期間各嘉賓及參加者遵守大會程序；安排適當場地指示配合整個活動進行；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（交通管制）（鄺逸俊）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日之交通管理提供意見；\n3. 協調及統籌繽紛日交通管理事宜：場內嘉賓及工作人員車輛管制；安排適當場地交通指示；協調參加者及嘉賓往返場地交通安排；管理停車場進出管制儀器（如電子泊車咭）；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n後勤主任（郭慧敏）：\n1. 參與籌備委員會會議並提供意見；\n2. 就繽紛日後勤支援服務提供意見；\n3. 協調及統籌繽紛日後勤支援事宜；\n4. 監察及確保衛生服務承辦商妥善清理洗手間及垃圾；及\n5. 協助總主任（協調）及執行其分配的工作。\n\n場地佈置主任（馬一波）：\n1. 參與籌備委員會會議並提供意見；\n2. 與各個組別協調，就繽紛日場地佈置提供意見；\n3. 協調及統籌繽紛日場地佈置事宜：場地佈置（包括場地指示製作）；音響、燈光佈置；監察及確保場地佈置承辦商妥善清理及還原場地；及\n4. 協助總主任（協調）及執行其分配的工作。\n\n運輸主任（物流）（李思諭、袁宇靖）：待定\n物資主任（施珍淇）：待定",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "服務及發展組",
+        "duty": "副主席（服務及發展）（黎姵伶）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日服務、成員招募及拓展等事宜，並聯絡各志願機構及持份者；\n3. 制訂服務組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（服務及發展）（李卓琪）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（服務及發展）統籌繽紛日服務及聯絡各志願機構及持份者事宜；\n3. 構思及制訂服務項目及執行策略；及\n4. 協助副主席（服務及發展）及執行其分配的工作。\n\n服務主任（郭成威）：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日服務及聯絡各志願機構及持份者；及\n3. 協助總主任（服務及發展）及執行其分配的工作。\n\n發展主任：\n1. 參與籌備委員會會議並提供意見；\n2. 設計、組織、推行繽紛日的成員招募及拓展、持份者參與策略；及\n3. 協助總主任（服務及發展）及執行其分配的工作。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "品牌推廣組",
+        "duty": "副主席（品牌推廣）（何嘉駿）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌繽紛日品牌推廣、宣傳及設計相關事宜；\n3. 制訂品牌推廣組財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（宣傳）（待定）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（品牌推廣）統籌繽紛日宣傳及推廣事宜；\n3. 構思及制訂宣傳及推廣策略；及\n4. 協助副主席（品牌推廣）及執行其分配的工作。\n\n設計主任：\n1. 參與籌備委員會會議並提供意見；\n2. 制訂及推行繽紛日宣傳工作：設計繽紛日標誌和各項宣傳品（包括紀念章）及製作；撰寫文章向地域季刊及香港童軍月刊投稿；撰寫文章及準備材料以供港島童軍面書專頁（Facebook Page）及 Instagram 專頁等平台發布；及\n3. 協助總主任（品牌推廣）及執行其分配的工作。\n\n宣傳主任（待定）：待定\n社交媒體主任（陳鈞翰）：待定\n攝影／攝錄主任：\n1. 參與籌備委員會會議並提供意見；\n2. 就宣傳及活動日當日的攝錄安排提供意見；\n3. 協調攝影師在活動日攝錄事宜；及\n4. 協助總主任（品牌推廣）及執行其分配的工作。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "嘉賓接待組",
+        "duty": "副主席（嘉賓接待）（曾麗珊）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助主席統籌嘉賓接待及支援相關事宜；\n3. 制訂嘉賓接待組的財政預算；及\n4. 協助主席及執行其分配的工作。\n\n總主任（嘉賓接待）（張嘉政）：\n1. 參與籌備委員會會議並提供意見；\n2. 協助副主席（嘉賓接待）及執行其分配的工作。\n\n嘉賓接待及交通主任：\n1. 參與籌備委員會會議並提供意見；\n2. 協調嘉賓交通及接待報到；\n3. 安排在頒獎典禮前的場內參觀；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。\n\n嘉賓支援主任（朱浩銘）：\n1. 參與籌備委員會會議並提供意見；\n2. 在頒獎典禮及會操進行期間協助嘉賓席相關事宜；\n3. 安排在頒獎典禮前及會操後的輕便茶點；\n4. 協助總主任（嘉賓接待）及執行其分配的工作。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      },
+      {
+        "group": "秘書處",
+        "duty": "秘書處（譚健祥、何家耀、陸詠德、鄧倩姸、曾凱瑩）：\n1. 參與籌備委員會會議；\n2. 會議前準備工作；\n3. 發出及處理所有與政府部門及相關機構的往來書信；\n4. 處理所有報名工作；\n5. 稽查各組的財務；\n6. 支援各組的行政工作；及\n7. 協助主席及執行其分配的工作。\n\n指揮中心（活動日）成員：主席、各副主席、行政主任、危機處理主任、秘書處主管。\n\n危機應變小組成員：主席、副地域總監（活動與訓練）、助理地域總監（活動）、各副主席、危機處理主任、秘書處主管。",
+        "status": "2027_reference_seed_pending_2027_confirmation"
+      }
+    ],
+    "document_catalog": {
+      "total": 79,
+      "by_category": {
+        "通告": 13,
+        "表格": 4,
+        "合規政策": 2,
+        "財務": 10,
+        "名單": 1,
+        "協調": 4,
+        "活動": 11,
+        "嘉賓及典禮": 6,
+        "典禮儀式": 3,
+        "品牌推廣": 1,
+        "會議": 2,
+        "公告": 2,
+        "嘉賓名單及點名": 1,
+        "參加旅團程序": 1,
+        "場地及旅團指示": 1,
+        "場地佈置及執行": 1,
+        "司儀稿及典禮程序": 2,
+        "自助餐司儀稿": 2,
+        "總流程及獎項": 1,
+        "主禮團進場": 1,
+        "優異旅團頒獎": 1,
+        "出席及派隊清單": 1,
+        "旅團報名人數": 1,
+        "活動資料表": 1,
+        "NGO聯絡資料": 1,
+        "場地／帳篷資料": 1,
+        "遊戲卡": 1,
+        "箱頭紙": 1,
+        "旅團通知書": 1,
+        "共創明Teen通知書": 1
+      },
+      "notices": 3,
+      "unit_guides": 12,
+      "staff_guidance": 12
+    },
+    "completion_checklist": [
+      "確認全部活動日文件均已有 2027 擁有的檔案／連結。",
+      "由各總主任確認所屬組別崗位、集合位置、交接及聯絡安排。",
+      "由行政組在活動日前發佈最終版並標示修訂日期。",
+      "確認普通工作人員版本不顯示受限個人及管理資料。"
+    ]
   }
 }

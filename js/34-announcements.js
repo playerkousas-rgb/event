@@ -70,10 +70,12 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   renderAnnMapTab(container){
     if(!container) return;
-    const file='assets/event-day/site-setup-plan-2026.pdf';
+    const map=(this.eventData?.activities?.maps||[]).find(row=>row.id==='map_2027_site_setup')||{};
+    const file=map.file_url||'assets/event-day/site-setup-plan-2027.pdf';
+    const title=map.title||'2027 警察學院場地佈置及攤位圖';
     container.innerHTML=`<div class="space-y-3">
-      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] text-emerald-950"><b><i class="fa-solid fa-map mr-1"></i>ISD2026 Site Setup Plan R10-SETUP PLAN-1</b></div>
-      <div class="bg-white border rounded-2xl overflow-hidden"><iframe src="${file}#view=FitH" title="ISD2026 Site Setup Plan R10-SETUP PLAN-1" class="w-full h-[72vh] min-h-[520px] border-0"></iframe></div>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[12px] text-emerald-950"><b><i class="fa-solid fa-map mr-1"></i>${escapeHtml(title)}</b></div>
+      <div class="bg-white border rounded-2xl overflow-hidden"><iframe src="${escapeHtml(file)}#view=FitH" title="${escapeHtml(title)}" class="w-full h-[72vh] min-h-[520px] border-0"></iframe></div>
       <div><a href="${file}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>新分頁開啟</a></div>
     </div>`;
   }
