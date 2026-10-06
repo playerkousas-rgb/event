@@ -2,7 +2,7 @@
 
 ## 狀態與界線
 
-- `data/isd_2026.json` 是 **2026 已完結的封存參考檔**。其 SHA-256 由 `data/2026_reference_lock.json` 鎖定；不可作日常修正、匯入或同步目標。
+- `data/isd_2026.json` 是 **2026 活動日前的封存參考檔**。其 SHA-256 由 `data/2026_reference_lock.json` 鎖定，並已核對為 GitHub commit `1c333862`（2026-10-03 14:24 HKT）的完全相同版本；不可作日常修正、匯入或同步目標。
 - 現有工作範圍仍是 **MOCK 示範版**。因此可更新的預製成品是 `data/mock_demo.json`，不是正式的 `data/isd_2027.json`。
 - `data/isd_2027.json` 在獲正式批准開啟 2027 活動前，維持不動。不要以「先填少少」方式同時維護它和 MOCK，否則立即再次出現兩套版本。
 

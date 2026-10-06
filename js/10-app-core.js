@@ -111,7 +111,7 @@ Object.assign(ScoutEventApp.prototype,{
       // 最新消息已改為 APP 內可改（執副以上／秘書處），後端 Events 表有 news_updated_at 就以後端為準。
       if(ev.news_updated_at||String(ev.news||'').trim()){ local.news=String(ev.news||''); local.news_updated_by=String(ev.news_updated_by||''); local.news_updated_at=String(ev.news_updated_at||''); }
     }); if(this.eventsList.length) loaded=true; }}catch(e){}}
-    if(!loaded && this.eventsList.length===0){this.eventsList=[{event_id:'isd_2026',event_name:'2026 港島童軍繽紛日',category:'isd',description:'港島地域年度旗艦',start_date:'2026-10-04',end_date:'2026-10-04',status:'active'},{event_id:'isd_2027',event_name:'2027 港島童軍繽紛日',category:'isd',description:'港島童軍繽紛日',start_date:'2027-10-01',end_date:'2027-10-04',status:'upcoming'}];}
+    if(!loaded && this.eventsList.length===0){this.eventsList=[{event_id:'isd_2026',event_name:'港島童軍繽紛日 2026（進行中）',category:'isd',description:'2026 活動日前封存參考資料（唯讀）',start_date:'2026-10-04',end_date:'2026-10-04',status:'active'},{event_id:'mock_demo',event_name:'模擬示範版 2027 港島童軍繽紛日',category:'demo',description:'以已封存的 2026 活動日前資料預製的 2027 示範版',start_date:'2027-10-04',end_date:'2027-10-04',status:'active'}];}
     // 修正類別：避免舊快取 (無 category) 被誤判到「其他大型活動」
     this.eventsList=this.eventsList.map(ev=>{
       if(!ev.category){

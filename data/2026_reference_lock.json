@@ -14,5 +14,14 @@
     "legacy rebuilds that write data/isd_2026.json",
     "Google Sheet imports or application save operations for isd_2026"
   ],
-  "recovery_rule": "A change requires an authorised source recovery, explicit --confirm-2026-archive-write acknowledgement, and an intentional update to this checksum manifest. It must never be part of normal 2027 preparation."
+  "recovery_rule": "A change requires an authorised source recovery, explicit --confirm-2026-archive-write acknowledgement, and an intentional update to this checksum manifest. It must never be part of normal 2027 preparation.",
+  "verified_pre_event_source": {
+    "provider": "GitHub",
+    "repository": "playerkousas-rgb/event",
+    "commit": "1c33386202886dae72f7e728d225b5f82789c024",
+    "committed_at_hkt": "2026-10-03T14:24:53+08:00",
+    "path": "data/isd_2026.json",
+    "git_blob": "64939768330e15d58a57af1d7e88e2a9f74f78f7",
+    "verification": "The current archive bytes match this latest activity-day-eve source exactly; no post-2026-10-04 data restore was needed."
+  }
 }

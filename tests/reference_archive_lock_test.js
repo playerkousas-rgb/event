@@ -15,6 +15,12 @@ assert.strictEqual(lock.reference_event_id,'isd_2026','lock event id must name t
 assert.strictEqual(lock.reference_file,'data/isd_2026.json','lock must identify its reference file');
 assert.strictEqual(sha(lock.reference_file),lock.sha256,'2026 reference checksum changed: do not overwrite the archive; recover only from an authorised source');
 assert.strictEqual(lock.status,'archived_read_only','2026 must remain archived read-only');
+assert.strictEqual(lock.verified_pre_event_source?.commit,'1c33386202886dae72f7e728d225b5f82789c024','archive must record the verified final pre-event GitHub source');
+assert.strictEqual(lock.verified_pre_event_source?.git_blob,'64939768330e15d58a57af1d7e88e2a9f74f78f7','archive must record the verified pre-event blob');
+const events=JSON.parse(read('data/events.json'));
+assert.deepStrictEqual(events.map(e=>e.event_id),['isd_2026','mock_demo'],'activity picker must contain only the archived 2026 reference and the 2027 MOCK');
+assert.strictEqual(events[0].event_name,'港島童軍繽紛日 2026（進行中）','2026 reference label must remain the requested active-event label');
+assert.strictEqual(events[1].event_name,'模擬示範版 2027 港島童軍繽紛日','MOCK label must identify the 2027 product');
 const sourcePolicy=read('docs/2027_SOURCE_OF_TRUTH.md');
 assert(sourcePolicy.includes('data/isd_2026.json') && sourcePolicy.includes('data/mock_demo.json') && sourcePolicy.includes('tools/schema/templates_2027.js'),'2027 source-of-truth policy must document the only allowed source chain');
 assert(sourcePolicy.includes('MOCK 模式的互動資料只存在當前瀏覽器'),'policy must not claim MOCK browser state is cross-team synchronisation');
@@ -26,6 +32,10 @@ assert(core.includes('isReferenceArchiveWriteBlocked'),'all in-app data writes n
 assert(core.includes("PIN_STAFF_REFERENCE_CARD_IDS=['exec_manual']" )===false,'staff allow-list belongs in config, not core');
 assert(/PIN_STAFF_REFERENCE_CARD_IDS\s*=\s*\['exec_manual'\]/.test(config),'PIN staff must be restricted to the execution-manual reference');
 assert(/pinStaffReferenceDefs/.test(core) && /PIN_STAFF_REFERENCE_CARD_IDS/.test(core),'dashboard must use the PIN staff allow-list');
+const loadEventsStart=core.indexOf('async loadEvents()');
+const loadEventsEnd=core.indexOf('\n,',loadEventsStart);
+const loadEventsSource=core.slice(loadEventsStart,loadEventsEnd);
+assert(loadEventsSource.includes("event_id:'mock_demo'") && !loadEventsSource.includes("event_id:'isd_2027'"),'offline event-picker fallback must keep the same two-event scope');
 
 const saveFns=[
   ['js/21-activities.js',['saveActivitiesData','saveScheduleData','saveParticipantsData','saveDocumentsData','saveThemeBadgesData']],

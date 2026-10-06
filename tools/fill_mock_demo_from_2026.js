@@ -278,8 +278,8 @@ const KEEP = [
 for (const [k, why] of KEEP) note('KEEP', k, n(mock[k]), n(mock[k]), why);
 
 /* ── 寫檔 ────────────────────────────────────────────────────────────── */
-mock.event_name = '模擬示範版（2026 真實資料・完整）';
-mock.description = '模擬示範版本：底層資料已用 2026 港島童軍繽紛日真實資料填滿（組織架構 55／聯絡 62／工作人員編更 279／參加旅團 31／攤位 33／文件 79／典禮儀式全套／嘉賓 102／膳食 290），另加示範用嘅申請與批核流程（物資／攤位／車輛／財務／訂餐）。';
+mock.event_name = '模擬示範版 2027 港島童軍繽紛日';
+mock.description = '2027 港島童軍繽紛日模擬示範版：以已封存的 2026 活動日前參考資料預製（組織架構、旅團、攤位、文件、典禮及膳食），另加示範用申請與批核流程。';
 mock.data_version = new Date().toISOString().slice(0, 19) + 'Z-demo-v5-filled-from-2026';
 mock.mock_fill_source = {
   from: 'data/isd_2026.json',
@@ -298,12 +298,12 @@ fs.writeFileSync(PMK, JSON.stringify(mock, null, 2) + '\n');
   const ev = evs.find(e => e.event_id === 'mock_demo');
   if (ev) {
     ev.event_name = mock.event_name;
-    ev.description = '模擬示範版：底層資料已用 2026 港島童軍繽紛日真實資料填滿（組織架構 55／聯絡 62／工作人員編更 279／參加旅團 31／攤位 33／文件 79／典禮儀式全套／嘉賓 102／膳食 290），再加示範用嘅申請與批核流程。本地沙盒——所有改動只儲存喺你嘅瀏覽器，絕不影響正式活動資料。';
-    ev.start_date = '2026-10-04'; ev.end_date = '2026-10-04';
-    ev.time = '07:45 - 17:30';
-    ev.location = '黃竹坑香港警察學院（示範環境）';
-    ev.weather = '示範資料';
-    ev.news = '示範版：資料取自 2026 港島童軍繽紛日，供籌委試用體驗；改動只留喺你部機。';
+    ev.description = '2027 港島童軍繽紛日模擬示範版：以已封存的 2026 活動日前參考資料預製。本地沙盒——所有改動只儲存喺你嘅瀏覽器，絕不影響 2026 參考資料。';
+    ev.start_date = '2027-10-04'; ev.end_date = '2027-10-04';
+    ev.time = '09:00 - 18:00';
+    ev.location = '黃竹坑香港警察學院（2027 示範環境）';
+    ev.weather = '待公佈（示範）';
+    ev.news = '2027 示範版：資料以已封存的 2026 活動日前版本預製；改動只留喺你部機。';
     fs.writeFileSync(PEV, JSON.stringify(evs, null, 2) + '\n');
     note('SYNC', 'events.json(mock_demo)', '-', '-', '首頁活動卡描述同日期／地點同步');
   }
