@@ -99,6 +99,97 @@ Object.assign(ScoutEventApp.prototype,{
   },
   crossSetFilter(v){ this.crossOnly=(this.crossOnly===v?'':v); const b=document.getElementById('cross-body'); if(b) b.innerHTML=this.crossBodyHTML(); },
 
+
+  /* ───────── 入口守門（v25） ─────────
+     用戶原話：「其實可能未必係唔知到只係大家習慣左用唔同既編譯方式…
+                 但現在我們是直接寫進後端，我們可以規限他填寫時的格式，
+                 例如旅團 只準填港島第1旅 不能填港島第一旅 或填1 這種的」
+
+     上面個對帳區係【補鑊】——落咗格先夾返。
+     呢個區係【守門】——根本唔畀佢落錯格。
+     2026 源頭係 Google Form，人想點填就點填，所以冇所謂填錯；
+     2027 直接寫後端，同一套認字能力搬去入口，就係呢個分別。
+     規矩同 templates/2027/ 啲 Excel 彈出嗰個輸入提示係同一份定義（js/51-field-format.js）。 */
+  GATE_SPECS:[
+    {src:'guest_roster.guests',  title:'嘉賓名單',       owner:'嘉賓接待組', cols:[
+      {k:'name',label:'姓名',format:'person'},{k:'car_plate',label:'車牌',format:'plate'}]},
+    {src:'staff.contacts',       title:'組織架構及聯絡',  owner:'秘書處',    cols:[
+      {k:'name',label:'姓名',format:'person'},{k:'contact',label:'電話',format:'phone'}]},
+    {src:'activities.booths',    title:'攤位資料',       owner:'主題節目組', cols:[
+      {k:'booth_no',label:'攤位編號',format:'booth'},{k:'staff_count',label:'人手',format:'count'},
+      {k:'lunch',label:'午膳數',format:'count'}]},
+    {src:'ceremony.meritRoster', title:'優異旅團獲獎名單',owner:'會操及典禮組',cols:[
+      {k:'unit',label:'旅名',format:'troop'}]}
+  ],
+
+  gateAudit(){
+    // 51-field-format.js 會把 ffAudit 掛落 ScoutEventApp.prototype 同 window
+    const FF=(typeof this.ffAudit==='function') ? this
+           : (typeof window!=='undefined'&&typeof window.ffAudit==='function') ? window : null;
+    if(!FF) return null;
+    const d=this.eventData||{};
+    const T={ok:0,fixed:0,reject:0,total:0}, sections=[];
+    this.GATE_SPECS.forEach(sp=>{
+      const rows=sp.src.split('.').reduce((x,k)=>(x==null?undefined:x[k]),d);
+      if(!Array.isArray(rows)||!rows.length) return;
+      const a=FF.ffAudit(rows,sp.cols);
+      T.ok+=a.ok; T.fixed+=a.fixed; T.reject+=a.reject; T.total+=a.total;
+      sections.push({title:sp.title,owner:sp.owner,rows:rows.length,a});
+    });
+    return {totals:T,sections};
+  },
+
+  gateHTML(){
+    const g=this.gateAudit();
+    if(!g||!g.totals.total) return '';
+    const T=g.totals, pct=n=>T.total?Math.round(n/T.total*100):0;
+    const bad=[], fix=[], seen={};
+    g.sections.forEach(s=>s.a.samples.forEach(x=>{
+      if(x.state==='reject') bad.push(Object.assign({t:s.title},x));
+      else if(x.state==='fixed'){ const k=s.title+'|'+x.field+'|'+x.why; if(!seen[k]){seen[k]=1; fix.push(Object.assign({t:s.title},x));} }
+    }));
+    const box=(n,l,c,bg)=>`<div class="${bg} border rounded-xl px-2 py-2 text-center"><div class="text-[17px] font-black ${c}">${n}</div><div class="text-[9.5px] text-slate-500 leading-tight mt-0.5">${l}</div></div>`;
+    return `
+      <div class="bg-white border rounded-xl p-3 mt-3">
+        <div class="text-[11.5px] font-bold text-slate-700 mb-1"><i class="fa-solid fa-shield-halved mr-1 text-indigo-500"></i>入口守門：2027 填嗰陣就卡住</div>
+        <div class="text-[10.5px] text-slate-500 leading-relaxed mb-2">
+          上面個對帳係<b>補鑊</b>——落咗格先夾返。呢度係<b>守門</b>：根本唔畀佢落錯格。<br>
+          2026 係 Google Form，人想點填就點填，所以唔存在填錯。2027 直接寫後端，規矩可以擺喺入口。
+          下面係攞 2026 真資料照新規矩行一次，答「如果當時有守門，會擋到幾多」。
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          ${box(T.ok,`✓ 本身合格<br>${pct(T.ok)}%`,'text-emerald-600','bg-emerald-50')}
+          ${box(T.fixed,`⟳ 自動改正<br>${pct(T.fixed)}%`,'text-amber-600','bg-amber-50')}
+          ${box(T.reject,`✗ 當場彈返<br>${pct(T.reject)}%`,'text-rose-600','bg-rose-50')}
+        </div>
+        <div class="mt-2 space-y-1">
+          ${g.sections.map(s=>`<div class="bg-slate-50 rounded-lg px-2 py-1.5">
+            <div class="flex items-center justify-between text-[10.5px]">
+              <span class="font-bold text-slate-700">${escapeHtml(s.title)} <span class="text-slate-400 font-normal">${s.rows} 行・${escapeHtml(s.owner)}</span></span>
+              <span class="font-mono text-[10px]"><span class="text-emerald-600">✓${s.a.ok}</span>
+                ${s.a.fixed?`<span class="text-amber-600 ml-1">⟳${s.a.fixed}</span>`:''}
+                ${s.a.reject?`<span class="text-rose-600 ml-1 font-black">✗${s.a.reject}</span>`:''}</span>
+            </div></div>`).join('')}
+        </div>
+        ${fix.length?`<details class="mt-2" open><summary class="cursor-pointer text-[10.5px] font-bold text-amber-700">⟳ 入口自動改成標準寫法，唔使人手跟（${g.totals.fixed} 格）</summary>
+          <div class="mt-1 space-y-0.5">${fix.slice(0,8).map(x=>`<div class="text-[10px] bg-amber-50 rounded px-2 py-1">
+            <span class="text-slate-400">${escapeHtml(x.label)}</span>
+            <code class="text-slate-700">${escapeHtml(String(x.was).slice(0,22))}</code>
+            <span class="text-slate-400 mx-1">→</span><code class="text-emerald-700 font-bold">${escapeHtml(String(x.value).slice(0,22))}</code>
+            <span class="text-slate-400 ml-1">${escapeHtml(x.why)}</span></div>`).join('')}</div></details>`:''}
+        ${bad.length?`<details class="mt-2" open><summary class="cursor-pointer text-[10.5px] font-bold text-rose-700">✗ 入口唔收，叫返填嘅人即場改（${bad.length} 格）</summary>
+          <div class="mt-1 space-y-0.5">${bad.slice(0,15).map(x=>`<div class="text-[10px] bg-rose-50 rounded px-2 py-1">
+            <span class="text-slate-400">${escapeHtml(x.t)}・${escapeHtml(x.label)}</span>
+            <code class="text-rose-800 font-bold">${escapeHtml(String(x.was).slice(0,22))}</code>
+            <div class="text-slate-500 mt-0.5">${escapeHtml(x.why)}　<span class="text-slate-400">應該：${escapeHtml(x.how)}</span></div>
+          </div>`).join('')}</div></details>`:''}
+        <div class="mt-2 text-[9.5px] text-slate-400 leading-relaxed">
+          同一份規矩已經寫入 <code>templates/2027/</code> 啲 Excel：人撳落個格就會彈出「只准咁填 ✓ ／ 唔好咁填 ✗」，唔使翻文件。
+          改 <code>js/51-field-format.js</code> 一處，網站同範本一齊跟。
+        </div>
+      </div>`;
+  },
+
   crossCheckHTML(){
     const t=this.crossCheckTotals();
     const rows=this.crossCheckRows();
@@ -146,6 +237,7 @@ Object.assign(ScoutEventApp.prototype,{
               <div class="mt-1 space-y-0.5">${tr.spelling.slice(0,30).map(s=>`<div class="text-[10px] font-mono text-slate-500">${escapeHtml(s.merit)} ＝ ${escapeHtml(s.part)}</div>`).join('')}</div></details>`:''}
           </div>
         </div>
+        ${this.gateHTML()}
       </div>`;
   },
 

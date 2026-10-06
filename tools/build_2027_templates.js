@@ -16,6 +16,7 @@
 const fs=require('fs'),path=require('path');
 const root=path.resolve(__dirname,'..');
 const {LEVEL,TEMPLATES}=require('./schema/templates_2027.js');
+const FF=require('../js/51-field-format.js');
 
 const CHECK=process.argv.indexOf('--check')>=0;
 const colLetter=i=>{let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=(i-m-1)/26;}return s;};
@@ -36,6 +37,11 @@ TEMPLATES.forEach(t=>{
     if(!c.k||!c.label) problems.push(`${t.id} 有欄位冇 k 或 label`);
     if(ks.has(c.k)) problems.push(`${t.id} 欄位重複：${c.k}`); ks.add(c.k);
     if([LEVEL.BLOCK,LEVEL.BEST,LEVEL.AUTO].indexOf(c.level)<0) problems.push(`${t.id}.${c.k} 級別唔啱：${c.level}`);
+    if(c.format&&!FF.FIELD_FORMATS[c.format]) problems.push(`${t.id}.${c.k} 用咗未定義嘅格式：${c.format}`);
+    if(c.format&&c.eg!==''&&c.eg!=null){
+      const r=FF.ffCheck(c.format,c.eg);
+      if(r.state==='reject') problems.push(`${t.id}.${c.k} 嘅例子「${c.eg}」自己都唔合格：${r.why}`);
+    }
     // 鐵律一只針對【同一件事實】。欄名撞名唔算——「嘉賓姓名」同「職員姓名」係兩回事。
     // 要判定係同一件事實，schema 要明寫 fid（語意身分）。
     const home=t.id+'.'+c.k;
@@ -158,7 +164,13 @@ async function buildXlsx(t,filled){
     col.width=Math.min(44,Math.max(10,String(c.label).length*2.4+6));
     [1,2].forEach(r=>{ ws.getCell(r,i+1).fill={type:'pattern',pattern:'solid',fgColor:{argb:LEVEL_FILL[c.level]}};
       ws.getCell(r,i+1).alignment={vertical:'middle',horizontal:'center',wrapText:true}; });
-    ws.getCell(1,i+1).note=`${LEVEL_NOTE[c.level]}\n型別：${c.type}\n例：${c.eg===''?'(可留空)':c.eg}${c.note?'\n'+c.note:''}`;
+    const fp=c.format?FF.ffPrompt(c.format):null;
+    ws.getCell(1,i+1).note=`${LEVEL_NOTE[c.level]}\n型別：${c.type}\n例：${c.eg===''?'(可留空)':c.eg}${c.note?'\n'+c.note:''}${fp?'\n\n'+fp.text:''}`;
+    if(fp){
+      // 撳落格就彈出規矩 —— 人填嗰陣就睇到，唔使翻文件
+      for(let r=3;r<=500;r++) ws.getCell(r,i+1).dataValidation={
+        type:'any',allowBlank:true,showInputMessage:true,promptTitle:fp.title,prompt:fp.text};
+    }
   });
   if(filled) rowsFor(t).forEach(r=>ws.addRow(t.columns.map(c=>{
     const v=r[c.k];
@@ -180,11 +192,14 @@ async function buildXlsx(t,filled){
   put('規矩','',{bold:true});
   (t.rules||[]).forEach((r,i)=>put('　'+(i+1)+'.',r));
   gs.addRow([]);
-  const hdr=gs.addRow(['欄','欄名','級別','型別','例子','說明']);
+  const hdr=gs.addRow(['欄','欄名','級別','格式','例子','說明']);
   hdr.font={bold:true};
   gs.getColumn(2).width=18; gs.getColumn(3).width=8; gs.getColumn(4).width=8; gs.getColumn(5).width=28; gs.getColumn(6).width=52;
   t.columns.forEach((c,i)=>{
-    const r=gs.addRow([colLetter(i),c.label,c.level,c.type,String(c.eg===''?'(可留空)':c.eg).slice(0,40),c.note||'']);
+    const F=c.format?FF.FIELD_FORMATS[c.format]:null;
+    const r=gs.addRow([colLetter(i),c.label,c.level,F?F.canon:c.type,
+      String(c.eg===''?'(可留空)':c.eg).slice(0,40),
+      (F?F.rule+'　✓'+F.good.join('／')+'　✗'+F.bad.join('／')+(c.note?'　'+c.note:''):(c.note||''))]);
     r.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:LEVEL_FILL[c.level]}};
     r.getCell(6).alignment={wrapText:true};
   });
@@ -251,7 +266,9 @@ async function buildDocx(t,filled){
     levels:LEVEL,
     templates:TEMPLATES.map(t=>({id:t.id,file:t.file,kind:t.kind,title:t.title,owner:t.owner,
       target:t.target,key:t.key,feeds:t.feeds,churn:t.churn,rules:t.rules,
-      columns:t.columns.map((c,i)=>({col:colLetter(i),k:c.k,label:c.label,type:c.type,level:c.level,note:c.note||''}))}))
+      columns:t.columns.map((c,i)=>({col:colLetter(i),k:c.k,label:c.label,type:c.type,level:c.level,
+        format:c.format||'',canon:c.format?FF.FIELD_FORMATS[c.format].canon:'',
+        rule:c.format?FF.FIELD_FORMATS[c.format].rule:'',note:c.note||''}))}))
   };
   fs.writeFileSync(path.join(root,'data/template_contract_2027.json'),JSON.stringify(contract,null,2)+'\n');
 
@@ -287,9 +304,12 @@ async function buildDocx(t,filled){
     L.push('**規矩**\n');
     (t.rules||[]).forEach(r=>L.push('- '+r));
     L.push('');
-    L.push('| 欄 | 欄名 | 級別 | 型別 | 說明 |');
-    L.push('|---|---|---|---|---|');
-    t.columns.forEach((c,i)=>L.push(`| ${colLetter(i)} | ${c.label} | ${c.level} | ${c.type} | ${c.note||''} |`));
+    L.push('| 欄 | 欄名 | 級別 | 只准咁填 | ✗ 唔好咁填 | 說明 |');
+    L.push('|---|---|---|---|---|---|');
+    t.columns.forEach((c,i)=>{
+      const F=c.format?FF.FIELD_FORMATS[c.format]:null;
+      L.push(`| ${colLetter(i)} | ${c.label} | ${c.level} | ${F?'`'+F.canon+'`':c.type} | ${F?F.bad.join('、'):''} | ${c.note||''} |`);
+    });
     const cv=coverage[t.id];
     if(cv) L.push(`\n*2026 實際：${cv.rows} 行*\n`);
   });

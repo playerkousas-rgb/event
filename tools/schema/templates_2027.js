@@ -42,17 +42,17 @@ const TEMPLATES=[
   ],
   columns:[
     {k:'serial',          label:'編號',          type:'number', level:LEVEL.AUTO,  eg:1,            note:'程式自動排，唔好手改'},
-    {k:'name',            label:'姓名（連稱謂）', type:'text',   level:LEVEL.BLOCK, eg:'區永樑先生',  note:'唯一鍵。司儀稿、名牌、紀念章都認呢個'},
+    {k:'name',            label:'姓名（連稱謂）', type:'text',   level:LEVEL.BLOCK, format:'person', eg:'區永樑先生',  note:'唯一鍵。司儀稿、名牌、紀念章都認呢個'},
     {k:'title',           label:'職銜',          type:'text',   level:LEVEL.BLOCK, eg:'香港警務處港島總區指揮官', note:'可以多過一行，司儀會照讀'},
     {k:'section',         label:'界別',          type:'text',   level:LEVEL.BEST,  eg:'政府',        note:'政府／議員／友好團體／童軍'},
-    {k:'ceremony_part_1', label:'出席第一部分',   type:'bool',   level:LEVEL.BEST,  eg:'',           note:'優異旅團頒獎'},
-    {k:'ceremony_part_2', label:'出席第二部分',   type:'bool',   level:LEVEL.BEST,  eg:true,         note:'會操檢閱'},
-    {k:'guest_tea',       label:'出席午膳',       type:'bool',   level:LEVEL.BEST,  eg:true},
-    {k:'event_bus',       label:'坐大會車',       type:'bool',   level:LEVEL.BEST,  eg:'',           note:'影響嘉賓交通安排'},
-    {k:'car_plate',       label:'車牌',          type:'text',   level:LEVEL.BEST,  eg:'AM1334',     note:'要入警察學院就要有。放唔放行由警方決定'},
+    {k:'ceremony_part_1', label:'出席第一部分',   type:'bool',   level:LEVEL.BEST,  format:'yesno', eg:'',           note:'優異旅團頒獎'},
+    {k:'ceremony_part_2', label:'出席第二部分',   type:'bool',   level:LEVEL.BEST,  format:'yesno', eg:true,         note:'會操檢閱'},
+    {k:'guest_tea',       label:'出席午膳',       type:'bool',   level:LEVEL.BEST,  format:'yesno', eg:true},
+    {k:'event_bus',       label:'坐大會車',       type:'bool',   level:LEVEL.BEST,  format:'yesno', eg:'',           note:'影響嘉賓交通安排'},
+    {k:'car_plate',       label:'車牌',          type:'text',   level:LEVEL.BEST,  format:'plate', eg:'AM1334',     note:'要入警察學院就要有。放唔放行由警方決定'},
     {k:'column_1',        label:'典禮角色',       type:'text',   level:LEVEL.BEST,  eg:'頒獎'},
     {k:'note',            label:'備註',          type:'text',   level:LEVEL.BEST,  eg:'區Sir副官',   note:'換人、取消、特別安排寫喺度'},
-    {k:'checked_in',      label:'已報到',        type:'bool',   level:LEVEL.AUTO,  eg:'',           note:'活動日由 APP 點名，唔好手填'}
+    {k:'checked_in',      label:'已報到',        type:'bool',   level:LEVEL.AUTO,  format:'yesno', eg:'',           note:'活動日由 APP 點名，唔好手填'}
   ]
 },
 
@@ -76,8 +76,8 @@ const TEMPLATES=[
     {k:'group_name', label:'組別',     type:'text', level:LEVEL.BLOCK, eg:'協調組',   note:'要同「組別一覽」表一致'},
     {k:'level',      label:'層級',     type:'text', level:LEVEL.BEST,  eg:'副主席'},
     {k:'role_title', label:'職位',     type:'text', level:LEVEL.BLOCK, eg:'顧問'},
-    {k:'name',       label:'姓名',     type:'text', level:LEVEL.BEST,  eg:'黃偉安',   note:'空缺就留空，備註寫「待定」'},
-    {k:'contact',    label:'電話',     type:'phone',level:LEVEL.BEST,  eg:'92157472', note:'8 位數字。錯咗就登入唔到 APP'},
+    {k:'name',       label:'姓名',     type:'text', level:LEVEL.BEST,  format:'person', eg:'黃偉安',   note:'空缺就留空，備註寫「待定」'},
+    {k:'contact',    label:'電話',     type:'phone',level:LEVEL.BEST,  format:'phone', eg:'92157472', note:'8 位數字。錯咗就登入唔到 APP'},
     {k:'email',      label:'電郵',     type:'text', level:LEVEL.BEST,  eg:'a@b.com'},
     {k:'job_desc',   label:'職務描述', type:'text', level:LEVEL.BEST,  eg:'統籌物資、車輛、膳食及場地佈置'},
     {k:'note',       label:'備註',     type:'text', level:LEVEL.BEST,  eg:'待定'}
@@ -101,16 +101,16 @@ const TEMPLATES=[
     '請外間團體（例如警察、消防）擺嘅攤位，交唔到人名係正常，填「待定」就得。'
   ],
   columns:[
-    {k:'booth_no',   label:'攤位編號',   type:'text',  level:LEVEL.BLOCK, eg:'A01', note:'唯一鍵。場地圖同遊戲卡認呢個'},
+    {k:'booth_no',   label:'攤位編號',   type:'text',  level:LEVEL.BLOCK, format:'booth', eg:'A01', note:'唯一鍵。場地圖同遊戲卡認呢個'},
     {k:'zone',       label:'區',        type:'text',  level:LEVEL.AUTO,  eg:'A',   note:'由攤位編號第一個字自動取'},
     {k:'booth_name', label:'攤位名稱',   type:'text',  level:LEVEL.BLOCK, eg:'主節目組總部'},
     {k:'group_name', label:'負責單位',   type:'text',  level:LEVEL.BLOCK, eg:'主題節目組總部'},
     {k:'theme',      label:'主題',      type:'text',  level:LEVEL.BEST,  eg:'積極公民實踐'},
     {k:'content',    label:'活動內容',   type:'text',  level:LEVEL.BEST,  eg:'攤位遊戲'},
     {k:'contact',    label:'聯絡人及電話',type:'text', level:LEVEL.BEST,  eg:'CHOW Hang-chun 6471 9696', note:'外間團體交唔到就寫「待定」'},
-    {k:'staff_count',label:'人手',      type:'number',level:LEVEL.BEST,  eg:7},
-    {k:'lunch',      label:'午膳數',     type:'number',level:LEVEL.BEST,  eg:7,     note:'影響代訂餐盒'},
-    {k:'confirmed',  label:'已確認',    type:'bool',  level:LEVEL.BEST,  eg:'Y'}
+    {k:'staff_count',label:'人手',      type:'number',level:LEVEL.BEST,  format:'count', eg:7},
+    {k:'lunch',      label:'午膳數',     type:'number',level:LEVEL.BEST,  format:'count', eg:7,     note:'影響代訂餐盒'},
+    {k:'confirmed',  label:'已確認',    type:'bool',  level:LEVEL.BEST,  format:'yesno', eg:'Y'}
   ]
 },
 
@@ -126,11 +126,12 @@ const TEMPLATES=[
   churn:'呢張表一經總部公佈就唔應該改。如果真係要改，喺備註寫明原因——2026 就係靠呢個查返邊個團次漏咗。',
   rules:[
     '一行一個「團次」：同一旅唔同支部要分開行，因為獎座係逐個支部派。',
-    '旅名要寫全（港島第六旅），唔好簡寫，唱名會照讀。'
+    '旅名只准填阿拉伯數字：港島第6旅。唔准填「港島第六旅」或者淨係「6」——2026 就係兩張表各有各寫法。',
+    '唱名要中文數字係司儀嘅事，系統會自動轉，唔使你喺度填中文。'
   ],
   columns:[
     {k:'area',    label:'區',   type:'text', level:LEVEL.BLOCK, eg:'CHW 柴灣區', ref:'external:區名'},
-    {k:'unit',    label:'旅名', type:'text', level:LEVEL.BLOCK, eg:'港島第六旅', ref:'external:旅團名冊', note:'同「支部」一齊做唯一鍵。寫法要同參加旅團表一致'},
+    {k:'unit',    label:'旅名', type:'text', level:LEVEL.BLOCK, format:'troop', eg:'港島第6旅', ref:'external:旅團名冊', note:'同「支部」一齊做唯一鍵。寫法要同參加旅團表一致'},
     {k:'section', label:'支部', type:'text', level:LEVEL.BLOCK, eg:'小童軍團',   note:'獎座逐個支部派'},
     {k:'note',    label:'備註', type:'text', level:LEVEL.BEST,  eg:''}
   ]
@@ -152,11 +153,11 @@ const TEMPLATES=[
   ],
   columns:[
     {k:'seq',      label:'序號',   type:'number', level:LEVEL.AUTO,  eg:1},
-    {k:'unit',     label:'旅名',   type:'text',   level:LEVEL.BLOCK, eg:'港島第175旅', ref:'external:旅團名冊', note:'唯一鍵。寫法要同優異旅團表一致'},
+    {k:'unit',     label:'旅名',   type:'text',   level:LEVEL.BLOCK, format:'troop', eg:'港島第175旅', ref:'external:旅團名冊', note:'唯一鍵。寫法要同優異旅團表一致'},
     {k:'area',     label:'區',     type:'text',   level:LEVEL.BLOCK, eg:'HKN 港島北區', ref:'external:區名'},
-    {k:'headcount',label:'人數',   type:'number', level:LEVEL.BEST,  eg:28, note:'當日以點名為準'},
-    {k:'mealbox',  label:'代訂餐盒',type:'number', level:LEVEL.BEST,  eg:0},
-    {k:'leader',   label:'領隊',   type:'text',   level:LEVEL.BEST,  eg:'朱耀文'}
+    {k:'headcount',label:'人數',   type:'number', level:LEVEL.BEST,  format:'count', eg:28, note:'當日以點名為準'},
+    {k:'mealbox',  label:'代訂餐盒',type:'number', level:LEVEL.BEST,  format:'count', eg:0},
+    {k:'leader',   label:'領隊',   type:'text',   level:LEVEL.BEST,  format:'person', eg:'朱耀文'}
   ]
 },
 
@@ -180,7 +181,7 @@ const TEMPLATES=[
     {k:'part',      label:'部分',    type:'text', level:LEVEL.BLOCK, eg:'第一部分'},
     {k:'title',     label:'標題',    type:'text', level:LEVEL.BLOCK, eg:'優異旅團及各項獎勵頒獎典禮 司儀稿'},
     {k:'version',   label:'版本',    type:'text', level:LEVEL.BLOCK, eg:'V5'},
-    {k:'updated_at',label:'更新日期', type:'date', level:LEVEL.BLOCK, eg:'2026-10-02', note:'APP 靠呢個判斷邊份最新'},
+    {k:'updated_at',label:'更新日期', type:'date', level:LEVEL.BLOCK, format:'date', eg:'2027-10-02', note:'APP 靠呢個判斷邊份最新'},
     {k:'mc',        label:'司儀',    type:'text', level:LEVEL.BEST,  eg:'林汶珊小姐（女）／林卓衡先生（男）'},
     {k:'note',      label:'重點提示', type:'text', level:LEVEL.BEST,  eg:'1045 宣佈就座｜1055 嘉賓進場'},
     {k:'content',   label:'正文',    type:'long', level:LEVEL.BLOCK, eg:'（全文）', note:'直接打字，唔好貼圖'}
