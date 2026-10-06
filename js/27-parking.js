@@ -14,6 +14,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveParkingData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveParkingData')) return false;
     const key=LS.parking(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key,JSON.stringify(data));
     if(!this.mockMode && this.gasUrl){

@@ -67,7 +67,7 @@ vm.runInContext(core, context);
 const App = context.TestApp;
 const app = Object.create(App.prototype);
 Object.assign(app, {
-  currentEvent: { event_id: 'isd_2026', event_name: '2026 港島童軍繽紛日', news: '活動如期舉行，敬請留意最新消息。' },
+  currentEvent: { event_id: 'mock_demo', event_name: '模擬示範版', news: '活動如期舉行，敬請留意最新消息。' },
   currentUser: null, eventsList: [], eventData: {}, usersList: [],
   gasUrl: 'https://example.com/exec', apiKey: 'k', systemConfig: {}, _catSel: {}
 });
@@ -118,15 +118,15 @@ app.currentEvent = savedEvent;
 (async () => {
   makeEl('news-input').value = '  比賽改期至 11 月 8 日，詳情稍後公佈。  ';
   app.currentUser = U('staff', '秘書處');
-  app.eventsList = [{ event_id: 'isd_2026', event_name: '2026 港島童軍繽紛日', news: '' }];
+  app.eventsList = [{ event_id: 'mock_demo', event_name: '模擬示範版', news: '' }];
   await app.saveEventNews();
   ok(app.currentEvent.news === '比賽改期至 11 月 8 日，詳情稍後公佈。', '③ 儲存後活動物件即時更新（自動去頭尾空白）');
   ok(app.currentEvent.news_updated_by === '測試' && !!app.currentEvent.news_updated_at, '③ 記低更新人／時間');
   ok(text.textContent.includes('比賽改期'), '③ 橫幅即時顯示新消息');
   const req = posted.find(p => p.action === 'saveEventNews');
-  ok(!!req && req.event_id === 'isd_2026' && req.news === '比賽改期至 11 月 8 日，詳情稍後公佈。' && req.updated_by === '測試',
+  ok(!!req && req.event_id === 'mock_demo' && req.news === '比賽改期至 11 月 8 日，詳情稍後公佈。' && req.updated_by === '測試',
     '③ 有 POST saveEventNews 去後端（唔使再改 GitHub JSON）');
-  const override = JSON.parse(localStorage.getItem('event_news_override_v1_isd_2026'));
+  const override = JSON.parse(localStorage.getItem('event_news_override_v1_mock_demo'));
   ok(override && override.news === '比賽改期至 11 月 8 日，詳情稍後公佈。', '③ 本機 override 已寫入（後端未讀返都即時生效）');
 
   // 無權限者唔可以儲存

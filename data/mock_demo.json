@@ -2626,7 +2626,7 @@
         "job_desc": "統籌會操流程、步操比賽後備日及頒獎典禮。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "王明灝",
@@ -2637,7 +2637,7 @@
         "job_desc": "統籌會操流程、步操比賽後備日及頒獎典禮。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "馬旌愷",
@@ -2648,7 +2648,7 @@
         "job_desc": "統籌會操流程、步操比賽後備日及頒獎典禮。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "吳冠達",
@@ -2659,7 +2659,7 @@
         "job_desc": "統籌會操流程、步操比賽後備日及頒獎典禮。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "馮玉成",
@@ -2670,7 +2670,7 @@
         "job_desc": "統籌會操流程、步操比賽後備日及頒獎典禮。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "范紫晴",
@@ -2681,7 +2681,7 @@
         "job_desc": "統籌典禮司儀稿及司儀安排。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "林文珊",
@@ -2692,7 +2692,7 @@
         "job_desc": "統籌典禮司儀稿及司儀安排。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "陳鈞翰",
@@ -2703,7 +2703,7 @@
         "job_desc": "統籌宣傳海報、場刊設計、社交媒體與活動攝錄。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "林耀鏘",
@@ -2714,7 +2714,7 @@
         "job_desc": "統籌宣傳海報、場刊設計、社交媒體與活動攝錄。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "陳銘彥",
@@ -2725,7 +2725,7 @@
         "job_desc": "統籌財務、保險、文件及人數統計。",
         "contact_placeholder": true,
         "contact_note": "2026 聯絡表未提供，示範佔位號碼",
-        "source": "placeholder"
+        "source": "mock_demo(舊)"
       },
       {
         "name": "蘇艷玲",
@@ -10538,16 +10538,13 @@
           "icon": "🦺",
           "name": "普通工作人員",
           "badge": "只需活動密碼",
-          "desc": "冇帳戶都用得：打一次 4 位活動密碼，即可查看工作人員公開資料。",
+          "desc": "冇帳戶都用得：打一次 4 位活動密碼，只可查閱已完結的 2026 公開執行手冊參考資料。",
           "cta": "打密碼入 →",
           "can": [
-            "公告及溝通（最新消息・通知）",
-            "執行手冊（全部分頁・唯讀）",
-            "申請中心（睇得・交得表）",
-            "童心捐贈",
-            "公眾頻道 2027（示範）"
+            "2026 公開執行手冊（全部分頁・唯讀）"
           ],
           "cannot": [
+            "2027 公眾頻道／公告／申請中心／捐贈",
             "部門中心（各組成員／統計／文件）",
             "工作卡片（會議・物資・財務・膳食…）",
             "批核中心",
@@ -25521,8 +25518,9 @@
   },
   "mock_fill_source": {
     "from": "data/isd_2026.json",
+    "reference_sha256": "d7dcd05521c01e7925851d74f5a87321c38e0ddadbbd921bb5ea41fe2c2ce037",
     "tool": "tools/fill_mock_demo_from_2026.js",
-    "filled_at": "2026-10-05",
+    "filled_at": "2026-10-06",
     "policy": "REPLACE＝2026 權威資料覆蓋；MERGE＝以 2026 為底保留示範版獨有欄位；KEEP＝2026 為空時保留示範流程",
     "note": "示範版唔好手改 JSON：改 tool 再 node tools/fill_mock_demo_from_2026.js && node tools/build_pc2027_demo.js"
   },

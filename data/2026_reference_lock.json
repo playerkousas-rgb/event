@@ -1,0 +1,18 @@
+{
+  "reference_event_id": "isd_2026",
+  "reference_file": "data/isd_2026.json",
+  "sha256": "d7dcd05521c01e7925851d74f5a87321c38e0ddadbbd921bb5ea41fe2c2ce037",
+  "locked_on": "2026-10-06",
+  "status": "archived_read_only",
+  "allowed_use": [
+    "read-only public reference in the staff execution manual",
+    "read-only input to the MOCK 2027 generator",
+    "read-only input to 2027 template generation through data/mock_demo.json"
+  ],
+  "prohibited": [
+    "manual edits to data/isd_2026.json",
+    "legacy rebuilds that write data/isd_2026.json",
+    "Google Sheet imports or application save operations for isd_2026"
+  ],
+  "recovery_rule": "A change requires an authorised source recovery, explicit --confirm-2026-archive-write acknowledgement, and an intentional update to this checksum manifest. It must never be part of normal 2027 preparation."
+}

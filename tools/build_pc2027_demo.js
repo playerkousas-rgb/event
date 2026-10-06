@@ -8,8 +8,9 @@
    用法：node tools/build_pc2027_demo.js
 */
 const fs = require('fs'), path = require('path');
+const {readReferenceArchive}=require('./reference_archive.js');
 const root = path.join(__dirname, '..');
-const d26 = JSON.parse(fs.readFileSync(path.join(root, 'data/isd_2026.json'), 'utf8'));
+const {data:d26}=readReferenceArchive(root);
 const mock = JSON.parse(fs.readFileSync(path.join(root, 'data/mock_demo.json'), 'utf8'));
 
 /* ── 由 2026 JSON 抽取（公眾版：剝離聯絡電話／電郵） ── */
@@ -151,10 +152,10 @@ const pc = {
     lanes: [
       {
         id: 'staff', icon: '🦺', name: '普通工作人員', badge: '只需活動密碼',
-        desc: '冇帳戶都用得：打一次 4 位活動密碼，即可查看工作人員公開資料。',
+        desc: '冇帳戶都用得：打一次 4 位活動密碼，只可查閱已完結的 2026 公開執行手冊參考資料。',
         cta: '打密碼入 →',
-        can: ['公告及溝通（最新消息・通知）', '執行手冊（全部分頁・唯讀）', '申請中心（睇得・交得表）', '童心捐贈', '公眾頻道 2027（示範）'],
-        cannot: ['部門中心（各組成員／統計／文件）', '工作卡片（會議・物資・財務・膳食…）', '批核中心', '管理工具（開戶／權限／用戶管理）', '嘉賓名單及個人聯絡資料']
+        can: ['2026 公開執行手冊（全部分頁・唯讀）'],
+        cannot: ['2027 公眾頻道／公告／申請中心／捐贈', '部門中心（各組成員／統計／文件）', '工作卡片（會議・物資・財務・膳食…）', '批核中心', '管理工具（開戶／權限／用戶管理）', '嘉賓名單及個人聯絡資料']
       },
       {
         id: 'committee', icon: '🎖️', name: '籌委／職員（有帳戶）', badge: '帳號＋密碼',

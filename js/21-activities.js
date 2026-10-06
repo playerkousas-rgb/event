@@ -44,6 +44,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveActivitiesData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveActivitiesData')) return false;
     if(this.isDataFrozen&&this.isDataFrozen()) return;
     const key=LS.activities(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
@@ -907,7 +908,8 @@ Object.assign(ScoutEventApp.prototype,{
     return [];
   }
 ,
-  saveScheduleData(data){ localStorage.setItem(LS.schedule(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['schedule']=data||[];
+  saveScheduleData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveScheduleData')) return false; localStorage.setItem(LS.schedule(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['schedule']=data||[];
     // 同步到後端（GAS）
     if(!this.mockMode && this.gasUrl){
       fetch(this.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveRecord',api_key:this.apiKey,module:'Schedule',record:{event_id:this.currentEvent?.event_id||'isd_2026',data_json:JSON.stringify(data||[]),updated_by:this.currentUser?.name||''}})}).catch(()=>{});
@@ -969,7 +971,8 @@ Object.assign(ScoutEventApp.prototype,{
     return [];
   }
 ,
-  saveParticipantsData(data){ if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
+  saveParticipantsData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveParticipantsData')) return false; if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.participants(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data||[])); this.eventData['participants']=data||[]; }
 ,
   participantHeaderMap(){ return { unit_name:['旅團','旅團名稱','單位','unit','unit_name','group','名稱'], section:['支部','section','支部名稱','組別'], headcount:['人數','headcount','count','參加人數'], notes:['備註','notes','說明','remark'], area:['區會','區','所屬區會','area','District'], leader:['領隊','旅長','負責人','领袖','leader','unit_leader'] }; }
 ,
@@ -1229,6 +1232,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveDocumentsData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveDocumentsData')) return false;
     const normalized={docs:(data.docs||[])};
     localStorage.setItem(LS.documents(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(normalized));
     this.eventData['documents']=normalized.docs;
@@ -1455,6 +1459,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveThemeBadgesData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveThemeBadgesData')) return false;
     const normalized={badges:data.badges||[]};
     localStorage.setItem(LS.theme_badges(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(normalized));
     this.eventData['theme_badges']=normalized.badges;

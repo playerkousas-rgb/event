@@ -8,9 +8,10 @@
         node tools/check_mock_demo_coverage.js --md     （輸出 Markdown 表，寫文件用）
 */
 const fs = require('fs'), path = require('path');
+const {readReferenceArchive}=require('./reference_archive.js');
 const root = path.join(__dirname, '..');
 const mk = JSON.parse(fs.readFileSync(path.join(root, 'data/mock_demo.json'), 'utf8'));
-const d26 = JSON.parse(fs.readFileSync(path.join(root, 'data/isd_2026.json'), 'utf8'));
+const {data:d26}=readReferenceArchive(root);
 const MD = process.argv.includes('--md');
 
 const get = (o, p) => p.split('.').reduce((a, k) => (a == null ? a : a[k]), o);

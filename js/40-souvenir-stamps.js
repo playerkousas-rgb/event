@@ -22,6 +22,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveSouvenirStampData(data, changed){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveSouvenirStampData')) return false;
     const key=LS.souvenirStamps(this.currentEvent?.event_id||'isd_2026');
     const toSave={
       staff:data.staff||{},

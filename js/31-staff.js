@@ -131,6 +131,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveStaffData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveStaffData')) return false;
     if(this.isDataFrozen&&this.isDataFrozen()) return;
     const key=LS.staff(this.currentEvent?.event_id||'isd_2026');
     // v8.2：正式活動中把即將寫入 localStorage 的項目全部打上 _userEdited，

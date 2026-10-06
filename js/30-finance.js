@@ -47,6 +47,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveFinanceData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveFinanceData')) return false;
     const eid=this.currentEvent?.event_id||'isd_2026';
     const key=LS.finance?LS.finance(eid):`event_finance_v6_${eid}`;
     localStorage.setItem(key, JSON.stringify(data));

@@ -12,6 +12,7 @@ Object.assign(ScoutEventApp.prototype, {
   // 邊個可以改「最新消息」：執行副主席以上 ＋ 秘書處（與「發送會議提醒」同一批人）
   // 執行副主席以上＝系統管理員／管理員／顧問／主席／執行副主席；秘書處＝ group_name 為「秘書處」
   canEditEventNews(){
+    if(this.isDataFrozen&&this.isDataFrozen()) return false;
     if(!this.currentUser) return false;
     if(this.currentUser.mock_admin) return true;
     const role=this.currentUser.role||'';
@@ -103,6 +104,7 @@ Object.assign(ScoutEventApp.prototype, {
   }
 ,
   async saveEventNews(e){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveEventNews')) return false;
     if(e&&e.preventDefault) e.preventDefault();
     if(!this.currentEvent){ showToast('請先選擇活動','warning'); return; }
     if(!this.canEditEventNews()){ showToast('只有執行副主席以上或秘書處可以修改最新消息','error'); return; }

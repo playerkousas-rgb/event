@@ -473,14 +473,19 @@ app.currentUser = null;
   ok(/staff_pin[\s\S]{0,500}要籌委帳戶/.test(grab('openModule')), '⑱ openModule：非公開模組擋住普通工作人員');
   ok(/grpSec[\s\S]{0,120}staff_pin/.test(coreSrc), '⑱ 部門管理中心區塊對普通工作人員隱藏');
   ok(/user\.staff_pin[\s\S]{0,140}heroMon/.test(grab('renderIdentityBar')), '⑱ 普通工作人員冇「我的監察」');
-  // 實際用卡片定義行一次：模擬 canSeeRoleCard 嘅 staff_pin 規則
-  const pinVisible = defs.filter(d => d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || pc));
-  ok(pinVisible.some(d => d.id === 'exec_manual') && pinVisible.some(d => d.id === 'announcements'), '⑱ 公開資料含執行手冊／公告');
-  ok(!pinVisible.some(d => String(d.id).startsWith('group_')) && !pinVisible.some(d => d.id === 'dept_hub'), '⑱ 公開資料唔含部門卡');
+  // 普通工作人員不是「所有 minLevel 0 公開卡」：只讀 2026 參考執行手冊，避免誤開 2027 示範／進行中資料。
+  const pinScopeMatch = cfgSrc.match(/const PIN_STAFF_REFERENCE_CARD_IDS=\[([^\]]+)\];/);
+  const pinAllowed = pinScopeMatch ? [...pinScopeMatch[1].matchAll(/'([^']+)'/g)].map(m => m[1]) : [];
+  const pinVisible = defs.filter(d => pinAllowed.includes(d.id) && d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || pc));
+  ok(pinAllowed.length === 1 && pinAllowed[0] === 'exec_manual', '⑱ 普通工作人員白名單只有 exec_manual');
+  ok(pinVisible.length === 1 && pinVisible[0].id === 'exec_manual', '⑱ 普通工作人員只見執行手冊，不見公告／申請／2027 公眾頻道');
+  ok(/PIN_STAFF_REFERENCE_CARD_IDS/.test(cardsSrc) && /pinStaffReferenceDefs/.test(cardsSrc), '⑱ 儀表板以普通工作人員白名單取卡');
+  ok(/PIN_STAFF_REFERENCE_CARD_IDS/.test(grab('openModule')), '⑱ openModule：只能由白名單開啟執行手冊');
   const sg = app.pcStaffGateDef();
   ok(sg.lanes.length === 2 && sg.lanes[0].id === 'staff' && sg.lanes[1].id === 'committee', '⑱ staff_gate 資料：兩條路');
   ok(sg.pin_user && sg.pin_user.role === 'staff', '⑱ staff_gate 資料：PIN 身份＝staff');
-  ok((sg.lanes[0].cannot || []).some(x => x.includes('部門中心')), '⑱ 文案：普通工作人員明寫冇部門中心');
+  ok((sg.lanes[0].can || []).length === 1 && sg.lanes[0].can[0].includes('2026 公開執行手冊'), '⑱ 文案：普通工作人員只獲 2026 唯讀執行手冊');
+  ok((sg.lanes[0].cannot || []).some(x => x.includes('2027 公眾頻道')) && (sg.lanes[0].cannot || []).some(x => x.includes('部門中心')), '⑱ 文案：普通工作人員明寫冇 2027 進行中資料／部門中心');
   ok((sg.lanes[1].can || []).some(x => x.includes('部門中心')), '⑱ 文案：籌委明寫有部門中心');
 }
 

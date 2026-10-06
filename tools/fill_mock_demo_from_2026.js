@@ -15,11 +15,11 @@
      node tools/check_mock_demo_coverage.js     ← 最後睇完成度報告
 */
 const fs = require('fs'), path = require('path');
+const {readReferenceArchive}=require('./reference_archive.js');
 const root = path.join(__dirname, '..');
-const P26 = path.join(root, 'data/isd_2026.json');
 const PMK = path.join(root, 'data/mock_demo.json');
 
-const d26 = JSON.parse(fs.readFileSync(P26, 'utf8'));
+const {data:d26,lock:referenceLock}=readReferenceArchive(root);
 const mock = JSON.parse(fs.readFileSync(PMK, 'utf8'));
 const clone = v => JSON.parse(JSON.stringify(v));
 const n = v => Array.isArray(v) ? v.length : (v && typeof v === 'object' ? Object.keys(v).length : (v == null ? 0 : 1));
@@ -283,6 +283,7 @@ mock.description = '模擬示範版本：底層資料已用 2026 港島童軍繽
 mock.data_version = new Date().toISOString().slice(0, 19) + 'Z-demo-v5-filled-from-2026';
 mock.mock_fill_source = {
   from: 'data/isd_2026.json',
+  reference_sha256: referenceLock.sha256,
   tool: 'tools/fill_mock_demo_from_2026.js',
   filled_at: new Date().toISOString().slice(0, 10),
   policy: 'REPLACE＝2026 權威資料覆蓋；MERGE＝以 2026 為底保留示範版獨有欄位；KEEP＝2026 為空時保留示範流程',

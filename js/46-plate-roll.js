@@ -30,6 +30,7 @@ Object.assign(ScoutEventApp.prototype,{
     return {extra:[], arrived:{}, submitted:null, notes:{}};
   },
   savePlateData(d){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('savePlateData')) return false;
     try{ localStorage.setItem(this.plateStoreKey(), JSON.stringify(d||{})); }catch(e){}
     if(!this.mockMode && this.gasUrl){
       try{

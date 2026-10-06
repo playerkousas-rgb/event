@@ -126,6 +126,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveSuppliesData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveSuppliesData')) return false;
     const key=LS.supplies(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
     this.eventData['supplies']={inventory:data.inventory, requests:data.requests, booth_requests:data.booth_requests||[], vehicle_passes:data.vehicle_passes||[]};

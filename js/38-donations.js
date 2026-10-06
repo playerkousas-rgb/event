@@ -8,6 +8,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveDonationsData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveDonationsData')) return false;
     const key=LS.config(this.currentEvent?.event_id||'isd_2026')+'_donations';
     localStorage.setItem(key,JSON.stringify(data));
     // 同步到後端（GAS）

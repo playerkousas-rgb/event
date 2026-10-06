@@ -175,6 +175,9 @@ const PERM_CARDS=[
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
 const PUBLIC_CARD_ORDER=['public_channel_demo','announcements','exec_manual','apply_hub','donations'];
+// 普通工作人員只取用已完結活動的公開參考資料：唯一入口為唯讀「執行手冊」。
+// 這個清單獨立於訪客／籌委的公開卡片，避免把 2027 示範或進行中資料誤開放。
+const PIN_STAFF_REFERENCE_CARD_IDS=['exec_manual'];
 const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secretariat','group_ceremony','group_theme','group_brand','group_reception','coordinator_group','group_service','admin_group']);
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }

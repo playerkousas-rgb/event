@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # build_staff2026.py — 由 ISD2026 staff list ver2 (FROZEN).xlsx 重建工作人員派章/膳食/點名資料 + 3 份通告
-import json, re
+import json, re, sys
+
+if '--confirm-2026-archive-write' not in sys.argv:
+    raise SystemExit('STOP: data/isd_2026.json is an archived reference. This legacy builder is disabled. Do not run it; use the 2027 generators. An authorised recovery requires --confirm-2026-archive-write.')
 
 DUMP = 'google_drive/stafflist_dump.json'
 OUT  = 'data/isd_2026.json'

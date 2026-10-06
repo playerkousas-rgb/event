@@ -41,11 +41,14 @@ Object.assign(ScoutEventApp.prototype,{
       role:(u.user_id==='exec_vp'||(u.job_title||'').includes('執行副主席'))?'executive_vice_chairperson':u.role
     }));
     list=migrateUsersToChineseLogin(list);
-    try{ localStorage.setItem(key,JSON.stringify(list)); }catch(e){}
+    // 讀取 2026 參考檔時可正規化畫面上的帳戶資料，但不可把遷移結果回寫成新的本機版本。
+    if(!(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('finalizeUserList',true))){
+      try{ localStorage.setItem(key,JSON.stringify(list)); }catch(e){}
+    }
     return list;
   }
 ,
-  setLocalUsers(l){const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
+  setLocalUsers(l){ if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('setLocalUsers')) return false; const key=LS.users(this.currentEvent?.event_id||'isd_2026'); localStorage.setItem(key,JSON.stringify(l));}
 ,
   canManageUsersPage(){ return this.roleLevel(this.currentUser?.role)>=30 || this.isSuperAdmin(); }
 ,

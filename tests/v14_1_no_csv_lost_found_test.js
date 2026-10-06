@@ -97,7 +97,7 @@ vm.runInContext(bundle, context);
 const App = context.TestApp;
 function mkApp(user) {
   const app = Object.create(App.prototype);
-  Object.assign(app, { currentEvent: { event_id: 'isd_2026', event_name: '港島童軍繽紛日2026', start_date: '2026-10-04' }, currentUser: user, eventData: { participants: [] }, usersList: [], approvalPerms: [], gasUrl: '', apiKey: '', pendingChanges: [], meetingsCache: [], tempFiles: {}, systemConfig: {} });
+  Object.assign(app, { currentEvent: { event_id: 'mock_demo', event_name: '港島童軍繽紛日2026', start_date: '2026-10-04' }, currentUser: user, eventData: { participants: [] }, usersList: [], approvalPerms: [], gasUrl: '', apiKey: '', pendingChanges: [], meetingsCache: [], tempFiles: {}, systemConfig: {} });
   app.isDemoEvent = () => false;
   return app;
 }

@@ -22,7 +22,8 @@ Object.assign(ScoutEventApp.prototype,{
     return {rows:{},ticks:{},meta:{},confirmed:{}};
   },
 
-  saveRosterData(d){ localStorage.setItem(this.rosterStoreKey(), JSON.stringify(d||{})); },
+  saveRosterData(d){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveRosterData')) return false; localStorage.setItem(this.rosterStoreKey(), JSON.stringify(d||{})); },
 
   // 行 key＝內容欄位（match_fields）：重新匯入、由不同入口（執行手冊／部門中心）入去，都对得返同一個 TICK
   rosterRowKey(def,row){

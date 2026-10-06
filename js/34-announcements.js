@@ -17,6 +17,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveAnnouncementsData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveAnnouncementsData')) return false;
     const key=LS.announcements(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
     this.eventData['announcements']=data;
@@ -197,7 +198,8 @@ Object.assign(ScoutEventApp.prototype,{
     ]};
   }
 ,
-  saveUnitGuideData(data){ localStorage.setItem(LS.unit_guide(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); }
+  saveUnitGuideData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveUnitGuideData')) return false; localStorage.setItem(LS.unit_guide(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); }
 ,
   renderUnitGuideModule(c){
     const container=c||this._unitGuideContainer||document.getElementById('module-content');
