@@ -102,3 +102,9 @@ node tools/export_2027_drive_sources.js
 3. Every 2027 write needs `updated_by`, `updated_at`, source domain and an audit entry. A failed build must retain the previous verified publication.
 4. Before public release, confirm reference-seed records for the relevant scope and apply the role visibility matrix.
 5. 2026 is retained only for traceable historical provenance. It is never mutated by this flow.
+
+## 執行手冊資料關連及缺口審核
+
+執行手冊的資料關連不是另一份由組別各自維護的副本。`source_of_truth.execution_manual_data_register` 把程序、場地／攤位／遊戲、報到、後勤、各組職責、安全及文件目錄對應到唯一的 2027 canonical domain 與共同負責組別；`execution_manual_gap_register` 則保留每一份尚未有 2027-owned 檔案的文件處置（`keep`／`replace`／`retire`）隊列。
+
+完整審核可在 [`2027_EXECUTION_MANUAL_SOURCE_AUDIT.md`](2027_EXECUTION_MANUAL_SOURCE_AUDIT.md) 及 ISD 2027／`07_參考快照（唯讀）` 的同名 2027-owned 檔案查閱。它只審核一次性複製的 2026 歷史輸入，絕不改寫 2026 archive。

@@ -203,6 +203,11 @@ const staffGuidance=list(event.unit_guide&&event.unit_guide.docs).map(row=>({
 const crisisDocs=list(event.crisis&&event.crisis.docs).map(row=>({
   title:row.title||'', category:row.category||'', description:row.description||''
 }));
+const documentCatalogRecords=docs.map(row=>({
+  id:row.id||'', title:row.title||'', category:row.category||row.folder||'其他活動文件',
+  status:(row.file_url||row.drive_file_id||row.drive_file_link)?'2027_owned_file_linked':'metadata_copied_file_pending',
+  note:'2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register.'
+}));
 
 /* This index is the worker-facing table of contents.  It deliberately contains
  * operational material for every worker; only personally identifying or
@@ -265,7 +270,7 @@ event.execution_manual_2027={
     ...list(event.ceremony&&event.ceremony.mc_scripts).map(row=>({id:row.id,title:row.title,category:'典禮及司儀',description:row.note||'',file_url:row.file_url,drive_file_id:row.drive_file_id||'',drive_file_link:row.drive_file_link||'',tab:'mc_scripts'}))
   ],
   group_playbook:publicGroupDuties,
-  document_catalog:{total:docs.length, by_category:documentsByCategory, notices:count(event.notices), unit_guides:count(event.unit_guide&&event.unit_guide.docs), staff_guidance:staffGuidance.length},
+  document_catalog:{total:docs.length, by_category:documentsByCategory, notices:count(event.notices), unit_guides:count(event.unit_guide&&event.unit_guide.docs), staff_guidance:staffGuidance.length, records:documentCatalogRecords},
   completion_checklist:[
     '確認全部活動日文件均已有 2027 擁有的檔案／連結。',
     '由各總主任確認所屬組別崗位、集合位置、交接及聯絡安排。',

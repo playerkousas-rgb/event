@@ -25769,6 +25769,900 @@
       "canonical_record": "execution_manual_2027 in ISD 2027 活動主資料",
       "staff_output": "MOCK / 2027 工作人員執行手冊",
       "update_rule": "先更新 ISD 2027 受控來源，再重建 read model、MOCK 和前端輸出；不得為各組建立平行版本。"
+    },
+    "execution_manual_data_register": {
+      "schema_version": "2027-execution-manual-data-register-v1",
+      "status": "audit_in_progress",
+      "purpose": "理順各組資料關連、唯一來源及 2026→2027 一次性複製範圍；這不是工作人員導覽規則。",
+      "reference_rule": "2026 只作 immutable historical input；每個 copied record 均為 2027 reference seed，日後只在 2027 canonical domain 更新。",
+      "audit_artifact": {
+        "file_name": "ISD 2027－執行手冊資料來源及缺口審核.md",
+        "drive_file_id": "123ZRQkueRRdaUIUHEONSJJWQwwstnYAw",
+        "drive_file_link": "https://drive.google.com/file/d/123ZRQkueRRdaUIUHEONSJJWQwwstnYAw/view",
+        "folder_key": "reference_snapshot",
+        "status": "2027_owned_audit_artifact"
+      },
+      "streams": [
+        {
+          "id": "programme",
+          "title": "程序、典禮及會操",
+          "owners": [
+            "行政組",
+            "會操及典禮組"
+          ],
+          "canonical_2027_domain": "programme",
+          "manual_categories": [
+            "programme",
+            "ceremony",
+            "mc_scripts"
+          ],
+          "source_paths": [
+            "schedule",
+            "ceremony.mc_scripts"
+          ],
+          "reference_2026_counts": {
+            "schedule": 6,
+            "ceremony.mc_scripts": 3
+          },
+          "copied_2027_counts": {
+            "schedule": 6,
+            "ceremony.mc_scripts": 3
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "shared_non_private_activity_data",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        },
+        {
+          "id": "venue",
+          "title": "場地、攤位、遊戲及動線",
+          "owners": [
+            "協調組",
+            "主題節目組"
+          ],
+          "canonical_2027_domain": "venue",
+          "manual_categories": [
+            "activities"
+          ],
+          "source_paths": [
+            "activities.maps",
+            "activities.booths",
+            "activities.gameCards"
+          ],
+          "reference_2026_counts": {
+            "activities.maps": 1,
+            "activities.booths": 33,
+            "activities.gameCards": 2
+          },
+          "copied_2027_counts": {
+            "activities.maps": 4,
+            "activities.booths": 33,
+            "activities.gameCards": 2
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "shared_non_private_activity_data",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        },
+        {
+          "id": "registration",
+          "title": "旅團、報到及單位資料",
+          "owners": [
+            "行政組",
+            "協調組"
+          ],
+          "canonical_2027_domain": "registration",
+          "manual_categories": [
+            "logistics",
+            "records"
+          ],
+          "source_paths": [
+            "participants",
+            "troop_checkin"
+          ],
+          "reference_2026_counts": {
+            "participants": 31,
+            "troop_checkin": 31
+          },
+          "copied_2027_counts": {
+            "participants": 31,
+            "troop_checkin": 31
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "shared_non_private_activity_data",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        },
+        {
+          "id": "logistics",
+          "title": "膳食、物資及現場後勤",
+          "owners": [
+            "協調組",
+            "行政組"
+          ],
+          "canonical_2027_domain": "logistics",
+          "manual_categories": [
+            "logistics",
+            "records"
+          ],
+          "source_paths": [
+            "meals.orders",
+            "staff_meals_2026",
+            "meal_menu_2026",
+            "meal_distribution_2026",
+            "meal_logistics_2026"
+          ],
+          "reference_2026_counts": {
+            "meals.orders": 0,
+            "staff_meals_2026": 290,
+            "meal_menu_2026": 9,
+            "meal_distribution_2026": 0,
+            "meal_logistics_2026": 3
+          },
+          "copied_2027_counts": {
+            "meals.orders": 7,
+            "staff_meals_2026": 0,
+            "meal_menu_2026": 0,
+            "meal_distribution_2026": 0,
+            "meal_logistics_2026": 0
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "shared_non_private_activity_data",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        },
+        {
+          "id": "staff",
+          "title": "各組職責、編更及工作資料",
+          "owners": [
+            "秘書處",
+            "各總主任"
+          ],
+          "canonical_2027_domain": "rosters",
+          "manual_categories": [
+            "staff.job_duties",
+            "staff.event_staff_roster"
+          ],
+          "source_paths": [
+            "staff.job_duties",
+            "staff.event_staff_roster"
+          ],
+          "reference_2026_counts": {
+            "staff.job_duties": 11,
+            "staff.event_staff_roster": 279
+          },
+          "copied_2027_counts": {
+            "staff.job_duties": 11,
+            "staff.event_staff_roster": 279
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "private_identity_redacted_in_manual",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        },
+        {
+          "id": "safety",
+          "title": "安全、危機及應變",
+          "owners": [
+            "危機處理組",
+            "行政組"
+          ],
+          "canonical_2027_domain": "logistics",
+          "manual_categories": [
+            "crisis"
+          ],
+          "source_paths": [
+            "crisis.docs",
+            "crisis.manuals"
+          ],
+          "reference_2026_counts": {
+            "crisis.docs": 13,
+            "crisis.manuals": 1
+          },
+          "copied_2027_counts": {
+            "crisis.docs": 13,
+            "crisis.manuals": 1
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "shared_non_private_activity_data",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        },
+        {
+          "id": "notices",
+          "title": "通告、指引及文件目錄",
+          "owners": [
+            "秘書處",
+            "行政組",
+            "相關內容組別"
+          ],
+          "canonical_2027_domain": "notices",
+          "manual_categories": [
+            "documents",
+            "documents"
+          ],
+          "source_paths": [
+            "documents",
+            "notices"
+          ],
+          "reference_2026_counts": {
+            "documents": 79,
+            "notices": 3
+          },
+          "copied_2027_counts": {
+            "documents": 79,
+            "notices": 3
+          },
+          "copy_status": "copied_as_2027_reference_seed",
+          "privacy": "shared_document_metadata_private_fields_redacted",
+          "update_rule": "日後只在所列 2027 canonical domain／2027 frontend flow 更新；不可回寫或重連到 2026。"
+        }
+      ]
+    },
+    "execution_manual_gap_register": {
+      "schema_version": "2027-execution-manual-gap-register-v1",
+      "status": "awaiting_owner_review",
+      "scope": "只列已複製資料中尚未有 2027-owned file／需判定 keep, replace or retire 的缺口；不刪改 2026 archive。",
+      "gaps": [
+        {
+          "id": "notice_source_files",
+          "category": "通告",
+          "owner": "秘書處／行政組",
+          "copied_records": 3,
+          "owned_2027_files": 0,
+          "missing_2027_owned_files": 3,
+          "status": "needs_2027_owned_copy_or_reissue",
+          "next_action": "把每份 2026 通告副本放入 ISD 2027／02_通知書，或由 2027 擁有人重發，再把 file_url／Drive ID 回填至 2027 record。"
+        },
+        {
+          "id": "document_catalog_files",
+          "category": "文件目錄",
+          "owner": "各來源組別",
+          "copied_records": 79,
+          "owned_2027_files": 0,
+          "missing_2027_owned_files": 79,
+          "status": "metadata_copied_file_inventory_pending",
+          "next_action": "先按文件用途標記 keep／replace／retire；保留者必須在相應 2027 Drive folder 有擁有副本，再建立 file_url／Drive ID。"
+        },
+        {
+          "id": "venue_and_game_assets",
+          "category": "場地圖及遊戲卡",
+          "owner": "協調組／主題節目組",
+          "copied_records": 6,
+          "owned_2027_files": 6,
+          "missing_2027_owned_files": 0,
+          "status": "2027_owned_reference_assets_present",
+          "next_action": "活動前只需確認內容、日期及版本，不需再從 2026 Drive 取用。"
+        }
+      ],
+      "document_review_queue": [
+        {
+          "id": "doc_sp12",
+          "title": "活動通告 sp12_26_isd2026.pdf",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_sp12a",
+          "title": "報名表格 sp12a_26_isd2026_enrollform.pdf",
+          "category": "表格",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_plan",
+          "title": "工作計劃及進度 V2.docx",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fooddon",
+          "title": "食物捐贈通告 (FoodDonation)",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fooddon_form",
+          "title": "食物捐贈表格 (FoodDonation_Form)",
+          "category": "表格",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_goodsdon",
+          "title": "物資捐贈通告 (Goods Donating)",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_goodsdon_form",
+          "title": "物資捐贈表格 (Goods Donating_Form)",
+          "category": "表格",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_pc13",
+          "title": "收受利益及申報政策 (pc132018c)",
+          "category": "合規政策",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_pc14",
+          "title": "收受利益及申報政策 (pc142018c)",
+          "category": "合規政策",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_oc_council",
+          "title": "籌委邀請函 M28 (Councils)",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_oc_district",
+          "title": "籌委邀請函 M28 (District)",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_oc_drc",
+          "title": "籌委邀請函 M28 (DRCs)",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_oc_reply",
+          "title": "籌委邀請回條 M28a",
+          "category": "表格",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_guide",
+          "title": "ISD2027 財務指引及會計程序 ver 1",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a1",
+          "title": "附件1 - 報價要求",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a2",
+          "title": "附件2 - 豁免商戶名單 (Rev Dec 2025)",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a3",
+          "title": "附件3 - 口頭報價資料記錄",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a4",
+          "title": "附件4 - 書面報價比較表",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a5",
+          "title": "附件5 - 結算總表 (WORD)",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a5a",
+          "title": "附件5A - 結算總表 (WORD w autosum)",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a5b",
+          "title": "附件5B - 結算總表 (EXCEL)",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_fin_a6",
+          "title": "附件6 - 四格印簽名位置",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_budget",
+          "title": "ISD2027 Budget（Google Sheet）",
+          "category": "財務",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_orgchart",
+          "title": "ISD2027 Org Chart and Contact List（持續更新）",
+          "category": "名單",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_sitequote",
+          "title": "ISD2027 Site setup Quotation Request",
+          "category": "協調",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_cleanquote",
+          "title": "ISD2027 Cleaning Quotation request",
+          "category": "協調",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_parking",
+          "title": "港島童軍繽紛日2026－泊車證申請表格（Google Sheet）",
+          "category": "協調",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_booths2026",
+          "title": "ISD2027 攤位資料",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_booths2025",
+          "title": "ISD2025 攤位資料（參考）",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_30",
+          "title": "特別通告第01/26號－地域總監嘉許計劃 2026",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_32",
+          "title": "特別通告第02/26號－區總監嘉許計劃 2026",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_34",
+          "title": "特別通告第03/26號－2026年優異旅團獎勵計劃",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_36",
+          "title": "特別通告第11/26號－2026/2027年度活動與訓練行事曆",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_38",
+          "title": "特別通告第15/26號－幼童軍及童軍積極公民獎章系列·機電先鋒章考驗",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_40",
+          "title": "特別通告第16/26號－深資童軍及樂行童軍積極公民獎章系列·機電先鋒章工作坊",
+          "category": "通告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_36",
+          "title": "ISD2027 邀請函 (Invitation Letter) 04102026",
+          "category": "嘉賓及典禮",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_38",
+          "title": "ISD2027 邀請卡－會長 04102026",
+          "category": "嘉賓及典禮",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_40",
+          "title": "ISD2027 邀請卡－主禮嘉賓 (GoH) 04102026",
+          "category": "嘉賓及典禮",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_42",
+          "title": "ISD2027 回條 (IN reply) 04102026",
+          "category": "嘉賓及典禮",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_44",
+          "title": "ISD2027 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+          "category": "嘉賓及典禮",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_46",
+          "title": "警察學院實地視察 18.8.2026－內容及程序 2026",
+          "category": "典禮儀式",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_48",
+          "title": "Parade Ceremony Rundown 2026 (典禮程序)",
+          "category": "典禮儀式",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_50",
+          "title": "Wish List 2026",
+          "category": "典禮儀式",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_52",
+          "title": "20260818 品牌推廣組 (Google Doc)",
+          "category": "品牌推廣",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_54",
+          "title": "WFQ26070315 香港童軍總會港島地域 4-10 (報價)",
+          "category": "嘉賓及典禮",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_56",
+          "title": "4_Agenda 籌備委員會議程 (20260818)",
+          "category": "會議",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_58",
+          "title": "App1-ISD2027-籌備委員會第3次會議記錄 Ver1",
+          "category": "會議",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_60",
+          "title": "ISD2027 - 主題節目組報告 (20260616) Rev.1",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_62",
+          "title": "ISD2027 - 主題節目組報告 (20260818) Rev.1",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_64",
+          "title": "積極公民獎章－機電先鋒章（Full Set）",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_66",
+          "title": "積極公民獎章－機電先鋒章 A2 100%",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_68",
+          "title": "積極公民獎章－機電先鋒：幼童軍支部 A2",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_70",
+          "title": "積極公民獎章－機電先鋒：童軍支部 A2",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_72",
+          "title": "積極公民獎章－機電先鋒：深資童軍支部 A2",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_74",
+          "title": "積極公民獎章－機電先鋒：樂行童軍支部 A2",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_76",
+          "title": "機電先鋒－家居電力安全手冊 (Cub Appendix)",
+          "category": "活動",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_78",
+          "title": "MAP.gif（場地地圖）",
+          "category": "協調",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_isd_schedule",
+          "title": "ISD2027 日程表 (Run Down)",
+          "category": "公告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "doc_police_map",
+          "title": "香港警察學院場地地圖",
+          "category": "公告",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1ZQkEu3w",
+          "title": "港島童軍繽紛日 2026－嘉賓名單 as at 02.10.2026",
+          "category": "嘉賓名單及點名",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1m13A7XP",
+          "title": "附錄1_參加旅團節目程序_2026",
+          "category": "參加旅團程序",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1cDfA0sP",
+          "title": "附錄2_參加旅團場地指示圖2026 v2",
+          "category": "場地及旅團指示",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1iXCjSba",
+          "title": "ISD2027 Site Setup Plan R10-SETUP PLAN-1",
+          "category": "場地佈置及執行",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1XP_tuso",
+          "title": "2. 司儀稿_會操檢閱典禮2026 V4",
+          "category": "司儀稿及典禮程序",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1G67Aw7C",
+          "title": "3_司儀稿_莫榮大樓自助餐 2026 V1",
+          "category": "自助餐司儀稿",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_11xPo4gj",
+          "title": "Rundown_All 2026 連獎項 Part 1 V5",
+          "category": "總流程及獎項",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1ZgBWJir",
+          "title": "ISD 會操檢閱 Part 2 主禮團進場 2026 V1",
+          "category": "主禮團進場",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1eHGFrje",
+          "title": "ISD 優異旅團頒獎 Part 1 主禮團進場 2026 V1",
+          "category": "優異旅團頒獎",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1vM-xxvy",
+          "title": "出席UG及派隊清單_2026_as at 20260929",
+          "category": "出席及派隊清單",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1m4GUAiZ",
+          "title": "旅團報名人數_2026 as 26.9.2026",
+          "category": "旅團報名人數",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1LkJTH2g",
+          "title": "0.updated_12S",
+          "category": "活動資料表",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_11PjIFbL",
+          "title": "ISD 2026 共創明Teen NGO contact list",
+          "category": "NGO聯絡資料",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1FAEATuZ",
+          "title": "261003_Scout_marquee",
+          "category": "場地／帳篷資料",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1gvi-0VA",
+          "title": "Game card",
+          "category": "遊戲卡",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1N5iPMkV",
+          "title": "港島童軍繽紛日2026箱頭紙",
+          "category": "箱頭紙",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1QnP_5fL",
+          "title": "0.童軍旅通知書2026",
+          "category": "旅團通知書",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1lv26LuB",
+          "title": "0.共創明Teen計劃團體活動通知書2026",
+          "category": "共創明Teen通知書",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1bBdWpJy",
+          "title": "1_司儀稿_優異旅團頒獎儀式 2026 V5",
+          "category": "司儀稿及典禮程序",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        },
+        {
+          "id": "isd_final_1UKPMQUj",
+          "title": "3_司儀稿_莫榮大樓自助餐 2026 V2",
+          "category": "自助餐司儀稿",
+          "current_state": "metadata_copied_no_2027_owned_file",
+          "decision": "keep_replace_or_retire_to_be_confirmed",
+          "owner": "待按文件類別確認"
+        }
+      ]
     }
   },
   "one_time_reference_seed": {
@@ -27085,7 +27979,562 @@
       },
       "notices": 3,
       "unit_guides": 12,
-      "staff_guidance": 12
+      "staff_guidance": 12,
+      "records": [
+        {
+          "id": "doc_sp12",
+          "title": "活動通告 sp12_26_isd2026.pdf",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_sp12a",
+          "title": "報名表格 sp12a_26_isd2026_enrollform.pdf",
+          "category": "表格",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_plan",
+          "title": "工作計劃及進度 V2.docx",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fooddon",
+          "title": "食物捐贈通告 (FoodDonation)",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fooddon_form",
+          "title": "食物捐贈表格 (FoodDonation_Form)",
+          "category": "表格",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_goodsdon",
+          "title": "物資捐贈通告 (Goods Donating)",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_goodsdon_form",
+          "title": "物資捐贈表格 (Goods Donating_Form)",
+          "category": "表格",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_pc13",
+          "title": "收受利益及申報政策 (pc132018c)",
+          "category": "合規政策",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_pc14",
+          "title": "收受利益及申報政策 (pc142018c)",
+          "category": "合規政策",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_oc_council",
+          "title": "籌委邀請函 M28 (Councils)",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_oc_district",
+          "title": "籌委邀請函 M28 (District)",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_oc_drc",
+          "title": "籌委邀請函 M28 (DRCs)",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_oc_reply",
+          "title": "籌委邀請回條 M28a",
+          "category": "表格",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_guide",
+          "title": "ISD2027 財務指引及會計程序 ver 1",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a1",
+          "title": "附件1 - 報價要求",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a2",
+          "title": "附件2 - 豁免商戶名單 (Rev Dec 2025)",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a3",
+          "title": "附件3 - 口頭報價資料記錄",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a4",
+          "title": "附件4 - 書面報價比較表",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a5",
+          "title": "附件5 - 結算總表 (WORD)",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a5a",
+          "title": "附件5A - 結算總表 (WORD w autosum)",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a5b",
+          "title": "附件5B - 結算總表 (EXCEL)",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_fin_a6",
+          "title": "附件6 - 四格印簽名位置",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_budget",
+          "title": "ISD2027 Budget（Google Sheet）",
+          "category": "財務",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_orgchart",
+          "title": "ISD2027 Org Chart and Contact List（持續更新）",
+          "category": "名單",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_sitequote",
+          "title": "ISD2027 Site setup Quotation Request",
+          "category": "協調",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_cleanquote",
+          "title": "ISD2027 Cleaning Quotation request",
+          "category": "協調",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_parking",
+          "title": "港島童軍繽紛日2026－泊車證申請表格（Google Sheet）",
+          "category": "協調",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_booths2026",
+          "title": "ISD2027 攤位資料",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_booths2025",
+          "title": "ISD2025 攤位資料（參考）",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_30",
+          "title": "特別通告第01/26號－地域總監嘉許計劃 2026",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_32",
+          "title": "特別通告第02/26號－區總監嘉許計劃 2026",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_34",
+          "title": "特別通告第03/26號－2026年優異旅團獎勵計劃",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_36",
+          "title": "特別通告第11/26號－2026/2027年度活動與訓練行事曆",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_38",
+          "title": "特別通告第15/26號－幼童軍及童軍積極公民獎章系列·機電先鋒章考驗",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_40",
+          "title": "特別通告第16/26號－深資童軍及樂行童軍積極公民獎章系列·機電先鋒章工作坊",
+          "category": "通告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_36",
+          "title": "ISD2027 邀請函 (Invitation Letter) 04102026",
+          "category": "嘉賓及典禮",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_38",
+          "title": "ISD2027 邀請卡－會長 04102026",
+          "category": "嘉賓及典禮",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_40",
+          "title": "ISD2027 邀請卡－主禮嘉賓 (GoH) 04102026",
+          "category": "嘉賓及典禮",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_42",
+          "title": "ISD2027 回條 (IN reply) 04102026",
+          "category": "嘉賓及典禮",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_44",
+          "title": "ISD2027 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+          "category": "嘉賓及典禮",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_46",
+          "title": "警察學院實地視察 18.8.2026－內容及程序 2026",
+          "category": "典禮儀式",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_48",
+          "title": "Parade Ceremony Rundown 2026 (典禮程序)",
+          "category": "典禮儀式",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_50",
+          "title": "Wish List 2026",
+          "category": "典禮儀式",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_52",
+          "title": "20260818 品牌推廣組 (Google Doc)",
+          "category": "品牌推廣",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_54",
+          "title": "WFQ26070315 香港童軍總會港島地域 4-10 (報價)",
+          "category": "嘉賓及典禮",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_56",
+          "title": "4_Agenda 籌備委員會議程 (20260818)",
+          "category": "會議",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_58",
+          "title": "App1-ISD2027-籌備委員會第3次會議記錄 Ver1",
+          "category": "會議",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_60",
+          "title": "ISD2027 - 主題節目組報告 (20260616) Rev.1",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_62",
+          "title": "ISD2027 - 主題節目組報告 (20260818) Rev.1",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_64",
+          "title": "積極公民獎章－機電先鋒章（Full Set）",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_66",
+          "title": "積極公民獎章－機電先鋒章 A2 100%",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_68",
+          "title": "積極公民獎章－機電先鋒：幼童軍支部 A2",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_70",
+          "title": "積極公民獎章－機電先鋒：童軍支部 A2",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_72",
+          "title": "積極公民獎章－機電先鋒：深資童軍支部 A2",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_74",
+          "title": "積極公民獎章－機電先鋒：樂行童軍支部 A2",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_76",
+          "title": "機電先鋒－家居電力安全手冊 (Cub Appendix)",
+          "category": "活動",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_78",
+          "title": "MAP.gif（場地地圖）",
+          "category": "協調",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_isd_schedule",
+          "title": "ISD2027 日程表 (Run Down)",
+          "category": "公告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "doc_police_map",
+          "title": "香港警察學院場地地圖",
+          "category": "公告",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1ZQkEu3w",
+          "title": "港島童軍繽紛日 2026－嘉賓名單 as at 02.10.2026",
+          "category": "嘉賓名單及點名",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1m13A7XP",
+          "title": "附錄1_參加旅團節目程序_2026",
+          "category": "參加旅團程序",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1cDfA0sP",
+          "title": "附錄2_參加旅團場地指示圖2026 v2",
+          "category": "場地及旅團指示",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1iXCjSba",
+          "title": "ISD2027 Site Setup Plan R10-SETUP PLAN-1",
+          "category": "場地佈置及執行",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1XP_tuso",
+          "title": "2. 司儀稿_會操檢閱典禮2026 V4",
+          "category": "司儀稿及典禮程序",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1G67Aw7C",
+          "title": "3_司儀稿_莫榮大樓自助餐 2026 V1",
+          "category": "自助餐司儀稿",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_11xPo4gj",
+          "title": "Rundown_All 2026 連獎項 Part 1 V5",
+          "category": "總流程及獎項",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1ZgBWJir",
+          "title": "ISD 會操檢閱 Part 2 主禮團進場 2026 V1",
+          "category": "主禮團進場",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1eHGFrje",
+          "title": "ISD 優異旅團頒獎 Part 1 主禮團進場 2026 V1",
+          "category": "優異旅團頒獎",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1vM-xxvy",
+          "title": "出席UG及派隊清單_2026_as at 20260929",
+          "category": "出席及派隊清單",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1m4GUAiZ",
+          "title": "旅團報名人數_2026 as 26.9.2026",
+          "category": "旅團報名人數",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1LkJTH2g",
+          "title": "0.updated_12S",
+          "category": "活動資料表",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_11PjIFbL",
+          "title": "ISD 2026 共創明Teen NGO contact list",
+          "category": "NGO聯絡資料",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1FAEATuZ",
+          "title": "261003_Scout_marquee",
+          "category": "場地／帳篷資料",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1gvi-0VA",
+          "title": "Game card",
+          "category": "遊戲卡",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1N5iPMkV",
+          "title": "港島童軍繽紛日2026箱頭紙",
+          "category": "箱頭紙",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1QnP_5fL",
+          "title": "0.童軍旅通知書2026",
+          "category": "旅團通知書",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1lv26LuB",
+          "title": "0.共創明Teen計劃團體活動通知書2026",
+          "category": "共創明Teen通知書",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1bBdWpJy",
+          "title": "1_司儀稿_優異旅團頒獎儀式 2026 V5",
+          "category": "司儀稿及典禮程序",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        },
+        {
+          "id": "isd_final_1UKPMQUj",
+          "title": "3_司儀稿_莫榮大樓自助餐 2026 V2",
+          "category": "自助餐司儀稿",
+          "status": "metadata_copied_file_pending",
+          "note": "2026 reference metadata copied to the 2027 source; retain, replace or retire is recorded in the 2027 source register."
+        }
+      ]
     },
     "completion_checklist": [
       "確認全部活動日文件均已有 2027 擁有的檔案／連結。",

@@ -26,6 +26,7 @@ ok(manual.logistics.meal_collection.length===3&&manual.logistics.staff_meal_reco
 ok(manual.safety.immediate_steps.length===4&&manual.safety.topics.length>=3,'manual includes practical emergency actions and sourced topics');
 ok(manual.staff_guidance.length===12&&manual.document_catalog.staff_guidance===12,'manual includes all 12 staff-facing guidance records as readable content');
 ok(manual.staff_document_assets.length>=10,'manual has a curated, directly usable activity-day document set');
+ok(manual.document_catalog.records.length===79&&manual.document_catalog.records.every(row=>row.status==='metadata_copied_file_pending'),'manual keeps the complete copied document catalogue while honestly flagging missing 2027-owned files');
 ok(manual.audience_rule.ordinary_staff.includes('不按組別隱藏')&&manual.audience_rule.restricted.includes('個人私隱'),'manual shares non-private operations across staff and restricts only private data');
 ok(!manual.task_finder&&manual.manual_catalog.length===9,'manual is a complete category-indexed reference book rather than a prescribed workstation finder');
 ok(manual.public_records.participant_units.length===31&&manual.public_records.booth_meal_allocation.length>=25,'manual includes public unit, meal and duty-allocation records in their own category');
