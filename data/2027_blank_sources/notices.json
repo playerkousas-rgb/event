@@ -1,0 +1,270 @@
+{
+  "schema_version": "2027-blank-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "notices",
+  "drive_folder_code": "02_通知書",
+  "status": "blank_framework_ready_not_live",
+  "update_rule": "Only the named owner updates a source record. Outputs read this record through data/2027_output_connection_registry.json; do not make output-side copies.",
+  "records": [
+    {
+      "source_id": "DATA-BRAND-CONTENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "品牌推廣組",
+      "approved_by": [
+        "品牌推廣組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-PUBLIC-CONTENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "品牌推廣組",
+      "approved_by": [
+        "品牌推廣組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DOC-COMPLIANCE",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-FOOD-DONATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-GOODS-DONATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-GUEST-CARD-GOH",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-GUEST-CARD-PRESIDENT",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-GUEST-INVITATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-MAIN-CIRCULAR",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-NGO-NOTICE",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-OC-INVITATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-SECTION-AWARD-LETTER",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "會操及典禮組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-SPECIAL-CIRCULAR",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-TROOP-NOTICE",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "IN-FOOD-DONATION",
+      "source_kind": "controlled_intake",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "IN-GOODS-DONATION",
+      "source_kind": "controlled_intake",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "NOTICE-WEATHER",
+      "source_kind": "published_channel",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    }
+  ]
+}

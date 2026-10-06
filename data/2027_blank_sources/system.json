@@ -1,0 +1,127 @@
+{
+  "schema_version": "2027-blank-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "system",
+  "drive_folder_code": "00_系統及資料",
+  "status": "blank_framework_ready_not_live",
+  "update_rule": "Only the named owner updates a source record. Outputs read this record through data/2027_output_connection_registry.json; do not make output-side copies.",
+  "records": [
+    {
+      "source_id": "DATA-CROSSCHECK",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-EVENT-BRIEF",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-GROUP-APPLICATION",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "PUBLIC-CHANNEL",
+      "source_kind": "published_channel",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "REGISTRY-ADMIN-DOCS",
+      "source_kind": "system_registry",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "REGISTRY-LINKS",
+      "source_kind": "system_registry",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "REGISTRY-OUTPUTS",
+      "source_kind": "system_registry",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    }
+  ]
+}

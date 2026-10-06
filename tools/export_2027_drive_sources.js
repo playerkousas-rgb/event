@@ -11,6 +11,9 @@ const root=path.resolve(__dirname,'..');
 const outDir=path.join(root,'tmp','isd_2027_drive_sources');
 const event=JSON.parse(fs.readFileSync(path.join(root,'data/isd_2027.json'),'utf8'));
 const registry=JSON.parse(fs.readFileSync(path.join(root,'data/2027_drive_registry.json'),'utf8'));
+if(registry.status==='blank_framework_ready_not_live'){
+  throw new Error('Superseded: do not export rehearsal seed data into ISD 2027. Rebuild the reviewed blank framework with node tools/build_2027_blank_framework.js, then use a future approved publish adapter.');
+}
 const get=(object,key)=>object[key];
 const sha=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const legacyNeedles=['1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF','13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM','ISD2026_GAS_URL'];

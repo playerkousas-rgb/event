@@ -1,0 +1,406 @@
+{
+  "schema_version": "2027-blank-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "logistics",
+  "drive_folder_code": "06_後勤",
+  "status": "blank_framework_ready_not_live",
+  "update_rule": "Only the named owner updates a source record. Outputs read this record through data/2027_output_connection_registry.json; do not make output-side copies.",
+  "records": [
+    {
+      "source_id": "ASSET-CARTON-LABEL",
+      "source_kind": "controlled_asset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "ASSET-TICKET",
+      "source_kind": "controlled_asset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "BADGE-STAFF",
+      "source_kind": "controlled_asset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DATA-COMMS-ALLOCATION",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-CRISIS-CONTACT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-BUDGET",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-EXPENSE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-QUOTE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-QUOTE-COMPARE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-SETTLEMENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-SUMMARY",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-INCIDENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-LOST-FOUND",
+      "source_kind": "structured_dataset",
+      "owner_group": "服務及發展組",
+      "approved_by": [
+        "服務及發展組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-MEAL-DISTRIBUTION",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-MEAL-LOGISTICS",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-MEAL-ORDER",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-MENU",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-STAFF-MEAL",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-STAFF-SOUVENIR",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DATA-SUPPLY",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    },
+    {
+      "source_id": "DOC-CRISIS-MANUAL",
+      "source_kind": "controlled_document",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-FINANCE-ANNEX",
+      "source_kind": "controlled_document",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "DOC-FINANCE-GUIDE",
+      "source_kind": "controlled_document",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    },
+    {
+      "source_id": "SCHEDULE-STAFF",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {
+        "records": []
+      }
+    }
+  ]
+}

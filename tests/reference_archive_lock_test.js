@@ -26,9 +26,9 @@ assert.strictEqual(events[0].event_name,'港島童軍繽紛日 2026（進行中�
 assert.strictEqual(events[1].event_name,'模擬示範版 2027 港島童軍繽紛日','MOCK label must identify the 2027 product');
 
 const policy=read('docs/2027_SOURCE_OF_TRUTH.md');
-for(const token of ['ISD 2027','1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q','data/isd_2027.json','data/mock_demo.json','07_參考快照（唯讀）','ISD2027_GAS_URL'])
+for(const token of ['ISD 2027','1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q','data/isd_2027.json','data/mock_demo.json','07_參考快照（唯讀）','ISD2027_GAS_URL','2027_canonical_source_registry.json','2027_output_connection_registry.json'])
   assert(policy.includes(token),`2027 source-of-truth policy must document ${token}`);
-assert(policy.includes('not a second hand-edited source'),'policy must make the read-model/Drive distinction explicit');
+assert(policy.includes('editable canonical sources')&&policy.includes('rehearsal/read-model artefacts'),'policy must make the blank canonical-source/rehearsal distinction explicit');
 
 const source=json('data/isd_2027.json');
 const mock=json('data/mock_demo.json');
@@ -46,8 +46,13 @@ assert.strictEqual(mock.mock_demo_source?.source_event_id,'isd_2027','mock must 
 assert(mock.mock_demo_source?.source_sha256,'mock build must record the 2027 source hash');
 assert.strictEqual(mock.drive.root_folder_id,source.drive.root_folder_id,'mock must use the 2027 folder, not legacy Drive');
 assert.strictEqual(registry.event_id,'isd_2027','registry must belong to 2027');
-assert.strictEqual(registry.domains.length,7,'all seven operational Drive source domains must be registered');
-assert(registry.domains.every(d=>d.drive_file_id&&d.drive_file_link),'every 2027 source domain must resolve to its own Drive file');
+assert.strictEqual(registry.status,'blank_framework_ready_not_live','the Drive registry must identify the blank 2027 framework as the current source layer');
+assert.strictEqual(registry.domains.length,8,'all eight blank Drive domains, including the 2027-owned reference boundary, must be registered');
+assert(registry.domains.every(d=>d.drive_file_id&&d.drive_file_link&&d.status==='blank_framework_ready_not_live'),'every blank 2027 source domain must resolve to its own verified Drive file');
+assert.strictEqual(registry.domains.reduce((total,d)=>total+d.record_count,0),96,'the Drive domains contain exactly the 96 canonical source records');
+assert.strictEqual(registry.framework_catalog?.source_count,96,'the verified Drive source catalogue covers every canonical source');
+assert.strictEqual(registry.output_connection_registry?.output_count,109,'the verified Drive output registry covers all detailed outputs');
+assert(registry.historical_rehearsal_exports?.domains?.length===7,'the old seed exports are retained only as explicitly non-canonical history');
 
 const prohibitedLegacyDriveIds=['1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF','13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM'];
 for(const value of [JSON.stringify(source),JSON.stringify(mock)])
