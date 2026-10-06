@@ -3,8 +3,8 @@
 > **成品**：[`apps-script/Code2027Unified.gs`](../apps-script/Code2027Unified.gs)（一個檔，貼上即用）
 > **Drive 副本（00_系統及資料）**：
 > - 連通索引 `ISD 2027－2026資料連通索引（一體化版 v1.1）.json`（16 快照版）→ ID `1JXD_zudm8p9S5CSZLp0_vIhWwnjE2NX1`
-> - 一體化 GS `ISD 2027－一體化後端 GS（2026連通／主SHEET同步／受控來源）v1.1.gs` → ID `1LN7Psgzn88tREQWuwHtWKlrW2yyByQ0T`
-> **版本**：`2027-unified-gs-v1`｜2026-10-06（同日完成 18 角色同源輻射驗證：`tests/all_roles_single_source_test.js` 220 項全過）
+> - 一體化 GS `ISD 2027－一體化後端 GS（2026連通／主SHEET同步／受控來源）v1.2.gs`（含防呆上限）→ 見 00_系統及資料 最新版本
+> **版本**：`2027-unified-gs-v1.2`｜2026-10-07（v1.2 新增瘦身＋防呆；同日完成 18 角色同源輻射驗證 `tests/all_roles_single_source_test.js` 220 項全過）
 
 ## 一、呢個 GS 做咩（一體化＝四件事一個檔）
 
@@ -98,6 +98,34 @@ pending 路由 `pullChildSheet` 會直接拒絕並寫 `05_欄位錯誤`，原因
                               ▼
         將來輸出 renderer 只讀已核准 source／主SHEET（get2027Output／getMasterTab）
 ```
+
+## 五之一、瘦身＋防呆機制（v1.2，2026-10-07）
+
+避免「Vercel 爆掉」同「傳後端出問題」嘅標準配備，一早已經全套裝好：
+
+### 前端（js/55-api-guard.js，被動式——45 個後端呼叫點即刻全部受保護）
+| 機制 | 設定 | 防咩 |
+|---|---|---|
+| 請求 timeout | 25 秒 | 死咗嘅後端唔會永遠等 |
+| GET 自動重試 | 2 次・指數退避（只重網絡錯／5xx／429） | 網絡一二下甩釘唔會即刻失敗 |
+| 單飛（single-flight） | 同 URL 並發共用一個請求 | 重複點擊／多卡片同時 load 唔會轟後端 |
+| 回應大細上限 | 10MB | 一個大回應唔會食爆瀏覽器記憶體 |
+| 斷路器 | 連續 4 次網絡失敗→開路 60 秒 | 唔會打死循環觸發 Google 配額 429 |
+| 離線補送匣（outbox） | 寫入操作網絡失敗→排隊（上限 30・5 次・7 日），後端返生自動補送 | **改動唔會因為網絡斷咗而消失**（POST 永不自動重試＝唔會重複寫入） |
+| localStorage 配額保護 | 爆配額→自動清其他活動舊快取（最大先清，保護 key 永不動）→重試 | 舊活動快取唔會令新數據寫唔入 |
+| 瘦身 | `data/*.json` 移除 `?t=Date.now()` 快取殺手 | 每次入 dashboard 唔再重下載 900KB（ETag＋data_version 雙機制保 freshness） |
+
+> Console 可以打 `GASGuard.status()` 睇狀態、`GASGuard.flush()` 即刻補送。
+
+### Vercel
+- `.vercelignore`：tools／tests／apps-script／docs／模擬資料（2027_simulation_*）唔推上 Vercel——部署體積大減，模擬資料亦唔會公開可下載（守住「模擬永不當真 2027 發佈」邊界）。
+- `google_drive/`（19MB 唯讀 PDF）＝immutable 一年快取；`assets/`＝7 日；`/api/config`＝no-store（config 改動即刻生效）。
+
+### 後端 GS（本檔 v1.2）
+- **請求上限 8MB**（`request_too_large`）：大 body 唔會行到 GAS 30 秒限時先死。
+- **回應上限 10MB**（`response_too_large`）：同前端上限一致，兩邊一齊拒。
+- **Rate limit 每分鐘 120 請求**（`rate_limited`）：防 loop／機械人打爆 Google 配額；GET／POST 兩個入口都有。
+- **getMasterTab 加 `limit` 參數**（1–2000）：大分頁可以逐段攞，唔會一次過傳 10MB。
 
 ## 六、維護
 

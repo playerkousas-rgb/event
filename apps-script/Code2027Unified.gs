@@ -37,8 +37,13 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 /* ── 0. CONFIG ─────────────────────────────────────────────────────────── */
-const ISD2027_UNIFIED_VERSION = '2027-unified-gs-v1';
+const ISD2027_UNIFIED_VERSION = '2027-unified-gs-v1.2';
 const ISD2027_EVENT_ID = 'isd_2027';
+
+/* ── 0b. 防呆上限（v1.2：避免 Vercel／瀏覽器／Google 配額爆掉）────────── */
+const ISD2027_MAX_REQUEST_CHARS = 8 * 1024 * 1024;   // 單一請求 body 上限 8MB（GAS 實際上限 50MB，但大 body 必超 30 秒執行限時）
+const ISD2027_MAX_RESPONSE_CHARS = 10 * 1024 * 1024; // 單一回應上限 10MB（前端 GASGuard 同步設 10MB，超過即兩邊都拒）
+const ISD2027_RATE_LIMIT = { windowMs: 60000, max: 120 }; // 每分鐘最多 120 個請求（防 loop／機械人打到 Google 配額 429）
 
 // Drive 上嘅連通索引檔（00_系統及資料 內；由 tools/build_2027_unified_connection_index.js 產生）
 const ISD2027_CONNECTION_INDEX_FILE_ID = '1JXD_zudm8p9S5CSZLp0_vIhWwnjE2NX1';
@@ -63,6 +68,7 @@ const UPSERT_MAX_ROWS = 500;       // 每次最多 upsert 行數
 function doGet(e) {
   const action = String((e && e.parameter && e.parameter.action) || 'getHealth');
   try {
+    if (!rateLimitOk_()) return jsonOut_({ success: false, error: 'rate_limited', retry_after_ms: ISD2027_RATE_LIMIT.windowMs, message: '請求太密（每分鐘上限 ' + ISD2027_RATE_LIMIT.max + ' 個），請一分鐘後再試' });
     if (action === 'getHealth') return jsonOut_(getHealth_());
     const data = (e && e.parameter) || {};
     verify2027Request_(data);
@@ -85,6 +91,9 @@ function doGet(e) {
 function doPost(e) {
   let data = {};
   try {
+    const rawBody = (e && e.postData && e.postData.contents) || '';
+    if (rawBody.length > ISD2027_MAX_REQUEST_CHARS) return jsonOut_({ success: false, error: 'request_too_large', max_chars: ISD2027_MAX_REQUEST_CHARS, message: '請求 body ' + Math.round(rawBody.length / 1048576) + 'MB 超過 8MB 上限；請分批（upsertMasterRows 每次最多 500 行）' });
+    if (!rateLimitOk_()) return jsonOut_({ success: false, error: 'rate_limited', retry_after_ms: ISD2027_RATE_LIMIT.windowMs, message: '請求太密（每分鐘上限 ' + ISD2027_RATE_LIMIT.max + ' 個），請一分鐘後再試' });
     data = parse2027Request_(e);
     const action = String(data.action || '');
     verify2027Request_(data);
@@ -189,7 +198,22 @@ function verify2027Request_(data) {
 }
 
 function jsonOut_(value) {
-  return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);
+  const text = JSON.stringify(value);
+  if (text && text.length > ISD2027_MAX_RESPONSE_CHARS) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'response_too_large', max_chars: ISD2027_MAX_RESPONSE_CHARS, message: '回應超過 10MB 上限：請用 section／limit／tab 參數細分請求，唔好一次過攞成個索引／成個分頁' })).setMimeType(ContentService.MimeType.JSON);
+  }
+  return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* 防呆：簡易 rate limit（每分鐘視窗計數，存 ScriptProperties；視窗過咗自動歸零） */
+function rateLimitOk_() {
+  const props = PropertiesService.getScriptProperties();
+  const win = Math.floor(Date.now() / ISD2027_RATE_LIMIT.windowMs);
+  const key = 'rl_win_' + win;
+  const count = Number(props.getProperty(key) || '0') + 1;
+  props.setProperty(key, String(count));
+  try { props.deleteProperty('rl_win_' + (win - 2)); } catch (ignored) {} // 順手清兩個視窗前嘅舊計數
+  return count <= ISD2027_RATE_LIMIT.max;
 }
 
 /* ── 3. Drive JSON 讀寫 ────────────────────────────────────────────────── */
@@ -422,8 +446,10 @@ function getMasterTab_(data) {
   if (['guide', 'entry_routes', 'dictionary', 'child_mapping'].indexOf(def.kind) >= 0) {
     throw new Error(tab + ' 是模型分頁，請用 getMasterModel／getUnifiedIndex 讀取');
   }
-  const result = readTabAsObjects_(getMasterSheet_(), tab, MASTER_MAX_ROWS);
-  return { success: true, event_id: ISD2027_EVENT_ID, tab: tab, business_key: def.business_key, field_keys: def.field_keys, count: result.rows.length, rows: result.rows };
+  // v1.2 防呆：limit 參數（1..2000）——大分頁可以逐段攞，唔會一次過傳 10MB+
+  const limit = Math.max(1, Math.min(Number((data && data.limit) || MASTER_MAX_ROWS) || MASTER_MAX_ROWS, MASTER_MAX_ROWS));
+  const result = readTabAsObjects_(getMasterSheet_(), tab, limit);
+  return { success: true, event_id: ISD2027_EVENT_ID, tab: tab, business_key: def.business_key, field_keys: def.field_keys, count: result.rows.length, limit: limit, rows: result.rows };
 }
 
 function listLogTab_(tab, data) {

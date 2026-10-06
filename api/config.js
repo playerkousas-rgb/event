@@ -7,6 +7,8 @@ module.exports = function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // v16 防呆：呢個 endpoint 只係小 config，唔准任何 CDN／瀏覽器快取住（改環境變數要即刻生效）
+  res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();

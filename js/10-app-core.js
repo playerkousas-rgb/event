@@ -1530,7 +1530,10 @@ Object.assign(ScoutEventApp.prototype,{
     // 正式活動（已連後端）：內置靜態資料仍從 JSON 載入（無後端模組），後端/本地改動優先
     if(!this.isDemoEvent() && this.currentEvent){
       try{
-        const r2=await fetch(`data/${this.currentEvent.event_id}.json?t=${Date.now()}`); const j2=await r2.json();
+        // v16 防呆瘦身：以前用 ?t=${Date.now()} 防 cache，代價係每次入 dashboard 都重新下載成個
+        // 900KB JSON（Vercel 流量同載入速度直接爆）。而家改用 ETag 協商（304 就唔使重傳）＋
+        // 下面已有嘅 data_version 檢查（版本變咗自動清舊快取）， freshness 由兩重機制保證。
+        const r2=await fetch(`data/${this.currentEvent.event_id}.json`); const j2=await r2.json();
         if(j2){
           // v8.2：JSON 版本檢查。data_version 變更時，自動清 staff / crisis 舊 localStorage 快取，
           // 讓「秘書處在 JSON 更新後強制刷新也看不到」的問題不再發生。
