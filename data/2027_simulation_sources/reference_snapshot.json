@@ -1,0 +1,43 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "reference_snapshot",
+  "drive_folder_code": "07_參考快照",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "ARCHIVE-REFERENCE-BOOTH-2025",
+      "source_kind": "owned_reference_snapshot",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ARCHIVE-REFERENCE-BOOTH-2025-001",
+            "simulation_title": "2027 演練：上屆攤位資料（參考用）",
+            "editable_test_value": "測試值：ARCHIVE-REFERENCE-BOOTH-2025／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: ISD2025 攤位資料（參考）。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,556 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "notices",
+  "drive_folder_code": "02_通知書",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "DATA-BRAND-CONTENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "品牌推廣組",
+      "approved_by": [
+        "品牌推廣組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "品牌推廣組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "品牌推廣組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-BRAND-CONTENT-001",
+            "simulation_title": "2027 演練：品牌推廣組文件",
+            "editable_test_value": "測試值：DATA-BRAND-CONTENT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 20260818 品牌推廣組 (Google Doc)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-PUBLIC-CONTENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "品牌推廣組",
+      "approved_by": [
+        "品牌推廣組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "品牌推廣組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "品牌推廣組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-PUBLIC-CONTENT-001",
+            "simulation_title": "2027 演練：公眾頻道內容（本組負責）",
+            "editable_test_value": "測試值：DATA-PUBLIC-CONTENT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: group_pc_content；v21。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-COMPLIANCE",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-COMPLIANCE-001",
+            "document_title": "收受利益及申報政策 (pc132018c)",
+            "template_body": "2027 演練文件：收受利益及申報政策。修改此句可驗證 DOC-COMPLIANCE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-COMPLIANCE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-FOOD-DONATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-FOOD-DONATION-001",
+            "document_title": "食物捐贈通告 (FoodDonation)",
+            "template_body": "2027 演練文件：食物捐贈通告＋表格。修改此句可驗證 DOC-FOOD-DONATION 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-FOOD-DONATION／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-GOODS-DONATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-GOODS-DONATION-001",
+            "document_title": "物資捐贈通告 (Goods Donating)",
+            "template_body": "2027 演練文件：物資捐贈通告＋表格。修改此句可驗證 DOC-GOODS-DONATION 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-GOODS-DONATION／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-GUEST-CARD-GOH",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-GUEST-CARD-GOH-001",
+            "document_title": "ISD2027 演練 邀請卡－會長 04102027 演練",
+            "template_body": "2027 演練文件：邀請卡－主禮嘉賓。修改此句可驗證 DOC-GUEST-CARD-GOH 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-GUEST-CARD-GOH／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-GUEST-CARD-PRESIDENT",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-GUEST-CARD-PRESIDENT-001",
+            "document_title": "ISD2027 演練 邀請卡－會長 04102027 演練",
+            "template_body": "2027 演練文件：邀請卡－會長。修改此句可驗證 DOC-GUEST-CARD-PRESIDENT 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-GUEST-CARD-PRESIDENT／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-GUEST-INVITATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-GUEST-INVITATION-001",
+            "document_title": "嘉賓邀請函",
+            "template_body": "2027 演練文件：嘉賓邀請函。修改此句可驗證 DOC-GUEST-INVITATION 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：DOC-GUEST-INVITATION／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-MAIN-CIRCULAR",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-MAIN-CIRCULAR-001",
+            "document_title": "活動通告 sp12_26_isd2027 演練.pdf",
+            "template_body": "2027 演練文件：活動通告 sp12。修改此句可驗證 DOC-MAIN-CIRCULAR 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-MAIN-CIRCULAR／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-NGO-NOTICE",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-NGO-NOTICE-001",
+            "document_title": "ISD 2027 演練 共創明Teen NGO contact list",
+            "template_body": "2027 演練文件：共創明Teen 團體活動通知書。修改此句可驗證 DOC-NGO-NOTICE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-NGO-NOTICE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-OC-INVITATION",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-OC-INVITATION-001",
+            "document_title": "籌委邀請函 M28 (Councils)",
+            "template_body": "2027 演練文件：籌委邀請函 M28（3 款）。修改此句可驗證 DOC-OC-INVITATION 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-OC-INVITATION／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-SECTION-AWARD-LETTER",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-SECTION-AWARD-LETTER-001",
+            "document_title": "支部最高獎章嘉許信",
+            "template_body": "2027 演練文件：支部最高獎章嘉許信。修改此句可驗證 DOC-SECTION-AWARD-LETTER 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：DOC-SECTION-AWARD-LETTER／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-SPECIAL-CIRCULAR",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-SPECIAL-CIRCULAR-001",
+            "document_title": "特別通告第01/26號－地域總監嘉許計劃 2027 演練",
+            "template_body": "2027 演練文件：特別通告（6 份）。修改此句可驗證 DOC-SPECIAL-CIRCULAR 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-SPECIAL-CIRCULAR／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-TROOP-NOTICE",
+      "source_kind": "controlled_document",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-TROOP-NOTICE-001",
+            "document_title": "0.童軍旅通知書2027 演練",
+            "template_body": "2027 演練文件：童軍旅通知書。修改此句可驗證 DOC-TROOP-NOTICE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-TROOP-NOTICE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "IN-FOOD-DONATION",
+      "source_kind": "controlled_intake",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-IN-FOOD-DONATION-001",
+            "simulation_title": "2027 演練：食物捐贈通告＋表格",
+            "editable_test_value": "測試值：IN-FOOD-DONATION／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 docs: 食物捐贈通告 (FoodDonation)、食物捐贈表格 (FoodDonation_Form)、v19 童心捐贈 QR；documents：秘書處。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "IN-GOODS-DONATION",
+      "source_kind": "controlled_intake",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-IN-GOODS-DONATION-001",
+            "simulation_title": "2027 演練：物資捐贈通告＋表格",
+            "editable_test_value": "測試值：IN-GOODS-DONATION／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 docs: 物資捐贈通告 (Goods Donating)、物資捐贈表格 (Goods Donating_Form)；documents：秘書處。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "NOTICE-WEATHER",
+      "source_kind": "published_channel",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-NOTICE-WEATHER-001",
+            "document_title": "惡劣天氣／改期公布",
+            "template_body": "2027 演練文件：惡劣天氣／改期公布。修改此句可驗證 NOTICE-WEATHER 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：NOTICE-WEATHER／樣本 1／revision 1"
+          }
+        ]
+      }
+    }
+  ]
+}

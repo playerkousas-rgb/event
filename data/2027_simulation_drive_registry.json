@@ -1,0 +1,49 @@
+{
+  "schema_version": "2027-simulation-drive-registry-v1",
+  "event_id": "isd_2027",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "simulation_label": "2027 演練 Drive 覆核包（非 live）",
+  "purpose": "A distinct Drive location for the fake 2027 connection-review pack. It is not the active blank-framework folder and must never be used for real 2027 publication.",
+  "boundary": {
+    "one_time_seed": "Derived from checksum-locked 2026 evidence once; later review edits never reread or sync 2026.",
+    "prohibited": [
+      "real 2027 source entry",
+      "publication or intake deployment",
+      "write-back or synchronisation to 2026",
+      "upload into the active blank-framework system folder"
+    ],
+    "reset_rule": "Delete/rebuild the fake profile before any real 2027 source entry."
+  },
+  "drive_folder": {
+    "id": "1bkpIFbp9x6YzDfDYCEiKOgaHNChJEHdk",
+    "name": "98_演練覆核（假資料・非 live）",
+    "parent_isd_2027_folder_id": "1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+    "web_view_link": "https://drive.google.com/drive/folders/1bkpIFbp9x6YzDfDYCEiKOgaHNChJEHdk"
+  },
+  "source_count": 96,
+  "output_count": 109,
+  "published_artifacts": {
+    "source_registry": {"id": "1QSUbRVBum5msmITz6aeutPKfbjFJFK6C", "name": "SIMULATION_ONLY－2027 來源總索引.json"},
+    "output_connection_registry": {"id": "1XCOWWnFUr1v4yNglgoXxkR7-JbgUd31d", "name": "SIMULATION_ONLY－2027 輸出連線索引.json"},
+    "output_projection": {"id": "1ou2kKaUeGGrkcQUg9ARJUVzfdz4to3Bf", "name": "SIMULATION_ONLY－2027 輸出指標.json"},
+    "review": {"id": "1LBd-24pAYdKj56E4kF_R3KvaHv7fffeE", "name": "SIMULATION_ONLY－2027 演練覆核.json"},
+    "domains": [
+      {"domain_id": "system", "id": "1uTHlG15lnKX4cUB3et-3vsCBIxXkUx8S", "name": "SIMULATION_ONLY－00_系統及資料.json"},
+      {"domain_id": "registration", "id": "1dIFLVSaBcUDuLN_yiigiDk9fnFCpGyqS", "name": "SIMULATION_ONLY－01_報名.json"},
+      {"domain_id": "notices", "id": "1Iexrpcbe9hmC-wpzOq7GzMvJZvXb8Yrd", "name": "SIMULATION_ONLY－02_通知書.json"},
+      {"domain_id": "rosters", "id": "1rBs2ERLmFAGmCZJB6O2l-jAjiA98CWvu", "name": "SIMULATION_ONLY－03_名單.json"},
+      {"domain_id": "venue", "id": "1WW3DhfBPfKQGewKcDCySIzZq3UkfpPOe", "name": "SIMULATION_ONLY－04_場地.json"},
+      {"domain_id": "programme", "id": "1SnJAIvTBJ_fkQHHQmAu7z5pfCUF5Z6UG", "name": "SIMULATION_ONLY－05_程序.json"},
+      {"domain_id": "logistics", "id": "1X_Mwg3mw4uRcL7KeGinCOIPWRFy3UGqC", "name": "SIMULATION_ONLY－06_後勤.json"},
+      {"domain_id": "reference_snapshot", "id": "10iuQk_YibXln-0PIIcUg2exNpdRbyptG", "name": "SIMULATION_ONLY－07_參考快照.json"}
+    ],
+    "review_guide": {"id": "17byn0u2ij5KGZuI57Dq02dpRChLW5w7Y", "name": "README－2027 假資料來源連通覆核.md"},
+    "review_interface_source": {"id": "1MqGc0kHLZ8ZmqjSHGBw2k8X7YxfYH1jL", "name": "simulation-review.html"}
+  },
+  "repository_review_commands": [
+    "node tools/build_2027_simulation_from_2026.js",
+    "node tools/serve_2027_simulation_review.js",
+    "node tests/simulation_2027_review_test.js"
+  ]
+}

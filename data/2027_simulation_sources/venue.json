@@ -1,0 +1,1355 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "venue",
+  "drive_folder_code": "04_場地",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "ASSET-BADGE-POSTER",
+      "source_kind": "controlled_asset",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-BADGE-POSTER-001",
+            "document_title": "特別通告第15/26號－幼童軍及童軍積極公民獎章系列·機電先鋒章考驗",
+            "template_body": "2027 演練文件：機電先鋒章海報（A2 五款）。修改此句可驗證 ASSET-BADGE-POSTER 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：ASSET-BADGE-POSTER／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "ASSET-GAME-CARD",
+      "source_kind": "controlled_asset",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-GAME-CARD-001",
+            "document_title": "遊戲卡",
+            "template_body": "2027 演練文件：遊戲卡。修改此句可驗證 ASSET-GAME-CARD 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：ASSET-GAME-CARD／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "ASSET-HOME-ELECTRIC-SAFETY",
+      "source_kind": "controlled_asset",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-HOME-ELECTRIC-SAFETY-001",
+            "document_title": "機電先鋒－家居電力安全手冊 (Cub Appendix)",
+            "template_body": "2027 演練文件：家居電力安全手冊。修改此句可驗證 ASSET-HOME-ELECTRIC-SAFETY 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：ASSET-HOME-ELECTRIC-SAFETY／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-BOOTH",
+      "source_kind": "structured_dataset",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-BOOTH-001",
+            "booth_code": "BOOTH-001",
+            "zone": "A",
+            "title": "主題活動 1",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-002",
+            "booth_code": "BOOTH-002",
+            "zone": "A",
+            "title": "主題活動 2",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-003",
+            "booth_code": "BOOTH-003",
+            "zone": "A",
+            "title": "主題活動 3",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-004",
+            "booth_code": "BOOTH-004",
+            "zone": "A",
+            "title": "主題活動 4",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-005",
+            "booth_code": "BOOTH-005",
+            "zone": "A",
+            "title": "主題活動 5",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-006",
+            "booth_code": "BOOTH-006",
+            "zone": "A",
+            "title": "主題活動 6",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-007",
+            "booth_code": "BOOTH-007",
+            "zone": "A",
+            "title": "主題活動 7",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-008",
+            "booth_code": "BOOTH-008",
+            "zone": "A",
+            "title": "主題活動 8",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-009",
+            "booth_code": "BOOTH-009",
+            "zone": "A",
+            "title": "主題活動 9",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-010",
+            "booth_code": "BOOTH-010",
+            "zone": "A",
+            "title": "主題活動 10",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-011",
+            "booth_code": "BOOTH-011",
+            "zone": "A",
+            "title": "主題活動 11",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-012",
+            "booth_code": "BOOTH-012",
+            "zone": "A",
+            "title": "主題活動 12",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-013",
+            "booth_code": "BOOTH-013",
+            "zone": "B",
+            "title": "主題活動 13",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-014",
+            "booth_code": "BOOTH-014",
+            "zone": "B",
+            "title": "主題活動 14",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-015",
+            "booth_code": "BOOTH-015",
+            "zone": "B",
+            "title": "主題活動 15",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-016",
+            "booth_code": "BOOTH-016",
+            "zone": "C",
+            "title": "主題活動 16",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-017",
+            "booth_code": "BOOTH-017",
+            "zone": "C",
+            "title": "主題活動 17",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-018",
+            "booth_code": "BOOTH-018",
+            "zone": "C",
+            "title": "主題活動 18",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-019",
+            "booth_code": "BOOTH-019",
+            "zone": "C",
+            "title": "主題活動 19",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-020",
+            "booth_code": "BOOTH-020",
+            "zone": "D",
+            "title": "主題活動 20",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-021",
+            "booth_code": "BOOTH-021",
+            "zone": "D",
+            "title": "主題活動 21",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-022",
+            "booth_code": "BOOTH-022",
+            "zone": "D",
+            "title": "主題活動 22",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-023",
+            "booth_code": "BOOTH-023",
+            "zone": "D",
+            "title": "主題活動 23",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-024",
+            "booth_code": "BOOTH-024",
+            "zone": "D",
+            "title": "主題活動 24",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-025",
+            "booth_code": "BOOTH-025",
+            "zone": "E",
+            "title": "主題活動 25",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-026",
+            "booth_code": "BOOTH-026",
+            "zone": "E",
+            "title": "主題活動 26",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-027",
+            "booth_code": "BOOTH-027",
+            "zone": "E",
+            "title": "主題活動 27",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-028",
+            "booth_code": "BOOTH-028",
+            "zone": "F",
+            "title": "主題活動 28",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-029",
+            "booth_code": "BOOTH-029",
+            "zone": "F",
+            "title": "主題活動 29",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-030",
+            "booth_code": "BOOTH-030",
+            "zone": "F",
+            "title": "主題活動 30",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-031",
+            "booth_code": "BOOTH-031",
+            "zone": "F",
+            "title": "主題活動 31",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-032",
+            "booth_code": "BOOTH-032",
+            "zone": "F",
+            "title": "主題活動 32",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-033",
+            "booth_code": "BOOTH-033",
+            "zone": "F",
+            "title": "主題活動 33",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BOOTH／樣本 33／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-BORROW",
+      "source_kind": "structured_dataset",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-BOOTH-001",
+            "booth_code": "BOOTH-001",
+            "zone": "A",
+            "title": "主題活動 1",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-002",
+            "booth_code": "BOOTH-002",
+            "zone": "A",
+            "title": "主題活動 2",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-003",
+            "booth_code": "BOOTH-003",
+            "zone": "A",
+            "title": "主題活動 3",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-004",
+            "booth_code": "BOOTH-004",
+            "zone": "A",
+            "title": "主題活動 4",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-005",
+            "booth_code": "BOOTH-005",
+            "zone": "A",
+            "title": "主題活動 5",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-006",
+            "booth_code": "BOOTH-006",
+            "zone": "A",
+            "title": "主題活動 6",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-007",
+            "booth_code": "BOOTH-007",
+            "zone": "A",
+            "title": "主題活動 7",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-008",
+            "booth_code": "BOOTH-008",
+            "zone": "A",
+            "title": "主題活動 8",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-009",
+            "booth_code": "BOOTH-009",
+            "zone": "A",
+            "title": "主題活動 9",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-010",
+            "booth_code": "BOOTH-010",
+            "zone": "A",
+            "title": "主題活動 10",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-011",
+            "booth_code": "BOOTH-011",
+            "zone": "A",
+            "title": "主題活動 11",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-012",
+            "booth_code": "BOOTH-012",
+            "zone": "A",
+            "title": "主題活動 12",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-013",
+            "booth_code": "BOOTH-013",
+            "zone": "B",
+            "title": "主題活動 13",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-014",
+            "booth_code": "BOOTH-014",
+            "zone": "B",
+            "title": "主題活動 14",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-015",
+            "booth_code": "BOOTH-015",
+            "zone": "B",
+            "title": "主題活動 15",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-016",
+            "booth_code": "BOOTH-016",
+            "zone": "C",
+            "title": "主題活動 16",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-017",
+            "booth_code": "BOOTH-017",
+            "zone": "C",
+            "title": "主題活動 17",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-018",
+            "booth_code": "BOOTH-018",
+            "zone": "C",
+            "title": "主題活動 18",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-019",
+            "booth_code": "BOOTH-019",
+            "zone": "C",
+            "title": "主題活動 19",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-020",
+            "booth_code": "BOOTH-020",
+            "zone": "D",
+            "title": "主題活動 20",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-021",
+            "booth_code": "BOOTH-021",
+            "zone": "D",
+            "title": "主題活動 21",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-022",
+            "booth_code": "BOOTH-022",
+            "zone": "D",
+            "title": "主題活動 22",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-023",
+            "booth_code": "BOOTH-023",
+            "zone": "D",
+            "title": "主題活動 23",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-024",
+            "booth_code": "BOOTH-024",
+            "zone": "D",
+            "title": "主題活動 24",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-025",
+            "booth_code": "BOOTH-025",
+            "zone": "E",
+            "title": "主題活動 25",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-026",
+            "booth_code": "BOOTH-026",
+            "zone": "E",
+            "title": "主題活動 26",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-027",
+            "booth_code": "BOOTH-027",
+            "zone": "E",
+            "title": "主題活動 27",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-028",
+            "booth_code": "BOOTH-028",
+            "zone": "F",
+            "title": "主題活動 28",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-029",
+            "booth_code": "BOOTH-029",
+            "zone": "F",
+            "title": "主題活動 29",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-030",
+            "booth_code": "BOOTH-030",
+            "zone": "F",
+            "title": "主題活動 30",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-031",
+            "booth_code": "BOOTH-031",
+            "zone": "F",
+            "title": "主題活動 31",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-032",
+            "booth_code": "BOOTH-032",
+            "zone": "F",
+            "title": "主題活動 32",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-033",
+            "booth_code": "BOOTH-033",
+            "zone": "F",
+            "title": "主題活動 33",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-BORROW／樣本 33／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-MARQUEE",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-MARQUEE-001",
+            "simulation_title": "2027 演練：帳篷資料",
+            "editable_test_value": "測試值：DATA-MARQUEE／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 261003_Scout_marquee；activity_day_sources：協調組／場地／帳篷資料。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-PARKING",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-PARKING-001",
+            "simulation_title": "2027 演練：泊車證（實物）",
+            "editable_test_value": "測試值：DATA-PARKING／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 parking_source。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-PROCUREMENT-CLEANING",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-PROCUREMENT-CLEANING-001",
+            "simulation_title": "2027 演練：清潔服務報價邀請",
+            "editable_test_value": "測試值：DATA-PROCUREMENT-CLEANING／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: ISD2026 Cleaning Quotation request。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-PROCUREMENT-VENUE",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-PROCUREMENT-VENUE-001",
+            "simulation_title": "2027 演練：場地佈置報價邀請",
+            "editable_test_value": "測試值：DATA-PROCUREMENT-VENUE／revision 1",
+            "dependent_output_count": 2,
+            "evidence_basis": "2026 doc: ISD2026 Site setup Quotation Request。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-THEME-PROGRAMME",
+      "source_kind": "structured_dataset",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "主題節目組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "主題節目組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-BOOTH-001",
+            "booth_code": "BOOTH-001",
+            "zone": "A",
+            "title": "主題活動 1",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-002",
+            "booth_code": "BOOTH-002",
+            "zone": "A",
+            "title": "主題活動 2",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-003",
+            "booth_code": "BOOTH-003",
+            "zone": "A",
+            "title": "主題活動 3",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-004",
+            "booth_code": "BOOTH-004",
+            "zone": "A",
+            "title": "主題活動 4",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-005",
+            "booth_code": "BOOTH-005",
+            "zone": "A",
+            "title": "主題活動 5",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-006",
+            "booth_code": "BOOTH-006",
+            "zone": "A",
+            "title": "主題活動 6",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-007",
+            "booth_code": "BOOTH-007",
+            "zone": "A",
+            "title": "主題活動 7",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-008",
+            "booth_code": "BOOTH-008",
+            "zone": "A",
+            "title": "主題活動 8",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-009",
+            "booth_code": "BOOTH-009",
+            "zone": "A",
+            "title": "主題活動 9",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-010",
+            "booth_code": "BOOTH-010",
+            "zone": "A",
+            "title": "主題活動 10",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-011",
+            "booth_code": "BOOTH-011",
+            "zone": "A",
+            "title": "主題活動 11",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-012",
+            "booth_code": "BOOTH-012",
+            "zone": "A",
+            "title": "主題活動 12",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-013",
+            "booth_code": "BOOTH-013",
+            "zone": "B",
+            "title": "主題活動 13",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-014",
+            "booth_code": "BOOTH-014",
+            "zone": "B",
+            "title": "主題活動 14",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-015",
+            "booth_code": "BOOTH-015",
+            "zone": "B",
+            "title": "主題活動 15",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-016",
+            "booth_code": "BOOTH-016",
+            "zone": "C",
+            "title": "主題活動 16",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-017",
+            "booth_code": "BOOTH-017",
+            "zone": "C",
+            "title": "主題活動 17",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-018",
+            "booth_code": "BOOTH-018",
+            "zone": "C",
+            "title": "主題活動 18",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-019",
+            "booth_code": "BOOTH-019",
+            "zone": "C",
+            "title": "主題活動 19",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-020",
+            "booth_code": "BOOTH-020",
+            "zone": "D",
+            "title": "主題活動 20",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-021",
+            "booth_code": "BOOTH-021",
+            "zone": "D",
+            "title": "主題活動 21",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-022",
+            "booth_code": "BOOTH-022",
+            "zone": "D",
+            "title": "主題活動 22",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-023",
+            "booth_code": "BOOTH-023",
+            "zone": "D",
+            "title": "主題活動 23",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-024",
+            "booth_code": "BOOTH-024",
+            "zone": "D",
+            "title": "主題活動 24",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-025",
+            "booth_code": "BOOTH-025",
+            "zone": "E",
+            "title": "主題活動 25",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-026",
+            "booth_code": "BOOTH-026",
+            "zone": "E",
+            "title": "主題活動 26",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-027",
+            "booth_code": "BOOTH-027",
+            "zone": "E",
+            "title": "主題活動 27",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-028",
+            "booth_code": "BOOTH-028",
+            "zone": "F",
+            "title": "主題活動 28",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-029",
+            "booth_code": "BOOTH-029",
+            "zone": "F",
+            "title": "主題活動 29",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-030",
+            "booth_code": "BOOTH-030",
+            "zone": "F",
+            "title": "主題活動 30",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-031",
+            "booth_code": "BOOTH-031",
+            "zone": "F",
+            "title": "主題活動 31",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-032",
+            "booth_code": "BOOTH-032",
+            "zone": "F",
+            "title": "主題活動 32",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-BOOTH-033",
+            "booth_code": "BOOTH-033",
+            "zone": "F",
+            "title": "主題活動 33",
+            "simulation_origin": "2026 booth/activity structure (contacts removed)",
+            "editable_test_value": "測試值：DATA-THEME-PROGRAMME／樣本 33／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-VEHICLE",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-VEHICLE-001",
+            "simulation_title": "2027 演練：車輛批核",
+            "editable_test_value": "測試值：DATA-VEHICLE／revision 1",
+            "dependent_output_count": 2,
+            "evidence_basis": "2026 tab: coord_vehicle。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-SITE-VISIT",
+      "source_kind": "controlled_document",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-SITE-VISIT-001",
+            "document_title": "ISD2027 演練 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+            "template_body": "2027 演練文件：警察學院實地視察程序。修改此句可驗證 DOC-SITE-VISIT 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-SITE-VISIT／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "MAP-BASE",
+      "source_kind": "controlled_asset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MAP-BASE-001",
+            "document_title": "MAP.gif（場地地圖）",
+            "template_body": "2027 演練文件：場地地圖 MAP。修改此句可驗證 MAP-BASE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：MAP-BASE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "MAP-GUEST",
+      "source_kind": "controlled_asset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MAP-GUEST-001",
+            "document_title": "ISD2027 演練 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+            "template_body": "2027 演練文件：警察學院地圖－嘉賓版。修改此句可驗證 MAP-GUEST 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：MAP-GUEST／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "MAP-SITE-SETUP",
+      "source_kind": "controlled_asset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MAP-SITE-SETUP-001",
+            "document_title": "場地佈置圖 Site Setup Plan",
+            "template_body": "2027 演練文件：場地佈置圖 Site Setup Plan。修改此句可驗證 MAP-SITE-SETUP 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：MAP-SITE-SETUP／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "MAP-TROOP",
+      "source_kind": "controlled_asset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MAP-TROOP-001",
+            "document_title": "附錄1_參加旅團節目程序_2027 演練",
+            "template_body": "2027 演練文件：參加旅團場地指示圖（附錄2）。修改此句可驗證 MAP-TROOP 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：MAP-TROOP／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "MAP-VENUE-DETAIL",
+      "source_kind": "controlled_asset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MAP-VENUE-DETAIL-001",
+            "document_title": "ISD2027 演練 警察學院地圖－嘉賓版 (PoliceCollege Maps guest) V2",
+            "template_body": "2027 演練文件：警察學院場地地圖。修改此句可驗證 MAP-VENUE-DETAIL 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：MAP-VENUE-DETAIL／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "REGISTRY-COORD-DOCS",
+      "source_kind": "system_registry",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-REGISTRY-COORD-DOCS-001",
+            "simulation_title": "2027 演練：場地佈置及文件夾",
+            "editable_test_value": "測試值：REGISTRY-COORD-DOCS／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: coord_docs。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    }
+  ]
+}

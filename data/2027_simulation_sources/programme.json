@@ -1,0 +1,722 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "programme",
+  "drive_folder_code": "05_程序",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "ASSET-MERIT-CERTIFICATE",
+      "source_kind": "controlled_asset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-MERIT-CERTIFICATE-001",
+            "document_title": "特別通告第03/26號－2027 演練年優異旅團獎勵計劃",
+            "template_body": "2027 演練文件：優異旅團證書及彩帶標籤。修改此句可驗證 ASSET-MERIT-CERTIFICATE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：ASSET-MERIT-CERTIFICATE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "ASSET-SERVICE-CERTIFICATE",
+      "source_kind": "controlled_asset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-SERVICE-CERTIFICATE-001",
+            "document_title": "長期服務獎狀及獎章證書",
+            "template_body": "2027 演練文件：長期服務獎狀及獎章證書。修改此句可驗證 ASSET-SERVICE-CERTIFICATE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：ASSET-SERVICE-CERTIFICATE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "ASSET-THANKS-CERTIFICATE",
+      "source_kind": "controlled_asset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-THANKS-CERTIFICATE-001",
+            "document_title": "協助單位感謝狀",
+            "template_body": "2027 演練文件：協助單位感謝狀。修改此句可驗證 ASSET-THANKS-CERTIFICATE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：ASSET-THANKS-CERTIFICATE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-CEREMONY-PROGRAMME",
+      "source_kind": "structured_dataset",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-SCRIPT-01",
+            "part": "第一部分",
+            "title": "優異旅團及各項獎勵頒獎典禮 司儀稿",
+            "version": "SIM-V5",
+            "pages": 12,
+            "note": "1045 宣佈就座｜1055 嘉賓進場｜1100 開場｜1110 主禮團進場及頒獎。主禮人：地域會長 吳家麗女士 OStJ。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：DATA-CEREMONY-PROGRAMME／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-02",
+            "part": "第二部分",
+            "title": "會操檢閱及頒獎典禮 司儀稿",
+            "version": "SIM-V4",
+            "pages": 15,
+            "note": "1150 會操隊伍進場｜1200 主禮嘉賓到場｜檢閱｜1250 合照。主禮嘉賓：香港警務處港島總區指揮官 區永樑助理處長。全場 15 隊。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：DATA-CEREMONY-PROGRAMME／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-03",
+            "part": "第三部分",
+            "title": "莫榮大樓自助餐 司儀稿",
+            "version": "SIM-V2",
+            "pages": 0,
+            "note": "典禮後嘉賓移步莫榮大樓茶點招待。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：DATA-CEREMONY-PROGRAMME／樣本 3／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-INSPECTION-ROUTE",
+      "source_kind": "structured_dataset",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ROUTE-01",
+            "sequence": 1,
+            "step": "檢閱官由檢閱台（右方）步下，先行向旗隊 Front Rank。",
+            "simulation_origin": "2026 inspection route structure",
+            "editable_test_value": "測試值：DATA-INSPECTION-ROUTE／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-ROUTE-02",
+            "sequence": 2,
+            "step": "沿旗隊 Front Rank 行過，再繞旗隊 Rear Rank。",
+            "simulation_origin": "2026 inspection route structure",
+            "editable_test_value": "測試值：DATA-INSPECTION-ROUTE／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-ROUTE-03",
+            "sequence": 3,
+            "step": "之後斜向左上，到第一組群隊伍起點；陪同總監及會操司令員同行。",
+            "simulation_origin": "2026 inspection route structure",
+            "editable_test_value": "測試值：DATA-INSPECTION-ROUTE／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-ROUTE-04",
+            "sequence": 4,
+            "step": "檢閱第一組群隊伍：只檢閱每一個 Row 的 Front Rank（由左至右）。",
+            "simulation_origin": "2026 inspection route structure",
+            "editable_test_value": "測試值：DATA-INSPECTION-ROUTE／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-ROUTE-05",
+            "sequence": 5,
+            "step": "轉上第二組群隊伍：同樣只檢閱每一個 Row 的 Front Rank（由右至左）。",
+            "simulation_origin": "2026 inspection route structure",
+            "editable_test_value": "測試值：DATA-INSPECTION-ROUTE／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-ROUTE-06",
+            "sequence": 6,
+            "step": "經樂隊前方折返檢閱台；檢閱完畢，會操司令員向檢閱官敬禮。",
+            "simulation_origin": "2026 inspection route structure",
+            "editable_test_value": "測試值：DATA-INSPECTION-ROUTE／樣本 6／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-MEETING",
+      "source_kind": "structured_dataset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-MEETING-001",
+            "simulation_title": "2027 演練：籌委會議議程",
+            "editable_test_value": "測試值：DATA-MEETING／revision 1",
+            "dependent_output_count": 2,
+            "evidence_basis": "2026 doc: 4_Agenda 籌備委員會議程 (20260818)；meetings(6)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-POST-EVENT-REPORT",
+      "source_kind": "structured_dataset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-POST-EVENT-REPORT-001",
+            "simulation_title": "2027 演練：活動後總結報告",
+            "editable_test_value": "測試值：DATA-POST-EVENT-REPORT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 工作計劃及進度 V2.docx；meetings(6)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-THANKS-RECIPIENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-THANKS-RECIPIENT-001",
+            "simulation_title": "2027 演練：協助單位感謝狀",
+            "editable_test_value": "測試值：DATA-THANKS-RECIPIENT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 司儀稿：香港警察學院及香港聖約翰救傷隊感謝狀。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-WISH-LIST",
+      "source_kind": "structured_dataset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-WISH-LIST-001",
+            "simulation_title": "2027 演練：Wish List",
+            "editable_test_value": "測試值：DATA-WISH-LIST／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: Wish List 2026。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-WORKPLAN",
+      "source_kind": "structured_dataset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-WORKPLAN-001",
+            "simulation_title": "2027 演練：工作計劃及進度",
+            "editable_test_value": "測試值：DATA-WORKPLAN／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 工作計劃及進度 V2.docx。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "SCHEDULE-ALL",
+      "source_kind": "structured_dataset",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處",
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-SCHEDULE-001",
+            "sequence": 1,
+            "time_slot": "10:45",
+            "title": "嘉賓接待（典禮嘉賓接待處）",
+            "location": "莫榮大樓地下",
+            "owner_group": "嘉賓接待組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-ALL／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-002",
+            "sequence": 2,
+            "time_slot": "10:55",
+            "title": "嘉賓就座",
+            "location": "大操場",
+            "owner_group": "嘉賓接待組／會操及典禮組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-ALL／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-003",
+            "sequence": 3,
+            "time_slot": "11:00",
+            "title": "第一部分典禮",
+            "location": "大操場",
+            "owner_group": "會操及典禮組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-ALL／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-004",
+            "sequence": 4,
+            "time_slot": "12:00",
+            "title": "第二部分典禮",
+            "location": "大操場",
+            "owner_group": "會操及典禮組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-ALL／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-005",
+            "sequence": 5,
+            "time_slot": "13:00",
+            "title": "嘉賓茶聚",
+            "location": "莫榮大樓地下",
+            "owner_group": "嘉賓接待組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-ALL／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-006",
+            "sequence": 6,
+            "time_slot": "14:00",
+            "title": "參觀主題活動區",
+            "location": "全場",
+            "owner_group": "主題節目組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-ALL／樣本 6／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "SCHEDULE-TROOP",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-SCHEDULE-001",
+            "sequence": 1,
+            "time_slot": "10:45",
+            "title": "嘉賓接待（典禮嘉賓接待處）",
+            "location": "莫榮大樓地下",
+            "owner_group": "嘉賓接待組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-TROOP／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-002",
+            "sequence": 2,
+            "time_slot": "10:55",
+            "title": "嘉賓就座",
+            "location": "大操場",
+            "owner_group": "嘉賓接待組／會操及典禮組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-TROOP／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-003",
+            "sequence": 3,
+            "time_slot": "11:00",
+            "title": "第一部分典禮",
+            "location": "大操場",
+            "owner_group": "會操及典禮組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-TROOP／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-004",
+            "sequence": 4,
+            "time_slot": "12:00",
+            "title": "第二部分典禮",
+            "location": "大操場",
+            "owner_group": "會操及典禮組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-TROOP／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-005",
+            "sequence": 5,
+            "time_slot": "13:00",
+            "title": "嘉賓茶聚",
+            "location": "莫榮大樓地下",
+            "owner_group": "嘉賓接待組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-TROOP／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-SCHEDULE-006",
+            "sequence": 6,
+            "time_slot": "14:00",
+            "title": "參觀主題活動區",
+            "location": "全場",
+            "owner_group": "主題節目組",
+            "simulation_origin": "2026 programme timing pattern",
+            "editable_test_value": "測試值：SCHEDULE-TROOP／樣本 6／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "SCRIPT-LUNCH",
+      "source_kind": "controlled_document",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-SCRIPT-01",
+            "part": "第一部分",
+            "title": "優異旅團及各項獎勵頒獎典禮 司儀稿",
+            "version": "SIM-V5",
+            "pages": 12,
+            "note": "1045 宣佈就座｜1055 嘉賓進場｜1100 開場｜1110 主禮團進場及頒獎。主禮人：地域會長 吳家麗女士 OStJ。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-LUNCH／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-02",
+            "part": "第二部分",
+            "title": "會操檢閱及頒獎典禮 司儀稿",
+            "version": "SIM-V4",
+            "pages": 15,
+            "note": "1150 會操隊伍進場｜1200 主禮嘉賓到場｜檢閱｜1250 合照。主禮嘉賓：香港警務處港島總區指揮官 區永樑助理處長。全場 15 隊。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-LUNCH／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-03",
+            "part": "第三部分",
+            "title": "莫榮大樓自助餐 司儀稿",
+            "version": "SIM-V2",
+            "pages": 0,
+            "note": "典禮後嘉賓移步莫榮大樓茶點招待。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-LUNCH／樣本 3／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "SCRIPT-MERIT",
+      "source_kind": "controlled_document",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-SCRIPT-01",
+            "part": "第一部分",
+            "title": "優異旅團及各項獎勵頒獎典禮 司儀稿",
+            "version": "SIM-V5",
+            "pages": 12,
+            "note": "1045 宣佈就座｜1055 嘉賓進場｜1100 開場｜1110 主禮團進場及頒獎。主禮人：地域會長 吳家麗女士 OStJ。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-MERIT／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-02",
+            "part": "第二部分",
+            "title": "會操檢閱及頒獎典禮 司儀稿",
+            "version": "SIM-V4",
+            "pages": 15,
+            "note": "1150 會操隊伍進場｜1200 主禮嘉賓到場｜檢閱｜1250 合照。主禮嘉賓：香港警務處港島總區指揮官 區永樑助理處長。全場 15 隊。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-MERIT／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-03",
+            "part": "第三部分",
+            "title": "莫榮大樓自助餐 司儀稿",
+            "version": "SIM-V2",
+            "pages": 0,
+            "note": "典禮後嘉賓移步莫榮大樓茶點招待。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-MERIT／樣本 3／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "SCRIPT-PARADE",
+      "source_kind": "controlled_document",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-SCRIPT-01",
+            "part": "第一部分",
+            "title": "優異旅團及各項獎勵頒獎典禮 司儀稿",
+            "version": "SIM-V5",
+            "pages": 12,
+            "note": "1045 宣佈就座｜1055 嘉賓進場｜1100 開場｜1110 主禮團進場及頒獎。主禮人：地域會長 吳家麗女士 OStJ。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-PARADE／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-02",
+            "part": "第二部分",
+            "title": "會操檢閱及頒獎典禮 司儀稿",
+            "version": "SIM-V4",
+            "pages": 15,
+            "note": "1150 會操隊伍進場｜1200 主禮嘉賓到場｜檢閱｜1250 合照。主禮嘉賓：香港警務處港島總區指揮官 區永樑助理處長。全場 15 隊。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-PARADE／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-SCRIPT-03",
+            "part": "第三部分",
+            "title": "莫榮大樓自助餐 司儀稿",
+            "version": "SIM-V2",
+            "pages": 0,
+            "note": "典禮後嘉賓移步莫榮大樓茶點招待。",
+            "simulation_origin": "2026 ceremony script metadata (people and full script removed)",
+            "editable_test_value": "測試值：SCRIPT-PARADE／樣本 3／revision 1"
+          }
+        ]
+      }
+    }
+  ]
+}

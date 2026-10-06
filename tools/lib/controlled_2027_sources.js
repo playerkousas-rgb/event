@@ -16,29 +16,39 @@ const DOMAIN_FILES={
   rosters:'rosters.json', venue:'venue.json', programme:'programme.json',
   logistics:'logistics.json', reference_snapshot:'reference_snapshot.json'
 };
+const FRAMEWORK_PROFILES={
+  blank:{catalog:'data/2027_canonical_source_registry.json',connections:'data/2027_output_connection_registry.json',source_dir:'data/2027_blank_sources',status:'blank_framework_ready_not_live'},
+  simulation:{catalog:'data/2027_simulation_source_registry.json',connections:'data/2027_simulation_output_connection_registry.json',source_dir:'data/2027_simulation_sources',status:'simulation_seed_from_2026_evidence_not_live'}
+};
+function frameworkProfile_(profile){
+  const found=FRAMEWORK_PROFILES[profile||'blank'];
+  if(!found) throw new Error(`unknown 2027 framework profile: ${profile}`);
+  return found;
+}
 const BLOCKED_LIVE_REFERENCES=['data/isd_2026.json','ISD2026_GAS_URL','event_id=isd_2026'];
 const clone=value=>JSON.parse(JSON.stringify(value));
 const readJson=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
 const writeJson=(root,file,value)=>fs.writeFileSync(path.join(root,file),JSON.stringify(value,null,2)+'\n');
 const nonEmptyString=value=>typeof value==='string'&&value.trim().length>0;
 
-function loadFramework(root){
-  const catalog=readJson(root,'data/2027_canonical_source_registry.json');
-  const connections=readJson(root,'data/2027_output_connection_registry.json');
+function loadFramework(root,profile='blank'){
+  const profileConfig=frameworkProfile_(profile);
+  const catalog=readJson(root,profileConfig.catalog);
+  const connections=readJson(root,profileConfig.connections);
   const domains={};
-  for(const [domain,file] of Object.entries(DOMAIN_FILES)) domains[domain]=readJson(root,`data/2027_blank_sources/${file}`);
+  for(const [domain,file] of Object.entries(DOMAIN_FILES)) domains[domain]=readJson(root,`${profileConfig.source_dir}/${file}`);
   const sources=new Map();
   for(const [domain,data] of Object.entries(domains)) for(const record of data.records){
     if(sources.has(record.source_id)) throw new Error(`duplicate controlled source ID: ${record.source_id}`);
     sources.set(record.source_id,{domain,record});
   }
-  return {catalog,connections,domains,sources};
+  return {profile,profileConfig,catalog,connections,domains,sources};
 }
 
 function validateFramework(framework){
   const errors=[];
-  if(framework.catalog.status!=='blank_framework_ready_not_live') errors.push('catalog is not a blank framework');
-  if(framework.connections.status!=='blank_framework_ready_not_live') errors.push('connection registry is not a blank framework');
+  if(framework.catalog.status!==framework.profileConfig.status) errors.push('catalog status does not match the selected framework profile');
+  if(framework.connections.status!==framework.profileConfig.status) errors.push('connection registry status does not match the selected framework profile');
   if(framework.catalog.source_count!==framework.sources.size) errors.push('catalog source count does not match domain records');
   if(framework.connections.output_count!==framework.connections.outputs.length) errors.push('connection output count is invalid');
   const catalogIds=new Set(framework.catalog.sources.map(x=>x.source_id));
@@ -49,7 +59,10 @@ function validateFramework(framework){
     for(const id of output.supporting_source_ids||[]) if(!framework.sources.has(id)) errors.push(`${output.output_id} has unknown supporting source ${id}`);
     if(output.canonical_read_rule!=='read_only_from_canonical_source; no output-side copy or edit') errors.push(`${output.output_id} has an unsafe output rule`);
   }
-  const liveText=JSON.stringify({catalog:framework.catalog,connections:framework.connections,domains:framework.domains});
+  // A simulation catalogue records the immutable evidence file/hash as provenance.
+  // Its actual domain payloads and output connections must still be free of live
+  // 2026 URLs/endpoints. The real blank profile checks its whole catalogue too.
+  const liveText=JSON.stringify(framework.profile==='simulation'?{connections:framework.connections,domains:framework.domains}:{catalog:framework.catalog,connections:framework.connections,domains:framework.domains});
   for(const blocked of BLOCKED_LIVE_REFERENCES) if(liveText.includes(blocked)) errors.push(`framework contains a blocked live reference: ${blocked}`);
   return errors;
 }
@@ -120,7 +133,7 @@ function sourceProjection(framework){
   return {
     schema_version:'2027-output-source-projection-v1',
     event_id:'isd_2027',
-    status:'blank_framework_ready_not_live',
+    status:framework.profileConfig.status,
     rule:'Pointers only: output endpoints resolve the current approved source record; no payload is duplicated here.',
     output_count:framework.connections.outputs.length,
     outputs:framework.connections.outputs.map(output=>{
@@ -130,7 +143,7 @@ function sourceProjection(framework){
         final_output:output.final_output,
         canonical_source_id:primary.record.source_id,
         canonical_domain:primary.domain,
-        source_file:`data/2027_blank_sources/${DOMAIN_FILES[primary.domain]}`,
+        source_file:`${framework.profileConfig.source_dir}/${DOMAIN_FILES[primary.domain]}`,
         source_revision:primary.record.revision,
         source_publication_status:primary.record.publication_status,
         state:resolveOutput(framework,output.output_id).state,
@@ -141,7 +154,7 @@ function sourceProjection(framework){
 }
 
 function writeFramework(root,framework){
-  for(const [domain,file] of Object.entries(DOMAIN_FILES)) writeJson(root,`data/2027_blank_sources/${file}`,framework.domains[domain]);
+  for(const [domain,file] of Object.entries(DOMAIN_FILES)) writeJson(root,`${framework.profileConfig.source_dir}/${file}`,framework.domains[domain]);
 }
 
 module.exports={DOMAIN_FILES,loadFramework,validateFramework,resolveOutput,applyApprovedChange,sourceProjection,writeFramework};

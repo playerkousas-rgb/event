@@ -1,0 +1,2583 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "rosters",
+  "drive_folder_code": "03_名單",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "DATA-AWARD-LEADER",
+      "source_kind": "structured_dataset",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組",
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-AWARD-LEADER-001",
+            "simulation_title": "2027 演練：領袖獎勵名單",
+            "editable_test_value": "測試值：DATA-AWARD-LEADER／revision 1",
+            "dependent_output_count": 2,
+            "evidence_basis": "2026 tab: cer_award_leader；ceremony.adult_awards(6)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-AWARD-MERIT",
+      "source_kind": "structured_dataset",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組",
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-AWARD-MERIT-001",
+            "simulation_title": "2027 演練：優異旅團獲獎名單",
+            "editable_test_value": "測試值：DATA-AWARD-MERIT／revision 1",
+            "dependent_output_count": 2,
+            "evidence_basis": "2026 tab: cer_award_merit；ceremony.meritRoster(188)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-AWARD-SECTION",
+      "source_kind": "structured_dataset",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組",
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-AWARD-SECTION-001",
+            "simulation_title": "2027 演練：支部獎勵名單",
+            "editable_test_value": "測試值：DATA-AWARD-SECTION／revision 1",
+            "dependent_output_count": 2,
+            "evidence_basis": "2026 tab: cer_award_section。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-COMMISSION",
+      "source_kind": "structured_dataset",
+      "owner_group": "會操及典禮組",
+      "approved_by": [
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "會操及典禮組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "會操及典禮組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-COMMISSION-001",
+            "simulation_title": "2027 演練：總監委任書名單",
+            "editable_test_value": "測試值：DATA-COMMISSION／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 司儀稿第8頁：7人表（職位／姓名／初步回覆／出席）。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-GUEST",
+      "source_kind": "structured_dataset",
+      "owner_group": "嘉賓接待組",
+      "approved_by": [
+        "嘉賓接待組",
+        "會操及典禮組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "嘉賓接待組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "嘉賓接待組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-GUEST-001",
+            "guest_code": "GUEST-001",
+            "section": "政府",
+            "role_title": "香港警務處港島總區指揮官 主禮嘉賓",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-002",
+            "guest_code": "GUEST-002",
+            "section": "嘉賓",
+            "role_title": "南區民政事務專員",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-003",
+            "guest_code": "GUEST-003",
+            "section": "嘉賓",
+            "role_title": "南區區議員",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-004",
+            "guest_code": "GUEST-004",
+            "section": "嘉賓",
+            "role_title": "香港警務處總督察",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-005",
+            "guest_code": "GUEST-005",
+            "section": "總會及其他地域",
+            "role_title": "副香港總監（常務）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-006",
+            "guest_code": "GUEST-006",
+            "section": "嘉賓",
+            "role_title": "香港童軍總會 副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-007",
+            "guest_code": "GUEST-007",
+            "section": "嘉賓",
+            "role_title": "助理香港總監（產業）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-008",
+            "guest_code": "GUEST-008",
+            "section": "嘉賓",
+            "role_title": "署理助理香港總監（訓練）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-009",
+            "guest_code": "GUEST-009",
+            "section": "嘉賓",
+            "role_title": "總會貝登堡聯誼會主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-010",
+            "guest_code": "GUEST-010",
+            "section": "嘉賓",
+            "role_title": "東九龍地域副地域總監（活動與訓練）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-011",
+            "guest_code": "GUEST-011",
+            "section": "嘉賓",
+            "role_title": "深旺區區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-012",
+            "guest_code": "GUEST-012",
+            "section": "制服團隊",
+            "role_title": "香港少年領袖團機構傳訊組指揮官",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-013",
+            "guest_code": "GUEST-013",
+            "section": "嘉賓",
+            "role_title": "香港女童軍總會 香港助理總監（港島地域）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-014",
+            "guest_code": "GUEST-014",
+            "section": "嘉賓",
+            "role_title": "香港聖約翰救傷隊少青團高級助理總監（青少事務）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-015",
+            "guest_code": "GUEST-015",
+            "section": "嘉賓",
+            "role_title": "香港青少年軍總會署理總幹事",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-016",
+            "guest_code": "GUEST-016",
+            "section": "嘉賓",
+            "role_title": "香港基督少年軍 副主席",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-017",
+            "guest_code": "GUEST-017",
+            "section": "嘉賓",
+            "role_title": "香港基督少年軍事工主任",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-018",
+            "guest_code": "GUEST-018",
+            "section": "嘉賓",
+            "role_title": "香港海事青年團九龍二區總指揮",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-019",
+            "guest_code": "GUEST-019",
+            "section": "嘉賓",
+            "role_title": "醫療輔助隊少年團副總監（少年團）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-020",
+            "guest_code": "GUEST-020",
+            "section": "嘉賓",
+            "role_title": "香港紅十字會 港島總部青年事務總主任",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-021",
+            "guest_code": "GUEST-021",
+            "section": "嘉賓",
+            "role_title": "香港紅十字會少年團高級主任",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-022",
+            "guest_code": "GUEST-022",
+            "section": "嘉賓",
+            "role_title": "香港紅十字會灣仔區區務主任",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-023",
+            "guest_code": "GUEST-023",
+            "section": "嘉賓",
+            "role_title": "地域會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-024",
+            "guest_code": "GUEST-024",
+            "section": "嘉賓",
+            "role_title": "地域總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-025",
+            "guest_code": "GUEST-025",
+            "section": "嘉賓",
+            "role_title": "地域主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-026",
+            "guest_code": "GUEST-026",
+            "section": "嘉賓",
+            "role_title": "副地域總監（活動與訓練）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-027",
+            "guest_code": "GUEST-027",
+            "section": "嘉賓",
+            "role_title": "副地域總監（常務）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-028",
+            "guest_code": "GUEST-028",
+            "section": "嘉賓",
+            "role_title": "副地域總監（行政）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-029",
+            "guest_code": "GUEST-029",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（專責）活動籌委會主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-030",
+            "guest_code": "GUEST-030",
+            "section": "嘉賓",
+            "role_title": "地域名譽會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-031",
+            "guest_code": "GUEST-031",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-032",
+            "guest_code": "GUEST-032",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-033",
+            "guest_code": "GUEST-033",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 33／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-034",
+            "guest_code": "GUEST-034",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 34／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-035",
+            "guest_code": "GUEST-035",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 35／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-036",
+            "guest_code": "GUEST-036",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 36／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-037",
+            "guest_code": "GUEST-037",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 37／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-038",
+            "guest_code": "GUEST-038",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 38／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-039",
+            "guest_code": "GUEST-039",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 39／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-040",
+            "guest_code": "GUEST-040",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 40／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-041",
+            "guest_code": "GUEST-041",
+            "section": "嘉賓",
+            "role_title": "地域副會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 41／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-042",
+            "guest_code": "GUEST-042",
+            "section": "地域",
+            "role_title": "地域副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 42／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-043",
+            "guest_code": "GUEST-043",
+            "section": "嘉賓",
+            "role_title": "地域副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 43／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-044",
+            "guest_code": "GUEST-044",
+            "section": "嘉賓",
+            "role_title": "地域副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 44／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-045",
+            "guest_code": "GUEST-045",
+            "section": "嘉賓",
+            "role_title": "法律顧問",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 45／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-046",
+            "guest_code": "GUEST-046",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 46／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-047",
+            "guest_code": "GUEST-047",
+            "section": "嘉賓",
+            "role_title": "訓練委員會主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 47／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-048",
+            "guest_code": "GUEST-048",
+            "section": "嘉賓",
+            "role_title": "港島北區主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 48／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-049",
+            "guest_code": "GUEST-049",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 49／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-050",
+            "guest_code": "GUEST-050",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 50／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-051",
+            "guest_code": "GUEST-051",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會委員",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 51／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-052",
+            "guest_code": "GUEST-052",
+            "section": "嘉賓",
+            "role_title": "教育及發展委員會副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 52／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-053",
+            "guest_code": "GUEST-053",
+            "section": "嘉賓",
+            "role_title": "空童軍發展委員會副主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": false,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 53／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-054",
+            "guest_code": "GUEST-054",
+            "section": "嘉賓",
+            "role_title": "行政及公共關係委員會副主席",
+            "ceremony_part_1": false,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 54／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-055",
+            "guest_code": "GUEST-055",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會委員",
+            "ceremony_part_1": false,
+            "ceremony_part_2": false,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 55／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-056",
+            "guest_code": "GUEST-056",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會委員",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 56／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-057",
+            "guest_code": "GUEST-057",
+            "section": "嘉賓",
+            "role_title": "青少年活動委員會委員",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 57／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-058",
+            "guest_code": "GUEST-058",
+            "section": "嘉賓",
+            "role_title": "訓練委員會委員",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 58／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-059",
+            "guest_code": "GUEST-059",
+            "section": "嘉賓",
+            "role_title": "領袖訓練主任",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 59／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-060",
+            "guest_code": "GUEST-060",
+            "section": "嘉賓",
+            "role_title": "港島地域童軍樂隊主席",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 60／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-061",
+            "guest_code": "GUEST-061",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（區務）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 61／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-062",
+            "guest_code": "GUEST-062",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（行政）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 62／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-063",
+            "guest_code": "GUEST-063",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（活動）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 63／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-064",
+            "guest_code": "GUEST-064",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（支部）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 64／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-065",
+            "guest_code": "GUEST-065",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（發展）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 65／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-066",
+            "guest_code": "GUEST-066",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（國際及內地事務）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 66／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-067",
+            "guest_code": "GUEST-067",
+            "section": "嘉賓",
+            "role_title": "助理地域總監（行政）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 67／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-068",
+            "guest_code": "GUEST-068",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（公共關係）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 68／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-069",
+            "guest_code": "GUEST-069",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（國際及內地事務）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 69／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-070",
+            "guest_code": "GUEST-070",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（專責）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 70／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-071",
+            "guest_code": "GUEST-071",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（訓練行政）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 71／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-072",
+            "guest_code": "GUEST-072",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（公共關係）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 72／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-073",
+            "guest_code": "GUEST-073",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（設備管理）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": false,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 73／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-074",
+            "guest_code": "GUEST-074",
+            "section": "嘉賓",
+            "role_title": "地域總部總監（屬會）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": false,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 74／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-075",
+            "guest_code": "GUEST-075",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（童軍）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 75／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-076",
+            "guest_code": "GUEST-076",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（公共關係）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 76／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-077",
+            "guest_code": "GUEST-077",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（公共關係）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 77／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-078",
+            "guest_code": "GUEST-078",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（小童軍）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 78／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-079",
+            "guest_code": "GUEST-079",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（屬會）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 79／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-080",
+            "guest_code": "GUEST-080",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（樂隊）",
+            "ceremony_part_1": false,
+            "ceremony_part_2": false,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 80／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-081",
+            "guest_code": "GUEST-081",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（國際及內地事務）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 81／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-082",
+            "guest_code": "GUEST-082",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（航空活動）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 82／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-083",
+            "guest_code": "GUEST-083",
+            "section": "嘉賓",
+            "role_title": "助理地域總部總監（深資童軍）",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 83／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-084",
+            "guest_code": "GUEST-084",
+            "section": "嘉賓",
+            "role_title": "籌委會副主席",
+            "ceremony_part_1": false,
+            "ceremony_part_2": false,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 84／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-085",
+            "guest_code": "GUEST-085",
+            "section": "嘉賓",
+            "role_title": "地域執行幹事",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 85／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-086",
+            "guest_code": "GUEST-086",
+            "section": "區",
+            "role_title": "港島西區署理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 86／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-087",
+            "guest_code": "GUEST-087",
+            "section": "嘉賓",
+            "role_title": "筲箕灣區區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 87／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-088",
+            "guest_code": "GUEST-088",
+            "section": "嘉賓",
+            "role_title": "灣仔區區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 88／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-089",
+            "guest_code": "GUEST-089",
+            "section": "嘉賓",
+            "role_title": "港島西區副區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 89／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-090",
+            "guest_code": "GUEST-090",
+            "section": "嘉賓",
+            "role_title": "筲箕灣區副區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 90／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-091",
+            "guest_code": "GUEST-091",
+            "section": "嘉賓",
+            "role_title": "灣仔區副區總該你",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 91／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-092",
+            "guest_code": "GUEST-092",
+            "section": "嘉賓",
+            "role_title": "港島西區助理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 92／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-093",
+            "guest_code": "GUEST-093",
+            "section": "嘉賓",
+            "role_title": "港島西區助理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 93／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-094",
+            "guest_code": "GUEST-094",
+            "section": "嘉賓",
+            "role_title": "筲箕灣區助理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 94／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-095",
+            "guest_code": "GUEST-095",
+            "section": "嘉賓",
+            "role_title": "筲箕灣區助理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 95／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-096",
+            "guest_code": "GUEST-096",
+            "section": "嘉賓",
+            "role_title": "筲箕灣區助理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": false,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 96／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-097",
+            "guest_code": "GUEST-097",
+            "section": "嘉賓",
+            "role_title": "港島北區署理區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 97／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-098",
+            "guest_code": "GUEST-098",
+            "section": "嘉賓",
+            "role_title": "港島南區副區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 98／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-099",
+            "guest_code": "GUEST-099",
+            "section": "嘉賓",
+            "role_title": "港島南區區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 99／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-100",
+            "guest_code": "GUEST-100",
+            "section": "嘉賓",
+            "role_title": "維多利亞城區區總監",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 100／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-101",
+            "guest_code": "GUEST-101",
+            "section": "嘉賓",
+            "role_title": "港島西區司庫",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 101／revision 1"
+          },
+          {
+            "record_id": "SIM-GUEST-102",
+            "guest_code": "GUEST-102",
+            "section": "其他獲獎人士",
+            "role_title": "港島地域先鋒工程會會長",
+            "ceremony_part_1": true,
+            "ceremony_part_2": true,
+            "guest_tea": true,
+            "simulation_origin": "2026 guest aggregate (name, car plate and contact removed)",
+            "editable_test_value": "測試值：DATA-GUEST／樣本 102／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-JOB-DUTY",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ORG-001",
+            "group_name": "顧問團 (Level 1)",
+            "role_title": "顧問",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-002",
+            "group_name": "主席及執行副主席 (Level 1)",
+            "role_title": "主席",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-003",
+            "group_name": "主席及執行副主席 (Level 3)",
+            "role_title": "執行副主席",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-004",
+            "group_name": "會操及典禮組 (Level 3)",
+            "role_title": "副主席（會操及典禮）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-005",
+            "group_name": "會操及典禮組 (Level 4)",
+            "role_title": "總主任（會操）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-006",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "步操統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-007",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "會操司令員",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-008",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "會操顧問",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-009",
+            "group_name": "會操及典禮組 (Level 4)",
+            "role_title": "總主任（典禮）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-010",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "典禮統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-011",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "優異旅團統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-012",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "獎勵統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-013",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "司儀統籌主任",
+            "assigned_count": 3,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-014",
+            "group_name": "主題節目組 (Level 3)",
+            "role_title": "副主席（主題節目）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-015",
+            "group_name": "主題節目組 (Level 4)",
+            "role_title": "總主任 （主題節目）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-016",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（1）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-017",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（2）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-018",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（3）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-019",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（4）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-020",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（5）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-021",
+            "group_name": "品牌推廣組 (Level 3)",
+            "role_title": "副主席（品牌推廣）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-022",
+            "group_name": "品牌推廣組 (Level 4)",
+            "role_title": "總主任 （品牌推廣）",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-023",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "設計主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-024",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "宣傳主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-025",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "社交媒體主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-026",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "拍攝/攝錄統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-027",
+            "group_name": "嘉賓接待組 (Level 3)",
+            "role_title": "副主席（嘉賓接待）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-028",
+            "group_name": "嘉賓接待組 (Level 4)",
+            "role_title": "總主任 （嘉賓接待）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-029",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "嘉賓接待主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-030",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "交通主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-031",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "嘉賓支援主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-032",
+            "group_name": "協調組 (Level 3)",
+            "role_title": "副主席（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-033",
+            "group_name": "協調組 (Level 4)",
+            "role_title": "總主任（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 33／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-034",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "場地佈置主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 34／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-035",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "膳食主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 35／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-036",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "後勤主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 36／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-037",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "物資主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 37／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-038",
+            "group_name": "協調組 (Level 4)",
+            "role_title": "總主任（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 38／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-039",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "秩序主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 39／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-040",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "交通管制主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 40／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-041",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "物流運輸主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 41／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-042",
+            "group_name": "服務及發展組 (Level 3)",
+            "role_title": "副主席（服務及發展）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 42／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-043",
+            "group_name": "服務及發展組 (Level 4)",
+            "role_title": "總主任 （服務及發展）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 43／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-044",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "服務主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 44／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-045",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "發展主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 45／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-046",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "募捐主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 46／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-047",
+            "group_name": "行政組 (Level 3)",
+            "role_title": "副主席（行政）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 47／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-048",
+            "group_name": "行政組 (Level 4)",
+            "role_title": "總主任(運作)",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 48／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-049",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "旅團報到主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 49／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-050",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "紀念品主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 50／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-051",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "危機處理主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 51／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-052",
+            "group_name": "行政組 (Level 4)",
+            "role_title": "總主任(行政)",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 52／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-053",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "行政主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 53／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-054",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "參事主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 54／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-055",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "財政主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-JOB-DUTY／樣本 55／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-NGO-PARTNER",
+      "source_kind": "structured_dataset",
+      "owner_group": "服務及發展組",
+      "approved_by": [
+        "服務及發展組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "服務及發展組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "服務及發展組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-NGO-PARTNER-001",
+            "simulation_title": "2027 演練：共創明Teen NGO 聯絡表",
+            "editable_test_value": "測試值：DATA-NGO-PARTNER／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: ISD 2026 共創明Teen NGO contact list；activity_day_sources：服務及發展組／NGO聯絡資料。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-ORGANISATION",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ORG-001",
+            "group_name": "顧問團 (Level 1)",
+            "role_title": "顧問",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-002",
+            "group_name": "主席及執行副主席 (Level 1)",
+            "role_title": "主席",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-003",
+            "group_name": "主席及執行副主席 (Level 3)",
+            "role_title": "執行副主席",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-004",
+            "group_name": "會操及典禮組 (Level 3)",
+            "role_title": "副主席（會操及典禮）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-005",
+            "group_name": "會操及典禮組 (Level 4)",
+            "role_title": "總主任（會操）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-006",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "步操統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-007",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "會操司令員",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-008",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "會操顧問",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-009",
+            "group_name": "會操及典禮組 (Level 4)",
+            "role_title": "總主任（典禮）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-010",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "典禮統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-011",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "優異旅團統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-012",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "獎勵統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-013",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "司儀統籌主任",
+            "assigned_count": 3,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-014",
+            "group_name": "主題節目組 (Level 3)",
+            "role_title": "副主席（主題節目）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-015",
+            "group_name": "主題節目組 (Level 4)",
+            "role_title": "總主任 （主題節目）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-016",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（1）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-017",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（2）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-018",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（3）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-019",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（4）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-020",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（5）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-021",
+            "group_name": "品牌推廣組 (Level 3)",
+            "role_title": "副主席（品牌推廣）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-022",
+            "group_name": "品牌推廣組 (Level 4)",
+            "role_title": "總主任 （品牌推廣）",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-023",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "設計主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-024",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "宣傳主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-025",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "社交媒體主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-026",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "拍攝/攝錄統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-027",
+            "group_name": "嘉賓接待組 (Level 3)",
+            "role_title": "副主席（嘉賓接待）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-028",
+            "group_name": "嘉賓接待組 (Level 4)",
+            "role_title": "總主任 （嘉賓接待）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-029",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "嘉賓接待主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-030",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "交通主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-031",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "嘉賓支援主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-032",
+            "group_name": "協調組 (Level 3)",
+            "role_title": "副主席（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-033",
+            "group_name": "協調組 (Level 4)",
+            "role_title": "總主任（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 33／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-034",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "場地佈置主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 34／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-035",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "膳食主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 35／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-036",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "後勤主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 36／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-037",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "物資主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 37／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-038",
+            "group_name": "協調組 (Level 4)",
+            "role_title": "總主任（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 38／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-039",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "秩序主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 39／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-040",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "交通管制主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 40／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-041",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "物流運輸主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 41／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-042",
+            "group_name": "服務及發展組 (Level 3)",
+            "role_title": "副主席（服務及發展）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 42／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-043",
+            "group_name": "服務及發展組 (Level 4)",
+            "role_title": "總主任 （服務及發展）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 43／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-044",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "服務主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 44／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-045",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "發展主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 45／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-046",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "募捐主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 46／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-047",
+            "group_name": "行政組 (Level 3)",
+            "role_title": "副主席（行政）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 47／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-048",
+            "group_name": "行政組 (Level 4)",
+            "role_title": "總主任(運作)",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 48／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-049",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "旅團報到主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 49／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-050",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "紀念品主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 50／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-051",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "危機處理主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 51／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-052",
+            "group_name": "行政組 (Level 4)",
+            "role_title": "總主任(行政)",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 52／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-053",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "行政主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 53／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-054",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "參事主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 54／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-055",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "財政主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：DATA-ORGANISATION／樣本 55／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-UG-ATTENDANCE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-PARTICIPANT-001",
+            "unit_code": "UNIT-001",
+            "unit_label": "演練旅團 001",
+            "area": "HKN 港島北區",
+            "headcount": 28,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-002",
+            "unit_code": "UNIT-002",
+            "unit_label": "演練旅團 002",
+            "area": "SKW 筲箕灣區",
+            "headcount": 17,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-003",
+            "unit_code": "UNIT-003",
+            "unit_label": "演練旅團 003",
+            "area": "WCH 灣仔區",
+            "headcount": 17,
+            "meal_boxes": 17,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-004",
+            "unit_code": "UNIT-004",
+            "unit_label": "演練旅團 004",
+            "area": "WCH 灣仔區",
+            "headcount": 90,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-005",
+            "unit_code": "UNIT-005",
+            "unit_label": "演練旅團 005",
+            "area": "CHW 柴灣區",
+            "headcount": 20,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-006",
+            "unit_code": "UNIT-006",
+            "unit_label": "演練旅團 006",
+            "area": "SKW 筲箕灣區",
+            "headcount": 45,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-007",
+            "unit_code": "UNIT-007",
+            "unit_label": "演練旅團 007",
+            "area": "CHW 柴灣區",
+            "headcount": 28,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-008",
+            "unit_code": "UNIT-008",
+            "unit_label": "演練旅團 008",
+            "area": "CHW 柴灣區",
+            "headcount": 58,
+            "meal_boxes": 25,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-009",
+            "unit_code": "UNIT-009",
+            "unit_label": "演練旅團 009",
+            "area": "WCH 灣仔區",
+            "headcount": 103,
+            "meal_boxes": 38,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-010",
+            "unit_code": "UNIT-010",
+            "unit_label": "演練旅團 010",
+            "area": "VIC 維多利亞城區",
+            "headcount": 55,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-011",
+            "unit_code": "UNIT-011",
+            "unit_label": "演練旅團 011",
+            "area": "HKS 港島南區",
+            "headcount": 10,
+            "meal_boxes": 10,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-012",
+            "unit_code": "UNIT-012",
+            "unit_label": "演練旅團 012",
+            "area": "HKS 港島南區",
+            "headcount": 45,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-013",
+            "unit_code": "UNIT-013",
+            "unit_label": "演練旅團 013",
+            "area": "CHW 柴灣區",
+            "headcount": 47,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-014",
+            "unit_code": "UNIT-014",
+            "unit_label": "演練旅團 014",
+            "area": "WCH 灣仔區",
+            "headcount": 41,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-015",
+            "unit_code": "UNIT-015",
+            "unit_label": "演練旅團 015",
+            "area": "WCH 灣仔區",
+            "headcount": 12,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-016",
+            "unit_code": "UNIT-016",
+            "unit_label": "演練旅團 016",
+            "area": "VIC 維多利亞城區",
+            "headcount": 72,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-017",
+            "unit_code": "UNIT-017",
+            "unit_label": "演練旅團 017",
+            "area": "CHW 柴灣區",
+            "headcount": 18,
+            "meal_boxes": 10,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-018",
+            "unit_code": "UNIT-018",
+            "unit_label": "演練旅團 018",
+            "area": "WCH 灣仔區",
+            "headcount": 52,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-019",
+            "unit_code": "UNIT-019",
+            "unit_label": "演練旅團 019",
+            "area": "HKW 港島西區",
+            "headcount": 9,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-020",
+            "unit_code": "UNIT-020",
+            "unit_label": "演練旅團 020",
+            "area": "HKN 港島北區",
+            "headcount": 7,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-021",
+            "unit_code": "UNIT-021",
+            "unit_label": "演練旅團 021",
+            "area": "HKW 港島西區",
+            "headcount": 30,
+            "meal_boxes": 30,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-022",
+            "unit_code": "UNIT-022",
+            "unit_label": "演練旅團 022",
+            "area": "SKW 筲箕灣區",
+            "headcount": 55,
+            "meal_boxes": 2,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-023",
+            "unit_code": "UNIT-023",
+            "unit_label": "演練旅團 023",
+            "area": "HKN 港島北區",
+            "headcount": 40,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-024",
+            "unit_code": "UNIT-024",
+            "unit_label": "演練旅團 024",
+            "area": "HKN 港島北區",
+            "headcount": 15,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-025",
+            "unit_code": "UNIT-025",
+            "unit_label": "演練旅團 025",
+            "area": "HKW 港島西區",
+            "headcount": 16,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-026",
+            "unit_code": "UNIT-026",
+            "unit_label": "演練旅團 026",
+            "area": "HKS 港島南區",
+            "headcount": 3,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-027",
+            "unit_code": "UNIT-027",
+            "unit_label": "演練旅團 027",
+            "area": "HKW 港島西區",
+            "headcount": 29,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-028",
+            "unit_code": "UNIT-028",
+            "unit_label": "演練旅團 028",
+            "area": "VIC 維多利亞城區",
+            "headcount": 20,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-029",
+            "unit_code": "UNIT-029",
+            "unit_label": "演練旅團 029",
+            "area": "HKIR 港島地域",
+            "headcount": 5,
+            "meal_boxes": 5,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-030",
+            "unit_code": "UNIT-030",
+            "unit_label": "演練旅團 030",
+            "area": "WCH 灣仔區",
+            "headcount": 23,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-031",
+            "unit_code": "UNIT-031",
+            "unit_label": "演練旅團 031",
+            "area": "HKW 港島西區",
+            "headcount": 6,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-UG-ATTENDANCE／樣本 31／revision 1"
+          }
+        ]
+      }
+    }
+  ]
+}

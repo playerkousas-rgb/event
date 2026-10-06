@@ -99,6 +99,17 @@ node tools/export_2027_drive_sources.js
 
 `tools/fill_mock_demo_from_2026.js` remains only as a compatibility shim; it delegates to the 2027 builder and deliberately cannot read the 2026 archive. Never use it to start a new 2026-to-2027 copy.
 
+## Separate fake-data connection review
+
+A review-only profile is available where a blank framework is too sparse to assess causal connections. It uses the same 96 source IDs and 109 output pointers, but is completely distinct from the blank framework:
+
+- `data/2027_simulation_*` and `data/2027_simulation_sources/` are labelled `simulation_seed_from_2026_evidence_not_live`; they are never real 2027 data or a Drive publication target.
+- `node tools/build_2027_simulation_from_2026.js` is the single checksum-verified, one-time bootstrap from frozen 2026 evidence. It produces anonymised/derived fake values only.
+- Later edits and `node tools/build_2027_simulation_review.js` never reopen or synchronise 2026 evidence.
+- Run `node tools/serve_2027_simulation_review.js` to alter one approved **simulation** canonical source and inspect the highlighted dependent output pointers and revision. It cannot write the blank framework.
+
+See [`2027_SIMULATION_REVIEW.md`](2027_SIMULATION_REVIEW.md) for the hard boundary, reset rule and review steps.
+
 ## Publication guardrails
 
 1. Do not edit `data/isd_2026.json`, a 2026 Drive folder, or a 2026 Sheet to “fix” a 2027 display.
