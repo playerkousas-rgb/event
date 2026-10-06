@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+'use strict';
+/* The review-only source explanation must account for every known 2026 output
+   without creating a 2026 live dependency or prematurely wiring integration. */
+const fs=require('fs'),path=require('path'),cp=require('child_process');
+const root=path.resolve(__dirname,'..');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+let n=0; const ok=(v,m)=>{if(!v) throw new Error('FAIL: '+m); n++;};
+const run=cp.spawnSync('node',['tools/build_2027_source_explanation_register.js'],{cwd:root,encoding:'utf8'});
+ok(run.status===0,'source explanation register builds from the locked reference');
+const register=JSON.parse(read('data/2027_source_explanation_register.json'));
+const {OUTPUTS}=require(path.join(root,'tools/schema/outputs_2027.js'));
+const lock=JSON.parse(read('data/2026_reference_lock.json'));
+ok(register.schema_version==='2027-source-explanation-register-v1'&&register.status==='review_only_2026_evidence_to_2027_framework','register is review-only');
+ok(register.boundary.reference_file==='data/isd_2026.json'&&register.boundary.reference_sha256===lock.sha256,'2026 evidence is explicitly immutable and checksummed');
+ok(register.outputs.length===OUTPUTS.length&&register.outputs.length===109,'all enumerated 2026-based outputs have an explanation row');
+ok(register.execution_manual.length===9,'all execution-manual pages are covered');
+ok(register.public_seven.length===7,'all seven public audience tabs remain in the overall explanation');
+ok(register.outputs.every(row=>row.final_output&&row.update_location&&row.central_approval!==undefined&&row.reference_source&&row.proposed_2027_input),'every output has output, maintenance, approval, evidence and future-input explanations');
+ok(register.outputs.every(row=>row.canonical_domain!=='unclassified'),'no legacy output is left without a proposed 2027 domain');
+ok(register.outputs.filter(row=>row.canonical_domain==='finance').every(row=>row.update_location.includes('2027目標：06_後勤')&&row.proposed_2027_input.includes('2026 財務文件核實後新建')),'finance is a 2027 target source rebuilt from verified 2026 evidence, not a dependency on an old folder');
+ok(register.outputs.filter(row=>row.canonical_domain==='governance').every(row=>row.update_location.includes('2027目標：05_程序')&&row.proposed_2027_input.includes('2026 會議及工作計劃文件核實後新建')),'meeting and work-plan are a 2027 target source rebuilt from verified 2026 evidence');
+ok(register.structural_questions.length===0,'no red structural decision remains after the evidence-led category reviews');
+ok(register.review_progress.completed.length===5&&register.review_progress.next.includes('全部 109 項'),'all five review categories are recorded as complete before implementation');
+const publicMap=JSON.parse(read('data/2027_public_documents_dataflow_map.json'));
+const staffMap=JSON.parse(read('data/2027_staff_documents_dataflow_map.json'));
+const deptMap=JSON.parse(read('data/2027_department_centre_dataflow_map.json'));
+const detailed=[...publicMap.sections.flatMap(x=>x.flows),...staffMap.sections.flatMap(x=>x.flows),...deptMap.sections.flatMap(x=>x.flows)];
+ok(detailed.length===109&&new Set(detailed.map(x=>x.final_output)).size===109,'the three detailed non-manual reviews cover each of the 109 inventory outputs exactly once');
+ok(detailed.every(x=>x.status==='mapped'&&x.update_location.startsWith('2027目標：')),'all 109 outputs now have a rebuilt 2027 canonical-source target with no red blocker');
+ok(!register.structural_questions.some(x=>x.includes('79 項歷史文件')||x.includes('未有擁有人或有多版本')),'Secretariat ownership resolves the historic activity-day document questions');
+ok(register.outputs.filter(row=>row.canonical_domain==='notices_documents').every(row=>row.central_approval==='秘書處'&&row.update_location.includes('子SHEET：不需要')),'notices, guidance and activity-day documents are owned by the Secretariat without a duplicate child-Sheet domain');
+ok(register.outputs.filter(row=>row.canonical_domain==='safety').every(row=>row.central_approval==='行政組'&&row.proposed_2027_input.includes('危機處理手冊')),'Administration owns safety and emergency outputs through the crisis manual');
+ok(!JSON.stringify(register).includes('ISD2026_GAS_URL'),'the source explanation does not configure a 2026 live endpoint');
+const templateRegistry=JSON.parse(read('data/2027_sheet_template_registry.json'));
+ok(templateRegistry.source_explanation_review_sheet&&templateRegistry.source_explanation_review_sheet.status==='review_only_2026_evidence_to_2027_framework','the published explanation Sheet is registered as review-only');
+const sheetBuilder=read('tools/build_2027_source_explanation_sheet.py');
+const templateBuilder=read('tools/build_2027_sheet_templates.py');
+ok(sheetBuilder.includes('2027 建構原則')&&sheetBuilder.includes('只改該來源一次，即更新所有相關輸出')&&sheetBuilder.includes('均已完成 2026 證據逐項覆核')&&sheetBuilder.includes('未標色的 2026 差異')&&sheetBuilder.includes('gap_styles'),'review workbook records the completed evidence-led review and the rebuilt 2027 single source of truth');
+ok(templateBuilder.includes('FFFCE4D6'),'workbook writer supports red review-row fills');
+const xlsxDir=path.join(root,'generated/2027_source_explanation');
+fs.rmSync(xlsxDir,{recursive:true,force:true});
+const sheet=cp.spawnSync('python',['tools/build_2027_source_explanation_sheet.py'],{cwd:root,encoding:'utf8'});
+ok(sheet.status===0,'source-explanation workbook builds successfully');
+const files=fs.readdirSync(xlsxDir).filter(f=>f.endsWith('.xlsx'));
+ok(files.length===1&&fs.readFileSync(path.join(xlsxDir,files[0])).subarray(0,4).toString('hex')==='504b0304','source-explanation workbook is a valid XLSX package');
+fs.rmSync(xlsxDir,{recursive:true,force:true});
+console.log(`2027 source explanation review package passed (${n} checks)`);

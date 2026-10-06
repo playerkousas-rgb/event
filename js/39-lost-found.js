@@ -30,6 +30,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveLostFoundData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveLostFoundData')) return false;
     const key=LS.lostFound(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key,JSON.stringify(data));
     if(!this.mockMode&&this.gasUrl){

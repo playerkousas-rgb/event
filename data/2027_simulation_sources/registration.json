@@ -1,0 +1,473 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "registration",
+  "drive_folder_code": "01_報名",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "DATA-PARTICIPANT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-PARTICIPANT-001",
+            "unit_code": "UNIT-001",
+            "unit_label": "演練旅團 001",
+            "area": "HKN 港島北區",
+            "headcount": 28,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-002",
+            "unit_code": "UNIT-002",
+            "unit_label": "演練旅團 002",
+            "area": "SKW 筲箕灣區",
+            "headcount": 17,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-003",
+            "unit_code": "UNIT-003",
+            "unit_label": "演練旅團 003",
+            "area": "WCH 灣仔區",
+            "headcount": 17,
+            "meal_boxes": 17,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-004",
+            "unit_code": "UNIT-004",
+            "unit_label": "演練旅團 004",
+            "area": "WCH 灣仔區",
+            "headcount": 90,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-005",
+            "unit_code": "UNIT-005",
+            "unit_label": "演練旅團 005",
+            "area": "CHW 柴灣區",
+            "headcount": 20,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-006",
+            "unit_code": "UNIT-006",
+            "unit_label": "演練旅團 006",
+            "area": "SKW 筲箕灣區",
+            "headcount": 45,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-007",
+            "unit_code": "UNIT-007",
+            "unit_label": "演練旅團 007",
+            "area": "CHW 柴灣區",
+            "headcount": 28,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-008",
+            "unit_code": "UNIT-008",
+            "unit_label": "演練旅團 008",
+            "area": "CHW 柴灣區",
+            "headcount": 58,
+            "meal_boxes": 25,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-009",
+            "unit_code": "UNIT-009",
+            "unit_label": "演練旅團 009",
+            "area": "WCH 灣仔區",
+            "headcount": 103,
+            "meal_boxes": 38,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-010",
+            "unit_code": "UNIT-010",
+            "unit_label": "演練旅團 010",
+            "area": "VIC 維多利亞城區",
+            "headcount": 55,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-011",
+            "unit_code": "UNIT-011",
+            "unit_label": "演練旅團 011",
+            "area": "HKS 港島南區",
+            "headcount": 10,
+            "meal_boxes": 10,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-012",
+            "unit_code": "UNIT-012",
+            "unit_label": "演練旅團 012",
+            "area": "HKS 港島南區",
+            "headcount": 45,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-013",
+            "unit_code": "UNIT-013",
+            "unit_label": "演練旅團 013",
+            "area": "CHW 柴灣區",
+            "headcount": 47,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-014",
+            "unit_code": "UNIT-014",
+            "unit_label": "演練旅團 014",
+            "area": "WCH 灣仔區",
+            "headcount": 41,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-015",
+            "unit_code": "UNIT-015",
+            "unit_label": "演練旅團 015",
+            "area": "WCH 灣仔區",
+            "headcount": 12,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-016",
+            "unit_code": "UNIT-016",
+            "unit_label": "演練旅團 016",
+            "area": "VIC 維多利亞城區",
+            "headcount": 72,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-017",
+            "unit_code": "UNIT-017",
+            "unit_label": "演練旅團 017",
+            "area": "CHW 柴灣區",
+            "headcount": 18,
+            "meal_boxes": 10,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-018",
+            "unit_code": "UNIT-018",
+            "unit_label": "演練旅團 018",
+            "area": "WCH 灣仔區",
+            "headcount": 52,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-019",
+            "unit_code": "UNIT-019",
+            "unit_label": "演練旅團 019",
+            "area": "HKW 港島西區",
+            "headcount": 9,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-020",
+            "unit_code": "UNIT-020",
+            "unit_label": "演練旅團 020",
+            "area": "HKN 港島北區",
+            "headcount": 7,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-021",
+            "unit_code": "UNIT-021",
+            "unit_label": "演練旅團 021",
+            "area": "HKW 港島西區",
+            "headcount": 30,
+            "meal_boxes": 30,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-022",
+            "unit_code": "UNIT-022",
+            "unit_label": "演練旅團 022",
+            "area": "SKW 筲箕灣區",
+            "headcount": 55,
+            "meal_boxes": 2,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-023",
+            "unit_code": "UNIT-023",
+            "unit_label": "演練旅團 023",
+            "area": "HKN 港島北區",
+            "headcount": 40,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-024",
+            "unit_code": "UNIT-024",
+            "unit_label": "演練旅團 024",
+            "area": "HKN 港島北區",
+            "headcount": 15,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-025",
+            "unit_code": "UNIT-025",
+            "unit_label": "演練旅團 025",
+            "area": "HKW 港島西區",
+            "headcount": 16,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-026",
+            "unit_code": "UNIT-026",
+            "unit_label": "演練旅團 026",
+            "area": "HKS 港島南區",
+            "headcount": 3,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-027",
+            "unit_code": "UNIT-027",
+            "unit_label": "演練旅團 027",
+            "area": "HKW 港島西區",
+            "headcount": 29,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-028",
+            "unit_code": "UNIT-028",
+            "unit_label": "演練旅團 028",
+            "area": "VIC 維多利亞城區",
+            "headcount": 20,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-029",
+            "unit_code": "UNIT-029",
+            "unit_label": "演練旅團 029",
+            "area": "HKIR 港島地域",
+            "headcount": 5,
+            "meal_boxes": 5,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-030",
+            "unit_code": "UNIT-030",
+            "unit_label": "演練旅團 030",
+            "area": "WCH 灣仔區",
+            "headcount": 23,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-PARTICIPANT-031",
+            "unit_code": "UNIT-031",
+            "unit_label": "演練旅團 031",
+            "area": "HKW 港島西區",
+            "headcount": 6,
+            "meal_boxes": 0,
+            "simulation_origin": "2026 participant aggregate (personal contacts removed)",
+            "editable_test_value": "測試值：DATA-PARTICIPANT／樣本 31／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "IN-OC-REPLY",
+      "source_kind": "controlled_intake",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-IN-OC-REPLY-001",
+            "simulation_title": "2027 演練：籌委邀請回條 M28a",
+            "editable_test_value": "測試值：IN-OC-REPLY／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 籌委邀請回條 M28a；documents：秘書處／表格。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "IN-PARKING",
+      "source_kind": "controlled_intake",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-IN-PARKING-001",
+            "simulation_title": "2027 演練：泊車證申請表",
+            "editable_test_value": "測試值：IN-PARKING／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 Google Sheet: 港島童軍繽紛日2026－泊車證申請表格；parking_source.columns(12)；documents：協調組／協調。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "IN01",
+      "source_kind": "controlled_intake",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-IN01-001",
+            "simulation_title": "2027 演練：報名表格 sp12a",
+            "editable_test_value": "測試值：IN01／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 報名表格 sp12a_26_isd2026_enrollform.pdf；documents：行政組／表格。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "IN04",
+      "source_kind": "controlled_intake",
+      "owner_group": "秘書處",
+      "approved_by": [
+        "秘書處"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "秘書處",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "秘書處",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-IN04-001",
+            "simulation_title": "2027 演練：嘉賓回條",
+            "editable_test_value": "測試值：IN04／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: ISD2026 回條 (IN reply) 04102026。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    }
+  ]
+}

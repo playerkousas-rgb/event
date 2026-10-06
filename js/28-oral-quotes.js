@@ -12,6 +12,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveOralQuotesData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveOralQuotesData')) return false;
     const key=LS.oral_quotes(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key,JSON.stringify(data));
     if(!this.mockMode && this.gasUrl){

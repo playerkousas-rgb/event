@@ -22,6 +22,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveSouvenirStampData(data, changed){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveSouvenirStampData')) return false;
     const key=LS.souvenirStamps(this.currentEvent?.event_id||'isd_2026');
     const toSave={
       staff:data.staff||{},
@@ -161,27 +162,41 @@ Object.assign(ScoutEventApp.prototype,{
 ,
   souvenirStaffRoster(){
     const out=[],seen=new Set();
-    const push=(name,group,job,extra)=>{
+    const push=(name,group,job,extra,rowKey='')=>{
       const n=String(name||'').trim(); if(!n) return;
-      const k=normalizeOrgText(n);
+      // Names normally de-duplicate imported/contact lists.  A controlled staff roster
+      // can legitimately contain two entries with the same display name, so retain both
+      // with their immutable roster row IDs.
+      const nameKey=normalizeOrgText(n);
+      let k=nameKey;
+      if(seen.has(k)) k=String(rowKey||'').trim()||nameKey;
       if(seen.has(k)) return; seen.add(k);
       out.push({key:k,name:n,group_name:normalizeGroupName(group||'')||'未分組',job_title:String(job||''),booth:(extra&&extra.booth)||'',remark:(extra&&extra.remark)||'',unit:(extra&&extra.unit)||''});
     };
-    // 2026 凍結版工作人員名單（ISD2026 staff list ver2 (FROZEN).xlsx）——全組別、連 42 個「人選待定」佔位；
-    // 有 booth／職務資料，放最前，同名時以凍結版為準
+    // 活動日點名／派章以 event_staff_roster 為唯一名單：這是 2027 已複製的
+    // 279 位工作人員編更資料。舊 souvenir seed 只在沒有 canonical roster 時才後備使用，
+    // 避免把舊帳戶、組織架構或重複紀錄混成幾百人的現場名單。
+    const canonicalRoster=(this.eventData&&this.eventData.staff&&this.eventData.staff.event_staff_roster)||[];
+    // This station design belongs to the independent 2027 rehearsal source. Keep
+    // the immutable 2026 screen's established merged roster behaviour untouched.
+    const is2027OwnedSource=String(this.eventData?.event_id||'')!=='isd_2026';
+    const useCanonicalRoster=is2027OwnedSource&&Array.isArray(canonicalRoster)&&canonicalRoster.length>0;
     try{
-      const seed=(this.eventData&&this.eventData.souvenirs&&this.eventData.souvenirs.staff_roster_2026)||[];
+      const seed=useCanonicalRoster?canonicalRoster:((this.eventData&&this.eventData.souvenirs&&this.eventData.souvenirs.staff_roster)||[]);
       seed.forEach(c=>{
         if(!c) return;
         if(c.placeholder){
-          const k=c.key||('seedph_'+normalizeOrgText((c.group||'')+(c.booth||'')+(c.name||'')));
+          const k=c.key||c.id||('seedph_'+normalizeOrgText((c.group||'')+(c.booth||'')+(c.name||'')));
           if(seen.has(k)) return; seen.add(k);
-          out.push({key:k,name:c.name||'（人選待定）',group_name:normalizeGroupName(c.group||'')||'未分組',job_title:String(c.job_title||''),booth:c.booth||'',remark:c.remark||'',unit:c.unit||'',placeholder:true});
-        }else push(c.name,c.group,c.job_title,{booth:c.booth||'',remark:c.remark||'',unit:c.unit||''});
+          out.push({key:k,name:c.name||'（人選待定）',group_name:normalizeGroupName(c.group||c.group_name||'')||'未分組',job_title:String(c.job_title||c.role_title||c.role||''),booth:c.booth||'',remark:c.remark||'',unit:c.unit||'',placeholder:true});
+        }else push(c.name,c.group||c.group_name,c.job_title||c.role_title||c.role,{booth:c.booth||'',remark:c.remark||'',unit:c.unit||''},c.id||c.key||'');
       });
     }catch(e){}
     let users=(this.usersList&&this.usersList.length)?this.usersList:[];
     if(!users.length){ try{ users=this.getLocalUsers()||[]; }catch(e){ users=[]; } }
+    // Canonical activity roster is complete; account/contact/org-chart records remain source data,
+    // not extra people to distribute badges to. The legacy merge only runs when no roster exists.
+    if(!useCanonicalRoster){
     // v12.1：最高層系統帳戶（isSuperAdminUser 判定）唔係工作人員——不計入紀念章派發名單同統計
     const superAdminNames=new Set();
     (users||[]).forEach(u=>{
@@ -209,6 +224,7 @@ Object.assign(ScoutEventApp.prototype,{
         push(nm,g,n.title||'');
       });
     });
+    }
     // 匯入的自訂名單（EXCEL）
     try{
       const custom=this.getSouvenirStampData().staff_custom||[];
@@ -312,12 +328,15 @@ Object.assign(ScoutEventApp.prototype,{
     return `<div class="space-y-4">
       <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-4 text-fuchsia-950">
         <b class="text-[14px]"><i class="fa-solid fa-award mr-1"></i>紀念章派發 — 工作人員</b>
-        <p class="mt-1 text-[12px]">以嘉賓點名方式派發：清單只顯示<b>姓名</b>及<b>組別／攤位</b>，方便快速剔選。</p>
+        <p class="mt-1 text-[12px]">活動日以 <b>2027 工作人員編更名單（${roster.length} 位）</b> 點名及派章；名單列只顯示<b>姓名</b>及<b>組別／攤位</b>，可按組別、攤位、姓名或未派狀態排序及篩選，再逐人剔選。</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        ${canManage?`<button onclick="app.openStampCheckinModal('staff','group')" class="bg-fuchsia-600 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-users mr-1"></i>按全組成員點名</button>
-        <button onclick="app.openStampCheckinModal('staff','booth')" class="bg-white border border-fuchsia-300 text-fuchsia-800 px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-store mr-1"></i>按全攤位成員點名</button>
-        <button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('staff')" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-floppy-disk mr-1"></i>儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>`:''}
+        ${canManage?`<button onclick="app.openStampCheckinModal('staff','group')" class="bg-fuchsia-600 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-users mr-1"></i>按全組成員點名／派章</button>
+        <button onclick="app.openStampCheckinModal('staff','booth')" class="bg-white border border-fuchsia-300 text-fuchsia-800 px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-store mr-1"></i>按全攤位成員點名／派章</button>
+        <button data-stamp-save-btn onclick="app.saveSouvenirStampsToBackend('staff')" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold"><i class="fa-solid fa-floppy-disk mr-1"></i>儲存<span data-stamp-pending-count class="hidden ml-1 bg-white/25 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
+        <button onclick="app.exportSouvenirStampsExcel('staff')" class="bg-white border border-fuchsia-300 text-fuchsia-800 px-3 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-excel mr-1"></i>匯出 Excel</button>
+        <button onclick="app.exportSouvenirStampsWord('staff')" class="bg-white border border-fuchsia-300 text-fuchsia-800 px-3 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-word mr-1"></i>匯出 Word</button>
+        <button onclick="app.printSouvenirStamps('staff')" class="bg-slate-900 text-white px-3 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>列印後備名單</button>`:''}
         <span data-stamp-sync-status class="text-[10px] text-slate-500"></span>
       </div>
       <div class="grid grid-cols-3 gap-2 max-w-md text-center">
@@ -325,7 +344,8 @@ Object.assign(ScoutEventApp.prototype,{
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2"><b class="block text-lg text-emerald-700" id="stamp-count-staff">${st.ticked}</b><span class="text-[10px] text-emerald-800">已派</span></div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-2"><b class="block text-lg text-amber-700" id="stamp-pending-staff">${st.pending}</b><span class="text-[10px] text-amber-800">未派</span></div>
       </div>
-      <p class="text-[10px] text-slate-500">共 ${roster.length} 位工作人員，其中 ${boothCount} 位附有攤位資料。完成點名後請按「儲存」。</p>
+      <p class="text-[10px] text-slate-500">共 ${roster.length} 位工作人員，其中 ${boothCount} 位附有攤位資料。完成點名後請按「儲存」；Excel／Word／列印名單可作現場後備，不會把數百人直接攤在操作畫面。</p>
+      <div id="stamp-print-staff" class="hidden"></div>
     </div>`;
   }
 ,
@@ -512,6 +532,21 @@ Object.assign(ScoutEventApp.prototype,{
     if(grid.length<=1){ showToast('暫無名單可匯出','warning'); return; }
     const done=grid.slice(1).filter(r=>r[grid[0].indexOf('已派發')]==='已派發').length;
     downloadWord(`紀念章派發紀錄_${def.label}_${todayISO()}.doc`,`紀念章派發紀錄（${def.label}）`,rowsToHtmlTable(grid),{meta:`活動：${escapeHtml(this.currentEvent?.event_name||'')}　已派發 ${done}／${grid.length-1}　匯出：${new Date().toLocaleString()}（${escapeHtml(this.currentUser?.name||'')}）`,landscape:grid[0].length>6});
+  }
+,
+  // 列印由同一 canonical grid 生成，避免現場後備紙本和螢幕上的派發名單分叉。
+  printSouvenirStamps(scope){
+    const def=this.souvenirStampScopeDef(scope);
+    const grid=this.souvenirStampsGrid(scope);
+    if(grid.length<=1){ showToast('暫無名單可列印','warning'); return; }
+    const id=`stamp-print-${scope}`;
+    let area=document.getElementById(id);
+    if(!area){
+      area=document.createElement('div'); area.id=id; area.className='hidden'; document.body.appendChild(area);
+    }
+    const done=grid.slice(1).filter(r=>r[grid[0].indexOf('已派發')]==='已派發').length;
+    area.innerHTML=`<p class="text-[11px]">已派發：${done}／${grid.length-1}</p>${rowsToHtmlTable(grid)}`;
+    this.printCoordArea(id,`紀念章派發紀錄（${def.label}）`);
   }
 ,
   // 舊名保留（一律出 Excel）

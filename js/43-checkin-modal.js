@@ -15,6 +15,8 @@ Object.assign(ScoutEventApp.prototype,{
     const accent=opts.accent||'rose';
     this._ckState=Object.fromEntries(rowsAll.map(r=>[r.key,!!r.checked]));
     this._ckSort=opts.initialSort||(opts.sortOptions&&opts.sortOptions[0]&&opts.sortOptions[0].k)||'group';
+    this._ckSortDir=opts.initialSortDir||'asc';
+    this._ckFilter=opts.initialFilter||'';
     this._ckQ='';
     this._ckOpts=opts;
     this._ckRows=rowsAll;
@@ -45,15 +47,23 @@ Object.assign(ScoutEventApp.prototype,{
     const sortOpts=(opts.sortOptions&&opts.sortOptions.length?opts.sortOptions:[
       {k:'group',label:'按組別／攤位'},{k:'name',label:'按姓名'},{k:'sub',label:'按職銜／項目'},{k:'pending',label:'未點名優先'}
     ]).map(o=>`<option value="${o.k}" ${this._ckSort===o.k?'selected':''}>${escapeHtml(o.label)}</option>`).join('');
+    const filter=opts.filter||{};
+    const filterOpts=(filter.options||[]).map(o=>`<option value="${escapeHtml(o.value)}" ${this._ckFilter===o.value?'selected':''}>${escapeHtml(o.label)}</option>`).join('');
+    const filterEmptyLabel=filter.placeholder||(filter.require_selection?`請選擇${filter.label||'分類'}`:`全部${filter.label||''}`);
+    const filterAll=filter.require_selection?`<option value="__all__">${escapeHtml(filter.all_label||`全部${filter.label||''}`)}</option>`:'';
+    const filterHTML=filterOpts?`<select id="ck-filter" onchange="app._ckFilter=this.value;app.renderCheckinRows();" class="border rounded-lg px-2 py-2 text-sm bg-white"><option value="">${escapeHtml(filterEmptyLabel)}</option>${filterAll}${filterOpts}</select>`:'';
     return `<div class="space-y-3">
       <div class="flex flex-wrap items-center gap-2">
         <input id="ck-search" value="${escapeHtml(this._ckQ||'')}" placeholder="${escapeHtml(opts.searchPlaceholder||'🔍 搜尋姓名／職銜／攤位／組別')}" oninput="app._ckQ=this.value;app.renderCheckinRows();" class="flex-1 min-w-[160px] px-3 py-2 border rounded-xl text-sm">
+        ${filterHTML}
         <select id="ck-sort" onchange="app._ckSort=this.value;app.renderCheckinRows();" class="border rounded-lg px-2 py-2 text-sm bg-white">${sortOpts}</select>
+        <button type="button" id="ck-sort-dir" onclick="app.toggleCheckinSortDirection()" class="border rounded-lg px-2.5 py-2 text-sm bg-white" title="切換排序方向">${this._ckSortDir==='asc'?'↑':'↓'}</button>
       </div>
       <div class="bg-slate-50 border rounded-xl px-3 py-2 text-sm font-bold flex items-center justify-between flex-wrap gap-2">
-        <span>已到／已剔 <span id="ck-count" class="text-emerald-700"></span> / <span id="ck-total"></span></span>
+        <span>已到／已剔 <span id="ck-count" class="text-emerald-700"></span> / <span id="ck-total"></span>　<span id="ck-visible" class="text-slate-500 text-[11px]"></span></span>
         <span class="text-[10px] text-slate-400 font-normal">${escapeHtml(opts.hint||'剔一格=已點名，儲存後一次過記錄')}</span>
       </div>
+      ${opts.allowBatch?`<div class="flex gap-2 text-[11px]"><button type="button" onclick="app.setVisibleCheckinRows(true)" class="bg-emerald-50 border border-emerald-300 text-emerald-800 px-3 py-1.5 rounded-lg font-bold">剔選目前篩選名單</button><button type="button" onclick="app.setVisibleCheckinRows(false)" class="bg-white border px-3 py-1.5 rounded-lg">取消目前篩選</button></div>`:''}
       <div id="ck-rows" class="space-y-2 max-h-[52vh] overflow-y-auto"></div>
     </div>`;
   },
@@ -66,11 +76,18 @@ Object.assign(ScoutEventApp.prototype,{
     const box=document.getElementById('ck-rows'); if(!box) return;
     const opts=this._ckOpts||{};
     const q=(this._ckQ||'').trim().toLowerCase();
+    const filter=this._ckOpts?.filter||{};
+    const filterField=filter.field||'';
+    const filterValue=this._ckFilter||'';
+    const selectionRequired=!!(filter.require_selection&&!filterValue&&!q);
     const rows=(this._ckRows||[]).filter(r=>{
-      if(!q) return true;
       const blob=[r.name,r.sub,r.group,r.booth,r.unit].filter(Boolean).join(' ').toLowerCase();
-      return blob.includes(q);
+      const hitQ=!q||blob.includes(q);
+      const value=String(r[filterField]||'').trim()||filter.empty_label||'';
+      const hitFilter=!filterValue||filterValue==='__all__'||value===filterValue;
+      return !selectionRequired&&hitQ&&hitFilter;
     });
+    this._ckVisibleKeys=rows.map(r=>r.key);
     const checked=this._ckState||{};
     const cmp=(a,b)=>{
       if(this._ckSort==='name') return String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
@@ -90,17 +107,17 @@ Object.assign(ScoutEventApp.prototype,{
       // group
       return String(a.group||a.booth||'').localeCompare(String(b.group||b.booth||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant');
     };
-    rows.sort(cmp);
+    rows.sort((a,b)=>{ const result=cmp(a,b); return this._ckSortDir==='desc'?-result:result; });
     const rowMeta=r=>typeof opts.rowMeta==='function'
       ?opts.rowMeta(r)
       :[r.sub,r.group,r.booth,r.unit].filter(Boolean).join(' ｜ ');
-    box.innerHTML=rows.map(r=>`<label class="flex items-center gap-3 rounded-xl border bg-white p-3 min-h-[52px] cursor-pointer ${checked[r.key]?'border-emerald-300 bg-emerald-50/50':''}">
+    box.innerHTML=rows.length?rows.map(r=>`<label class="flex items-center gap-3 rounded-xl border bg-white p-3 min-h-[52px] cursor-pointer ${checked[r.key]?'border-emerald-300 bg-emerald-50/50':''}">
       <input type="checkbox" class="ck-check w-6 h-6 accent-emerald-600" data-key="${escapeHtml(r.key)}" ${checked[r.key]?'checked':''}>
       <span class="min-w-0">
         <b class="block text-sm truncate">${escapeHtml(r.name||'')}</b>
         <span class="block text-[11px] text-slate-500 truncate">${escapeHtml(rowMeta(r)||'')}</span>
       </span>
-    </label>`).join('');
+    </label>`).join(''):`<div class="rounded-xl border border-dashed p-6 text-center text-[12px] text-slate-500">${escapeHtml(selectionRequired?(filter.empty_message||`請先選擇${filter.label||'分類'}，或直接搜尋姓名。`):'沒有符合的名單')}</div>`;
     box.querySelectorAll('.ck-check').forEach(el=>el.addEventListener('change',()=>{
       this._ckState[el.dataset.key]=el.checked;
       el.closest('label').classList.toggle('border-emerald-300',el.checked);
@@ -110,6 +127,19 @@ Object.assign(ScoutEventApp.prototype,{
     }));
     const cnt=document.getElementById('ck-count'); if(cnt) cnt.textContent=(this._ckRows||[]).filter(r=>this._ckState[r.key]).length;
     const tot=document.getElementById('ck-total'); if(tot) tot.textContent=(this._ckRows||[]).length;
+    const visible=document.getElementById('ck-visible'); if(visible) visible.textContent=`目前顯示 ${rows.length} 位`;
+  },
+
+  toggleCheckinSortDirection(){
+    this._ckSortDir=this._ckSortDir==='asc'?'desc':'asc';
+    const control=document.getElementById('ck-sort-dir'); if(control) control.textContent=this._ckSortDir==='asc'?'↑':'↓';
+    this.renderCheckinRows();
+  },
+  setVisibleCheckinRows(checked){
+    const keys=this._ckVisibleKeys||[];
+    if(!keys.length){ showToast('目前篩選沒有名單','warning'); return; }
+    keys.forEach(key=>this._ckState[key]=!!checked);
+    this.renderCheckinRows();
   },
 
   // 由紀念章派發開啟嘉賓同款快速點名；工作人員只顯示「組別／攤位 + 姓名」。
@@ -120,13 +150,18 @@ Object.assign(ScoutEventApp.prototype,{
     const map=store[scope]||{};
     const isStaff=scope==='staff';
     const rows=roster.map(p=>({key:p.key,name:p.name,sub:p.job_title||p.title||'',group:p.group_name||'',booth:p.booth||'',unit:p.unit||'',checked:!!(map[p.key]&&map[p.key].ticked)}));
+    const filterField=isStaff?(initialSort==='booth'?'booth':'group'):'unit';
+    const filterLabel=isStaff?(filterField==='booth'?'攤位':'組別'):'單位';
+    const filterValues=[...new Set(rows.map(r=>String(r[filterField]||'').trim()||'未編'+filterLabel))].sort((a,b)=>a.localeCompare(b,'zh-Hant',{numeric:true}));
     this.openCheckinModal(rows,{
       title:isStaff?'紀念章派發點名 — 工作人員':'紀念章派發點名 — 嘉賓',
       saveLabel:`儲存（共 ${rows.length} 位）`,
-      hint:isStaff?'剔＝已派發；只顯示組別／攤位及姓名':'剔＝已派發；撳「儲存」一次過入賬，之後再撳頁面「💾 儲存」寫入後端',
+      hint:isStaff?`先選擇${filterLabel}或搜尋姓名，再逐人剔選＝已派發；儲存後再撳頁面「💾 儲存」寫入後端`:'剔＝已派發；撳「儲存」一次過入賬，之後再撳頁面「💾 儲存」寫入後端',
       initialSort:initialSort||(isStaff?'group':'group'),
       searchPlaceholder:isStaff?'🔍 搜尋姓名／組別／攤位':'🔍 搜尋姓名／職銜／單位',
       rowMeta:isStaff?(r=>`組別／攤位：${r.booth||r.group||'未分組'}`):null,
+      filter:{field:filterField,label:filterLabel,empty_label:'未編'+filterLabel,options:filterValues.map(value=>({value,label:value})),require_selection:isStaff,all_label:`全部${filterLabel}（${rows.length} 位）`,empty_message:`請先選擇${filterLabel}，以免面對 ${rows.length} 位未分類的大清單；如要跨組尋人，請直接搜尋姓名。`},
+      allowBatch:isStaff,
       sortOptions:isStaff?[
         {k:'group',label:'按全組成員'},
         {k:'booth',label:'按全攤位成員'},

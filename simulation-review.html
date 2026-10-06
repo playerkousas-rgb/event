@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ISD 2027 演練來源連通覆核</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+  <main class="max-w-7xl mx-auto p-4 sm:p-8">
+    <header class="rounded-2xl bg-slate-900 text-white p-6 shadow-lg">
+      <p class="text-xs uppercase tracking-[.24em] text-amber-300 font-bold">review only · no live 2027 data</p>
+      <h1 class="text-2xl sm:text-3xl font-black mt-1">ISD 2027 假資料來源連通覆核</h1>
+      <p class="text-sm text-slate-300 mt-2 max-w-3xl">此頁只使用由 2026 封存證據一次性推導的假 2027 演練資料。修改一個 source 的測試值後，所有相依輸出會讀取同一個 revision；正式 blank framework 不會被改動。</p>
+      <div id="summary" class="mt-4 flex flex-wrap gap-2 text-xs"></div>
+    </header>
+
+    <section class="grid lg:grid-cols-[360px_1fr] gap-5 mt-5">
+      <aside class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 h-fit">
+        <h2 class="font-black text-lg">1．修改演練 source</h2>
+        <p class="text-xs text-slate-500 mt-1">這是本機覆核服務；只更新 `data/2027_simulation_sources`，不會寫入 blank 或正式 2027 source。</p>
+        <label class="block text-sm font-bold mt-4 mb-1" for="source">Canonical source ID</label>
+        <select id="source" class="w-full border rounded-xl p-2.5 text-sm bg-white"></select>
+        <div id="source-meta" class="text-xs text-slate-600 rounded-xl bg-slate-50 p-3 mt-3"></div>
+        <label class="block text-sm font-bold mt-4 mb-1" for="value">演練測試值</label>
+        <textarea id="value" rows="5" class="w-full border rounded-xl p-3 text-sm" placeholder="輸入新測試值"></textarea>
+        <button id="save" class="mt-3 w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3">更新這個演練 source</button>
+        <p id="message" class="text-sm mt-3"></p>
+      </aside>
+
+      <section class="min-w-0">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div><h2 class="font-black text-lg">2．檢查相依輸出</h2><p class="text-xs text-slate-500 mt-1">每張卡只顯示其 source pointer、revision 和演練 preview；沒有 output-side content copy。</p></div>
+            <input id="search" class="border rounded-xl px-3 py-2 text-sm w-full sm:w-72" placeholder="搜尋輸出名稱或 source ID">
+          </div>
+          <div id="outputs" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3 mt-5"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+<script>
+let state;
+const $=id=>document.getElementById(id);
+const escape=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+async function load(){
+  const res=await fetch('/api/simulation/state',{cache:'no-store'}); const data=await res.json(); if(!res.ok) throw Error(data.error||'未能讀取演練資料'); state=data; render();
+}
+function selected(){return state.sources.find(source=>source.source_id===$('source').value)||state.sources[0];}
+function render(){
+  $('summary').innerHTML=[`<span class="rounded-full bg-white/10 px-3 py-1">${state.review.source_count} 個 fake source</span>`,`<span class="rounded-full bg-white/10 px-3 py-1">${state.review.output_count} 個 ready outputs</span>`,`<span class="rounded-full bg-white/10 px-3 py-1">${state.audit_entry_count} 筆演練審計</span>`,`<span class="rounded-full bg-amber-400/20 text-amber-100 px-3 py-1">simulation only</span>`].join('');
+  const source=$('source'), previous=source.value;
+  source.innerHTML=state.sources.map(item=>`<option value="${escape(item.source_id)}">${escape(item.source_id)} · ${escape(item.owner_group)}</option>`).join('');
+  source.value=state.sources.some(item=>item.source_id===previous)?previous:state.sources[0].source_id;
+  renderSource(); renderOutputs();
+}
+function renderSource(){
+  const item=selected(); if(!item)return;
+  $('value').value=item.editable_test_value;
+  const audit=item.last_audit; const auditLine=audit?`<div class="mt-2 border-t pt-2"><b>最近審計：</b><span class="font-mono break-all">${escape(audit.audit_id)}</span><br>revision ${audit.before_revision} → ${audit.after_revision} · ${escape(audit.occurred_at)}</div>`:'<div class="mt-2 border-t pt-2 text-slate-500">尚未有此 source 的表單修改；現為 bootstrap 演練值。</div>';
+  $('source-meta').innerHTML=`<div><b>主責：</b>${escape(item.owner_group)}</div><div class="mt-1"><b>Domain：</b>${escape(item.canonical_domain)}　<b>Revision：</b>${item.revision}</div>${auditLine}<div class="mt-2 font-bold">相依輸出（${item.dependent_outputs.length}）</div><ul class="list-disc pl-4 mt-1 space-y-0.5">${item.dependent_outputs.map(output=>`<li>${escape(output)}</li>`).join('')}</ul>`;
+}
+function renderOutputs(){
+  const term=$('search').value.trim().toLowerCase(); const focused=selected()?.source_id;
+  const entries=state.review.outputs.filter(item=>!term||`${item.final_output} ${item.canonical_source_id}`.toLowerCase().includes(term));
+  $('outputs').innerHTML=entries.map(item=>`<article class="border rounded-xl p-4 ${item.canonical_source_id===focused?'border-indigo-400 ring-2 ring-indigo-100':'border-slate-200'}"><div class="flex justify-between gap-2"><h3 class="font-bold text-sm">${escape(item.final_output)}</h3><span class="shrink-0 text-[10px] rounded-full px-2 py-1 ${item.state==='ready_to_render'?'bg-emerald-100 text-emerald-700':'bg-amber-100 text-amber-700'}">${escape(item.state)}</span></div><p class="font-mono text-[11px] text-indigo-700 mt-2 break-all">${escape(item.canonical_source_id)}</p><p class="text-[11px] text-slate-500 mt-1">${escape(item.canonical_domain)} · revision ${item.source_revision} · ${item.dependent_output_count} outputs share this source</p><div class="mt-3 rounded-lg bg-slate-50 p-2.5 text-xs text-slate-700"><b>演練值：</b>${escape(item.preview_value)}</div></article>`).join('')||'<p class="text-sm text-slate-500 col-span-full">找不到相符輸出。</p>';
+}
+$('source').addEventListener('change',()=>{renderSource();renderOutputs();});
+$('search').addEventListener('input',renderOutputs);
+$('save').addEventListener('click',async()=>{const item=selected(), message=$('message'); message.textContent='更新中…';message.className='text-sm mt-3 text-slate-500'; try{const res=await fetch('/api/simulation/source',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source_id:item.source_id,expected_revision:item.revision,editable_test_value:$('value').value})});const data=await res.json();if(!res.ok)throw Error(data.error||'更新失敗');state=data;render();$('source').value=item.source_id;renderSource();renderOutputs();message.textContent=`已更新 ${item.source_id}。請查看高亮輸出卡：它們已讀取新的 revision。`;message.className='text-sm mt-3 text-emerald-700 font-bold';}catch(error){message.textContent=error.message;message.className='text-sm mt-3 text-rose-700 font-bold';}});
+load().catch(error=>{$('message').textContent=error.message;$('message').className='text-sm text-rose-700';});
+</script>
+</body>
+</html>

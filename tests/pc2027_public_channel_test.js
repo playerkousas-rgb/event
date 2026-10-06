@@ -32,7 +32,8 @@ function ok(cond, msg) { if (!cond) throw new Error('FAIL: ' + msg); n++; }
 const mock = JSON.parse(read('data/mock_demo.json'));
 const pc = mock.public_channel_2027;
 ok(pc, '① mock_demo.json 有 public_channel_2027');
-ok(pc.audiences && pc.audiences.length === 7, '① 公眾入口＝須知分眾七類');
+ok(pc.audiences && pc.audiences.length === 7, '① 公眾身份＝須知分眾七類');
+ok(pc.entry_summary && pc.entry_summary.total === 8 && pc.entry_summary.public_audiences === 7 && pc.entry_summary.staff_entry === 1, '① 首屏入口＝7 類公眾身份＋第 8 個工作人員入口');
 ok(['guest', 'troop', 'merit', 'march', 'ug', 'awardee_section', 'awardee_adult'].every(id => pc.audiences.some(a => a.id === id)), '① 七類 id 齊：嘉賓/旅團/優異旅團獲獎/步操隊伍/其他制服團體/支部最高獎勵/成人獎勵');
 ok(pc.audiences.every(a => Array.isArray(a.sections) && a.sections.length > 0), '① 每個受眾有內容組合');
 ok(pc.audiences.every(a => ['schedule', 'arrival'].every(x => a.sections.includes(x))), '① 每類都有：時間表＋報到地圖');
@@ -109,7 +110,9 @@ ok(order[0] === 'public_channel_demo', '② 排公開資料第一位（mock_demo
 let html = render();
 ok(html.includes('你係邊類人'), '⑤ 入口頁有「你係邊類人」');
 ok(['嘉賓', '旅團', '優異旅團獲獎', '步操隊伍', '其他制服團體', '支部最高獎勵獲獎人士', '成人獎勵獲獎人士'].every(n => html.includes(n)), '⑤ 入口卡：七類齊晒（須知分眾七類）');
-ok((html.match(/\?pub=/g) || []).length >= 7, '⑤ 每個入口有專屬連結提示（?pub=）');
+ok((html.match(/\?pub=/g) || []).length >= 7, '⑤ 每個公眾身份入口有專屬連結提示（?pub=）');
+ok(html.includes('8 個入口') && html.includes('data-pc-entry="staff"'), '⑤ 首屏清楚列出第 8 個工作人員入口');
+ok(html.includes('活動密碼') && html.includes('籌委會成員') && html.includes('2027'), '⑤ 工作人員入口清楚分流：普通工作人員密碼 2027／籌委帳戶登入');
 ok(html.includes('一頁睇晒'), '⑤ 底部有委員預覽入口');
 
 /* ── ⑥ 分眾版面（v15 頁簽制）：揀身份後一個頁簽一版，唔再長長一版拖拉 ── */
@@ -135,6 +138,9 @@ ok(html.includes('有蓋操場報到處（東閘入）'), '⑥ 旅團・報到�
 ok(html.includes('旅遊巴'), '⑥ 旅團：專屬交通提示（旅遊巴）');
 html = renderTab('troop', 'guide');
 ok(html.includes('PT/46') && html.includes('普通旅團・須知'), '⑥ 旅團・須知：普通旅團版');
+html = renderTab('troop', 'booths');
+ok(html.includes('攤位遊戲一覽') && html.includes('A01') && html.includes('F06'), '⑥ 旅團・攤位遊戲一覽：33 個攤位按編號可查');
+ok(html.includes('攤位遊戲地圖') && html.includes('pc-booth-game-list') && html.includes('完整攤位遊戲地圖'), '⑥ 旅團・攤位遊戲地圖：分區地圖＋完整 PDF 下載');
 
 html = renderTab('merit', 'schedule');
 ok(html.includes('10:15') && html.includes('排位'), '⑥ 優異旅團獲獎・日程（10:15 排位）');
@@ -374,9 +380,10 @@ ok(app.pcPublicLandingActive() === true, '⑧ mock_demo 未登入 → 公眾 lan
 app.renderPublicLanding();
 let land = containers['public-landing'].innerHTML;
 ok(land.includes('你係邊類人'), '⑧ landing：身份入口選擇');
-ok(land.includes('步操隊伍') && land.includes('支部最高獎勵獲獎人士') && land.includes('成人獎勵獲獎人士'), '⑧ landing：七類入口齊晒');
+ok(land.includes('步操隊伍') && land.includes('支部最高獎勵獲獎人士') && land.includes('成人獎勵獲獎人士'), '⑧ landing：七類公眾身份入口齊晒');
+ok(land.includes('8 個入口') && land.includes('data-pc-entry="staff"'), '⑧ landing：第 8 個工作人員入口與七類公眾身份並列');
 ok(land.includes('2027 港島童軍繽紛日'), '⑧ landing：活動名＋日期時間地點');
-ok(land.includes('工作人員入口'), '⑧ landing：頁尾隱藏工作人員入口');
+ok(land.includes('普通工作人員') && land.includes('籌委會成員'), '⑧ landing：工作人員入口預先說明兩條登入路');
 ok(!land.includes('一頁睇晒'), '⑧ landing：公眾見唔到委員預覽連結');
 ok(containers['dash-hero'].classList.contains('hidden') && containers['simple-card-panel'].classList.contains('hidden'), '⑧ landing：儀表板組件（含會議預告）收起');
 ok(containers['bottom-nav'].style.display === 'none', '⑧ landing：底部導覽（工作人員功能）隱藏');
@@ -466,14 +473,19 @@ app.currentUser = null;
   ok(/staff_pin[\s\S]{0,500}要籌委帳戶/.test(grab('openModule')), '⑱ openModule：非公開模組擋住普通工作人員');
   ok(/grpSec[\s\S]{0,120}staff_pin/.test(coreSrc), '⑱ 部門管理中心區塊對普通工作人員隱藏');
   ok(/user\.staff_pin[\s\S]{0,140}heroMon/.test(grab('renderIdentityBar')), '⑱ 普通工作人員冇「我的監察」');
-  // 實際用卡片定義行一次：模擬 canSeeRoleCard 嘅 staff_pin 規則
-  const pinVisible = defs.filter(d => d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || pc));
-  ok(pinVisible.some(d => d.id === 'exec_manual') && pinVisible.some(d => d.id === 'announcements'), '⑱ 公開資料含執行手冊／公告');
-  ok(!pinVisible.some(d => String(d.id).startsWith('group_')) && !pinVisible.some(d => d.id === 'dept_hub'), '⑱ 公開資料唔含部門卡');
+  // 普通工作人員不是「所有 minLevel 0 公開卡」：只讀 2027 公開執行手冊，避免誤開其他公眾／部門資料。
+  const pinScopeMatch = cfgSrc.match(/const PIN_STAFF_REFERENCE_CARD_IDS=\[([^\]]+)\];/);
+  const pinAllowed = pinScopeMatch ? [...pinScopeMatch[1].matchAll(/'([^']+)'/g)].map(m => m[1]) : [];
+  const pinVisible = defs.filter(d => pinAllowed.includes(d.id) && d.minLevel <= 0 && !d.hideOnDashboard && (!d.requiresData || pc));
+  ok(pinAllowed.length === 1 && pinAllowed[0] === 'exec_manual', '⑱ 普通工作人員白名單只有 exec_manual');
+  ok(pinVisible.length === 1 && pinVisible[0].id === 'exec_manual', '⑱ 普通工作人員只見執行手冊，不見公告／申請／2027 公眾頻道');
+  ok(/PIN_STAFF_REFERENCE_CARD_IDS/.test(cardsSrc) && /pinStaffReferenceDefs/.test(cardsSrc), '⑱ 儀表板以普通工作人員白名單取卡');
+  ok(/PIN_STAFF_REFERENCE_CARD_IDS/.test(grab('openModule')), '⑱ openModule：只能由白名單開啟執行手冊');
   const sg = app.pcStaffGateDef();
   ok(sg.lanes.length === 2 && sg.lanes[0].id === 'staff' && sg.lanes[1].id === 'committee', '⑱ staff_gate 資料：兩條路');
   ok(sg.pin_user && sg.pin_user.role === 'staff', '⑱ staff_gate 資料：PIN 身份＝staff');
-  ok((sg.lanes[0].cannot || []).some(x => x.includes('部門中心')), '⑱ 文案：普通工作人員明寫冇部門中心');
+  ok((sg.lanes[0].can || []).length === 1 && sg.lanes[0].can[0].includes('2027 公開執行手冊'), '⑱ 文案：普通工作人員只獲 2027 唯讀執行手冊');
+  ok((sg.lanes[0].cannot || []).some(x => x.includes('2027 公眾頻道')) && (sg.lanes[0].cannot || []).some(x => x.includes('部門中心')), '⑱ 文案：普通工作人員明寫冇 2027 進行中資料／部門中心');
   ok((sg.lanes[1].can || []).some(x => x.includes('部門中心')), '⑱ 文案：籌委明寫有部門中心');
 }
 
@@ -490,7 +502,13 @@ ok(!containers['module-content'].innerHTML.includes('名額（先到先得）') 
 app.openPublicChannelTab('booths');
 ok(containers['module-content'].innerHTML.includes('A01'), '③ 攤位列表有 A01');
 app.pcDemoZone = 'F'; app.renderPublicChannelDemo();
-ok(containers['module-content'].innerHTML.includes('F06') && !containers['module-content'].innerHTML.includes('>A01<'), '③ 攤位 F 區篩選生效');
+{
+  const rendered=containers['module-content'].innerHTML;
+  const from=rendered.indexOf('id="pc-booth-game-list"');
+  const until=rendered.indexOf('🗺️ 攤位遊戲地圖', from);
+  const boothList=rendered.slice(from,until);
+  ok(boothList.includes('F06') && !boothList.includes('>A01<'), '③ 攤位 F 區篩選生效（地圖仍保留全部分區作對照）');
+}
 app.pcDemoZone = 'all';
 app.openPublicChannelTab('manual');
 ok(containers['module-content'].innerHTML.includes('合共 31 團'), '③ 參加旅團名單合計');
@@ -651,4 +669,4 @@ ok(idxSrc.includes('id="public-landing"') && idxSrc.includes('id="modal-staff-ga
   ok(!/saveDonationsData|getDonationsData/.test(pcSrc), '⑱ 公眾頻道完全唔掂捐贈存檔（入數只可以喺工作人員端）');
 }
 
-console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜audiences 7・booths 33・participants 31・merit ${meritTotal}`);
+console.log(`公眾頻道 2027 分眾入口＋landing＋工作人員閘口測試通過（${n} 項）｜7 公眾身份＋1 工作人員入口・booths 33・participants 31・merit ${meritTotal}`);

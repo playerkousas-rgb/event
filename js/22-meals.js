@@ -79,6 +79,7 @@ Object.assign(ScoutEventApp.prototype,{
   }
 ,
   saveMealsData(data,skipGasSync=false){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveMealsData')) return false;
     const key=LS.meals(this.currentEvent?.event_id||'isd_2026');
     localStorage.setItem(key, JSON.stringify(data));
     this.eventData['meals']=data;

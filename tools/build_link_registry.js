@@ -119,7 +119,7 @@ const links=Object.keys(occ).sort().map(url=>{
   return {id:mkId(label,kind),label,kind,kind_zh:KIND_ZH[kind],owner:ownerOf(paths),url,
     targets:paths, uses:paths.length,
     inline_uses:(inline[url]||[]).length,        // 夾喺內文嘅唔自動換，但要知有幾多處
-    source:'2026', updated_by:'', updated_at:''};
+    source:'2027', updated_by:'', updated_at:''};
 });
 
 const registry={

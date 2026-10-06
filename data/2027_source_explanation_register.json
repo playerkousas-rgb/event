@@ -1,0 +1,2279 @@
+{
+  "schema_version": "2027-source-explanation-register-v1",
+  "status": "review_only_2026_evidence_to_2027_framework",
+  "generated_at": "2026-10-06",
+  "boundary": {
+    "reference_event_id": "isd_2026",
+    "reference_file": "data/isd_2026.json",
+    "reference_sha256": "d7dcd05521c01e7925851d74f5a87321c38e0ddadbbd921bb5ea41fe2c2ce037",
+    "rule": "所有 2026 來源只作封存、唯讀證據。此表提出 2027 資料位置及輸入草案，但不會建立同步、寫入 2026 或把 2026 變成 live source。"
+  },
+  "column_rule": "所有覆核列均按 A 最終輸出、B 主SHEET／子SHEET更新位置、C 中央批核、D 2026已驗證來源／未來2027輸入草案閱讀。",
+  "review_progress": {
+    "completed": [
+      "公眾七類活動日輸出",
+      "工作人員執行手冊九個頁簽",
+      "公眾文件及入口（26項）",
+      "工作人員文件及工作視圖（25項）",
+      "部門中心及內部輸出（58項）"
+    ],
+    "next": "全部 109 項2026實物根據輸出及工作人員執行手冊已按類別完成來源解釋。下一步只可在確認沒有遺漏後，於下一個對話建立 2027-owned sources 與輸出連通；現有 2027 資料夾及 MOCK 可按此設計重建。"
+  },
+  "established_groups": [
+    "主席及執行副主席",
+    "顧問團",
+    "秘書處",
+    "行政組",
+    "協調組",
+    "嘉賓接待組",
+    "會操及典禮組",
+    "主題節目組",
+    "服務及發展組",
+    "品牌推廣組"
+  ],
+  "public_seven": [
+    {
+      "final_output": "嘉賓",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／02_嘉賓",
+      "status": "already_modelled"
+    },
+    {
+      "final_output": "參加旅團",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／03_參加旅團",
+      "status": "already_modelled"
+    },
+    {
+      "final_output": "優異旅團",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／04_優異旅團",
+      "status": "already_modelled"
+    },
+    {
+      "final_output": "步操隊伍",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／05_步操隊伍",
+      "status": "already_modelled"
+    },
+    {
+      "final_output": "其他制服團體",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／06_其他制服團體",
+      "status": "already_modelled"
+    },
+    {
+      "final_output": "支部最高獎勵得主",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／07_支部最高獎勵得主",
+      "status": "already_modelled"
+    },
+    {
+      "final_output": "成人獎勵得主",
+      "update_location": "另見已覆核的公眾七類四欄表。",
+      "central_approval": "按各頁 C 欄。",
+      "reference_source": "ISD 2027－活動日輸出頁簽及輸入對照表／08_成人獎勵得主",
+      "status": "already_modelled"
+    }
+  ],
+  "execution_manual": [
+    {
+      "final_output": "手冊目錄及資料說明",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "2026 documents、notices、活動日資料目錄；2027 由秘書處提供及確認活動日文件",
+      "status": "review_required"
+    },
+    {
+      "final_output": "全日程序及各組工作時間",
+      "update_location": "主SHEET：16_當值安排、26_日程及地圖、21_典禮；子SHEET：CS03_工作人員及攤位人手、CS05_典禮及會操",
+      "central_approval": "行政組",
+      "reference_source": "2026 schedule、ceremony.rundown_part1_v5、司儀稿；2027 每個既有大組別填寫其全日工作的開始及結束時間，不設交接或換位資料",
+      "status": "review_required"
+    },
+    {
+      "final_output": "場地、攤位、遊戲及動線",
+      "update_location": "主SHEET：17_攤位、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動、CS06_場地交通及泊車",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "2026 activities.maps、activities.booths、activities.gameCards、場地圖及攤位資料",
+      "status": "review_required"
+    },
+    {
+      "final_output": "報到、服務點、膳食及後勤",
+      "update_location": "主SHEET：19_膳食、22_報到；子SHEET：CS01_參加單位及旅團、CS02_嘉賓獎勵及典禮對象、CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "2026 participants、troop_checkin、guest_roster、meal_distribution、meal_logistics",
+      "status": "review_required"
+    },
+    {
+      "final_output": "典禮、會操及司儀資料",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "2026 ceremony、司儀稿、檢閱路線",
+      "status": "review_required"
+    },
+    {
+      "final_output": "旅團、膳食及編更資料",
+      "update_location": "主SHEET：14_出席、16_當值安排、19_膳食；子SHEET：CS01、CS03、CS07",
+      "central_approval": "行政組",
+      "reference_source": "2026 participants、staff.event_staff_roster、staff_meals、meal_distribution",
+      "status": "review_required"
+    },
+    {
+      "final_output": "各組職責及工作資料",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "2026 staff.contacts、staff.org_chart、staff.job_duties、staff.event_staff_roster",
+      "status": "review_required"
+    },
+    {
+      "final_output": "安全及應變",
+      "update_location": "主SHEET：27_公告及求助；子SHEET：CS08_安全醫療及服務",
+      "central_approval": "行政組",
+      "reference_source": "2026 ISD2026-RiskMangementManual_V1(Clean).pdf、crisis；2027 由行政組提供及確認危機處理手冊",
+      "status": "review_required"
+    },
+    {
+      "final_output": "通告、指引及活動日文件",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "2026 notices、documents（79 項）、活動日檔案；2027 由秘書處提供及確認活動日文件",
+      "status": "review_required"
+    }
+  ],
+  "outputs": [
+    {
+      "output_id": "o-mc-merit",
+      "audience": "dept",
+      "final_output": "司儀稿－優異旅團頒獎",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:1_司儀稿_優異旅團頒獎儀式 2026 V5；ceremony.mc_scripts[0]",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "總領袖獎章名單（3 組）",
+        "榮譽童軍獎章名單",
+        "貝登堡獎章名單",
+        "總監委任書＿＿人數"
+      ],
+      "note": "v26 已接優異旅團五個支部；其餘名單仲係「請參閱附件」"
+    },
+    {
+      "output_id": "o-mc-parade",
+      "audience": "dept",
+      "final_output": "司儀稿－會操檢閱典禮",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:2. 司儀稿_會操檢閱典禮2026 V4；ceremony.mc_scripts[1]",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-mc-lunch",
+      "audience": "dept",
+      "final_output": "司儀稿－莫榮大樓自助餐",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:3_司儀稿_莫榮大樓自助餐 2026 V2；ceremony.mc_scripts[2]",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": "2026 同時存在 V1 同 V2 兩份，係「改完再改」嘅直接證據"
+    },
+    {
+      "output_id": "o-rundown-all",
+      "audience": "dept",
+      "final_output": "總流程連獎項 Rundown",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:Rundown_All 2026 連獎項 Part 1 V5；ceremony.rundown_part1_v5(13 行)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-rundown-parade",
+      "audience": "dept",
+      "final_output": "典禮程序 Parade Ceremony Rundown",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:Parade Ceremony Rundown 2026 (典禮程序)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-party-entry-1",
+      "audience": "dept",
+      "final_output": "優異旅團頒獎－主禮團進場次序",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD 優異旅團頒獎 Part 1 主禮團進場 2026 V1",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-party-entry-2",
+      "audience": "dept",
+      "final_output": "會操檢閱－主禮團進場次序",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD 會操檢閱 Part 2 主禮團進場 2026 V1",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-inspection",
+      "audience": "dept",
+      "final_output": "檢閱路線及提問",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "ceremony.inspection_route(6 步／3 人／3 條問題)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-merit-roster",
+      "audience": "dept",
+      "final_output": "優異旅團獲獎名單",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:cer_award_merit；ceremony.meritRoster(188)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-section-award",
+      "audience": "dept",
+      "final_output": "支部獎勵名單",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:cer_award_section",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "總領袖獎章 46 位",
+        "榮譽童軍獎章 8 位",
+        "貝登堡獎章 3 位"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-leader-award",
+      "audience": "dept",
+      "final_output": "領袖獎勵名單",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:cer_award_leader；ceremony.adult_awards(6)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "十年長期服務獎狀 7 位",
+        "長期服務獎章 3 位",
+        "一星 1 位",
+        "三星 1 位",
+        "每位嘅「初步回覆／出席」狀態"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-commission",
+      "audience": "dept",
+      "final_output": "總監委任書名單",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "司儀稿第 8 頁 7 人表（職位／姓名／初步回覆／出席）",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "成張表仲喺司儀稿入面，未入資料庫"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-ug-list",
+      "audience": "dept",
+      "final_output": "出席 UG 及派隊清單",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:出席UG及派隊清單_2026_as at 20260929；ceremony.ug_units(3)；ceremony.ug_guests(8)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-roster",
+      "audience": "dept",
+      "final_output": "嘉賓名單",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:港島童軍繽紛日 2026－嘉賓名單 as at 02.10.2026；guest_roster.guests(102)；範本 01",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-checkin",
+      "audience": "dept",
+      "final_output": "嘉賓報到點名",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "guest_roster.guests.checked_in",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-stamp",
+      "audience": "dept",
+      "final_output": "紀念章派發（嘉賓）",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:stamp_guest",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-invitation",
+      "audience": "public",
+      "final_output": "嘉賓邀請函",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 邀請函 (Invitation Letter) 04102026",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [
+        "逐位嘉賓 mail merge：稱謂／職銜／出席部分"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-invite-card-pres",
+      "audience": "public",
+      "final_output": "邀請卡－會長",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 邀請卡－會長 04102026",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-invite-card-goh",
+      "audience": "public",
+      "final_output": "邀請卡－主禮嘉賓",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 邀請卡－主禮嘉賓 (GoH) 04102026",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-reply",
+      "audience": "public",
+      "final_output": "嘉賓回條",
+      "output_kind": "IN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 回條 (IN reply) 04102026",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [
+        "收返嚟之後點入返 guest_roster（2026 係人手入）"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-map",
+      "audience": "public",
+      "final_output": "警察學院地圖－嘉賓版",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 警察學院地圖－嘉賓版 V2",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-transport",
+      "audience": "dept",
+      "final_output": "嘉賓交通／大會車安排",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "guest_transport.guests(4)；guest_roster.guests.event_bus",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [
+        "大會車上落點同時間"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-troop-notice",
+      "audience": "public",
+      "final_output": "童軍旅通知書",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "doc:0.童軍旅通知書2026",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [
+        "逐個旅 mail merge：旅名／人數／餐盒／領隊／集合點"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-ngo-notice",
+      "audience": "public",
+      "final_output": "共創明Teen 團體活動通知書",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "doc:0.共創明Teen計劃團體活動通知書2026",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-troop-count",
+      "audience": "dept",
+      "final_output": "旅團報名人數表",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "doc:旅團報名人數_2026 as 26.9.2026；participants(31)；範本 05",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-troop-checkin",
+      "audience": "dept",
+      "final_output": "旅團點名簽收",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "tab:admin_troop_checkin；troop_checkin(31)",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-troop-program",
+      "audience": "public",
+      "final_output": "參加旅團節目程序（附錄1）",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "doc:附錄1_參加旅團節目程序_2026",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-troop-sitemap",
+      "audience": "public",
+      "final_output": "參加旅團場地指示圖（附錄2）",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "doc:附錄2_參加旅團場地指示圖2026 v2",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-enroll-form",
+      "audience": "public",
+      "final_output": "報名表格 sp12a",
+      "output_kind": "IN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "doc:報名表格 sp12a_26_isd2026_enrollform.pdf",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [
+        "2026 經 Google Form 收，再人手改；2027 要直接寫後端"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-org-chart",
+      "audience": "staff",
+      "final_output": "籌委架構及聯絡表",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD2026 Org Chart and Contact List（持續更新）；staff.contacts(80)；staff.org_chart(55)；範本 02",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [
+        "空缺 15 位・有名無電話 2 位・示範號碼 11 個"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-staff-roster",
+      "audience": "staff",
+      "final_output": "工作人員編更",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "staff.event_staff_roster(279)",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [
+        "contact 欄 279 個全空",
+        "booth 欄寫「A1 Core」同攤位表「A01」對唔上（v24 已可夾返）"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-staff-stamp",
+      "audience": "staff",
+      "final_output": "紀念章派發（工作人員）",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "tab:stamp_staff；souvenirs.staff_roster(290)",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [
+        "290 vs 編更 279，兩個數唔一樣"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-staff-meal",
+      "audience": "staff",
+      "final_output": "工作人員膳食點名",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "tab:coord_meal_staff；staff_meals(290)",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-job-duties",
+      "audience": "staff",
+      "final_output": "職務分工表",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "staff.job_duties(11)",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-booth-master",
+      "audience": "staff",
+      "final_output": "攤位總表",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 攤位資料；tab:master；activities.booths(33)；範本 03",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [
+        "contact 欄 17/33 空白"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-booth-drive",
+      "audience": "staff",
+      "final_output": "攤位資料（Drive 版）",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "linked",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:drive",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-borrow-stat",
+      "audience": "dept",
+      "final_output": "借用統計及招牌",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:borrow",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-game-card",
+      "audience": "public",
+      "final_output": "遊戲卡",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:Game card；activities.gameCards(2)",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-badge-poster",
+      "audience": "public",
+      "final_output": "機電先鋒章海報（A2 五款）",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:積極公民獎章－機電先鋒章（Full Set）；doc:積極公民獎章－機電先鋒章 A2 100%；doc:積極公民獎章－機電先鋒：幼童軍支部 A2；doc:積極公民獎章－機電先鋒：童軍支部 A2；doc:積極公民獎章－機電先鋒：深資童軍支部 A2；doc:積極公民獎章－機電先鋒：樂行童軍支部 A2",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-badge-booklet",
+      "audience": "public",
+      "final_output": "家居電力安全手冊",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:機電先鋒－家居電力安全手冊 (Cub Appendix)",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-theme-report",
+      "audience": "dept",
+      "final_output": "主題節目組報告",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 - 主題節目組報告 (20260616) Rev.1；doc:ISD2026 - 主題節目組報告 (20260818) Rev.1",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [
+        "同一份嘢出咗兩個 Rev"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-mealbox",
+      "audience": "dept",
+      "final_output": "代訂餐盒名單",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：19_膳食；子SHEET：CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "tab:coord_mealbox；participants.mealbox",
+      "proposed_2027_input": "對應受邀入口的膳食欄／協調組受控輸入／2026 膳食資料",
+      "canonical_domain": "meals",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-meal-approve",
+      "audience": "dept",
+      "final_output": "膳食批核",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：19_膳食；子SHEET：CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "tab:coord_meals；meals.orders(7)；meals.menus(3)",
+      "proposed_2027_input": "對應受邀入口的膳食欄／協調組受控輸入／2026 膳食資料",
+      "canonical_domain": "meals",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-meal-dist",
+      "audience": "dept",
+      "final_output": "膳食派發分配表",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：19_膳食；子SHEET：CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "meal_distribution.booths(30)；staff_groups(14)；others(3)",
+      "proposed_2027_input": "對應受邀入口的膳食欄／協調組受控輸入／2026 膳食資料",
+      "canonical_domain": "meals",
+      "known_gaps": [
+        "攤位午膳加總 173 vs 攤位人手 193 vs 編更 279 vs 派章 290，四個數"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-meal-menu",
+      "audience": "staff",
+      "final_output": "餐單",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：19_膳食；子SHEET：CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "meal_menu(9)",
+      "proposed_2027_input": "對應受邀入口的膳食欄／協調組受控輸入／2026 膳食資料",
+      "canonical_domain": "meals",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-meal-logistics",
+      "audience": "dept",
+      "final_output": "膳食運送安排",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：19_膳食；子SHEET：CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "meal_logistics(3)",
+      "proposed_2027_input": "對應受邀入口的膳食欄／協調組受控輸入／2026 膳食資料",
+      "canonical_domain": "meals",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-site-plan",
+      "audience": "staff",
+      "final_output": "場地佈置圖 Site Setup Plan",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD2026 Site Setup Plan R10-SETUP PLAN-1",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-site-map",
+      "audience": "public",
+      "final_output": "場地地圖 MAP",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:MAP.gif（場地地圖）；activities.maps(1)",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-police-map",
+      "audience": "public",
+      "final_output": "警察學院場地地圖",
+      "output_kind": "DSGN",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:香港警察學院場地地圖",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-marquee",
+      "audience": "staff",
+      "final_output": "帳篷資料",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:261003_Scout_marquee",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-carton",
+      "audience": "staff",
+      "final_output": "箱頭紙",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:港島童軍繽紛日2026箱頭紙",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [
+        "每個攤位／每個組印幾多張、印邊個名 —— 要由攤位表同編更推"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-supplies",
+      "audience": "dept",
+      "final_output": "物資批核",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：23_物資；子SHEET：CS07_膳食物資及後勤",
+      "central_approval": "行政組",
+      "reference_source": "tab:coord_supplies",
+      "proposed_2027_input": "協調組受控輸入／2026 物資批核資料",
+      "canonical_domain": "supplies",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-lost-found",
+      "audience": "staff",
+      "final_output": "失物認領",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：27_公告及求助；子SHEET：CS08_安全醫療及服務",
+      "central_approval": "行政組",
+      "reference_source": "tab:lost_found",
+      "proposed_2027_input": "行政組受控輸入／2026 危機處理手冊；2027 由行政組提供及確認危機處理手冊",
+      "canonical_domain": "safety",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-site-quote",
+      "audience": "dept",
+      "final_output": "場地佈置報價邀請",
+      "output_kind": "FIX",
+      "delivery": "file",
+      "status_2026": "na",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD2026 Site setup Quotation Request",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-clean-quote",
+      "audience": "dept",
+      "final_output": "清潔服務報價邀請",
+      "output_kind": "FIX",
+      "delivery": "file",
+      "status_2026": "na",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD2026 Cleaning Quotation request",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-parking-form",
+      "audience": "public",
+      "final_output": "泊車證申請表",
+      "output_kind": "IN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:港島童軍繽紛日2026－泊車證申請表格（Google Sheet）；parking_source.columns(12)",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-parking-pass",
+      "audience": "dept",
+      "final_output": "泊車證（實物）",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "parking_source",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [
+        "一人一張，要 mail merge 車牌同姓名"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-vehicle-approve",
+      "audience": "dept",
+      "final_output": "車輛批核",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "tab:coord_vehicle",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-plate-roll",
+      "audience": "dept",
+      "final_output": "點車牌（閘口查冊）",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "tab:coord_plate；v20 車牌三源",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-budget",
+      "audience": "dept",
+      "final_output": "財務預算 Budget",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD2026 Budget（Google Sheet）；finance.budget_source.columns(5)",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-fin-summary",
+      "audience": "dept",
+      "final_output": "財務匯總（各部門）",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "tab:admin_finance",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-expense",
+      "audience": "staff",
+      "final_output": "開支申報",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "tab:group_expense",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-quotes",
+      "audience": "staff",
+      "final_output": "口頭報價記錄",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "linked",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "tab:group_quotes；doc:附件3 - 口頭報價資料記錄",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-quote-compare",
+      "audience": "dept",
+      "final_output": "書面報價比較表（附件4）",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:附件4 - 書面報價比較表",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-settlement",
+      "audience": "dept",
+      "final_output": "結算總表（附件5／5A／5B）",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:附件5 - 結算總表 (WORD)；doc:附件5A - 結算總表 (WORD w autosum)；doc:附件5B - 結算總表 (EXCEL)",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [
+        "同一份嘢三個格式，2026 要人手對三次"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-fin-guide",
+      "audience": "staff",
+      "final_output": "財務指引及會計程序",
+      "output_kind": "FIX",
+      "delivery": "screen+file",
+      "status_2026": "na",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD2026 財務指引及會計程序 ver 1；tab:group_finance_guide",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-fin-annex",
+      "audience": "staff",
+      "final_output": "財務附件 1／2／6",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:附件1 - 報價要求；doc:附件2 - 豁免商戶名單 (Rev Dec 2025)；doc:附件6 - 四格印簽名位置",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-main-circular",
+      "audience": "public",
+      "final_output": "活動通告 sp12",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:活動通告 sp12_26_isd2026.pdf",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [
+        "內有日期／名額／費用／截止日，換年份要逐個改"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-special-circ",
+      "audience": "public",
+      "final_output": "特別通告（6 份）",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:特別通告第01/26號－地域總監嘉許計劃 2026；doc:特別通告第02/26號－區總監嘉許計劃 2026；doc:特別通告第03/26號－2026年優異旅團獎勵計劃；doc:特別通告第11/26號－2026/2027年度活動與訓練行事曆；doc:特別通告第15/26號－幼童軍及童軍積極公民獎章系列·機電先鋒章考驗；doc:特別通告第16/26號－深資童軍及樂行童軍積極公民獎章系列·機電先鋒章工作坊",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-oc-invite",
+      "audience": "public",
+      "final_output": "籌委邀請函 M28（3 款）",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:籌委邀請函 M28 (Councils)；doc:籌委邀請函 M28 (District)；doc:籌委邀請函 M28 (DRCs)",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-oc-reply",
+      "audience": "public",
+      "final_output": "籌委邀請回條 M28a",
+      "output_kind": "IN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:籌委邀請回條 M28a",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-food-donate",
+      "audience": "public",
+      "final_output": "食物捐贈通告＋表格",
+      "output_kind": "GEN",
+      "delivery": "print+screen",
+      "status_2026": "partial",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:食物捐贈通告 (FoodDonation)；食物捐贈表格 (FoodDonation_Form)；v19 童心捐贈 QR",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [
+        "紙本表同 QR 入數未對帳"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-goods-donate",
+      "audience": "public",
+      "final_output": "物資捐贈通告＋表格",
+      "output_kind": "GEN",
+      "delivery": "print+screen",
+      "status_2026": "partial",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:物資捐贈通告 (Goods Donating)；doc:物資捐贈表格 (Goods Donating_Form)",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [
+        "紙本表收返嚟點入帳（食物捐贈有 v19 QR，物資捐贈仲係淨紙本）"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-compliance",
+      "audience": "public",
+      "final_output": "收受利益及申報政策",
+      "output_kind": "FIX",
+      "delivery": "print",
+      "status_2026": "na",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:收受利益及申報政策 (pc132018c)；doc:收受利益及申報政策 (pc142018c)",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-public-page",
+      "audience": "public",
+      "final_output": "公眾頻道（活動日版）",
+      "output_kind": "GEN",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "public_channel_2027；v15",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-brand",
+      "audience": "dept",
+      "final_output": "品牌推廣組文件",
+      "output_kind": "DSGN",
+      "delivery": "file",
+      "status_2026": "na",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "doc:20260818 品牌推廣組 (Google Doc)",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-agenda",
+      "audience": "dept",
+      "final_output": "籌委會議議程",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：05_程序／會議及工作計劃（唯一受控資料及文件）；空白工作計劃範本",
+      "central_approval": "秘書處",
+      "reference_source": "doc:4_Agenda 籌備委員會議程 (20260818)；meetings(6)",
+      "proposed_2027_input": "由 2026 會議及工作計劃文件核實後新建 2027 唯一來源",
+      "canonical_domain": "governance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-minutes",
+      "audience": "dept",
+      "final_output": "會議記錄",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：05_程序／會議及工作計劃（唯一受控資料及文件）；空白工作計劃範本",
+      "central_approval": "秘書處",
+      "reference_source": "doc:App1-ISD2026-籌備委員會第3次會議記錄 Ver1",
+      "proposed_2027_input": "由 2026 會議及工作計劃文件核實後新建 2027 唯一來源",
+      "canonical_domain": "governance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-workplan",
+      "audience": "dept",
+      "final_output": "工作計劃及進度",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：05_程序／會議及工作計劃（唯一受控資料及文件）；空白工作計劃範本",
+      "central_approval": "秘書處",
+      "reference_source": "doc:工作計劃及進度 V2.docx",
+      "proposed_2027_input": "由 2026 會議及工作計劃文件核實後新建 2027 唯一來源",
+      "canonical_domain": "governance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-schedule",
+      "audience": "public",
+      "final_output": "日程表 Run Down（全日）",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "partial",
+      "update_location": "主SHEET：26_日程及地圖；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2026 日程表 (Run Down)；schedule(6)",
+      "proposed_2027_input": "秘書處／會操及典禮組受控輸入／2026 日程及 Rundown",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "schedule 得 6 行，2026 份 Run Down PDF 實際內容多過呢 6 行"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-crisis",
+      "audience": "staff",
+      "final_output": "危機處理小組名單及程序",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：27_公告及求助；子SHEET：CS08_安全醫療及服務",
+      "central_approval": "行政組",
+      "reference_source": "crisis.team(14)；crisis.contacts(13)；crisis.docs(13)",
+      "proposed_2027_input": "行政組受控輸入／2026 危機處理手冊；2027 由行政組提供及確認危機處理手冊",
+      "canonical_domain": "safety",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-ngo-contact",
+      "audience": "dept",
+      "final_output": "共創明Teen NGO 聯絡表",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、11_人員、13_報名；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "行政組",
+      "reference_source": "doc:ISD 2026 共創明Teen NGO contact list",
+      "proposed_2027_input": "IN08 合作／攤位入口／2026 NGO 聯絡表",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-wish-list",
+      "audience": "dept",
+      "final_output": "Wish List",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：05_程序／會議及工作計劃（唯一受控資料及文件）；空白工作計劃範本",
+      "central_approval": "秘書處",
+      "reference_source": "doc:Wish List 2026",
+      "proposed_2027_input": "由 2026 會議及工作計劃文件核實後新建 2027 唯一來源",
+      "canonical_domain": "governance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-site-visit",
+      "audience": "dept",
+      "final_output": "警察學院實地視察程序",
+      "output_kind": "FIX",
+      "delivery": "file",
+      "status_2026": "na",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "doc:警察學院實地視察 18.8.2026－內容及程序 2026",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-activity-sheet",
+      "audience": "dept",
+      "final_output": "活動資料表 0.updated_12S",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：05_程序／會議及工作計劃（唯一受控資料及文件）；空白工作計劃範本",
+      "central_approval": "秘書處",
+      "reference_source": "doc:0.updated_12S",
+      "proposed_2027_input": "由 2026 會議及工作計劃文件核實後新建 2027 唯一來源",
+      "canonical_domain": "governance",
+      "known_gaps": [
+        "未知內容，要開返個檔先知"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-tickets",
+      "audience": "staff",
+      "final_output": "票券",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "tab:admin_tickets",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-admin-docs",
+      "audience": "dept",
+      "final_output": "行政文件夾",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "tab:admin_docs",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-coord-docs",
+      "audience": "dept",
+      "final_output": "場地佈置及文件夾",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "tab:coord_docs",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-link-registry",
+      "audience": "staff",
+      "final_output": "連結總表",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "tab:group_links；v22 74 links／121 targets",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [
+        "48/74 條 link id 含年份，應改槽位制"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-crosscheck",
+      "audience": "staff",
+      "final_output": "跨組對帳",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：24_修正紀錄；子SHEET：不需要",
+      "central_approval": "行政組",
+      "reference_source": "tab:group_crosscheck；v24",
+      "proposed_2027_input": "各受控主SHEET資料頁／2026 跨組對帳規則",
+      "canonical_domain": "audit",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-booths-2025ref",
+      "audience": "dept",
+      "final_output": "上屆攤位資料（參考用）",
+      "output_kind": "FIX",
+      "delivery": "file",
+      "status_2026": "na",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "doc:ISD2025 攤位資料（參考）",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [],
+      "note": "唔係 2027 要出嘅嘢，係開會時攞嚟對嘅上屆底。列出嚟係因為佢佔住 documents 一格。"
+    },
+    {
+      "output_id": "o-venue-quote",
+      "audience": "dept",
+      "final_output": "場地報價 WFQ",
+      "output_kind": "FIX",
+      "delivery": "file",
+      "status_2026": "na",
+      "update_location": "2027目標：06_後勤／財務（唯一受控資料及文件）；受控財務範本",
+      "central_approval": "行政組",
+      "reference_source": "doc:WFQ26070315 香港童軍總會港島地域 4-10 (報價)",
+      "proposed_2027_input": "由 2026 財務文件核實後新建 2027 唯一財務來源",
+      "canonical_domain": "finance",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-participants-admin",
+      "audience": "dept",
+      "final_output": "參加旅團（行政組視圖）",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、13_報名、14_出席、19_膳食、20_交通泊車、22_報到；子SHEET：CS01_參加單位及旅團",
+      "central_approval": "行政組",
+      "reference_source": "tab:admin_participants",
+      "proposed_2027_input": "IN01／IN02／IN03／IN07 對應入口／2026 旅團資料",
+      "canonical_domain": "registration",
+      "known_gaps": [],
+      "note": "同 o-troop-count 同一份資料，兩個地方睇 —— 要留意係咪真係要兩個入口。"
+    },
+    {
+      "output_id": "o-live-script-tab",
+      "audience": "dept",
+      "final_output": "活司儀稿（位置本身）",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "tab:cer_live_script；v26",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [],
+      "note": "呢個係 o-mc-merit 嗰份稿嘅「指定位置」，唔係另一份輸出。"
+    },
+    {
+      "output_id": "o-pc-content",
+      "audience": "staff",
+      "final_output": "公眾頻道內容（本組負責）",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "tab:group_pc_content；v21",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-group-apps",
+      "audience": "staff",
+      "final_output": "本組申請",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "tab:apps",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [],
+      "note": ""
+    },
+    {
+      "output_id": "o-merit-cert",
+      "audience": "dept",
+      "final_output": "優異旅團證書及彩帶標籤",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "司儀稿原文：頒發「2026 年優異旅團彩帶及證書」—小童軍（證書）／幼童軍（彩帶）／童軍（彩帶）／深資童軍（彩帶）；ceremony.meritRoster(188)",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "188 份，每份要印旅名。而家冇一份嘢列明邊個旅攞證書、邊個攞彩帶"
+      ],
+      "note": "旅名要用邊個寫法？證書應該印全寫，唔係司儀稿嗰個中文數字。"
+    },
+    {
+      "output_id": "o-thanks-cert",
+      "audience": "dept",
+      "final_output": "協助單位感謝狀",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "司儀稿原文：有請地域主席李傑之先生為我哋致送感謝狀比協助機構 1. 香港警察學院 2. 香港聖約翰救傷隊",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "協助單位名單冇獨立存喺任何地方，淨係寫死喺司儀稿入面"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-award-letter",
+      "audience": "dept",
+      "final_output": "支部最高獎章嘉許信",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "司儀稿原文：頒發「支部最高獎章嘉許信」；總領袖獎章 46 位／榮譽童軍獎章 8 位／貝登堡獎章 3 位",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "57 封，逐封印人名。名單本身都未入系統（見 o-section-award）"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-service-cert",
+      "audience": "dept",
+      "final_output": "長期服務獎狀及獎章證書",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：21_典禮；子SHEET：CS05_典禮及會操",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "司儀稿原文：十年長期服務獎狀 7 位／長期服務獎章 3 位／一星 1 位／三星 1 位",
+      "proposed_2027_input": "會操及典禮組受控輸入／2026 典禮檔案",
+      "canonical_domain": "programme_ceremony",
+      "known_gaps": [
+        "12 份，連「初步回覆／出席」狀態都仲喺司儀稿張表入面"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-guest-seating",
+      "audience": "dept",
+      "final_output": "嘉賓座位表及座位卡",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "司儀稿原文：請各位就座／請到嘉賓席就座；guest_roster.guests(102) 有 ceremony_part_1／part_2 分場",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [
+        "ceremony.seating 呢個位 2026 完全冇資料",
+        "第一部分同第二部分出席唔同人，座位要唔要換？"
+      ],
+      "note": "有 102 位嘉賓、有分兩場出席，但冇一張座位圖。2026 應該係現場夾。"
+    },
+    {
+      "output_id": "o-guest-badge",
+      "audience": "dept",
+      "final_output": "嘉賓名牌",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：11_人員、12_邀請、13_報名、14_出席、20_交通泊車、21_典禮、22_報到；子SHEET：CS02_嘉賓獎勵及典禮對象",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "guest_roster.guests(102)：name 同 title 兩欄齊",
+      "proposed_2027_input": "IN04 嘉賓入口／嘉賓接待組受控輸入／2026 嘉賓名單",
+      "canonical_domain": "guest",
+      "known_gaps": [
+        "102 個，印邊個稱謂？名單寫「區永樑先生」，司儀稿叫「區永樑助理處長」"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-staff-badge",
+      "audience": "staff",
+      "final_output": "工作人員證",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：10_組織、11_人員、15_工作人員、16_當值安排；子SHEET：CS03_工作人員及攤位人手",
+      "central_approval": "行政組",
+      "reference_source": "staff.event_staff_roster(279)；souvenirs.staff_roster(290)",
+      "proposed_2027_input": "IN09／IN10 工作人員入口／各既有組別受控輸入／2026 編更及職責表",
+      "canonical_domain": "staff",
+      "known_gaps": [
+        "279 定 290？兩份名單人數唔同，印證應該照邊份"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-booth-signage",
+      "audience": "dept",
+      "final_output": "攤位桌牌／指示牌",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：17_攤位、18_攤位人手、23_物資、26_日程及地圖；子SHEET：CS04_攤位及主題活動",
+      "central_approval": "秘書處／行政組",
+      "reference_source": "activities.booths(33)：booth_no 加 booth_name 加 group_name",
+      "proposed_2027_input": "IN08 合作／攤位入口／主題節目組受控輸入／2026 攤位資料",
+      "canonical_domain": "venue_programme",
+      "known_gaps": [
+        "33 塊。牌上面寫「A01」定「A01 主節目組總部」？行政組編更寫緊「A1 Core」"
+      ],
+      "note": "v24 已證實攤位編號兩組寫法零重疊，印牌之前要先夾返。"
+    },
+    {
+      "output_id": "o-radio-alloc",
+      "audience": "dept",
+      "final_output": "對講機／通訊分配表",
+      "output_kind": "GEN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：20_交通泊車、26_日程及地圖；子SHEET：CS06_場地交通及泊車",
+      "central_approval": "行政組",
+      "reference_source": "staff.contacts(80) 有 group_name 同 role_title；crisis.contacts(13)",
+      "proposed_2027_input": "對應受邀入口的交通欄／協調組受控輸入／2026 場地及泊車資料",
+      "canonical_domain": "venue_transport",
+      "known_gaps": [
+        "2026 冇呢份嘢，但危機小組 14 人同 10 個組之間一定要通到話"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-incident-log",
+      "audience": "dept",
+      "final_output": "意外／急救記錄表",
+      "output_kind": "IN",
+      "delivery": "print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：27_公告及求助；子SHEET：CS08_安全醫療及服務",
+      "central_approval": "行政組",
+      "reference_source": "司儀稿原文：提供急救服務的香港聖約翰救傷隊；crisis.docs(13)",
+      "proposed_2027_input": "行政組受控輸入／2026 危機處理手冊；2027 由行政組提供及確認危機處理手冊",
+      "canonical_domain": "safety",
+      "known_gaps": [
+        "有救傷隊駐場但冇記錄表"
+      ],
+      "note": ""
+    },
+    {
+      "output_id": "o-weather-call",
+      "audience": "public",
+      "final_output": "惡劣天氣／改期公布",
+      "output_kind": "GEN",
+      "delivery": "screen+print",
+      "status_2026": "unlinked",
+      "update_location": "主SHEET：27_公告及求助；子SHEET：CS08_安全醫療及服務",
+      "central_approval": "行政組",
+      "reference_source": "2026 原文：延期日 2026-10-11",
+      "proposed_2027_input": "行政組受控輸入／2026 危機處理手冊；2027 由行政組提供及確認危機處理手冊",
+      "canonical_domain": "safety",
+      "known_gaps": [
+        "已經定咗延期日，但冇一個位可以一撳就全站改期"
+      ],
+      "note": "呢個係「一處更新全站同步」最極端嘅測試：改期要同時改通告、公眾頻道、通知書、司儀稿、所有日期。"
+    },
+    {
+      "output_id": "o-output-board",
+      "audience": "staff",
+      "final_output": "輸出總表（呢份清單本身）",
+      "output_kind": "SCR",
+      "delivery": "screen",
+      "status_2026": "linked",
+      "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+      "central_approval": "秘書處",
+      "reference_source": "tab:group_outputs；tools/schema/outputs_2027.js",
+      "proposed_2027_input": "秘書處受控輸入／2026 通告、指引或活動日文件；2027 由秘書處提供及確認",
+      "canonical_domain": "notices_documents",
+      "known_gaps": [],
+      "note": "第 1 步嘅成果本身都係一件輸出 —— 下屆要知「有乜要出」就睇呢度。"
+    },
+    {
+      "output_id": "o-post-report",
+      "audience": "staff",
+      "final_output": "活動後總結報告",
+      "output_kind": "GEN",
+      "delivery": "file",
+      "status_2026": "unlinked",
+      "update_location": "2027目標：05_程序／會議及工作計劃（唯一受控資料及文件）；空白工作計劃範本",
+      "central_approval": "秘書處",
+      "reference_source": "doc:工作計劃及進度 V2.docx；meetings(6)",
+      "proposed_2027_input": "由 2026 會議及工作計劃文件核實後新建 2027 唯一來源",
+      "canonical_domain": "governance",
+      "known_gaps": [
+        "2026 冇，但下屆要接手就一定要有"
+      ],
+      "note": ""
+    }
+  ],
+  "source_clusters": [
+    {
+      "source": "2026 participants／troop_checkin",
+      "feeds": "旅團報到、餐盒、交通、旅團公開頁、行政旅團視圖",
+      "future_domain": "registration"
+    },
+    {
+      "source": "2026 guest_roster／guest_transport",
+      "feeds": "嘉賓報到、交通、座位、名牌、嘉賓公開頁、典禮",
+      "future_domain": "guest"
+    },
+    {
+      "source": "2026 ceremony／司儀稿／rundown",
+      "feeds": "典禮、會操、頒獎、司儀稿、獎項及各類儀式通知",
+      "future_domain": "programme_ceremony"
+    },
+    {
+      "source": "2026 staff／staff_meals／souvenirs",
+      "feeds": "編更、工作人員證、膳食、點名、紀念章及執行手冊",
+      "future_domain": "staff"
+    },
+    {
+      "source": "2026 activities／場地圖／攤位資料",
+      "feeds": "地圖、攤位、遊戲卡、物資、指示牌及工作人員手冊",
+      "future_domain": "venue_programme"
+    },
+    {
+      "source": "2026 documents／notices",
+      "feeds": "通知書、通告、固定文件、文件目錄及公眾資訊",
+      "future_domain": "notices_documents"
+    },
+    {
+      "source": "2026 finance",
+      "feeds": "預算、部門財務、報價、結算及財務指引",
+      "future_domain": "finance"
+    },
+    {
+      "source": "2026 crisis",
+      "feeds": "危機手冊、求助、安全、急救及惡劣天氣公布",
+      "future_domain": "safety"
+    }
+  ],
+  "structural_questions": [],
+  "gaps": [
+    {
+      "type": "output_gap",
+      "output_id": "o-mc-merit",
+      "output": "司儀稿－優異旅團頒獎",
+      "detail": "總領袖獎章名單（3 組）",
+      "source": "doc:1_司儀稿_優異旅團頒獎儀式 2026 V5；ceremony.mc_scripts[0]"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-mc-merit",
+      "output": "司儀稿－優異旅團頒獎",
+      "detail": "榮譽童軍獎章名單",
+      "source": "doc:1_司儀稿_優異旅團頒獎儀式 2026 V5；ceremony.mc_scripts[0]"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-mc-merit",
+      "output": "司儀稿－優異旅團頒獎",
+      "detail": "貝登堡獎章名單",
+      "source": "doc:1_司儀稿_優異旅團頒獎儀式 2026 V5；ceremony.mc_scripts[0]"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-mc-merit",
+      "output": "司儀稿－優異旅團頒獎",
+      "detail": "總監委任書＿＿人數",
+      "source": "doc:1_司儀稿_優異旅團頒獎儀式 2026 V5；ceremony.mc_scripts[0]"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-section-award",
+      "output": "支部獎勵名單",
+      "detail": "總領袖獎章 46 位",
+      "source": "tab:cer_award_section"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-section-award",
+      "output": "支部獎勵名單",
+      "detail": "榮譽童軍獎章 8 位",
+      "source": "tab:cer_award_section"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-section-award",
+      "output": "支部獎勵名單",
+      "detail": "貝登堡獎章 3 位",
+      "source": "tab:cer_award_section"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-leader-award",
+      "output": "領袖獎勵名單",
+      "detail": "十年長期服務獎狀 7 位",
+      "source": "tab:cer_award_leader；ceremony.adult_awards(6)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-leader-award",
+      "output": "領袖獎勵名單",
+      "detail": "長期服務獎章 3 位",
+      "source": "tab:cer_award_leader；ceremony.adult_awards(6)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-leader-award",
+      "output": "領袖獎勵名單",
+      "detail": "一星 1 位",
+      "source": "tab:cer_award_leader；ceremony.adult_awards(6)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-leader-award",
+      "output": "領袖獎勵名單",
+      "detail": "三星 1 位",
+      "source": "tab:cer_award_leader；ceremony.adult_awards(6)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-leader-award",
+      "output": "領袖獎勵名單",
+      "detail": "每位嘅「初步回覆／出席」狀態",
+      "source": "tab:cer_award_leader；ceremony.adult_awards(6)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-commission",
+      "output": "總監委任書名單",
+      "detail": "成張表仲喺司儀稿入面，未入資料庫",
+      "source": "司儀稿第 8 頁 7 人表（職位／姓名／初步回覆／出席）"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-invitation",
+      "output": "嘉賓邀請函",
+      "detail": "逐位嘉賓 mail merge：稱謂／職銜／出席部分",
+      "source": "doc:ISD2026 邀請函 (Invitation Letter) 04102026"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-guest-reply",
+      "output": "嘉賓回條",
+      "detail": "收返嚟之後點入返 guest_roster（2026 係人手入）",
+      "source": "doc:ISD2026 回條 (IN reply) 04102026"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-guest-transport",
+      "output": "嘉賓交通／大會車安排",
+      "detail": "大會車上落點同時間",
+      "source": "guest_transport.guests(4)；guest_roster.guests.event_bus"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-troop-notice",
+      "output": "童軍旅通知書",
+      "detail": "逐個旅 mail merge：旅名／人數／餐盒／領隊／集合點",
+      "source": "doc:0.童軍旅通知書2026"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-enroll-form",
+      "output": "報名表格 sp12a",
+      "detail": "2026 經 Google Form 收，再人手改；2027 要直接寫後端",
+      "source": "doc:報名表格 sp12a_26_isd2026_enrollform.pdf"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-org-chart",
+      "output": "籌委架構及聯絡表",
+      "detail": "空缺 15 位・有名無電話 2 位・示範號碼 11 個",
+      "source": "doc:ISD2026 Org Chart and Contact List（持續更新）；staff.contacts(80)；staff.org_chart(55)；範本 02"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-staff-roster",
+      "output": "工作人員編更",
+      "detail": "contact 欄 279 個全空",
+      "source": "staff.event_staff_roster(279)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-staff-roster",
+      "output": "工作人員編更",
+      "detail": "booth 欄寫「A1 Core」同攤位表「A01」對唔上（v24 已可夾返）",
+      "source": "staff.event_staff_roster(279)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-staff-stamp",
+      "output": "紀念章派發（工作人員）",
+      "detail": "290 vs 編更 279，兩個數唔一樣",
+      "source": "tab:stamp_staff；souvenirs.staff_roster(290)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-booth-master",
+      "output": "攤位總表",
+      "detail": "contact 欄 17/33 空白",
+      "source": "doc:ISD2026 攤位資料；tab:master；activities.booths(33)；範本 03"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-theme-report",
+      "output": "主題節目組報告",
+      "detail": "同一份嘢出咗兩個 Rev",
+      "source": "doc:ISD2026 - 主題節目組報告 (20260616) Rev.1；doc:ISD2026 - 主題節目組報告 (20260818) Rev.1"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-meal-dist",
+      "output": "膳食派發分配表",
+      "detail": "攤位午膳加總 173 vs 攤位人手 193 vs 編更 279 vs 派章 290，四個數",
+      "source": "meal_distribution.booths(30)；staff_groups(14)；others(3)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-carton",
+      "output": "箱頭紙",
+      "detail": "每個攤位／每個組印幾多張、印邊個名 —— 要由攤位表同編更推",
+      "source": "doc:港島童軍繽紛日2026箱頭紙"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-parking-pass",
+      "output": "泊車證（實物）",
+      "detail": "一人一張，要 mail merge 車牌同姓名",
+      "source": "parking_source"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-settlement",
+      "output": "結算總表（附件5／5A／5B）",
+      "detail": "同一份嘢三個格式，2026 要人手對三次",
+      "source": "doc:附件5 - 結算總表 (WORD)；doc:附件5A - 結算總表 (WORD w autosum)；doc:附件5B - 結算總表 (EXCEL)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-main-circular",
+      "output": "活動通告 sp12",
+      "detail": "內有日期／名額／費用／截止日，換年份要逐個改",
+      "source": "doc:活動通告 sp12_26_isd2026.pdf"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-food-donate",
+      "output": "食物捐贈通告＋表格",
+      "detail": "紙本表同 QR 入數未對帳",
+      "source": "doc:食物捐贈通告 (FoodDonation)；食物捐贈表格 (FoodDonation_Form)；v19 童心捐贈 QR"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-goods-donate",
+      "output": "物資捐贈通告＋表格",
+      "detail": "紙本表收返嚟點入帳（食物捐贈有 v19 QR，物資捐贈仲係淨紙本）",
+      "source": "doc:物資捐贈通告 (Goods Donating)；doc:物資捐贈表格 (Goods Donating_Form)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-schedule",
+      "output": "日程表 Run Down（全日）",
+      "detail": "schedule 得 6 行，2026 份 Run Down PDF 實際內容多過呢 6 行",
+      "source": "doc:ISD2026 日程表 (Run Down)；schedule(6)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-activity-sheet",
+      "output": "活動資料表 0.updated_12S",
+      "detail": "未知內容，要開返個檔先知",
+      "source": "doc:0.updated_12S"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-link-registry",
+      "output": "連結總表",
+      "detail": "48/74 條 link id 含年份，應改槽位制",
+      "source": "tab:group_links；v22 74 links／121 targets"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-merit-cert",
+      "output": "優異旅團證書及彩帶標籤",
+      "detail": "188 份，每份要印旅名。而家冇一份嘢列明邊個旅攞證書、邊個攞彩帶",
+      "source": "司儀稿原文：頒發「2026 年優異旅團彩帶及證書」—小童軍（證書）／幼童軍（彩帶）／童軍（彩帶）／深資童軍（彩帶）；ceremony.meritRoster(188)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-thanks-cert",
+      "output": "協助單位感謝狀",
+      "detail": "協助單位名單冇獨立存喺任何地方，淨係寫死喺司儀稿入面",
+      "source": "司儀稿原文：有請地域主席李傑之先生為我哋致送感謝狀比協助機構 1. 香港警察學院 2. 香港聖約翰救傷隊"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-award-letter",
+      "output": "支部最高獎章嘉許信",
+      "detail": "57 封，逐封印人名。名單本身都未入系統（見 o-section-award）",
+      "source": "司儀稿原文：頒發「支部最高獎章嘉許信」；總領袖獎章 46 位／榮譽童軍獎章 8 位／貝登堡獎章 3 位"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-service-cert",
+      "output": "長期服務獎狀及獎章證書",
+      "detail": "12 份，連「初步回覆／出席」狀態都仲喺司儀稿張表入面",
+      "source": "司儀稿原文：十年長期服務獎狀 7 位／長期服務獎章 3 位／一星 1 位／三星 1 位"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-guest-seating",
+      "output": "嘉賓座位表及座位卡",
+      "detail": "ceremony.seating 呢個位 2026 完全冇資料",
+      "source": "司儀稿原文：請各位就座／請到嘉賓席就座；guest_roster.guests(102) 有 ceremony_part_1／part_2 分場"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-guest-seating",
+      "output": "嘉賓座位表及座位卡",
+      "detail": "第一部分同第二部分出席唔同人，座位要唔要換？",
+      "source": "司儀稿原文：請各位就座／請到嘉賓席就座；guest_roster.guests(102) 有 ceremony_part_1／part_2 分場"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-guest-badge",
+      "output": "嘉賓名牌",
+      "detail": "102 個，印邊個稱謂？名單寫「區永樑先生」，司儀稿叫「區永樑助理處長」",
+      "source": "guest_roster.guests(102)：name 同 title 兩欄齊"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-staff-badge",
+      "output": "工作人員證",
+      "detail": "279 定 290？兩份名單人數唔同，印證應該照邊份",
+      "source": "staff.event_staff_roster(279)；souvenirs.staff_roster(290)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-booth-signage",
+      "output": "攤位桌牌／指示牌",
+      "detail": "33 塊。牌上面寫「A01」定「A01 主節目組總部」？行政組編更寫緊「A1 Core」",
+      "source": "activities.booths(33)：booth_no 加 booth_name 加 group_name"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-radio-alloc",
+      "output": "對講機／通訊分配表",
+      "detail": "2026 冇呢份嘢，但危機小組 14 人同 10 個組之間一定要通到話",
+      "source": "staff.contacts(80) 有 group_name 同 role_title；crisis.contacts(13)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-incident-log",
+      "output": "意外／急救記錄表",
+      "detail": "有救傷隊駐場但冇記錄表",
+      "source": "司儀稿原文：提供急救服務的香港聖約翰救傷隊；crisis.docs(13)"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-weather-call",
+      "output": "惡劣天氣／改期公布",
+      "detail": "已經定咗延期日，但冇一個位可以一撳就全站改期",
+      "source": "2026 原文：延期日 2026-10-11"
+    },
+    {
+      "type": "output_gap",
+      "output_id": "o-post-report",
+      "output": "活動後總結報告",
+      "detail": "2026 冇，但下屆要接手就一定要有",
+      "source": "doc:工作計劃及進度 V2.docx；meetings(6)"
+    },
+    {
+      "type": "archive_structure",
+      "output_id": "f-dup-id",
+      "output": "documents 有 3 組重覆 id",
+      "detail": "doc_36／doc_38／doc_40 各自畀兩份唔同文件用咗。特別通告嗰三份同嘉賓邀請嗰三份撞晒。",
+      "source": "2027 唔可以再用遞增號做 id，要用槽位名。"
+    },
+    {
+      "type": "archive_structure",
+      "output_id": "f-version",
+      "output": "14/79 份標題入面寫住版本號",
+      "detail": "V1 V2 V4 V5 Ver1 Rev.1 —— 司儀稿去到 V5，會議記錄 Ver1，主題節目組報告兩個 Rev。",
+      "source": "版本號寫喺標題＝冇單一最新版。用戶病因「改完再改再改」喺呢度肉眼可見。"
+    },
+    {
+      "type": "archive_structure",
+      "output_id": "f-dup-doc",
+      "output": "同一份嘢同時存在兩個版本",
+      "detail": "3_司儀稿_莫榮大樓自助餐 2026 V1 同 V2 兩份都喺清單入面。",
+      "source": "邊份先係最新？清單答唔到。"
+    },
+    {
+      "type": "archive_structure",
+      "output_id": "f-owner",
+      "output": "79 份入面 48 份冇寫邊組出",
+      "detail": "uploaded_by 只有 31/79 有值（行政組 13・秘書處 13・協調組 3・主題節目組 2）。",
+      "source": "「呢格幾時更新過」答唔到，因為連「邊個負責」都冇記。"
+    },
+    {
+      "type": "archive_structure",
+      "output_id": "f-three-fmt",
+      "output": "結算總表同一份嘢出三個格式",
+      "detail": "附件5 WORD／附件5A WORD w autosum／附件5B EXCEL。",
+      "source": "鐵律一「一格資料只准喺一個範本出現」嘅反例。"
+    }
+  ]
+}

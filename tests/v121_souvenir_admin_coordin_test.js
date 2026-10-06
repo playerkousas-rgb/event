@@ -16,6 +16,7 @@ const vm = require('vm');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const isd = JSON.parse(fs.readFileSync(path.join(root, 'data/isd_2026.json'), 'utf8'));
+const mock2027 = JSON.parse(fs.readFileSync(path.join(root, 'data/mock_demo.json'), 'utf8'));
 
 const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .map(m => {
@@ -119,7 +120,7 @@ vm.runInContext(bundle, context);
 vm.runInContext(`
   globalThis.__app = Object.create(TestApp.prototype);
   Object.assign(globalThis.__app, {
-    currentEvent: { event_id: 'isd_2026', event_name: '2026 港島童軍繽紛日' },
+    currentEvent: { event_id: 'mock_demo', event_name: '2026 港島童軍繽紛日' },
     currentUser: { role: 'admin', name: '陳 admin', user_id: 'admin1', group_name: '行政組' },
     eventData: ${JSON.stringify(isd)},
     navHistory: [], currentModule: null, gasUrl: 'https://gas.example.com/mock', apiKey: 'k',
@@ -146,6 +147,12 @@ vm.runInContext(`
 let rosterArr = JSON.parse(vm.runInContext(`JSON.stringify(globalThis.__app.souvenirStaffRoster().map(p=>({name:p.name,group:p.group_name})))`, context));
 ok(!rosterArr.some(p => p.name === '最高層帳戶'), '② 最高層帳戶唔應出現喺紀念章工作人員名單');
 ok(rosterArr.some(p => p.name === '陳大文') && rosterArr.some(p => p.name === '李小明'), '② 普通工作人員／主任應出現喺名單');
+
+/* 2027 rehearsal: check-in must use its own complete shift roster, not account/contact expansion. */
+vm.runInContext(`globalThis.__app.eventData=${JSON.stringify(mock2027)};`, context);
+const roster2027=JSON.parse(vm.runInContext(`JSON.stringify(globalThis.__app.souvenirStaffRoster())`, context));
+ok(roster2027.length===279, '2027 工作人員派章名單精確使用 279 位 activity roster，而非混入帳戶／聯絡人');
+ok(roster2027.every(p=>p.key&&p.name&&p.group_name), '2027 工作人員名單每列保留可派發的穩定鍵、姓名及組別');
 
 /* ① 行為：連續 TICK 5 次 —— 只入本機佇列，唔自動發後端 request */
 vm.runInContext(`(()=>{

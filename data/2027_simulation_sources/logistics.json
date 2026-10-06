@@ -1,0 +1,1266 @@
+{
+  "schema_version": "2027-simulation-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "logistics",
+  "drive_folder_code": "06_後勤",
+  "status": "simulation_seed_from_2026_evidence_not_live",
+  "simulation_only": true,
+  "update_rule": "Review profile only. Change a canonical simulation source, then rebuild the projection/review to inspect its dependent outputs. Never publish this profile as real 2027 data.",
+  "records": [
+    {
+      "source_id": "ASSET-CARTON-LABEL",
+      "source_kind": "controlled_asset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-CARTON-LABEL-001",
+            "document_title": "港島童軍繽紛日2027 演練箱頭紙",
+            "template_body": "2027 演練文件：箱頭紙。修改此句可驗證 ASSET-CARTON-LABEL 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：ASSET-CARTON-LABEL／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "ASSET-TICKET",
+      "source_kind": "controlled_asset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ASSET-TICKET-001",
+            "document_title": "票券",
+            "template_body": "2027 演練文件：票券。修改此句可驗證 ASSET-TICKET 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：ASSET-TICKET／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "BADGE-STAFF",
+      "source_kind": "controlled_asset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-BADGE-STAFF-001",
+            "document_title": "工作人員證",
+            "template_body": "2027 演練文件：工作人員證。修改此句可驗證 BADGE-STAFF 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：BADGE-STAFF／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-COMMS-ALLOCATION",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-COMMS-ALLOCATION-001",
+            "simulation_title": "2027 演練：對講機／通訊分配表",
+            "editable_test_value": "測試值：DATA-COMMS-ALLOCATION／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 staff.contacts(80) 有 group_name及role_title；crisis.contacts(13)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-CRISIS-CONTACT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-CRISIS-CONTACT-001",
+            "simulation_title": "2027 演練：危機處理小組名單及程序",
+            "editable_test_value": "測試值：DATA-CRISIS-CONTACT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 crisis.team(14)、crisis.contacts(13)、crisis.docs(13)及 ISD2026-RiskMangementManual_V1(Clean).pdf。2027 由行政組提供及確認危機處理手冊。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-BUDGET",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-FINANCE-BUDGET-001",
+            "simulation_title": "2027 演練：財務預算 Budget",
+            "editable_test_value": "測試值：DATA-FINANCE-BUDGET／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: ISD2026 Budget（Google Sheet）；finance.budget_source.columns(5)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-EXPENSE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-FINANCE-EXPENSE-001",
+            "simulation_title": "2027 演練：開支申報",
+            "editable_test_value": "測試值：DATA-FINANCE-EXPENSE／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: group_expense。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-QUOTE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-FINANCE-QUOTE-001",
+            "simulation_title": "2027 演練：口頭報價記錄",
+            "editable_test_value": "測試值：DATA-FINANCE-QUOTE／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: group_quotes；doc: 附件3 - 口頭報價資料記錄。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-QUOTE-COMPARE",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-FINANCE-QUOTE-COMPARE-001",
+            "simulation_title": "2027 演練：書面報價比較表（附件4）",
+            "editable_test_value": "測試值：DATA-FINANCE-QUOTE-COMPARE／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 doc: 附件4 - 書面報價比較表。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-SETTLEMENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-FINANCE-SETTLEMENT-001",
+            "simulation_title": "2027 演練：結算總表（附件5／5A／5B）",
+            "editable_test_value": "測試值：DATA-FINANCE-SETTLEMENT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 docs: 附件5 - 結算總表 (WORD)、5A (WORD w autosum)、5B (EXCEL)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-FINANCE-SUMMARY",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-FINANCE-SUMMARY-001",
+            "simulation_title": "2027 演練：財務匯總（各部門）",
+            "editable_test_value": "測試值：DATA-FINANCE-SUMMARY／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: admin_finance。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-INCIDENT",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-INCIDENT-001",
+            "simulation_title": "2027 演練：意外／急救記錄表",
+            "editable_test_value": "測試值：DATA-INCIDENT／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 司儀稿：香港聖約翰救傷隊急救服務；crisis.docs(13)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-LOST-FOUND",
+      "source_kind": "structured_dataset",
+      "owner_group": "服務及發展組",
+      "approved_by": [
+        "服務及發展組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "服務及發展組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "服務及發展組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-LOST-FOUND-001",
+            "simulation_title": "2027 演練：失物認領",
+            "editable_test_value": "測試值：DATA-LOST-FOUND／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: lost_found。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-MEAL-DISTRIBUTION",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MEAL-SUMMARY-001",
+            "ordered_total": null,
+            "staff_group_count": 14,
+            "booth_count": 30,
+            "simulation_origin": "2026 meal distribution aggregate",
+            "editable_test_value": "測試值：DATA-MEAL-DISTRIBUTION／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-MEAL-LOGISTICS",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MEAL-SUMMARY-001",
+            "ordered_total": null,
+            "staff_group_count": 14,
+            "booth_count": 30,
+            "simulation_origin": "2026 meal distribution aggregate",
+            "editable_test_value": "測試值：DATA-MEAL-LOGISTICS／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-MEAL-ORDER",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MEAL-SUMMARY-001",
+            "ordered_total": null,
+            "staff_group_count": 14,
+            "booth_count": 30,
+            "simulation_origin": "2026 meal distribution aggregate",
+            "editable_test_value": "測試值：DATA-MEAL-ORDER／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-MENU",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MENU-01",
+            "option_code": "MEAL-01",
+            "label": "嘉／賓／自／助／午／餐／(／只／限／總／監／級／/／副／主／席／)",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-02",
+            "option_code": "MEAL-02",
+            "label": "嘉／賓／自／助／午／餐／(／只／限／總／監／級／)",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-03",
+            "option_code": "MEAL-03",
+            "label": "A／ ／柱／侯／蘿／蔔／牛／腩／飯／ ／配／菜",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-04",
+            "option_code": "MEAL-04",
+            "label": "B／ ／鹹／蛋／蒸／肉／餅／飯／ ／配／菜",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-05",
+            "option_code": "MEAL-05",
+            "label": "C／ ／滷／水／雞／髀／拼／紅／腸／飯／ ／配／菜",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-06",
+            "option_code": "MEAL-06",
+            "label": "D／ ／(／素／)／翠／玉／瓜／雲／耳／炒／野／菌",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-07",
+            "option_code": "MEAL-07",
+            "label": "R／a／n／d／o／m",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-08",
+            "option_code": "MEAL-08",
+            "label": "小／食／餐／盒",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-MENU-09",
+            "option_code": "MEAL-09",
+            "label": "午／餐／時／間／無／需／當／值",
+            "simulation_origin": "2026 meal menu structure",
+            "editable_test_value": "測試值：DATA-MENU／樣本 9／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-STAFF-MEAL",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-MEAL-SUMMARY-001",
+            "ordered_total": null,
+            "staff_group_count": 14,
+            "booth_count": 30,
+            "simulation_origin": "2026 meal distribution aggregate",
+            "editable_test_value": "測試值：DATA-STAFF-MEAL／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-STAFF-SOUVENIR",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-STAFF-SOUVENIR-001",
+            "simulation_title": "2027 演練：紀念章派發（工作人員）",
+            "editable_test_value": "測試值：DATA-STAFF-SOUVENIR／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: stamp_staff；souvenirs.staff_roster(290)。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DATA-SUPPLY",
+      "source_kind": "structured_dataset",
+      "owner_group": "協調組",
+      "approved_by": [
+        "協調組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "協調組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "協調組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DATA-SUPPLY-001",
+            "simulation_title": "2027 演練：物資批核",
+            "editable_test_value": "測試值：DATA-SUPPLY／revision 1",
+            "dependent_output_count": 1,
+            "evidence_basis": "2026 tab: coord_supplies。",
+            "simulation_origin": "2026 evidence interpretation; no live link"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-CRISIS-MANUAL",
+      "source_kind": "controlled_document",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-CRISIS-MANUAL-001",
+            "document_title": "危機處理小組名單及程序",
+            "template_body": "2027 演練文件：危機處理小組名單及程序。修改此句可驗證 DOC-CRISIS-MANUAL 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：DOC-CRISIS-MANUAL／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-FINANCE-ANNEX",
+      "source_kind": "controlled_document",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-FINANCE-ANNEX-001",
+            "document_title": "財務附件 1／2／6",
+            "template_body": "2027 演練文件：財務附件 1／2／6。修改此句可驗證 DOC-FINANCE-ANNEX 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 output evidence mapping",
+            "editable_test_value": "測試值：DOC-FINANCE-ANNEX／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "DOC-FINANCE-GUIDE",
+      "source_kind": "controlled_document",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-DOC-FINANCE-GUIDE-001",
+            "document_title": "ISD2027 演練 財務指引及會計程序 ver 1",
+            "template_body": "2027 演練文件：財務指引及會計程序。修改此句可驗證 DOC-FINANCE-GUIDE 的相依輸出。",
+            "source_file_state": "simulation_template_only",
+            "simulation_origin": "2026 document metadata (file URL omitted)",
+            "editable_test_value": "測試值：DOC-FINANCE-GUIDE／樣本 1／revision 1"
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "SCHEDULE-STAFF",
+      "source_kind": "structured_dataset",
+      "owner_group": "行政組",
+      "approved_by": [
+        "行政組"
+      ],
+      "record_state": "approved_2027_source",
+      "revision": 1,
+      "updated_by": "行政組",
+      "updated_at": "2027-01-15T09:00:00+08:00",
+      "audit_id": "SIM-2027-BOOTSTRAP-2026-EVIDENCE",
+      "approval_record": {
+        "approved_by": "行政組",
+        "approved_at": "2027-01-15T09:00:00+08:00"
+      },
+      "publication_status": "approved",
+      "simulation_only": true,
+      "simulation_origin": "2026 immutable evidence; generated once for 2027 review",
+      "payload": {
+        "records": [
+          {
+            "record_id": "SIM-ORG-001",
+            "group_name": "顧問團 (Level 1)",
+            "role_title": "顧問",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 1／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-002",
+            "group_name": "主席及執行副主席 (Level 1)",
+            "role_title": "主席",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 2／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-003",
+            "group_name": "主席及執行副主席 (Level 3)",
+            "role_title": "執行副主席",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 3／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-004",
+            "group_name": "會操及典禮組 (Level 3)",
+            "role_title": "副主席（會操及典禮）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 4／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-005",
+            "group_name": "會操及典禮組 (Level 4)",
+            "role_title": "總主任（會操）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 5／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-006",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "步操統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 6／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-007",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "會操司令員",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 7／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-008",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "會操顧問",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 8／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-009",
+            "group_name": "會操及典禮組 (Level 4)",
+            "role_title": "總主任（典禮）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 9／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-010",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "典禮統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 10／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-011",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "優異旅團統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 11／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-012",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "獎勵統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 12／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-013",
+            "group_name": "會操及典禮組 (Level 5)",
+            "role_title": "司儀統籌主任",
+            "assigned_count": 3,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 13／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-014",
+            "group_name": "主題節目組 (Level 3)",
+            "role_title": "副主席（主題節目）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 14／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-015",
+            "group_name": "主題節目組 (Level 4)",
+            "role_title": "總主任 （主題節目）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 15／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-016",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（1）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 16／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-017",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（2）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 17／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-018",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（3）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 18／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-019",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（4）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 19／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-020",
+            "group_name": "主題節目組 (Level 5)",
+            "role_title": "節目主任（5）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 20／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-021",
+            "group_name": "品牌推廣組 (Level 3)",
+            "role_title": "副主席（品牌推廣）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 21／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-022",
+            "group_name": "品牌推廣組 (Level 4)",
+            "role_title": "總主任 （品牌推廣）",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 22／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-023",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "設計主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 23／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-024",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "宣傳主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 24／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-025",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "社交媒體主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 25／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-026",
+            "group_name": "品牌推廣組 (Level 5)",
+            "role_title": "拍攝/攝錄統籌主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 26／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-027",
+            "group_name": "嘉賓接待組 (Level 3)",
+            "role_title": "副主席（嘉賓接待）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 27／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-028",
+            "group_name": "嘉賓接待組 (Level 4)",
+            "role_title": "總主任 （嘉賓接待）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 28／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-029",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "嘉賓接待主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 29／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-030",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "交通主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 30／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-031",
+            "group_name": "嘉賓接待組 (Level 5)",
+            "role_title": "嘉賓支援主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 31／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-032",
+            "group_name": "協調組 (Level 3)",
+            "role_title": "副主席（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 32／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-033",
+            "group_name": "協調組 (Level 4)",
+            "role_title": "總主任（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 33／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-034",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "場地佈置主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 34／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-035",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "膳食主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 35／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-036",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "後勤主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 36／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-037",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "物資主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 37／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-038",
+            "group_name": "協調組 (Level 4)",
+            "role_title": "總主任（協調）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 38／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-039",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "秩序主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 39／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-040",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "交通管制主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 40／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-041",
+            "group_name": "協調組 (Level 5)",
+            "role_title": "物流運輸主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 41／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-042",
+            "group_name": "服務及發展組 (Level 3)",
+            "role_title": "副主席（服務及發展）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 42／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-043",
+            "group_name": "服務及發展組 (Level 4)",
+            "role_title": "總主任 （服務及發展）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 43／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-044",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "服務主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 44／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-045",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "發展主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 45／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-046",
+            "group_name": "服務及發展組 (Level 5)",
+            "role_title": "募捐主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 46／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-047",
+            "group_name": "行政組 (Level 3)",
+            "role_title": "副主席（行政）",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 47／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-048",
+            "group_name": "行政組 (Level 4)",
+            "role_title": "總主任(運作)",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 48／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-049",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "旅團報到主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 49／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-050",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "紀念品主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 50／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-051",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "危機處理主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 51／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-052",
+            "group_name": "行政組 (Level 4)",
+            "role_title": "總主任(行政)",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 52／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-053",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "行政主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 53／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-054",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "參事主任",
+            "assigned_count": 0,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 54／revision 1"
+          },
+          {
+            "record_id": "SIM-ORG-055",
+            "group_name": "行政組 (Level 5)",
+            "role_title": "財政主任",
+            "assigned_count": 1,
+            "simulation_origin": "2026 organisation structure (names removed)",
+            "editable_test_value": "測試值：SCHEDULE-STAFF／樣本 55／revision 1"
+          }
+        ]
+      }
+    }
+  ]
+}

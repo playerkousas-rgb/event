@@ -141,7 +141,7 @@ vm.runInContext(bundle, context);
 vm.runInContext(`
   globalThis.__app = Object.create(TestApp.prototype);
   Object.assign(globalThis.__app, {
-    currentEvent: { event_id: 'isd_2026', event_name: '2026 港島童軍繽紛日' },
+    currentEvent: { event_id: 'mock_demo', event_name: '2026 港島童軍繽紛日' },
     currentUser: { role: 'admin', name: '陳 admin', user_id: 'admin1', group_name: '行政組' },
     eventData: {},
     navHistory: [], currentModule: null, gasUrl: 'https://gas.example.com/mock', apiKey: 'k',

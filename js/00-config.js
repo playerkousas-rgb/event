@@ -175,6 +175,9 @@ const PERM_CARDS=[
 ];
 const PERM_IDS=new Set(PERM_CARDS.map(c=>c.id));
 const PUBLIC_CARD_ORDER=['public_channel_demo','announcements','exec_manual','apply_hub','donations'];
+// 普通工作人員只取用已完結活動的公開參考資料：唯一入口為唯讀「執行手冊」。
+// 這個清單獨立於訪客／籌委的公開卡片，避免把 2027 示範或進行中資料誤開放。
+const PIN_STAFF_REFERENCE_CARD_IDS=['exec_manual'];
 const GROUP_CARD_IDS=new Set(['group_advisors','group_leadership','group_secretariat','group_ceremony','group_theme','group_brand','group_reception','coordinator_group','group_service','admin_group']);
 const MANAGEMENT_TOOL_ORDER=['account_setup','approvals'];
 function parsePerm(v){ if(Array.isArray(v)) return v; if(typeof v==='string'&&v.trim()){ try{ const a=JSON.parse(v); return Array.isArray(a)?a:[]; }catch(e){ return []; } } return undefined; }
@@ -528,7 +531,7 @@ const ROSTER_LIST_DEFS=[
     exec_location:'執行手冊 → 代訂餐盒名單（工作人員膳食）', dept_tab:'coord_meal_staff',
     tick_label:'派發', tick_hint:'派發工作人員午膳／餐盒時逐人 TICK（已派）；取消請同時剔「修正」格（TICK 只加不減）。',
     intro:'',
-    source:'staff_meals_2026', editable:false, required:'name', group_field:'group', sort_fields:['group','name','booth','meal'],
+    source:'staff_meals', editable:false, required:'name', group_field:'group', sort_fields:['group','name','booth','meal'],
     total_fields:[],
     columns:[
       {k:'group',label:'組別',type:'text'},

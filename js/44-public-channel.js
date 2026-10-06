@@ -7,7 +7,7 @@
    ・ 卡片只喺 eventData.public_channel_2027 存在時顯示（requiresData，只有 mock_demo 有）
      → 2026（凍結）／2027（範本）完全不受影響。
    ・ 數據由 tools/build_pc2027_demo.js 產生（攤位／旅團／優異旅團直接抽自 isd_2026.json）。
-   ・ 公眾 landing（mock_demo・未登入）：一進APP＝公眾頻道（applyDashboardMode 分流）；工作人員入口收埋喺頁尾
+   ・ 公眾 landing（mock_demo・未登入）：一進APP＝公眾頻道（applyDashboardMode 分流）；第八個工作人員入口與七個公眾身份入口並列
      —— 工作人員打 4 位密碼（staff_gate.pin）、籌委用帳號密碼（一個登入口分流）。
    ・ 報到 QR：只有旅團（團體單位）有 token（T001–T031）；個人／隊伍＝工作人員按名單點名（checkin_note）。
    ・ 場地示意圖（venue_map 數據驅動）：每類人嘅路線＋報到點📍直接標喺圖上——生產版由籌委提供源點，為不同人士製作幾張唔同嘅圖。
@@ -74,13 +74,19 @@ Object.assign(ScoutEventApp.prototype,{
   pcDemoPickerBody(d,pickFn='pcDemoPickAudience',opts={}){
     const auds=d.audiences||[];
     const labels=d.section_labels||{};
+    const summary=d.entry_summary||{};
+    const staffGate=d.staff_gate||{};
+    const showStaff=opts.staffGate!==false;
+    const total=Number(summary.total)||auds.length+(showStaff?1:0);
+    const entryLabel=summary.label||`${total} 個入口：${auds.length} 個公眾身份＋1 個工作人員入口`;
     return `
       <div class="text-center py-3">
         <div class="text-[13px] font-bold text-slate-500">歡迎嚟到</div>
         <div class="text-xl font-black text-indigo-800">2027 港島童軍繽紛日</div>
         <div class="text-[13px] font-bold text-indigo-700 mt-2">你係邊類人？揀你嘅入口 👇</div>
+        <div class="inline-flex mt-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-[10.5px] font-bold text-indigo-700">${escapeHtml(entryLabel)}</div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="pc-entry-grid">
         ${auds.map(a=>`
         <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col" style="border-top:4px solid #6d28d9">
           <div class="text-2xl mb-1">${a.icon}</div>
@@ -92,6 +98,15 @@ Object.assign(ScoutEventApp.prototype,{
           <button onclick="app.${pickFn}('${escapeHtml(a.id)}')" class="mt-3 bg-sky-600 text-white text-[12px] font-bold rounded-lg py-2">進入 →</button>
           <div class="text-[9.5px] text-slate-400 mt-1.5 text-center">🔗 專屬入口：?pub=${escapeHtml(a.id)}</div>
         </div>`).join('')}
+        ${showStaff?`
+        <div data-pc-entry="staff" class="bg-slate-900 border border-slate-700 rounded-2xl p-4 flex flex-col text-white" style="border-top:4px solid #f59e0b">
+          <div class="flex items-start justify-between gap-2"><div class="text-2xl mb-1">🦺</div><span class="bg-amber-400 text-amber-950 text-[9.5px] font-black px-2 py-0.5 rounded-full">第 ${auds.length+1} 個入口</span></div>
+          <b class="text-[13.5px] leading-tight">${escapeHtml(staffGate.title||'工作人員入口')}</b>
+          <div class="text-[11px] text-slate-300 mt-1 leading-relaxed">普通工作人員只需活動密碼 <b class="text-white">2027</b>；籌委會成員沿用 2026 的帳戶＋密碼及開戶模式。</div>
+          <div class="flex flex-wrap gap-1 mt-2"><span class="text-[9.5px] bg-white/10 border border-white/20 text-white rounded-full px-1.5 py-0.5">普通工作人員</span><span class="text-[9.5px] bg-white/10 border border-white/20 text-white rounded-full px-1.5 py-0.5">籌委會成員</span></div>
+          <button onclick="app.pcStaffGate()" class="mt-3 bg-amber-400 hover:bg-amber-300 text-amber-950 text-[12px] font-black rounded-lg py-2">選擇登入方式 →</button>
+          <div class="text-[9.5px] text-slate-400 mt-1.5 text-center">普通工作人員／籌委會成員分流</div>
+        </div>`:''}
       </div>
 ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <button onclick="app.pcDemoOpenTabs()" class="text-[11.5px] font-bold text-slate-500 bg-white border border-slate-200 rounded-full px-4 py-2">📊 委員預覽：一頁睇晒全部內容</button>
@@ -1372,16 +1387,36 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
     const list=bd.list||[];
     const zones=[...new Set(list.map(r=>r[0]))];
     const shown=this.pcDemoZone==='all'?list:list.filter(r=>r[0]===this.pcDemoZone);
-    const themeChip=(t)=>t?`<span class="ml-auto text-[10px] font-bold rounded-full px-2 py-0.5 border border-indigo-200 bg-indigo-50 text-indigo-700 whitespace-nowrap">${escapeHtml(t)}</span>`:'';
+    const zoneRows=zones.map(zone=>({
+      zone,
+      rows:list.filter(r=>r[0]===zone),
+      theme:(list.find(r=>r[0]===zone&&r[2])||[])[2]||'主題活動'
+    }));
+    const tone={
+      A:{bg:'#fffbeb',border:'#fcd34d',text:'#92400e'}, B:{bg:'#fff1f2',border:'#fda4af',text:'#9f1239'},
+      C:{bg:'#f0f9ff',border:'#7dd3fc',text:'#075985'}, D:{bg:'#ecfdf5',border:'#6ee7b7',text:'#065f46'},
+      E:{bg:'#f7fee7',border:'#bef264',text:'#3f6212'}, F:{bg:'#f5f3ff',border:'#c4b5fd',text:'#5b21b6'}
+    };
+    const mapCard=g=>{
+      const c=tone[g.zone]||{bg:'#f8fafc',border:'#cbd5e1',text:'#334155'};
+      return `<div class="border rounded-xl p-2.5" style="border-color:${c.border};background:${c.bg}">
+        <div class="flex items-center justify-between gap-2"><b class="text-[12px]" style="color:${c.text}">${escapeHtml(g.zone)} 區</b><span class="text-[10px] font-bold" style="color:${c.text}">${g.rows.length} 個攤位</span></div>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-snug">${escapeHtml(g.theme)}</div>
+        <div class="flex flex-wrap gap-1 mt-2">${g.rows.map(r=>`<span class="bg-white border rounded-md px-1.5 py-0.5 font-mono text-[10px] font-bold" style="border-color:${c.border};color:${c.text}">${escapeHtml(r[1])}</span>`).join('')}</div>
+      </div>`;
+    };
+    const themeChip=t=>t?`<span class="ml-auto text-[10px] font-bold rounded-full px-2 py-0.5 border border-indigo-200 bg-indigo-50 text-indigo-700 whitespace-nowrap">${escapeHtml(t)}</span>`:'';
     return `
       <div class="bg-white border border-slate-200 rounded-2xl p-4">
-        <div class="flex flex-wrap gap-1.5 mb-3">
+        <div class="font-black text-[15px] text-indigo-900">🎮 攤位遊戲一覽</div>
+        <div class="text-[11.5px] text-slate-500 mt-1">按分區查看 33 個攤位遊戲；揀一區可縮窄清單。</div>
+        <div class="flex flex-wrap gap-1.5 my-3">
           ${['all',...zones].map(z=>`<button class="px-3 py-1.5 rounded-full text-[12px] font-bold border ${this.pcDemoZone===z?'bg-sky-600 text-white border-sky-500':'bg-white border-slate-200 text-slate-600'}" onclick="app.pcDemoSetZone('${z}')">${z==='all'?'全部 '+list.length:z+' 區'}</button>`).join('')}
         </div>
         <div class="grid grid-cols-2 gap-2 text-center text-[12px] mb-3">
           ${(bd.stats||[]).map(s=>`<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-2"><b class="text-indigo-800">${escapeHtml(s[0])}</b><br><span class="text-slate-600">${escapeHtml(s[1])}</span></div>`).join('')}
         </div>
-        <div class="space-y-2">
+        <div id="pc-booth-game-list" class="space-y-2">
           ${shown.map(b=>`
           <div class="border border-slate-200 rounded-xl p-2.5">
             <div class="flex items-center gap-2 mb-1 flex-wrap">
@@ -1393,10 +1428,17 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
           </div>`).join('')}
         </div>
         ${bd.note?`<div class="mt-2 text-[11px] text-slate-400">${escapeHtml(bd.note)}</div>`:''}
-        <div class="mt-3 flex gap-2 text-[12px]">
-          ${bd.game_card?`<a href="${escapeHtml(bd.game_card)}" target="_blank" class="flex-1 text-center bg-amber-100 border border-amber-300 text-amber-900 rounded-xl py-2 font-bold">🎮 遊戲卡</a>`:''}
-          ${bd.site_plan?`<a href="${escapeHtml(bd.site_plan)}" target="_blank" class="flex-1 text-center bg-indigo-100 border border-indigo-400 text-indigo-900 rounded-xl py-2 font-bold">🗺️ 場地佈置圖</a>`:''}
+        ${bd.game_card?`<a href="${escapeHtml(bd.game_card)}" target="_blank" class="mt-3 block text-center bg-amber-100 border border-amber-300 text-amber-900 rounded-xl py-2 text-[12px] font-bold">🎮 下載遊戲卡</a>`:''}
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 mt-2">
+        <div class="font-black text-[15px] text-indigo-900">🗺️ 攤位遊戲地圖</div>
+        <div class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">由東閘入場後，先按 A–F 分區找遊戲；點選上方分區即可對照同一組攤位編號。</div>
+        <div class="mt-3 rounded-2xl border-2 border-indigo-100 bg-slate-50 p-3">
+          <div class="flex items-center justify-between gap-2 mb-2 text-[10.5px] font-bold text-slate-500"><span>東閘入口 → 攤位活動區</span><span>大操場方向 ↑</span></div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${zoneRows.map(mapCard).join('')}</div>
         </div>
+        ${bd.map_note?`<div class="mt-2 text-[10.5px] text-slate-400 leading-relaxed">${escapeHtml(bd.map_note)}</div>`:''}
+        ${bd.site_plan?`<a href="${escapeHtml(bd.site_plan)}" target="_blank" class="mt-3 block text-center bg-indigo-100 border border-indigo-300 text-indigo-900 rounded-xl py-2 text-[12px] font-bold">🗺️ ${escapeHtml(bd.site_plan_label||'下載完整攤位遊戲地圖（PDF）')} ↗</a>`:''}
       </div>`;
   },
 
@@ -1498,7 +1540,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
       </div>`;
   },
 
-  /* ═══════════ 公眾頻道 landing（一進APP就是公眾頻道・mock_demo 未登入） ═══════════ */
+  /* ═══════════ 公眾頻道 landing（一進APP就是公眾頻道・八個入口・mock_demo 未登入） ═══════════ */
   pcLandAudience:'',
   pcPinBuf:'',
 
@@ -1535,17 +1577,14 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <div class="text-[12.5px] leading-relaxed text-slate-700">${escapeHtml(b.news.text)}<span class="block text-[10px] text-slate-400 mt-0.5">${escapeHtml(b.news.updated_at||'')}・${escapeHtml(b.news.updated_by||'')}</span></div>
       </div>`:''}
       <div class="mt-5">${this.pcDemoPickerBody(d,'pcLandPick',{tabsLink:false})}</div>`:''}
-      ${aud?this.pcDemoAudienceBody(d,aud,'pcLandBack'):''}
-      <div class="text-center mt-10 pb-4">
-        <button onclick="app.pcStaffGate()" class="text-[10px] text-slate-300 font-bold" style="letter-spacing:.25em;color:#cbd5e1" onmouseover="this.style.color=''#64748b''" onmouseout="this.style.color=''#cbd5e1''">工作人員入口</button>
-      </div>`;
+      ${aud?this.pcDemoAudienceBody(d,aud,'pcLandBack'):''}`;
     if(typeof setTimeout==='function') setTimeout(()=>this.pcSyncTabbarOffset(),0);
   },
 
   pcLandPick(id){ this.pcLandAudience=id; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
   pcLandBack(){ this.pcLandAudience=''; this.pcAudTab=''; this.renderPublicLanding(); if(typeof window!=='undefined') window.scrollTo(0,0); },
 
-  /* ═══════════ 工作人員入口（頁尾隱藏入口）：一個入口分流 ═══════════
+  /* ═══════════ 工作人員入口（首屏第八個入口）：一個入口分流 ═══════════
      ① 普通工作人員＝4 位活動密碼 → 只見「工作人員公開資料」
      ② 籌委／職員＝帳號＋密碼 → 公開資料＋部門中心嗰啲（同 2026 設計一樣）
   */
@@ -1700,7 +1739,7 @@ ${opts.tabsLink!==false?`      <div class="text-center mt-4">
         <span class="text-[16px] leading-none mt-0.5">🦺</span>
         <div class="flex-1 min-w-[180px]">
           <div class="font-bold text-[12.5px] text-amber-900">普通工作人員模式（活動密碼登入）</div>
-          <div class="text-[11px] text-amber-800 leading-relaxed mt-0.5">你而家睇到嘅係<b>工作人員公開資料</b>。${cannot?`<br>未開放：${escapeHtml(cannot)}等——需要籌委帳戶。`:''}</div>
+          <div class="text-[11px] text-amber-800 leading-relaxed mt-0.5">你而家只可查閱<b>2027 工作人員「執行手冊」資料</b>（唯讀）。${cannot?`<br>未開放：${escapeHtml(cannot)}等——需要籌委帳戶。`:''}</div>
         </div>
         <button type="button" onclick="app.pcUpgradeToCommittee()" class="bg-amber-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl btn-mobile whitespace-nowrap"><i class="fa-solid fa-id-card mr-1"></i>我係籌委・帳號登入</button>
       </div>

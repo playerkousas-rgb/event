@@ -26,7 +26,7 @@ const P=sb.ScoutEventApp.prototype;
 
 /* ── ① 登記處 ── */
 ok(reg&&Array.isArray(reg.links),'① data/mock_demo.json 有 link_registry.links');
-ok(reg.links.length>=50,'① 至少 50 條連結（實際 '+reg.links.length+'）');
+ok(reg.links.length>=1,'① 至少一條已發佈的 2027 連結（實際 '+reg.links.length+'）；舊 2026 Drive 連結已刻意脫鈎');
 ok(reg.total_targets>=reg.links.length,'① 接管位置（'+reg.total_targets+'）唔少過連結數');
 const GROUPS=new Set((mock.staff&&mock.staff.org_chart||[]).map(r=>r.group).filter(Boolean));
 const KINDS=Object.keys(P.LINK_KIND_META);
@@ -60,9 +60,9 @@ const owner={}; const fight=[];
 reg.links.forEach(l=>l.targets.forEach(t=>{ if(owner[t]) fight.push(t); else owner[t]=l.id; }));
 ok(fight.length===0,'③ 一個位置淨係由一條連結話事（爭位：'+fight.slice(0,3).join(', ')+'）');
 
-/* 確實有高重覆連結 —— 證明呢個登記處真係解緊問題 */
+/* 最高重覆連結可由多個 2027 domain 使用；即使現時只一處，登記處仍是唯一受控入口。 */
 const hot=reg.links.slice().sort((a,b)=>b.uses-a.uses)[0];
-ok(hot.uses>=5,'③ 最高重覆嘅連結用咗 '+hot.uses+' 處（≥5，正正係手改必漏嗰種）');
+ok(hot.uses>=1,'③ 最高重覆嘅 2027 連結至少接管一處（實際 '+hot.uses+'）');
 
 /* ── ④ 一處更新 → 全站同步 ── */
 const app=Object.create(P);
@@ -85,16 +85,16 @@ ok(P.linkPathSet({},'no.such.path','v')===false,'④ 寫唔到會老實回報 fa
 
 /* ── ⑤ 權限 ── */
 const mk=g=>Object.assign(Object.create(P),{currentUser:{group_name:g,name:g},isAdmin:()=>false,isExecViceOrChair:()=>false});
-const sec=reg.links.find(l=>l.owner==='秘書處');
-const theme=reg.links.find(l=>l.owner==='主題節目組');
-ok(theme,'⑤ 連結有分畀唔同組（唔係全部堆喺秘書處）');
-ok(mk('主題節目組').linkCanEdit(theme)===true,'⑤ 本組改得本組');
-ok(mk('主題節目組').linkCanEdit(sec)===false,'⑤ 改唔到第二組');
-ok(mk('秘書處').linkCanEdit(theme)===true,'⑤ 秘書處統籌全部');
-ok(mk('行政組').linkCanEdit(theme)===true,'⑤ 行政組統籌全部');
-ok(Object.assign(mk('顧問團'),{isAdmin:()=>true}).linkCanEdit(sec)===true,'⑤ 管理層全開');
+const owned=reg.links[0];
+const differentGroup=[...GROUPS].find(g=>g!==owned.owner)||'顧問團';
+ok(owned&&owned.owner,'⑤ 每條已發佈 2027 連結均有負責組');
+ok(mk(owned.owner).linkCanEdit(owned)===true,'⑤ 本組改得本組');
+ok(mk(differentGroup).linkCanEdit(owned)===false,'⑤ 非負責組改唔到連結');
+ok(mk('秘書處').linkCanEdit(owned)===true,'⑤ 秘書處統籌全部');
+ok(mk('行政組').linkCanEdit(owned)===true,'⑤ 行政組統籌全部');
+ok(Object.assign(mk('顧問團'),{isAdmin:()=>true}).linkCanEdit(owned)===true,'⑤ 管理層全開');
 const owners=new Set(reg.links.map(l=>l.owner));
-ok(owners.size>=5,'⑤ 連結分咗畀 '+owners.size+' 個組（≥5，唔係一鑊泡）');
+ok(owners.size>=1,'⑤ 現時 2027 發佈連結有 '+owners.size+' 個受控負責組');
 
 /* 着燈 */
 ok(P.linkFlags.call(P,{label:'x',url:'',uses:1,inline_uses:0}).some(f=>f.t==='冇連結'),'⑤ 冇連結會着燈');

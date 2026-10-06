@@ -63,7 +63,7 @@ const App = context.TestApp;
 const LS = context.TestLS;
 const app = Object.create(App.prototype);
 Object.assign(app, {
-  currentEvent: { event_id: 'isd_2026' },
+  currentEvent: { event_id: 'mock_demo' },
   currentUser: { role: 'super_admin', name: '系統管理員', user_id: 'sys.ops', group_name: '主席及執行副主席' },
   eventData: {
     drive: { groups: { '會議': '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM' }, meeting_upload_folder_id: '13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM' },
@@ -78,6 +78,8 @@ Object.assign(app, {
   usersList: [],
   approvalPerms: []
 });
+// Exercise the editable (non-archive) persistence path while keeping the fixture isolated from 2026.
+app.isDemoEvent = () => false;
 app.approvalRouting = {
   supplies: { approver_groups: ['協調組'], executor_groups: ['服務及發展組'] },
   vehicle: { approver_groups: ['協調組'], executor_groups: ['協調組'] },
@@ -139,17 +141,17 @@ app.gasUrl = 'https://gas.example';
 app.markRecordDeleted('Supply_Requests', 'req_1');
 assert(app.getSuppliesData().requests.length === 0, 'deleted supply tombstone was not filtered');
 
-localStorage.setItem(LS.supplies('isd_2026'), JSON.stringify({ inventory: [], requests: [{ request_id: 'stale' }], vehicle_passes: [{ pass_id: 'stale-v' }] }));
-localStorage.setItem(LS.meals('isd_2026'), JSON.stringify({ menus: [], orders: [{ order_id: 'stale-o' }] }));
-localStorage.setItem(LS.parking('isd_2026'), JSON.stringify({ applications: [{ parking_id: 'stale-p' }] }));
-localStorage.setItem(LS.finance('isd_2026'), JSON.stringify({ group_itemized_budgets: [], income: [], expenses: [{ id: 'stale-f' }] }));
+localStorage.setItem(LS.supplies('mock_demo'), JSON.stringify({ inventory: [], requests: [{ request_id: 'stale' }], vehicle_passes: [{ pass_id: 'stale-v' }] }));
+localStorage.setItem(LS.meals('mock_demo'), JSON.stringify({ menus: [], orders: [{ order_id: 'stale-o' }] }));
+localStorage.setItem(LS.parking('mock_demo'), JSON.stringify({ applications: [{ parking_id: 'stale-p' }] }));
+localStorage.setItem(LS.finance('mock_demo'), JSON.stringify({ group_itemized_budgets: [], income: [], expenses: [{ id: 'stale-f' }] }));
 
 (async () => {
   await app.syncApplicationsFromGas();
-  const supplies = JSON.parse(localStorage.getItem(LS.supplies('isd_2026')));
-  const meals = JSON.parse(localStorage.getItem(LS.meals('isd_2026')));
-  const parking = JSON.parse(localStorage.getItem(LS.parking('isd_2026')));
-  const finance = JSON.parse(localStorage.getItem(LS.finance('isd_2026')));
+  const supplies = JSON.parse(localStorage.getItem(LS.supplies('mock_demo')));
+  const meals = JSON.parse(localStorage.getItem(LS.meals('mock_demo')));
+  const parking = JSON.parse(localStorage.getItem(LS.parking('mock_demo')));
+  const finance = JSON.parse(localStorage.getItem(LS.finance('mock_demo')));
   assert(!supplies.requests.length && !supplies.vehicle_passes.length, 'empty backend did not clear stale supply/vehicle cache');
   assert(!meals.orders.length, 'empty backend did not clear stale meal cache');
   assert(!parking.applications.length, 'empty backend did not clear stale parking cache');

@@ -1,0 +1,232 @@
+{
+  "schema_version": "2027-sheet-template-registry-v1",
+  "event_id": "isd_2027",
+  "status": "review_only_pending_user_confirmation",
+  "purpose": "2027 master/child Sheet template catalogue. This is a schema review package only; no Google Sheet or Google Drive live-sync endpoint is enabled.",
+  "source_rule": "All forms, templates and assets are 2027-owned. 2026 is immutable reference only and is not a live source or target.",
+  "review_guide": {
+    "drive_file_id": "1nXVSR8sFS9mdw1pean_mGYjiuC5Y7edf",
+    "drive_file_link": "https://drive.google.com/file/d/1nXVSR8sFS9mdw1pean_mGYjiuC5Y7edf/view"
+  },
+  "folders": {
+    "system_master": {
+      "id": "1BYIIBA8_TCO2W77qEpVxrImWkb5ZMohM",
+      "name": "00_系統及資料/01_主SHEET及資料模型"
+    },
+    "data_dictionary": {
+      "id": "1tXyYtb0iixOEF2FgHOZTkd_BWFPcq5sI",
+      "name": "00_系統及資料/02_資料字典及欄位映射"
+    },
+    "sync_audit": {
+      "id": "1yh1oI7tqVbSxrzlumgoAWQe1qY5Xo928",
+      "name": "00_系統及資料/03_同步稽核及錯誤"
+    },
+    "child_sheet_templates": {
+      "id": "1Ai_OVIEV2F2W3l8_AqfciThGNJrwfU1J",
+      "name": "99_模板/01_子SHEET範本"
+    },
+    "entry_route_specs": {
+      "id": "1-4Yva4T1rax8Uk5gAEpD9zH57pRbT6V4",
+      "name": "99_模板/02_資料填寫入口規格"
+    },
+    "simulated_outputs": {
+      "id": "14zoXIaYFVL1OG9CIMCgdfEsa_3FxwU6E",
+      "name": "99_模板/03_模擬輸出及PDF"
+    }
+  },
+  "data_flow_review_sheets": [
+    {
+      "id": "1z95kU9ghiBTW8JAlnfNJoSxVSazjzgbOgZzIUODlB18",
+      "name": "ISD 2027－活動日輸出頁簽及輸入對照表（第一階段：公眾七類／四欄覆核版）",
+      "location": "00_系統及資料/02_資料字典及欄位映射",
+      "scope": "每個頁簽是一類公眾對象；A欄是最終活動日輸出頁簽，B欄是主SHEET／子SHEET更新位置，C欄是中央批核，D欄是最簡單的輸入地方",
+      "status": "review_draft_not_live_sync"
+    }
+  ],
+  "source_explanation_review_sheet": {
+    "id": "1KK7XzYH5zd0VmzxUmvXZG36geaClPZEaRt2Tkl5OcTE",
+    "name": "ISD 2027－完整資料來源解釋覆核表（2026證據基礎／全項完成版）",
+    "location": "00_系統及資料/02_資料字典及欄位映射",
+    "scope": "109 個2026實物根據輸出、9個工作人員執行手冊頁簽及7類公眾對象的覆核；2027 可從零重建為單一受控來源，五個來源類別均已按2026證據逐項完成覆核；不啟用任何2026或2027 live connection",
+    "status": "review_only_2026_evidence_to_2027_framework"
+  },
+  "execution_manual_dataflow_review_sheet": {
+    "id": "11TsVXVfx-cPTjOz7h4YTYTu0MaHnar6wtl9luXX_gNU",
+    "name": "ISD 2027－工作人員執行手冊頁簽來源對照表（2026證據基礎／已確認無紅色版）",
+    "location": "00_系統及資料/02_資料字典及欄位映射",
+    "scope": "工作人員執行手冊9個頁簽、35項最後內容的逐項來源解釋；已確認各組工作開始／結束時間、行政組危機手冊及秘書處活動日文件來源",
+    "status": "review_only_2026_evidence_to_2027_framework"
+  },
+  "master_sheet": {
+    "id": "1aQYNIq41ek3w5zfoLP12KuT_LAeWQLNv6UTAR_1SWPg",
+    "name": "ISD 2027－系統主SHEET（公眾輸出頁簽增補覆核版）",
+    "location": "00_系統及資料/01_主SHEET及資料模型",
+    "tabs": [
+      "00_閱讀指引",
+      "01_十個入口",
+      "02_資料字典",
+      "03_子SHEET映射",
+      "04_同步狀態",
+      "05_欄位錯誤",
+      "10_組織",
+      "11_人員",
+      "12_邀請",
+      "13_報名",
+      "14_出席",
+      "15_工作人員",
+      "16_當值安排",
+      "17_攤位",
+      "18_攤位人手",
+      "19_膳食",
+      "20_交通泊車",
+      "21_典禮",
+      "22_報到",
+      "23_物資",
+      "24_修正紀錄",
+      "25_基本資訊",
+      "26_日程及地圖",
+      "27_公告及求助",
+      "90_代碼表"
+    ]
+  },
+  "child_sheets": [
+    {
+      "template_code": "CS01",
+      "id": "1EzEHK7U82U73AW5MLNhiKtmzOL_4UdBoEWTF7g4pxJQ",
+      "name": "ISD 2027－子SHEET範本－01_參加單位及旅團",
+      "tabs": [
+        "01_單位",
+        "02_出席",
+        "03_膳食",
+        "04_交通"
+      ]
+    },
+    {
+      "template_code": "CS02",
+      "id": "1vSXhpDwLSXe_kllbuUZmk826a4kFJPcLwDT45Erq-yo",
+      "name": "ISD 2027－子SHEET範本－02_嘉賓獎勵及典禮對象",
+      "tabs": [
+        "01_受邀對象",
+        "02_回覆出席",
+        "03_典禮安排"
+      ]
+    },
+    {
+      "template_code": "CS03",
+      "id": "1svzXdcDA12y-R54sNFDsbuHOobtiH2B_Az7XsqsE22c",
+      "name": "ISD 2027－子SHEET範本－03_工作人員及攤位人手",
+      "tabs": [
+        "01_工作人員",
+        "02_當值安排",
+        "03_攤位人手"
+      ]
+    },
+    {
+      "template_code": "CS04",
+      "id": "1rXVYPKnggvHOO2uqPmd64UHUuCCfUZmDVqH1wV9VcHs",
+      "name": "ISD 2027－子SHEET範本－04_攤位及主題活動",
+      "tabs": [
+        "01_攤位",
+        "02_活動安排",
+        "03_物資需求"
+      ]
+    },
+    {
+      "template_code": "CS05",
+      "id": "13KTAZPnzutoU5AGOpWvpUkQipkyoHs404EhNqz5NS0s",
+      "name": "ISD 2027－子SHEET範本－05_典禮及會操",
+      "tabs": [
+        "01_典禮項目",
+        "02_唱名及上台",
+        "03_座位及步操"
+      ]
+    },
+    {
+      "template_code": "CS06",
+      "id": "1BojC00m90z0byScCgWbbdcXDqf56vqY36Y6pcFCbgT8",
+      "name": "ISD 2027－子SHEET範本－06_場地交通及泊車",
+      "tabs": [
+        "01_場地",
+        "02_車輛泊車",
+        "03_旅遊巴"
+      ]
+    },
+    {
+      "template_code": "CS07",
+      "id": "15oDWnw5IqIrO5nSZh4s4CyRsGmEBMNPjRiSL_zco-TU",
+      "name": "ISD 2027－子SHEET範本－07_膳食物資及後勤",
+      "tabs": [
+        "01_膳食",
+        "02_物資",
+        "03_派發"
+      ]
+    },
+    {
+      "template_code": "CS08",
+      "id": "1A_muOrG5IeooJ_m1IAaWbW4_sb5mTV-Q3PzNtgiMF8Y",
+      "name": "ISD 2027－子SHEET範本－08_安全醫療及服務",
+      "tabs": [
+        "01_服務人員",
+        "02_安全安排",
+        "03_緊急資源"
+      ]
+    }
+  ],
+  "ten_invitation_entry_routes": [
+    "IN01_一般參加旅團及單位",
+    "IN02_優異旅團及典禮旅團",
+    "IN03_步操及表演隊伍",
+    "IN04_受邀嘉賓",
+    "IN05_支部最高獎勵得主",
+    "IN06_成人獎勵得主",
+    "IN07_其他制服團體及受邀隊伍",
+    "IN08_NGO合作及攤位夥伴",
+    "IN09_一般工作人員及義工",
+    "IN10_攤位工作人員及人手"
+  ],
+  "format_contract": {
+    "allowed_changes": [
+      "approved data values",
+      "approved new rows",
+      "authorised central corrections"
+    ],
+    "forbidden_changes": [
+      "tab names",
+      "field keys",
+      "field order",
+      "system ID fields",
+      "template_version",
+      "code lists without approved schema version"
+    ],
+    "sync_key_rule": "source_record_id plus the relevant entity/business ID",
+    "error_rule": "format or validation failures must be rejected, logged and returned to the owning group; never silently remap altered headers"
+  },
+  "connection_prerequisites": [
+    "user reviews and confirms entry routes, master tabs and all fields",
+    "sheet protections, data validation and approved code lists are applied",
+    "each regional/group copy receives a registered source sheet ID and owner",
+    "APP upload and direct-Drive update rules are approved",
+    "GS/Drive sync endpoint, audit log and error-return workflow are then enabled"
+  ],
+  "public_documents_dataflow_review_sheet": {
+    "id": "1Yen7oSIGBBl_Oh-3VvUHRDuwAcJpjD42cqKzXMQNyaQ",
+    "name": "ISD 2027－公眾文件及入口來源對照表（2026證據基礎／已覆核版）",
+    "location": "00_系統及資料/02_資料字典及欄位映射",
+    "scope": "公眾七類活動日頁面以外的26項正式公眾文件、報名入口、地圖、教材、通告及公告輸出；每項對應一個日後重建的2027唯一受控來源／source ID",
+    "status": "review_only_2026_evidence_to_2027_rebuild"
+  },
+  "staff_documents_dataflow_review_sheet": {
+    "id": "1kmcamyyfxeCaL1W_yxfX1UiWO2m4aYhXfNgY2bo-Wac",
+    "name": "ISD 2027－工作人員文件及工作視圖來源對照表（2026證據基礎／已覆核版）",
+    "location": "00_系統及資料/02_資料字典及欄位映射",
+    "scope": "工作人員執行手冊頁面以外的25項文件、受控工作視圖、表格及內部輸出；每項對應一個日後重建的2027唯一受控來源／source ID",
+    "status": "review_only_2026_evidence_to_2027_rebuild"
+  },
+  "department_centre_dataflow_review_sheet": {
+    "id": "1oq5cWFixYmhQQk6FAZNx1boskB2-uSuMs7FEQMZoZ2A",
+    "name": "ISD 2027－部門中心及內部輸出來源對照表（2026證據基礎／已覆核版）",
+    "location": "00_系統及資料/02_資料字典及欄位映射",
+    "scope": "58項部門中心及內部輸出；每項對應一個日後重建的2027唯一受控來源／source ID，並記錄中央批核及2026實物證據",
+    "status": "review_only_2026_evidence_to_2027_rebuild"
+  }
+}

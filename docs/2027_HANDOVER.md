@@ -1,5 +1,8 @@
 # 2027 交接文件（HANDOVER）— 俾下一個 Agent
 
+> ## 已被現行資料規則取代（2026-10-06）
+> 本文件的早期「每次直接由 2026 填入 `mock_demo`」描述只作歷史交接參考，**不可再照做**。現行唯一規則及 Drive source mapping 見 [`2027_SOURCE_OF_TRUTH.md`](2027_SOURCE_OF_TRUTH.md)：2026 只可作封存 provenance，2027 一律在 ISD 2027 folder／2027 frontend flow 更新，再發佈到 read model 與 MOCK。
+
 > **你嘅任務**：令**所有參加者喺活動當日用手機睇到最新資訊**。
 > 階段 0–2 已完成（本文件講明現狀＋你嘅彈藥庫＋建議路線）。
 > 日期：2026-10-05｜repo：`playerkousas-rgb/event`｜branch：`arena/01a1066c-event` → 經 PR 合併入 `main`
@@ -25,12 +28,13 @@
 ### 制度（三層分工）
 ```
 源頭（Drive/表格） ← 新籌委只做：出內容 → 撳 APP 上傳掣（原名原檔・連 Drive 都唔使入）
-出口（APP）        ← 系統自動：七類入口渲染・攞最新・公眾免登入
+出口（APP）        ← 系統自動：首屏 8 個入口（七類公眾身份＋工作人員分流）渲染・攞最新・公眾免登入
 傳播（QR/Link）    ← 我哋預先設定：通知書信模板預印 QR・APP 入口即 link；籌委零傳播動作
 ```
 
-### APP 內容（`index.html`，mock_demo 示範，205 項測試鎖實）
-- **七類分眾入口**（`?pub=guest/troop/merit/march/ug/awardee_section/awardee_adult`）：各有時間表・報到地圖（示意圖路線）・須知・通知書掣
+### APP 內容（`index.html`，mock_demo 示範，345 項測試鎖實）
+- **首屏 8 個入口**：七類公眾身份（`?pub=guest/troop/merit/march/ug/awardee_section/awardee_adult`）各有時間表・報到地圖（示意圖路線）・須知・通知書掣；第 8 個為**工作人員入口**，再分流為「普通工作人員＝密碼 2027」及「籌委／職員＝沿用 2026 帳戶＋密碼及開戶模式」。
+- **旅團攤位遊戲頁**：攤位遊戲一覽（33 個攤位、A–F 分區篩選）＋分區遊戲地圖＋完整 PDF 遊戲地圖／遊戲卡下載。
 - **旅團報到 QR**（T001–T031，報名自動生成 T032+）＋**報到站**（工作人員掃碼→人數・餐盒→確認）
 - **源頭上傳中心**：15 個掣（7 通知書＋7 場地圖＋1 座位表）→ 後端 Drive 指定資料夾・攞最新
 - **嘉賓接待站**：102 位真實 2026 嘉賓（搜尋・分類・頒獎台/大會車/茶聚一鍵篩・接待報到）
@@ -61,7 +65,7 @@
 
 ## 四、開發慣例（唔好破壞）
 
-- 測試：`node tests/pc2027_public_channel_test.js`（205 項）＋全套 `for t in tests/*.js`（基線 21/14，14 個 FAIL 係 2026 舊 demo 嘅預期基線，**唔好修**）
+- 測試：`node tests/pc2027_public_channel_test.js`（345 項）＋全套 `npm test`（基線 31/45 通過；14 個 FAIL 係 2026 舊 demo 嘅預期基線，**唔好修**）
 - 改 `js/` 之後：`node --check`＋`sed -i 's/?v=OLD/?v=NEW/g' index.html`（cache-bust，29 處）＋ rebuild `node tools/build_pc2027_demo.js`
 - 數據改動一律改 `tools/build_pc2027_demo.js` 再 rebuild，**唔好直接改 `data/mock_demo.json`**
 - 用戶鍾意：結果先行（交「成品」唔係交「機制」）・廣東話回覆・真實 2026 數據打底

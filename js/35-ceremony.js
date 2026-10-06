@@ -98,7 +98,8 @@ Object.assign(ScoutEventApp.prototype,{
     }
     return demo;
   },
-  saveCeremonyData(data){ if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
+  saveCeremonyData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveCeremonyData')) return false; if(this.isDataFrozen&&this.isDataFrozen()) return; localStorage.setItem(LS.ceremony(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
   renderCeremonyModule(box){
     const container=box||document.getElementById('module-content');
     const ceremonyTabs=['rundown','route','mc','guests','ug','seating','speech','awards','section_award','leader_award','map'];
@@ -760,7 +761,8 @@ Object.assign(ScoutEventApp.prototype,{
       ]}
     ]};
   },
-  saveAwardsData(data){ localStorage.setItem(LS.awards(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
+  saveAwardsData(data){
+    if(this.isReferenceArchiveWriteBlocked&&this.isReferenceArchiveWriteBlocked('saveAwardsData')) return false; localStorage.setItem(LS.awards(this.currentEvent?.event_id||'isd_2026'), JSON.stringify(data)); },
   meritAwardReplyStatusHTML(){
     const ceremony=this.getCeremonyData();
     const master=Array.isArray(ceremony.meritRoster)?ceremony.meritRoster:[];

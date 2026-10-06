@@ -1,0 +1,228 @@
+{
+  "schema_version": "2027-public-documents-output-to-source-v1",
+  "event_id": "isd_2027",
+  "status": "review_only_2026_evidence_to_2027_rebuild",
+  "scope": "公眾七類活動日頁面以外的 26 項正式公眾文件、報名入口、地圖、教材、通告及公告輸出。每項由已驗證的 2026 實物來源，說明其日後唯一 2027 受控資料／文件來源；不建立同步或寫入。",
+  "rules": [
+    "2026 檔案、Sheet 及資料只作唯讀證據，不能成為 2027 的 live source。",
+    "2027 可從零重建。每一份正式文件、地圖或結構化入口資料只設一個唯一受控來源／source ID；所有公眾出口只讀取該來源，不各自複製版本。",
+    "內容更新先改 2027 唯一來源，才重建或發布所有需要它的公眾輸出；同一文件不在不同對象資料夾維護平行版本。",
+    "B 欄是日後 2027 的目標受控位置，不代表現有 MOCK 或 2026 檔案可直接沿用。",
+    "只有缺少唯一來源、資料域、既有組別擁有人或必要用戶決定才標紅；2026 的日期、名額、收費、格式、版本及舊副本差異不標色。",
+    "組別名稱只使用 2026 既有大組別：主席及執行副主席、顧問團、秘書處、行政組、協調組、嘉賓接待組、會操及典禮組、主題節目組、服務及發展組、品牌推廣組。"
+  ],
+  "sections": [
+    {
+      "section_id": "guest_documents",
+      "section_name": "嘉賓邀請、回覆及位置資料",
+      "flows": [
+        {
+          "final_output": "嘉賓邀請函",
+          "update_location": "2027目標：02_通知書／01_嘉賓；唯一受控文件：DOC-GUEST-INVITATION；資料來源：12_邀請",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: ISD2026 邀請函 (Invitation Letter) 04102026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "邀請卡－會長",
+          "update_location": "2027目標：02_通知書／01_嘉賓；唯一受控文件：DOC-GUEST-CARD-PRESIDENT；資料來源：12_邀請",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: ISD2026 邀請卡－會長 04102026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "邀請卡－主禮嘉賓",
+          "update_location": "2027目標：02_通知書／01_嘉賓；唯一受控文件：DOC-GUEST-CARD-GOH；資料來源：12_邀請",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: ISD2026 邀請卡－主禮嘉賓 (GoH) 04102026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "嘉賓回條",
+          "update_location": "2027目標：01_報名／嘉賓回覆；唯一受控入口：IN04；資料來源：13_報名、14_出席",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: ISD2026 回條 (IN reply) 04102026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "警察學院地圖－嘉賓版",
+          "update_location": "2027目標：04_場地／嘉賓及典禮位置圖；唯一受控文件：MAP-GUEST；資料來源：26_日程及地圖",
+          "central_approval": "協調組",
+          "reference_source": "2026 doc: ISD2026 警察學院地圖－嘉賓版 V2。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "participant_documents",
+      "section_name": "旅團、合作單位及報名文件",
+      "flows": [
+        {
+          "final_output": "童軍旅通知書",
+          "update_location": "2027目標：02_通知書／02_旅團；唯一受控文件：DOC-TROOP-NOTICE；資料來源：10_組織、13_報名、26_日程及地圖",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: 0.童軍旅通知書2026；activity_day_sources：行政組／旅團通知書。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "共創明Teen 團體活動通知書",
+          "update_location": "2027目標：02_通知書／08_NGO合作；唯一受控文件：DOC-NGO-NOTICE；資料來源：10_組織、13_報名",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: 0.共創明Teen計劃團體活動通知書2026；activity_day_sources：服務及發展組／共創明Teen通知書。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "參加旅團節目程序（附錄1）",
+          "update_location": "2027目標：05_程序／參加旅團；唯一受控資料：SCHEDULE-TROOP；資料來源：26_日程及地圖",
+          "central_approval": "行政組",
+          "reference_source": "2026 doc: 附錄1_參加旅團節目程序_2026；activity_day_sources：行政組／參加旅團程序。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "參加旅團場地指示圖（附錄2）",
+          "update_location": "2027目標：04_場地／場地指示圖／參加旅團；唯一受控文件：MAP-TROOP；資料來源：26_日程及地圖",
+          "central_approval": "協調組",
+          "reference_source": "2026 doc: 附錄2_參加旅團場地指示圖2026 v2；activity_day_sources：協調組／場地及旅團指示。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "報名表格 sp12a",
+          "update_location": "2027目標：01_報名／一般參加旅團及單位；唯一受控入口：IN01；資料來源：10_組織、13_報名、19_膳食、20_交通泊車",
+          "central_approval": "行政組",
+          "reference_source": "2026 doc: 報名表格 sp12a_26_isd2026_enrollform.pdf；documents：行政組／表格。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "materials_and_venue",
+      "section_name": "活動教材、地圖及泊車資料",
+      "flows": [
+        {
+          "final_output": "遊戲卡",
+          "update_location": "2027目標：04_場地／攤位遊戲卡；唯一受控文件：ASSET-GAME-CARD；資料來源：17_攤位、23_物資",
+          "central_approval": "主題節目組",
+          "reference_source": "2026 doc: Game card；activities.gameCards(2)；activity_day_sources：主題節目組／遊戲卡。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "機電先鋒章海報（A2 五款）",
+          "update_location": "2027目標：04_場地／攤位宣傳物；唯一受控文件：ASSET-BADGE-POSTER；資料來源：17_攤位、23_物資",
+          "central_approval": "主題節目組",
+          "reference_source": "2026 docs: 積極公民獎章－機電先鋒章（Full Set）、A2 100%及四個支部 A2 海報。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "家居電力安全手冊",
+          "update_location": "2027目標：04_場地／攤位宣傳物；唯一受控文件：ASSET-HOME-ELECTRIC-SAFETY；資料來源：17_攤位",
+          "central_approval": "主題節目組",
+          "reference_source": "2026 doc: 機電先鋒－家居電力安全手冊 (Cub Appendix)。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "場地地圖 MAP",
+          "update_location": "2027目標：04_場地／場地指示圖／共用底圖；唯一受控文件：MAP-BASE；資料來源：26_日程及地圖",
+          "central_approval": "協調組",
+          "reference_source": "2026 doc: MAP.gif（場地地圖）；activities.maps(1)。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "警察學院場地地圖",
+          "update_location": "2027目標：04_場地／場地指示圖／共用底圖；唯一受控文件：MAP-VENUE-DETAIL；資料來源：26_日程及地圖",
+          "central_approval": "協調組",
+          "reference_source": "2026 doc: 香港警察學院場地地圖；documents：秘書處／公告。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "泊車證申請表",
+          "update_location": "2027目標：01_報名／泊車申請；唯一受控入口：IN-PARKING；資料來源：20_交通泊車",
+          "central_approval": "行政組",
+          "reference_source": "2026 Google Sheet: 港島童軍繽紛日2026－泊車證申請表格；parking_source.columns(12)；documents：協調組／協調。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "notices_and_forms",
+      "section_name": "通告、籌委及捐贈文件",
+      "flows": [
+        {
+          "final_output": "活動通告 sp12",
+          "update_location": "2027目標：02_通知書／活動主通告；唯一受控文件：DOC-MAIN-CIRCULAR；資料來源：25_基本資訊、27_公告及求助",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: 活動通告 sp12_26_isd2026.pdf；documents：行政組／通告；notices：notice_main_2026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "特別通告（6 份）",
+          "update_location": "2027目標：02_通知書／特別通告；唯一受控文件組：DOC-SPECIAL-CIRCULAR；資料來源：25_基本資訊、27_公告及求助",
+          "central_approval": "秘書處",
+          "reference_source": "2026 docs: 特別通告第01／02／03／11／15／16號。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "籌委邀請函 M28（3 款）",
+          "update_location": "2027目標：02_通知書／籌委；唯一受控文件組：DOC-OC-INVITATION；資料來源：12_邀請",
+          "central_approval": "秘書處",
+          "reference_source": "2026 docs: 籌委邀請函 M28 (Councils)、(District)、(DRCs)；documents：秘書處／通告。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "籌委邀請回條 M28a",
+          "update_location": "2027目標：01_報名／籌委回覆；唯一受控入口：IN-OC-REPLY；資料來源：12_邀請、13_報名、14_出席",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: 籌委邀請回條 M28a；documents：秘書處／表格。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "食物捐贈通告＋表格",
+          "update_location": "2027目標：02_通知書／捐贈；唯一受控文件及入口：DOC-FOOD-DONATION、IN-FOOD-DONATION；資料來源：23_物資",
+          "central_approval": "秘書處",
+          "reference_source": "2026 docs: 食物捐贈通告 (FoodDonation)、食物捐贈表格 (FoodDonation_Form)、v19 童心捐贈 QR；documents：秘書處。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "物資捐贈通告＋表格",
+          "update_location": "2027目標：02_通知書／捐贈；唯一受控文件及入口：DOC-GOODS-DONATION、IN-GOODS-DONATION；資料來源：23_物資",
+          "central_approval": "秘書處",
+          "reference_source": "2026 docs: 物資捐贈通告 (Goods Donating)、物資捐贈表格 (Goods Donating_Form)；documents：秘書處。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "收受利益及申報政策",
+          "update_location": "2027目標：02_通知書／合規政策；唯一受控文件：DOC-COMPLIANCE；資料來源：25_基本資訊",
+          "central_approval": "秘書處",
+          "reference_source": "2026 docs: 收受利益及申報政策 (pc132018c)、(pc142018c)；documents：秘書處／合規政策。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "public_channel",
+      "section_name": "公眾頻道、日程及即時公告",
+      "flows": [
+        {
+          "final_output": "公眾頻道（活動日版）",
+          "update_location": "2027目標：公眾輸出層；唯一受控設定：PUBLIC-CHANNEL；資料來源：25_基本資訊、26_日程及地圖、27_公告及求助",
+          "central_approval": "秘書處",
+          "reference_source": "2026 public_channel_2027；v15。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "日程表 Run Down（全日）",
+          "update_location": "2027目標：05_程序／全日程序；唯一受控資料：SCHEDULE-ALL；資料來源：26_日程及地圖、21_典禮",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 doc: ISD2026 日程表 (Run Down)；schedule(6)；documents：秘書處／公告。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "惡劣天氣／改期公布",
+          "update_location": "2027目標：02_通知書／即時公告；唯一受控公告：NOTICE-WEATHER；資料來源：27_公告及求助",
+          "central_approval": "行政組",
+          "reference_source": "2026 notices：延期日 2026-10-11；活動通告及危機／活動日公告資料。",
+          "status": "mapped"
+        }
+      ]
+    }
+  ]
+}

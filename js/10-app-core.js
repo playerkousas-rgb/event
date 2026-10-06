@@ -111,7 +111,7 @@ Object.assign(ScoutEventApp.prototype,{
       // 最新消息已改為 APP 內可改（執副以上／秘書處），後端 Events 表有 news_updated_at 就以後端為準。
       if(ev.news_updated_at||String(ev.news||'').trim()){ local.news=String(ev.news||''); local.news_updated_by=String(ev.news_updated_by||''); local.news_updated_at=String(ev.news_updated_at||''); }
     }); if(this.eventsList.length) loaded=true; }}catch(e){}}
-    if(!loaded && this.eventsList.length===0){this.eventsList=[{event_id:'isd_2026',event_name:'2026 港島童軍繽紛日',category:'isd',description:'港島地域年度旗艦',start_date:'2026-10-04',end_date:'2026-10-04',status:'active'},{event_id:'isd_2027',event_name:'2027 港島童軍繽紛日',category:'isd',description:'港島童軍繽紛日',start_date:'2027-10-01',end_date:'2027-10-04',status:'upcoming'}];}
+    if(!loaded && this.eventsList.length===0){this.eventsList=[{event_id:'isd_2026',event_name:'港島童軍繽紛日 2026（進行中）',category:'isd',description:'2026 活動日前封存參考資料（唯讀）',start_date:'2026-10-04',end_date:'2026-10-04',status:'active'},{event_id:'mock_demo',event_name:'模擬示範版 2027 港島童軍繽紛日',category:'demo',description:'以已封存的 2026 活動日前資料預製的 2027 示範版',start_date:'2027-10-04',end_date:'2027-10-04',status:'active'}];}
     // 修正類別：避免舊快取 (無 category) 被誤判到「其他大型活動」
     this.eventsList=this.eventsList.map(ev=>{
       if(!ev.category){
@@ -431,6 +431,19 @@ Object.assign(ScoutEventApp.prototype,{
     return (typeof DATA_FROZEN_EVENT_IDS!=='undefined') && DATA_FROZEN_EVENT_IDS.includes(eid);
   }
 ,
+  // 2026 是已結束的參考檔，不是可繼續補資料的活動。所有共用 save* 路徑均以此為最後防線；
+  // 即使舊按鈕／舊瀏覽器快取仍能觸發函式，也不可寫 localStorage、eventData 或 GAS。
+  isReferenceArchiveWriteBlocked(operation,silent=false){
+    if(!this.isDataFrozen()) return false;
+    const eid=this.currentEvent?.event_id||'isd_2026';
+    if(!silent) console.warn(`[reference archive] blocked write to ${eid}: ${operation||'unknown operation'}`);
+    if(!silent&&!this._referenceArchiveWriteNoticeShown){
+      this._referenceArchiveWriteNoticeShown=true;
+      showToast('2026 已封存為唯讀參考資料，不能修改或同步寫入。請在 2027 範本／示範產物處理新資料。','warning');
+    }
+    return true;
+  }
+,
   // 可以睇晒全部部門嘅人：執副以上 ＋ 行政組（統管全站）
   // v8.14d：可以睇晒全部部門嘅人＝ 執副以上 ＋ 副主席 ＋ 行政組總主任 ＋ 參事主任 ＋ 行政組（統管全站）
   // 其餘（包括各組總主任）一律淨係睇自己部門
@@ -645,6 +658,7 @@ Object.assign(ScoutEventApp.prototype,{
       if(ia===-1&&ib===-1) return 0; if(ia===-1) return 1; if(ib===-1) return -1; return ia-ib;
     });
     const publicDefs=byOrder(DASH_CARD_DEFS.filter(d=>d.minLevel<=0&&!d.hideOnDashboard&&(!d.requiresData||(this.eventData&&this.eventData[d.requiresData]))),PUBLIC_CARD_ORDER);
+    const pinStaffReferenceDefs=publicDefs.filter(d=>typeof PIN_STAFF_REFERENCE_CARD_IDS!=='undefined'&&PIN_STAFF_REFERENCE_CARD_IDS.includes(d.id));
     const identityDefs=DASH_CARD_DEFS.filter(d=>d.minLevel>0&&!d.hideOnDashboard);
     const groupDefs=identityDefs.filter(d=>GROUP_CARD_IDS.has(d.id)).sort((a,b)=>ORG_GROUPS.indexOf(normalizeGroupName(a.groups?.[0]))-ORG_GROUPS.indexOf(normalizeGroupName(b.groups?.[0])));
     const toolDefs=byOrder(identityDefs.filter(d=>MANAGEMENT_TOOL_ORDER.includes(d.id)),MANAGEMENT_TOOL_ORDER);
@@ -673,8 +687,8 @@ Object.assign(ScoutEventApp.prototype,{
       if(publicSection) publicSection.classList.remove('hidden');
       identityGrid.innerHTML=''; toolsGrid.innerHTML='';
       if(pinNote){ pinNote.classList.remove('hidden'); pinNote.innerHTML=(typeof this.pcPinStaffNoticeHTML==='function')?this.pcPinStaffNoticeHTML():''; }
-      this.deferredDashWrite(publicGrid, publicDefs.map(d=>this.cardHTML(d,{locked:false})).join(''));
-      if(publicCount) publicCount.textContent=`${publicDefs.length} 張`;
+      this.deferredDashWrite(publicGrid, pinStaffReferenceDefs.map(d=>this.cardHTML(d,{locked:false})).join(''));
+      if(publicCount) publicCount.textContent=`${pinStaffReferenceDefs.length} 張`;
       if(identityCount) identityCount.textContent='';
       if(toolsCount) toolsCount.textContent='';
       return;
@@ -754,7 +768,7 @@ Object.assign(ScoutEventApp.prototype,{
     const simplePanel=document.getElementById('simple-card-panel');
     const heroEl=document.getElementById('dash-hero'); if(heroEl) heroEl.classList.remove('hidden');
     const landEl=document.getElementById('public-landing');
-    // 階段1：mock_demo（有 public_channel_2027）＋未登入 → 一進APP＝公眾頻道；工作人員入口收埋喺頁尾
+    // mock_demo（有 public_channel_2027）＋未登入 → 一進APP＝公眾頻道；首屏 8 個入口（7 類公眾＋工作人員分流）
     if(typeof this.pcPublicLandingActive==='function' && this.pcPublicLandingActive()){
       if(landEl) landEl.classList.remove('hidden');
       this.updateAdminNav();
@@ -1461,7 +1475,7 @@ Object.assign(ScoutEventApp.prototype,{
         case 'coord_meals': this.renderCoordMeals(el); break;
         case 'coord_docs': this.renderCoordDocs(el); break;
         // 名單與點名資料在各入口共用；此處提供負責組的操作入口。
-        case 'coord_mealbox': el.innerHTML=`<div class="space-y-3">${this.mealLogistics2026HTML?this.mealLogistics2026HTML():''}${this.rosterPanelHTML('meal_box',{scope:'coord'})}</div>`; break;
+        case 'coord_mealbox': el.innerHTML=`<div class="space-y-3">${this.mealLogisticsHTML?this.mealLogisticsHTML():''}${this.rosterPanelHTML('meal_box',{scope:'coord'})}</div>`; break;
         case 'coord_meal_staff':
           el.innerHTML=`<div class="space-y-3"><div class="bg-white border rounded-xl p-4">${this.rosterPanelHTML('staff_meals',{scope:'coord'})}</div>${this.staffMealDigestHTML?this.staffMealDigestHTML():''}${this.mealMenuHTML?this.mealMenuHTML():''}</div>`;
           break;
@@ -1628,9 +1642,8 @@ Object.assign(ScoutEventApp.prototype,{
   openModule(key){
     // v16：普通工作人員（活動密碼入）＝只准開「公開資料」卡片，其餘要籌委帳戶
     if(this.currentUser&&this.currentUser.staff_pin){
-      const def=(typeof DASH_CARD_DEFS!=='undefined')?DASH_CARD_DEFS.find(d=>d.id===key):null;
-      const openToAll=(key==='dept_hub'||key==='my_monitor')?false:(def?def.minLevel<=0:false);
-      if(!openToAll){ showToast('呢部分要籌委帳戶（帳號＋密碼）先入到，請撳「我係籌委・帳號登入」','warning'); return; }
+      const allowed=typeof PIN_STAFF_REFERENCE_CARD_IDS!=='undefined'&&PIN_STAFF_REFERENCE_CARD_IDS.includes(key);
+      if(!allowed){ showToast('普通工作人員只可查看 2027 工作人員「執行手冊」資料；其他內容要籌委帳戶（帳號＋密碼）先入到。','warning'); return; }
     }
     if((key==='account_setup'||key==='permissions') && this.roleLevel(this.currentUser?.role)<40){ showToast('此管理工具只供總主任以上使用','warning'); return; }
     this.pushNavHistory({view:'module',module:key});

@@ -1,0 +1,222 @@
+{
+  "schema_version": "2027-staff-documents-output-to-source-v1",
+  "event_id": "isd_2027",
+  "status": "review_only_2026_evidence_to_2027_rebuild",
+  "scope": "工作人員執行手冊頁面以外的 25 項工作人員文件、受控工作視圖、表格及內部輸出。每項以已驗證的 2026 實物來源說明日後唯一 2027 受控資料／文件來源；不建立同步或寫入。",
+  "rules": [
+    "2026 Sheet、文件及資料只作唯讀證據，不能成為 2027 的 live source。",
+    "2027 可從零重建。每一份資料、文件、工作視圖或列印輸出只讀取一個唯一受控資料／文件來源或 source ID；不在每個工作崗位維護副本。",
+    "每組全日只處理其既定工作。2027 只記錄該組工作開始及結束時間，不設交接或換位資料域。",
+    "危機處理資料由行政組提供及確認危機處理手冊；通告、指引及活動日文件由秘書處提供及確認。",
+    "B 欄是日後 2027 的目標受控位置，不代表現有 MOCK 或 2026 檔案可直接沿用。",
+    "只有缺少唯一來源、資料域、既有組別擁有人或必要用戶決定才標紅；2026 的日期、數量、格式、版本及舊副本差異不標色。",
+    "組別名稱只使用 2026 既有大組別：主席及執行副主席、顧問團、秘書處、行政組、協調組、嘉賓接待組、會操及典禮組、主題節目組、服務及發展組、品牌推廣組。"
+  ],
+  "sections": [
+    {
+      "section_id": "staff_and_duties",
+      "section_name": "組織、工作人員及當日職責",
+      "flows": [
+        {
+          "final_output": "籌委架構及聯絡表",
+          "update_location": "2027目標：03_名單／組織及聯絡；唯一受控資料：DATA-ORGANISATION；資料來源：10_組織、11_人員",
+          "central_approval": "行政組",
+          "reference_source": "2026 doc: ISD2026 Org Chart and Contact List（持續更新）；staff.contacts(80)、staff.org_chart(55)、範本02。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "工作人員編更",
+          "update_location": "2027目標：06_後勤／工作人員名單；唯一受控資料：SCHEDULE-STAFF；資料來源：15_工作人員、16_當值安排",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.event_staff_roster(279)。2027 以各組工作開始／結束時間取代交接資料。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "職務分工表",
+          "update_location": "2027目標：03_名單／工作人員職責；唯一受控資料：DATA-JOB-DUTY；資料來源：10_組織、15_工作人員、16_當值安排",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.job_duties(11)。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "票券",
+          "update_location": "2027目標：06_後勤／工作人員及票券；唯一受控資料：ASSET-TICKET；資料來源：15_工作人員",
+          "central_approval": "行政組",
+          "reference_source": "2026 tab: admin_tickets。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "工作人員證",
+          "update_location": "2027目標：06_後勤／工作人員及票券；唯一受控輸出設定：BADGE-STAFF；資料來源：15_工作人員",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.event_staff_roster(279)、souvenirs.staff_roster(290)。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "紀念章派發（工作人員）",
+          "update_location": "2027目標：06_後勤／工作人員及紀念品；唯一受控資料：DATA-STAFF-SOUVENIR；資料來源：15_工作人員、23_物資",
+          "central_approval": "行政組",
+          "reference_source": "2026 tab: stamp_staff；souvenirs.staff_roster(290)。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "booth_venue_meals",
+      "section_name": "攤位、場地、物資及膳食工作視圖",
+      "flows": [
+        {
+          "final_output": "攤位總表",
+          "update_location": "2027目標：04_場地／攤位；唯一受控資料：DATA-BOOTH；資料來源：17_攤位、18_攤位人手、23_物資",
+          "central_approval": "主題節目組",
+          "reference_source": "2026 doc: ISD2026 攤位資料；tab: master；activities.booths(33)、範本03。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "攤位資料（Drive 版）",
+          "update_location": "2027目標：04_場地／攤位；唯一受控資料：DATA-BOOTH；資料來源：17_攤位、18_攤位人手、23_物資",
+          "central_approval": "主題節目組",
+          "reference_source": "2026 tab: drive。與攤位總表日後讀取同一 DATA-BOOTH，不保留平行 Drive 版。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "餐單",
+          "update_location": "2027目標：06_後勤／餐盒統計；唯一受控資料：DATA-MENU；資料來源：19_膳食",
+          "central_approval": "協調組",
+          "reference_source": "2026 meal_menu(9)。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "工作人員膳食點名",
+          "update_location": "2027目標：06_後勤／餐盒統計；唯一受控資料：DATA-STAFF-MEAL；資料來源：15_工作人員、19_膳食",
+          "central_approval": "協調組",
+          "reference_source": "2026 tab: coord_meal_staff；staff_meals(290)。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "場地佈置圖 Site Setup Plan",
+          "update_location": "2027目標：04_場地／場地佈置圖；唯一受控文件：MAP-SITE-SETUP；資料來源：17_攤位、23_物資、26_日程及地圖",
+          "central_approval": "協調組",
+          "reference_source": "2026 doc: ISD2026 Site Setup Plan R10-SETUP PLAN-1；activity_day_sources：協調組／場地佈置及執行。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "帳篷資料",
+          "update_location": "2027目標：04_場地／帳篷及設施；唯一受控資料：DATA-MARQUEE；資料來源：23_物資、26_日程及地圖",
+          "central_approval": "協調組",
+          "reference_source": "2026 doc: 261003_Scout_marquee；activity_day_sources：協調組／場地／帳篷資料。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "箱頭紙",
+          "update_location": "2027目標：06_後勤／物資；唯一受控文件：ASSET-CARTON-LABEL；資料來源：23_物資",
+          "central_approval": "行政組",
+          "reference_source": "2026 doc: 港島童軍繽紛日2026箱頭紙；activity_day_sources：行政組／箱頭紙。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "safety_service",
+      "section_name": "安全、危機及失物服務",
+      "flows": [
+        {
+          "final_output": "失物認領",
+          "update_location": "2027目標：06_後勤／安全及危機處理；唯一受控資料：DATA-LOST-FOUND；資料來源：27_公告及求助",
+          "central_approval": "服務及發展組",
+          "reference_source": "2026 tab: lost_found。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "危機處理小組名單及程序",
+          "update_location": "2027目標：06_後勤／安全及危機處理；唯一受控文件及資料：DOC-CRISIS-MANUAL、DATA-CRISIS-CONTACT；資料來源：27_公告及求助",
+          "central_approval": "行政組",
+          "reference_source": "2026 crisis.team(14)、crisis.contacts(13)、crisis.docs(13)及 ISD2026-RiskMangementManual_V1(Clean).pdf。2027 由行政組提供及確認危機處理手冊。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "finance_controls",
+      "section_name": "財務及受控表格",
+      "flows": [
+        {
+          "final_output": "開支申報",
+          "update_location": "2027目標：06_後勤／財務；唯一受控資料：DATA-FINANCE-EXPENSE；資料來源：財務主資料",
+          "central_approval": "行政組",
+          "reference_source": "2026 tab: group_expense。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "口頭報價記錄",
+          "update_location": "2027目標：06_後勤／財務；唯一受控資料：DATA-FINANCE-QUOTE；資料來源：財務主資料",
+          "central_approval": "行政組",
+          "reference_source": "2026 tab: group_quotes；doc: 附件3 - 口頭報價資料記錄。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "財務指引及會計程序",
+          "update_location": "2027目標：06_後勤／財務；唯一受控文件：DOC-FINANCE-GUIDE；資料來源：財務主資料",
+          "central_approval": "行政組",
+          "reference_source": "2026 doc: ISD2026 財務指引及會計程序 ver 1；tab: group_finance_guide。內容可核實後以 2027 受控版本重建。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "財務附件 1／2／6",
+          "update_location": "2027目標：06_後勤／財務；唯一受控文件組：DOC-FINANCE-ANNEX；資料來源：財務主資料",
+          "central_approval": "行政組",
+          "reference_source": "2026 docs: 附件1 - 報價要求、附件2 - 豁免商戶名單、附件6 - 四格印簽名位置。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "section_id": "management_views",
+      "section_name": "管理、資料品質及輸出登記",
+      "flows": [
+        {
+          "final_output": "連結總表",
+          "update_location": "2027目標：00_系統及資料／來源及連結登記；唯一受控資料：REGISTRY-LINKS；資料來源：來源登記",
+          "central_approval": "秘書處",
+          "reference_source": "2026 tab: group_links；v22：74 links／121 targets。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "跨組對帳",
+          "update_location": "2027目標：00_系統及資料／修正及稽核；唯一受控資料：DATA-CROSSCHECK；資料來源：24_修正紀錄",
+          "central_approval": "行政組",
+          "reference_source": "2026 tab: group_crosscheck；v24。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "公眾頻道內容（本組負責）",
+          "update_location": "2027目標：02_通知書／公眾內容；唯一受控資料：DATA-PUBLIC-CONTENT；資料來源：25_基本資訊、27_公告及求助",
+          "central_approval": "品牌推廣組",
+          "reference_source": "2026 tab: group_pc_content；v21。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "本組申請",
+          "update_location": "2027目標：00_系統及資料／內部申請；唯一受控資料：DATA-GROUP-APPLICATION；資料來源：10_組織、11_人員",
+          "central_approval": "行政組",
+          "reference_source": "2026 tab: apps。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "輸出總表（呢份清單本身）",
+          "update_location": "2027目標：00_系統及資料／輸出登記；唯一受控資料：REGISTRY-OUTPUTS；資料來源：來源及輸出登記",
+          "central_approval": "秘書處",
+          "reference_source": "2026 tab: group_outputs；tools/schema/outputs_2027.js。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "活動後總結報告",
+          "update_location": "2027目標：05_程序／活動後總結；唯一受控資料及文件：DATA-POST-EVENT-REPORT；資料來源：工作計劃及進度",
+          "central_approval": "秘書處",
+          "reference_source": "2026 doc: 工作計劃及進度 V2.docx；meetings(6)。",
+          "status": "mapped"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+{
+  "schema_version": "2027-drive-registry-v2-blank-framework",
+  "event_id": "isd_2027",
+  "canonical_root": {
+    "root_folder_id": "1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+    "root_folder_link": "https://drive.google.com/drive/folders/1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+    "folders": {
+      "system": "1hMIWMjJx02er0B-sAyviJ2IzYdqLjWZR",
+      "registration": "1CW5QljmlMUKQa69vNQwkMb_1EvKkF59n",
+      "notices": "1AmFGWgduaiFDwQ7vnG4R3ny0W4moCR8S",
+      "rosters": "1--quc9LEdyZMJOPSGnGMjR5BGv1gtG00",
+      "venue": "1rg4ikkJAEz1C0qonfh0x7QepFqMxCPHE",
+      "programme": "1F0j-3qQhqvEXNUpBh0748BY4sMZbG0pC",
+      "logistics": "1T8nK5yuFiUc-LS4_Rv8N1x8dYirB9e1g",
+      "templates": "1upCRCZ-i05Nx49zctaBwv6QK42_5QFsE",
+      "reference_snapshot": "16xOvkXVcxLJcVGSej9g9xvVDKunfvAgc"
+    }
+  },
+  "generated_from": [
+    "data/2027_canonical_source_registry.json",
+    "data/2027_output_connection_registry.json",
+    "data/2027_blank_sources/*.json"
+  ],
+  "update_policy": "The eight blank framework files below are the only editable 2027 canonical records. Each source ID has one home; output connections only read it. The historical rehearsal exports are retained for audit only and must not be used as an entry or publish source.",
+  "domains": [
+    {
+      "id": "system",
+      "folder": "1hMIWMjJx02er0B-sAyviJ2IzYdqLjWZR",
+      "file": "ISD 2027－00_系統及資料－受控來源（空白實框架）.json",
+      "drive_file_id": "1nubvFAfEXvUgydNwwV8DbrOvYeXvO8W_",
+      "drive_file_link": "https://drive.google.com/file/d/1nubvFAfEXvUgydNwwV8DbrOvYeXvO8W_/view",
+      "record_count": 7,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "registration",
+      "folder": "1CW5QljmlMUKQa69vNQwkMb_1EvKkF59n",
+      "file": "ISD 2027－01_報名－受控來源（空白實框架）.json",
+      "drive_file_id": "1SBYbL84HRlmYQQqH7z1fZKrIExBGak-v",
+      "drive_file_link": "https://drive.google.com/file/d/1SBYbL84HRlmYQQqH7z1fZKrIExBGak-v/view",
+      "record_count": 5,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "notices",
+      "folder": "1AmFGWgduaiFDwQ7vnG4R3ny0W4moCR8S",
+      "file": "ISD 2027－02_通知書－受控來源（空白實框架）.json",
+      "drive_file_id": "1MmF87mlUt_SY-wNZ35VL22veTJ9fcex2",
+      "drive_file_link": "https://drive.google.com/file/d/1MmF87mlUt_SY-wNZ35VL22veTJ9fcex2/view",
+      "record_count": 17,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "rosters",
+      "folder": "1--quc9LEdyZMJOPSGnGMjR5BGv1gtG00",
+      "file": "ISD 2027－03_名單－受控來源（空白實框架）.json",
+      "drive_file_id": "19YSmLsRlvujrPUFeEa5Zl5rk1uSbHRy2",
+      "drive_file_link": "https://drive.google.com/file/d/19YSmLsRlvujrPUFeEa5Zl5rk1uSbHRy2/view",
+      "record_count": 9,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "venue",
+      "folder": "1rg4ikkJAEz1C0qonfh0x7QepFqMxCPHE",
+      "file": "ISD 2027－04_場地－受控來源（空白實框架）.json",
+      "drive_file_id": "1owq1L-aheQbPK1NkrsKP0axT1D_ryiM3",
+      "drive_file_link": "https://drive.google.com/file/d/1owq1L-aheQbPK1NkrsKP0axT1D_ryiM3/view",
+      "record_count": 18,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "programme",
+      "folder": "1F0j-3qQhqvEXNUpBh0748BY4sMZbG0pC",
+      "file": "ISD 2027－05_程序－受控來源（空白實框架）.json",
+      "drive_file_id": "1mJy0KNcMHxvvJMAXTCspwmF1M3vxD3DQ",
+      "drive_file_link": "https://drive.google.com/file/d/1mJy0KNcMHxvvJMAXTCspwmF1M3vxD3DQ/view",
+      "record_count": 15,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "logistics",
+      "folder": "1T8nK5yuFiUc-LS4_Rv8N1x8dYirB9e1g",
+      "file": "ISD 2027－06_後勤－受控來源（空白實框架）.json",
+      "drive_file_id": "1hTcdYJ7o5x2_Kn041uQ1X7vuDlNvVybY",
+      "drive_file_link": "https://drive.google.com/file/d/1hTcdYJ7o5x2_Kn041uQ1X7vuDlNvVybY/view",
+      "record_count": 24,
+      "status": "blank_framework_ready_not_live"
+    },
+    {
+      "id": "reference_snapshot",
+      "folder": "16xOvkXVcxLJcVGSej9g9xvVDKunfvAgc",
+      "file": "ISD 2027－07_參考快照－受控來源（空白實框架）.json",
+      "drive_file_id": "1Sr4qDW9O2MFpn3HJ50GaQl5BQNxJIToM",
+      "drive_file_link": "https://drive.google.com/file/d/1Sr4qDW9O2MFpn3HJ50GaQl5BQNxJIToM/view",
+      "record_count": 1,
+      "status": "blank_framework_ready_not_live"
+    }
+  ],
+  "execution_manual_assets": [
+    {
+      "asset_id": "map_2027_site_setup",
+      "drive_file_id": "1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R",
+      "drive_file_link": "https://drive.google.com/file/d/1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R/view"
+    },
+    {
+      "asset_id": "map_2027_troop_route",
+      "drive_file_id": "1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T",
+      "drive_file_link": "https://drive.google.com/file/d/1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T/view"
+    },
+    {
+      "asset_id": "map_2027_guest_reception",
+      "drive_file_id": "1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr",
+      "drive_file_link": "https://drive.google.com/file/d/1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr/view"
+    },
+    {
+      "asset_id": "map_2027_inspection_route",
+      "drive_file_id": "1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB",
+      "drive_file_link": "https://drive.google.com/file/d/1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB/view"
+    },
+    {
+      "asset_id": "gc_2027",
+      "drive_file_id": "1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z",
+      "drive_file_link": "https://drive.google.com/file/d/1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z/view"
+    },
+    {
+      "asset_id": "gc_p_2027",
+      "drive_file_id": "1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW",
+      "drive_file_link": "https://drive.google.com/file/d/1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW/view"
+    },
+    {
+      "asset_id": "crisis_manual_2027",
+      "drive_file_id": "1OInPhs1NFG193KtX0m341oRZugxkDckj",
+      "drive_file_link": "https://drive.google.com/file/d/1OInPhs1NFG193KtX0m341oRZugxkDckj/view"
+    },
+    {
+      "asset_id": "mc_part1",
+      "drive_file_id": "1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA",
+      "drive_file_link": "https://drive.google.com/file/d/1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA/view"
+    },
+    {
+      "asset_id": "mc_part2",
+      "drive_file_id": "1i5NpagcI4zqT83WmPz452nop-GGRJgX1",
+      "drive_file_link": "https://drive.google.com/file/d/1i5NpagcI4zqT83WmPz452nop-GGRJgX1/view"
+    },
+    {
+      "asset_id": "mc_part3",
+      "drive_file_id": "1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny",
+      "drive_file_link": "https://drive.google.com/file/d/1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny/view"
+    }
+  ],
+  "status": "blank_framework_ready_not_live",
+  "historical_rehearsal_exports": {
+    "domains": [
+      {
+        "id": "event_master",
+        "folder": "system",
+        "file": "ISD 2027－活動主資料.json",
+        "paths": [
+          "event_id",
+          "event_name",
+          "description",
+          "data_version",
+          "drive",
+          "source_of_truth",
+          "one_time_reference_seed",
+          "record_state",
+          "future_data_intake",
+          "public_channel_2027",
+          "execution_manual_2027"
+        ],
+        "drive_file_id": "1I_6wYp3RBJarm6HP9QEL9fPql26f8m0d",
+        "drive_file_link": "https://drive.google.com/file/d/1I_6wYp3RBJarm6HP9QEL9fPql26f8m0d/view"
+      },
+      {
+        "id": "registration",
+        "folder": "registration",
+        "file": "ISD 2027－報名及旅團資料.json",
+        "paths": [
+          "participants",
+          "participants_source",
+          "troop_checkin",
+          "troop_checkin_source",
+          "roster_seed"
+        ],
+        "drive_file_id": "1HEMRCGMaYACmztpFrGWny9wdj8N6ja7G",
+        "drive_file_link": "https://drive.google.com/file/d/1HEMRCGMaYACmztpFrGWny9wdj8N6ja7G/view"
+      },
+      {
+        "id": "notices",
+        "folder": "notices",
+        "file": "ISD 2027－通告及公眾資訊.json",
+        "paths": [
+          "notices",
+          "announcements",
+          "unit_guide",
+          "documents"
+        ],
+        "drive_file_id": "1i2nwHFsgit9dxuaz-pmZC736VEpb97rK",
+        "drive_file_link": "https://drive.google.com/file/d/1i2nwHFsgit9dxuaz-pmZC736VEpb97rK/view"
+      },
+      {
+        "id": "rosters",
+        "folder": "rosters",
+        "file": "ISD 2027－人員、嘉賓及典禮名單.json",
+        "paths": [
+          "users",
+          "staff",
+          "guest_roster",
+          "guest_transport",
+          "ceremony"
+        ],
+        "drive_file_id": "16VV7hxp9cEKhGpF7E7n6i9l3Vh2Elwvi",
+        "drive_file_link": "https://drive.google.com/file/d/16VV7hxp9cEKhGpF7E7n6i9l3Vh2Elwvi/view"
+      },
+      {
+        "id": "venue",
+        "folder": "venue",
+        "file": "ISD 2027－場地、攤位及泊車資料.json",
+        "paths": [
+          "activities",
+          "supplies",
+          "parking_source"
+        ],
+        "drive_file_id": "1FnvD6xFkrlhYwbbnTg0PWYrrbHPEq1dG",
+        "drive_file_link": "https://drive.google.com/file/d/1FnvD6xFkrlhYwbbnTg0PWYrrbHPEq1dG/view"
+      },
+      {
+        "id": "programme",
+        "folder": "programme",
+        "file": "ISD 2027－日程及會議資料.json",
+        "paths": [
+          "schedule",
+          "schedule_source",
+          "meetings"
+        ],
+        "drive_file_id": "1J1dBMYReyMc5NkdLEImNwQJL1ZmigqMc",
+        "drive_file_link": "https://drive.google.com/file/d/1J1dBMYReyMc5NkdLEImNwQJL1ZmigqMc/view"
+      },
+      {
+        "id": "logistics",
+        "folder": "logistics",
+        "file": "ISD 2027－後勤、安全及財務資料.json",
+        "paths": [
+          "meals",
+          "staff_meals",
+          "meal_menu",
+          "meal_distribution",
+          "meal_logistics",
+          "meals_source",
+          "finance",
+          "crisis",
+          "souvenirs",
+          "activity_day_sources"
+        ],
+        "drive_file_id": "1EOo8fuEpLA-sGZfhxcE9c7Q3HLfqC_bJ",
+        "drive_file_link": "https://drive.google.com/file/d/1EOo8fuEpLA-sGZfhxcE9c7Q3HLfqC_bJ/view"
+      }
+    ],
+    "index": {
+      "id": "1q4JOn0ucXR8RLqZb-pW_oXex9yUhF3nG",
+      "link": "https://drive.google.com/file/d/1q4JOn0ucXR8RLqZb-pW_oXex9yUhF3nG/view"
+    },
+    "note": "Superseded by the blank framework. These files are not canonical sources and must not be re-seeded or used for 2027 entry.",
+    "status": "superseded_and_moved_to_drive_trash",
+    "trashed_on": "2026-10-06",
+    "reason": "The old seed/rehearsal domain exports were replaced by the verified blank canonical-source framework. Restore only for historical audit, never as a 2027 live source."
+  },
+  "framework_catalog": {
+    "file": "ISD 2027－受控來源目錄（空白實框架）.json",
+    "drive_file_id": "1Y1ge9mctv_jJS5y7-HDSnwbIRyuy_xag",
+    "drive_file_link": "https://drive.google.com/file/d/1Y1ge9mctv_jJS5y7-HDSnwbIRyuy_xag/view",
+    "source_count": 96
+  },
+  "output_connection_registry": {
+    "file": "ISD 2027－輸出連通目錄（空白實框架）.json",
+    "drive_file_id": "1paVJR-Zx330ojpa9xn7sbH6HmAXJ9XVP",
+    "drive_file_link": "https://drive.google.com/file/d/1paVJR-Zx330ojpa9xn7sbH6HmAXJ9XVP/view",
+    "output_count": 109
+  },
+  "output_source_projection": {
+    "file": "ISD 2027－輸出來源指標（空白實框架）.json",
+    "drive_file_id": "1BDCPaD1b8m0PaDj4hXr4f530TbHnqgzo",
+    "drive_file_link": "https://drive.google.com/file/d/1BDCPaD1b8m0PaDj4hXr4f530TbHnqgzo/view",
+    "output_count": 109,
+    "payload_free": true
+  }
+}

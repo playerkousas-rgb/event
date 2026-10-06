@@ -1,0 +1,315 @@
+{
+  "schema_version": "2027-execution-manual-output-to-source-v1",
+  "event_id": "isd_2027",
+  "status": "review_only_2026_evidence_to_2027_framework",
+  "scope": "工作人員執行手冊九個頁簽的逐項來源解釋。每一橫列從工作人員最後看到／使用的手冊內容，讀到其 2027 受控更新位置、中央批核，以及目前已驗證的 2026 來源。2026 只作唯讀證據。",
+  "rules": [
+    "每個分頁就是工作人員執行手冊的一個現有頁簽；每一橫列是一項工作人員可查閱的非私隱活動日資料。",
+    "B 欄只列一份 2027 主SHEET資料頁及（如有）受控子SHEET；其他手冊頁只讀取這份資料，不另建副本。",
+    "C 欄只列中央批核；沒有需要中央批核的內容以「—」表示。",
+    "D 欄列目前 2026 已驗證來源；待本輪覆核完成後，該來源會被相應 2027 受控入口或組別更新位置取代，絕不 live 連回 2026。",
+    "只有真正未有來源、未有資料域或必須先由用戶決定的項目標紅；2026 的格式、版本或數字差異不在本輪列為阻塞問題。",
+    "組別名稱只使用 2026 既有大組別：主席及執行副主席、顧問團、秘書處、行政組、協調組、嘉賓接待組、會操及典禮組、主題節目組、服務及發展組、品牌推廣組。"
+  ],
+  "pages": [
+    {
+      "page_id": "overview",
+      "page_name": "手冊目錄及資料說明",
+      "flows": [
+        {
+          "final_output": "手冊分類目錄及每類資料說明",
+          "update_location": "主SHEET：25_基本資訊；子SHEET：不需要",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 documents（79 項）的分類、notices 及活動日輸出總表。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "手冊資料的更新及私隱使用規則",
+          "update_location": "主SHEET：25_基本資訊、27_公告及求助、24_修正紀錄；子SHEET：不需要",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 staff、guest_roster、parking_source、crisis 及各活動日名單所反映的私隱資料類型。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "programme",
+      "page_name": "全日程序及交接",
+      "flows": [
+        {
+          "final_output": "全日統一程序時間線",
+          "update_location": "主SHEET：26_日程及地圖、21_典禮；子SHEET：CS05／01_典禮項目",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 schedule、schedule_source、ceremony.rundown_part1_v5、Rundown_All 2026 連獎項 Part 1 V5。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "典禮、會操、旅團及嘉賓的共用時間提示",
+          "update_location": "主SHEET：26_日程及地圖、21_典禮；子SHEET：CS05／01_典禮項目",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 public schedules、ceremony.mc_scripts、參加旅團節目程序及七類通知內容。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "各組工作開始／結束時間",
+          "update_location": "主SHEET：16_當值安排；子SHEET：CS03／02_當值安排",
+          "central_approval": "行政組",
+          "reference_source": "2026 schedule 有程序時間，但沒有逐組工作開始／結束時間。2027 由每個既有大組別填寫其全日工作的開始及結束時間；不設交接或換位資料。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "活動日正式更新及即時公告",
+          "update_location": "主SHEET：27_公告及求助；子SHEET：不需要",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 notices、活動日臨時更新、司儀稿版本與活動前／當日修訂記錄。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "activities",
+      "page_name": "場地、攤位、遊戲及動線",
+      "flows": [
+        {
+          "final_output": "工作人員主場地佈置及攤位圖",
+          "update_location": "主SHEET：26_日程及地圖；子SHEET：CS06／01_場地",
+          "central_approval": "行政組",
+          "reference_source": "2026 activities.maps、ISD2026 Site Setup Plan R10、警察學院場地地圖。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "旅團、嘉賓及檢閱動線圖",
+          "update_location": "主SHEET：26_日程及地圖、21_典禮；子SHEET：CS06／01_場地、CS05／03_座位及步操",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 參加旅團場地指示圖、嘉賓地圖、ceremony.inspection_route。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "攤位總表、分區、負責單位及活動內容",
+          "update_location": "主SHEET：17_攤位、26_日程及地圖；子SHEET：CS04／01_攤位、02_活動安排",
+          "central_approval": "行政組",
+          "reference_source": "2026 activities.booths、ISD2026 攤位資料.xlsx、主題節目組報告。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "遊戲卡、遊戲規則及活動資料",
+          "update_location": "主SHEET：17_攤位、26_日程及地圖；子SHEET：CS04／02_活動安排",
+          "central_approval": "秘書處",
+          "reference_source": "2026 activities.gameCards、Game card.pdf、主題活動及機電先鋒章資料。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "場地服務點、物資及後勤位置",
+          "update_location": "主SHEET：23_物資、26_日程及地圖；子SHEET：CS06／01_場地、CS07／02_物資",
+          "central_approval": "行政組",
+          "reference_source": "2026 supplies、activity_day_sources、場地佈置圖及物資批核資料。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "logistics",
+      "page_name": "報到、服務點、膳食及後勤",
+      "flows": [
+        {
+          "final_output": "旅團報到位置、報到規則及到場狀態",
+          "update_location": "主SHEET：22_報到、14_出席；子SHEET：CS01／02_出席",
+          "central_approval": "行政組",
+          "reference_source": "2026 participants、troop_checkin、troop_checkin_source、旅團報名人數及報到站資料。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "嘉賓接待、到達及報到安排",
+          "update_location": "主SHEET：22_報到、14_出席、20_交通泊車；子SHEET：CS02／02_回覆出席、CS06／02_車輛泊車",
+          "central_approval": "行政組",
+          "reference_source": "2026 guest_roster.guests、guest_transport、嘉賓名單及嘉賓地圖。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "餐單、領取時間、派發點及餐盒安排",
+          "update_location": "主SHEET：19_膳食；子SHEET：CS07／01_膳食、03_派發",
+          "central_approval": "行政組",
+          "reference_source": "2026 meal_menu_2026、meal_distribution_2026、meal_logistics_2026、participants.meal_boxes。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "工作人員膳食及服務點安排",
+          "update_location": "主SHEET：19_膳食、16_當值安排；子SHEET：CS03／02_當值安排、CS07／01_膳食",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff_meals_2026、staff.event_staff_roster、meal_distribution_2026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "現場物資派發、補給及運送安排",
+          "update_location": "主SHEET：23_物資；子SHEET：CS07／02_物資、03_派發",
+          "central_approval": "行政組",
+          "reference_source": "2026 supplies、meal_logistics_2026、活動日後勤與物資批核資料。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "ceremony",
+      "page_name": "典禮、會操及司儀資料",
+      "flows": [
+        {
+          "final_output": "典禮及會操程序、場地及服裝提示",
+          "update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目、03_座位及步操",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 ceremony、Parade Ceremony Rundown、Rundown_All 2026、會操檢閱典禮司儀稿。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "優異旅團、支部及成人獎勵的典禮資料",
+          "update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目、02_唱名及上台、03_座位及步操",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 ceremony.meritRoster、ceremony.adult_awards、優異旅團名單、頒獎司儀稿。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "司儀稿及現場叫名資料",
+          "update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目、02_唱名及上台",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 ceremony.mc_scripts、Rundown_All 2026、三份司儀稿。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "檢閱路線、進場及站位提示",
+          "update_location": "主SHEET：21_典禮、26_日程及地圖；子SHEET：CS05／03_座位及步操、CS06／01_場地",
+          "central_approval": "行政組",
+          "reference_source": "2026 ceremony.inspection_route、會操檢閱典禮司儀稿及場地圖。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "records",
+      "page_name": "旅團、膳食及編更資料",
+      "flows": [
+        {
+          "final_output": "非私隱旅團、區會、人數及餐盒摘要",
+          "update_location": "主SHEET：10_組織、14_出席、19_膳食；子SHEET：CS01／01_單位、02_出席、03_膳食",
+          "central_approval": "行政組",
+          "reference_source": "2026 participants、participants_source、旅團報名人數表及 mealbox 資料。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "非私隱膳食分配及派發摘要",
+          "update_location": "主SHEET：19_膳食；子SHEET：CS07／01_膳食、03_派發",
+          "central_approval": "行政組",
+          "reference_source": "2026 meal_distribution_2026、meal_logistics_2026、meal_menu_2026。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "不含個人資料的崗位、攤位及編更摘要",
+          "update_location": "主SHEET：16_當值安排、17_攤位、18_攤位人手；子SHEET：CS03／02_當值安排、03_攤位人手、CS04／01_攤位",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.event_staff_roster、activities.booths、staff.job_duties。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "獎勵及典禮的非私隱數量摘要",
+          "update_location": "主SHEET：21_典禮；子SHEET：CS05／01_典禮項目、02_唱名及上台",
+          "central_approval": "行政組",
+          "reference_source": "2026 ceremony.meritRoster、ceremony.adult_awards、典禮司儀稿。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "staff",
+      "page_name": "各組職責及工作資料",
+      "flows": [
+        {
+          "final_output": "十個既有大組別的職責及工作範圍",
+          "update_location": "主SHEET：10_組織、15_工作人員；子SHEET：CS03／01_工作人員",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.org_chart、staff.job_duties、ISD2026 Org Chart and Contact List。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "非私隱崗位、當值時段及工作位置",
+          "update_location": "主SHEET：16_當值安排；子SHEET：CS03／02_當值安排",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.event_staff_roster、staff.job_duties。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "攤位工作人手及崗位資料",
+          "update_location": "主SHEET：18_攤位人手、17_攤位；子SHEET：CS03／03_攤位人手、CS04／01_攤位",
+          "central_approval": "行政組",
+          "reference_source": "2026 staff.event_staff_roster、activities.booths、攤位資料.xlsx。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "個人電話、電郵、車牌及受限名單的私隱界線",
+          "update_location": "主SHEET：11_人員、20_交通泊車；子SHEET：受權限的 CS02／CS03／CS06 資料列",
+          "central_approval": "秘書處／行政組",
+          "reference_source": "2026 users、staff.contacts、guest_roster、parking_source 的個人資料欄。此類資料不在普通工作人員手冊顯示。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "crisis",
+      "page_name": "安全及應變",
+      "flows": [
+        {
+          "final_output": "危機類別、即時處理步驟及回報原則",
+          "update_location": "主SHEET：27_公告及求助；子SHEET：CS08／02_安全安排",
+          "central_approval": "行政組",
+          "reference_source": "2026 ISD2026-RiskMangementManual_V1(Clean).pdf、crisis；2027 由行政組提供及確認危機處理手冊。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "急救、失物、求助及對外發言的工作人員指引",
+          "update_location": "主SHEET：27_公告及求助；子SHEET：CS08／01_服務人員、03_緊急資源",
+          "central_approval": "行政組",
+          "reference_source": "2026 ISD2026-RiskMangementManual_V1(Clean).pdf、crisis.docs、lost_found；2027 由行政組提供及確認危機處理手冊。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "指揮中心、集合位置及當日緊急資源位置",
+          "update_location": "主SHEET：26_日程及地圖、27_公告及求助；子SHEET：CS06／01_場地、CS08／03_緊急資源",
+          "central_approval": "行政組",
+          "reference_source": "2026 ISD2026-RiskMangementManual_V1(Clean).pdf、crisis；2027 由行政組在危機處理手冊確認後提供指揮中心、集合位置及緊急資源位置。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "事故個資、個人聯絡及事故紀錄的限制",
+          "update_location": "主SHEET：24_修正紀錄；子SHEET：CS08 受權限資料列／未來事故紀錄範本",
+          "central_approval": "行政組",
+          "reference_source": "2026 ISD2026-RiskMangementManual_V1(Clean).pdf、crisis.contacts；2027 由行政組提供及確認危機處理手冊。此類資料不在普通工作人員手冊顯示。",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "page_id": "documents",
+      "page_name": "通告、指引及活動日文件",
+      "flows": [
+        {
+          "final_output": "工作人員使用的地圖、遊戲卡、典禮、危機及指引文件清單",
+          "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+          "central_approval": "秘書處",
+          "reference_source": "2026 documents、activity_day_sources、場地圖、遊戲卡、司儀稿及危機手冊；2027 由秘書處提供已確認的活動日文件清單。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "可在工作人員手冊展示的正式通告及指引",
+          "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+          "central_approval": "秘書處",
+          "reference_source": "2026 notices、sp12_26_isd2026.pdf、特別通告及工作人員指引；2027 由秘書處提供正式通告及指引。",
+          "status": "mapped"
+        },
+        {
+          "final_output": "活動日文件清單及手冊展示文件",
+          "update_location": "主SHEET：25_基本資訊、27_公告及求助；子SHEET：不需要",
+          "central_approval": "秘書處",
+          "reference_source": "2026 documents（79 項）及 notices；2027 全部由秘書處提供、確認及維護活動日文件清單。",
+          "status": "mapped"
+        }
+      ]
+    }
+  ]
+}

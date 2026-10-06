@@ -10,8 +10,11 @@ build_2026_freeze.py — ISD2026 活動前資料凍結整備（2026-10-03）
 危機手冊連結、場地圖／遊戲卡連結、Drive Sheet 來源 ID 更新。
 只改 data/isd_2026.json 同 js/00-config.js（BOOTH_ZONES_2026 塊）；唔郁任何其他程式碼。
 """
-import json, re, openpyxl, xlrd
+import json, re, sys, openpyxl, xlrd
 from pathlib import Path
+
+if '--confirm-2026-archive-write' not in sys.argv:
+    raise SystemExit('STOP: data/isd_2026.json is an archived reference. This legacy builder is disabled. Do not run it; use the 2027 generators. An authorised recovery requires --confirm-2026-archive-write.')
 
 ROOT = Path(__file__).resolve().parent.parent
 GD = ROOT / 'google_drive'

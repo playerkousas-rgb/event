@@ -33,6 +33,11 @@ console.log('來源：data/isd_2026.json');
 console.log('映射結果：', counts);
 console.log('批次數：', jobs.length, '（每批最多', chunkSize, '行）');
 
+if (!dryRun && !args.includes('--confirm-2026-archive-write')) {
+  console.error('STOP: isd_2026 is an archived reference. Google Sheet writes are disabled. Use the 2027 workflow; an authorised recovery requires --confirm-2026-archive-write.');
+  process.exit(2);
+}
+
 if (dryRun) {
   const out = path.join(root, 'tmp-import-2026-preview.json');
   fs.writeFileSync(out, JSON.stringify({ counts, sections }, null, 2));

@@ -1,0 +1,25 @@
+{
+  "schema_version": "2027-blank-canonical-domain-v1",
+  "event_id": "isd_2027",
+  "domain_id": "reference_snapshot",
+  "drive_folder_code": "07_參考快照",
+  "status": "blank_framework_ready_not_live",
+  "update_rule": "Only the named owner updates a source record. Outputs read this record through data/2027_output_connection_registry.json; do not make output-side copies.",
+  "records": [
+    {
+      "source_id": "ARCHIVE-REFERENCE-BOOTH-2025",
+      "source_kind": "owned_reference_snapshot",
+      "owner_group": "主題節目組",
+      "approved_by": [
+        "主題節目組"
+      ],
+      "record_state": "blank_awaiting_2027_owner_entry",
+      "revision": 0,
+      "updated_by": null,
+      "updated_at": null,
+      "audit_id": null,
+      "publication_status": "draft_not_published",
+      "payload": {}
+    }
+  ]
+}

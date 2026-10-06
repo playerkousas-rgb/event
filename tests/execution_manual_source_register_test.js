@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+'use strict';
+/* 2026 is immutable input; this test guards the 2027-only source map and gap register. */
+const fs=require('fs');
+const path=require('path');
+const assert=require('assert');
+const root=path.join(__dirname,'..');
+const readJson=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
+const historical=readJson('data/isd_2026.json');
+const source=readJson('data/isd_2027.json');
+const mock=readJson('data/mock_demo.json');
+let n=0; const ok=(v,m)=>{assert(v,m);n++;};
+const sot=source.source_of_truth||{};
+const register=sot.execution_manual_data_register||{};
+const gaps=sot.execution_manual_gap_register||{};
+const manual=source.execution_manual_2027||{};
+ok(register.schema_version==='2027-execution-manual-data-register-v1','2027 source has a versioned cross-group data register');
+ok(register.reference_rule.includes('2026')&&register.reference_rule.includes('immutable'),'register describes 2026 as historical immutable input');
+ok(register.streams.length===7,'register maps all seven manual data streams to 2027 domains');
+ok(register.streams.every(row=>row.canonical_2027_domain&&row.manual_categories.length&&row.copy_status==='copied_as_2027_reference_seed'),'every stream has an owner/domain/category and copied-seed state');
+ok(register.streams.find(row=>row.id==='venue').copied_2027_counts['activities.gameCards']===2,'venue stream records both copied game cards');
+ok(register.streams.find(row=>row.id==='notices').copied_2027_counts.documents===79,'notices stream records the complete copied document metadata catalogue');
+ok(gaps.schema_version==='2027-execution-manual-gap-register-v1'&&gaps.gaps.length===3,'2027 source has a separate actionable gap register');
+const notices=gaps.gaps.find(row=>row.id==='notice_source_files');
+const documents=gaps.gaps.find(row=>row.id==='document_catalog_files');
+const venue=gaps.gaps.find(row=>row.id==='venue_and_game_assets');
+ok(notices.missing_2027_owned_files===3&&documents.missing_2027_owned_files===79,'register identifies all current notice and document file-copy gaps');
+ok(venue.missing_2027_owned_files===0&&venue.status==='2027_owned_reference_assets_present','register confirms maps and game cards already have 2027-owned assets');
+ok(gaps.document_review_queue.length===79&&gaps.document_review_queue.every(row=>row.decision==='keep_replace_or_retire_to_be_confirmed'),'all copied document metadata have an explicit 2027 review decision rather than being silently discarded');
+ok(manual.document_catalog.records.length===79&&manual.document_catalog.records.every(row=>row.status==='metadata_copied_file_pending'),'manual retains the complete copied file catalogue and flags missing assets honestly');
+ok(JSON.stringify(mock.source_of_truth.execution_manual_data_register)===JSON.stringify(register),'MOCK receives the exact 2027 source relationship register');
+ok(register.audit_artifact?.status==='2027_owned_audit_artifact'&&register.audit_artifact.drive_file_id==='123ZRQkueRRdaUIUHEONSJJWQwwstnYAw','source register links its 2027-owned Drive audit artifact');
+ok(fs.existsSync(path.join(root,'docs/2027_EXECUTION_MANUAL_SOURCE_AUDIT.md')),'generated source-and-gap audit is documented');
+ok(historical.documents.length===79&&source.documents.length===79,'2026 document metadata were copied into 2027 without modifying historical input');
+console.log(`2027 execution-manual source register test passed (${n} assertions)｜${register.streams.length} streams・${gaps.document_review_queue.length} review records`);
