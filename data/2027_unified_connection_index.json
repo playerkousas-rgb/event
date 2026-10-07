@@ -1,0 +1,3115 @@
+{
+  "schema_version": "2027-unified-connection-index-v1",
+  "event_id": "isd_2027",
+  "status": "connected_reference_index_gs_ready_not_live",
+  "generated_on": "2026-10-06",
+  "purpose": "一體化連通索引：ISD 2027 Drive 受控來源、07_參考快照（2026 唯讀副本）、系統主SHEET 資料模型、子SHEET 同步路由、十個填寫入口、覆核表／演練包，以及 2026 封存數據集統計。apps-script/Code2027Unified.gs 以本檔為唯一索引來源。",
+  "boundary": {
+    "rule": "2026 檔案／Sheet／數據集一律唯讀參考（provenance／規劃參考）。2027 資料只可由受控來源或主SHEET 更新；本索引不建立任何 2026 live link 或寫回路徑。",
+    "reference_lock": {
+      "reference_file": "data/isd_2026.json",
+      "sha256": "d7dcd05521c01e7925851d74f5a87321c38e0ddadbbd921bb5ea41fe2c2ce037",
+      "locked_on": "2026-10-06",
+      "status": "archived_read_only"
+    },
+    "prohibited": [
+      "寫回、同步或修改 2026 Drive／Sheet／封存檔",
+      "把 2026 檔案當成 2027 live source",
+      "在本索引或 GS 儲存姓名、電話、電郵、車牌等個人資料"
+    ],
+    "privacy": "索引只含檔案 Metadata、資料夾 ID 及統計數字（record_count），不含任何個人資料。"
+  },
+  "drive_roots": {
+    "isd_2027_root": {
+      "id": "1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+      "link": "https://drive.google.com/drive/folders/1qzaHkoua5Se2rOn1z6LljVmlIq-oae3Q",
+      "name": "ISD 2027"
+    },
+    "isd_2027_folders": {
+      "system": "1hMIWMjJx02er0B-sAyviJ2IzYdqLjWZR",
+      "registration": "1CW5QljmlMUKQa69vNQwkMb_1EvKkF59n",
+      "notices": "1AmFGWgduaiFDwQ7vnG4R3ny0W4moCR8S",
+      "rosters": "1--quc9LEdyZMJOPSGnGMjR5BGv1gtG00",
+      "venue": "1rg4ikkJAEz1C0qonfh0x7QepFqMxCPHE",
+      "programme": "1F0j-3qQhqvEXNUpBh0748BY4sMZbG0pC",
+      "logistics": "1T8nK5yuFiUc-LS4_Rv8N1x8dYirB9e1g",
+      "templates": "1upCRCZ-i05Nx49zctaBwv6QK42_5QFsE",
+      "reference_snapshot": "16xOvkXVcxLJcVGSej9g9xvVDKunfvAgc"
+    },
+    "isd_2026_staff_drive": {
+      "id": "1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+      "link": "https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+      "name": "ISD 2026 Staff Drive（唯讀參考）"
+    },
+    "isd_2026_evidence_folder": {
+      "id": "1hyzzIuRGxEh9iya4YvcIsKyfCAZ3sVlG",
+      "link": "https://drive.google.com/drive/folders/1hyzzIuRGxEh9iya4YvcIsKyfCAZ3sVlG",
+      "name": "ISD 2026 證據庫（唯讀參考）"
+    },
+    "simulation_review_folder": {
+      "id": "1bkpIFbp9x6YzDfDYCEiKOgaHNChJEHdk",
+      "link": "https://drive.google.com/drive/folders/1bkpIFbp9x6YzDfDYCEiKOgaHNChJEHdk",
+      "name": "98_演練覆核（假資料・非 live）",
+      "note": "假資料演練覆核包；非 live。"
+    }
+  },
+  "master_sheet": {
+    "drive_file_id": "1aQYNIq41ek3w5zfoLP12KuT_LAeWQLNv6UTAR_1SWPg",
+    "name": "ISD 2027－系統主SHEET（公眾輸出頁簽增補覆核版）",
+    "location": "00_系統及資料/01_主SHEET及資料模型",
+    "layout": {
+      "title_row": 1,
+      "note_row": 2,
+      "header_row": 3,
+      "data_from_row": 4
+    },
+    "tabs": [
+      {
+        "tab": "00_閱讀指引",
+        "kind": "guide",
+        "owner": "系統",
+        "business_key": "",
+        "field_keys": [],
+        "related_source_ids": [],
+        "note": "主SHEET 使用規則；不可同步。"
+      },
+      {
+        "tab": "01_十個入口",
+        "kind": "entry_routes",
+        "owner": "系統",
+        "business_key": "",
+        "field_keys": [],
+        "related_source_ids": [],
+        "note": "IN01–IN10 填寫入口定義。"
+      },
+      {
+        "tab": "02_資料字典",
+        "kind": "dictionary",
+        "owner": "系統",
+        "business_key": "",
+        "field_keys": [],
+        "related_source_ids": [],
+        "note": "欄位鍵名合約；欄位鍵名／次序不可改。"
+      },
+      {
+        "tab": "03_子SHEET映射",
+        "kind": "child_mapping",
+        "owner": "系統",
+        "business_key": "",
+        "field_keys": [],
+        "related_source_ids": [],
+        "note": "子SHEET 分頁同步路由。"
+      },
+      {
+        "tab": "04_同步狀態",
+        "kind": "sync_log",
+        "owner": "系統",
+        "business_key": "sync_id",
+        "field_keys": [
+          "sync_id",
+          "source_sheet",
+          "source_tab",
+          "source_record_id",
+          "template_version",
+          "result",
+          "message",
+          "synced_at"
+        ],
+        "related_source_ids": [],
+        "note": "GS 同步結果自動寫入。"
+      },
+      {
+        "tab": "05_欄位錯誤",
+        "kind": "error_log",
+        "owner": "系統",
+        "business_key": "error_id",
+        "field_keys": [
+          "error_id",
+          "source_sheet",
+          "source_tab",
+          "source_record_id",
+          "field_key",
+          "error_code",
+          "message",
+          "detected_at",
+          "resolved_at"
+        ],
+        "related_source_ids": [],
+        "note": "GS 拒收紀錄自動寫入；原組別依此修正。"
+      },
+      {
+        "tab": "10_組織",
+        "kind": "data",
+        "owner": "行政／地域",
+        "business_key": "organisation_id",
+        "field_keys": [
+          "organisation_id",
+          "organisation_type",
+          "organisation_name",
+          "unit_number",
+          "area_code",
+          "primary_contact_person_id",
+          "status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-ORGANISATION",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-GROUP-APPLICATION",
+            "domain": "system",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "11_人員",
+        "kind": "data",
+        "owner": "秘書／行政",
+        "business_key": "person_id",
+        "field_keys": [
+          "person_id",
+          "display_name",
+          "english_name",
+          "person_type",
+          "organisation_id",
+          "role_title",
+          "phone",
+          "email",
+          "privacy_consent",
+          "status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-ORGANISATION",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-COMMISSION",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "12_邀請",
+        "kind": "data",
+        "owner": "秘書",
+        "business_key": "invitation_id",
+        "field_keys": [
+          "invitation_id",
+          "entry_route_id",
+          "recipient_person_id",
+          "recipient_organisation_id",
+          "invitation_status",
+          "sent_at",
+          "response_due_at",
+          "secure_link_ref",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DOC-GUEST-INVITATION",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          },
+          {
+            "source_id": "DOC-OC-INVITATION",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          },
+          {
+            "source_id": "DATA-GUEST",
+            "domain": "rosters",
+            "owner_group": "嘉賓接待組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "13_報名",
+        "kind": "data",
+        "owner": "秘書／行政",
+        "business_key": "registration_id",
+        "field_keys": [
+          "registration_id",
+          "entry_route_id",
+          "organisation_id",
+          "primary_person_id",
+          "response_status",
+          "submitted_at",
+          "admin_status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-GROUP-APPLICATION",
+            "domain": "system",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "IN01",
+            "domain": "registration",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "IN04",
+            "domain": "registration",
+            "owner_group": "秘書處"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "14_出席",
+        "kind": "data",
+        "owner": "秘書／各相關組",
+        "business_key": "attendance_id",
+        "field_keys": [
+          "attendance_id",
+          "registration_id",
+          "person_id",
+          "organisation_id",
+          "activity_code",
+          "attendance_role",
+          "youth_count",
+          "adult_count",
+          "companion_count",
+          "arrival_window",
+          "departure_window",
+          "status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-UG-ATTENDANCE",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-PARTICIPANT",
+            "domain": "registration",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "15_工作人員",
+        "kind": "data",
+        "owner": "行政／各組",
+        "business_key": "staff_id",
+        "field_keys": [
+          "staff_id",
+          "person_id",
+          "home_group_code",
+          "employment_type",
+          "availability",
+          "meal_required",
+          "dietary_need",
+          "badge_status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-JOB-DUTY",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "SCHEDULE-STAFF",
+            "domain": "logistics",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "16_當值安排",
+        "kind": "data",
+        "owner": "各組",
+        "business_key": "assignment_id",
+        "field_keys": [
+          "assignment_id",
+          "staff_id",
+          "department_code",
+          "role_code",
+          "booth_id",
+          "location_code",
+          "shift_start",
+          "shift_end",
+          "assignment_status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "SCHEDULE-STAFF",
+            "domain": "logistics",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-JOB-DUTY",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "17_攤位",
+        "kind": "data",
+        "owner": "主題節目組",
+        "business_key": "booth_id",
+        "field_keys": [
+          "booth_id",
+          "zone_code",
+          "booth_number",
+          "theme",
+          "booth_name",
+          "owner_organisation_id",
+          "lead_person_id",
+          "status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-BOOTH",
+            "domain": "venue",
+            "owner_group": "主題節目組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "18_攤位人手",
+        "kind": "data",
+        "owner": "主題節目組／各組",
+        "business_key": "booth_staffing_id",
+        "field_keys": [
+          "booth_staffing_id",
+          "booth_id",
+          "staff_id",
+          "person_id",
+          "role_code",
+          "shift_start",
+          "shift_end",
+          "meal_required",
+          "status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-BOOTH",
+            "domain": "venue",
+            "owner_group": "主題節目組"
+          },
+          {
+            "source_id": "DATA-THEME-PROGRAMME",
+            "domain": "venue",
+            "owner_group": "主題節目組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "19_膳食",
+        "kind": "data",
+        "owner": "後勤／膳食",
+        "business_key": "meal_id",
+        "field_keys": [
+          "meal_id",
+          "person_id",
+          "organisation_id",
+          "registration_id",
+          "meal_type",
+          "meal_qty",
+          "dietary_need",
+          "distribution_location",
+          "ticket_status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-MEAL-ORDER",
+            "domain": "logistics",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "DATA-MENU",
+            "domain": "logistics",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "DATA-STAFF-MEAL",
+            "domain": "logistics",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "DATA-MEAL-DISTRIBUTION",
+            "domain": "logistics",
+            "owner_group": "協調組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "20_交通泊車",
+        "kind": "data",
+        "owner": "協調／場地",
+        "business_key": "transport_id",
+        "field_keys": [
+          "transport_id",
+          "registration_id",
+          "organisation_id",
+          "transport_mode",
+          "vehicle_type",
+          "vehicle_plate",
+          "vehicle_qty",
+          "coach_qty",
+          "parking_status",
+          "arrival_window",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-VEHICLE",
+            "domain": "venue",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "DATA-PARKING",
+            "domain": "venue",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "IN-PARKING",
+            "domain": "registration",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "21_典禮",
+        "kind": "data",
+        "owner": "會操及典禮",
+        "business_key": "ceremony_id",
+        "field_keys": [
+          "ceremony_id",
+          "person_id",
+          "organisation_id",
+          "ceremony_item_code",
+          "award_code",
+          "stage_order",
+          "seat_code",
+          "rehearsal_required",
+          "attendance_status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-CEREMONY-PROGRAMME",
+            "domain": "programme",
+            "owner_group": "會操及典禮組"
+          },
+          {
+            "source_id": "DATA-AWARD-MERIT",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          },
+          {
+            "source_id": "DATA-AWARD-SECTION",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          },
+          {
+            "source_id": "DATA-AWARD-LEADER",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          },
+          {
+            "source_id": "DATA-INSPECTION-ROUTE",
+            "domain": "programme",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "22_報到",
+        "kind": "data",
+        "owner": "行政／接待",
+        "business_key": "checkin_id",
+        "field_keys": [
+          "checkin_id",
+          "person_id",
+          "organisation_id",
+          "registration_id",
+          "checkin_location",
+          "checkin_status",
+          "checked_in_at",
+          "badge_issued",
+          "meal_issued",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-PARTICIPANT",
+            "domain": "registration",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-GUEST",
+            "domain": "rosters",
+            "owner_group": "嘉賓接待組"
+          },
+          {
+            "source_id": "DATA-CROSSCHECK",
+            "domain": "system",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "23_物資",
+        "kind": "data",
+        "owner": "後勤／各組",
+        "business_key": "supply_request_id",
+        "field_keys": [
+          "supply_request_id",
+          "department_code",
+          "booth_id",
+          "item_code",
+          "item_name",
+          "requested_qty",
+          "approved_qty",
+          "issued_qty",
+          "delivery_location",
+          "status",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-SUPPLY",
+            "domain": "logistics",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "DATA-BORROW",
+            "domain": "venue",
+            "owner_group": "主題節目組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "24_修正紀錄",
+        "kind": "correction_log",
+        "owner": "秘書／行政",
+        "business_key": "change_id",
+        "field_keys": [
+          "change_id",
+          "entity_type",
+          "entity_id",
+          "field_key",
+          "old_value",
+          "new_value",
+          "change_reason",
+          "changed_by",
+          "changed_at",
+          "source_channel"
+        ],
+        "related_source_ids": [],
+        "note": "中央更正專用；upsertMasterRows 帶 change_reason 時逐欄寫入。"
+      },
+      {
+        "tab": "25_基本資訊",
+        "kind": "data",
+        "owner": "秘書處／行政組",
+        "business_key": "info_id",
+        "field_keys": [
+          "info_id",
+          "audience_scope",
+          "info_title",
+          "info_content",
+          "visibility",
+          "status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-EVENT-BRIEF",
+            "domain": "system",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-PUBLIC-CONTENT",
+            "domain": "notices",
+            "owner_group": "品牌推廣組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "26_日程及地圖",
+        "kind": "data",
+        "owner": "協調組／會操及典禮組",
+        "business_key": "schedule_map_id",
+        "field_keys": [
+          "schedule_map_id",
+          "record_type",
+          "audience_scope",
+          "title",
+          "start_at",
+          "end_at",
+          "location_code",
+          "map_asset_id",
+          "content",
+          "status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "SCHEDULE-ALL",
+            "domain": "programme",
+            "owner_group": "秘書處"
+          },
+          {
+            "source_id": "SCHEDULE-TROOP",
+            "domain": "programme",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "MAP-BASE",
+            "domain": "venue",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "MAP-TROOP",
+            "domain": "venue",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "MAP-VENUE-DETAIL",
+            "domain": "venue",
+            "owner_group": "協調組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "27_公告及求助",
+        "kind": "data",
+        "owner": "秘書處／協調組／服務及發展組",
+        "business_key": "notice_support_id",
+        "field_keys": [
+          "notice_support_id",
+          "record_type",
+          "audience_scope",
+          "title",
+          "content",
+          "contact_role",
+          "contact_method",
+          "urgency",
+          "status",
+          "source_record_id",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "DATA-PUBLIC-CONTENT",
+            "domain": "notices",
+            "owner_group": "品牌推廣組"
+          },
+          {
+            "source_id": "NOTICE-WEATHER",
+            "domain": "notices",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-CRISIS-CONTACT",
+            "domain": "logistics",
+            "owner_group": "行政組"
+          }
+        ],
+        "note": ""
+      },
+      {
+        "tab": "90_代碼表",
+        "kind": "data",
+        "owner": "行政／系統",
+        "business_key": "code_set+code",
+        "field_keys": [
+          "code_set",
+          "code",
+          "label_zh",
+          "label_en",
+          "active",
+          "sort_order",
+          "updated_at"
+        ],
+        "related_source_ids": [
+          {
+            "source_id": "REGISTRY-LINKS",
+            "domain": "system",
+            "owner_group": "秘書處"
+          }
+        ],
+        "note": ""
+      }
+    ]
+  },
+  "child_sheet_routes": [
+    {
+      "route_id": "CS01-01",
+      "template_code": "CS01",
+      "child_sheet_name": "01_參加單位及旅團",
+      "tab": "01_單位",
+      "fixed_fields": [
+        "source_record_id",
+        "organisation_id",
+        "organisation_type",
+        "organisation_name",
+        "unit_number",
+        "area_code",
+        "contact_name",
+        "phone",
+        "email",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "10_組織"
+      ],
+      "match_fields": {
+        "10_組織": [
+          "source_record_id",
+          "organisation_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": "contact_name／phone／email 為子表專欄，主SHEET 10_組織 無此鍵，同步時跳過並記錄。"
+    },
+    {
+      "route_id": "CS01-02",
+      "template_code": "CS01",
+      "child_sheet_name": "01_參加單位及旅團",
+      "tab": "02_出席",
+      "fixed_fields": [
+        "source_record_id",
+        "registration_id",
+        "organisation_id",
+        "activity_code",
+        "youth_count",
+        "adult_count",
+        "companion_count",
+        "arrival_window",
+        "departure_window",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "14_出席"
+      ],
+      "match_fields": {
+        "14_出席": [
+          "registration_id",
+          "organisation_id",
+          "activity_code"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS01-03",
+      "template_code": "CS01",
+      "child_sheet_name": "01_參加單位及旅團",
+      "tab": "03_膳食",
+      "fixed_fields": [
+        "source_record_id",
+        "registration_id",
+        "organisation_id",
+        "meal_type",
+        "meal_qty",
+        "dietary_need",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "19_膳食"
+      ],
+      "match_fields": {
+        "19_膳食": [
+          "registration_id",
+          "organisation_id",
+          "meal_type"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS01-04",
+      "template_code": "CS01",
+      "child_sheet_name": "01_參加單位及旅團",
+      "tab": "04_交通",
+      "fixed_fields": [
+        "source_record_id",
+        "registration_id",
+        "organisation_id",
+        "transport_mode",
+        "vehicle_type",
+        "vehicle_plate",
+        "coach_qty",
+        "arrival_window",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "20_交通泊車"
+      ],
+      "match_fields": {
+        "20_交通泊車": [
+          "registration_id",
+          "organisation_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS02-01",
+      "template_code": "CS02",
+      "child_sheet_name": "02_嘉賓獎勵及典禮對象",
+      "tab": "01_受邀對象",
+      "fixed_fields": [
+        "source_record_id",
+        "person_id",
+        "invitation_id",
+        "entry_route_id",
+        "display_name",
+        "role_title",
+        "organisation_name",
+        "phone",
+        "email",
+        "invitation_status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "11_人員",
+        "12_邀請"
+      ],
+      "match_fields": {
+        "11_人員": [
+          "source_record_id"
+        ],
+        "12_邀請": [
+          "source_record_id",
+          "invitation_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": "同一行分寫 11_人員（person_id/display_name/phone/email）及 12_邀請（invitation_id/entry_route_id/invitation_status）。"
+    },
+    {
+      "route_id": "CS02-02",
+      "template_code": "CS02",
+      "child_sheet_name": "02_嘉賓獎勵及典禮對象",
+      "tab": "02_回覆出席",
+      "fixed_fields": [
+        "source_record_id",
+        "registration_id",
+        "person_id",
+        "attendance_status",
+        "companion_count",
+        "meal_qty",
+        "dietary_need",
+        "transport_mode",
+        "vehicle_plate",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "建議目標 13_報名＋14_出席，但 attendance_status／companion_count／meal_qty 等鍵名與主SHEET（response_status／status）不一致；待秘書處確認鍵名對應後接通。"
+    },
+    {
+      "route_id": "CS02-03",
+      "template_code": "CS02",
+      "child_sheet_name": "02_嘉賓獎勵及典禮對象",
+      "tab": "03_典禮安排",
+      "fixed_fields": [
+        "source_record_id",
+        "person_id",
+        "ceremony_item_code",
+        "award_code",
+        "stage_order",
+        "seat_code",
+        "rehearsal_required",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "21_典禮"
+      ],
+      "match_fields": {
+        "21_典禮": [
+          "person_id",
+          "ceremony_item_code"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS03-01",
+      "template_code": "CS03",
+      "child_sheet_name": "03_工作人員及攤位人手",
+      "tab": "01_工作人員",
+      "fixed_fields": [
+        "source_record_id",
+        "staff_id",
+        "person_id",
+        "display_name",
+        "phone",
+        "email",
+        "home_group_code",
+        "employment_type",
+        "availability",
+        "meal_required",
+        "dietary_need",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "15_工作人員"
+      ],
+      "match_fields": {
+        "15_工作人員": [
+          "source_record_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": "display_name／phone／email 屬 11_人員；如需一併更新請另行以 upsertMasterRows 寫 11_人員。"
+    },
+    {
+      "route_id": "CS03-02",
+      "template_code": "CS03",
+      "child_sheet_name": "03_工作人員及攤位人手",
+      "tab": "02_當值安排",
+      "fixed_fields": [
+        "source_record_id",
+        "assignment_id",
+        "staff_id",
+        "department_code",
+        "role_code",
+        "location_code",
+        "shift_start",
+        "shift_end",
+        "assignment_status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "16_當值安排"
+      ],
+      "match_fields": {
+        "16_當值安排": [
+          "assignment_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS03-03",
+      "template_code": "CS03",
+      "child_sheet_name": "03_工作人員及攤位人手",
+      "tab": "03_攤位人手",
+      "fixed_fields": [
+        "source_record_id",
+        "booth_staffing_id",
+        "booth_id",
+        "staff_id",
+        "person_id",
+        "role_code",
+        "shift_start",
+        "shift_end",
+        "meal_required",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "18_攤位人手"
+      ],
+      "match_fields": {
+        "18_攤位人手": [
+          "booth_staffing_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS04-01",
+      "template_code": "CS04",
+      "child_sheet_name": "04_攤位及主題活動",
+      "tab": "01_攤位",
+      "fixed_fields": [
+        "source_record_id",
+        "booth_id",
+        "zone_code",
+        "booth_number",
+        "theme",
+        "booth_name",
+        "owner_organisation_id",
+        "lead_person_id",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "17_攤位"
+      ],
+      "match_fields": {
+        "17_攤位": [
+          "booth_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS04-02",
+      "template_code": "CS04",
+      "child_sheet_name": "04_攤位及主題活動",
+      "tab": "02_活動安排",
+      "fixed_fields": [
+        "source_record_id",
+        "activity_code",
+        "booth_id",
+        "activity_name",
+        "start_at",
+        "end_at",
+        "location_code",
+        "capacity_note",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "activity_code／activity_name 與 26_日程及地圖（schedule_map_id／record_type／title）鍵名不一致；待主題節目組確認對應。"
+    },
+    {
+      "route_id": "CS04-03",
+      "template_code": "CS04",
+      "child_sheet_name": "04_攤位及主題活動",
+      "tab": "03_物資需求",
+      "fixed_fields": [
+        "source_record_id",
+        "supply_request_id",
+        "booth_id",
+        "item_code",
+        "item_name",
+        "requested_qty",
+        "delivery_location",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "23_物資"
+      ],
+      "match_fields": {
+        "23_物資": [
+          "supply_request_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS05-01",
+      "template_code": "CS05",
+      "child_sheet_name": "05_典禮及會操",
+      "tab": "01_典禮項目",
+      "fixed_fields": [
+        "source_record_id",
+        "ceremony_item_code",
+        "ceremony_item_name",
+        "start_at",
+        "end_at",
+        "location_code",
+        "lead_person_id",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "典禮項目表與 26_日程及地圖 鍵名不一致（ceremony_item_name≠title）；待會操及典禮組確認。"
+    },
+    {
+      "route_id": "CS05-02",
+      "template_code": "CS05",
+      "child_sheet_name": "05_典禮及會操",
+      "tab": "02_唱名及上台",
+      "fixed_fields": [
+        "source_record_id",
+        "ceremony_id",
+        "person_id",
+        "organisation_id",
+        "award_code",
+        "stage_order",
+        "attendance_status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "21_典禮"
+      ],
+      "match_fields": {
+        "21_典禮": [
+          "ceremony_id",
+          "person_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS05-03",
+      "template_code": "CS05",
+      "child_sheet_name": "05_典禮及會操",
+      "tab": "03_座位及步操",
+      "fixed_fields": [
+        "source_record_id",
+        "person_id",
+        "organisation_id",
+        "seat_code",
+        "formation_code",
+        "rehearsal_required",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "21_典禮"
+      ],
+      "match_fields": {
+        "21_典禮": [
+          "person_id",
+          "seat_code"
+        ]
+      },
+      "state": "route_ready",
+      "note": "formation_code 主SHEET 21_典禮 無此鍵，同步時跳過並記錄。"
+    },
+    {
+      "route_id": "CS06-01",
+      "template_code": "CS06",
+      "child_sheet_name": "06_場地交通及泊車",
+      "tab": "01_場地",
+      "fixed_fields": [
+        "source_record_id",
+        "location_code",
+        "location_name",
+        "zone_code",
+        "capacity_note",
+        "owner_department_code",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "場地代碼建議入 90_代碼表（code_set=location），屬語義轉換；待行政／系統確認，GS 不會自動改寫。"
+    },
+    {
+      "route_id": "CS06-02",
+      "template_code": "CS06",
+      "child_sheet_name": "06_場地交通及泊車",
+      "tab": "02_車輛泊車",
+      "fixed_fields": [
+        "source_record_id",
+        "transport_id",
+        "registration_id",
+        "organisation_id",
+        "vehicle_type",
+        "vehicle_plate",
+        "vehicle_qty",
+        "parking_status",
+        "arrival_window",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "20_交通泊車"
+      ],
+      "match_fields": {
+        "20_交通泊車": [
+          "transport_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS06-03",
+      "template_code": "CS06",
+      "child_sheet_name": "06_場地交通及泊車",
+      "tab": "03_旅遊巴",
+      "fixed_fields": [
+        "source_record_id",
+        "transport_id",
+        "organisation_id",
+        "coach_qty",
+        "dropoff_location",
+        "arrival_window",
+        "departure_window",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "20_交通泊車"
+      ],
+      "match_fields": {
+        "20_交通泊車": [
+          "transport_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": "dropoff_location／departure_window／status 主SHEET 20_交通泊車 無此鍵，同步時跳過並記錄。"
+    },
+    {
+      "route_id": "CS07-01",
+      "template_code": "CS07",
+      "child_sheet_name": "07_膳食物資及後勤",
+      "tab": "01_膳食",
+      "fixed_fields": [
+        "source_record_id",
+        "meal_id",
+        "person_id",
+        "organisation_id",
+        "registration_id",
+        "meal_type",
+        "meal_qty",
+        "dietary_need",
+        "distribution_location",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "19_膳食"
+      ],
+      "match_fields": {
+        "19_膳食": [
+          "meal_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS07-02",
+      "template_code": "CS07",
+      "child_sheet_name": "07_膳食物資及後勤",
+      "tab": "02_物資",
+      "fixed_fields": [
+        "source_record_id",
+        "supply_request_id",
+        "department_code",
+        "booth_id",
+        "item_code",
+        "item_name",
+        "requested_qty",
+        "approved_qty",
+        "delivery_location",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [
+        "23_物資"
+      ],
+      "match_fields": {
+        "23_物資": [
+          "supply_request_id"
+        ]
+      },
+      "state": "route_ready",
+      "note": ""
+    },
+    {
+      "route_id": "CS07-03",
+      "template_code": "CS07",
+      "child_sheet_name": "07_膳食物資及後勤",
+      "tab": "03_派發",
+      "fixed_fields": [
+        "source_record_id",
+        "distribution_id",
+        "entity_type",
+        "entity_id",
+        "item_code",
+        "issued_qty",
+        "issued_at",
+        "issued_by",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "主SHEET 暫無派發分頁（23_物資 只有 issued_qty 欄位）；待後勤組確認歸屬。"
+    },
+    {
+      "route_id": "CS08-01",
+      "template_code": "CS08",
+      "child_sheet_name": "08_安全醫療及服務",
+      "tab": "01_服務人員",
+      "fixed_fields": [
+        "source_record_id",
+        "staff_id",
+        "person_id",
+        "service_type",
+        "qualification",
+        "location_code",
+        "shift_start",
+        "shift_end",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "service_type／qualification 主SHEET 15_工作人員／16_當值安排 均無此鍵；待行政確認。"
+    },
+    {
+      "route_id": "CS08-02",
+      "template_code": "CS08",
+      "child_sheet_name": "08_安全醫療及服務",
+      "tab": "02_安全安排",
+      "fixed_fields": [
+        "source_record_id",
+        "safety_record_id",
+        "location_code",
+        "risk_code",
+        "control_measure",
+        "owner_department_code",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "主SHEET 暫無安全安排分頁；危機處理屬受控來源 DOC-CRISIS-MANUAL／DATA-CRISIS-CONTACT。"
+    },
+    {
+      "route_id": "CS08-03",
+      "template_code": "CS08",
+      "child_sheet_name": "08_安全醫療及服務",
+      "tab": "03_緊急資源",
+      "fixed_fields": [
+        "source_record_id",
+        "resource_id",
+        "resource_type",
+        "location_code",
+        "contact_role",
+        "availability",
+        "status",
+        "template_version",
+        "updated_at"
+      ],
+      "master_tabs": [],
+      "match_fields": {},
+      "state": "pending_field_mapping",
+      "note": "主SHEET 暫無緊急資源分頁；待行政／系統確認（可考慮 90_代碼表 resource_type）。"
+    }
+  ],
+  "child_sheet_templates": [
+    {
+      "template_code": "CS01",
+      "name": "ISD 2027－子SHEET範本－01_參加單位及旅團",
+      "drive_file_id": "1EzEHK7U82U73AW5MLNhiKtmzOL_4UdBoEWTF7g4pxJQ",
+      "link": "https://drive.google.com/file/d/1EzEHK7U82U73AW5MLNhiKtmzOL_4UdBoEWTF7g4pxJQ/view",
+      "tabs": [
+        "01_單位",
+        "02_出席",
+        "03_膳食",
+        "04_交通"
+      ]
+    },
+    {
+      "template_code": "CS02",
+      "name": "ISD 2027－子SHEET範本－02_嘉賓獎勵及典禮對象",
+      "drive_file_id": "1vSXhpDwLSXe_kllbuUZmk826a4kFJPcLwDT45Erq-yo",
+      "link": "https://drive.google.com/file/d/1vSXhpDwLSXe_kllbuUZmk826a4kFJPcLwDT45Erq-yo/view",
+      "tabs": [
+        "01_受邀對象",
+        "02_回覆出席",
+        "03_典禮安排"
+      ]
+    },
+    {
+      "template_code": "CS03",
+      "name": "ISD 2027－子SHEET範本－03_工作人員及攤位人手",
+      "drive_file_id": "1svzXdcDA12y-R54sNFDsbuHOobtiH2B_Az7XsqsE22c",
+      "link": "https://drive.google.com/file/d/1svzXdcDA12y-R54sNFDsbuHOobtiH2B_Az7XsqsE22c/view",
+      "tabs": [
+        "01_工作人員",
+        "02_當值安排",
+        "03_攤位人手"
+      ]
+    },
+    {
+      "template_code": "CS04",
+      "name": "ISD 2027－子SHEET範本－04_攤位及主題活動",
+      "drive_file_id": "1rXVYPKnggvHOO2uqPmd64UHUuCCfUZmDVqH1wV9VcHs",
+      "link": "https://drive.google.com/file/d/1rXVYPKnggvHOO2uqPmd64UHUuCCfUZmDVqH1wV9VcHs/view",
+      "tabs": [
+        "01_攤位",
+        "02_活動安排",
+        "03_物資需求"
+      ]
+    },
+    {
+      "template_code": "CS05",
+      "name": "ISD 2027－子SHEET範本－05_典禮及會操",
+      "drive_file_id": "13KTAZPnzutoU5AGOpWvpUkQipkyoHs404EhNqz5NS0s",
+      "link": "https://drive.google.com/file/d/13KTAZPnzutoU5AGOpWvpUkQipkyoHs404EhNqz5NS0s/view",
+      "tabs": [
+        "01_典禮項目",
+        "02_唱名及上台",
+        "03_座位及步操"
+      ]
+    },
+    {
+      "template_code": "CS06",
+      "name": "ISD 2027－子SHEET範本－06_場地交通及泊車",
+      "drive_file_id": "1BojC00m90z0byScCgWbbdcXDqf56vqY36Y6pcFCbgT8",
+      "link": "https://drive.google.com/file/d/1BojC00m90z0byScCgWbbdcXDqf56vqY36Y6pcFCbgT8/view",
+      "tabs": [
+        "01_場地",
+        "02_車輛泊車",
+        "03_旅遊巴"
+      ]
+    },
+    {
+      "template_code": "CS07",
+      "name": "ISD 2027－子SHEET範本－07_膳食物資及後勤",
+      "drive_file_id": "15oDWnw5IqIrO5nSZh4s4CyRsGmEBMNPjRiSL_zco-TU",
+      "link": "https://drive.google.com/file/d/15oDWnw5IqIrO5nSZh4s4CyRsGmEBMNPjRiSL_zco-TU/view",
+      "tabs": [
+        "01_膳食",
+        "02_物資",
+        "03_派發"
+      ]
+    },
+    {
+      "template_code": "CS08",
+      "name": "ISD 2027－子SHEET範本－08_安全醫療及服務",
+      "drive_file_id": "1A_muOrG5IeooJ_m1IAaWbW4_sb5mTV-Q3PzNtgiMF8Y",
+      "link": "https://drive.google.com/file/d/1A_muOrG5IeooJ_m1IAaWbW4_sb5mTV-Q3PzNtgiMF8Y/view",
+      "tabs": [
+        "01_服務人員",
+        "02_安全安排",
+        "03_緊急資源"
+      ]
+    }
+  ],
+  "entry_routes": [
+    {
+      "route_id": "IN01",
+      "name": "一般參加旅團／單位",
+      "link_location": "地域通知書內連結",
+      "creates_updates": [
+        "組織",
+        "報名",
+        "出席",
+        "膳食",
+        "交通"
+      ],
+      "feeds": [
+        "報到／膳食／交通／場地"
+      ]
+    },
+    {
+      "route_id": "IN02",
+      "name": "優異旅團／典禮旅團",
+      "link_location": "地域通知書內連結",
+      "creates_updates": [
+        "組織",
+        "報名",
+        "出席",
+        "典禮",
+        "膳食"
+      ],
+      "feeds": [
+        "典禮／報到／膳食／場地"
+      ]
+    },
+    {
+      "route_id": "IN03",
+      "name": "步操／表演隊伍",
+      "link_location": "地域通知書內連結",
+      "creates_updates": [
+        "組織",
+        "出席",
+        "典禮",
+        "交通"
+      ],
+      "feeds": [
+        "典禮／場地／交通／報到"
+      ]
+    },
+    {
+      "route_id": "IN04",
+      "name": "受邀嘉賓",
+      "link_location": "邀請信內專屬連結",
+      "creates_updates": [
+        "人員",
+        "邀請",
+        "報名",
+        "出席",
+        "膳食",
+        "交通"
+      ],
+      "feeds": [
+        "嘉賓接待／典禮／膳食／交通"
+      ]
+    },
+    {
+      "route_id": "IN05",
+      "name": "支部最高獎勵得主",
+      "link_location": "邀請信內專屬連結",
+      "creates_updates": [
+        "人員",
+        "邀請",
+        "典禮",
+        "出席",
+        "膳食"
+      ],
+      "feeds": [
+        "典禮／嘉賓接待／報到"
+      ]
+    },
+    {
+      "route_id": "IN06",
+      "name": "成人獎勵得主",
+      "link_location": "邀請信內專屬連結",
+      "creates_updates": [
+        "人員",
+        "邀請",
+        "典禮",
+        "出席",
+        "膳食"
+      ],
+      "feeds": [
+        "典禮／嘉賓接待／報到"
+      ]
+    },
+    {
+      "route_id": "IN07",
+      "name": "其他制服團體／受邀隊伍",
+      "link_location": "地域通知書內連結",
+      "creates_updates": [
+        "組織",
+        "報名",
+        "出席",
+        "膳食",
+        "交通"
+      ],
+      "feeds": [
+        "報到／膳食／交通／場地"
+      ]
+    },
+    {
+      "route_id": "IN08",
+      "name": "NGO／合作／攤位夥伴",
+      "link_location": "合作邀請信內連結",
+      "creates_updates": [
+        "組織",
+        "人員",
+        "攤位",
+        "出席",
+        "物資"
+      ],
+      "feeds": [
+        "攤位／物資／場地／工作人員"
+      ]
+    },
+    {
+      "route_id": "IN09",
+      "name": "一般工作人員／義工",
+      "link_location": "組別招募信內連結",
+      "creates_updates": [
+        "人員",
+        "工作人員",
+        "當值",
+        "膳食"
+      ],
+      "feeds": [
+        "各組主管／膳食／派章／點名"
+      ]
+    },
+    {
+      "route_id": "IN10",
+      "name": "攤位工作人員及人手",
+      "link_location": "攤位組指派連結",
+      "creates_updates": [
+        "人員",
+        "工作人員",
+        "攤位人手",
+        "物資",
+        "膳食"
+      ],
+      "feeds": [
+        "攤位／物資／膳食／點名"
+      ]
+    }
+  ],
+  "assets_2027": {
+    "controlled_domains": [
+      {
+        "domain_id": "system",
+        "file": "ISD 2027－00_系統及資料－受控來源（空白實框架）.json",
+        "drive_file_id": "1nubvFAfEXvUgydNwwV8DbrOvYeXvO8W_",
+        "link": "https://drive.google.com/file/d/1nubvFAfEXvUgydNwwV8DbrOvYeXvO8W_/view",
+        "record_count": 7,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "registration",
+        "file": "ISD 2027－01_報名－受控來源（空白實框架）.json",
+        "drive_file_id": "1SBYbL84HRlmYQQqH7z1fZKrIExBGak-v",
+        "link": "https://drive.google.com/file/d/1SBYbL84HRlmYQQqH7z1fZKrIExBGak-v/view",
+        "record_count": 5,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "notices",
+        "file": "ISD 2027－02_通知書－受控來源（空白實框架）.json",
+        "drive_file_id": "1MmF87mlUt_SY-wNZ35VL22veTJ9fcex2",
+        "link": "https://drive.google.com/file/d/1MmF87mlUt_SY-wNZ35VL22veTJ9fcex2/view",
+        "record_count": 17,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "rosters",
+        "file": "ISD 2027－03_名單－受控來源（空白實框架）.json",
+        "drive_file_id": "19YSmLsRlvujrPUFeEa5Zl5rk1uSbHRy2",
+        "link": "https://drive.google.com/file/d/19YSmLsRlvujrPUFeEa5Zl5rk1uSbHRy2/view",
+        "record_count": 9,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "venue",
+        "file": "ISD 2027－04_場地－受控來源（空白實框架）.json",
+        "drive_file_id": "1owq1L-aheQbPK1NkrsKP0axT1D_ryiM3",
+        "link": "https://drive.google.com/file/d/1owq1L-aheQbPK1NkrsKP0axT1D_ryiM3/view",
+        "record_count": 18,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "programme",
+        "file": "ISD 2027－05_程序－受控來源（空白實框架）.json",
+        "drive_file_id": "1mJy0KNcMHxvvJMAXTCspwmF1M3vxD3DQ",
+        "link": "https://drive.google.com/file/d/1mJy0KNcMHxvvJMAXTCspwmF1M3vxD3DQ/view",
+        "record_count": 15,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "logistics",
+        "file": "ISD 2027－06_後勤－受控來源（空白實框架）.json",
+        "drive_file_id": "1hTcdYJ7o5x2_Kn041uQ1X7vuDlNvVybY",
+        "link": "https://drive.google.com/file/d/1hTcdYJ7o5x2_Kn041uQ1X7vuDlNvVybY/view",
+        "record_count": 24,
+        "status": "blank_framework_ready_not_live"
+      },
+      {
+        "domain_id": "reference_snapshot",
+        "file": "ISD 2027－07_參考快照－受控來源（空白實框架）.json",
+        "drive_file_id": "1Sr4qDW9O2MFpn3HJ50GaQl5BQNxJIToM",
+        "link": "https://drive.google.com/file/d/1Sr4qDW9O2MFpn3HJ50GaQl5BQNxJIToM/view",
+        "record_count": 1,
+        "status": "blank_framework_ready_not_live"
+      }
+    ],
+    "framework_catalogs": [
+      {
+        "asset_id": "REG-DRIVE",
+        "name": "ISD 2027－Drive 來源登記（空白實框架／連通版）.json",
+        "drive_file_id": "1mUiVpt-DIvCLHZnySt-sruhnfQBIqGcR",
+        "note": "受控來源檔案索引；Code2027Unified.gs 直接讀取。"
+      },
+      {
+        "asset_id": "REG-SOURCE-CATALOG",
+        "name": "ISD 2027－受控來源目錄（空白實框架）.json",
+        "drive_file_id": "1Y1ge9mctv_jJS5y7-HDSnwbIRyuy_xag",
+        "note": "96 個 source ID 目錄。"
+      },
+      {
+        "asset_id": "REG-OUTPUT-CONNECTIONS",
+        "name": "ISD 2027－輸出連通目錄（空白實框架）.json",
+        "drive_file_id": "1paVJR-Zx330ojpa9xn7sbH6HmAXJ9XVP",
+        "note": "109 個輸出連通。"
+      },
+      {
+        "asset_id": "REG-OUTPUT-PROJECTION",
+        "name": "ISD 2027－輸出來源指標（空白實框架）.json",
+        "drive_file_id": "1BDCPaD1b8m0PaDj4hXr4f530TbHnqgzo",
+        "note": "輸出→來源 pointer projection。"
+      }
+    ],
+    "reference_snapshots": [
+      {
+        "asset_id": "SNAP-MC-MERIT",
+        "name": "2027 參考快照－優異旅團頒獎司儀稿.pdf",
+        "kind": "pdf",
+        "drive_file_id": "1a0xl2cBrjmguMbuuBVZAjzlKZZSxzzCU",
+        "link": "https://drive.google.com/file/d/1a0xl2cBrjmguMbuuBVZAjzlKZZSxzzCU/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "SCRIPT-MERIT",
+            "domain": "programme",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "origin_2026": "2026 司儀稿：1_司儀稿_優異旅團頒獎儀式 2026 (V5 2026-10-04).pdf",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-MC-PARADE",
+        "name": "2027 參考快照－會操檢閱司儀稿.pdf",
+        "kind": "pdf",
+        "drive_file_id": "14CNb40X0eXTI5qJkimr54xAFA4BL2MXe",
+        "link": "https://drive.google.com/file/d/14CNb40X0eXTI5qJkimr54xAFA4BL2MXe/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "SCRIPT-PARADE",
+            "domain": "programme",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "origin_2026": "2026 司儀稿：2. 司儀稿_會操檢閱典禮2026 (V4 2026-10-04).pdf",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-MC-LUNCH",
+        "name": "2027 參考快照－嘉賓午膳司儀稿.pdf",
+        "kind": "pdf",
+        "drive_file_id": "1PS50F4uvBMIX1kQiVP3svu62Uo9iUSV-",
+        "link": "https://drive.google.com/file/d/1PS50F4uvBMIX1kQiVP3svu62Uo9iUSV-/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "SCRIPT-LUNCH",
+            "domain": "programme",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "origin_2026": "2026 司儀稿：3_司儀稿_莫榮大樓自助餐 2026 (V2 2026-10-04).pdf",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-CIRCULAR",
+        "name": "2027 參考快照－活動特別通告.pdf",
+        "kind": "pdf",
+        "drive_file_id": "1HA46I0rJCrnYRiUa9etqUVv0hdZpW2WX",
+        "link": "https://drive.google.com/file/d/1HA46I0rJCrnYRiUa9etqUVv0hdZpW2WX/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DOC-MAIN-CIRCULAR",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          },
+          {
+            "source_id": "DOC-SPECIAL-CIRCULAR",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          }
+        ],
+        "origin_2026": "2026 通告：sp12_26_isd2026.pdf（特別通告第12/26號）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-DONATE-FOOD",
+        "name": "2027 參考快照－童心捐贈（食品捐贈）.doc",
+        "kind": "doc",
+        "drive_file_id": "1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ",
+        "link": "https://drive.google.com/file/d/1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DOC-FOOD-DONATION",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          }
+        ],
+        "origin_2026": "2026 通告：_FoodDonation.doc（童心捐贈大行動・食品捐贈）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-DONATE-GOODS",
+        "name": "2027 參考快照－童心捐贈（物品回收）.doc",
+        "kind": "doc",
+        "drive_file_id": "10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk",
+        "link": "https://drive.google.com/file/d/10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DOC-GOODS-DONATION",
+            "domain": "notices",
+            "owner_group": "秘書處"
+          }
+        ],
+        "origin_2026": "2026 通告：_Goods Donating.doc（童心捐贈大行動・物品回收）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-UG-ATTEND",
+        "name": "2027 參考快照－其他制服團體出席清單.pdf",
+        "kind": "pdf",
+        "drive_file_id": "1fAVXD5CwWf4wgMfJEqRcbRwL8Qc8sQAv",
+        "link": "https://drive.google.com/file/d/1fAVXD5CwWf4wgMfJEqRcbRwL8Qc8sQAv/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DATA-UG-ATTENDANCE",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          }
+        ],
+        "origin_2026": "2026：出席UG及派隊清單_2026_as at 20260929.pdf",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-AWARD-MERIT",
+        "name": "2027 參考快照－優異旅團及獎項名單.docx",
+        "kind": "docx",
+        "drive_file_id": "1JBz0Ph8ukHPmMlnjU4spatT5YzX025sR",
+        "link": "https://drive.google.com/file/d/1JBz0Ph8ukHPmMlnjU4spatT5YzX025sR/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DATA-AWARD-MERIT",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          },
+          {
+            "source_id": "DATA-AWARD-SECTION",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          },
+          {
+            "source_id": "DATA-AWARD-LEADER",
+            "domain": "rosters",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "origin_2026": "2026 優異旅團獲獎名單（188 團次；ceremony.meritRoster）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-GUEST-LIST",
+        "name": "2027 參考快照－嘉賓名單.csv",
+        "kind": "csv",
+        "drive_file_id": "1Uhg6zQS-_V_eI_MBpnIY-O3EUcCNxiCu",
+        "link": "https://drive.google.com/file/d/1Uhg6zQS-_V_eI_MBpnIY-O3EUcCNxiCu/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DATA-GUEST",
+            "domain": "rosters",
+            "owner_group": "嘉賓接待組"
+          }
+        ],
+        "origin_2026": "2026：港島童軍繽紛日2026 - 嘉賓名單 as at 02.10.2026.csv（102 位）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-TROOP-REG",
+        "name": "2027 參考快照－旅團報名資料.xls",
+        "kind": "xls",
+        "drive_file_id": "1cphnjNvWmSEhsgqoYftGIOqFER8I4xwB",
+        "link": "https://drive.google.com/file/d/1cphnjNvWmSEhsgqoYftGIOqFER8I4xwB/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DATA-GROUP-APPLICATION",
+            "domain": "system",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-PARTICIPANT",
+            "domain": "registration",
+            "owner_group": "行政組"
+          }
+        ],
+        "origin_2026": "2026：旅團報名人數_2026 as 26.9.2026.xls（31 旅）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-CEREMONY-SCHED",
+        "name": "2027 參考快照－第一部分典禮日程.docx",
+        "kind": "docx",
+        "drive_file_id": "1GFAxiV5v5-KinBwElL3QEafRqnp3cjQ1",
+        "link": "https://drive.google.com/file/d/1GFAxiV5v5-KinBwElL3QEafRqnp3cjQ1/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "SCHEDULE-ALL",
+            "domain": "programme",
+            "owner_group": "秘書處"
+          },
+          {
+            "source_id": "DATA-CEREMONY-PROGRAMME",
+            "domain": "programme",
+            "owner_group": "會操及典禮組"
+          }
+        ],
+        "origin_2026": "2026：Rundown_All 2026 連獎項 Part 1 V5.docx（13 行）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-CRISIS",
+        "name": "2027 參考快照－危機處理手冊.pdf",
+        "kind": "pdf",
+        "drive_file_id": "1Yi0S4qNT12X0hOaBHOi8wM4Hz6QCWrcI",
+        "link": "https://drive.google.com/file/d/1Yi0S4qNT12X0hOaBHOi8wM4Hz6QCWrcI/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DOC-CRISIS-MANUAL",
+            "domain": "logistics",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-CRISIS-CONTACT",
+            "domain": "logistics",
+            "owner_group": "行政組"
+          }
+        ],
+        "origin_2026": "2026：ISD2026-RiskMangementManual_V1(Clean).pdf",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-ORG-CONTACTS",
+        "name": "2027 參考快照－組織架構及聯絡表.xlsx",
+        "kind": "xlsx",
+        "drive_file_id": "1uM_dN9Bl7psrSGJJ1XU8T-SX17jJN7Cc",
+        "link": "https://drive.google.com/file/d/1uM_dN9Bl7psrSGJJ1XU8T-SX17jJN7Cc/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DATA-ORGANISATION",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          }
+        ],
+        "origin_2026": "2026：ISD2026 Org Chart and Contact List（持續更新）.xlsx（54 崗位／80 聯絡）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-SITE-MAP",
+        "name": "2027 參考快照－場地佈置圖.pdf",
+        "kind": "pdf",
+        "drive_file_id": "1Qqi7OMu7viUPkwdOQiRZ2rSFm73swfTc",
+        "link": "https://drive.google.com/file/d/1Qqi7OMu7viUPkwdOQiRZ2rSFm73swfTc/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "MAP-SITE-SETUP",
+            "domain": "venue",
+            "owner_group": "協調組"
+          },
+          {
+            "source_id": "MAP-BASE",
+            "domain": "venue",
+            "owner_group": "協調組"
+          }
+        ],
+        "origin_2026": "2026：ISD2026 Site Setup Plan R10-SETUP PLAN-1.pdf",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-STAFF-ROSTER",
+        "name": "2027 參考快照－工作人員編更.xlsx",
+        "kind": "xlsx",
+        "drive_file_id": "17eh4_ptcyKzyS6ze04Kh5c2vySqCI-99",
+        "link": "https://drive.google.com/file/d/17eh4_ptcyKzyS6ze04Kh5c2vySqCI-99/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "SCHEDULE-STAFF",
+            "domain": "logistics",
+            "owner_group": "行政組"
+          },
+          {
+            "source_id": "DATA-JOB-DUTY",
+            "domain": "rosters",
+            "owner_group": "行政組"
+          }
+        ],
+        "origin_2026": "2026：ISD2026 staff list ver2 (FROZEN).xlsx（活動日編更 279 人次）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      },
+      {
+        "asset_id": "SNAP-BOOTH",
+        "name": "2027 參考快照－攤位資料.xlsx",
+        "kind": "xlsx",
+        "drive_file_id": "1jFQxYgZSv11PIEromK_DviGixcMoCL3W",
+        "link": "https://drive.google.com/file/d/1jFQxYgZSv11PIEromK_DviGixcMoCL3W/view",
+        "maps_to_source_ids": [
+          {
+            "source_id": "DATA-BOOTH",
+            "domain": "venue",
+            "owner_group": "主題節目組"
+          }
+        ],
+        "origin_2026": "2026：ISD2026 攤位資料.xlsx（33 攤位 A–F 區）",
+        "note": "07_參考快照（唯讀）：2026 資料嘅獨立副本，只作規劃參考；不可作 2027 live source。"
+      }
+    ],
+    "master_and_templates": [
+      {
+        "asset_id": "MASTER-SHEET",
+        "name": "ISD 2027－系統主SHEET（公眾輸出頁簽增補覆核版）",
+        "kind": "gsheet",
+        "drive_file_id": "1aQYNIq41ek3w5zfoLP12KuT_LAeWQLNv6UTAR_1SWPg",
+        "note": "2027 唯一主資料模型（25 分頁）。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS01",
+        "name": "ISD 2027－子SHEET範本－01_參加單位及旅團",
+        "kind": "gsheet",
+        "drive_file_id": "1EzEHK7U82U73AW5MLNhiKtmzOL_4UdBoEWTF7g4pxJQ",
+        "note": "子SHEET範本 CS01。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS02",
+        "name": "ISD 2027－子SHEET範本－02_嘉賓獎勵及典禮對象",
+        "kind": "gsheet",
+        "drive_file_id": "1vSXhpDwLSXe_kllbuUZmk826a4kFJPcLwDT45Erq-yo",
+        "note": "子SHEET範本 CS02。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS03",
+        "name": "ISD 2027－子SHEET範本－03_工作人員及攤位人手",
+        "kind": "gsheet",
+        "drive_file_id": "1svzXdcDA12y-R54sNFDsbuHOobtiH2B_Az7XsqsE22c",
+        "note": "子SHEET範本 CS03。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS04",
+        "name": "ISD 2027－子SHEET範本－04_攤位及主題活動",
+        "kind": "gsheet",
+        "drive_file_id": "1rXVYPKnggvHOO2uqPmd64UHUuCCfUZmDVqH1wV9VcHs",
+        "note": "子SHEET範本 CS04。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS05",
+        "name": "ISD 2027－子SHEET範本－05_典禮及會操",
+        "kind": "gsheet",
+        "drive_file_id": "13KTAZPnzutoU5AGOpWvpUkQipkyoHs404EhNqz5NS0s",
+        "note": "子SHEET範本 CS05。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS06",
+        "name": "ISD 2027－子SHEET範本－06_場地交通及泊車",
+        "kind": "gsheet",
+        "drive_file_id": "1BojC00m90z0byScCgWbbdcXDqf56vqY36Y6pcFCbgT8",
+        "note": "子SHEET範本 CS06。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS07",
+        "name": "ISD 2027－子SHEET範本－07_膳食物資及後勤",
+        "kind": "gsheet",
+        "drive_file_id": "15oDWnw5IqIrO5nSZh4s4CyRsGmEBMNPjRiSL_zco-TU",
+        "note": "子SHEET範本 CS07。"
+      },
+      {
+        "asset_id": "TEMPLATE-CS08",
+        "name": "ISD 2027－子SHEET範本－08_安全醫療及服務",
+        "kind": "gsheet",
+        "drive_file_id": "1A_muOrG5IeooJ_m1IAaWbW4_sb5mTV-Q3PzNtgiMF8Y",
+        "note": "子SHEET範本 CS08。"
+      },
+      {
+        "asset_id": "BLANK-STAFF-XLSX",
+        "name": "ISD 2027－工作人員名單（空白範本）",
+        "kind": "xlsx",
+        "drive_file_id": "1nTVrcCxQtQrnksDxawoSS3Yg2tZ7Cymu",
+        "note": "root 空白範本。"
+      },
+      {
+        "asset_id": "BLANK-WORKPLAN-DOCX",
+        "name": "ISD 2027－工作計劃及進度（空白範本）",
+        "kind": "docx",
+        "drive_file_id": "13iMSIUwye3rlIfLA7xllrcNTKrQH2lwr",
+        "note": "root 空白範本。"
+      },
+      {
+        "asset_id": "BLANK-PARKING-SHEET",
+        "name": "ISD 2027－泊車證申請表格（空白範本）",
+        "kind": "gsheet",
+        "drive_file_id": "1GQ6pWWCJllyjyIpq6rDodU5kWy-mWhmbKrJ4R_KO8eg",
+        "note": "root 空白範本。"
+      }
+    ],
+    "review_sheets": [
+      {
+        "asset_id": "REVIEW-SOURCE-EXPLAIN",
+        "name": "完整資料來源解釋覆核表（2026證據基礎／全項完成版）",
+        "drive_file_id": "1KK7XzYH5zd0VmzxUmvXZG36geaClPZEaRt2Tkl5OcTE",
+        "note": "109 輸出＋9 手冊頁簽＋7 公眾對象覆核。"
+      },
+      {
+        "asset_id": "REVIEW-PUBLIC-DOCS",
+        "name": "公眾文件及入口來源對照表（已覆核版）",
+        "drive_file_id": "1Yen7oSIGBBl_Oh-3VvUHRDuwAcJpjD42cqKzXMQNyaQ",
+        "note": "26 項。"
+      },
+      {
+        "asset_id": "REVIEW-STAFF-DOCS",
+        "name": "工作人員文件及工作視圖來源對照表（已覆核版）",
+        "drive_file_id": "1kmcamyyfxeCaL1W_yxfX1UiWO2m4aYhXfNgY2bo-Wac",
+        "note": "25 項。"
+      },
+      {
+        "asset_id": "REVIEW-DEPT-CENTRE",
+        "name": "部門中心及內部輸出來源對照表（已覆核版）",
+        "drive_file_id": "1oq5cWFixYmhQQk6FAZNx1boskB2-uSuMs7FEQMZoZ2A",
+        "note": "58 項。"
+      },
+      {
+        "asset_id": "REVIEW-EXEC-MANUAL",
+        "name": "工作人員執行手冊頁簽來源對照表（已確認無紅色版）",
+        "drive_file_id": "11TsVXVfx-cPTjOz7h4YTYTu0MaHnar6wtl9luXX_gNU",
+        "note": "9 頁簽／35 項。"
+      },
+      {
+        "asset_id": "REVIEW-PUBLIC7",
+        "name": "活動日輸出頁簽及輸入對照表（公眾七類／四欄覆核版）",
+        "drive_file_id": "1z95kU9ghiBTW8JAlnfNJoSxVSazjzgbOgZzIUODlB18",
+        "note": "公眾七類。"
+      },
+      {
+        "asset_id": "REVIEW-GUIDE",
+        "name": "ISD 2027－覆核導覽.md",
+        "drive_file_id": "1nXVSR8sFS9mdw1pean_mGYjiuC5Y7edf",
+        "note": "範本覆核導覽。"
+      }
+    ],
+    "simulation_pack": {
+      "folder": {
+        "id": "1bkpIFbp9x6YzDfDYCEiKOgaHNChJEHdk",
+        "link": "https://drive.google.com/drive/folders/1bkpIFbp9x6YzDfDYCEiKOgaHNChJEHdk"
+      },
+      "files": [
+        {
+          "asset_id": "SIM-01",
+          "name": "SIMULATION_ONLY－2027 來源總索引.json",
+          "drive_file_id": "1QSUbRVBum5msmITz6aeutPKfbjFJFK6C",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-02",
+          "name": "SIMULATION_ONLY－2027 輸出連線索引.json",
+          "drive_file_id": "1XCOWWnFUr1v4yNglgoXxkR7-JbgUd31d",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-03",
+          "name": "SIMULATION_ONLY－2027 輸出指標.json",
+          "drive_file_id": "1ou2kKaUeGGrkcQUg9ARJUVzfdz4to3Bf",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-04",
+          "name": "SIMULATION_ONLY－2027 演練覆核.json",
+          "drive_file_id": "1LBd-24pAYdKj56E4kF_R3KvaHv7fffeE",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-05",
+          "name": "SIMULATION_ONLY－2027 來源變更審計.json",
+          "drive_file_id": "1Eh2wcnJr7YEXEfmc3zukwl1HUBARujHk",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-06",
+          "name": "SIMULATION_ONLY－00_系統及資料.json",
+          "drive_file_id": "1uTHlG15lnKX4cUB3et-3vsCBIxXkUx8S",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-07",
+          "name": "SIMULATION_ONLY－01_報名.json",
+          "drive_file_id": "1dIFLVSaBcUDuLN_yiigiDk9fnFCpGyqS",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-08",
+          "name": "SIMULATION_ONLY－02_通知書.json",
+          "drive_file_id": "1Iexrpcbe9hmC-wpzOq7GzMvJZvXb8Yrd",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-09",
+          "name": "SIMULATION_ONLY－03_名單.json",
+          "drive_file_id": "1rBs2ERLmFAGmCZJB6O2l-jAjiA98CWvu",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-10",
+          "name": "SIMULATION_ONLY－04_場地.json",
+          "drive_file_id": "1WW3DhfBPfKQGewKcDCySIzZq3UkfpPOe",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-11",
+          "name": "SIMULATION_ONLY－05_程序.json",
+          "drive_file_id": "1SnJAIvTBJ_fkQHHQmAu7z5pfCUF5Z6UG",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-12",
+          "name": "SIMULATION_ONLY－06_後勤.json",
+          "drive_file_id": "1X_Mwg3mw4uRcL7KeGinCOIPWRFy3UGqC",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-13",
+          "name": "SIMULATION_ONLY－07_參考快照.json",
+          "drive_file_id": "10iuQk_YibXln-0PIIcUg2exNpdRbyptG",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-14",
+          "name": "README－2027 假資料來源連通覆核（current v2）.md",
+          "drive_file_id": "1VIoAcyOk9CZu5V6NGAwyhuLGQ6F9H4xz",
+          "note": "SIMULATION_ONLY；非 live。"
+        },
+        {
+          "asset_id": "SIM-15",
+          "name": "simulation-review（current v2）.html",
+          "drive_file_id": "1O1DS9-qixe5CJ8a39bBX5N6PFa-mGq3z",
+          "note": "SIMULATION_ONLY；非 live。"
+        }
+      ]
+    },
+    "execution_manual_assets": [
+      {
+        "asset_id": "map_2027_site_setup",
+        "name": "map_2027_site_setup",
+        "drive_file_id": "1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R",
+        "link": "https://drive.google.com/file/d/1nZFeTsOEMpPMTq4Ji4k51FJnOo4_KT3R/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "map_2027_troop_route",
+        "name": "map_2027_troop_route",
+        "drive_file_id": "1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T",
+        "link": "https://drive.google.com/file/d/1-3OoZ_TaIV-amHDU7d1aK-B9x01qQr7T/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "map_2027_guest_reception",
+        "name": "map_2027_guest_reception",
+        "drive_file_id": "1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr",
+        "link": "https://drive.google.com/file/d/1qppVeX9KomgIBDXM3aHJaAeRmeOhCFBr/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "map_2027_inspection_route",
+        "name": "map_2027_inspection_route",
+        "drive_file_id": "1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB",
+        "link": "https://drive.google.com/file/d/1splYOZVz8q6uw7TGfZ1RXZ6pL6ZHVonB/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "gc_2027",
+        "name": "gc_2027",
+        "drive_file_id": "1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z",
+        "link": "https://drive.google.com/file/d/1YV4WtVd9OOfOOpAgrY4aRjcjxCHC_18Z/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "gc_p_2027",
+        "name": "gc_p_2027",
+        "drive_file_id": "1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW",
+        "link": "https://drive.google.com/file/d/1YfwDCcsPaKrOQzvExXFeMvANC0bSu_EW/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "crisis_manual_2027",
+        "name": "crisis_manual_2027",
+        "drive_file_id": "1OInPhs1NFG193KtX0m341oRZugxkDckj",
+        "link": "https://drive.google.com/file/d/1OInPhs1NFG193KtX0m341oRZugxkDckj/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "mc_part1",
+        "name": "mc_part1",
+        "drive_file_id": "1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA",
+        "link": "https://drive.google.com/file/d/1OwcLvFzCKST4g0KkmvJWtbFIOOk9VZNA/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "mc_part2",
+        "name": "mc_part2",
+        "drive_file_id": "1i5NpagcI4zqT83WmPz452nop-GGRJgX1",
+        "link": "https://drive.google.com/file/d/1i5NpagcI4zqT83WmPz452nop-GGRJgX1/view",
+        "note": "執行手冊 2027 資產。"
+      },
+      {
+        "asset_id": "mc_part3",
+        "name": "mc_part3",
+        "drive_file_id": "1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny",
+        "link": "https://drive.google.com/file/d/1k_VYR5JxUrCFibtwfQDYb-zV_wUSEJny/view",
+        "note": "執行手冊 2027 資產。"
+      }
+    ]
+  },
+  "assets_2026_reference": {
+    "key_assets": [
+      {
+        "asset_id": "D2026-STAFF-DRIVE",
+        "name": "ISD 2026 Staff Drive（根資料夾）",
+        "kind": "folder",
+        "drive_file_id": "1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF",
+        "maps_to_source_ids": [],
+        "note": "2026 全部工作檔案；唯讀證據。",
+        "link": "https://drive.google.com/drive/folders/1fqFMBRpMaujqoUSOMR0gzRprTeG-O8jF"
+      },
+      {
+        "asset_id": "D2026-EVIDENCE",
+        "name": "ISD 2026 證據庫（含 V8 座位表、03.10 嘉賓名單）",
+        "kind": "folder",
+        "drive_file_id": "1hyzzIuRGxEh9iya4YvcIsKyfCAZ3sVlG",
+        "maps_to_source_ids": [],
+        "note": "2026-10-05 建立嘅活動日最後版本證據。",
+        "link": "https://drive.google.com/drive/folders/1hyzzIuRGxEh9iya4YvcIsKyfCAZ3sVlG"
+      },
+      {
+        "asset_id": "S2026-BUDGET",
+        "name": "ISD2026 Budget（已轉 Google Sheet）",
+        "kind": "gsheet",
+        "drive_file_id": "1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE",
+        "maps_to_source_ids": [
+          "DATA-FINANCE-BUDGET"
+        ],
+        "note": "2026 財務卡片自動讀取；原 xlsx=1tFl8f_E--bwDo6Jl3PcCgMRs06-hg3c_。",
+        "link": "https://drive.google.com/file/d/1S1mNNjhcBY_IsMOYtI8sZLoKUht5yTdD7ICZUfJiBGE/view"
+      },
+      {
+        "asset_id": "S2026-ORG-CHART",
+        "name": "ISD2026 組織架構及聯絡（已轉 Google Sheet）",
+        "kind": "gsheet",
+        "drive_file_id": "1BaClx2C_4ozzOy0hkO0M-jTjWhBQTuo4MXfq6GgTKZo",
+        "maps_to_source_ids": [
+          "DATA-ORGANISATION"
+        ],
+        "note": "2026 工作人員名單來源；原 xlsx=1__vfReg_Hal8qXBDXaidDVvN_lRgRKcp。",
+        "link": "https://drive.google.com/file/d/1BaClx2C_4ozzOy0hkO0M-jTjWhBQTuo4MXfq6GgTKZo/view"
+      },
+      {
+        "asset_id": "S2026-PARKING",
+        "name": "港島童軍繽紛日2026－泊車證（已轉 Google Sheet）",
+        "kind": "gsheet",
+        "drive_file_id": "1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4",
+        "maps_to_source_ids": [
+          "DATA-PARKING"
+        ],
+        "note": "2026 泊車證卡片讀取；原 xlsx=1_O_7VZAeASGPEk5BqSD0VxTEPPLH5_h7。",
+        "link": "https://drive.google.com/file/d/1jmz2lLDJo9fB5qsdcPMrbeHqN0rGBQwoyhY5mavvzy4/view"
+      },
+      {
+        "asset_id": "S2026-BOOTH-REF",
+        "name": "ISD2025 攤位資料（參考 Sheet）",
+        "kind": "gsheet",
+        "drive_file_id": "1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY",
+        "maps_to_source_ids": [
+          "ARCHIVE-REFERENCE-BOOTH-2025"
+        ],
+        "note": "用戶指示 2026 攤位卡片採用嘅參考來源。",
+        "link": "https://drive.google.com/file/d/1Z6e8X51Zl952fZTjvuwsDImLNC656ftYROezHcZMlXY/view"
+      },
+      {
+        "asset_id": "X2026-BOOTH",
+        "name": "ISD2026 攤位資料.xlsx",
+        "kind": "xlsx",
+        "drive_file_id": "1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle",
+        "maps_to_source_ids": [
+          "DATA-BOOTH"
+        ],
+        "note": "2026 攤位資料原檔（未轉 Sheet）。",
+        "link": "https://drive.google.com/file/d/1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle/view"
+      }
+    ],
+    "drive_group_folders": [
+      {
+        "asset_id": "D2026-G-秘書處及文件類",
+        "name": "ISD 2026 Drive／秘書處及文件類",
+        "kind": "folder",
+        "drive_file_id": "1q65ci_5185w2IeDujy_Pnq4KtzId02Nq",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/1q65ci_5185w2IeDujy_Pnq4KtzId02Nq"
+      },
+      {
+        "asset_id": "D2026-G-通告",
+        "name": "ISD 2026 Drive／通告",
+        "kind": "folder",
+        "drive_file_id": "1zZsgcH4DyAWKrwdXvcOs_gwtMaRI5VVH",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/1zZsgcH4DyAWKrwdXvcOs_gwtMaRI5VVH"
+      },
+      {
+        "asset_id": "D2026-G-會議",
+        "name": "ISD 2026 Drive／會議",
+        "kind": "folder",
+        "drive_file_id": "13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/13P0gJ3c-1zXTzniZFZL6VT2EZP_FDTYM"
+      },
+      {
+        "asset_id": "D2026-G-行政組",
+        "name": "ISD 2026 Drive／行政組",
+        "kind": "folder",
+        "drive_file_id": "1f36teUWdBPMm1rmkSlENguJgSm-MGJ5C",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/1f36teUWdBPMm1rmkSlENguJgSm-MGJ5C"
+      },
+      {
+        "asset_id": "D2026-G-協調組",
+        "name": "ISD 2026 Drive／協調組",
+        "kind": "folder",
+        "drive_file_id": "1OFugENuzbu8gIPr-tsXfBOG0_Un9QJ2n",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/1OFugENuzbu8gIPr-tsXfBOG0_Un9QJ2n"
+      },
+      {
+        "asset_id": "D2026-G-節目組",
+        "name": "ISD 2026 Drive／節目組",
+        "kind": "folder",
+        "drive_file_id": "1EYw48Lh_UrTfpFDpNifHO7Wd1kjWOi15",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/1EYw48Lh_UrTfpFDpNifHO7Wd1kjWOi15"
+      },
+      {
+        "asset_id": "D2026-G-財務指引",
+        "name": "ISD 2026 Drive／財務指引",
+        "kind": "folder",
+        "drive_file_id": "1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C",
+        "maps_to_source_ids": [],
+        "note": "",
+        "link": "https://drive.google.com/drive/folders/1zkJI5Yp1xv6PNSp8e7kJRKcjRjlyDO8C"
+      }
+    ],
+    "repo_file_snapshots": [
+      {
+        "name": "1_司儀稿_優異旅團頒獎儀式 2026 ( V5 2026-10-04).pdf",
+        "bytes": 612837,
+        "sha256": "95218086854f4c3d627de975f03f68e346dddeb19dc639b04e52ab045734440e"
+      },
+      {
+        "name": "2. 司儀稿_會操檢閱典禮2026 (V4_2026-10-04).pdf",
+        "bytes": 453718,
+        "sha256": "4264265d71adec9121ce73f97d05e0ad71d4f67f54c792be466129527dcd22a7"
+      },
+      {
+        "name": "3_司儀稿_莫榮大樓自助餐 2026 ( V2 2026-10-04).pdf",
+        "bytes": 152225,
+        "sha256": "bd5b80e6c797dc64ee6132f815460d4d2e9dd228d8f14123c8ac8607b0d8c15a"
+      },
+      {
+        "name": "Game card-P.pdf",
+        "bytes": 150735,
+        "sha256": "abd4dd62c6b24eeb11926daddbe4a08dd510ed66cd48d24ad013aa7d661b22c2"
+      },
+      {
+        "name": "Game card.pdf",
+        "bytes": 106928,
+        "sha256": "a7e2ccd7b05278258bf23dbe0f653ec46a99397a14dc472dde40da038d4b4a14"
+      },
+      {
+        "name": "ISD 2027－參加旅團場地指示圖.pdf",
+        "bytes": 623384,
+        "sha256": "a8981ce5ffb504954b96a5fc01e99447f4819b2634216c14163daff9844de656"
+      },
+      {
+        "name": "ISD2026 Org Chart and Contact List（持續更新）.xlsx",
+        "bytes": 106866,
+        "sha256": "fb32f1d05905195ae9132f51f2c85826efd30df0945036a4faa215cebf122277"
+      },
+      {
+        "name": "ISD2026 Site Setup Plan R10-SETUP PLAN-1.pdf",
+        "bytes": 612655,
+        "sha256": "b07a1b4c11791c7b46091a76aa5886f577541d02d013eb65d3d2b76091eb93c1"
+      },
+      {
+        "name": "ISD2026 staff list ver2 (FROZEN).xlsx",
+        "bytes": 384262,
+        "sha256": "fa7ca82d280648e96196d3ee6e2d75e4bf7329d77afaea9f917e6d6f68ad2017"
+      },
+      {
+        "name": "ISD2026 攤位資料.xlsx",
+        "bytes": 174405,
+        "sha256": "f779b6065dbfda098dc297362a4139aa576caa87e803ee36873ccf3de847fedf"
+      },
+      {
+        "name": "ISD2026-RiskMangementManual_V1(Clean).pdf",
+        "bytes": 9951312,
+        "sha256": "7d6e9da2995c45096f5c6c39d5b49e93e79c301d8a064f3844b5ed46d5b2f679"
+      },
+      {
+        "name": "Rundown_All 2026 連獎項 Part 1 V５.docx",
+        "bytes": 12049,
+        "sha256": "eef78b9c1c488d1bd7f7b61ae73320917f559642d595b8b094b49ad13744da0c"
+      },
+      {
+        "name": "_FoodDonation.doc",
+        "bytes": 1624064,
+        "sha256": "3321b1e2bb8fb6f2809ea638f1b4b3a630480822214fce84bee769c9e5833f2f"
+      },
+      {
+        "name": "_Goods Donating.doc",
+        "bytes": 1816064,
+        "sha256": "1250e3574425c9b60f788bd97b0e89bb949147da7bfe3809ede53afd1215d0d5"
+      },
+      {
+        "name": "_dga_list.txt",
+        "bytes": 7668,
+        "sha256": "b71ce24df8371262c460e192de66450ae89265ee57123c60581195a2b8de3a11"
+      },
+      {
+        "name": "_notice1.txt",
+        "bytes": 3162,
+        "sha256": "b560857369781188f118ab58b79227cec87d7df43a2039367a311cfd706233bf"
+      },
+      {
+        "name": "_rundown_part1_v5.txt",
+        "bytes": 2220,
+        "sha256": "cef1b44a611a0513f43e7865e793bad3cc506ee1965ce2ebbf311fe307c29868"
+      },
+      {
+        "name": "_ug_units.txt",
+        "bytes": 1039,
+        "sha256": "1edb0b1d1299f6bc8eef55c9f0325c3c4a5752dc3353fdbe2ad0e85700a6f10d"
+      },
+      {
+        "name": "sp12_26_isd2026.pdf",
+        "bytes": 611963,
+        "sha256": "567115e35e5a6d344d38321e23fc77b23a97c0a9439f6b31bf2e80d18b776f0b"
+      },
+      {
+        "name": "sp17_26_hkir_dga_list_final.docx",
+        "bytes": 766759,
+        "sha256": "23c5d5398f360a8a97706c5d4e355cf3cd4498c975002d945a2e7b74aab638f0"
+      },
+      {
+        "name": "stafflist_dump.json",
+        "bytes": 1230208,
+        "sha256": "ea5618b6d4a5da9e30a809ec4f7a67523147583fb1d793087928495e595ef92d"
+      },
+      {
+        "name": "出席UG及派隊清單_2026_as at 20260929.pdf",
+        "bytes": 118162,
+        "sha256": "f9618e679b949861af15d948eab76e3a17eb55efdd4a212c2ed88870ae985b50"
+      },
+      {
+        "name": "旅團報名人數_2026 as 26.9.2026.xls",
+        "bytes": 128512,
+        "sha256": "824f2a1da336b26731626c5f074f78fb8e202cbc3db4eb4305e935514fa2fd1e"
+      },
+      {
+        "name": "港島童軍繽紛日2026 - 嘉賓名單 as at 02.10.2026.csv",
+        "bytes": 7236,
+        "sha256": "d873fc9cd810a6c209c8105a8755b3ef0cab8f15cd39e9a98984396379da0617"
+      },
+      {
+        "name": "附件2_參加旅團場地指示圖2026 v2.pdf",
+        "bytes": 623384,
+        "sha256": "a8981ce5ffb504954b96a5fc01e99447f4819b2634216c14163daff9844de656"
+      }
+    ],
+    "repo_snapshot_note": "repo google_drive/ 內 2026 檔案快照（SHA-256）；唯讀 provenance。"
+  },
+  "datasets_2026": [
+    {
+      "key": "users",
+      "label": "籌委帳戶（54 人預先開戶）",
+      "record_count": 54,
+      "related_master_tabs": [
+        "11_人員"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-ORGANISATION",
+          "domain": "rosters",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "staff.org_chart",
+      "label": "組織架構崗位（封存原始行數；正規化後 54 人）",
+      "record_count": 55,
+      "related_master_tabs": [
+        "10_組織",
+        "11_人員"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-ORGANISATION",
+          "domain": "rosters",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "staff.contacts",
+      "label": "聯絡表（封存原始行數）",
+      "record_count": 62,
+      "related_master_tabs": [
+        "11_人員"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-ORGANISATION",
+          "domain": "rosters",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "staff.event_staff_roster",
+      "label": "活動日工作人員編更（人次）",
+      "record_count": 279,
+      "related_master_tabs": [
+        "15_工作人員",
+        "16_當值安排"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "SCHEDULE-STAFF",
+          "domain": "logistics",
+          "owner_group": "行政組"
+        },
+        {
+          "source_id": "DATA-JOB-DUTY",
+          "domain": "rosters",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "participants",
+      "label": "參加旅團",
+      "record_count": 31,
+      "related_master_tabs": [
+        "10_組織",
+        "13_報名",
+        "14_出席"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-PARTICIPANT",
+          "domain": "registration",
+          "owner_group": "行政組"
+        },
+        {
+          "source_id": "DATA-GROUP-APPLICATION",
+          "domain": "system",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "guest_roster.guests",
+      "label": "嘉賓名單",
+      "record_count": 102,
+      "related_master_tabs": [
+        "11_人員",
+        "12_邀請",
+        "21_典禮",
+        "22_報到"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-GUEST",
+          "domain": "rosters",
+          "owner_group": "嘉賓接待組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "guest_transport",
+      "label": "嘉賓車安排（乘大會車嘉賓）",
+      "record_count": 4,
+      "related_master_tabs": [
+        "20_交通泊車"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-VEHICLE",
+          "domain": "venue",
+          "owner_group": "協調組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "activities.booths",
+      "label": "攤位",
+      "record_count": 33,
+      "related_master_tabs": [
+        "17_攤位",
+        "18_攤位人手"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-BOOTH",
+          "domain": "venue",
+          "owner_group": "主題節目組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "activities.activities",
+      "label": "主題活動",
+      "record_count": 0,
+      "related_master_tabs": [
+        "17_攤位"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-THEME-PROGRAMME",
+          "domain": "venue",
+          "owner_group": "主題節目組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "activities.gameCards",
+      "label": "遊戲卡",
+      "record_count": 2,
+      "related_master_tabs": [],
+      "related_source_ids": [
+        {
+          "source_id": "ASSET-GAME-CARD",
+          "domain": "venue",
+          "owner_group": "主題節目組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "meals",
+      "label": "膳食訂餐紀錄",
+      "record_count": 276,
+      "related_master_tabs": [
+        "19_膳食"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-MEAL-ORDER",
+          "domain": "logistics",
+          "owner_group": "協調組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "staff_meals_2026",
+      "label": "工作人員餐單統計",
+      "record_count": 290,
+      "related_master_tabs": [
+        "19_膳食"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-STAFF-MEAL",
+          "domain": "logistics",
+          "owner_group": "協調組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "meal_menu_2026",
+      "label": "餐單",
+      "record_count": 9,
+      "related_master_tabs": [
+        "19_膳食"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-MENU",
+          "domain": "logistics",
+          "owner_group": "協調組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "meal_logistics_2026",
+      "label": "派飯物流安排",
+      "record_count": 3,
+      "related_master_tabs": [
+        "19_膳食"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-MEAL-LOGISTICS",
+          "domain": "logistics",
+          "owner_group": "協調組"
+        },
+        {
+          "source_id": "DATA-MEAL-DISTRIBUTION",
+          "domain": "logistics",
+          "owner_group": "協調組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "schedule",
+      "label": "全日時間表",
+      "record_count": 6,
+      "related_master_tabs": [
+        "26_日程及地圖"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "SCHEDULE-ALL",
+          "domain": "programme",
+          "owner_group": "秘書處"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "ceremony.mc_scripts",
+      "label": "司儀稿（3 份全文）",
+      "record_count": 3,
+      "related_master_tabs": [],
+      "related_source_ids": [
+        {
+          "source_id": "SCRIPT-MERIT",
+          "domain": "programme",
+          "owner_group": "會操及典禮組"
+        },
+        {
+          "source_id": "SCRIPT-PARADE",
+          "domain": "programme",
+          "owner_group": "會操及典禮組"
+        },
+        {
+          "source_id": "SCRIPT-LUNCH",
+          "domain": "programme",
+          "owner_group": "會操及典禮組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "ceremony.rundown_part1_v5",
+      "label": "Rundown Part 1 V5（行）",
+      "record_count": 13,
+      "related_master_tabs": [
+        "26_日程及地圖"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "SCHEDULE-ALL",
+          "domain": "programme",
+          "owner_group": "秘書處"
+        },
+        {
+          "source_id": "DATA-CEREMONY-PROGRAMME",
+          "domain": "programme",
+          "owner_group": "會操及典禮組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "ceremony.meritRoster",
+      "label": "優異旅團獲獎（團次）",
+      "record_count": 188,
+      "related_master_tabs": [
+        "21_典禮"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-AWARD-MERIT",
+          "domain": "rosters",
+          "owner_group": "會操及典禮組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "ceremony.adult_awards",
+      "label": "成年獎勵",
+      "record_count": 6,
+      "related_master_tabs": [
+        "21_典禮"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-AWARD-LEADER",
+          "domain": "rosters",
+          "owner_group": "會操及典禮組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "ceremony.ug_units",
+      "label": "其他制服團體單位",
+      "record_count": 3,
+      "related_master_tabs": [
+        "14_出席",
+        "10_組織"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-UG-ATTENDANCE",
+          "domain": "rosters",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "troop_checkin",
+      "label": "旅團報到點名（旅）",
+      "record_count": 31,
+      "related_master_tabs": [
+        "22_報到"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-PARTICIPANT",
+          "domain": "registration",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "notices",
+      "label": "特別通告",
+      "record_count": 3,
+      "related_master_tabs": [
+        "27_公告及求助"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DOC-SPECIAL-CIRCULAR",
+          "domain": "notices",
+          "owner_group": "秘書處"
+        },
+        {
+          "source_id": "DOC-MAIN-CIRCULAR",
+          "domain": "notices",
+          "owner_group": "秘書處"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "documents",
+      "label": "文件中心檔案",
+      "record_count": 79,
+      "related_master_tabs": [],
+      "related_source_ids": [
+        {
+          "source_id": "REGISTRY-ADMIN-DOCS",
+          "domain": "system",
+          "owner_group": "行政組"
+        },
+        {
+          "source_id": "REGISTRY-COORD-DOCS",
+          "domain": "venue",
+          "owner_group": "協調組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "meetings",
+      "label": "會議",
+      "record_count": 6,
+      "related_master_tabs": [],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-MEETING",
+          "domain": "programme",
+          "owner_group": "秘書處"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    },
+    {
+      "key": "souvenirs.staff_roster_2026",
+      "label": "紀念章派發名單",
+      "record_count": 290,
+      "related_master_tabs": [
+        "15_工作人員",
+        "22_報到"
+      ],
+      "related_source_ids": [
+        {
+          "source_id": "DATA-STAFF-SOUVENIR",
+          "domain": "logistics",
+          "owner_group": "行政組"
+        },
+        {
+          "source_id": "BADGE-STAFF",
+          "domain": "logistics",
+          "owner_group": "行政組"
+        }
+      ],
+      "privacy": "只記數量；不含個人資料。"
+    }
+  ],
+  "unified_gs": {
+    "repo_file": "apps-script/Code2027Unified.gs",
+    "version": "2027-unified-gs-v1",
+    "drive_folder": "00_系統及資料",
+    "note": "一體化後端 GS（本索引嘅唯一消費者）；由 repo 貼入 Apps Script 部署。"
+  }
+}

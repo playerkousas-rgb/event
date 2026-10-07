@@ -30,6 +30,6 @@ ok(modal.includes('require_selection:isStaff')&&modal.includes('請先選擇${fi
 ok(modal.includes('toggleCheckinSortDirection')&&modal.includes('setVisibleCheckinRows'), '快速點名提供明確排序方向及目前篩選名單的批次剔選');
 ok(stamps.includes('is2027OwnedSource')&&stamps.includes('event_staff_roster'), '2027 工作人員派章以獨立的活動編更名單為準，並保留 2026 行為');
 ok(stamps.includes('printSouvenirStamps')&&stamps.includes('匯出 Excel')&&stamps.includes('匯出 Word')&&stamps.includes('列印後備名單'), '高流量工作人員派章站保留同一 canonical 名單的 Excel／Word／列印後備輸出');
-ok(html.includes('js/40-souvenir-stamps.js?v=20261006m') && html.includes('js/43-checkin-modal.js?v=20261006m'), '更新兩個前端檔案的快取版本');
+ok(html.includes('js/40-souvenir-stamps.js?v=20261007a') && html.includes('js/43-checkin-modal.js?v=20261007a'), '更新兩個前端檔案的快取版本');
 
 console.log(`V15_2_STAFF_STAMP_CHECKIN_OK (${checks} checks)`);

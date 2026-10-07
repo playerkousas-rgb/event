@@ -12,6 +12,37 @@ const root = path.join(__dirname, '..');
 const P2027 = path.join(root, 'data/isd_2027.json');
 const source = JSON.parse(fs.readFileSync(P2027, 'utf8'));
 
+/* ── 公告內文連結正規化：2026 live 檔 → 2027 參考快照副本（同一源頭規則）────
+   一次性 bootstrap 清空咗結構化欄位（drive_url／file_url → awaiting_2027_owned_copy），
+   但公告 content 內文夾住嘅 3 條 2026 live Drive 連結漏咗——任何角色睇到嘅「正式文件」
+   連結一律改指 ISD 2027 Drive 07_參考快照嘅唯讀副本，2026 原檔從此唔再被 2027 示範直連：
+     特別通告第12/26號 → SNAP-CIRCULAR（快照與 2026 原檔同大小 611963 bytes）
+     童心捐贈（食品捐贈）→ SNAP-DONATE-FOOD
+     童心捐贈（物品回收）→ SNAP-DONATE-GOODS                                                              */
+const ANNOUNCEMENT_SNAPSHOT_URLS = {
+  'https://drive.google.com/file/d/1rmV3zqrBex803aiyjrf20QddudOBoTFf/view': 'https://drive.google.com/file/d/1HA46I0rJCrnYRiUa9etqUVv0hdZpW2WX/view',
+  'https://drive.google.com/file/d/1AXsmbK59MFz-ODLtZ-ysgvW2RcF8mu7j/view': 'https://drive.google.com/file/d/1_Km-OXf1mPg8vDopi8fDKZ6po7mkB1DJ/view',
+  'https://drive.google.com/file/d/1WbfGCy90Pkau6TLNg9J_DdohEqPzdknQ/view': 'https://drive.google.com/file/d/10R3X8eau7PO5wDc5hvQC3Y5uu23PnVAk/view'
+};
+let swapped = 0;
+((source.announcements && source.announcements.announcements) || []).forEach(a => {
+  if (typeof a.content === 'string') {
+    Object.keys(ANNOUNCEMENT_SNAPSHOT_URLS).forEach(from => {
+      if (a.content.includes(from)) { a.content = a.content.split(from).join(ANNOUNCEMENT_SNAPSHOT_URLS[from]); swapped++; }
+    });
+  }
+});
+if (swapped) console.log('OK 公告內文連結 → 2027 參考快照：' + swapped + ' 條（2026 live 直連已清除）');
+
+/* booth_import_validation.source_file 描述文字：bootstrap 清空咗 booth_source 結構欄位，
+   但呢句描述文字夾住 2026 攤位 xlsx 嘅 Drive ID——改指 2027 參考快照（SNAP-BOOTH）。 */
+const biv = source.activities && source.activities.booth_import_validation;
+if (biv && /1Po1UGjl1E3Q6HWlYlFqnE_tcXjblmFle/.test(String(biv.source_file || ''))) {
+  biv.source_file = '2027 參考快照－攤位資料.xlsx (Drive 1jFQxYgZSv11PIEromK_DviGixcMoCL3W)';
+  biv.note = '攤位資料（33 攤位種籽來自 07_參考快照嘅 2026 唯讀副本；正式 2027 攤位表待主題節目組上載）。';
+  console.log('OK booth_import_validation.source_file → 2027 參考快照－攤位資料.xlsx');
+}
+
 /* ── 由 2027 source snapshot 抽取（公眾版：剝離聯絡電話／電郵） ── */
 const booths = ((source.activities && source.activities.booths) || []).map(b =>
   [b.zone, b.booth_no, b.theme || '', b.group_name || '', b.booth_name || '', String(b.content || '').slice(0, 60)]);
