@@ -10,5 +10,8 @@
     "test": "node scripts/run-tests.js",
     "import:2026": "node scripts/import-2026.js",
     "import:2026:dry": "node scripts/import-2026.js --dry-run"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
