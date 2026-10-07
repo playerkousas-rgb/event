@@ -8,6 +8,10 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
 :root{--brand:#6d28d9;--brand-dark:#5b21b6;--brand-deep:#4c1d95;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-hover:0 8px 24px rgba(0,0,0,0.12);}
 *{ -webkit-tap-highlight-color:transparent; }
@@ -323,7 +327,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
       </div>
       <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2">
         <label class="block text-[11px] font-bold text-emerald-900"><i class="fa-solid fa-clipboard-check mr-1"></i> 會議紀錄 (管理員上傳)</label>
-        <textarea id="mf-minutes" rows="3" placeholder="會議紀錄..." class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"></textarea>
+        <textarea id="mf-minutes" rows="3" placeholder="會議���錄..." class="w-full px-3 py-2.5 border rounded-xl text-sm bg-white"></textarea>
         <div class="flex gap-2 items-center"><input type="file" id="mf-minutes-file" accept=".pdf,.doc,.docx,.txt,.jpg,.png" class="text-xs"><span id="mf-minutes-file-name" class="text-[11px] text-slate-500"></span></div>
       </div>
       <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2">
@@ -475,7 +479,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
         <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-[11px] leading-relaxed text-sky-900 space-y-1">
           <b>申請表設計（一次申請多項，唔使重複填）：</b><br>
           • <b>物資申請：</b>每項物資只填「名稱＋數量（＋單位）」，按「增加一項物資」繼續加；<b>所屬組別／聯絡電話／申請原因是整張申請共用，只填一次</b>，電話自動載入你登記時嘅聯絡號碼。<br>
-          • <b>攤位計劃書＝獨立卡片＋公開可填寫（v8.7）：</b>對標主題節目組「主題節目攤位計劃書」表單＋「2026 攤位總表」（分區＋編號＋負責單位選擇、攤位招牌名稱／活動內容／「十五五」主題自填、帳篷 3mW x 3mD／摺枱／摺椅只填數量、負責人姓名／年齡組別／單位／職位／WhatsApp／電郵）；<b>「總表」頁籤按攤位匯總：TOTAL 總數（帳篷／摺枱／摺椅／圍布／電源）＋每個攤位一行明細，未提交攤位顯示「未提交」</b>；與地域物資借用兩項紀錄完全分開。<b>任何人無需登入都可提交</b>（未登入請留姓名＋聯絡電話）；聯絡電話／電郵只供登入後查看。<b>可匯出總表 Excel／Word，或列印成 PDF</b>。<br>
+          • <b>攤位計劃書＝獨立卡片＋公開可填寫（v8.7）：</b>對標主題節目組「主題節目攤位計劃書」表單＋「2026 攤位總表」（分區＋編號＋負責單位選擇、攤位招牌��稱／活動內容／「十五五」主題自填、帳篷 3mW x 3mD／摺枱／摺椅只填數量、負責人姓名／年齡組別／單位／職位／WhatsApp／電郵）；<b>「總表」頁籤按攤位匯總：TOTAL 總數（帳篷／摺枱／摺椅／圍布／電源）＋每個攤位一行明細，未提交攤位顯示「未提交」</b>；與地域物資借用兩項紀錄完全分開。<b>任何人無需登入都可提交</b>（未登入請留姓名＋聯絡電話）；聯絡電話／電郵只供登入後查看。<b>可匯出總表 Excel／Word，或列印成 PDF</b>。<br>
           • <b>膳食：</b>菜單開放俾所有人填寫訂餐（無需登入，可選不吃）；菜單不設「組別」欄。公眾只見到「菜單＋我的訂餐」；訂餐紀錄/統計與列印派發只供本組總主任以上／批核／執行組。訂餐由本組總主任以上確認，再由指定組批核，最後由執行組落單派飯。<br>
           • <b>童心捐贈：</b>公眾直接見到物品／食品兩張捐贈表（無須登入）；QR Code 下載同統計只列予服務及發展組／管理層。<br>          • <b>紀念章派發（v11）：</b>紀念章只派發俾<b>工作人員</b>及<b>典禮嘉賓</b>，活動前已有全人名，所以派發時只需 <b>TICK 人名</b>。<b>行政組</b>部門中心＝工作人員派發（另有「備註」欄，用作紀錄改名／替假嘅工作人員）；<b>嘉賓接待組</b>部門中心＝嘉賓派發（嘉賓名單跟典禮儀式，<b>不可改名</b>，因為冇代嘉賓）。嘉賓派發由行政組及嘉賓接待組管理，可匯出 Excel／Word 或列印成 PDF。<br>
           • <b>失物認領（v11）：</b>執行手冊「各類附加資料」及「行政組 → 部門管理中心」同一份紀錄；<b>由行政組紀錄</b>（登記拾獲日期／地點／物品，認領時更新狀態及認領人），其他組別及公眾只可查閱（未登入隱藏認領人聯絡）。<br>
@@ -507,7 +511,7 @@ details.group[open] .group-open\:rotate-180{transform:rotate(180deg)}
           <li><b>角色授權：</b>上級可透過「權限管理」設定用戶的「可看／可管」清單（perm_see／perm_edit）。</li>
           <li><b>開戶權限：</b>前端開戶只提供工作人員／主任／總主任；副主席及以上由管理員處理；批量開戶管理員專用。</li>
           <li><b>批核權限表：</b>L1 或以上（管理員／顧問／主席／執行副主席）可修改及使用「批核權限表」。</li>
-          <li><b>批核路由：</b>每類申請（物資／車輛／膳食／財務）可分別指定「批核組」（＝決定批唔批）及「執行／最後名單組」（＝批准後負責跟進、持最後名單），兩組都可多選、可隨時改。主任／工作人員提交後，先由<b>所屬組總主任以上</b>確認，再交指定批核組批核，批准後由指定執行組跟進。</li>
+          <li><b>批核路由：</b>每類申請（物資／車輛／膳食／財務）可分別指定「批核組」（＝決定批唔批）及「執行／最後名單組」（＝批准後負責跟進、��最後名單），兩組都可多選、可隨時改。主任／工作人員提交後，先由<b>所屬組總主任以上</b>確認，再交指定批核組批核，批准後由指定執行組跟進。</li>
         </ul>
       </div>
 
