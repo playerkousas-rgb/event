@@ -18,6 +18,8 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 for (const match of html.matchAll(/(?:src|href)=["']([^"']+)["']/g)) {
   const asset = match[1].split('?')[0];
   if (/^(https?:|#|mailto:|data:|javascript:)/i.test(asset)) continue;
+  // Allow Vercel runtime routes (analytics, speed insights, etc.)
+  if (asset.startsWith('/_vercel/')) continue;
   if (!fs.existsSync(path.join(root, asset))) errors.push(`broken local reference: ${asset}`);
 }
 for (const name of ['.bak', '.tmp', '.old']) {
