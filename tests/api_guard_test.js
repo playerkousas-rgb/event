@@ -225,11 +225,15 @@ ok(!core.includes('.json?t=${Date.now()}'), '⑦ loadEventData 已移除 ?t=Date
 ok(core.includes('ETag 協商'), '⑧ 以 ETag＋data_version 雙機制代替（有註解説明）');
 const vercel = JSON.parse(read('vercel.json'));
 const hdr = (src) => (vercel.headers.find(h => h.source === src) || {}).headers || [];
-ok(hdr('/google_drive/(.*)').some(h => h.value.includes('immutable')), '⑦ google_drive（19MB 唯讀 PDF）＝immutable 一年快取');
+ok(hdr('/google_drive/(.*)').some(h => h.value.includes('immutable')), '⑦ google_drive（唯讀 PDF）＝immutable 一年快取');
 ok(hdr('/assets/(.*)').some(h => h.value.includes('604800')), '⑦ assets＝7 日快取（以前 1 小時）');
+ok(hdr('/js/(.*)').some(h => h.value === 'public, max-age=86400, s-maxage=604800'), '⑦ JS 使用瀏覽器 1 日／CDN 7 日快取');
+ok(vercel.buildCommand === 'true', '⑦ Vercel 使用 no-op build command');
+ok(vercel.git?.deploymentEnabled?.main === true, '⑦ 只允許 main 分支部署');
+ok(vercel.rewrites.some(r => r.source === '/assets/event-day/crisis-manual-2026.pdf' && r.destination === '/assets/event-day/crisis-manual-2027.pdf'), '⑦ 2026 歷史 PDF URL 轉至唯一保留檔案');
 const ig = read('.vercelignore');
 ok(/tools|tests|apps-script|docs/.test(ig) && /2027_simulation/.test(ig), '⑦ .vercelignore：開發工具＋模擬資料唔推上 Vercel（部署瘦身＋模擬邊界）');
-ok(read('api/config.js').includes("no-store"), '⑦ /api/config 唔准任何快取（config 改動即刻生效）');
+ok(read('api/config.js').includes("public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"), '⑦ /api/config 設定短期瀏覽器／CDN 快取');
 
 /* ══ ⑧ GS：後端防呆 ══ */
 const gs = read('apps-script/Code2027Unified.gs');

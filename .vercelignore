@@ -1,9 +1,14 @@
 # Vercel 部署瘦身（v16，2026-10-07）：靜態站只需要 index.html＋js＋data（活動 JSON）＋assets＋google_drive＋api
-# 以下一律唔推上 Vercel：部署體積大減（~70MB → ~46MB），亦避免開發工具／模擬資料公開可下載。
+# 以下一律唔推上 Vercel；PDF 去重及排除非 runtime 原始檔後，部署體積粗估約 22.6 MB。
 tools
 tests
 apps-script
 docs
+
+# 無前端引用的原始捐贈文件／名冊快照不部署（保留於 Git 作來源證據）
+google_drive/_Goods Donating.doc
+google_drive/_FoodDonation.doc
+google_drive/stafflist_dump.json
 
 # 模擬／審查用資料（SIMULATION_ONLY、永不當真 2027 發佈）唔上公開站
 data/2027_simulation_*

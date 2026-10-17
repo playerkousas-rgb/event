@@ -1,46 +1,107 @@
 {
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/api/config", "destination": "/api/config.js" },
-    { "source": "/api/:path*", "destination": "/api/:path*.js" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/config",
+      "destination": "/api/config.js"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*.js"
+    },
+    {
+      "source": "/assets/event-day/crisis-manual-2026.pdf",
+      "destination": "/assets/event-day/crisis-manual-2027.pdf"
+    },
+    {
+      "source": "/assets/event-day/site-setup-plan-2026.pdf",
+      "destination": "/assets/event-day/site-setup-plan-2027.pdf"
+    },
+    {
+      "source": "/assets/event-day/game-card-2026.pdf",
+      "destination": "/assets/event-day/game-card-2027.pdf"
+    },
+    {
+      "source": "/assets/event-day/game-card-p-2026.pdf",
+      "destination": "/assets/event-day/game-card-p-2027.pdf"
+    },
+    {
+      "source": "/assets/event-day/mc-awards-v5-2026.pdf",
+      "destination": "/assets/event-day/mc-awards-2027.pdf"
+    },
+    {
+      "source": "/assets/event-day/mc-buffet-v2-2026.pdf",
+      "destination": "/assets/event-day/mc-buffet-2027.pdf"
+    },
+    {
+      "source": "/assets/event-day/mc-inspection-v4-2026.pdf",
+      "destination": "/assets/event-day/mc-inspection-2027.pdf"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/data/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
       ]
     },
     {
       "source": "/google_drive/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/js/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=604800"
+        }
       ]
     },
     {
       "source": "/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/assets/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
+        }
       ]
     }
-  ]
+  ],
+  "buildCommand": "true",
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
 }
