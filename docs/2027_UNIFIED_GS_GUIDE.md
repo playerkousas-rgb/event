@@ -119,7 +119,7 @@ pending 路由 `pullChildSheet` 會直接拒絕並寫 `05_欄位錯誤`，原因
 
 ### Vercel
 - `.vercelignore`：tools／tests／apps-script／docs／模擬資料（2027_simulation_*）唔推上 Vercel——部署體積大減，模擬資料亦唔會公開可下載（守住「模擬永不當真 2027 發佈」邊界）。
-- `google_drive/`（19MB 唯讀 PDF）＝immutable 一年快取；`assets/`＝7 日；`/api/config`＝no-store（config 改動即刻生效）。
+- Google Drive PDF 使用 immutable 一年快取；`assets/`＝7 日；`/js/`＝瀏覽器 1 日／CDN 7 日；`/api/config`＝瀏覽器 5 分鐘／CDN 1 小時，並使用 stale-while-revalidate。
 
 ### 後端 GS（本檔 v1.2）
 - **請求上限 8MB**（`request_too_large`）：大 body 唔會行到 GAS 30 秒限時先死。

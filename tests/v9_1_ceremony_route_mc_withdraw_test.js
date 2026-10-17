@@ -12,6 +12,12 @@ const ok = (condition, message) => { assert.ok(condition, message); n++; };
 
 const ceremony = data.ceremony || {};
 const sourceText = JSON.stringify({ceremony, participants: data.participants || []});
+const vercel = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
+const shippedOrRedirected = (url) => {
+  if (fs.existsSync(path.join(root, url))) return true;
+  const rewrite = (vercel.rewrites || []).find((item) => item.source === `/${url}`);
+  return Boolean(rewrite && fs.existsSync(path.join(root, rewrite.destination.slice(1))));
+};
 
 // ① Three current MC scripts remain embedded and their shipped PDFs open locally.
 const mc = ceremony.mc_scripts || [];
@@ -21,7 +27,7 @@ ok(mc.find(x => x.part === '第二部分')?.version === 'V4', '會操檢閱典�
 ok(mc.find(x => x.part === '第三部分')?.version === 'V2', '自助餐 = V2');
 mc.forEach(s => {
   ok(s.content && s.content.trim(), `${s.part} 有內建全文`);
-  ok(s.file_url && fs.existsSync(path.join(root, s.file_url)), `${s.part} PDF 已隨 APP 提供`);
+  ok(s.file_url && shippedOrRedirected(s.file_url), `${s.part} PDF 已隨 APP 提供（或由 Vercel 導向共用副本）`);
 });
 
 // ② The separate inspection-route tab uses the current route image and wording.

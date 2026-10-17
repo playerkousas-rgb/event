@@ -124,7 +124,7 @@ AUDS.forEach(aud => {
 
 // B2 — 同一份文件，所有見到佢嘅角色見到同一條 URL（共用文檔跨身份完全一致）
 const venuePdf = 'google_drive/ISD 2027－參加旅團場地指示圖.pdf';
-AUDS.forEach(aud => ok(audDocs[aud].has(venuePdf), `B2 ${aud}：場地指示圖（本地 2027 副本）用同一條連結`));
+AUDS.forEach(aud => ok(audDocs[aud].has(venuePdf), `B2 ${aud}：各角色共用同一份場地指示圖`));
 const hki = 'https://www.hkirscout.org.hk';
 AUDS.filter(a => a !== 'guest').forEach(aud => ok([...audDocs[aud]].some(u => u.startsWith(hki)), `B2 ${aud}：紙本表格下載（總會官網）用同一條連結`));
 ok(!audDocs.guest.has(hki) && ![...audDocs.guest].some(u => u.startsWith(hki)), 'B2 嘉賓唔設童心捐贈頁簽（設計如此，非缺漏）');

@@ -225,12 +225,30 @@ datasetDefs.forEach((def) => def.related_master_tabs.forEach((tab) => {
 
 /* ══ repo google_drive/ 2026 檔案快照（SHA-256 provenance） ══ */
 const snapshotDir = path.join(root, 'google_drive');
-const repoSnapshots = fs.readdirSync(snapshotDir)
+// Several source PDFs are byte-for-byte duplicates of the canonical event-day assets.
+// Keep their historical source names/checksums in the provenance index without storing
+// a second copy of the same binary in the deployment repository.
+const deduplicatedPdfSnapshots = {
+  '1_司儀稿_優異旅團頒獎儀式 2026 ( V5 2026-10-04).pdf': 'assets/event-day/mc-awards-2027.pdf',
+  'Game card-P.pdf': 'assets/event-day/game-card-p-2027.pdf',
+  'Game card.pdf': 'assets/event-day/game-card-2027.pdf',
+  'ISD2026 Site Setup Plan R10-SETUP PLAN-1.pdf': 'assets/event-day/site-setup-plan-2027.pdf',
+  'ISD2026-RiskMangementManual_V1(Clean).pdf': 'assets/event-day/crisis-manual-2027.pdf',
+  '附件2_參加旅團場地指示圖2026 v2.pdf': 'google_drive/ISD 2027－參加旅團場地指示圖.pdf'
+};
+const snapshotSources = fs.readdirSync(snapshotDir)
   .filter((f) => fs.statSync(path.join(snapshotDir, f)).isFile())
-  .sort()
-  .map((f) => {
-    const buf = fs.readFileSync(path.join(snapshotDir, f));
-    return { name: f, bytes: buf.length, sha256: sha256(buf) };
+  .map((f) => ({ name: f, file: path.join(snapshotDir, f) }));
+Object.entries(deduplicatedPdfSnapshots).forEach(([name, canonicalPath]) => {
+  if (!snapshotSources.some((item) => item.name === name)) {
+    snapshotSources.push({ name, file: path.join(root, canonicalPath) });
+  }
+});
+const repoSnapshots = snapshotSources
+  .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+  .map(({ name, file }) => {
+    const buf = fs.readFileSync(file);
+    return { name, bytes: buf.length, sha256: sha256(buf) };
   });
 
 /* ══ 組裝索引 ══ */
