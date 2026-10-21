@@ -15,6 +15,11 @@ data/2027_simulation_*
 data/2027_simulation_sources
 data/2027_blank_sources
 
+# 加強瘦身：防止 .git / 大 PDF 被打包（2026-10-22）
+.git
+assets/event-day/*.pdf
+google_drive/*.pdf
+
 # 開發雜物
 .vercel
 *.md
